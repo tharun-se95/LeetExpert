@@ -20,6 +20,22 @@ selection chapter. Checklist in [`HANDBOOK_PLAN.md`](HANDBOOK_PLAN.md). Bit /
 math / simulation remain optional appendix only (see Uncategorized in
 `QUESTION_BANK.md`).
 
+## Web app
+
+Interactive Next.js reader lives in [`web/`](web/README.md).
+
+| | |
+| --- | --- |
+| Repo | [tharun-se95/dsa-handbook](https://github.com/tharun-se95/dsa-handbook) |
+| CI | GitHub Actions — lint + production build on `main` / PRs (`.github/workflows/ci.yml`) |
+| CD | Vercel — production deploy on push to `main` (project Root Directory = `web`) |
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
 ## Table of Contents
 
 ### Part 1 — Foundations

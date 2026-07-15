@@ -11,7 +11,28 @@ import {
   getPattern,
 } from "./manifest";
 
-const handbookRoot = path.resolve(process.cwd(), "..");
+/**
+ * Resolve the handbook repo root (folder that contains `part-1-foundations/`).
+ * Local & Vercel with Root Directory=`web` use the parent of cwd.
+ * Override with `HANDBOOK_ROOT` when needed.
+ */
+function resolveHandbookRoot(): string {
+  if (process.env.HANDBOOK_ROOT) {
+    return path.resolve(process.env.HANDBOOK_ROOT);
+  }
+  const candidates = [
+    path.resolve(process.cwd(), ".."),
+    process.cwd(),
+  ];
+  for (const dir of candidates) {
+    if (fs.existsSync(path.join(dir, "part-1-foundations"))) {
+      return dir;
+    }
+  }
+  return path.resolve(process.cwd(), "..");
+}
+
+const handbookRoot = resolveHandbookRoot();
 
 export interface TocItem {
   id: string;

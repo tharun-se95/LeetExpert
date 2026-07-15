@@ -53,6 +53,25 @@ Markdown is read at build/request time from the parent handbook root
 **not** copy or modify those files. Route/slug mapping lives in
 `src/lib/content/manifest.ts`.
 
+Override with `HANDBOOK_ROOT` if the markdown tree is not the parent of `cwd`.
+
+## Deploy (Vercel)
+
+1. Vercel project **Root Directory** must be `web` (Git still clones the full
+   repo, so parent markdown is available as `../` at build time).
+2. Push to `main` on [tharun-se95/dsa-handbook](https://github.com/tharun-se95/dsa-handbook)
+   — Vercel builds and promotes production.
+3. GitHub Actions CI (repo root `.github/workflows/ci.yml`) runs lint + build
+   on every push/PR; it does not deploy (Vercel owns CD).
+
+Local production preview:
+
+```bash
+npx vercel login
+npx vercel link   # Root Directory: web
+npx vercel --prod
+```
+
 ## Export PDF
 
 Two options:
