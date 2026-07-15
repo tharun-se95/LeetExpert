@@ -26,6 +26,7 @@ Interactive Next.js reader lives in [`web/`](web/README.md).
 
 | | |
 | --- | --- |
+| Live | [dsa-handbook-seven.vercel.app](https://dsa-handbook-seven.vercel.app) |
 | Repo | [tharun-se95/dsa-handbook](https://github.com/tharun-se95/dsa-handbook) |
 | CI | GitHub Actions — lint + production build on `main` / PRs (`.github/workflows/ci.yml`) |
 | CD | Vercel — production deploy on push to `main` (project Root Directory = `web`) |
