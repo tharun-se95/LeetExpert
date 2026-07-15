@@ -1,0 +1,5 @@
+flowchart LR
+  L[left] --> W[window state]
+  W --> R[right]
+  R -->|expand| W
+  W -->|invalid| L

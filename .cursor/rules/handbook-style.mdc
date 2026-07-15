@@ -1,0 +1,54 @@
+---
+description: Required section structure for every pattern chapter
+alwaysApply: true
+---
+
+# Handbook Chapter Structure
+
+Every individual pattern chapter (files under `part-2-pattern-families/`, and
+anything generated via `create-chapter.md`) must follow this exact structure,
+in this exact order. Do not skip or reorder sections.
+
+```markdown
+# <Pattern Name>
+
+## Purpose
+
+## Recognition Clues
+
+## Mental Model
+
+## Visualization
+
+## Generic Template
+
+## Complexity
+
+## Common Mistakes
+
+## Classic Interview Questions
+
+## Engineering Connections
+
+## Summary
+```
+
+Section notes:
+
+- **Purpose** — one paragraph: what real problem does this pattern solve?
+- **Recognition Clues** — bullet list of interview phrasing that signals this
+  pattern ("longest substring", "top K", "connected components")
+- **Mental Model** — the intuition, in plain language, before any code
+- **Visualization** — see `diagrams.mdc`
+- **Generic Template** — language-independent pseudocode only, never a
+  specific programming language
+- **Complexity** — time AND space, each with a one-line justification
+- **Common Mistakes** — mistakes beginners actually make, not hypothetical ones
+- **Classic Interview Questions** — exactly 3 easy, 3 medium, 2 hard
+- **Engineering Connections** — a real production system that uses this pattern
+- **Summary** — 3-5 bullet takeaways, no new information
+
+Target length per chapter: **~800–1,200 words** plus diagrams.
+
+Full family files (`family-N-*.md`) contain multiple pattern sections back to
+back, each following this structure independently.

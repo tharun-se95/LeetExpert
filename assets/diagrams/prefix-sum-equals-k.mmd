@@ -1,0 +1,5 @@
+flowchart LR
+  P["prefix[R]"] --> S["need = prefix[R] - K"]
+  S --> H{need in freq map?}
+  H -->|Yes| C[Add freq to answer]
+  H --> U[Record prefix[R] in map]

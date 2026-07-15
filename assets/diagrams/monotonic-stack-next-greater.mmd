@@ -1,0 +1,6 @@
+flowchart LR
+  I[scan i left to right] --> C{temps i greater than stack top?}
+  C -->|Yes| P[pop top; record i - top as wait]
+  P --> C
+  C -->|No| S[push i]
+  S --> I

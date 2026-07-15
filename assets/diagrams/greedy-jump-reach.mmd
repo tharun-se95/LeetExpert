@@ -1,0 +1,5 @@
+flowchart LR
+  I[index i] --> R["maxReach = max(maxReach, i + nums[i])"]
+  R --> C{"i <= maxReach?"}
+  C -->|yes| N[continue]
+  C -->|no| F[cannot finish]

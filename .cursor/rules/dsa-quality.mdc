@@ -1,0 +1,31 @@
+---
+description: Explanation depth required for every algorithm discussed
+alwaysApply: true
+---
+
+# DSA Explanation Quality Bar
+
+Never explain an algorithm by jumping directly to a template or code. Always
+build up through these steps, in order, inside the relevant chapter sections:
+
+1. **The problem** — state it concretely with a tiny example
+2. **The naive/brute-force solution** — what would an untrained solver try first?
+3. **Why it's too slow** — name the actual bottleneck (nested loop, repeated
+   scan, redundant recomputation) rather than just saying "it's O(n²)"
+4. **The better idea** — the specific insight that unlocks the pattern
+5. **The pattern name** — connect the insight to the named pattern
+6. **The algorithm** — the generic template (see `handbook-style.mdc`)
+7. **Complexity** — time and space, justified
+8. **A real-world analogy** — something outside of programming
+9. **A real engineering application** — a system that actually uses this
+
+Prioritize in this order, never the reverse:
+
+```
+Understanding -> Pattern Recognition -> Implementation -> Optimization
+```
+
+If a paragraph could be replaced by "just memorize this solution," rewrite it
+so it teaches recognition and derivation instead. The reader should be able to
+reconstruct the algorithm from the mental model alone, without having seen the
+exact problem before.

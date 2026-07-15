@@ -1,0 +1,9 @@
+flowchart LR
+  LO[lo = min answer] --> MID[mid = lo + hi // 2]
+  MID --> F{feasible mid?}
+  F -->|Yes| HI[hi = mid]
+  F -->|No| UP[lo = mid + 1]
+  HI --> DONE{lo == hi?}
+  UP --> DONE
+  DONE -->|No| MID
+  DONE -->|Yes| ANS[return lo]

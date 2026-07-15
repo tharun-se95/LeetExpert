@@ -1,0 +1,5 @@
+flowchart TD
+  S[Start / sources] --> L0[Level 0 in queue]
+  L0 --> L1[Enqueue neighbors → Level 1]
+  L1 --> L2[Enqueue neighbors → Level 2]
+  L2 --> DN[… until empty / target]

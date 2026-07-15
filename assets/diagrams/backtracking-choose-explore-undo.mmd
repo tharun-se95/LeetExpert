@@ -1,0 +1,7 @@
+flowchart TD
+  R[Partial path] --> C1[Choose option]
+  C1 --> OK{Valid?}
+  OK -->|No| R
+  OK -->|Yes| D[Go deeper]
+  D --> U[Undo choice]
+  U --> R

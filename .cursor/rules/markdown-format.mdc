@@ -1,0 +1,25 @@
+---
+description: Markdown formatting conventions for the handbook
+globs: **/*.md
+alwaysApply: false
+---
+
+# Markdown Formatting
+
+- Markdown only — never raw HTML
+- One `#` (H1) per file, matching the chapter/pattern title
+- Proper heading hierarchy: `##` for major sections, `###` for sub-points —
+  never skip a level (e.g. `#` straight to `###`)
+- Wrap prose near ~100 characters per line where practical (soft wrap is fine,
+  don't hard-break mid-sentence in a way that breaks rendering)
+- Use tables for comparisons (complexity, pattern cheat sheets), bullet lists
+  for enumerations, numbered lists only for sequential steps
+- Use `---` horizontal rules between major sections within a file
+- Use fenced code blocks with a language tag for pseudocode (` ```text ` or
+  ` ```pseudo `), never unlabeled blocks
+- Callout boxes are Markdown blockquotes with an emoji prefix (see
+  `HANDBOOK_STYLE_GUIDE.md` for the fixed set: 💡 ⚠️ 🚀 🏗️ 🧠)
+- No trailing whitespace, no more than one blank line in a row
+- No placeholder text ("TODO", "Lorem ipsum", "...") in finished chapters —
+  draft-in-progress files instead carry a single `> Status: not yet written`
+  line right under the title

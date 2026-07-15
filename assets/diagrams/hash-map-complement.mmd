@@ -1,0 +1,5 @@
+flowchart LR
+  A["nums[i]"] --> C["need = target - nums[i]"]
+  C --> M{"need in map?"}
+  M -->|Yes| R[Return indices]
+  M -->|No| S["map[nums[i]] = i"]

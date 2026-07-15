@@ -1,0 +1,272 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --muted: #71717a;
+  --border: #e4e4e7;
+  --surface: #fafafa;
+  --code: #f4f4f5;
+  --accent: #0070f3;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --muted: #a1a1aa;
+  --border: #27272a;
+  --surface: #111111;
+  --code: #171717;
+  --accent: #3b9eff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-code: var(--code);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 25%, transparent);
+}
+
+.handbook-prose {
+  max-width: 65ch;
+  font-size: 1.015rem;
+  line-height: 1.75;
+  color: color-mix(in oklab, var(--foreground) 92%, transparent);
+}
+
+.handbook-prose h2 {
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.handbook-prose h3 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--foreground);
+}
+
+.handbook-prose h4 {
+  margin-top: 1.35rem;
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.handbook-prose p {
+  margin: 0.85rem 0;
+}
+
+.handbook-prose ul,
+.handbook-prose ol {
+  margin: 0.85rem 0;
+  padding-left: 1.35rem;
+}
+
+.handbook-prose ul {
+  list-style: disc;
+}
+
+.handbook-prose ol {
+  list-style: decimal;
+}
+
+.handbook-prose li {
+  margin: 0.3rem 0;
+}
+
+.handbook-prose li::marker {
+  color: var(--muted);
+}
+
+.handbook-prose hr {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+.handbook-prose strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.handbook-prose .anchor-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.handbook-prose .anchor-link:hover {
+  color: var(--accent);
+}
+
+.handbook-prose .mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-inline: auto;
+}
+
+/* Visual OS / PatternLab stage */
+[data-family] {
+  --family-accent: var(--accent);
+  --family-wash: color-mix(in oklab, var(--family-accent) 12%, transparent);
+}
+
+.lab-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 20px;
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 100% 0%,
+      color-mix(in oklab, var(--family-accent, var(--accent)) 10%, transparent),
+      transparent 55%
+    ),
+    var(--surface);
+  box-shadow: 0 20px 50px rgb(0 0 0 / 0.04);
+}
+
+.dark .lab-stage {
+  box-shadow: none;
+  background:
+    linear-gradient(to bottom, rgb(255 255 255 / 0.06), transparent 1px),
+    radial-gradient(
+      ellipse 80% 60% at 100% 0%,
+      color-mix(in oklab, var(--family-accent, var(--accent)) 12%, transparent),
+      transparent 55%
+    ),
+    var(--surface);
+}
+
+.lab-mesh::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--foreground) 6%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--foreground) 6%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 24px 24px;
+  mask-image: linear-gradient(to bottom, black 30%, transparent 95%);
+}
+
+.lab-theater {
+  min-height: 320px;
+  max-height: 420px;
+}
+
+.lab-accent-border {
+  border-left: 3px solid var(--family-accent, var(--accent));
+}
+
+.poster-roof {
+  height: 6px;
+  background: var(--family-accent, var(--accent));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-motion {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Print / PDF export */
+@media print {
+  @page {
+    size: letter;
+    margin: 0.75in;
+  }
+
+  html {
+    font-size: 11pt;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .handbook-prose {
+    max-width: none;
+    color: black;
+  }
+
+  .handbook-prose a {
+    color: black;
+    text-decoration: underline;
+  }
+
+  .handbook-prose pre,
+  .handbook-prose code {
+    border-color: #ccc !important;
+    background: #f7f7f7 !important;
+    color: black !important;
+  }
+
+  .mermaid-diagram {
+    break-inside: avoid;
+    border-color: #ccc !important;
+    background: white !important;
+  }
+
+  article {
+    break-inside: auto;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  .print-chapter {
+    break-before: page;
+  }
+
+  .print-chapter:first-child {
+    break-before: avoid;
+  }
+}
