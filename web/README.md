@@ -57,19 +57,17 @@ Override with `HANDBOOK_ROOT` if the markdown tree is not the parent of `cwd`.
 
 ## Deploy (Vercel)
 
-1. Vercel project **Root Directory** must be `web` (Git still clones the full
-   repo, so parent markdown is available as `../` at build time).
-2. Push to `main` on [tharun-se95/dsa-handbook](https://github.com/tharun-se95/dsa-handbook)
-   — Vercel builds and promotes production.
-3. GitHub Actions CI (repo root `.github/workflows/ci.yml`) runs lint + build
-   on every push/PR; it does not deploy (Vercel owns CD).
+Production is on Vercel (project **Root Directory** = `web`). Git clones the
+full repo, so handbook markdown is available as `../` at build time.
 
-Local production preview:
+| Piece | Owner |
+| --- | --- |
+| CI (lint + build) | GitHub Actions — `.github/workflows/ci.yml` |
+| CD (production) | Vercel — auto-deploys on push to `main` |
 
 ```bash
-npx vercel login
-npx vercel link   # Root Directory: web
-npx vercel --prod
+# After local login/link (already done for this repo):
+vercel --prod   # from repo root; uses linked project settings
 ```
 
 ## Export PDF
