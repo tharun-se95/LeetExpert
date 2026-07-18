@@ -49,3 +49,4 @@ venv/
 # Local agent / plan scratch (keep project rules)
 .cursor/plans/
 .env*
+.superpowers/
