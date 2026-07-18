@@ -1,0 +1,15 @@
+[curious] Some interview problems don't need a clever trick. They just need order.
+
+Take Merge Intervals. You're handed messy time blocks — one to three, two to six, eight to ten — and asked to glue anything that overlaps.
+
+[sighs] The naive move is to compare every block against every other block. Ten intervals, that's forty five pairs. Ten thousand intervals, that's fifty million, and most of those pairs never even touch.
+
+The real problem isn't the overlaps. It's that you can't see who's next to whom until the list is in order.
+
+[excited] So sort by start time first. Now overlaps can only ever happen between neighbors. Walk the sorted list once. If the next block starts before your current block ends, stretch it. If not, start a new one. One pass, and you're done, because you paid for order up front.
+
+[calm] That single habit, sort once then scan, shows up everywhere that doesn't look like it at first. Group anagrams by sorting each word's letters into a key. Find two numbers that add up to a target by walking in from both ends of a sorted list. Even Sort Colors is really this: give order a chance to do the hard work, so the pass afterward is boring.
+
+[playfully] Two ways this trick gets misused. First: sorting when a hash map already answers the question in one linear walk, you just paid an n log n tax for nothing. Second: confusing this with binary search. What's the smallest speed that still finishes on time isn't sort then scan, that's guessing on a yes or no staircase, a different chapter entirely.
+
+[curious] The real skill isn't memorizing a sorting algorithm. It's noticing the moment a wall of pairwise comparisons collapses into one clean, ordered walk.
