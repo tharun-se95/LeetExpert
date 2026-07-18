@@ -1,0 +1,13 @@
+[excited] Five data structures. Five different rules for what happens next. Nail the rule, and the hard problem falls apart.
+
+[curious] First: a stack of plates. Last one down is the first one up. Feed it left paren, left bracket, right paren, right bracket — the counts match, one of each — but a stack catches what counting can't. It remembers what's still open, and closes it in order.
+
+[calm] Next: a lunch line. First kid in is first kid served. No cutting. Perfect for anything that has to stay fair — a moving average, a rate limiter, first come, first served.
+
+[excited] Then: a trophy shelf. It only ever shows the current best. A new challenger only has to beat the weakest trophy on the shelf, not fight the whole crowd. That's how you grab the top K, or the next smallest, without sorting everything.
+
+[curious] Now the sneaky one: a line of kids facing forward. A taller kid steps in, and every shorter kid who's been waiting finally learns their answer and leaves. One pass, and every next greater day gets solved at once.
+
+[calm] Last: a family tree of letters. Words that start the same share the same branches. Walk one letter at a time, and "does anything start with these letters" stops being a full dictionary scan — it's just a walk down one path.
+
+[excited] Five rules, five shapes. Match the shape of the problem to the shape of the structure, and the answer's already there.
