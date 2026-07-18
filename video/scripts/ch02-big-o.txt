@@ -1,0 +1,13 @@
+Big O isn't a secret handshake. It's a capacity check: will this finish in time, for this input size?
+
+It measures how work grows as the input grows — not exact speed, just the shape of the curve.
+
+Picture four kinds of growth. Constant time — like opening a labeled toy box, you go straight there. Logarithmic — like guessing a number by always picking the middle, halving your search every time. Linear — like reading every email in your inbox, one by one. And quadratic — like every kid in a room shaking hands with every other kid. That last one explodes fast.
+
+Here's the gap that matters: linear and quadratic don't feel a little slower — they're a different universe. One walk down the line, versus walking the whole line again for every single person in it.
+
+A rule of thumb for interviews: if the input can be a hundred thousand items, aim for linear or n log n. If it's only twenty, trying everything might be fine.
+
+And don't forget space. Extra memory counts too — a hash map costs you room to save you time.
+
+One common trap: saying this is order n, while your code hides a nested loop inside it. Complexity is about what your code actually does — not the name of the pattern you meant to use.

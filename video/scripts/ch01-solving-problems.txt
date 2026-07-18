@@ -1,0 +1,17 @@
+Interview problems feel endless — until you notice something. Strong solvers all run the same six-step plan, every single time.
+
+Understand the problem in one plain sentence. Try the brute force — the slow, obvious way — just to prove you understand the rules. Then observe: where are you doing the same work twice?
+
+That's almost always the real bottleneck. Not a missing fancy algorithm — just wasted, repeated work.
+
+Once you spot the waste, you choose a data structure to kill it. Need instant lookup? A hash map. Need the best contiguous stretch? A sliding window.
+
+Let's try it. Two Sum: find two numbers in a list that add up to a target.
+
+Brute force: check every pair. For a hundred thousand numbers, that's billions of checks — too slow.
+
+The bottleneck? For each number, you keep asking: have I already seen its partner? A hash map answers that instantly. One pass, and you're done.
+
+Here's the trap, though. A problem can sound like a sliding window and not be one. Two Sum's answer doesn't have to be a contiguous stretch — index zero and index three can both work, with junk in between. Match the bottleneck, not a lucky keyword.
+
+Master this six-step plan once, and every pattern in this handbook becomes a drop-in answer — not a disconnected trick to memorize.

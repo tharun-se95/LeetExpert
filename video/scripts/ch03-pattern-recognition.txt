@@ -1,0 +1,15 @@
+Thousands of interview questions. Only seven families.
+
+Longest substring, max sum of size K, fruits in baskets — different stories, same move underneath: keep a window, and slide it.
+
+That's the whole idea behind pattern recognition. Once you name the family, the shape of the solution is basically decided.
+
+Think of it like a map with seven biomes. A new question shows up — first ask which biome you're in, then open that walkthrough.
+
+Contiguous stretch with a rule? Sliding window. Sorted array, ends walking inward? Two pointers. Nodes and edges, friends and roads? Graph traversal. Overlapping smaller answers? Dynamic programming.
+
+Read the question twice. Once for the story. Once for the structure. Structure wins, every time.
+
+Some questions honestly sit on two patterns at once. Top K Frequent: a hash map counts, a heap picks the winners. Learn it deep once, in one home — then just remember where the other pattern helps.
+
+You're not inventing a famous algorithm under pressure. You're searching a small catalog you already know — and picking the one that fits.
