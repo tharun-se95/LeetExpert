@@ -171,8 +171,18 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Hash functions, collisions, load factor, resizing — then the problems they unlock.",
     stage: 1,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("hashing-fundamentals", "Hashing Fundamentals"),
+      concept("collision-resolution", "Collisions, Load Factor & Resizing"),
+      concept("build-a-hash-map", "Build a Hash Map From Scratch"),
+      concept("hash-patterns", "The Four Hash Patterns"),
+      problem("two-sum", "Two Sum"),
+      problem("contains-duplicate-ii", "Contains Duplicate II"),
+      problem("first-unique-character", "First Unique Character"),
+      problem("group-anagrams", "Group Anagrams"),
+      problem("longest-consecutive-sequence", "Longest Consecutive Sequence"),
+    ],
   },
   {
     slug: "linked-lists",
