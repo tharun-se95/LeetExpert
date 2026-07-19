@@ -109,8 +109,14 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Logarithms, modular arithmetic, and counting — just enough math, properly understood.",
     stage: 0,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("logarithms-and-exponents", "Logarithms & Exponents"),
+      concept("modular-arithmetic", "Modular Arithmetic"),
+      concept("divisibility-primes-gcd", "Divisibility, Primes & GCD"),
+      concept("counting-and-combinatorics", "Counting & Combinatorics"),
+      concept("math-drills", "Math Drills"),
+    ],
   },
 
   // ── Stage 1 — Linear Structures ──────────────────────────────────────────
