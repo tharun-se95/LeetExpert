@@ -50,3 +50,4 @@ venv/
 .cursor/plans/
 .env*
 .superpowers/
+.worktrees/
