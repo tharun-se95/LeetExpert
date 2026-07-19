@@ -7,6 +7,10 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import type { Components } from "react-markdown";
 import { Mermaid } from "@/components/md/Mermaid";
 import { Callout } from "@/components/md/Callout";
+import { Quiz } from "@/components/course/Quiz";
+import { CodeTabs } from "@/components/course/CodeTabs";
+import { Reveal } from "@/components/course/Reveal";
+import { Complexity } from "@/components/course/Complexity";
 import type { ReactNode } from "react";
 
 function flattenText(node: ReactNode): string {
@@ -41,11 +45,33 @@ const components: Components = {
       "props" in child
     ) {
       const codeEl = child as {
-        props: { className?: string; children?: ReactNode };
+        props: {
+          className?: string;
+          children?: ReactNode;
+          node?: { data?: { meta?: string } };
+        };
       };
       const className = codeEl.props.className ?? "";
+      const text = () => flattenText(codeEl.props.children);
       if (className.includes("language-mermaid")) {
-        return <Mermaid chart={flattenText(codeEl.props.children)} />;
+        return <Mermaid chart={text()} />;
+      }
+      if (className.includes("language-quiz")) {
+        return <Quiz source={text()} />;
+      }
+      if (className.includes("language-tabs")) {
+        return <CodeTabs source={text()} />;
+      }
+      if (className.includes("language-complexity")) {
+        return <Complexity source={text()} />;
+      }
+      if (className.includes("language-reveal")) {
+        const label = codeEl.props.node?.data?.meta?.trim() || "Reveal";
+        return (
+          <Reveal label={label}>
+            <Markdown source={text()} />
+          </Reveal>
+        );
       }
     }
     return (

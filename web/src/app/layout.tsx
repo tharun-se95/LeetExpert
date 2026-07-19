@@ -7,11 +7,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "DSA Pattern Handbook",
-    template: "%s · DSA Pattern Handbook",
+    default: "DSA Course",
+    template: "%s · DSA Course",
   },
   description:
-    "Think in patterns, not problems — a compact handbook for DSA interview pattern recognition.",
+    "A complete data structures & algorithms course — every structure from first principles, implemented from scratch, drilled with solve-first problems.",
 };
 
 export default function RootLayout({

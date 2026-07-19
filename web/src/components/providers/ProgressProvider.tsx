@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 
-const STORAGE_KEY = "dsa-handbook-visited";
+const STORAGE_KEY = "dsa-course-progress";
 
 interface ProgressContextValue {
   visited: Set<string>;

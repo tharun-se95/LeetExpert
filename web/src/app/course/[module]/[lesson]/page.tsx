@@ -1,0 +1,54 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { LessonView } from "@/components/course/LessonView";
+import { LESSON_EMBEDS } from "@/components/course/embeds";
+import {
+  allLessonParams,
+  getLessonNeighbors,
+  loadLesson,
+} from "@/lib/course/load";
+import { getLesson, getModule } from "@/lib/course/manifest";
+import { lessonHref, lessonId, moduleHref } from "@/lib/course/nav";
+
+interface PageProps {
+  params: Promise<{ module: string; lesson: string }>;
+}
+
+export function generateStaticParams() {
+  return allLessonParams();
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { module: moduleSlug, lesson: lessonSlug } = await params;
+  const hit = getLesson(moduleSlug, lessonSlug);
+  return { title: hit ? hit.lesson.title : "Lesson" };
+}
+
+export default async function LessonPage({ params }: PageProps) {
+  const { module: moduleSlug, lesson: lessonSlug } = await params;
+  const mod = getModule(moduleSlug);
+  const meta = getLesson(moduleSlug, lessonSlug);
+  const lesson = loadLesson(moduleSlug, lessonSlug);
+  if (!mod || !meta || !lesson) notFound();
+
+  const { prev, next } = getLessonNeighbors(moduleSlug, lessonSlug);
+  const Embed = LESSON_EMBEDS[lessonId(moduleSlug, lessonSlug)];
+
+  return (
+    <LessonView
+      lesson={lesson}
+      eyebrow={`Module ${mod.number} · ${mod.title}`}
+      typeLabel={meta.lesson.type === "problem" ? "Problem" : "Concept"}
+      breadcrumbs={[
+        { label: "Course", href: "/" },
+        { label: mod.shortTitle, href: moduleHref(mod.slug) },
+        { label: meta.lesson.title },
+      ]}
+      prev={prev ? { href: lessonHref(prev.module, prev.lesson), title: prev.title } : null}
+      next={next ? { href: lessonHref(next.module, next.lesson), title: next.title } : null}
+      stage={Embed ? <Embed /> : undefined}
+    />
+  );
+}

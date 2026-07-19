@@ -5,74 +5,42 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { buildSidebarNav, type NavItem } from "@/lib/content/nav";
+import {
+  buildCourseNav,
+  type CourseNavModule,
+} from "@/lib/course/nav";
 import { useProgress } from "@/components/providers/ProgressProvider";
-import { FAMILIES } from "@/lib/content/manifest";
-import { getFamilyTheme } from "@/lib/visual/familyTheme";
 
 function isActivePath(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function familyIdFromNavItem(item: NavItem): string | null {
-  if (item.id.startsWith("family-")) return item.id.replace(/^family-/, "");
-  if (item.id.startsWith("pattern-")) {
-    // pattern-{familyId}-{slug} — family ids contain hyphens
-    for (const f of FAMILIES) {
-      if (item.id.startsWith(`pattern-${f.id}-`)) return f.id;
-    }
-  }
-  if (item.id.startsWith("cheat-")) {
-    const id = item.id.replace(/^cheat-/, "");
-    return FAMILIES.some((f) => f.id === id) ? id : null;
-  }
-  if (item.id.startsWith("practice-")) {
-    const id = item.id.replace(/^practice-/, "");
-    return FAMILIES.some((f) => f.id === id) ? id : null;
-  }
-  return null;
-}
-
-function NavNode({
-  item,
-  depth,
+function ModuleNode({
+  module,
   pathname,
 }: {
-  item: NavItem;
-  depth: number;
+  module: CourseNavModule;
   pathname: string;
 }) {
   const { visited } = useProgress();
-  const hasChildren = Boolean(item.children?.length);
-  const childActive = item.children?.some(
-    (c) =>
-      isActivePath(pathname, c.href) ||
-      c.children?.some((gc) => isActivePath(pathname, gc.href)),
+  const hasLessons = module.lessons.length > 0;
+  const childActive = module.lessons.some((l) =>
+    isActivePath(pathname, l.href),
   );
-  const selfActive = pathname === item.href;
-  const [open, setOpen] = useState(
-    depth === 0 || Boolean(childActive) || selfActive,
-  );
+  const selfActive = pathname === module.href;
+  const [open, setOpen] = useState(childActive || selfActive);
 
   useEffect(() => {
     if (childActive || selfActive) setOpen(true);
   }, [childActive, selfActive, pathname]);
 
-  const familyId = familyIdFromNavItem(item);
-  const accent = familyId ? getFamilyTheme(familyId).accent : null;
-  const showPip = !hasChildren || depth >= 2;
-  const isVisited = visited.has(item.id);
+  const doneCount = module.lessons.filter((l) => visited.has(l.id)).length;
 
   return (
     <div>
-      <div
-        className={cn(
-          "group flex items-center gap-0.5 rounded-md",
-          depth === 0 && "mt-3 first:mt-0",
-        )}
-      >
-        {hasChildren && depth < 2 ? (
+      <div className="group flex items-center gap-0.5 rounded-md">
+        {hasLessons ? (
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -86,63 +54,63 @@ function NavNode({
             )}
           </button>
         ) : (
-          <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center">
-            {showPip ? (
-              <span
-                className={cn(
-                  "h-1.5 w-1.5 rounded-full",
-                  !isVisited && "bg-border",
-                )}
-                style={
-                  isVisited
-                    ? { background: accent ?? "var(--accent)" }
-                    : undefined
-                }
-                title={isVisited ? "Visited" : "Not visited"}
-              />
-            ) : null}
-          </span>
+          <span className="inline-flex h-6 w-6 shrink-0" />
         )}
         <Link
-          href={item.href}
+          href={module.href}
           className={cn(
             "min-w-0 flex-1 truncate rounded-md py-1 pl-1.5 pr-1.5 text-[13px] transition",
-            depth === 0 && "font-medium text-foreground",
-            depth > 0 && "text-muted hover:text-foreground",
-            selfActive && "bg-accent/10 text-foreground",
-            !selfActive && "hover:bg-surface",
-            accent && depth >= 1 && "border-l-[3px]",
+            module.status === "coming-soon" && "text-muted/60",
+            selfActive
+              ? "bg-accent/10 text-foreground"
+              : "text-muted hover:bg-surface hover:text-foreground",
           )}
-          style={{
-            paddingLeft: depth > 1 ? 8 + (depth - 1) * 6 : undefined,
-            ...(accent && depth >= 1
-              ? { borderLeftColor: accent }
-              : {}),
-          }}
         >
-          {item.title}
+          <span className="mr-1.5 tabular-nums text-[11px] text-muted/70">
+            {module.number}.
+          </span>
+          {module.shortTitle}
+          {module.status === "coming-soon" ? (
+            <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted/50">
+              soon
+            </span>
+          ) : hasLessons && doneCount > 0 ? (
+            <span className="ml-1.5 tabular-nums text-[10px] text-muted/60">
+              {doneCount}/{module.lessons.length}
+            </span>
+          ) : null}
         </Link>
       </div>
-      {hasChildren && open ? (
-        <div
-          className="ml-2 border-l pl-1"
-          style={
-            accent
-              ? {
-                  borderLeftWidth: 3,
-                  borderLeftColor: `color-mix(in oklab, ${accent} 55%, transparent)`,
-                }
-              : { borderLeftColor: "var(--border)" }
-          }
-        >
-          {item.children!.map((child) => (
-            <NavNode
-              key={child.id}
-              item={child}
-              depth={depth + 1}
-              pathname={pathname}
-            />
-          ))}
+      {hasLessons && open ? (
+        <div className="ml-2 border-l border-border pl-1">
+          {module.lessons.map((lesson) => {
+            const active = pathname === lesson.href;
+            const isDone = visited.has(lesson.id);
+            return (
+              <div key={lesson.id} className="flex items-center gap-0.5">
+                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center">
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      isDone ? "bg-accent" : "bg-border",
+                    )}
+                    title={isDone ? "Completed" : "Not completed"}
+                  />
+                </span>
+                <Link
+                  href={lesson.href}
+                  className={cn(
+                    "min-w-0 flex-1 truncate rounded-md py-1 pl-1.5 pr-1.5 text-[13px] transition",
+                    active
+                      ? "bg-accent/10 text-foreground"
+                      : "text-muted hover:bg-surface hover:text-foreground",
+                  )}
+                >
+                  {lesson.title}
+                </Link>
+              </div>
+            );
+          })}
         </div>
       ) : null}
     </div>
@@ -156,7 +124,7 @@ interface SidebarProps {
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const nav = useMemo(() => buildSidebarNav(), []);
+  const nav = useMemo(() => buildCourseNav(), []);
 
   useEffect(() => {
     onClose();
@@ -182,9 +150,27 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <div className="flex h-14 items-center border-b border-border px-4 lg:hidden">
           <span className="text-sm font-semibold">Navigation</span>
         </div>
-        <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Handbook">
-          {nav.map((item) => (
-            <NavNode key={item.id} item={item} depth={0} pathname={pathname} />
+        <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Course">
+          <Link
+            href="/"
+            className={cn(
+              "mb-1 block rounded-md py-1 pl-2 text-[13px] font-medium transition",
+              pathname === "/"
+                ? "bg-accent/10 text-foreground"
+                : "text-foreground hover:bg-surface",
+            )}
+          >
+            Course Overview
+          </Link>
+          {nav.map((stage) => (
+            <div key={stage.number} className="mt-4 first:mt-2">
+              <p className="px-2 pb-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted/70">
+                Stage {stage.number} — {stage.title}
+              </p>
+              {stage.modules.map((m) => (
+                <ModuleNode key={m.slug} module={m} pathname={pathname} />
+              ))}
+            </div>
           ))}
         </nav>
       </aside>

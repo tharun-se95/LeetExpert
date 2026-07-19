@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import type { TocItem } from "@/lib/content/load";
+import type { TocItem } from "@/lib/course/load";
 
 interface TableOfContentsProps {
   items: TocItem[];

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { PrintButton } from "@/components/layout/PrintButton";
 import { useProgress } from "@/components/providers/ProgressProvider";
 
 interface HeaderProps {
@@ -31,14 +30,14 @@ export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
           DSA
         </span>
         <span className="truncate text-sm font-semibold tracking-tight">
-          DSA Pattern Handbook
+          DSA Course
         </span>
       </Link>
 
       <div className="hidden items-center gap-2 sm:flex">
         <div
           className="flex items-center gap-2 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted"
-          title={`${visitedCount} of ${totalCount} chapters visited`}
+          title={`${visitedCount} of ${totalCount} lessons completed`}
         >
           <span className="h-1.5 w-16 overflow-hidden rounded-full bg-surface">
             <span
@@ -52,7 +51,6 @@ export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
         </div>
       </div>
 
-      <PrintButton />
       <ThemeToggle />
     </header>
   );

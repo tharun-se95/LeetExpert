@@ -3,15 +3,15 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useProgress } from "@/components/providers/ProgressProvider";
-import { buildFlatNav } from "@/lib/content/nav";
+import { lessonIdFromPathname } from "@/lib/course/nav";
 
 export function VisitTracker() {
   const pathname = usePathname();
   const { markVisited } = useProgress();
 
   useEffect(() => {
-    const entry = buildFlatNav().find((e) => e.href === pathname);
-    if (entry) markVisited(entry.id);
+    const id = lessonIdFromPathname(pathname);
+    if (id) markVisited(id);
   }, [pathname, markVisited]);
 
   return null;
