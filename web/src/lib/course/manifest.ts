@@ -62,6 +62,10 @@ function concept(slug: string, title: string): LessonMeta {
   return { slug, title, type: "concept" };
 }
 
+function problem(slug: string, title: string): LessonMeta {
+  return { slug, title, type: "problem" };
+}
+
 export const MODULES: ModuleMeta[] = [
   // ── Stage 0 — Foundations ────────────────────────────────────────────────
   {
@@ -128,8 +132,17 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Contiguous memory, cache locality, resizing amortization, and in-place techniques.",
     stage: 1,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("contiguous-memory", "Arrays in Memory"),
+      concept("dynamic-arrays", "Dynamic Arrays, Built From Scratch"),
+      concept("in-place-techniques", "In-Place Techniques"),
+      problem("remove-duplicates-sorted", "Remove Duplicates from Sorted Array"),
+      problem("move-zeroes", "Move Zeroes"),
+      problem("rotate-array", "Rotate Array"),
+      problem("best-time-to-buy-sell-stock", "Best Time to Buy & Sell Stock"),
+      problem("product-except-self", "Product of Array Except Self"),
+    ],
   },
   {
     slug: "strings",
