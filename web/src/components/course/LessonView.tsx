@@ -49,7 +49,11 @@ export function LessonView({
         </p>
         {stage ? <div className="mt-6 print:hidden">{stage}</div> : null}
         <div className="mt-8">
-          <Markdown source={lesson.markdown} />
+          <Markdown
+            source={lesson.markdown}
+            highlightedBlocks={lesson.highlightedBlocks}
+            highlightedTabs={lesson.highlightedTabs}
+          />
         </div>
         <nav className="mt-12 flex items-stretch justify-between gap-4 border-t border-border pt-6">
           {prev ? (
