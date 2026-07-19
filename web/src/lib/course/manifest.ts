@@ -152,8 +152,16 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Immutability, builders, encodings, and the standard transformation toolkit.",
     stage: 1,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("strings-in-memory", "Strings in Memory & Immutability"),
+      concept("string-toolkit", "The String Toolkit"),
+      problem("valid-palindrome", "Valid Palindrome"),
+      problem("valid-anagram", "Valid Anagram"),
+      problem("longest-common-prefix", "Longest Common Prefix"),
+      problem("reverse-words", "Reverse Words in a String"),
+      problem("find-the-index", "Find the Index (strStr)"),
+    ],
   },
   {
     slug: "hash-tables",
