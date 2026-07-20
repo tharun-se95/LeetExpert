@@ -50,6 +50,13 @@ the end — the accidental-quadratic from the memory lesson.)
 > front." The zeroes don't need to be *carried* — they're all identical,
 > so they can be *reconstructed*: fill the tail with zeroes.
 
+Watch pass 1 run on the example input — when it ends, everything past
+`write` is junk waiting to be overwritten with zeroes:
+
+```viz
+{ "id": "write-pointer", "data": [0, 1, 0, 3, 12] }
+```
+
 ## Solution
 
 `````reveal Solution — two-pass compact-and-fill

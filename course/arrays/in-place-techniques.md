@@ -98,9 +98,14 @@ function keepIf(nums: number[], keep: (x: number) => boolean): number {
 
 Why it's safe to overwrite: `write ≤ read` always (write only advances on
 a keeper, read advances every step), so the slot being written has already
-been read. The two problems after next — Remove Duplicates and Move
+been read. Step through the template below — the tinted regions *are* the
+invariant. The two problems after next — Remove Duplicates and Move
 Zeroes — are this template with different `keep` conditions, which is why
 they're your first solve-first exercises.
+
+```viz
+{ "id": "write-pointer", "data": [0, 1, 0, 3, 12] }
+```
 
 ## Technique 4: cyclic placement (a preview)
 
