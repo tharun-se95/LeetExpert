@@ -72,7 +72,15 @@ export function Markdown({
           return <Quiz source={text()} />;
         }
         if (className.includes("language-tabs")) {
-          return <CodeTabs tabs={highlightedTabs[codeText()] ?? []} />;
+          const key = codeText();
+          const tabs = highlightedTabs[key];
+          // A missing/empty lookup means something went wrong upstream (bad
+          // parse, key mismatch). Fall back to the raw block instead of
+          // rendering nothing, so a future miss is visible, not silent.
+          if (!tabs || tabs.length === 0) {
+            return <CodeBlock language="tabs" code={key} html={null} />;
+          }
+          return <CodeTabs tabs={tabs} />;
         }
         if (className.includes("language-complexity")) {
           return <Complexity source={text()} />;
