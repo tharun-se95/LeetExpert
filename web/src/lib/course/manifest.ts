@@ -212,8 +212,17 @@ export const MODULES: ModuleMeta[] = [
     description:
       "LIFO discipline, the call stack, expression problems, and the monotonic stack.",
     stage: 1,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("lifo-and-the-call-stack", "LIFO & the Call Stack"),
+      concept("matching-and-nesting", "Matching & Nesting"),
+      concept("monotonic-stack", "The Monotonic Stack"),
+      problem("valid-parentheses", "Valid Parentheses"),
+      problem("evaluate-rpn", "Evaluate Reverse Polish Notation"),
+      problem("min-stack", "Min Stack"),
+      problem("daily-temperatures", "Daily Temperatures"),
+      problem("largest-rectangle", "Largest Rectangle in Histogram"),
+    ],
   },
   {
     slug: "queues",
