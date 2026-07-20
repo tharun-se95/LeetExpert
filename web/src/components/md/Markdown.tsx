@@ -60,6 +60,11 @@ export function Markdown({
         };
         const className = codeEl.props.className ?? "";
         const text = () => flattenText(codeEl.props.children);
+        // react-markdown/remark-rehype appends one synthetic trailing "\n" to a
+        // fenced code block's rendered text (CommonMark's HTML convention),
+        // which mdast's raw `code.value` — what highlightBlocks.ts keys against
+        // server-side — never has. Strip it so lookups line up.
+        const codeText = () => text().replace(/\n$/, "");
         if (className.includes("language-mermaid")) {
           return <Mermaid chart={text()} />;
         }
@@ -67,7 +72,7 @@ export function Markdown({
           return <Quiz source={text()} />;
         }
         if (className.includes("language-tabs")) {
-          return <CodeTabs tabs={highlightedTabs[text()] ?? []} />;
+          return <CodeTabs tabs={highlightedTabs[codeText()] ?? []} />;
         }
         if (className.includes("language-complexity")) {
           return <Complexity source={text()} />;
@@ -87,7 +92,7 @@ export function Markdown({
         const langMatch = /language-(\S+)/.exec(className);
         if (langMatch) {
           const language = langMatch[1];
-          const code = text();
+          const code = codeText();
           const html = highlightedBlocks[codeHighlightKey(language, code)] ?? null;
           return <CodeBlock language={language} code={code} html={html} />;
         }
