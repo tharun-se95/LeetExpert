@@ -14,7 +14,7 @@ build up through these steps, in order, inside the relevant chapter sections:
    scan, redundant recomputation) rather than just saying "it's O(n²)"
 4. **The better idea** — the specific insight that unlocks the pattern
 5. **The pattern name** — connect the insight to the named pattern
-6. **The algorithm** — the generic template (see `handbook-style.mdc`)
+6. **The algorithm** — the generic template
 7. **Complexity** — time and space, justified
 8. **A real-world analogy** — something outside of programming
 9. **A real engineering application** — a system that actually uses this
