@@ -253,8 +253,16 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Opposite-direction and same-direction pointer walks, and why they're correct.",
     stage: 2,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("converging-pointers", "Converging Pointers"),
+      concept("partition-pointers", "Partition Pointers"),
+      problem("two-sum-ii", "Two Sum II (Sorted Input)"),
+      problem("sort-colors", "Sort Colors (Dutch National Flag)"),
+      problem("container-with-most-water", "Container With Most Water"),
+      problem("three-sum", "3Sum"),
+      problem("trapping-rain-water", "Trapping Rain Water"),
+    ],
   },
   {
     slug: "sliding-window",
