@@ -4,6 +4,7 @@ import matter from "gray-matter";
 import readingTime from "reading-time";
 import { slugify } from "@/lib/slugify";
 import { getLesson, getModule, MODULES } from "./manifest";
+import { highlightBlocks, type TabBlock } from "@/lib/content/highlightBlocks";
 
 export interface TocItem {
   id: string;
@@ -63,12 +64,14 @@ export interface LoadedLesson {
   toc: TocItem[];
   readingMinutes: number;
   sourcePath: string;
+  highlightedBlocks: Record<string, string | null>;
+  highlightedTabs: Record<string, TabBlock[]>;
 }
 
-export function loadLesson(
+export async function loadLesson(
   moduleSlug: string,
   lessonSlug: string,
-): LoadedLesson | null {
+): Promise<LoadedLesson | null> {
   const hit = getLesson(moduleSlug, lessonSlug);
   if (!hit) return null;
 
@@ -83,15 +86,19 @@ export function loadLesson(
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n");
   const { content, data } = matter(raw);
+  const trimmed = content.trim();
+  const { blocks, tabs } = await highlightBlocks(trimmed);
 
   return {
     moduleSlug,
     lessonSlug,
     title: (data.title as string) ?? hit.lesson.title,
-    markdown: content.trim(),
+    markdown: trimmed,
     toc: extractToc(content),
     readingMinutes: Math.max(1, Math.ceil(readingTime(content).minutes)),
     sourcePath: relative,
+    highlightedBlocks: blocks,
+    highlightedTabs: tabs,
   };
 }
 

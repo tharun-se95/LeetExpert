@@ -30,7 +30,7 @@ export default async function LessonPage({ params }: PageProps) {
   const { module: moduleSlug, lesson: lessonSlug } = await params;
   const mod = getModule(moduleSlug);
   const meta = getLesson(moduleSlug, lessonSlug);
-  const lesson = loadLesson(moduleSlug, lessonSlug);
+  const lesson = await loadLesson(moduleSlug, lessonSlug);
   if (!mod || !meta || !lesson) notFound();
 
   const { prev, next } = getLessonNeighbors(moduleSlug, lessonSlug);

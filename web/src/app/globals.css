@@ -133,6 +133,20 @@ body {
   margin-inline: auto;
 }
 
+.handbook-prose .shiki,
+.handbook-prose .shiki span {
+  color: var(--shiki-light);
+}
+
+.dark .handbook-prose .shiki,
+.dark .handbook-prose .shiki span {
+  color: var(--shiki-dark);
+}
+
+.handbook-prose .shiki {
+  background-color: transparent !important;
+}
+
 /* Visual OS / PatternLab stage */
 [data-family] {
   --family-accent: var(--accent);
