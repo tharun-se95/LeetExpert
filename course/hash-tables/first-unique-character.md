@@ -101,13 +101,13 @@ re-scan — is structure-independent.
 
 ```quiz
 {
-  "question": "Why can't a single pass with an insertion-ordered map (Python dict / JS Map) directly answer 'first unique'?",
+  "question": "A single forward pass cannot, in general, DECLARE a character unique at the moment it reads it. Why?",
   "options": [
-    "Insertion-ordered maps don't exist in these languages",
-    "A single pass doesn't know a character is unique until the END of input — uniqueness is decided by everything that comes later, so some second look (a re-scan or deferred queue) is unavoidable",
-    "It can — iterate the map and return the first entry with count 1"
+    "Hash operations are too slow inside a single pass",
+    "Uniqueness is only settled once the entire input has been read — any later duplicate revokes it, so a verdict at read-time can be wrong",
+    "Because map iteration order is random"
   ],
   "answer": 1,
-  "explanation": "Option C actually works for THIS static problem (first-inserted unique char = first unique) — but only by luck of the structure; it fails the moment you need the index rather than the character, or a stream. The two-pass shape states WHY it's correct and generalizes. When two solutions tie, prefer the one whose correctness you can argue."
+  "explanation": "Uniqueness is a whole-input fact: character x at position i is unique only if x never appears in the unread suffix. That's why every correct solution takes some second look after counting — a re-scan of the input, or a scan of a first-index-carrying map. Both work; both are two looks."
 }
 ```

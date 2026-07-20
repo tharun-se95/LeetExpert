@@ -703,10 +703,10 @@ export const dynamicProgrammingDemo: PatternDemoModule = {
   },
 };
 
-/** Greedy contrast — Jump Game reach line (cross-ref from DP page) */
+/** Greedy — Jump Game reach line */
 export const greedyContrastDemo: PatternDemoModule = {
-  id: "state-transition/greedy-contrast",
-  title: "Greedy Contrast",
+  id: "state-transition/greedy",
+  title: "Greedy",
   microExample: "Jump Game · nums = [2, 3, 1, 1, 4]",
   steps: [
     {
@@ -1493,7 +1493,7 @@ export const monotonicStackDemo: PatternDemoModule = {
         </div>
         <div className="flex flex-wrap justify-center gap-1">
           <span className="font-mono text-[10px] text-muted">wait</span>
-          {f.ans.map((a, i) =>
+          {f.ans.map((a) =>
             pill(a, accent, { active: a !== "?", dim: a === "?" }),
           )}
         </div>

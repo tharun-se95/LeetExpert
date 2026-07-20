@@ -192,8 +192,17 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Node-and-pointer memory model, core operations, in-place reversal, fast & slow pointers.",
     stage: 1,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("nodes-and-pointers", "Nodes & Pointers"),
+      concept("build-a-linked-list", "Build a Linked List From Scratch"),
+      concept("pointer-surgery", "Pointer Surgery Patterns"),
+      problem("reverse-linked-list", "Reverse Linked List"),
+      problem("middle-of-list", "Middle of the Linked List"),
+      problem("linked-list-cycle", "Linked List Cycle"),
+      problem("merge-two-sorted", "Merge Two Sorted Lists"),
+      problem("remove-nth-from-end", "Remove Nth Node From End"),
+    ],
   },
   {
     slug: "stacks",
