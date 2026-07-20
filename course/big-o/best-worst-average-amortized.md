@@ -6,7 +6,8 @@ type: concept
 ## One algorithm, several cost functions
 
 "What does this algorithm cost?" is underspecified — cost varies with the
-*input*, not just its size. So we name which inputs we mean:
+*input*, not just its size. Ask the more precise question instead: cost
+over *which* inputs?
 
 - **Worst case** — the maximum cost over all inputs of size n. The
   guarantee; the default meaning of a bare complexity claim.
@@ -15,50 +16,87 @@ type: concept
 - **Average case** — the expected cost over some *distribution* of inputs.
   Only meaningful once you say what distribution — that's the fine print.
 
-**Linear search** makes it concrete: target at index 0 → best case Θ(1);
-target absent → worst case Θ(n); target equally likely at any position →
-average ~n/2 probes → Θ(n).
+**Linear search** makes all three concrete. Searching for a target in an
+n-element list, one index at a time:
+
+- Target at index 0 → found on the first check → best case **Θ(1)**.
+- Target missing entirely → every index gets checked → worst case
+  **Θ(n)**.
+- Target equally likely at any position → on average you check about
+  halfway through: (0 + 1 + ⋯ + (n−1)) / n ≈ (n−1)/2 ≈ n/2 probes →
+  **Θ(n)**.
+
+Same code, three honest answers, depending only on what you assume about
+the input.
 
 ## Two famous case-splits
 
-**Quicksort** is Θ(n log n) on average but **Θ(n²) in the worst case**:
-with a bad pivot rule (say, always the last element) an already-sorted
-input produces splits of size 0 and n−1 — the recursion tree degenerates
-into a path, and depth n × partition-work n gives n². Randomizing the pivot
-makes bad splits *unlikely* rather than impossible: the average is over the
-algorithm's own coin flips, valid for every input. (The Sorting module does
-this properly.)
+Two algorithms you already know quietly rely on this distinction — most
+people quote their average case as if it were a guarantee.
 
-**Hash table lookup** is O(1) *average*, O(n) worst — if every key lands in
-the same bucket, lookup degenerates to a scan. Why we may treat collisions
-as rare is a real argument about hash functions and load factor, and the
-Hash Tables module makes it. When you say "hash lookup is O(1)," know that
-you're quoting the average case.
+**Quicksort** is Θ(n log n) on average but **Θ(n²) in the worst case**.
+With a naive pivot rule (always pick the last element), an *already-sorted*
+input produces splits of size 0 and n−1 every time — the recursion tree
+degenerates from a balanced tree into a straight path n levels deep, with
+O(n) partition work at each level: n × n = n². Randomizing the pivot
+doesn't make bad splits impossible — it makes them *unlikely* for any
+fixed input, because now the average is taken over the algorithm's own
+coin flips, not over "typical" inputs. That's a much stronger guarantee: it
+holds no matter what the input is. (The Sorting module builds this
+properly.)
+
+**Hash table lookup** is O(1) *average*, O(n) worst — if every key
+happens to land in the same bucket, lookup degenerates into a scan of
+that one bucket. Whether that's realistic is a real argument about hash
+functions and load factor, and the Hash Tables module makes it in full.
+For now: when you say "hash lookup is O(1)," know precisely which case
+you're quoting.
 
 ## Amortized: charging peaks to quiet neighbors
 
-Amortized analysis answers a different question. Not "what's a typical
-input?" but: **"in any sequence of m operations, what's the total — worst
-case — divided by m?"** No probability involved.
+Amortized analysis answers a different question again. Not "what's a
+typical input?" (that's average case) but: **in any sequence of m
+operations — including an adversarial one — what's the total cost, divided
+by m?** No probability anywhere; it's a worst-case statement, just about a
+*sequence* instead of a single call.
 
 The canonical example: appending to a **dynamic array** (Python `list`,
-JS array). Normally append writes one slot: O(1). But when capacity runs
-out, the array allocates a new block **twice the size** and copies
-everything: O(n) for that one append.
+JS array). Normally an append just writes to the next free slot: O(1).
+But when the array is full, it has to allocate a new block **twice the
+size** and copy every existing element into it before the new item can go
+in: O(n) for that one append. Watch what that actually costs across a run,
+starting from capacity 1:
 
-So is append O(n)? Watch a full sequence. Start with capacity 1 and append
-n times. Copies happen at sizes 1, 2, 4, 8, …, so the total copy work is
-1 + 2 + 4 + ⋯ + n/2 ≈ **n**, plus n ordinary writes. Total ≈ 2n for n
-appends → **O(1) amortized per append**, even counting the spikes.
+| Append # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Capacity before | 1 | 1 | 2 | 4 | 4 | 8 | 8 | 8 | 8 |
+| Cost | 1 | 2 (resize) | 3 (resize) | 1 | 5 (resize) | 1 | 1 | 1 | 9 (resize) |
 
-The accounting view: charge each append **3 units** — one to write, two
-banked. When a copy of n elements comes due, the n/2 elements appended
-since the last resize have banked n units — exactly enough to pay for it.
-No operation ever draws on an empty bank, so 3 units cover everything:
-that's the proof, and it's *why* the growth factor must be multiplicative.
-Growing by a fixed +10 slots instead would force a copy every 10 appends —
-total work n²/20, i.e. **O(n) amortized**. Doubling isn't a convention;
-it's what makes the argument work.
+Most appends cost 1. The expensive ones (resizes) get *rarer* exactly as
+fast as they get *bigger* — they happen once the array reaches size 1, 2,
+4, 8, … doubling each time. Summing every cost through append 9 gives 24,
+for an average under 3 per append — even counting every spike. In general,
+for n appends
+the resize costs are 1 + 2 + 4 + ⋯ + n/2 ≈ n, plus n ordinary O(1) writes:
+about 2n total work for n appends → **O(1) amortized per append**.
+
+That direct sum works because we could see the whole resize schedule laid
+out in advance. Here's a technique that proves the same bound without
+needing to precompute anything — the **accounting method**, and it's the
+standard tool for amortized proofs you'll meet again later in the course.
+Pretend every append is charged **3 units**, not 1: one unit pays for the
+write happening right now, and two units go into a bank tied to that
+element. When a resize copies n/2 elements, those are exactly the n/2
+elements appended since the *last* resize — and each one banked 2 units,
+for exactly n units sitting in the bank, exactly enough to pay for copying
+them. No operation ever needs to draw on an empty bank, so a flat charge
+of 3 units genuinely covers everything, spikes included. That's the proof
+— and it exposes *why* the growth factor has to be multiplicative. Grow by
+a fixed +10 slots instead of doubling, and a resize (cost ~n) comes due
+every 10 appends regardless of how large the array already is: total work
+~n²/20 for n appends, i.e. **O(n) amortized** — quadratic, not constant.
+Doubling isn't a stylistic convention; it's the one thing that makes the
+banking argument close.
 
 ## Using the right lens
 
@@ -70,8 +108,10 @@ it's what makes the argument work.
 | "Merge sort is O(n log n)" | genuinely worst case — no fine print |
 
 The skill isn't memorizing this table — it's asking, whenever you hear a
-complexity claim, *"over what: worst input, random input, or a long
-sequence?"*
+bare complexity claim, *"over what: the worst input, a random input, or a
+long sequence of operations?"* Those are three different promises, and
+conflating them is where most "but I thought this was fast" surprises
+come from.
 
 ```quiz
 {
