@@ -7,10 +7,12 @@ export function CodeBlock({
   language,
   code,
   html,
+  showLanguage = true,
 }: {
   language: string;
   code: string;
   html: string | null;
+  showLanguage?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -27,7 +29,11 @@ export function CodeBlock({
   return (
     <div className="group my-5 overflow-hidden rounded-lg border border-border bg-code">
       <div className="flex items-center justify-between border-b border-border px-4 py-1.5">
-        <span className="font-mono text-xs text-muted">{language}</span>
+        {showLanguage ? (
+          <span className="font-mono text-xs text-muted">{language}</span>
+        ) : (
+          <span />
+        )}
         <button
           type="button"
           onClick={copyCode}

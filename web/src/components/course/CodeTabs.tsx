@@ -37,6 +37,7 @@ export function CodeTabs({ tabs }: { tabs: TabBlock[] }) {
         language={current.language}
         code={current.code}
         html={current.html}
+        showLanguage={false}
       />
     </div>
   );
