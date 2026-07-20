@@ -42,7 +42,35 @@ exist to show state changes and invariants, not to decorate.
    deterministic, testable, and trivially scrubbable — do NOT drive
    animation off timers inside each viz.
 
-3. **Reuse before building.** `web/src/components/lab/primitives/` and
+3. **Code-synchronized tracing — this is the product's core feature.**
+   Each viz is an *algorithm tracer*: the player shows the code snippet
+   beside (desktop) or above (mobile) the animated state, and highlights
+   the line being "executed" at the current step, moving in lockstep with
+   play/step/scrub. Contract details:
+
+   - The viz definition OWNS its code — a short canonical implementation
+     in BOTH Python and TypeScript (mirroring the lesson's solution code,
+     trimmed to ≤ ~15 lines; simplify if needed so every step maps to a
+     real line). Code in the markdown fence is never used for tracing —
+     line numbers must be stable.
+   - Each `Step` carries `line: { python: number; typescript: number }`
+     (1-indexed into the viz's own snippets). The code panel has the same
+     Python/TypeScript tabs as `CodeTabs` (reuse its styling); the
+     highlight follows the active tab's line for the current step.
+   - Highlight = a `motion` layout-animated bar behind the active line
+     (`layoutId` so it glides between lines; instant under reduced
+     motion). Auto-scroll the code panel if the snippet exceeds the
+     visible height — without scrolling the page.
+   - Steps must correspond to *observable* state changes: one step per
+     loop iteration or meaningful assignment, not per token. A loop
+     iteration that changes two things may be two steps if the caption
+     reads better that way. Rule of thumb: 8–25 steps per viz.
+   - The caption + highlighted line + state snapshot must AGREE at every
+     step. Hand-verify the full trace of each viz against a mental (or
+     actual) execution of the snippet before committing — a desynced
+     trace is worse than no viz.
+
+4. **Reuse before building.** `web/src/components/lab/primitives/` and
    `web/src/components/explorers/BigOObservatory.tsx` are kept v1
    investments — mine them for cell/pointer/pill rendering patterns and
    the DemoPlayer's conventions. `web/src/components/course/embeds.tsx`
@@ -66,6 +94,13 @@ exist to show state changes and invariants, not to decorate.
 - **Accessibility:** player buttons keyboard-operable with aria-labels;
   captions are text (they double as the screen-reader narrative).
 - **Print:** hide players under `print:hidden` (see how lessons use it).
+
+## Scope, revised for code sync
+
+Code-synchronized tracing roughly doubles per-viz effort. Quality over
+coverage: ship items 1–5 below as full tracers, hand-verified, before
+touching 6–10. Five excellent tracers beat ten desynced ones — and the
+user has explicitly preferred depth over volume in past feedback.
 
 ## Backlog — build in this order
 
@@ -131,6 +166,9 @@ animation, but do not rewrite lessons).
   least one lesson listed above.
 - Steps + captions tell the invariant story; scrubbing to any step shows a
   consistent state.
-- Reduced-motion, dark mode, mobile, print all handled.
+- Code panel synced: both language tabs, line highlight correct at EVERY
+  step in both languages — verified by hand-tracing the snippet end to
+  end, not by eyeballing two steps.
+- Reduced-motion, dark mode, mobile (stacked layout), print all handled.
 - Lint + build green; no console errors on the lesson page; screenshot
-  taken.
+  taken showing mid-trace state (highlight + moved elements visible).
