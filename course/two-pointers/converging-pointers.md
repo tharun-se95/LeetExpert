@@ -49,7 +49,13 @@ elimination with a proof**, not clever iteration. And notice the
 precondition doing the work: **sortedness** is what let us know the
 minimum and maximum possible partners without looking. No sortedness (or
 a sortedness-like monotone structure) → no elimination argument → the
-technique silently degrades into a heuristic that misses answers.
+technique silently degrades into a heuristic that misses answers. Step
+through the exact example above and watch the counter — every pointer
+move is a batch of pairs dying with a proof:
+
+```viz
+{ "id": "converging-pointers", "data": [2, 7, 11, 15, 21], "target": 22 }
+```
 
 ## The template
 

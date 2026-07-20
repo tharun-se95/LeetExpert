@@ -83,7 +83,12 @@ One subtlety the comments encode: the elimination compares against the
 largest/smallest **remaining** partner, not the global extremes — which
 works because everything outside [left, right] was already proven dead,
 so the current window's ends ARE the live extremes. The invariant
-sustains itself; that's what makes the induction go through.
+sustains itself; that's what makes the induction go through. Trace it on
+the first example:
+
+```viz
+{ "id": "converging-pointers", "data": [2, 7, 11, 15], "target": 9 }
+```
 
 ```complexity
 {
