@@ -232,8 +232,16 @@ export const MODULES: ModuleMeta[] = [
     description:
       "FIFO, deques, ring buffers, and the monotonic queue.",
     stage: 1,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("fifo-basics", "FIFO & Queue Mechanics"),
+      concept("ring-buffer", "Build a Ring Buffer"),
+      concept("deques-and-monotonic", "Deques & the Monotonic Deque"),
+      problem("recent-calls", "Number of Recent Calls"),
+      problem("queue-using-stacks", "Implement Queue Using Stacks"),
+      problem("stream-first-unique", "First Unique in a Stream"),
+      problem("sliding-window-maximum", "Sliding Window Maximum"),
+    ],
   },
 
   // ── Stage 2 — Techniques on Linear Data ──────────────────────────────────
