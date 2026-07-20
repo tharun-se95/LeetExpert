@@ -78,7 +78,12 @@ fast as they get *bigger* — they happen once the array reaches size 1, 2,
 for an average under 3 per append — even counting every spike. In general,
 for n appends
 the resize costs are 1 + 2 + 4 + ⋯ + n/2 ≈ n, plus n ordinary O(1) writes:
-about 2n total work for n appends → **O(1) amortized per append**.
+about 2n total work for n appends → **O(1) amortized per append**. Watch
+the schedule play out — the work counter is the whole argument:
+
+```viz
+{ "id": "dynamic-array-growth", "values": [3, 7, 1, 9, 4] }
+```
 
 That direct sum works because we could see the whole resize schedule laid
 out in advance. Here's a technique that proves the same bound without

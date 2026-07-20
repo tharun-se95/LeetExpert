@@ -135,7 +135,12 @@ class DynamicArray<T> {
 Walk the code against the design: `append` is a single write except when
 `_grow` fires; `_grow` doubles (the amortization argument needs exactly
 this); `pop` at the end never shifts; `insert` pays the shifting cost that
-contiguity demands.
+contiguity demands. Step through five appends and watch `_grow` earn its
+keep:
+
+```viz
+{ "id": "dynamic-array-growth", "values": [3, 7, 1, 9, 4] }
+```
 
 ```complexity
 {
