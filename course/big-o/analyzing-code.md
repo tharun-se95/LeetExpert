@@ -187,6 +187,14 @@ and you've already discovered why memoization (Stage 4) collapses this to
 O(n): compute each distinct subproblem once, reuse it everywhere it
 repeats.
 
+Watch the tree grow call by call, in the exact order the real call stack
+unwinds — every red flash is a subproblem being solved again from
+scratch:
+
+```viz
+{ "id": "fib-call-tree", "n": 4 }
+```
+
 ```quiz
 {
   "questions": [
