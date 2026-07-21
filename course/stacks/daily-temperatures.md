@@ -76,7 +76,13 @@ function dailyTemperatures(temps: number[]): number[] {
 This is why the template stacks **indices**, never values: the pop-time
 computation needs j itself (for i − j). A value-stack version of
 next-greater happens to work when you only need values; the index stack
-subsumes it — one habit covers every variant.
+subsumes it — one habit covers every variant. The mechanic underneath is
+identical to next-greater-value — only what gets recorded on a pop
+changes (a distance instead of a value):
+
+```viz
+{ "id": "monotonic-stack", "data": [2, 1, 5, 3] }
+```
 
 Equal temperatures check: 72 then 72 — is the second "warmer"? No; the
 pop condition is strict (`<`), so equal days stay stacked, correctly

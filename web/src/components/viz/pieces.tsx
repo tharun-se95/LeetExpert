@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  * PointerMarkers) but motion-animated and theme-var driven.
  */
 
-export type CellTone = "plain" | "kept" | "junk" | "active" | "dropped";
+export type CellTone = "plain" | "kept" | "junk" | "active" | "dropped" | "resolved";
 
 const TONE_CLASS: Record<CellTone, string> = {
   plain: "border-border bg-background text-foreground",
@@ -19,6 +19,7 @@ const TONE_CLASS: Record<CellTone, string> = {
   junk: "border-border bg-surface text-muted opacity-60",
   active: "border-accent bg-accent text-white",
   dropped: "border-red-500/60 bg-red-500/10 text-muted",
+  resolved: "border-emerald-500/50 bg-emerald-500/10 text-foreground",
 };
 
 export function Cell({

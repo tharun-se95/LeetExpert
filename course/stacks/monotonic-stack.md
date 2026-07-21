@@ -62,6 +62,13 @@ function nextGreater(nums: number[]): number[] {
 ```
 ````
 
+Step through the mechanism on the example above — watch the stack shrink
+on arrival and the answer row fill in from the pops:
+
+```viz
+{ "id": "monotonic-stack", "data": [2, 1, 5, 3] }
+```
+
 ## The two arguments you must own
 
 **Correctness.** When x pops index j, nothing between j and x was

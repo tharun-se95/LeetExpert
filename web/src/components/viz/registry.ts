@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import { WritePointerViz } from "@/components/viz/vizzes/WritePointerViz";
 import { DynamicArrayGrowthViz } from "@/components/viz/vizzes/DynamicArrayGrowthViz";
 import { ConvergingPointersViz } from "@/components/viz/vizzes/ConvergingPointersViz";
+import { MonotonicStackViz } from "@/components/viz/vizzes/MonotonicStackViz";
 
 export type VizComponent = ComponentType<Record<string, unknown>>;
 
@@ -13,4 +14,5 @@ export const VIZ_REGISTRY: Record<string, VizComponent> = {
   "write-pointer": WritePointerViz,
   "dynamic-array-growth": DynamicArrayGrowthViz,
   "converging-pointers": ConvergingPointersViz,
+  "monotonic-stack": MonotonicStackViz,
 };
