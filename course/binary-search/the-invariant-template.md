@@ -103,6 +103,13 @@ that CANNOT contain the answer, and always keep `mid` itself accounted
 for exactly once (either it's the answer, or it's provably excluded
 from `[lo, hi]` next iteration — never both kept and re-examined).
 
+Step through a search and watch the eliminated half turn red at every
+comparison — one comparison, half the live range gone, proof included:
+
+```viz
+{ "id": "binary-search", "data": [1, 3, 5, 7, 9, 11, 13], "target": 9 }
+```
+
 ```complexity
 {
   "time": "O(log n)",

@@ -9,6 +9,10 @@ import { FastSlowViz } from "@/components/viz/vizzes/FastSlowViz";
 import { HashBucketsViz } from "@/components/viz/vizzes/HashBucketsViz";
 import { FibCallTreeViz } from "@/components/viz/vizzes/FibCallTreeViz";
 import { SlidingWindowViz } from "@/components/viz/vizzes/SlidingWindowViz";
+import { BinarySearchViz } from "@/components/viz/vizzes/BinarySearchViz";
+import { DynamicWindowViz } from "@/components/viz/vizzes/DynamicWindowViz";
+import { PrefixSumViz } from "@/components/viz/vizzes/PrefixSumViz";
+import { KadaneViz } from "@/components/viz/vizzes/KadaneViz";
 
 export type VizComponent = ComponentType<Record<string, unknown>>;
 
@@ -27,4 +31,8 @@ export const VIZ_REGISTRY: Record<string, VizComponent> = {
   "hash-buckets": HashBucketsViz,
   "fib-call-tree": FibCallTreeViz,
   "sliding-window": SlidingWindowViz,
+  "binary-search": BinarySearchViz,
+  "dynamic-window": DynamicWindowViz,
+  "prefix-sum": PrefixSumViz,
+  "kadane": KadaneViz,
 };
