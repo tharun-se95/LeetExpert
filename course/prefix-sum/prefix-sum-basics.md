@@ -71,6 +71,13 @@ common prefix-sum bug — always re-derive the formula from the
 definition (`prefix[i]` = sum of the first i elements, indices 0..i−1)
 rather than memorizing "subtract something."
 
+Watch the prefix array build once, then answer two different ranges
+against it without ever re-scanning `nums`:
+
+```viz
+{ "id": "prefix-sum", "data": [2, 4, 1, 5, 3], "queries": [{ "l": 1, "r": 3 }, { "l": 2, "r": 4 }] }
+```
+
 ```complexity
 {
   "operations": [
