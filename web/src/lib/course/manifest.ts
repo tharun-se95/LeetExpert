@@ -294,8 +294,17 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Precomputed running totals, prefix-sum + hash map, 2D grids, and Kadane's algorithm.",
     stage: 2,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("prefix-sum-basics", "Prefix Sums"),
+      concept("prefix-sum-hash-map", "Prefix Sum + Hash Map"),
+      concept("prefix-sum-2d", "2D Prefix Sums"),
+      problem("range-sum-query-immutable", "Range Sum Query — Immutable"),
+      problem("subarray-sum-equals-k", "Subarray Sum Equals K"),
+      problem("contiguous-array", "Contiguous Array"),
+      problem("range-sum-2d-immutable", "Range Sum Query 2D — Immutable"),
+      problem("kadanes-algorithm", "Maximum Subarray (Kadane's Algorithm)"),
+    ],
   },
   {
     slug: "binary-search",
