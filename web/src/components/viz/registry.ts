@@ -5,6 +5,7 @@ import { ConvergingPointersViz } from "@/components/viz/vizzes/ConvergingPointer
 import { MonotonicStackViz } from "@/components/viz/vizzes/MonotonicStackViz";
 import { RingBufferViz } from "@/components/viz/vizzes/RingBufferViz";
 import { ListReversalViz } from "@/components/viz/vizzes/ListReversalViz";
+import { FastSlowViz } from "@/components/viz/vizzes/FastSlowViz";
 
 export type VizComponent = ComponentType<Record<string, unknown>>;
 
@@ -19,4 +20,5 @@ export const VIZ_REGISTRY: Record<string, VizComponent> = {
   "monotonic-stack": MonotonicStackViz,
   "ring-buffer": RingBufferViz,
   "list-reversal": ListReversalViz,
+  "fast-slow": FastSlowViz,
 };

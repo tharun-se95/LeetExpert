@@ -87,7 +87,13 @@ function hasCycle(head: ListNode | null): boolean {
 Two details that separate correct from lucky: the comparison is **node
 identity** (`is` / `===` on references — values may repeat), and it
 happens **after** stepping (both start at head; comparing before moving
-would report a cycle on every non-empty list).
+would report a cycle on every non-empty list). Trace it on the example
+from the top of this lesson and watch the gap close by exactly one lap
+after lap — 2, 1, 0:
+
+```viz
+{ "id": "fast-slow", "data": [3, 2, 0, -4], "cycleAt": 1 }
+```
 
 ```complexity
 {

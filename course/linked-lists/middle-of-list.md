@@ -83,6 +83,14 @@ null dereference.
 fast.next.next` — the same machine, stopping one beat earlier. Knowing
 how to retune the condition is the real skill.)
 
+This tracer shows the general two-speed machine (it also detects
+cycles — the identity check just never fires true on a plain list);
+watch where `slow` rests when `fast` falls off:
+
+```viz
+{ "id": "fast-slow", "data": [1, 2, 3, 4, 5] }
+```
+
 ```complexity
 {
   "time": "O(n)",
