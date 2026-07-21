@@ -101,6 +101,10 @@ Trace on `[-2,1,-3,4,-1,2,1,-5,4]`: best_ending_here sequence: -2, 1,
 -2, 4, 3, 5, 6, 1, 5. Running best: -2, 1, 1, 4, 4, 5, 6, 6, 6. Final
 answer 6 — matching the expected subarray `[4,-1,2,1]`.
 
+```viz
+{ "id": "kadane", "data": [-2, 1, -3, 4, -1, 2, 1, -5, 4] }
+```
+
 ```complexity
 {
   "time": "O(n)",
