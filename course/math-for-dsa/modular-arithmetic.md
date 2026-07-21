@@ -8,8 +8,15 @@ type: concept
 `a mod m` is the remainder when a is divided by m. The productive mental
 model is a **clock with m positions**: counting past m−1 wraps to 0. Every
 integer lands on exactly one clock position, so "mod m" collapses the
-infinite number line onto m values — and, crucially, arithmetic *survives
-the collapse*:
+infinite number line onto m values:
+
+```diagram
+{ "id": "mod-clock", "m": 5, "values": [8, -7] }
+```
+
+Both 8 and −7 land on the same position (3) on this 5-clock — different
+numbers, same remainder. That's the whole idea in one picture. And,
+crucially, arithmetic *survives the collapse*:
 
 > (a + b) mod m = ((a mod m) + (b mod m)) mod m
 > (a · b) mod m = ((a mod m) · (b mod m)) mod m

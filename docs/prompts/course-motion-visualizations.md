@@ -144,6 +144,28 @@ animation, but do not rewrite lessons).
     shape so a window (two same-direction pointers + a highlighted range)
     is expressible.
 
+## Parked: interactive Math module tracers
+
+The Math for DSA module (`course/math-for-dsa/`) got STATIC diagrams
+instead (see `web/src/components/md/diagrams/` — `mod-clock`,
+`euclid-shrink`, `log-halving`, registered in the `diagram` fence, not
+`viz`). The user explicitly deferred the interactive/code-synced version
+of these to be picked up later, as a phase 2. When resumed, candidates:
+
+- **`mod-clock` tracer** — the clock face animated: a token walks around
+  the ring one tick at a time as a value is reduced mod m, landing on the
+  final position. Code panel synced to a loop doing `x = (x + 1) % m`.
+- **`euclid-gcd` tracer** — step through Euclid's algorithm live: the two
+  bars from the static `euclid-shrink` diagram shrink one step at a time,
+  synced to the `while b: a, b = b, a % b` loop.
+- **`sieve` tracer** — Sieve of Eratosthenes marking multiples of each
+  prime, animated grid, synced to the nested-loop sieve code.
+
+These would live in `web/src/components/viz/vizzes/` following the exact
+same VizPlayer/CodePanel contract as the rest of this backlog — nothing
+new to design, just apply the existing pattern to these three lessons
+once picked back up.
+
 ## Working method
 
 - Work on a branch off `main`? No — commit to `main` in small commits, one

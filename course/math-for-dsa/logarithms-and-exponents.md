@@ -22,6 +22,12 @@ exactly when 2^k = n, i.e. k = log₂ n. This is why the logarithm is not a
 "formula" in binary search's analysis; it's the literal count of the loop's
 iterations.
 
+```diagram
+{ "id": "log-halving", "n": 8 }
+```
+
+Three halvings, three bars, done — that row count IS log₂ 8.
+
 ## Feel for the numbers
 
 Fluency here means knowing magnitudes without a calculator:

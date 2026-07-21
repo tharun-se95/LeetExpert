@@ -13,6 +13,7 @@ import { CodeTabs } from "@/components/course/CodeTabs";
 import { Reveal } from "@/components/course/Reveal";
 import { Complexity } from "@/components/course/Complexity";
 import { Viz } from "@/components/viz/Viz";
+import { Diagram } from "@/components/md/Diagram";
 import { codeHighlightKey, type TabBlock } from "@/lib/content/highlightBlocks";
 import type { ReactNode } from "react";
 
@@ -88,6 +89,9 @@ export function Markdown({
         }
         if (className.includes("language-viz")) {
           return <Viz source={text()} />;
+        }
+        if (className.includes("language-diagram")) {
+          return <Diagram source={text()} />;
         }
         if (className.includes("language-reveal")) {
           const label = codeEl.props.node?.data?.meta?.trim() || "Reveal";

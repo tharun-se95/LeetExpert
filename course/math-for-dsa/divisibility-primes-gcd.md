@@ -111,6 +111,13 @@ identically the same set of common divisors, so in particular the same
 GREATEST one. That's the whole proof: two pairs that agree on every
 common divisor must agree on the largest.
 
+Watch it happen on 48 and 18 — each row divides the bar into copies of
+the shorter length, and the leftover (accent) becomes next row's bar:
+
+```diagram
+{ "id": "euclid-shrink", "a": 48, "b": 18 }
+```
+
 ````tabs
 ```python
 def gcd(a: int, b: int) -> int:
