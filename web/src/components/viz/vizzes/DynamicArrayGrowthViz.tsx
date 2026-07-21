@@ -111,14 +111,19 @@ function buildSteps(values: number[]): VizStep<DynGrowState>[] {
     }
     store[length] = v;
     cost += 1;
+    steps.push({
+      caption: `Append #${n}: write ${v} into slot ${length}. +1 work, ${cost} total.`,
+      line: { python: 8, typescript: 10 },
+      state: snap({ wrote: length }),
+    });
     length += 1;
     const summary =
       n === values.length
         ? ` All ${values.length} appends cost ${cost} units — resizes included, still well under 3 per append.`
         : "";
     steps.push({
-      caption: `Append #${n}: write ${v} into slot ${length - 1}; length → ${length}. +1 work, ${cost} total.${summary}`,
-      line: { python: 8, typescript: 10 },
+      caption: `length → ${length}.${summary}`,
+      line: { python: 9, typescript: 11 },
       state: snap({ wrote: length - 1 }),
     });
   });

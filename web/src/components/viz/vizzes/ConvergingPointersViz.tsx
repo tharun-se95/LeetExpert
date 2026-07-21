@@ -72,7 +72,7 @@ function buildSteps(arr: number[], target: number): VizStep<ConvergingState>[] {
 
   steps.push({
     caption: `left = 0, right = ${n - 1} — all ${total} pairs are still candidates. Sortedness makes the ends the extremes.`,
-    line: { python: 2, typescript: 2 },
+    line: { python: 2, typescript: 3 },
     state: snap(),
   });
 
