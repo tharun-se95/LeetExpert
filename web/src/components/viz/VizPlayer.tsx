@@ -147,7 +147,7 @@ export function VizPlayer<S>({
           "print:hidden flex flex-col border-border bg-surface/40 outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
           expanded
             ? "fixed inset-0 z-50 overflow-y-auto border-0 bg-background px-4 py-6 sm:px-8"
-            : "my-6 rounded-xl border md:w-[calc(100%+4rem)] md:-mx-8 lg:w-[calc(100%+8rem)] lg:-mx-16",
+            : "my-6 w-full rounded-xl border",
         )}
       >
         <div
@@ -159,22 +159,19 @@ export function VizPlayer<S>({
           <div
             className={cn(
               "grid gap-3 p-3",
-              expanded
-                ? "md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]"
-                : "md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]",
+              expanded && "md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]",
             )}
           >
-            {/* Code above state on mobile, beside it on desktop */}
-            <div className="min-w-0 md:order-2">
-              <CodePanel code={code} line={step.line} reduced={reduced} large={expanded} />
-            </div>
             <div
               className={cn(
-                "flex min-w-0 items-center justify-center overflow-x-auto rounded-lg border border-border bg-background/60 px-3 py-4 md:order-1",
-                expanded && "min-h-64",
+                "flex min-w-0 items-center justify-center overflow-x-auto rounded-lg border border-border bg-background/60 px-3 py-4",
+                expanded ? "min-h-64 md:order-1" : "order-1",
               )}
             >
               {children(step.state, { reduced, index })}
+            </div>
+            <div className={cn("min-w-0", expanded ? "md:order-2" : "order-2")}>
+              <CodePanel code={code} line={step.line} reduced={reduced} large={expanded} />
             </div>
           </div>
 
