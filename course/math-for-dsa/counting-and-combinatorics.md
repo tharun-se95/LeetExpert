@@ -80,6 +80,19 @@ function choose(n: number, k: number): number {
 }
 ```
 
+Worth confirming that "exact" claim rather than taking it on faith. After
+step i, `result` holds C(n−k+i, i) — check it for i=1: the loop computes
+n−k+1 (choosing 1 item from n−k+1 options, C(n−k+1, 1) = n−k+1, matches).
+The step from i−1 to i multiplies by (n−k+i) and divides by i, i.e. it
+computes C(n−k+i−1, i−1) · (n−k+i) / i. That's exactly the standard ratio
+between consecutive binomial coefficients — C(m, i) = C(m−1, i−1) · m / i
+for m = n−k+i — and the LEFT side, C(m, i), is a binomial coefficient,
+which by definition counts a number of subsets and is therefore always a
+whole number. So the division has to come out even: you're computing a
+value that's already known to be an integer, one multiply-divide at a
+time, never touching a numerator or denominator anywhere near
+factorial-sized.
+
 C(n, k) also satisfies **Pascal's identity**: C(n, k) = C(n−1, k−1) +
 C(n−1, k) — "either element n is chosen (pick k−1 from the rest) or it
 isn't (pick k from the rest)." That case-split on the last element is

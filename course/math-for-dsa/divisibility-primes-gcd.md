@@ -97,9 +97,19 @@ algorithm rests on one identity:
 
 > **gcd(a, b) = gcd(b, a mod b)**
 
-*Why it's true:* any d dividing both a and b also divides a − qb = a mod b;
-any d dividing b and a mod b also divides their combination a. So the two
-pairs have the *same set* of common divisors — hence the same greatest one.
+*Why it's true:* let q = a // b (integer division), so by definition
+a = q·b + (a mod b). Now check both directions:
+
+- If d divides both a and b, it divides q·b (a multiple of b) and
+  therefore divides a − q·b, which is exactly a mod b.
+- If d divides both b and a mod b, it divides q·b (a multiple of b)
+  and a mod b, so it divides their sum q·b + (a mod b), which is exactly
+  a.
+
+Either way, d divides the FULL pair — (a, b) and (b, a mod b) have
+identically the same set of common divisors, so in particular the same
+GREATEST one. That's the whole proof: two pairs that agree on every
+common divisor must agree on the largest.
 
 ````tabs
 ```python
@@ -131,9 +141,15 @@ function lcm(a: number, b: number): number {
 {
   "time": "O(log min(a, b))",
   "space": "O(1)",
-  "why": "After two steps the remainder at least halves (if b ≤ a/2, then a mod b < b ≤ a/2; if b > a/2, then a mod b = a − b < a/2). Halving every two steps is the logarithm again."
+  "why": "After every TWO steps, the smaller number at least halves. Case 1: b <= a/2, so a mod b (which is always < b) is automatically < a/2 too — one step does the halving. Case 2: b > a/2, so a is less than 2b, meaning the division a / b happens exactly once (quotient 1) and a mod b = a - b, which is < a/2 precisely because b > a/2. Either way, two steps at most halve the smaller value, so the process ends in O(log min(a,b)) steps."
 }
 ```
+
+Concretely, watch case 2 fire: gcd(100, 60) → b=60 > 100/2=50, so
+a mod b = 100 − 60 = 40 (one subtraction, not a real "division" in
+spirit) → gcd(60, 40) → next round continues. The halving isn't always
+visually dramatic step-to-step, but it's guaranteed within every pair of
+steps — which is all the O(log) bound needs.
 
 Where you'll actually use it: reducing fractions to lowest terms (compare
 slopes exactly without floating point), array-rotation cycle counts, and

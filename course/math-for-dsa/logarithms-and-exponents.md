@@ -55,11 +55,19 @@ The practical consequence: any two log bases differ by a *constant factor*
 (1/log_c b), which is why Big O never specifies a base — O(log₂ n) and
 O(log₁₀ n) are the same class.
 
-One more identity that shows up in analysis:
-**2^(log₂ n) = n** (applying inverse operations returns you home), and its
-sneaky cousin **a^(log_b n) = n^(log_b a)** — this is how "2 branches, log₂ n
-deep" became n calls in the Big O module's Drill 5, and it returns in the
-master-theorem-style analyses of divide & conquer.
+One more identity that shows up in analysis: **2^(log₂ n) = n** — applying
+a function and its inverse returns you home (this is exactly what made
+Big O's Drill 5 work: a recursion tree that doubles in width at every one
+of its log₂ n levels ends with 2^(log₂ n) = n leaves).
+
+A less obvious cousin, worth seeing derived rather than just stated:
+**a^(log_b n) = n^(log_b a)**. Take log_b of both sides and check they
+match: log_b(a^(log_b n)) = (log_b n)(log_b a) by the power rule, and
+log_b(n^(log_b a)) = (log_b a)(log_b n) — same product, so the two
+original expressions are equal. This shows up when a recursion branches
+`a` ways and shrinks by a factor of `b` each level (T(n) = a·T(n/b) + …):
+the leaf count works out to n^(log_b a), and this identity is the reason
+that expression can also be written base-a instead of base-b.
 
 ## Where logs appear in this course
 
