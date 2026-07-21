@@ -59,6 +59,15 @@ triggers a rehash — one reason you never rely on bucket order. (Python
 dicts and JS Maps *do* guarantee insertion order — a deliberate extra
 mechanism layered on top, not a property of hashing.)
 
+Watch a chain form, the load factor cross 0.75, and every surviving key
+get re-filed under the doubled modulus — including one that collides
+again at the new size, because doubling reduces collisions statistically,
+not individually:
+
+```viz
+{ "id": "hash-buckets", "keys": [10, 3, 18, 7, 25, 11], "capacity": 4 }
+```
+
 ## Strategy 2: open addressing, briefly
 
 Store entries directly in the bucket array; on collision, **probe** for

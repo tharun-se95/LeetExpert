@@ -6,6 +6,7 @@ import { MonotonicStackViz } from "@/components/viz/vizzes/MonotonicStackViz";
 import { RingBufferViz } from "@/components/viz/vizzes/RingBufferViz";
 import { ListReversalViz } from "@/components/viz/vizzes/ListReversalViz";
 import { FastSlowViz } from "@/components/viz/vizzes/FastSlowViz";
+import { HashBucketsViz } from "@/components/viz/vizzes/HashBucketsViz";
 
 export type VizComponent = ComponentType<Record<string, unknown>>;
 
@@ -21,4 +22,5 @@ export const VIZ_REGISTRY: Record<string, VizComponent> = {
   "ring-buffer": RingBufferViz,
   "list-reversal": ListReversalViz,
   "fast-slow": FastSlowViz,
+  "hash-buckets": HashBucketsViz,
 };
