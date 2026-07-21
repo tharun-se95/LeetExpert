@@ -72,7 +72,13 @@ step:  nxt = curr.next
 
 You'll implement this — both iteratively and recursively — as the first
 problem. It's the most-asked linked-list operation in existence, and
-sub-range reversal is the engine of several hard problems.
+sub-range reversal is the engine of several hard problems. Step through
+it once here — watch the reversed region grow one flipped arrow at a
+time:
+
+```viz
+{ "id": "list-reversal", "data": [1, 2, 3, 4] }
+```
 
 ## 3. Fast & slow (the runner)
 

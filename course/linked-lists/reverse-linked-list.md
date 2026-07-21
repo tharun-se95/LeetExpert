@@ -77,6 +77,10 @@ Trace on 1→2→3: (prev=∅, curr=1) flip → 1→∅ · (prev=1, curr=2) flip
 and single-node cases need no branches — the invariant covers them (loop
 runs zero/one times).
 
+```viz
+{ "id": "list-reversal", "data": [1, 2, 3, 4] }
+```
+
 ```complexity
 {
   "time": "O(n)",

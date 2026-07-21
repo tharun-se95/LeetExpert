@@ -4,6 +4,7 @@ import { DynamicArrayGrowthViz } from "@/components/viz/vizzes/DynamicArrayGrowt
 import { ConvergingPointersViz } from "@/components/viz/vizzes/ConvergingPointersViz";
 import { MonotonicStackViz } from "@/components/viz/vizzes/MonotonicStackViz";
 import { RingBufferViz } from "@/components/viz/vizzes/RingBufferViz";
+import { ListReversalViz } from "@/components/viz/vizzes/ListReversalViz";
 
 export type VizComponent = ComponentType<Record<string, unknown>>;
 
@@ -17,4 +18,5 @@ export const VIZ_REGISTRY: Record<string, VizComponent> = {
   "converging-pointers": ConvergingPointersViz,
   "monotonic-stack": MonotonicStackViz,
   "ring-buffer": RingBufferViz,
+  "list-reversal": ListReversalViz,
 };
