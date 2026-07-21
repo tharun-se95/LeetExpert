@@ -272,8 +272,19 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Fixed and dynamic windows — maintaining an invariant while the window moves.",
     stage: 2,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("fixed-size-windows", "Fixed-Size Windows"),
+      concept("dynamic-windows", "Dynamic Windows & the Shrink Invariant"),
+      problem("maximum-average-subarray", "Maximum Average Subarray I"),
+      problem("minimum-size-subarray-sum", "Minimum Size Subarray Sum"),
+      problem(
+        "longest-substring-without-repeating",
+        "Longest Substring Without Repeating Characters",
+      ),
+      problem("permutation-in-string", "Permutation in String"),
+      problem("minimum-window-substring", "Minimum Window Substring"),
+    ],
   },
   {
     slug: "prefix-sum",
