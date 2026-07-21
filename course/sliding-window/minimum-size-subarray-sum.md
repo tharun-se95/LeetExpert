@@ -99,6 +99,10 @@ firing *twice* in a row on right=4 and right=5 — the `while`, not `if`,
 is what lets a single expansion trigger multiple shrinks when the
 window has slack, each one a candidate for a new best.
 
+```viz
+{ "id": "dynamic-window", "data": [2, 3, 1, 2, 4, 3], "target": 7 }
+```
+
 ```complexity
 {
   "time": "O(n)",

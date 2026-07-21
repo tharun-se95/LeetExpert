@@ -34,6 +34,10 @@ right=4: [3,1,2,4]       sum=10 valid! shrink:
 (Minimum Size Subarray Sum works this exact trace in full, with the
 running best tracked precisely.)
 
+```viz
+{ "id": "dynamic-window", "data": [2, 3, 1, 2, 4, 3], "target": 7 }
+```
+
 ## Why "expand right, shrink left" is safe — the monotonicity requirement
 
 This only works because of a property worth naming explicitly:
