@@ -337,8 +337,18 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Comparison sorts and their lower bound, linear-time sorts, stability, and when each wins.",
     stage: 2,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("baseline-sorts", "The O(n²) Baseline Sorts"),
+      concept("merge-sort-lower-bound", "Merge Sort & the n log n Lower Bound"),
+      concept("quicksort-partitioning", "Quicksort & Partitioning"),
+      concept("linear-time-sorts", "Linear-Time Sorts"),
+      problem("sort-an-array", "Sort an Array"),
+      problem("merge-intervals", "Merge Intervals"),
+      problem("largest-number", "Largest Number"),
+      problem("meeting-rooms-ii", "Meeting Rooms II"),
+      problem("kth-largest-element", "Kth Largest Element in an Array"),
+    ],
   },
   {
     slug: "matrix",
