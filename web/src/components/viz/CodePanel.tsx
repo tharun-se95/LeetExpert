@@ -22,10 +22,13 @@ export function CodePanel({
   code,
   line,
   reduced,
+  large = false,
 }: {
   code: VizCode;
   line: VizLineRef;
   reduced: boolean;
+  /** Fullscreen mode: bigger type, taller (near-uncapped) scroll area */
+  large?: boolean;
 }) {
   const [lang, setLang] = useState<Lang>("python");
   const highlightId = useId();
@@ -70,7 +73,10 @@ export function CodePanel({
       </div>
       <div
         ref={scrollRef}
-        className="max-h-72 overflow-x-auto overflow-y-auto py-2 font-mono text-[0.8rem] leading-relaxed"
+        className={cn(
+          "overflow-x-auto overflow-y-auto py-2 font-mono leading-relaxed",
+          large ? "max-h-[70vh] text-[0.95rem]" : "max-h-[26rem] text-[0.8rem]",
+        )}
       >
         {lines.map((text, i) => {
           const isActive = i + 1 === active;
