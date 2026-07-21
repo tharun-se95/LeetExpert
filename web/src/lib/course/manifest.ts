@@ -314,8 +314,20 @@ export const MODULES: ModuleMeta[] = [
     description:
       "The invariant-driven template, boundary variants, and binary search on the answer.",
     stage: 2,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("the-invariant-template", "The Invariant-Driven Template"),
+      concept("boundary-search", "Boundary Search"),
+      concept("binary-search-on-the-answer", "Binary Search on the Answer"),
+      problem("search-insert-position", "Search Insert Position"),
+      problem("find-first-and-last", "Find First and Last Position"),
+      problem("search-rotated-sorted-array", "Search in Rotated Sorted Array"),
+      problem("koko-eating-bananas", "Koko Eating Bananas"),
+      problem(
+        "find-minimum-in-rotated-sorted-array",
+        "Find Minimum in Rotated Sorted Array",
+      ),
+    ],
   },
   {
     slug: "sorting",
