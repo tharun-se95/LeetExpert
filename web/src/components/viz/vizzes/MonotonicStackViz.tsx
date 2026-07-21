@@ -76,10 +76,16 @@ function buildSteps(values: number[]): VizStep<MonoStackState>[] {
       state: snap({ current: i }),
     });
     while (stackIdx.length > 0 && values[stackIdx[stackIdx.length - 1]] < x) {
-      const j = stackIdx.pop()!;
+      const j = stackIdx[stackIdx.length - 1];
+      stackIdx.pop();
+      steps.push({
+        caption: `${values[j]} at index ${j} < ${x} — its wait is over. Pop it off the stack.`,
+        line: { python: 6, typescript: 7 },
+        state: snap({ current: i, justPopped: j }),
+      });
       answer[j] = x;
       steps.push({
-        caption: `${values[j]} at index ${j} < ${x} — its wait is over. answer[${j}] = ${x}; pop it off.`,
+        caption: `answer[${j}] = ${x}. Index ${j}'s next-greater is found.`,
         line: { python: 7, typescript: 8 },
         state: snap({ current: i, justPopped: j }),
       });
