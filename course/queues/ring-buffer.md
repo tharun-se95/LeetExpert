@@ -115,6 +115,14 @@ class RingBuffer<T> {
 ```
 ````
 
+Watch the ring fill, drain, and wrap on the diagram's own example — in a
+circular layout, wrapping from the last slot to the first isn't a jump,
+it's just the next neighbor:
+
+```viz
+{ "id": "ring-buffer", "capacity": 5, "ops": ["+A", "+B", "+C", "+D", "-", "+E", "+F"] }
+```
+
 Design notes worth reading against the code:
 
 - **tail is derived, not stored**: `(head + size) % capacity`. One
