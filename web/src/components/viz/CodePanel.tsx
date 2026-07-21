@@ -2,12 +2,12 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { motion } from "motion/react";
+import type { ThemedToken } from "shiki";
 import { cn } from "@/lib/utils";
+import { tokenizeVizCode, type VizLang } from "@/lib/viz/highlightVizCode";
 import type { VizCode, VizLineRef } from "@/components/viz/types";
 
-type Lang = "python" | "typescript";
-
-const TABS: { lang: Lang; label: string }[] = [
+const TABS: { lang: VizLang; label: string }[] = [
   { lang: "python", label: "Python" },
   { lang: "typescript", label: "TypeScript" },
 ];
@@ -16,7 +16,9 @@ const TABS: { lang: Lang; label: string }[] = [
  * The trace's code pane: Python/TypeScript tabs (styled like CodeTabs) with
  * a layout-animated highlight bar behind the line executing at the current
  * step. Scrolls the active line into view within its own scroll container —
- * never the page.
+ * never the page. Syntax colors come from Shiki, tokenized client-side per
+ * line (rather than rendered as one HTML blob like CodeBlock does) so each
+ * line can still carry its own ref for the highlight bar and auto-scroll.
  */
 export function CodePanel({
   code,
@@ -30,13 +32,28 @@ export function CodePanel({
   /** Fullscreen mode: bigger type, taller (near-uncapped) scroll area */
   large?: boolean;
 }) {
-  const [lang, setLang] = useState<Lang>("python");
+  const [lang, setLang] = useState<VizLang>("python");
+  const [tokens, setTokens] = useState<Partial<Record<VizLang, ThemedToken[][]>>>({});
   const highlightId = useId();
   const scrollRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLDivElement>(null);
 
   const lines = code[lang].split("\n");
   const active = line[lang];
+  const lineTokens = tokens[lang];
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      tokenizeVizCode(code.python, "python"),
+      tokenizeVizCode(code.typescript, "typescript"),
+    ]).then(([python, typescript]) => {
+      if (!cancelled) setTokens({ python, typescript });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [code.python, code.typescript]);
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -74,12 +91,13 @@ export function CodePanel({
       <div
         ref={scrollRef}
         className={cn(
-          "overflow-x-auto overflow-y-auto py-2 font-mono leading-relaxed",
+          "viz-shiki overflow-x-auto overflow-y-auto py-2 font-mono leading-relaxed",
           large ? "max-h-[70vh] text-[0.95rem]" : "max-h-[26rem] text-[0.8rem]",
         )}
       >
         {lines.map((text, i) => {
           const isActive = i + 1 === active;
+          const tokensForLine = lineTokens?.[i];
           return (
             <div
               key={i}
@@ -97,7 +115,15 @@ export function CodePanel({
               <span className="relative w-6 shrink-0 select-none pr-3 text-right text-muted/60">
                 {i + 1}
               </span>
-              <span className="relative whitespace-pre">{text || " "}</span>
+              <span className="relative whitespace-pre">
+                {tokensForLine && tokensForLine.length > 0
+                  ? tokensForLine.map((tok, ti) => (
+                      <span key={ti} className="viz-code-token" style={tok.htmlStyle}>
+                        {tok.content}
+                      </span>
+                    ))
+                  : text || " "}
+              </span>
             </div>
           );
         })}

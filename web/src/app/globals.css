@@ -147,6 +147,14 @@ body {
   background-color: transparent !important;
 }
 
+.viz-shiki .viz-code-token {
+  color: var(--shiki-light);
+}
+
+.dark .viz-shiki .viz-code-token {
+  color: var(--shiki-dark);
+}
+
 /* Visual OS / PatternLab stage */
 [data-family] {
   --family-accent: var(--accent);
