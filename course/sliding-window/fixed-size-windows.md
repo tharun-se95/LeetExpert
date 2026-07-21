@@ -49,6 +49,13 @@ the saving comes from *incremental maintenance* rather than *batch
 elimination*. Different mechanism, same economic shape: find what's
 shared between adjacent subproblems and stop recomputing it.
 
+Step through the exact example above — the window never re-sums, it
+only trades one element for another:
+
+```viz
+{ "id": "sliding-window", "data": [2, 1, 5, 1, 3, 2], "k": 3 }
+```
+
 ## The template
 
 ````tabs

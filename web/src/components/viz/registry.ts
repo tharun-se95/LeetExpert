@@ -8,6 +8,7 @@ import { ListReversalViz } from "@/components/viz/vizzes/ListReversalViz";
 import { FastSlowViz } from "@/components/viz/vizzes/FastSlowViz";
 import { HashBucketsViz } from "@/components/viz/vizzes/HashBucketsViz";
 import { FibCallTreeViz } from "@/components/viz/vizzes/FibCallTreeViz";
+import { SlidingWindowViz } from "@/components/viz/vizzes/SlidingWindowViz";
 
 export type VizComponent = ComponentType<Record<string, unknown>>;
 
@@ -25,4 +26,5 @@ export const VIZ_REGISTRY: Record<string, VizComponent> = {
   "fast-slow": FastSlowViz,
   "hash-buckets": HashBucketsViz,
   "fib-call-tree": FibCallTreeViz,
+  "sliding-window": SlidingWindowViz,
 };
