@@ -103,11 +103,11 @@ re-scan — is structure-independent.
 {
   "question": "A single forward pass cannot, in general, DECLARE a character unique at the moment it reads it. Why?",
   "options": [
-    "Hash operations are too slow inside a single pass",
     "Uniqueness is only settled once the entire input has been read — any later duplicate revokes it, so a verdict at read-time can be wrong",
-    "Because map iteration order is random"
+    "Hash operations are too slow inside a single pass — looking up and updating a running count map on every character introduces enough overhead that a second, separate pass ends up being faster overall",
+    "Because map iteration order is random — even a fully populated frequency map can't be trusted to yield characters back in their original input order, which is what a single-pass verdict would need"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "Uniqueness is a whole-input fact: character x at position i is unique only if x never appears in the unread suffix. That's why every correct solution takes some second look after counting — a re-scan of the input, or a scan of a first-index-carrying map. Both work; both are two looks."
 }
 ```

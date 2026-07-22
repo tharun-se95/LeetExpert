@@ -358,8 +358,18 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Grid coordinates, traversal orders, and in-place matrix transformations.",
     stage: 2,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("grid-coordinates", "Grid Representation & Coordinates"),
+      concept("traversal-orders", "Traversal Orders"),
+      concept("in-place-transformations", "In-Place Transformations"),
+      problem("rotate-image", "Rotate Image"),
+      problem("spiral-matrix", "Spiral Matrix"),
+      problem("set-matrix-zeroes", "Set Matrix Zeroes"),
+      problem("search-a-2d-matrix", "Search a 2D Matrix"),
+      problem("number-of-islands", "Number of Islands"),
+      problem("word-search", "Word Search"),
+    ],
   },
 
   // ── Stage 3 — Recursive & Hierarchical ───────────────────────────────────
@@ -371,8 +381,21 @@ export const MODULES: ModuleMeta[] = [
     description:
       "The call-stack model, divide & conquer, and systematic search over choice trees.",
     stage: 3,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("the-call-stack-and-base-cases", "The Call Stack & Base Cases"),
+      concept(
+        "backtracking-choose-explore-unchoose",
+        "Backtracking: Choose, Explore, Unchoose",
+      ),
+      concept("recursion-vs-iteration", "Recursion vs. Iteration"),
+      problem("subsets", "Subsets"),
+      problem("permutations", "Permutations"),
+      problem("combination-sum", "Combination Sum"),
+      problem("generate-parentheses", "Generate Parentheses"),
+      problem("palindrome-partitioning", "Palindrome Partitioning"),
+      problem("n-queens", "N-Queens"),
+    ],
   },
   {
     slug: "binary-trees",
@@ -382,8 +405,38 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Tree anatomy, all four traversals, and reconstruction from traversal orders.",
     stage: 3,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept(
+        "tree-terminology-and-representation",
+        "Tree Terminology & Representation",
+      ),
+      concept("dfs-traversals", "DFS Traversals"),
+      concept("bfs-level-order", "BFS & Level-Order Traversal"),
+      concept(
+        "top-down-vs-bottom-up-recursion",
+        "Top-Down vs. Bottom-Up Tree Recursion",
+      ),
+      problem("maximum-depth-of-binary-tree", "Maximum Depth of Binary Tree"),
+      problem("diameter-of-binary-tree", "Diameter of Binary Tree"),
+      problem(
+        "binary-tree-level-order-traversal",
+        "Binary Tree Level Order Traversal",
+      ),
+      problem(
+        "construct-binary-tree-from-preorder-and-inorder",
+        "Construct Binary Tree from Preorder and Inorder Traversal",
+      ),
+      problem(
+        "lowest-common-ancestor-of-a-binary-tree",
+        "Lowest Common Ancestor of a Binary Tree",
+      ),
+      problem("binary-tree-right-side-view", "Binary Tree Right Side View"),
+      problem(
+        "serialize-and-deserialize-binary-tree",
+        "Serialize and Deserialize Binary Tree",
+      ),
+    ],
   },
   {
     slug: "bst",
@@ -393,8 +446,29 @@ export const MODULES: ModuleMeta[] = [
     description:
       "The ordering invariant, balance (AVL / red-black conceptually), and ordered-set applications.",
     stage: 3,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept(
+        "bst-invariant-and-operations",
+        "The BST Invariant & Core Operations",
+      ),
+      concept("balance-and-why-it-matters", "Balance & Why It Matters"),
+      problem("validate-binary-search-tree", "Validate Binary Search Tree"),
+      problem("kth-smallest-element-in-a-bst", "Kth Smallest Element in a BST"),
+      problem(
+        "insert-into-a-binary-search-tree",
+        "Insert into a Binary Search Tree",
+      ),
+      problem("delete-node-in-a-bst", "Delete Node in a BST"),
+      problem(
+        "convert-sorted-array-to-bst",
+        "Convert Sorted Array to Binary Search Tree",
+      ),
+      problem(
+        "lowest-common-ancestor-of-a-bst",
+        "Lowest Common Ancestor of a BST",
+      ),
+    ],
   },
   {
     slug: "heaps",
@@ -404,8 +478,29 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Array-backed complete trees, heapify's real cost, two-heaps, k-way merge, top-k.",
     stage: 3,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept(
+        "heap-property-and-array-representation",
+        "The Heap Property & Array Representation",
+      ),
+      concept(
+        "heapify-sift-up-and-sift-down",
+        "Heapify: Sift-Up & Sift-Down",
+      ),
+      problem(
+        "kth-largest-element-in-a-stream",
+        "Kth Largest Element in a Stream",
+      ),
+      problem("top-k-frequent-elements", "Top K Frequent Elements"),
+      problem("merge-k-sorted-lists", "Merge k Sorted Lists"),
+      problem(
+        "find-median-from-data-stream",
+        "Find Median from Data Stream",
+      ),
+      problem("k-closest-points-to-origin", "K Closest Points to Origin"),
+      problem("task-scheduler", "Task Scheduler"),
+    ],
   },
   {
     slug: "tries",
@@ -415,8 +510,20 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Prefix trees — building, searching, and when they beat hash tables.",
     stage: 3,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept(
+        "trie-structure-and-prefix-search",
+        "Trie Structure & Prefix Search",
+      ),
+      problem("implement-trie", "Implement Trie (Prefix Tree)"),
+      problem(
+        "design-add-and-search-words",
+        "Design Add and Search Words Data Structure",
+      ),
+      problem("word-search-ii", "Word Search II"),
+      problem("longest-word-in-dictionary", "Longest Word in Dictionary"),
+    ],
   },
 
   // ── Stage 4 — Global Reasoning ───────────────────────────────────────────
@@ -428,8 +535,21 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Sorting by endpoints, merging, and scheduling — the sweep mindset.",
     stage: 4,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept(
+        "sorting-intervals-and-the-sweep",
+        "Sorting Intervals & the Sweep",
+      ),
+      problem("insert-interval", "Insert Interval"),
+      problem("non-overlapping-intervals", "Non-overlapping Intervals"),
+      problem(
+        "minimum-arrows-to-burst-balloons",
+        "Minimum Number of Arrows to Burst Balloons",
+      ),
+      problem("meeting-rooms", "Meeting Rooms"),
+      problem("employee-free-time", "Employee Free Time"),
+    ],
   },
   {
     slug: "greedy",
@@ -439,8 +559,18 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Exchange arguments — proving the greedy choice is safe, not just hoping.",
     stage: 4,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept(
+        "greedy-choice-and-proving-correctness",
+        "The Greedy Choice Property & Proving Correctness",
+      ),
+      problem("jump-game", "Jump Game"),
+      problem("jump-game-ii", "Jump Game II"),
+      problem("gas-station", "Gas Station"),
+      problem("partition-labels", "Partition Labels"),
+      problem("candy", "Candy"),
+    ],
   },
   {
     slug: "graphs",
@@ -450,8 +580,28 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Representations, BFS/DFS, topological sort, union-find, shortest paths, MST.",
     stage: 4,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept("graph-representation", "Graph Representation"),
+      concept("dfs-and-bfs-on-graphs", "DFS & BFS on Graphs"),
+      concept("topological-sort", "Topological Sort"),
+      concept("shortest-paths", "Shortest Paths (BFS, Dijkstra)"),
+      concept("union-find", "Union-Find (Disjoint Set)"),
+      concept(
+        "minimum-spanning-trees",
+        "Minimum Spanning Trees (Kruskal's & Prim's)",
+      ),
+      problem("clone-graph", "Clone Graph"),
+      problem("course-schedule", "Course Schedule"),
+      problem("course-schedule-ii", "Course Schedule II"),
+      problem("network-delay-time", "Network Delay Time"),
+      problem("number-of-provinces", "Number of Provinces"),
+      problem("redundant-connection", "Redundant Connection"),
+      problem(
+        "min-cost-to-connect-all-points",
+        "Min Cost to Connect All Points",
+      ),
+    ],
   },
   {
     slug: "dynamic-programming",
@@ -461,8 +611,39 @@ export const MODULES: ModuleMeta[] = [
     description:
       "Overlapping subproblems from first principles — 1-D, knapsack, LIS, grid, string, tree DP.",
     stage: 4,
-    status: "coming-soon",
-    lessons: [],
+    status: "available",
+    lessons: [
+      concept(
+        "from-recursion-to-memoization",
+        "From Recursion to Memoization",
+      ),
+      concept(
+        "tabulation-and-space-optimization",
+        "Tabulation & Space Optimization",
+      ),
+      concept("1d-dp-patterns", "1D DP Patterns"),
+      concept("2d-dp-patterns", "2D DP Patterns"),
+      concept("knapsack-style-dp", "Knapsack-Style DP"),
+      problem("climbing-stairs", "Climbing Stairs"),
+      problem("house-robber", "House Robber"),
+      problem("coin-change", "Coin Change"),
+      problem(
+        "longest-increasing-subsequence",
+        "Longest Increasing Subsequence",
+      ),
+      problem("unique-paths", "Unique Paths"),
+      problem(
+        "longest-common-subsequence",
+        "Longest Common Subsequence",
+      ),
+      problem("edit-distance", "Edit Distance"),
+      problem(
+        "partition-equal-subset-sum",
+        "Partition Equal Subset Sum",
+      ),
+      problem("word-break", "Word Break"),
+      problem("house-robber-iii", "House Robber III"),
+    ],
   },
 ];
 

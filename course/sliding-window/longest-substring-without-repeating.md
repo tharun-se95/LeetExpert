@@ -167,9 +167,9 @@ iterations, not a better asymptotic class; worth knowing, not required.
 {
   "question": "In the optimized version, why must the check be `last_seen[ch] >= left` rather than just `ch in last_seen`?",
   "options": [
-    "It's a minor performance optimization",
+    "It prevents a KeyError/undefined access — without the guard, looking up a character that has never appeared in the string at all would throw, so the check exists purely to avoid that runtime error",
     "last_seen holds the MOST RECENT index for every character ever seen, including ones from before the current window's left boundary — without the >= left guard, a stale index could yank left backward, past where it already validly advanced, breaking the invariant that left only moves forward",
-    "It prevents a KeyError/undefined access"
+    "It's a minor performance optimization — the guard just lets the algorithm skip a redundant map lookup in cases where the jump wouldn't have changed the outcome anyway, saving a constant amount of work per character"
   ],
   "answer": 1,
   "explanation": "last_seen never forgets a character once seen, even after it's fallen out of the window. The guard is what distinguishes 'this duplicate is still in my current window' from 'this character appeared long ago and is irrelevant now' — omitting it is the classic bug in this optimization."

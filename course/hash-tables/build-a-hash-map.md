@@ -174,9 +174,9 @@ Python `set` / JS `Set` are this exact structure with entries of just
     {
       "question": "Why can delete use swap-remove (move the last chain entry into the hole) when Module 4 said array deletion costs O(n−i)?",
       "options": [
-        "Chains are short so O(n−i) is fine anyway",
+        "Chains are short so O(n−i) is fine anyway — with load factor kept low, the expected chain length is small enough that even a shifting deletion would cost only a constant amount of work",
         "The O(n−i) cost paid for preserving ORDER; a bucket's chain has no meaningful order to preserve, so any element may fill the hole",
-        "Linked lists make deletion free"
+        "Linked lists make deletion free — unlinking a node from a linked chain is always O(1) regardless of ordering requirements, which is the real reason swap-remove isn't needed here"
       ],
       "answer": 1,
       "explanation": "Costs buy properties. Ordered container ⇒ shifting; unordered ⇒ swap-remove. Knowing WHICH property you're paying for lets you drop it when it's worthless."
@@ -184,19 +184,19 @@ Python `set` / JS `Set` are this exact structure with entries of just
     {
       "question": "In this implementation, what sequence of events makes a single `set` call cost O(n)?",
       "options": [
-        "It never can",
         "The insert that pushes size past the bucket count triggers _resize, which re-hashes and re-files all n entries — the amortized-O(1) spike, exactly like the dynamic array's grow",
-        "Setting a key that already exists"
+        "Setting a key that already exists — overwriting a value still walks the full bucket to find the matching key first, and that linear scan is what makes the call cost O(n)",
+        "It never can — every operation in this implementation is bounded by the load factor's constant chain length, so no single call is ever allowed to touch more than a fixed number of entries"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Same shape as Module 4: cheap steady-state, rare O(n) spike, doubling makes the spikes sum to O(n) over n inserts. One theorem, two structures."
     },
     {
       "question": "If the hash function returned 0 for every key, what would each operation cost, and which premise failed?",
       "options": [
-        "Still O(1) — the table absorbs it",
+        "Still O(1) — the table absorbs it, since the number of buckets is independent of which bucket keys land in, the resizing logic keeps operations fast regardless of hash quality",
         "O(n): every entry chains in bucket 0, so every operation scans the full chain — the UNIFORMITY premise of the average-case theorem is gone",
-        "O(log n)"
+        "O(log n) — with every key colliding into one bucket, the chain would effectively become a balanced structure internally once it grows past a certain size, giving logarithmic scan cost"
       ],
       "answer": 1,
       "explanation": "The structure runs fine — correctness doesn't need uniformity — but performance collapses to one long list. Average-case O(1) was a theorem WITH premises, and this deletes one."

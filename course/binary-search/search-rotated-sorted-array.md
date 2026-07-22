@@ -149,9 +149,9 @@ correctly (a single-element range is trivially "sorted").
 {
   "question": "Why does exactly ONE of the two halves around any midpoint always end up fully sorted in a rotated array?",
   "options": [
-    "It's a coincidence that happens to hold for the given examples",
+    "It's a coincidence that happens to hold for the given examples — the specific arrays used to illustrate the algorithm happen to split cleanly, but a differently-rotated array could produce a midpoint where neither half is sorted",
     "A rotated sorted array has exactly ONE rotation point (one place where a larger value is immediately followed by a smaller one). Splitting at any midpoint, that single discontinuity can only fall in one of the two halves — the half WITHOUT the discontinuity is necessarily still in sorted order",
-    "Because the array has distinct values"
+    "Because the array has distinct values — without a guarantee of distinctness, ties between elements would make it possible for both halves around a midpoint to appear unsorted simultaneously, breaking the classification"
   ],
   "answer": 1,
   "explanation": "The key structural fact is that rotation introduces exactly one 'break' in the ordering. A split can separate the break from one side but never from both — which is precisely why one comparison (nums[lo] vs nums[mid]) is enough to identify the sorted half every time."

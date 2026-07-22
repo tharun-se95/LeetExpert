@@ -114,11 +114,11 @@ the first example:
 {
   "question": "The elimination says 'right's smallest possible partner overshoots.' Why is numbers[left] — not the global minimum — the right value to reason with?",
   "options": [
-    "It's an approximation that happens to work",
-    "All indexes below left were already eliminated with proofs of their own, so within the live window [left, right], numbers[left] IS the minimum — the invariant makes the local extreme globally sufficient",
-    "Because the array is 1-indexed"
+    "Because the array is 1-indexed — the problem's 1-based indexing convention shifts which element counts as the window's boundary, which is why numbers[left] rather than the array's true first element is the relevant value",
+    "It's an approximation that happens to work — numbers[left] is usually close enough to the window's true minimum that reasoning with it produces the right answer on most inputs, even though it isn't formally guaranteed to be exact",
+    "All indexes below left were already eliminated with proofs of their own, so within the live window [left, right], numbers[left] IS the minimum — the invariant makes the local extreme globally sufficient"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "The induction leans on itself: past eliminations guarantee the window's ends are the true remaining extremes, which powers the next elimination. This self-sustaining structure is what 'loop invariant' means in practice."
 }
 ```

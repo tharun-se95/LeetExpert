@@ -99,11 +99,11 @@ Trace on `[1,1,1], k=2`: running sums are 1, 2, 3. At running=1: seek
 {
   "question": "For nums = [1,-1,0], k = 0, the answer is 3. Which subarrays produce it, and what does that reveal about the algorithm's handling of ZERO-VALUED elements?",
   "options": [
-    "[1,-1], [0], and [1,-1,0] — a single zero element forms its own valid subarray, which the algorithm counts naturally because running sum stays UNCHANGED across a zero, matching whatever prefix value was already seen",
-    "Only [1,-1] and [1,-1,0] — single-element zero subarrays don't count",
-    "The algorithm fails on arrays containing 0"
+    "The algorithm fails on arrays containing 0 — a zero-valued element leaves the running sum unchanged, which the hash map interprets as never having advanced position, causing it to silently skip or miscount any subarray that includes that element",
+    "Only [1,-1] and [1,-1,0] — single-element zero subarrays don't count, since a subarray consisting of exactly one zero-valued element is defined as trivial and excluded from the count by convention",
+    "[1,-1], [0], and [1,-1,0] — a single zero element forms its own valid subarray, which the algorithm counts naturally because running sum stays UNCHANGED across a zero, matching whatever prefix value was already seen"
   ],
-  "answer": 0,
+  "answer": 2,
   "explanation": "A zero element doesn't change the running sum at all — so if running was already matched by an earlier prefix, a zero element automatically extends that match set by one more subarray. No special case is needed; it falls out of the prefix-difference logic for free."
 }
 ```

@@ -127,11 +127,11 @@ Two landmines, both in the details:
 {
   "question": "Why does popping the operands in the wrong order survive + and * but break - and /?",
   "options": [
-    "It doesn't — all four break",
     "Addition and multiplication are commutative (a∘b = b∘a), so the swap is invisible; subtraction and division are not — '6 2 /' becomes 2/6 instead of 6/2",
-    "Because division truncates"
+    "Because division truncates — the toward-zero truncation rule absorbs the operand-order mistake in a way multiplication's exact result can't, which is why only two of the four operators end up affected",
+    "It doesn't — all four break; every operator depends on knowing which operand came first, so swapping pop order produces a wrong result across addition, subtraction, multiplication, and division alike"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "The bug is masked by an algebraic property of half the operators — the nastiest kind of bug, because plus-heavy tests all pass. Choosing test inputs that BREAK symmetry (subtraction, division, non-equal operands) is the testing discipline this problem teaches."
 }
 ```

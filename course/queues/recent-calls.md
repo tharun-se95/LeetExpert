@@ -109,11 +109,11 @@ guard can stay lean because the invariant covers it.
 {
   "question": "The strictly-increasing t guarantee is load-bearing. What breaks without it?",
   "options": [
-    "Nothing — the queue still works",
-    "Arrival order ≠ time order: a late-arriving old timestamp lands at the BACK while belonging near the front, so front-only expiry misses it (or expires fresh entries) — the alive set is no longer a contiguous range of arrivals",
-    "The queue overflows"
+    "Nothing — the queue still works; since every ping still gets enqueued and the expiry condition is checked independently on each call, out-of-order timestamps don't actually change which entries end up counted",
+    "The queue overflows — without the strictly-increasing guarantee, expired entries would never get dequeued fast enough, and the backlog of un-expired timestamps would grow without bound",
+    "Arrival order ≠ time order: a late-arriving old timestamp lands at the BACK while belonging near the front, so front-only expiry misses it (or expires fresh entries) — the alive set is no longer a contiguous range of arrivals"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "The queue models 'alive = suffix of arrival order' — true only when arrivals are time-sorted. Unsorted timestamps would need an ordered structure (Module 18) or buckets. Spotting WHICH constraint licenses your structure is the recognition skill; lose the constraint, lose the structure."
 }
 ```

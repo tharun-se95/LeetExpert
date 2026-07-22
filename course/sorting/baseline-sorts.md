@@ -138,19 +138,19 @@ to n outright — nearly-sorted input costs close to O(n), not O(n²).
     {
       "question": "Why does selection sort cost O(n²) even when the input is already sorted, while insertion sort drops to O(n) on the same input?",
       "options": [
-        "Selection sort has a bug that insertion sort doesn't",
-        "Selection sort's inner loop unconditionally SCANS the entire unsorted remainder every pass to find the minimum, regardless of whether it's already in order — insertion sort's inner loop CHECKS a condition (arr[j] > key) that fails immediately on sorted input, skipping the shift entirely",
-        "Insertion sort uses a different comparison operator"
+        "Insertion sort uses a different comparison operator — swapping strict inequality for a non-strict one changes how many shifts occur on already-ordered data, which is the actual source of the speed difference",
+        "Selection sort has a bug that insertion sort doesn't — an off-by-one in how the minimum is tracked across passes causes selection sort to occasionally redo work it should be able to skip on sorted input",
+        "Selection sort's inner loop unconditionally SCANS the entire unsorted remainder every pass to find the minimum, regardless of whether it's already in order — insertion sort's inner loop CHECKS a condition (arr[j] > key) that fails immediately on sorted input, skipping the shift entirely"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "The structural difference is search vs. check: selection sort must always search for the minimum (no shortcut even if it's already in place), while insertion sort's work is proportional to how far an element actually needs to move — zero distance on sorted input means zero work."
     },
     {
       "question": "Why do production sorting libraries often switch to insertion sort for small subarrays, even though they use a faster O(n log n) algorithm overall?",
       "options": [
-        "It's a historical artifact with no real benefit today",
+        "Insertion sort is required for correctness on small inputs — the faster O(n log n) algorithms have edge-case bugs that only manifest below a certain array size, so insertion sort is a necessary correctness patch, not a performance choice",
         "Insertion sort has very low constant-factor overhead — no recursion, no extra allocation — which makes it faster than asymptotically-superior algorithms specifically when n is small enough that the O(n log n) vs O(n²) gap hasn't yet outweighed the constants",
-        "Insertion sort is required for correctness on small inputs"
+        "It's a historical artifact with no real benefit today — modern hardware has made the constant-factor differences between algorithms negligible, so this switch persists mostly out of inertia rather than measurable gain"
       ],
       "answer": 1,
       "explanation": "Big O describes GROWTH, not actual speed at any fixed n — for small n, a simple O(n²) algorithm with tiny constants can beat a complex O(n log n) algorithm with recursion/allocation overhead. This is why real sorts are hybrids, not pure implementations of one algorithm."

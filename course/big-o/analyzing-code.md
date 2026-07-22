@@ -200,28 +200,32 @@ scratch:
   "questions": [
     {
       "question": "What is the complexity?\n`for (i = 0; i < n; i++) { for (j = 1; j < n; j *= 3) { work(); } }`",
-      "options": ["O(n²)", "O(n log n)", "O(n)"],
-      "answer": 1,
+      "options": [
+        "O(n log n)",
+        "O(n) — the inner loop's multiplicative step means it only touches a handful of values before exiting, so its cost is dominated by the outer loop alone",
+        "O(n²) — any loop nested inside another loop multiplies the outer's n iterations by another full n, regardless of how the inner loop's counter moves"
+      ],
+      "answer": 0,
       "explanation": "Outer loop: n iterations. Inner loop multiplies by 3, so log₃ n iterations. Nesting multiplies: O(n log n)."
     },
     {
       "question": "A loop runs n times; its body calls a helper that is O(n), followed by a separate O(n) loop after it. Total?",
       "options": [
-        "O(n) + O(n) = O(n)",
-        "O(n²) — the nested part dominates the sequential part",
-        "O(n³)"
+        "O(n³) — the O(n) helper called inside an n-iteration loop should multiply with the trailing O(n) loop as well, since all three linear factors compound together",
+        "O(n) + O(n) = O(n) — treating the whole snippet as two independent linear passes back to back, as if the helper call inside the loop didn't also scale with n",
+        "O(n²) — the nested part dominates the sequential part"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Loop × body = n · n = O(n²); the trailing loop adds O(n). Sum: O(n² + n) = O(n²)."
     },
     {
       "question": "Why is naive recursive Fibonacci exponential while merge sort's two-way recursion is only O(n log n)?",
       "options": [
-        "Fibonacci's branches barely shrink the problem (n−1, n−2), so the tree is n levels deep with ~doubling width; merge sort halves, giving only log n levels",
-        "Merge sort's recursion is tail-recursive",
-        "Fibonacci does more work per call"
+        "Fibonacci does more work per call — each call performs extra arithmetic that merge sort's calls skip, so the per-node cost compounds across the recursion tree",
+        "Merge sort's recursion is tail-recursive, so the runtime collapses each recursive call into a loop with no extra stack frames or repeated work, unlike Fibonacci's stacked calls",
+        "Fibonacci's branches barely shrink the problem (n−1, n−2), so the tree is n levels deep with ~doubling width; merge sort halves, giving only log n levels"
       ],
-      "answer": 0,
+      "answer": 2,
       "explanation": "Both branch twice. What differs is depth: halving → log n levels of flat total work; shrinking by 1 → n levels of doubling width. How fast subproblems shrink controls everything."
     }
   ]

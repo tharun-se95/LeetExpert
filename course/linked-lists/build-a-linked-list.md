@@ -184,9 +184,9 @@ by making the boundary itself a normal node.
     {
       "question": "Why does delete walk a (prev, curr) PAIR instead of just curr?",
       "options": [
-        "To count the nodes",
+        "It's an optimization to exit early — holding both references lets the loop terminate as soon as a match is found instead of continuing to scan, which is the actual reason the extra variable exists",
         "Splicing curr out means writing prev.next = curr.next — in a singly linked list, the node BEFORE the target holds the pointer that must change, and there's no way back to it from curr",
-        "It's an optimization to exit early"
+        "To count the nodes — the prev reference doubles as a running counter that tracks how many nodes have been visited so far, which delete needs to update the size field correctly"
       ],
       "answer": 1,
       "explanation": "Singly linked lists only see forward. The edit always happens one node behind the discovery — so you carry the predecessor with you. (A doubly linked list's prev pointer makes this unnecessary — that's exactly what you're paying its overhead for.)"
@@ -194,19 +194,19 @@ by making the boundary itself a normal node.
     {
       "question": "push_back forgot the `if (curr === tail) tail = prev` branch in delete. What breaks, and when?",
       "options": [
-        "Nothing — tail is only cosmetic",
-        "After deleting the last node, tail points at a spliced-out node; the NEXT push_back links the new node onto the ghost, and it's unreachable from head — the list silently loses data",
-        "The list throws immediately"
+        "The list throws immediately — dereferencing a stale tail pointer on the very next operation raises an exception, so the bug surfaces as a crash right where it was introduced",
+        "Nothing — tail is only cosmetic; since head always reaches every real node via next pointers, an outdated tail reference is just unused bookkeeping that no correct method actually relies on",
+        "After deleting the last node, tail points at a spliced-out node; the NEXT push_back links the new node onto the ghost, and it's unreachable from head — the list silently loses data"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Invariant 2 (tail = last reachable node) fails silently, and the damage surfaces LATER at push_back — the new node hangs off a node no traversal can reach. Pointer-invariant bugs are time bombs; that's why each method is checked against all three invariants."
     },
     {
       "question": "A million-int array vs a million-int singly linked list — which uses meaningfully more memory, and why?",
       "options": [
-        "Same — both store a million ints",
+        "The array — capacity slack wastes half; a dynamic array's doubling strategy can leave up to half its allocated capacity empty at any given moment, which outweighs a linked list's per-node overhead",
         "The list: every element carries an extra next-reference (plus per-node allocation overhead), roughly doubling footprint or worse — a real cost the complexity table rounds into 'O(n)'",
-        "The array — capacity slack wastes half"
+        "Same — both store a million ints; since Big O counts elements rather than bytes, the two structures share the identical O(n) space bound and therefore consume comparable real memory"
       ],
       "answer": 1,
       "explanation": "O(n) hides constants, and here the constant differs by 2× or more: value + pointer + allocator header per node, versus packed values (the array's ≤2× slack is bounded and amortized). Locality AND footprint both favor arrays — lists must earn their keep on splice patterns."

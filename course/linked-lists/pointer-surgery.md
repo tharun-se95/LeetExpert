@@ -119,29 +119,29 @@ Three habits that catch most bugs before they run:
     {
       "question": "What exactly does the dummy node eliminate?",
       "options": [
-        "The O(n) search cost",
-        "The head-has-no-predecessor special case: with a fake predecessor in front, edits at the head use the same prev.next rewiring as everywhere else, and dummy.next always names the current head",
-        "The need for a tail pointer"
+        "The need for a tail pointer — with a dummy node absorbing every edge case at the front, the list no longer needs a separate reference tracking its final node either",
+        "The O(n) search cost — the dummy node lets edits happen without first locating the target through a linear walk, collapsing what would be a search-then-splice into a single O(1) operation",
+        "The head-has-no-predecessor special case: with a fake predecessor in front, edits at the head use the same prev.next rewiring as everywhere else, and dummy.next always names the current head"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Surgery is always phrased as 'rewrite the predecessor's next'. The dummy manufactures a predecessor for the head, collapsing the branchy case into the general one — fewer branches, fewer bugs."
     },
     {
       "question": "In the reversal walk, why must nxt = curr.next be saved BEFORE curr.next = prev?",
       "options": [
-        "Order doesn't matter — both work",
-        "curr.next is the only route to the rest of the list; flipping it first would orphan everything not yet reversed — the saved nxt is the lifeline the march depends on",
-        "To keep prev valid"
+        "To keep prev valid — prev's own reference could be silently invalidated by the flip if nxt weren't captured first, since both variables secretly alias the same underlying node object",
+        "Order doesn't matter — both work; whether nxt is captured before or after the flip, the three-pointer walk ends up visiting and reversing the exact same sequence of nodes either way",
+        "curr.next is the only route to the rest of the list; flipping it first would orphan everything not yet reversed — the saved nxt is the lifeline the march depends on"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "One pointer write destroys the only forward reference. The three-name dance exists precisely to hold the lifeline across the flip. Losing-the-rest-of-the-list is THE classic reversal bug."
     },
     {
       "question": "In delete_all, why does the walker advance only in the else-branch?",
       "options": [
-        "Efficiency — skipping saves steps",
+        "Because prev could become null — advancing inside the if-branch risks stepping prev past the end of the list entirely, leaving it dangling on a deleted node with no valid next to inspect",
         "After a splice, prev.next is a NEW, uninspected node; advancing would skip it — e.g. two consecutive targets would leave the second one alive",
-        "Because prev could become null"
+        "Efficiency — skipping saves steps; not advancing after a splice trims one iteration off the loop's total step count, a minor performance tweak rather than something correctness depends on"
       ],
       "answer": 1,
       "explanation": "The splice pulls the next-next node INTO the current inspection slot. Advance-after-splice is the second classic list bug: it passes single-deletion tests and fails on consecutive targets like [7,7,3]."

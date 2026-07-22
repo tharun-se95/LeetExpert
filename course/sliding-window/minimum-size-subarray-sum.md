@@ -128,11 +128,11 @@ window has slack, each one a candidate for a new best.
 {
   "question": "The problem guarantees all values in nums are positive. Where exactly does the solution rely on that guarantee, and what breaks without it?",
   "options": [
-    "It doesn't rely on positivity — the code works for any integers",
     "The shrink loop's condition `while window_sum >= target` assumes shrinking (removing nums[left]) can only DECREASE window_sum — with a negative value at nums[left], removing it could increase the sum, so a window that looks 'newly invalid' might still be valid, and the loop would stop shrinking too early",
-    "Positive values are needed so the sum doesn't overflow"
+    "It doesn't rely on positivity — the code works for any integers; the while loop's condition is checked freshly on every iteration, so it would still correctly detect validity regardless of what values are removed from the window",
+    "Positive values are needed so the sum doesn't overflow — allowing negative numbers into the running total risks the accumulated sum exceeding the range a standard integer type can safely hold"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "This is the concept lesson's monotonicity requirement made concrete: the shrink loop trusts that removing an element never helps validity. A single negative value anywhere in nums breaks that trust, and the algorithm can silently return a wrong (too-large, or missed) answer without erroring."
 }
 ```

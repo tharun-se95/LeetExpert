@@ -122,21 +122,21 @@ body. When repetitive data makes the worst case live, the fixes are:
     {
       "question": "What is the worst-case total work of naive matching with haystack = 'aaaa…a' (length n) and needle = 'aaab' (length m)?",
       "options": [
-        "O(n) — mismatches end alignments early",
         "O(n·m) — every one of ~n alignments matches m−1 a's before failing on b",
-        "O(n + m)"
+        "O(n + m) — a linear-time algorithm like KMP achieves this by never re-reading a character, and naive matching is often mistakenly assumed to behave the same way",
+        "O(n) — mismatches end alignments early, and since a mismatch is assumed to occur within a small constant number of characters, the per-alignment cost stays bounded regardless of m"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Repetitive data defeats early mismatch: each alignment does nearly full verification. This adversarial family is WHY linear-time algorithms (KMP) were invented."
     },
     {
       "question": "Why is naive matching nonetheless the right answer at these constraints (n, m ≤ 10⁴)?",
       "options": [
-        "It isn't — KMP is always required",
         "Worst case is ~10⁸ simple comparisons at the extreme corner, typical inputs are effectively linear, and the implementation is 10 obviously-correct lines — engineering judgment says start here",
-        "Because the inputs are guaranteed random"
+        "It isn't — KMP is always required; any production substring-search code that skips building the failure function risks silently timing out the moment inputs turn adversarial",
+        "Because the inputs are guaranteed random — the constraints implicitly promise no adversarial repetition, which is what licenses skipping a linear-time algorithm here"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Matching the tool to the constraints is the discipline this course drills. Reaching for KMP at n = 10⁴ is complexity theater; KNOWING KMP exists — and when the worst case becomes live — is the real requirement."
     }
   ]

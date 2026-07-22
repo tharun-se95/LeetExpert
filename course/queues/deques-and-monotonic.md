@@ -124,9 +124,9 @@ You'll implement the full algorithm in this module's capstone.
     {
       "question": "When x arrives, indices at the BACK with values ≤ x are discarded permanently. Why is this safe for all future windows?",
       "options": [
-        "They might return when x expires",
+        "They might return when x expires — once x eventually slides out of the window, the discarded smaller elements could theoretically become relevant again for whatever window forms next",
         "x entered later, so x expires later — any future window containing a discarded index also contains x, whose value is ≥ theirs; they can never be the answer again",
-        "Because the deque would overflow otherwise"
+        "Because the deque would overflow otherwise — keeping every candidate around regardless of dominance would let the structure grow past its bounded capacity, so weaker elements must be evicted"
       ],
       "answer": 1,
       "explanation": "Dominated = strictly worse on BOTH axes that matter: value (≤ x) and lifetime (expires before x). The safety proof needs both — value alone wouldn't suffice if the smaller element outlived x. This dominance argument is the pattern's entire correctness core."
@@ -134,11 +134,11 @@ You'll implement the full algorithm in this module's capstone.
     {
       "question": "Why couldn't Min Stack's snapshot trick give an O(1) min-QUEUE directly?",
       "options": [
-        "It could, with more snapshots",
-        "Snapshots unwind LIFO — they expire in reverse insertion order. A queue's oldest element leaves FIRST, invalidating snapshots from the wrong end; the monotonic deque replaces per-depth snapshots with a candidate list that supports front-expiry",
-        "Queues can't hold auxiliary data"
+        "It could, with more snapshots — doubling the number of snapshot stacks to track both ends of the structure would restore the same O(1) guarantee that Min Stack achieves for a single end",
+        "Queues can't hold auxiliary data — a FIFO structure's interface is fundamentally too restrictive to attach any parallel bookkeeping structure like a second stack alongside it",
+        "Snapshots unwind LIFO — they expire in reverse insertion order. A queue's oldest element leaves FIRST, invalidating snapshots from the wrong end; the monotonic deque replaces per-depth snapshots with a candidate list that supports front-expiry"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "The snapshot design's correctness leaned entirely on pops undoing pushes. FIFO breaks that symmetry, so the aggregate must be maintained by a structure that can shed from both ends — exactly the deque's niche."
     }
   ]

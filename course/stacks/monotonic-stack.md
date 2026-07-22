@@ -107,31 +107,31 @@ Largest Rectangle) each need a different row, and the histogram needs
     {
       "question": "Why is the nested while-inside-for still O(n) total?",
       "options": [
-        "The while rarely runs in practice",
-        "Each index enters the stack once and leaves at most once — total pop-work across the WHOLE run is ≤ n, so the sum of all while-iterations is bounded, regardless of how any single step spikes",
-        "Because the stack stays small"
+        "Because the stack stays small — the invariant that keeps values strictly decreasing also caps the stack's maximum depth at a small constant regardless of input size, which is what keeps the while loop cheap",
+        "The while rarely runs in practice — on typical, non-adversarial inputs the pop condition fails most of the time, so the nested loop's real-world cost stays close to linear even though its worst case looks quadratic",
+        "Each index enters the stack once and leaves at most once — total pop-work across the WHOLE run is ≤ n, so the sum of all while-iterations is bounded, regardless of how any single step spikes"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Per-iteration bounds would give O(n²) and be uselessly loose. The push-once/pop-once budget is the amortized accounting pattern — the third time this course has used it (dynamic array, cancellation scan, now this)."
     },
     {
       "question": "When x pops index j, why is x guaranteed to be j's FIRST greater element to the right, not just some greater element?",
       "options": [
-        "Because the scan goes left to right",
         "Any element between j and x that was greater than nums[j] would have popped j at ITS arrival — j still being on the stack certifies that nothing in between qualified",
-        "Because the stack is sorted"
+        "Because the scan goes left to right — processing indices in increasing order alone guarantees that whichever element causes a pop must be the first qualifying one, independent of anything about the stack's contents",
+        "Because the stack is sorted — the stack maintains its elements in fully ascending order by value at all times, so the element that triggers a pop is automatically the smallest one capable of doing so"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The stack holds exactly the still-unanswered indices. Survival ON the stack is itself the proof that no earlier arrival beat them — the data structure's state encodes the 'first' guarantee."
     },
     {
       "question": "You need, for each element, the nearest SMALLER element on its LEFT. What does the stack look like?",
       "options": [
-        "Strictly decreasing; answers recorded on pop",
         "Increasing; the answer is read at PUSH time — after popping ≥ elements, the surviving top is the nearest smaller to the left",
-        "It can't be done in one pass"
+        "Strictly decreasing; answers recorded on pop — the stack is kept in descending order and each element's answer is only known once a later, larger arrival forces it off the stack",
+        "It can't be done in one pass — nearest-smaller-to-the-left questions need to know about elements that haven't been scanned yet, so a second reverse pass is unavoidably required to fill in every answer"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Previous-X questions read the answer when the element ARRIVES (what's below me after clearing non-candidates), next-X questions record when elements LEAVE. Re-deriving this from 'what must the top mean?' beats memorizing the four-row table."
     }
   ]

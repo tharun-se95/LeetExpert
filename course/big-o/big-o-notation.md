@@ -77,29 +77,29 @@ day to day, you're budgeting against the ceiling.
     {
       "question": "Which statement does f(n) = O(n²) actually make?",
       "options": [
-        "f grows exactly like n²",
         "Beyond some point, f(n) is at most a constant multiple of n²",
-        "f's worst case takes n² steps"
+        "f grows exactly like n² — the two functions track each other closely enough that neither can be a constant multiple bigger than the other for large n",
+        "f's worst case takes n² steps — Big O is fundamentally a statement about the worst input, baked into the notation itself rather than being a separate choice you make"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "O is only an upper bound on growth. Saying f grows *exactly* like n² is a Θ statement, and O by itself says nothing about cases at all."
     },
     {
       "question": "Is the claim `2n + 100 = O(n)` true?",
       "options": [
-        "No — the +100 eventually matters",
-        "Yes — pick c = 3, n₀ = 100: for n ≥ 100, 2n + 100 ≤ 2n + n = 3n",
-        "Only for small n"
+        "Only for small n — once n grows large enough the +100 term becomes negligible relative to 2n, so the bound flips from true to false past some threshold",
+        "No — the +100 eventually matters, because Big O requires f(n) to equal c·n exactly in the limit, and an additive constant permanently breaks that equality",
+        "Yes — pick c = 3, n₀ = 100: for n ≥ 100, 2n + 100 ≤ 2n + n = 3n"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Constants get absorbed: past n₀ = 100 the term 100 is at most n, so c = 3 works. The definition only cares about large n."
     },
     {
       "question": "An algorithm runs in Θ(n) on sorted input and Θ(n²) on reversed input. Which is correct?",
       "options": [
-        "The algorithm is Θ(n²)",
+        "The algorithm is Θ(n²) — Θ bounds must hold for every input, so the presence of even one input class costing n² forces the whole algorithm's Θ to be n²",
         "Its worst case is Θ(n²) and its best case is Θ(n)",
-        "The algorithm is O(n)"
+        "The algorithm is O(n) — since the algorithm technically achieves linear time on some inputs, that best-case behavior is what the O notation is reporting"
       ],
       "answer": 1,
       "explanation": "O/Θ describe a chosen case's cost function. Naming the case makes both statements precise; a bare 'Θ(n²)' would wrongly claim every input costs quadratic."

@@ -149,31 +149,31 @@ O(n) space to keep that order; quicksort spends none, and loses it.
     {
       "question": "Why does choosing the LAST element as pivot make quicksort degrade to O(n²) specifically on already-sorted input?",
       "options": [
-        "Sorted arrays are always slow to process",
         "On sorted input, the last element is always the maximum of whatever subarray it's partitioning — so partition always produces a split of sizes (n-1, 0), the worst possible imbalance, turning the recursion into an n-level chain instead of a balanced tree",
-        "The partition function has a bug on sorted arrays"
+        "Sorted arrays are always slow to process — comparison-based algorithms in general perform worse on already-ordered input because there's no beneficial structure left to exploit, a property of sortedness itself rather than of pivot choice",
+        "The partition function has a bug on sorted arrays — an off-by-one in the boundary tracking causes it to misplace elements specifically when the input arrives already in order, producing an incorrect but still O(n²)-costly split"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "This is exactly why deterministic pivot choice is dangerous: an adversary (or just unlucky common input, like already-sorted data) can reliably trigger the worst case. Randomization breaks the ADVERSARY's ability to predict which element becomes the pivot."
     },
     {
       "question": "Randomizing the pivot doesn't change partition's worst-case Θ(n²) possibility — a terrible split can still happen. So what does randomization actually guarantee?",
       "options": [
-        "It guarantees the worst case never happens",
-        "It guarantees the worst case becomes vanishingly UNLIKELY for any fixed input, because the bad luck would have to come from the algorithm's own random choices rather than from a property of the input itself — the EXPECTED running time is O(n log n) for every input, not just typical ones",
-        "It reduces the worst case to O(n log n) exactly"
+        "It reduces the worst case to O(n log n) exactly — randomizing the pivot mathematically eliminates the possibility of an unbalanced split entirely, converting the algorithm's guarantee from probabilistic to absolute",
+        "It guarantees the worst case never happens — once the pivot is chosen randomly, the specific sequence of splits that would produce Θ(n²) behavior becomes structurally impossible to encounter, not just unlikely",
+        "It guarantees the worst case becomes vanishingly UNLIKELY for any fixed input, because the bad luck would have to come from the algorithm's own random choices rather than from a property of the input itself — the EXPECTED running time is O(n log n) for every input, not just typical ones"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "This is the strong form of average-case guarantee from the Big O module: not 'assume nice input' but 'defend against ALL input using the algorithm's own randomness.' The Θ(n²) possibility technically still exists — it's just astronomically improbable, and no adversary can force it deliberately."
     },
     {
       "question": "Why is quicksort unstable while merge sort is stable, given both are comparison-based sorts?",
       "options": [
-        "Quicksort simply has more bugs",
         "Merge sort's merge step never displaces an element past another during a copy — equal elements keep their relative order by construction (taking LEFT on ties). Quicksort's partition SWAPS elements, which can move an element past an equal one it started behind, with no mechanism preventing that reordering",
+        "Quicksort simply has more bugs",
         "Stability is unrelated to the sorting mechanism used"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Stability is a direct consequence of HOW elements move: copy-based merging preserves order for free; swap-based partitioning actively can violate it. This is the same in-place-vs-stable trade-off the course has now seen in three different structures (Module 4's write pointer, Module 10's partition, and here)."
     }
   ]

@@ -481,38 +481,6 @@ membership question billions of times a day.
 > (or a fuzzy Bloom filter when memory is tight) is enough; they do not need a
 > full map of page bodies keyed by URL for the membership check itself.
 
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
-
 ### Summary
 
 - Set = yes/no guest list; map = guest list with notes
@@ -659,38 +627,6 @@ use the same rollup tables.
 > 🏗️ **Engineering Connection:** Rollup counters in analytics pipelines store
 > cumulative metrics so a time-range dashboard query is two lookups and a
 > subtract — prefix sums with a clock instead of an array index.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
 
 ### Summary
 

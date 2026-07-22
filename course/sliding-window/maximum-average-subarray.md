@@ -94,11 +94,11 @@ scores).
 {
   "question": "Why is it correct to compare SUMS throughout the loop and only divide by k once, at the very end, instead of computing each window's average inside the loop?",
   "options": [
-    "It's a micro-optimization that happens to give the same answer",
     "Since k is constant across every window, dividing by k is a strictly increasing transform — it preserves ordering, so whichever window has the largest SUM also has the largest AVERAGE. Comparing sums and comparing averages find the same winner",
-    "Floating point division is unsafe inside loops"
+    "It's a micro-optimization that happens to give the same answer — deferring the division saves a few CPU cycles across the loop, but computing each window's average inline would still find the correct maximum, just slightly slower",
+    "Floating point division is unsafe inside loops — repeated division operations inside a tight loop can accumulate rounding error across iterations in a way that a single division at the end avoids"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "Deferring a monotonic transform until after the comparisons that matter is a recurring move: it's valid exactly because the transform doesn't change relative order. The same reasoning would break if k varied per window — then sums wouldn't be comparable at all."
 }
 ```

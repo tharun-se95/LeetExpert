@@ -114,11 +114,11 @@ past each other.
 {
   "question": "Why do the inner skip-loops need their own `left < right` guards?",
   "options": [
-    "Performance — fewer comparisons",
     "On inputs like \",,,,\" a skip loop without the guard would march its pointer past the other and out of bounds; with guards the loops halt at the crossing point and the outer loop exits cleanly (vacuously a palindrome)",
-    "They don't — the outer while already checks it"
+    "They don't — the outer while already checks it; since left < right is evaluated once per outer iteration, that single check already bounds every step the inner skip loops could take",
+    "Performance — fewer comparisons; adding the guard lets the skip loops exit a few iterations earlier on average, trading a small amount of correctness risk for speed on typical inputs"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "The outer check happens once per outer iteration, but a skip loop can advance MANY steps within one iteration. Boundary discipline inside nested loops is exactly the kind of detail invariant-thinking catches."
 }
 ```

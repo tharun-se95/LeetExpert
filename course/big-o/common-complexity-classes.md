@@ -97,28 +97,32 @@ an announcement that an exponential search is intended.
   "questions": [
     {
       "question": "An algorithm's cost doubles when n doubles. Which class?",
-      "options": ["O(log n)", "O(n)", "O(n²)"],
+      "options": [
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
       "answer": 1,
       "explanation": "Linear growth scales proportionally: 2× input → 2× work. O(n²) would 4×, and O(log n) would add a single step."
     },
     {
       "question": "Why is binary search O(log n) and not O(n)?",
       "options": [
-        "It checks elements faster than a scan does",
         "Each comparison discards half the remaining candidates, so ~log₂ n comparisons reach a single element",
-        "Sorted arrays are faster to read from memory"
+        "It checks elements faster than a scan does — each individual comparison in binary search executes in fewer CPU cycles than the per-element check inside a linear scan",
+        "Sorted arrays are faster to read from memory — sorted data has better cache locality than unsorted data, which is what actually accounts for binary search's speed advantage"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The speed comes from *discarding*, not from faster per-element work: n → n/2 → n/4 → … → 1 takes log₂ n halvings by the definition of the logarithm."
     },
     {
       "question": "A problem says n ≤ 100,000. Which solution class is the intended target?",
       "options": [
-        "O(n²) — 10¹⁰ operations",
         "O(n log n) or O(n) — about 10⁶–10⁷ operations",
-        "O(2ⁿ)"
+        "O(n²) — 10¹⁰ operations, which a modern judge's few-second time limit can comfortably absorb since 10¹⁰ simple operations complete in well under a second on typical hardware",
+        "O(2ⁿ) — since 100,000 is a large-looking number, the intended solution should be the most powerful brute-force tool available, enumerating every subset of the input"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "At n = 10⁵, n² = 10¹⁰ operations — minutes, not seconds. n log n ≈ 1.7 × 10⁶ passes easily. Constraints are a statement of the expected class."
     }
   ]

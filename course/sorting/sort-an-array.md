@@ -195,11 +195,11 @@ that fails on adversarial graders.
 {
   "question": "Why does randomizing quicksort's pivot matter specifically for a problem like this one, more than it might for casual use?",
   "options": [
-    "It doesn't matter more here than anywhere else",
-    "Automated graders can and do construct adversarial inputs (e.g. sorted or reverse-sorted arrays) specifically designed to trigger a FIXED pivot rule's worst case — randomization defeats this because the adversary can't predict the algorithm's own coin flips",
-    "Randomization is only needed for very large arrays"
+    "Randomization is only needed for very large arrays — below a certain input size the worst-case O(n²) behavior isn't actually reachable, so a fixed pivot rule is safe until the array grows past that threshold",
+    "It doesn't matter more here than anywhere else — the risk of hitting a bad pivot sequence is the same constant probability regardless of context, so there's nothing about automated grading specifically that changes the calculus",
+    "Automated graders can and do construct adversarial inputs (e.g. sorted or reverse-sorted arrays) specifically designed to trigger a FIXED pivot rule's worst case — randomization defeats this because the adversary can't predict the algorithm's own coin flips"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "This is the concept lesson's average-case argument made concrete and consequential: a naive last-element-pivot quicksort passes casual testing fine but can time out against deliberately adversarial graders, which is exactly the scenario 'defend against ALL input, not just typical input' was built to handle."
 }
 ```

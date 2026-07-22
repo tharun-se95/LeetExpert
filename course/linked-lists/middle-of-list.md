@@ -111,11 +111,11 @@ watch where `slow` rests when `fast` falls off:
 {
   "question": "For even lengths, this implementation returns the SECOND middle. Which single change returns the first, and why?",
   "options": [
-    "Step slow twice and fast once instead",
     "Loop on `fast.next and fast.next.next` instead of `fast and fast.next` — the runner stops one beat earlier, leaving slow on the first middle",
-    "Return slow.next instead of slow"
+    "Step slow twice and fast once instead — swapping which pointer moves faster reverses which half of the list gets covered first, landing the search on the opposite middle node for even lengths",
+    "Return slow.next instead of slow — since slow always lags one node behind where the algorithm needs to report, reading the next field forward corrects the off-by-one and lands on the first middle"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "Parity behavior lives entirely in the stopping condition — 'fast can take a full double-step' vs 'fast could take one more'. (Starting fast at head.next is another correct retune of the same knob.) Swapping the speeds breaks the half-distance invariant entirely, and slow.next moves the wrong way — past the second middle, not before it."
 }
 ```

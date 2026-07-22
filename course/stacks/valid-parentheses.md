@@ -109,11 +109,11 @@ construction; one that merely passes sample tests is correct by luck.
 {
   "question": "Why is `stack and stack[-1] == pairs[ch]` a COMPLETE validity check for a closer — what do its two halves rule out?",
   "options": [
-    "It's incomplete — type counts must also be checked at the end",
     "Non-empty rules out a closer-with-nothing-open (mode 2); top-equality rules out closing the wrong obligation (mode 1). Mode 3 can't be checked mid-scan — it's the final emptiness test, and together the three checks are exhaustive",
-    "The two halves are redundant — either alone suffices"
+    "The two halves are redundant — either alone suffices; a non-empty stack check alone already guarantees the top matches the closer's required opener, so the second condition never actually changes the outcome",
+    "It's incomplete — type counts must also be checked at the end, since two different bracket types could still pop against each other undetected without a final tally confirming each type balanced independently"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "Each failure mode maps to exactly one check, and the three modes partition every way validity can break (wrong match now, no match now, unmatched later). That's what makes the implementation an ARGUMENT, not a hope — no count check needed, since matched pops already balance counts."
 }
 ```

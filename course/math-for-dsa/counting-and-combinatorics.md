@@ -114,31 +114,31 @@ DP's core move a stage early.
     {
       "question": "How many distinct pairs (unordered, no repeats) can be formed from n items — and what does that say about all-pairs brute force?",
       "options": [
-        "n² pairs, so O(n²)",
         "C(n,2) = n(n−1)/2 pairs — the same triangular count as the nested dependent loop, O(n²) with a ½ constant",
-        "2ⁿ pairs"
+        "n² pairs, so O(n²) — every ordered pair (i, j) with i ≠ j counts separately, since brute force naturally iterates both indices independently across the full range",
+        "2ⁿ pairs — pairing items is really choosing a subset of size 2 or less from each element's perspective, which is why the subset-counting formula applies here too"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Choosing 2 of n unordered is C(n,2) = n(n−1)/2. That's literally the iteration count of `for i, for j > i` — counting and loop analysis are the same computation."
     },
     {
       "question": "A problem has n ≤ 16 and asks about 'every possible selection of elements'. What's the intended approach signal?",
       "options": [
-        "n! permutation search",
         "2ⁿ subset enumeration (≈ 65,536 subsets — trivial), likely via bitmask or backtracking",
-        "An O(n log n) greedy"
+        "n! permutation search — 'every possible selection' implies order matters, since a selection is really an arrangement of the chosen elements into some sequence",
+        "An O(n log n) greedy — small constraints like n ≤ 16 typically signal that a sort-based approach is intended, since sorting is the cheapest thing that can meaningfully restructure the input"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "'Selections' = subsets = 2ⁿ. At n = 16 that's 65,536 — tiny. Constraints of 16–25 practically announce subset enumeration."
     },
     {
       "question": "Why compute C(n, k) with incremental multiply-divide instead of n!/(k!(n−k)!)?",
       "options": [
-        "It's asymptotically faster",
-        "Factorials overflow fixed-width integers and lose float precision long before C(n,k) itself is large; incremental division keeps every intermediate exact and small",
-        "Factorials are O(n²) to compute"
+        "It's asymptotically faster — the multiply-divide loop runs in fewer total arithmetic operations than computing three separate factorials and dividing them, which is where the real time savings come from",
+        "Factorials are O(n²) to compute — multiplying together n terms one at a time, with each multiplication getting more expensive as the running product grows, adds up to quadratic total work",
+        "Factorials overflow fixed-width integers and lose float precision long before C(n,k) itself is large; incremental division keeps every intermediate exact and small"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "C(50, 3) = 19,600 — tiny — but 50! has 65 digits. The formula's intermediates are the problem, not the answer. Multiply-divide stepwise keeps intermediates at binomial size."
     }
   ]

@@ -136,9 +136,9 @@ and pointers become the data structure.
 {
   "question": "The inner while loop can run 10⁵ iterations for a single start. Why is the algorithm still O(n)?",
   "options": [
-    "Because that case is rare in random data",
+    "Because the set makes each iteration O(1) — since each membership check inside the while loop is a constant-time operation, the loop's own iteration count doesn't factor into the overall complexity at all",
     "Total inner iterations across the WHOLE execution are bounded by total run length ≤ n — each value is visited by exactly one run's walk, since runs are walked only from their unique starts",
-    "Because the set makes each iteration O(1)"
+    "Because that case is rare in random data — a single run of length 10⁵ is an unlikely edge case on typical inputs, so the algorithm's average behavior across realistic test data stays linear"
   ],
   "answer": 1,
   "explanation": "Same accounting style as the dynamic array: bound the SUM, not the step. One expensive walk is paid for by all the elements it consumes — every element is consumed at most once. The start-check is what makes the accounting airtight."

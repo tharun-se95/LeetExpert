@@ -127,9 +127,9 @@ The lesson's asymmetry argument, now embodied in three test-able lines.
 {
   "question": "Which pair of test inputs kills the two classic Dutch-flag bugs, and why these?",
   "options": [
-    "[0,0,0] and [2,2,2] — the extremes",
+    "[0,0,0] and [2,2,2] — the extremes; a uniform array forces every iteration down the same code path repeatedly, which is the most direct way to exercise each branch of the three-way conditional at least once",
     "[2,0,1] (loop with mid < high leaves the final element unexamined) and [1,2,0] (advancing mid after the high-swap steps past the unread 0 that just arrived) — each input is minimal for its bug",
-    "Any random large array"
+    "Any random large array — with enough elements and enough randomness in the value distribution, both classic bugs are statistically certain to be triggered somewhere in the array purely by chance"
   ],
   "answer": 1,
   "explanation": "Both bugs are boundary errors, so tiny adversarial inputs find them where random data won't: the bugs need a 2 early (forcing the high-swap path) and the wrong element arriving at exactly the wrong moment. Deriving minimal killer tests from the invariant is the same skill as deriving the algorithm."

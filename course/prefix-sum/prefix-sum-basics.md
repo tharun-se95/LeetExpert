@@ -121,19 +121,19 @@ entirely.
     {
       "question": "Why is prefix[i] defined as the sum of the FIRST i elements (indices 0..i-1), with prefix[0] = 0, rather than prefix[i] = sum through index i?",
       "options": [
-        "Both conventions work equally well",
         "This shift makes range queries a single clean subtraction (prefix[r+1] - prefix[l]) with no special case for l = 0, since prefix[0] = 0 correctly represents 'nothing summed yet' — the empty range",
-        "It uses less memory"
+        "Both conventions work equally well — defining prefix[i] as the sum through index i instead would require the exact same subtraction formula and produce identical query behavior, just with different index labels",
+        "It uses less memory — the shifted convention needs one fewer stored value than summing through index i would, which is the actual reason prefix[0] = 0 was chosen over the alternative"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The off-by-one convention is chosen specifically so l=0 needs no special-casing: prefix[0]=0 makes 'sum of nothing before index 0' true by definition, not by a guard clause."
     },
     {
       "question": "A prefix-sum array is built once; then the underlying array gets one value updated. What's the cheapest correct way to answer the next range query?",
       "options": [
-        "The existing prefix array still works — updates don't affect it",
+        "Only rebuild prefix[i] for the single updated index — since each prefix entry is defined independently from the raw array rather than accumulated from its neighbor, fixing just that one position restores full correctness",
         "Rebuild the ENTIRE prefix array in O(n), since every prefix[i] at or past the updated index is now stale — or use a different structure (Fenwick/segment tree) if updates are frequent",
-        "Only rebuild prefix[i] for the single updated index"
+        "The existing prefix array still works — updates don't affect it, since prefix sums are a read-only summary computed once at build time and are mathematically independent of subsequent changes to the source array"
       ],
       "answer": 1,
       "explanation": "prefix[i] accumulates EVERYTHING before it, so one changed value invalidates every prefix entry from that point onward. This is precisely why plain prefix sums suit read-heavy, write-never scenarios — frequent updates call for a different data structure entirely."
@@ -141,9 +141,9 @@ entirely.
     {
       "question": "Why can't 'prefix maximum' answer a range-maximum query the same way prefix sum answers range-sum?",
       "options": [
-        "Maximum is more expensive to compute than sum",
+        "Maximum is more expensive to compute than sum — comparing values to find the largest one takes more CPU cycles per element than adding them together, which is the real obstacle standing in the way of a prefix-maximum trick",
         "Sum is invertible (subtraction undoes addition), so removing a prefix's contribution is exact; maximum has no inverse operation — knowing prefix_max[r] and prefix_max[l] tells you nothing about whether the range's actual max lies inside [l, r] or was contributed entirely before l",
-        "Prefix arrays only work for numeric data"
+        "Prefix arrays only work for numeric data — the subtraction step at query time is only mathematically defined for numbers, so extending the technique to a non-numeric aggregate is structurally impossible"
       ],
       "answer": 1,
       "explanation": "The subtraction trick specifically needs an operation with an inverse. Sum, product, and XOR have one; max and min don't — which is the same fork Sliding Window Maximum ran into, now named explicitly as a property (invertibility) rather than a one-off exception."

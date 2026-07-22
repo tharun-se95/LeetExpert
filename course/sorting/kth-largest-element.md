@@ -180,19 +180,19 @@ coordinates, traversal orders, and in-place matrix transformations.
     {
       "question": "Quickselect and quicksort both partition around random pivots. Why is quickselect's expected time O(n) while quicksort's is O(n log n)?",
       "options": [
-        "Quickselect uses a smarter partition function",
-        "Quicksort must recurse into BOTH halves after every partition (it needs every element's position), giving a total of O(n) work at each of O(log n) levels. Quickselect discards one whole half every round, so the work forms a geometric series (n + n/2 + n/4 + ...) that sums to O(n) — no log factor, because there's only ever one active branch",
-        "Quickselect doesn't actually run faster; the complexities are the same"
+        "Quickselect doesn't actually run faster; the complexities are the same — both algorithms do the identical amount of total partition work, and the O(n) vs O(n log n) distinction is just a difference in how the bound is conventionally written",
+        "Quickselect uses a smarter partition function — its partition step is a more efficient variant that does less comparison work per element than the one quicksort uses, which is where the speed advantage actually comes from",
+        "Quicksort must recurse into BOTH halves after every partition (it needs every element's position), giving a total of O(n) work at each of O(log n) levels. Quickselect discards one whole half every round, so the work forms a geometric series (n + n/2 + n/4 + ...) that sums to O(n) — no log factor, because there's only ever one active branch"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "The log factor in quicksort comes specifically from work being repeated across O(log n) LEVELS of a tree with two branches each. Quickselect has only one branch per level, so summing its work is a geometric series collapsing to a constant multiple of n, not n times the depth."
     },
     {
       "question": "Why does the algorithm compute `target_index = len(nums) - k` instead of using k directly as an index?",
       "options": [
-        "It's an arbitrary implementation detail",
+        "It's an arbitrary implementation detail — either k or len(nums) - k could be used as the target index interchangeably, since the partition function would locate the correct element either way",
         "Partition naturally produces elements in ASCENDING order (smallest at index 0), but the problem asks for the kth LARGEST — which corresponds to the (n-k)th smallest in 0-indexed terms. The translation converts the problem's framing into the index the partition machinery actually understands",
-        "To make the algorithm run faster"
+        "To make the algorithm run faster — computing the index this way lets the partition function skip over already-eliminated elements more efficiently than using k directly would allow"
       ],
       "answer": 1,
       "explanation": "This is a recurring translation whenever you reuse an ascending-order tool for a descending-order question — get the off-by-one right by re-deriving it from a small example (n=6, k=2 -> index 4) rather than memorizing the formula."

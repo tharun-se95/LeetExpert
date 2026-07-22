@@ -44,7 +44,9 @@ finishes the job.
 should become `[1,6], [8,10], [15,18]`.
 
 **Naive idea.** Compare every interval to every other interval and merge when
-they overlap. Correct, but the pair checks explode.
+they overlap. Correct, but the pair checks explode: 10 intervals means 45
+pairs, 10,000 intervals means roughly 50 million pairs — quadratic growth for
+work that mostly finds "these two never touch."
 
 **The stuck part.** Most pairs can never overlap once the list is ordered by
 start time — you only need to watch neighbors.
@@ -58,6 +60,10 @@ pattern’s identity.)
 
 **Kid analogy.** Sort laundry by color before folding — the fold pass becomes
 boring and linear because neighbors already match.
+
+Same habit reused elsewhere: anagrams group by a sorted-letter key, and closest
+pair sum on a line becomes sort-then-two-pointers. Pay for order once, then
+reuse it across very different-sounding problems.
 
 ### Visualization
 
@@ -94,7 +100,13 @@ In plain English: line them up, then walk the line once.
 
 - Sorting when a hash map already solves it in one walk (unsorted Two Sum)
 - Assuming stable order when relative order matters
-- Broken custom comparators that aren’t a real total order (Largest Number)
+- Broken custom comparators that aren’t a real total order (Largest Number) —
+  a comparator that says `a < b` and `b < a` at the same time will make most
+  sort implementations silently produce a wrong, inconsistent order
+- Reaching for a hand-rolled quicksort to prove the point — library sort is
+  fine; the insight is ordering as a move, not sorting-algorithm trivia
+- Forgetting that sorting changes original indexes — if the answer needs the
+  input’s original positions, capture `(value, index)` pairs before sorting
 
 > 💡 **Tip:** If the question is “minimum capacity such that …”, that’s Binary
 > Search on the answer — not this chapter.
@@ -116,79 +128,10 @@ lets later work skim a sorted stream — same sort-then-scan idea.
 > 🏗️ **Engineering Connection:** A sorted mailbox dump makes “find nearby
 > keys” cheap.
 
-### Depth Note — Ordering as a Move
-
-Sorting is not “implement quicksort.” Interviews mean: **pay once to create
-order**, then finish with a simple walk. Anagrams become sorted-key grouping.
-Meeting conflicts become “sort by start, check overlaps.” Closest pair sum on
-a row becomes sort then two pointers. The Dutch National Flag three-way
-partition is a niche in-place Arrays callout when values are only `{0,1,2}` —
-it is **not** the identity of this pattern.
-
-Worked sketch — Merge Intervals after ordering. Sort intervals by start. Keep
-an answer stack; if the next interval starts before the last ends, extend the
-end; else push a new block. The bottleneck you killed is “compare every pair
-of intervals.” Order made neighbors the only candidates that matter.
-
-Reach for Sorting when a nested pair scan only needed local order. Reach for
-Binary Search answer-space when you are guessing a numeric threshold. Reach for
-Sweep Line when concurrency events (starts and ends) need a counter, not just
-merge-after-sort.
-
-### Worked Recognition
-
-Interview prompt: "Given an array of intervals, merge all overlapping." You
-sort by start, then walk once. That is Sorting-as-a-move, not a sorting-algorithm
-contest. "Largest Number" custom comparator is the same idea with a weirder
-order key. "Sort Colors" may use counting or three-way partition — mention the
-Arrays callout, then still name the broader habit: create order, then scan.
-
-Engineering echo: ETL pipelines sort events by timestamp once so later joins
-and window aggregations become single passes — warehouse sorting paid so
-analytics scans stay linear.
-
-### Interview Dialogue
-
-Interviewer: “Merge these intervals.” You: “I’ll sort by start so neighbors are
-the only intervals that can overlap, then one scan merges.” That sentence is
-the whole pattern. If they ask whether you must write quicksort, say no —
-library sort is fine; the insight is ordering as a move. Contrast: binary
-searching the minimum shipping capacity is Answer-Space Binary Search, not this
-chapter. Contrast: peak concurrent meetings needs start/end events — Sweep
-Line. Keep Sorting for “order once, walk once” stories with duplicate
-clustering, greedy-after-sort, and neighbor comparisons.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+Data warehouses sort fact tables by the join key before a merge-join step —
+same “pay for order once” trade as Merge Intervals, just at a much bigger
+scale, and the same reason compilers sort symbol tables before a linear
+resolve pass.
 
 ### Summary
 
@@ -222,7 +165,9 @@ throws away half the remaining options.
 **The problem.** Koko Eating Bananas: what’s the slowest eating speed that
 still finishes by hour `h`?
 
-**Naive idea.** Try speed 1, then 2, then 3… forever if piles are huge.
+**Naive idea.** Try speed 1, then 2, then 3… forever if piles are huge. If the
+biggest pile has a billion bananas, that's up to a billion feasibility checks
+— each one itself an O(piles) scan — before you ever find the answer.
 
 **The stuck part.** Checking every speed from 1 upward. But if speed `k` works,
 every faster speed also works (the yes/no staircase only rises once).
@@ -233,6 +178,17 @@ speeds.
 
 **Kid analogy.** Guessing a secret number with “too low / too high” — each ask
 halves the possible range.
+
+Binary search comes in two interview flavors: **index search** on a sorted row
+(classic left/right until you hit the target or the insertion spot), and
+**answer-space search** like Koko, where the row is imaginary but a yes/no
+predicate is monotone across it.
+
+**Second sketch — Search in Rotated Sorted Array.** A rotated sorted array
+still has one half properly ordered around any `mid` — either the left half
+or the right half. Check which half is sorted first; if the target's value
+falls inside that sorted half's range, search there, otherwise search the
+other half. Same halve-and-discard habit, one extra check up front.
 
 ### Visualization
 
@@ -275,9 +231,13 @@ answer; repeat.
 
 ### Common Mistakes
 
-- Off-by-one (`lo < hi` vs `lo <= hi`) so mid never moves
+- Off-by-one (`lo < hi` vs `lo <= hi`) so mid never moves — for example,
+  writing `hi = mid` in an index search where the target could still be at
+  `mid` itself silently drops that candidate from the range
 - Using binary search when the yes/no rule is not monotone
 - Searching an unsorted array without a monotone rule
+- Computing `mid = (lo + hi) / 2` in a language where that can overflow on
+  huge bounds — prefer `lo + (hi - lo) / 2`
 
 > ⚠️ **Common Mistake:** Binary search on a shuffled list is just guessing —
 > halves mean nothing without order or a staircase rule.
@@ -298,74 +258,9 @@ and again — same “cut the remaining key space in half” feel as B-tree prob
 > 🏗️ **Engineering Connection:** Sorted indexes are binary-search cousins in
 > production.
 
-### Depth Note — Index Search and Answer Space
-
-Binary search is “guess the middle, throw away half.” Two interview flavors:
-
-1. **Index search** on a sorted row — classic left/right until you find the
-   target or the insertion spot.
-2. **Answer-space search** — the row is not sorted, but a yes/no predicate is
-   monotonic on a numeric range (Koko eating bananas, minimize max page load).
-
-Koko sketch: bananas piles, hours `h`. Guess speed `mid`. If Koko finishes in
-`≤ h` hours with that speed, try slower; else go faster. The bottleneck of
-trying every speed from 1 to max(pile) dies because the feasibility check is
-monotone.
-
-Common trap: off-by-one on inclusive bounds, or searching indexes when you
-should search the answer. Say which space you search before coding.
-
-### Worked Recognition
-
-Search Insert Position and First Bad Version train index / boundary search.
-Koko and Minimum Time to Ship train answer-space. Always state: "I search the
-space of answers from lo to hi; mid is feasible if …” The bottleneck you kill
-is linear trying every candidate when the feasibility check is monotonic.
-
-Engineering echo: load balancers pick the lowest server id that still has
-capacity with a binary search on sorted capacity arrays; databases probe B-tree
-pages by the same halve-the-range idea.
-
-### Interview Dialogue
-
-Interviewer: “Koko eats bananas.” You: “I binary search the eating speed. Mid
-is feasible if total hours ≤ h; feasibility is monotone so I can discard half
-the speeds.” For rotated array search, say which half is sorted before you
-discard. Off-by-one is the usual bug — write inclusive bounds and prove the
-loop shrinks. Never claim binary search on unsorted pair-sum data without an
-ordering story.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+Rate limiters and autoscalers use the same answer-space trick: binary search
+the smallest instance count where projected load stays under a threshold,
+instead of provisioning one instance at a time and re-measuring.
 
 ### Summary
 
@@ -399,7 +294,9 @@ lets one walk merge or spot fights.
 **The problem.** Merge Intervals: glue overlapping blocks. Example:
 `[1,3],[2,6],[8,10]` → `[1,6],[8,10]`.
 
-**Naive idea.** For each block, scan all others to merge. Messy and slow.
+**Naive idea.** For each block, scan all others to merge. Messy and slow: with
+n intervals that's up to n² overlap checks, and merging one pair can change
+which other pairs now overlap, forcing you to re-scan.
 
 **The stuck part.** Unordered blocks hide who can touch whom.
 
@@ -409,6 +306,23 @@ That’s Intervals.
 
 **Kid analogy.** Combining marker pens on a schedule strip — sort by start,
 then fuse anything that overlaps as you go left to right.
+
+**Second sketch — Insert Interval.** Copy every interval that ends before the
+new interval starts, merge the new interval through every overlap you meet,
+then copy whatever is left. Three zones — left, overlap, right — no re-scan of
+the whole list.
+
+**Third sketch — Non-overlapping Intervals.** Sort by *end* time instead of
+start. Walk left to right and keep an interval only if it starts at or after
+the last kept interval's end; every rejected interval counts toward the
+minimum removals. Same sort-then-scan habit, different sort key — this one
+dual-homes with Greedy (Family 5).
+
+**Fourth sketch — Employee Free Time.** Flatten every employee's schedule into
+one big list of intervals, sort by start, and merge exactly like Merge
+Intervals. The free time is just the gaps between consecutive merged blocks —
+the merge step is identical, the "answer" is what merging leaves out instead
+of what it produces.
 
 ### Visualization
 
@@ -444,7 +358,9 @@ the last sticky note.
 ### Common Mistakes
 
 - Forgetting to sort first
-- Mixing up `<` vs `<=` for touching endpoints (ask if times are half-open)
+- Mixing up `<` vs `<=` for touching endpoints — a meeting `[9,10]` followed
+  by `[10,11]` touches but doesn't overlap under a half-open convention;
+  ask which convention the problem means before comparing
 - Solving Meeting Rooms II with only merge logic — peak concurrency needs
   Sweep or a heap of end times
 
@@ -469,70 +385,10 @@ sort by start, scan for overlap, same as Insert/Merge Intervals.
 > 🏗️ **Engineering Connection:** “Can I book this room?” is interval conflict
 > checking.
 
-### Depth Note — Merge, Insert, Overlap
-
-Intervals are calendar blocks. Naive “every block vs every other block” is the
-bottleneck. After sorting by start, one scan merges overlaps. Insert Interval:
-merge the new block into the sorted stream while copying non-overlapping left
-and right sides.
-
-Non-overlapping intervals / erase overlaps: sort by end, greedily keep the next
-compatible block — that drill dual-homes with Greedy, but the data shape is
-still intervals.
-
-Kid analogy: stack sticky notes on a timeline; if the next note overlaps the
-top note, stretch the top instead of adding a new sticker.
-
-### Worked Recognition
-
-Insert Interval: copy every interval ending before the new start; merge through
-overlaps; copy the rest. The naive “re-check the whole list after each insert”
-is the bottleneck. Meeting Rooms (can you attend all?) is sort-by-start then
-check adjacent overlaps — still Intervals; peak room count is Sweep Line.
-
-Engineering echo: calendar UIs merge free/busy blocks after sorting by start so
-a day view is one pass, not O(n²) pairwise clash tests.
-
-### Interview Dialogue
-
-Interviewer: “Insert a new interval into a sorted list.” You: “Copy left
-non-overlapping, merge through the overlap pocket, copy the right.” Draw three
-zones on the board. If they change the question to “how many rooms,” switch
-explicitly to Sweep Line. If they ask erase overlaps for max keep, sort by end
-and greedily take — mention Greedy dual-home. Intervals own the geometry of
-ranges; Sweep owns the event counter.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+Version-control merge tools apply the same sort-by-start-then-scan trick to
+line ranges when combining non-conflicting edits from two branches, and CDN
+cache-invalidation systems merge overlapping "purge this URL range" requests
+the same way before executing them.
 
 ### Summary
 
@@ -566,7 +422,9 @@ only stop at starts and ends. Bumping a counter beats checking every pair.
 **The problem.** Meeting Rooms II: fewest rooms so no two overlapping meetings
 share a room.
 
-**Naive idea.** For each meeting, count how many others overlap. Slow.
+**Naive idea.** For each meeting, count how many others overlap. Slow — n²
+pairwise checks — and it still doesn't directly tell you the peak, since the
+busiest moment might not be any single meeting's start time.
 
 **The stuck part.** Pairwise overlap tests.
 
@@ -576,6 +434,18 @@ walk; track the max active. That’s Sweep Line.
 
 **Kid analogy.** A hallway guard walks the timeline, noting when kids enter
 and leave — the biggest pile of kids is the rooms you need.
+
+**Second sketch — Car Pooling.** Events don't have to be ±1: each pickup event
+adds that trip's passenger count, each drop-off subtracts it. Same
+sort-events-and-track-a-running-total habit, just with variable deltas instead
+of a fixed +1/−1.
+
+**Third sketch — The Skyline Problem.** Each building becomes a "height turns
+on" event at its left edge and a "height turns off" event at its right edge.
+Sweep left to right keeping a multiset of active heights; whenever the current
+maximum height changes after processing an event, that x-coordinate and new
+height is one point of the skyline. Same event-sweep skeleton, tracking a
+running max instead of a running count.
 
 ### Visualization
 
@@ -615,7 +485,9 @@ the busiest moment.
 
 ### Common Mistakes
 
-- Wrong tie-break when one meeting ends at t and another starts at t
+- Wrong tie-break when one meeting ends at t and another starts at t — for
+  meetings `[0,10]` and `[10,20]` sharing a room at t=10, processing the `+1`
+  before the `-1` overcounts a room that was actually free by then
 - Using merge-intervals when you need **peak concurrency**
 - Forgetting to sort events
 
@@ -638,68 +510,10 @@ of segments — same skeleton as Meeting Rooms II.
 > 🏗️ **Engineering Connection:** “How many open shapes cover this x?” is a
 > sweep with a counter (or a richer active tree).
 
-### Depth Note — Events and a Counter
-
-Sweep line turns ranges into start/end events on a line. Sort events; walk left
-to right; maintain an active-count. Meeting Rooms II: start = +1, end = −1
-(process ends before starts at the same time if rooms free instantly). Peak
-count = rooms needed.
-
-This is not “merge intervals.” Merge collapses blocks; sweep measures peak
-concurrency or coverage. Graphics and calendars both “walk the line” with an
-active set.
-
-Easy warmup honesty: you can practice with counting overlapping segments on a
-number line after sorting events — same muscle as Meeting Rooms II.
-
-### Worked Recognition
-
-Car Pooling and Meeting Rooms II are the same event sort: open = +delta, close
-= −delta, track peak. Process closes before opens at equal time when resources
-free at that instant. Skyline problems emit height changes the same way.
-
-Engineering echo: cloud schedulers compute peak concurrent jobs by sweeping
-start/end events — same counter walk as the interview template.
-
-### Interview Dialogue
-
-Interviewer: “Minimum meeting rooms.” You: “I’ll turn each meeting into a start
-event (+1) and end event (−1), sort, and track the running active count. Peak
-active is the answer.” Clarify end-before-start tie-breaking. This is not
-merge intervals — you are measuring concurrency, not collapsing blocks.
-Skyline and carpooling reuse the same event tape.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+Capacity planners sweep reservation start/end events to find the peak
+concurrent bookings a shared resource pool needs to support, and physical CPU
+schedulers sweep task start/deadline events the same way to size a thread
+pool for worst-case concurrency instead of guessing a fixed number of workers.
 
 ### Summary
 

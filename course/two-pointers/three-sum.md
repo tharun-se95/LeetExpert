@@ -160,11 +160,11 @@ the comparator; Module 14 will beat this drum, but start flinching now.)
 {
   "question": "Why does the anchor dedup check nums[i] == nums[i−1] rather than nums[i] == nums[i+1]?",
   "options": [
-    "Either works — direction is a style choice",
-    "Backward-compare skips a value only on its SECOND-and-later uses as anchor. Forward-compare would skip the FIRST use — losing triplets like [-1,-1,2] where the duplicate value must appear within one triplet (as anchor and as pair member)",
-    "Backward comparison is faster"
+    "Backward comparison is faster — checking against the previous element avoids an extra array bounds check that comparing against the next element would require, which is the actual reason for the direction chosen",
+    "Either works — direction is a style choice; since the dedup check only compares adjacent equal values in a sorted array, scanning forward or backward produces the identical set of skipped anchors",
+    "Backward-compare skips a value only on its SECOND-and-later uses as anchor. Forward-compare would skip the FIRST use — losing triplets like [-1,-1,2] where the duplicate value must appear within one triplet (as anchor and as pair member)"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "The rule is 'each distinct value anchors once' — not 'skip all duplicated values.' The first occurrence must anchor (its pair-window includes its own duplicates); later occurrences are redundant. One index of direction encodes that entire distinction — trace [-1,-1,2] both ways to feel it."
 }
 ```

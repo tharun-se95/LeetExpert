@@ -123,11 +123,11 @@ is reusable far beyond this problem.
 {
   "question": "Why does comparing `a + b` against `b + a` correctly decide which of two number-strings should come first, rather than just comparing a and b directly (numerically or lexicographically)?",
   "options": [
-    "It doesn't reliably work — this is a common but flawed approach",
-    "Neither numeric nor lexicographic order captures what actually matters here: which ORDER, when concatenated, produces a larger combined string. Directly forming both possible concatenations and comparing them answers exactly that question, for exactly this pair, regardless of digit count differences",
-    "Because all the input numbers have the same number of digits"
+    "Because all the input numbers have the same number of digits — with uniform digit counts, straightforward numeric comparison and the concatenation test always happen to agree, which is what lets the simpler approach work here",
+    "It doesn't reliably work — this is a common but flawed approach; there exist input sets where the concatenation comparator produces a demonstrably suboptimal arrangement, even though it passes most test cases",
+    "Neither numeric nor lexicographic order captures what actually matters here: which ORDER, when concatenated, produces a larger combined string. Directly forming both possible concatenations and comparing them answers exactly that question, for exactly this pair, regardless of digit count differences"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Neither plain numeric comparison (30 < 34 numerically, but '304' < '340'... check: is '34' then '3' -> '343' vs '3' then '34' -> '334' — 343>334, so 34 before 3) nor string comparison ('3' < '30' lexicographically, but that's irrelevant to the concatenation question) answers the actual question being asked. The concatenation test is a comparator custom-built for exactly this problem's actual ordering criterion."
 }
 ```

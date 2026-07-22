@@ -137,11 +137,11 @@ caller must separately verify the value actually present there matches.
 {
   "question": "Why can't a single lower_bound call, followed by scanning left and right to find the boundaries, satisfy the O(log n) requirement?",
   "options": [
-    "Scanning is always O(n) regardless of what's being scanned",
     "If target occurs many times (up to the whole array), scanning outward from one found occurrence to find both ends costs O(count of duplicates) in the worst case — which can be O(n), violating the guarantee. Two independent binary searches avoid ever touching the duplicate run itself",
-    "lower_bound doesn't reliably find target at all"
+    "lower_bound doesn't reliably find target at all — its guarantee only holds for arrays without duplicate values, so relying on it as a starting point for a scan-outward approach is unsound from the very first step",
+    "Scanning is always O(n) regardless of what's being scanned — any linear walk through an array, no matter how short the actual distance covered turns out to be, is charged the full O(n) cost by definition"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "The failure mode is specifically adversarial duplicate-heavy input: an array of a single repeated value, searched for that value, would make scan-outward degrade to a full linear pass. The two-lower_bound-calls approach never depends on how many duplicates exist — it stays O(log n) unconditionally."
 }
 ```

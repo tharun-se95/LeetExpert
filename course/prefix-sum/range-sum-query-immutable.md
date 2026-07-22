@@ -101,11 +101,11 @@ Verify against the example: `prefix = [0, -2, -2, 1, -4, -2, -3]`.
 {
   "question": "Why does this problem specifically matter that `sumRange` is called MANY times, not once?",
   "options": [
-    "It doesn't — the prefix-sum approach is always better",
-    "The prefix array costs O(n) to build; that investment only pays off when its O(1)-per-query benefit is collected many times. For a single query, brute-force summing (O(range length), no preprocessing) is at least as good and simpler",
-    "Because the array is described as immutable"
+    "It doesn't — the prefix-sum approach is always better; paying O(n) once to build the array is worth it even for a single query, since amortized cost is a red herring here and the technique dominates brute force unconditionally",
+    "Because the array is described as immutable — the 'immutable' label in the problem's title is itself the reason preprocessing pays off, independent of how many times sumRange actually gets called afterward",
+    "The prefix array costs O(n) to build; that investment only pays off when its O(1)-per-query benefit is collected many times. For a single query, brute-force summing (O(range length), no preprocessing) is at least as good and simpler"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "This is the preprocessing trade from the concept lesson, made numeric: O(n) once is only worth paying if it's amortized across enough O(1) queries to beat doing each query in O(range length) directly. Recognizing WHEN a fixed upfront cost pays off is as important as knowing the technique."
 }
 ```

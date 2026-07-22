@@ -168,31 +168,31 @@ hand-written sort is the actually-correct engineering choice.
     {
       "question": "Counting sort runs in O(n + k). Why doesn't this contradict the Ω(n log n) lower bound proven in the previous lesson?",
       "options": [
-        "It does contradict it — counting sort must have a hidden log factor",
-        "The lower bound only applies to algorithms that sort by COMPARING elements. Counting sort never compares two array elements to each other — it uses each value directly as an array index, sidestepping the assumption the entire proof rests on",
-        "The lower bound only applies to arrays larger than k"
+        "It does contradict it — counting sort must have a hidden log factor somewhere in its bookkeeping that isn't obvious from the pseudocode, since no algorithm can truly beat a proven lower bound",
+        "The lower bound only applies to arrays larger than k — once the array size exceeds the value range, the proof's assumptions kick back in, so counting sort only escapes the bound in the small-n regime",
+        "The lower bound only applies to algorithms that sort by COMPARING elements. Counting sort never compares two array elements to each other — it uses each value directly as an array index, sidestepping the assumption the entire proof rests on"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "This is the entire point of the lesson: the Ω(n log n) proof is airtight WITHIN its assumption and simply inapplicable outside it. Counting sort isn't a counterexample to the theorem — it's a different kind of algorithm the theorem never claimed to cover."
     },
     {
       "question": "Why must radix sort's per-digit counting pass be stable?",
       "options": [
-        "Stability is a nice-to-have but not required for correctness",
-        "Radix sort processes digits least-significant-first; if a pass reordered elements with EQUAL current digits, it would scramble the correct ordering already established by previous (less significant) digit passes — stability is what preserves that accumulated order",
-        "Because counting sort is always stable regardless of implementation"
+        "Stability is a nice-to-have but not required for correctness — an unstable per-digit pass would still converge on the correct final ordering once all d passes complete, since later passes have more significant information to work with",
+        "Because counting sort is always stable regardless of implementation — stability is an inherent property of the counting-sort algorithm itself, so any correct implementation automatically preserves order without needing the reverse-iteration trick",
+        "Radix sort processes digits least-significant-first; if a pass reordered elements with EQUAL current digits, it would scramble the correct ordering already established by previous (less significant) digit passes — stability is what preserves that accumulated order"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Correctness of the whole multi-pass algorithm depends on each individual pass being a stable sort — an unstable per-digit sort would silently produce wrong overall orderings on inputs with repeated digits, which is most inputs."
     },
     {
       "question": "A problem asks you to sort 10^5 integers, each in the range [0, 100]. What's the best-fit tool, and why?",
       "options": [
-        "Quicksort, since it's generally fastest",
         "Counting sort: k = 100 is tiny relative to n = 10^5, so O(n + k) is essentially O(n) — strictly better than any comparison sort's O(n log n) floor, and simple to implement correctly",
-        "Merge sort, for the stability guarantee"
+        "Quicksort, since it's generally fastest — its low constant factors and in-place partitioning make it the better choice here regardless of the input's bounded range, since general-purpose speed usually wins in practice",
+        "Merge sort, for the stability guarantee — since the problem doesn't rule out needing stable output, merge sort's guaranteed O(n log n) with order preservation is the safer default over a specialized technique"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "This is exactly the signal from the reading table: small bounded integer range plus large n is counting sort's home turf. Reaching for a comparison sort here works but leaves real performance on the table for no benefit."
     }
   ]

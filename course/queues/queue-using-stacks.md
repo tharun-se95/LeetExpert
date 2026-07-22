@@ -152,11 +152,11 @@ returns 3 before 2.)
 {
   "question": "A sequence of n pushes then n pops: the FIRST pop costs n pour-steps. Why is the whole sequence still O(n) total?",
   "options": [
-    "The first pop is an unlucky outlier we ignore",
     "That expensive pour moved ALL n elements into the outbox, prepaying every later pop — each of which is now O(1). Total touches: n pushes + n pour-steps + n pops ≈ 3n. Charge the pour to the elements moved, not to the operation that triggered it",
-    "Because pours get faster as the inbox shrinks"
+    "The first pop is an unlucky outlier we ignore — amortized analysis is permitted to discard the cost of the single worst operation in a sequence as long as every other operation stays cheap",
+    "Because pours get faster as the inbox shrinks — each subsequent pour only has to move whatever is left in the inbox, so the total pour cost across the whole sequence shrinks geometrically rather than staying flat"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "Amortized analysis in its purest form: the spike's size exactly equals the number of future operations it makes cheap. Same accounting as the dynamic array's resize and the monotonic stack's pops — by now this argument should feel like an old friend."
 }
 ```

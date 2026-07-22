@@ -110,9 +110,9 @@ whole array.
 {
   "question": "For the 'at most 2 duplicates' variant, why does comparing against nums[write − 2] work?",
   "options": [
-    "It checks the two most recent reads",
+    "It checks the two most recent reads — comparing against write − 2 is shorthand for comparing against whatever the last two values read from the array happened to be, regardless of what's been written",
     "If nums[read] equals nums[write − 2], then (by sortedness) write − 1 holds the same value too — writing would create a third copy",
-    "It's an optimization to skip faster"
+    "It's an optimization to skip faster — reading from two slots back lets the loop advance the read pointer by two positions at a time whenever a match is found, cutting iteration count"
   ],
   "answer": 1,
   "explanation": "The kept prefix is sorted, so nums[write−2] == nums[read] forces nums[write−1] to be equal as well (it's sandwiched). One comparison rules out a third copy — the invariant does the work."

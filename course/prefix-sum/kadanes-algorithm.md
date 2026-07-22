@@ -183,9 +183,9 @@ the answer" as its most surprising generalization.
     {
       "question": "In the extend-or-restart formulation, why is it always safe to 'restart' (discard best_ending_here) whenever it goes negative?",
       "options": [
-        "Negative numbers are invalid in a sum",
+        "Negative numbers are invalid in a sum — a running total that goes negative represents an impossible intermediate state, so the algorithm must discard it and restart to keep every computed value mathematically meaningful",
         "A negative running total, carried into any FUTURE subarray, can only make that future subarray's sum smaller than if it started fresh at the current element — so discarding it never loses a better answer",
-        "Because Kadane's algorithm requires resetting periodically"
+        "Because Kadane's algorithm requires resetting periodically — the algorithm's design mandates a fresh restart at regular intervals regardless of the running total's sign, which happens to coincide with negative values in most inputs"
       ],
       "answer": 1,
       "explanation": "This is a real optimality argument, not a heuristic: for any x, best_ending_here + x < x whenever best_ending_here < 0. So carrying a negative prefix forward is strictly worse than dropping it — the algorithm never sacrifices a superior subarray by restarting."
@@ -193,9 +193,9 @@ the answer" as its most surprising generalization.
     {
       "question": "How does Kadane's algorithm relate to Best Time to Buy & Sell Stock (Module 4)?",
       "options": [
-        "They're unrelated problems that happen to both use a single pass",
+        "They're unrelated problems that happen to both use a single pass — beyond sharing the same O(n) time and O(1) space complexity class, the underlying computations track fundamentally different quantities with no deeper structural connection",
         "They're the same algorithm: 'maximize price[i] - min_so_far' and 'maximize running_prefix - min_prefix_so_far' are identical in structure — a running minimum subtracted from the current value, tracked in one O(n), O(1) pass",
-        "Kadane's is a generalization that REPLACES the stock algorithm"
+        "Kadane's is a generalization that REPLACES the stock algorithm — since Kadane's handles arbitrary sums while the stock problem only handles one price difference, the stock algorithm is really just a special case that no longer needs teaching separately"
       ],
       "answer": 1,
       "explanation": "Once subarray sums are expressed as prefix differences, the maximum-subarray problem becomes EXACTLY the stock problem's shape with 'prefix sum' substituted for 'price'. Seeing this connection is more valuable than memorizing either algorithm in isolation."

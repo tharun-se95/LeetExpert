@@ -112,29 +112,29 @@ regularly believed without proof.
     {
       "question": "Converging pointers turn O(n²) pair-search into O(n). Where does the saving actually come from?",
       "options": [
-        "Each step is faster than a pair-check",
         "Each pointer move eliminates an entire index — and all ~n unexplored pairs involving it — backed by a proof that none of them can be the answer",
-        "The array is only half-scanned"
+        "Each step is faster than a pair-check — comparing two pointer positions and moving one is a cheaper CPU operation than evaluating a full pair sum, so the technique wins purely on lower constant-factor cost per step",
+        "The array is only half-scanned — since the two pointers converge toward the middle from opposite ends, each index is visited by only one of them, roughly halving the total elements examined"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "n steps × n pairs eliminated per step covers all n²/2 pairs. The technique is batch elimination; the proof of safety is the technique. Without the proof you have a fast way to get wrong answers."
     },
     {
       "question": "Why does the elimination argument for sorted pair-sum REQUIRE sortedness?",
       "options": [
-        "Sorted arrays are faster to index",
-        "The argument reasons about an index's best possible partner ('even the minimum overshoots') — sortedness is what makes the ends the extremes, so one comparison speaks for all pairs at once",
-        "It doesn't — the technique works unsorted"
+        "It doesn't — the technique works unsorted; the elimination proof only needs SOME pair to be compared at each step, and that reasoning holds regardless of what order the underlying array happens to be in",
+        "Sorted arrays are faster to index — accessing elements in a sorted array benefits from better cache behavior than an unsorted one, which is what actually accounts for the technique's speed advantage",
+        "The argument reasons about an index's best possible partner ('even the minimum overshoots') — sortedness is what makes the ends the extremes, so one comparison speaks for all pairs at once"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "One tested pair stands in for many untested ones only if you KNOW the untested ones are all ≥ or ≤ it. Sorted order provides that. On unsorted input, use the hash map (Module 6) or sort first and convert the problem."
     },
     {
       "question": "A converging-pointer solution runs and returns a plausible answer on all your test cases, but you can't articulate why moving the pointer is safe. What do you actually have?",
       "options": [
-        "A correct solution — tests passing is evidence enough",
+        "A correct solution — tests passing is evidence enough; an implementation that produces the right output on every test case you threw at it has, by that same evidence, been shown correct on all possible inputs",
         "A heuristic: without the elimination proof, some input may have its true answer eliminated silently, and pair-search bugs are exactly the kind tests miss",
-        "A solution that's correct but slow"
+        "A solution that's correct but slow — without a stated elimination proof the algorithm still visits every pair it needs to, it just does so less efficiently than a version with the argument spelled out explicitly"
       ],
       "answer": 1,
       "explanation": "The failure mode of an unproved elimination is a MISSED answer — invisible unless a test happens to have its optimum in the eliminated region. This is why every problem lesson in this module leads with the proof, not the code."

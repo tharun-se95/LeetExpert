@@ -149,21 +149,21 @@ to write. Both are right; say the trade-off out loud.
     {
       "question": "What property must a canonical key f satisfy for hash-map grouping to be CORRECT (not just fast)?",
       "options": [
-        "f must be quick to compute",
-        "f(a) == f(b) if AND ONLY IF a, b belong to the same group — 'if' prevents split groups, 'only if' prevents merged ones",
-        "f must produce short keys"
+        "f must produce short keys — a canonical key that stays small keeps the hash map's memory footprint down and its per-key hashing cost low regardless of how the grouping actually turns out",
+        "f must be quick to compute — since the map does all the real grouping work, the only thing that matters for correctness is that computing f for each item doesn't slow the whole pass down",
+        "f(a) == f(b) if AND ONLY IF a, b belong to the same group — 'if' prevents split groups, 'only if' prevents merged ones"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Both directions carry weight. If anagrams could get different keys, a group fragments; if non-anagrams could share a key, groups fuse. Sorted-form and count-fingerprint both satisfy the biconditional — that's WHY they work."
     },
     {
       "question": "Why does the JS count-key need a separator (counts.join(\",\") not join(\"\"))?",
       "options": [
-        "Readability",
         "Without it the digit strings of different counts can collide: [1,12,0,…] and [11,2,0,…] both serialize to '1120…' — two DIFFERENT fingerprints, one key: groups wrongly merge",
-        "join(\"\") is slower"
+        "Readability — a separator like the comma just makes the resulting key easier for a human to read while debugging, which is nice-to-have but doesn't affect whether the algorithm groups correctly",
+        "join(\"\") is slower — concatenating without a separator forces the runtime to do extra bounds-checking on each digit string, which is a performance concern rather than a correctness one"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Serialization must be INJECTIVE on fingerprints or the canonical-key biconditional breaks in the 'only if' direction. Ambiguous flattening is a classic silent grouping bug — same reason '1,2' + '3' vs '1' + '2,3' style key-building needs care everywhere."
     }
   ]

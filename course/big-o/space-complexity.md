@@ -116,19 +116,19 @@ this course reports time *and* space.
     {
       "question": "A function recursively halves its input, doing O(1) work per call with no allocations. Its auxiliary space is…",
       "options": [
-        "O(1) — it allocates nothing",
-        "O(log n) — one stack frame per level of halving",
-        "O(n)"
+        "O(n) — recursive calls always cost space proportional to the original input size n, regardless of how much smaller each subsequent call's input actually is",
+        "O(1) — it allocates nothing, and since no explicit data structure is created inside the function body, the recursion itself is assumed to be free of any space cost",
+        "O(log n) — one stack frame per level of halving"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Frames are memory even when the body allocates nothing. Halving gives log n simultaneous frames at peak."
     },
     {
       "question": "Reversing an array by swapping ends toward the middle, versus building a reversed copy — what's the auxiliary-space comparison?",
       "options": [
         "O(1) versus O(n)",
-        "O(n) for both — the array has n elements",
-        "O(log n) versus O(n)"
+        "O(n) for both — the array has n elements, so any operation performed on it inherits that size as its auxiliary space cost regardless of whether new memory is actually allocated",
+        "O(log n) versus O(n) — swapping ends toward the middle still needs a small amount of bookkeeping proportional to how many halvings it takes to meet in the middle, rather than truly constant space"
       ],
       "answer": 0,
       "explanation": "Swapping in place needs one temporary variable: O(1) auxiliary (the input doesn't count). The copy allocates n new slots."

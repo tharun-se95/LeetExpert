@@ -132,29 +132,29 @@ can do better in the worst case, ever.
     {
       "question": "In the decision-tree proof, why must the tree have at least n! leaves?",
       "options": [
-        "Because n! is the number of comparisons needed",
-        "There are n! distinct possible orderings of n elements, and the algorithm must produce a DIFFERENT output for each — if two different input orderings reached the same leaf, the algorithm couldn't distinguish them and would sort at least one incorrectly, so each ordering needs its own leaf",
-        "Because binary trees always have that many leaves"
+        "Because binary trees always have that many leaves — any binary tree of a given height is guaranteed to have exactly n! leaves at that height, a general structural fact about binary trees rather than something specific to this proof",
+        "Because n! is the number of comparisons needed — since the algorithm must perform one comparison per possible input ordering to sort correctly, the leaf count directly reflects the number of comparisons required",
+        "There are n! distinct possible orderings of n elements, and the algorithm must produce a DIFFERENT output for each — if two different input orderings reached the same leaf, the algorithm couldn't distinguish them and would sort at least one incorrectly, so each ordering needs its own leaf"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "This is the crux of the whole argument: correctness REQUIRES distinguishability, and distinguishability requires one leaf per possible input arrangement. Everything else in the proof is just counting how tall a binary tree with that many leaves must be."
     },
     {
       "question": "Why does merge sort's O(n log n) apply to EVERY input, while insertion sort's O(n²) only applies to the WORST input?",
       "options": [
-        "Merge sort is simply a better-implemented algorithm",
-        "Merge sort's work is determined entirely by its recursive STRUCTURE (splitting in half, merging) which doesn't depend on the input's existing order — every level always does O(n) merge work regardless of what's being merged. Insertion sort's work depends on how far out of place each element already is, which varies by input",
-        "It doesn't — merge sort also has a best case"
+        "Merge sort is simply a better-implemented algorithm — its code is written more carefully and with fewer inefficiencies than a typical insertion sort implementation, which is what accounts for the more consistent performance",
+        "It doesn't — merge sort also has a best case; on nearly-sorted input the merge step can skip comparisons the same way insertion sort's inner loop does, giving merge sort a faster best case too",
+        "Merge sort's work is determined entirely by its recursive STRUCTURE (splitting in half, merging) which doesn't depend on the input's existing order — every level always does O(n) merge work regardless of what's being merged. Insertion sort's work depends on how far out of place each element already is, which varies by input"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "This is the same best/worst-case distinction from the Big O module, now illustrated by two algorithms with genuinely different SHAPES of cost: one that's input-sensitive (insertion sort) and one that's structurally fixed (merge sort)."
     },
     {
       "question": "The proof concludes that NO comparison sort can beat O(n log n) in the worst case. Does this mean n log n is a hard limit on sorting, period?",
       "options": [
-        "Yes, no algorithm can ever sort faster than n log n",
+        "Yes, no algorithm can ever sort faster than n log n — the decision-tree argument is a statement about sorting itself, not about any particular technique, so it rules out every possible algorithm regardless of how it's implemented",
         "No — the proof only bounds algorithms that sort by COMPARING elements pairwise. Algorithms that exploit other structure (like the actual values being small integers) can sort in O(n), sidestepping the comparison-based lower bound entirely",
-        "The proof is only a heuristic, not a guarantee"
+        "The proof is only a heuristic, not a guarantee — the decision-tree argument gives strong empirical support for the n log n bound but leaves open the possibility that a cleverly designed comparison sort could beat it on real hardware"
       ],
       "answer": 1,
       "explanation": "The proof's power comes from being airtight WITHIN its assumption (comparisons only) — and its limit comes from that same assumption. The next lesson's linear-time sorts don't violate this theorem; they simply don't play by its rules, which is exactly why they can beat it."

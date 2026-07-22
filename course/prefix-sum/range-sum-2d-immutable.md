@@ -139,11 +139,11 @@ fastest way to make the inclusion-exclusion concrete.
 {
   "question": "The query formula needs FOUR terms (one add, two subtracts, one add-back) while the 1D range-sum formula needed only two (one subtract). What's the structural reason for the difference?",
   "options": [
-    "2D arrays are simply more complex to index",
-    "In 1D, a range is bounded by exactly two points with nothing to double-count; in 2D, 'subtract the region before the rectangle' means subtracting TWO overlapping strips (top and left), which double-subtracts their shared corner — requiring a fourth term to add that corner back",
-    "The four-term formula is an unoptimized version; two terms would also work"
+    "The four-term formula is an unoptimized version; two terms would also work — a more careful arrangement of the same prefix array could compute any rectangle's sum with a single subtraction, matching the 1D formula's simplicity",
+    "2D arrays are simply more complex to index — tracking two coordinates instead of one naturally requires proportionally more lookup terms in any formula that touches the array, regardless of what those terms are correcting for",
+    "In 1D, a range is bounded by exactly two points with nothing to double-count; in 2D, 'subtract the region before the rectangle' means subtracting TWO overlapping strips (top and left), which double-subtracts their shared corner — requiring a fourth term to add that corner back"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Each added dimension multiplies the inclusion-exclusion complexity: 1D needs 2 terms (2^1), 2D needs 4 terms (2^2) — a 3D prefix sum would need 8. The pattern is a direct consequence of how many overlapping regions must be corrected for at each additional dimension."
 }
 ```

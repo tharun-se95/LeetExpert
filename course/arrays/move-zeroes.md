@@ -140,9 +140,9 @@ than compact-and-fill when zeroes are rare (each swap is two writes).
 {
   "question": "In the one-pass swap version, why is nums[read] guaranteed to swap with a ZERO (or itself), never losing a non-zero?",
   "options": [
-    "Because the array is scanned twice",
+    "Because swaps are commutative — exchanging any two positions produces the same result regardless of which one is labeled read and which is labeled write, so the values involved don't matter",
     "The invariant holds that [write..read) contains only zeroes; the swap target nums[write] is in that region (or write == read when it's empty)",
-    "Because swaps are commutative"
+    "Because the array is scanned twice — a first pass identifies where all the zeroes currently sit, and the second pass only swaps read against a position already confirmed to hold one"
   ],
   "answer": 1,
   "explanation": "Every non-zero encountered was moved into [0..write) immediately, so anything left between write and read is zero. The swap therefore exchanges a non-zero with a zero — or with itself when the regions have no gap."

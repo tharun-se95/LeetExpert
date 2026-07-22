@@ -97,19 +97,19 @@ constraint, at the cost of O(n) space instead of O(1).
     {
       "question": "Why does the algorithm seed the map with {0: 1} before processing any elements?",
       "options": [
-        "To avoid a division-by-zero error",
         "It represents the empty prefix sum (before index 0) — without it, a subarray starting at index 0 that sums to exactly k would have no earlier prefix sum of 0 to match against, so it would be silently undercounted",
-        "It's a performance optimization"
+        "To avoid a division-by-zero error — since the lookup at running - k could otherwise divide by a zero-valued prefix sum under certain inputs, seeding the map with a nonzero entry sidesteps that arithmetic failure",
+        "It's a performance optimization — pre-populating the map with one entry warms up its internal hash table structure, shaving a small constant amount of time off the very first lookup"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "This is the boundary case every prefix-sum-plus-map solution must handle: the subarray touching the very start of the array. Seeding the identity value is the standard fix, directly analogous to how Two Sum's map starts empty but is checked before insertion each step."
     },
     {
       "question": "This technique works with negative numbers, but Minimum Size Subarray Sum's sliding window required all-positive values. Why the difference?",
       "options": [
-        "The hash-map version doesn't actually work with negatives either",
+        "The hash-map version doesn't actually work with negatives either — both techniques quietly assume non-negative inputs, and the hash-map approach simply happens to fail more subtly, returning a plausible-looking but wrong count",
         "Sliding window's shrink logic relies on validity being monotonic in window size — a property negatives break. This technique never shrinks a window at all; it asks a hash map a direct O(1) question at each position, so it has no monotonicity requirement to violate",
-        "Hash maps are inherently better with negative numbers"
+        "Hash maps are inherently better with negative numbers — the underlying hashing scheme for negative integers distributes more evenly across buckets than for positive ones, giving this technique a structural advantage on such inputs"
       ],
       "answer": 1,
       "explanation": "The two techniques solve overlapping-looking problems through fundamentally different mechanisms — one leans on a structural guarantee about the window, the other leans on exact lookup. Recognizing which mechanism a problem's constraints permit is the actual skill."

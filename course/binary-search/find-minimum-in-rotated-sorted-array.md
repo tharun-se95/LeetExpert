@@ -145,9 +145,9 @@ quicksort's engine.
 {
   "question": "Why does the predicate `nums[mid] <= nums[hi]` correctly split the array into 'before the rotation point' (false) and 'at or after it' (true), for ANY valid lo/hi range during the search?",
   "options": [
-    "It only works for the initial full-array range, not shrunk ranges",
+    "It works by coincidence for these specific examples — the walkthrough above happens to trace through inputs where the predicate holds, but a differently-rotated array could easily produce a counterexample where the split logic breaks down",
     "nums[hi] always belongs to whichever contiguous piece of the ORIGINAL sorted sequence the current search range sits in; every index at or after the true rotation point is <= that piece's largest value (nums[hi]), and every index before it is > nums[hi], because rotation guarantees exactly one discontinuity, and the range never straddles the wrong side of it incorrectly",
-    "It works by coincidence for these specific examples"
+    "It only works for the initial full-array range, not shrunk ranges — once lo and hi have moved inward from the original endpoints, nums[hi] no longer reliably represents the boundary between the two rotated pieces"
   ],
   "answer": 1,
   "explanation": "The invariant survives shrinking because the search range always stays a contiguous sub-piece of the original rotated array, and the SAME single discontinuity property (from the previous problem) guarantees the predicate stays monotonic within any such sub-piece — this is worth confirming by re-tracing the walkthrough above and checking the predicate at each step."

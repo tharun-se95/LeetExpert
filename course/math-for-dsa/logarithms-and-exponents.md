@@ -91,16 +91,20 @@ that expression can also be written base-a instead of base-b.
   "questions": [
     {
       "question": "Without a calculator: roughly what is log₂(1,000,000,000,000)?",
-      "options": ["About 40", "About 12", "About 4,000"],
-      "answer": 0,
+      "options": [
+        "About 12",
+        "About 4,000",
+        "About 40"
+      ],
+      "answer": 2,
       "explanation": "10¹² = (10³)⁴ ≈ (2¹⁰)⁴ = 2⁴⁰. Every ×1,000 adds ~10 to the log."
     },
     {
       "question": "Why doesn't Big O notation ever specify a logarithm's base?",
       "options": [
-        "Because base 2 is assumed by international convention",
+        "Because base 2 is assumed by international convention, so omitting a base in Big O is simply shorthand for log₂, the same way we omit units in other contexts",
         "Because logs of different bases differ only by a constant factor, which O absorbs",
-        "Because the base doesn't affect the value of the logarithm"
+        "Because the base doesn't affect the value of the logarithm — log₂(x) and log₁₀(x) compute the identical number once you account for how logarithms are defined"
       ],
       "answer": 1,
       "explanation": "Change of base: log_b n = log_c n / log_c b. That divisor is a constant — invisible to O. The values differ; the growth class doesn't."
@@ -108,11 +112,11 @@ that expression can also be written base-a instead of base-b.
     {
       "question": "A loop processes a number by repeatedly stripping its last decimal digit (`n //= 10` / `n = Math.floor(n/10)`). Its complexity in terms of the value n is…",
       "options": [
-        "O(n)",
-        "O(log n) — one iteration per digit, and n has ~log₁₀ n digits",
-        "O(√n)"
+        "O(√n) — stripping digits one at a time resembles trial division's up-to-√n search pattern, since both loops terminate once they've covered roughly half the number's magnitude",
+        "O(n) — the loop divides by 10 a fixed amount less each time rather than shrinking multiplicatively, so the iteration count scales directly with the size of n itself, not its digit count",
+        "O(log n) — one iteration per digit, and n has ~log₁₀ n digits"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Dividing by 10 each step is the ×10 version of halving: the iteration count is 'how many times does 10 go into n multiplicatively' = log₁₀ n."
     }
   ]

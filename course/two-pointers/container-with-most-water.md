@@ -132,9 +132,9 @@ meet, the second clause is vacuous — best is the answer.
 {
   "question": "Why is 'move the shorter wall' provably safe rather than merely plausible?",
   "options": [
-    "Taller walls always hold more water",
+    "Taller walls always hold more water — since height is one of the two factors in the area formula, maximizing the shorter wall's height directly increases the product regardless of what happens to width",
     "Fix the shorter wall L: every remaining pairing of L has strictly less width AND height still capped at height[L] — all are ≤ the container just measured with L at maximum width. One measurement retires the whole family",
-    "Because the array is processed from both ends"
+    "Because the array is processed from both ends — starting the pointers at the two extremes guarantees the initial measurement already covers the maximum possible width, so every subsequent move is safe by construction"
   ],
   "answer": 1,
   "explanation": "The proof leans on two monotone facts: width only shrinks inward, and min(·, height[L]) ≤ height[L]. Note what it does NOT claim — that moving the taller wall can't help NOW — but that keeping the shorter one can never beat what it already achieved. That asymmetry is the argument people hand-wave; being able to state it exactly is the difference the interviewer is probing."

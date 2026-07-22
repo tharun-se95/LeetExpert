@@ -175,11 +175,11 @@ function reverseWordsInPlace(chars: string[]): void {
 {
   "question": "In the in-place version, why does reversing the whole array and then each word produce reversed WORD ORDER with correct spelling?",
   "options": [
-    "Coincidence of the test cases",
-    "Global reversal maps the k-th word from the end to the k-th position from the start (right order) while flipping its letters; per-word reversal is its own inverse on exactly those letters, restoring spelling without moving the word",
-    "Because words are all the same length"
+    "Because words are all the same length — with uniform word sizes, reversing the whole array happens to permute characters in a way that lines up word order and spelling correctly at once",
+    "Coincidence of the test cases — the given examples happen to produce readable output, but the technique isn't actually guaranteed to preserve spelling on strings with different word-length patterns",
+    "Global reversal maps the k-th word from the end to the k-th position from the start (right order) while flipping its letters; per-word reversal is its own inverse on exactly those letters, restoring spelling without moving the word"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Reversal reverses block order AND block interiors; a second, block-local reversal cancels only the interior damage. Composing two reversals to isolate the effect you want is the same algebra as Rotate Array's three-reversal solution."
 }
 ```

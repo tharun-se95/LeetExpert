@@ -131,9 +131,9 @@ looping over it would be correct but pays pointless steps.
 {
   "question": "Why is attaching the entire leftover list with one pointer write legal, rather than merging it node by node?",
   "options": [
-    "It's an approximation that happens to pass",
+    "It's an approximation that happens to pass — attaching the whole remainder in one write occasionally produces an unsorted tail, but the test suites for this problem don't happen to catch that case",
     "Every leftover value is ≥ tail's value — the leftover's FRONT survived every comparison (it was never the smaller), and the rest of its list is ≥ its front by sortedness — so the whole chain extends the merged prefix in order",
-    "Because the dummy guarantees sortedness"
+    "Because the dummy guarantees sortedness — the sentinel node's presence at the front of the result is what forces every subsequently attached node, including the bulk-attached remainder, into correct order"
   ],
   "answer": 1,
   "explanation": "Two facts compose: the surviving front beat nothing (so it's ≥ everything consumed), and its own list is sorted behind it. Chains, unlike array ranges, attach in O(1) — this is precisely the splice advantage linked lists exist for."

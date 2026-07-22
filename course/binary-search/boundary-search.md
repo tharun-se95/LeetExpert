@@ -116,19 +116,19 @@ consistently is more valuable than knowing many templates by rote.
     {
       "question": "Why does the boundary-search template initialize `hi` to `len(arr)` instead of `len(arr) - 1`?",
       "options": [
-        "It's an arbitrary convention with no functional difference",
         "The half-open range [lo, hi) needs to represent 'the boundary could be one past the last valid index' (target larger than every element) without a separate special case — hi = len(arr) makes that representable as a normal state of the range",
-        "To avoid an off-by-one in the midpoint calculation"
+        "It's an arbitrary convention with no functional difference — len(arr) - 1 would work exactly as well, since both conventions ultimately converge on the same final answer regardless of which one is chosen",
+        "To avoid an off-by-one in the midpoint calculation — starting hi one index higher shifts every subsequent mid computation just enough to prevent the classic rounding error that plagues naive implementations"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "This is the payoff of switching conventions: the half-open range can naturally express 'insert at the very end' as lo == hi == len(arr), something the inclusive [lo, hi] convention would need an extra branch to handle."
     },
     {
       "question": "In lower_bound, when arr[mid] >= target (predicate true), why does hi become mid rather than mid - 1?",
       "options": [
-        "mid - 1 would also work correctly",
+        "mid - 1 would also work correctly — since the search always converges to the same boundary index eventually, excluding mid here just means the loop takes one extra iteration to arrive at an equivalent final answer",
         "mid has NOT been ruled out as the boundary — it satisfies the predicate, so it's a candidate for being the first true index. Setting hi = mid keeps it in the search range; hi = mid - 1 would incorrectly discard a possibly-correct answer",
-        "Because the range is inclusive"
+        "Because the range is inclusive — the [lo, hi] convention used elsewhere in binary search requires keeping mid in the range whenever a predicate holds, and this code is following that same inclusive-range rule"
       ],
       "answer": 1,
       "explanation": "This is the key asymmetry versus exact-match search: there, arr[mid] being wrong meant mid was fully eliminated. Here, arr[mid] satisfying the predicate means mid is still a LIVE CANDIDATE for the answer, so it must stay in the range rather than being excluded."

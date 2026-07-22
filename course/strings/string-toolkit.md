@@ -103,31 +103,31 @@ without peeking, the Arrays module did its job.
     {
       "question": "When is a 26-slot count array the right replacement for a hash map of character counts?",
       "options": [
-        "Always — it's strictly better",
         "When the constraints guarantee a small fixed alphabet (e.g. lowercase English letters) — the guarantee is what makes index = ord(ch) − ord('a') safe and complete",
-        "Only for strings shorter than 26 characters"
+        "Always — it's strictly better; a fixed 26-slot array beats a hash map on every input regardless of the actual character set, since arrays are inherently faster than maps",
+        "Only for strings shorter than 26 characters — once the input has more characters than there are slots, some letters would need to share a slot and the counts would collide"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The count array trades generality for constant size and direct indexing. Unicode input would need 100k+ slots — that's when the hash map (Module 6) earns its place. Constraints are the contract."
     },
     {
       "question": "A loop over n words calls `text.includes(word)` on each (text has length n). Total cost?",
       "options": [
-        "O(n) — includes is a built-in",
-        "O(n²·w)-ish — each includes is a substring search costing up to O(n·|word|), and it runs n times",
-        "O(n log n)"
+        "O(n) — includes is a built-in, and built-in string methods run in constant time per call regardless of how long the searched string is",
+        "O(n log n) — each includes call internally sorts a working copy of the text to speed up the search, and that sorting cost is what the loop multiplies by n",
+        "O(n²·w)-ish — each includes is a substring search costing up to O(n·|word|), and it runs n times"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Built-in ≠ free. Substring search is linear-times-pattern in the worst case, and the loop multiplies it. Pricing library calls honestly was the Big O module's rule; strings are where it bites hardest."
     },
     {
       "question": "Why does a palindrome check need no char-array conversion while string reversal does?",
       "options": [
-        "Palindrome checks are O(1)",
-        "The check only READS (compare s[left] vs s[right]) — immutability blocks writes, not reads; reversal must write, so it needs a mutable copy",
-        "Reversal is recursive"
+        "Reversal is recursive — since it calls itself on a shrinking substring, each recursive layer needs its own private mutable buffer to swap characters into, which forces the array conversion",
+        "Palindrome checks are O(1) — comparing s[left] and s[right] is a single constant-time operation independent of string length, so no linear-time setup like array conversion is ever needed",
+        "The check only READS (compare s[left] vs s[right]) — immutability blocks writes, not reads; reversal must write, so it needs a mutable copy"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Immutability is a write-lock. Read-only two-pointer algorithms run directly on the string at O(1) auxiliary space; mutating ones pay the O(n) detour."
     }
   ]

@@ -133,11 +133,11 @@ WITH the structure's grain instead of against it.
 {
   "question": "Why is leaving dead (count ≥ 2) entries in the middle of the queue acceptable?",
   "options": [
-    "They're rare in practice",
-    "Correctness only ever reads the FRONT, and the front check filters the dead on contact; mid-queue removal would cost O(n) against the queue's grain, while lazy discard rides the existing dequeue budget for free",
-    "The count map removes them automatically"
+    "The count map removes them automatically — updating a character's count to 2 or more triggers a cleanup pass that reaches back into the queue and deletes that character's earlier entries on the spot",
+    "They're rare in practice — most streams don't repeat characters often enough for dead entries to accumulate meaningfully, so the queue's size stays close to the number of truly unique candidates",
+    "Correctness only ever reads the FRONT, and the front check filters the dead on contact; mid-queue removal would cost O(n) against the queue's grain, while lazy discard rides the existing dequeue budget for free"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Lazy deletion is a recurring systems trick (hash-table tombstones, heap lazy-delete, log compaction): when a structure can't remove interior items cheaply, mark-and-skip at the access point — provided every read path performs the check. Here the single read path is the front, making it airtight."
 }
 ```

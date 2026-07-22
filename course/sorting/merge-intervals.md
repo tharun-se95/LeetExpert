@@ -113,11 +113,11 @@ covering everything absorbed so far.
 {
   "question": "Why does sorting by start time reduce overlap-checking to only comparing NEIGHBORS, rather than needing to check every pair?",
   "options": [
-    "It doesn't — some overlaps can still skip a neighbor",
-    "Once sorted by start, if interval i doesn't overlap the currently-merged range (its start is past the merged range's end), no LATER interval can overlap that merged range either — later starts are only larger. So overlap can only ever be assessed against the immediately preceding merged interval",
-    "Because overlapping intervals are always adjacent in the input"
+    "It doesn't — some overlaps can still skip a neighbor; a sufficiently long interval can overlap several intervals that are two or more positions ahead in the sorted order, requiring occasional lookahead beyond the immediate neighbor",
+    "Because overlapping intervals are always adjacent in the input — the problem guarantees that any two overlapping intervals appear next to each other in the original unsorted list, which is what sorting merely preserves",
+    "Once sorted by start, if interval i doesn't overlap the currently-merged range (its start is past the merged range's end), no LATER interval can overlap that merged range either — later starts are only larger. So overlap can only ever be assessed against the immediately preceding merged interval"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "This is the same 'sortedness makes local checks globally sufficient' argument from Two Pointers and Binary Search — sorting doesn't just make the DATA easier to look at, it changes what a single comparison is able to PROVE about everything else."
 }
 ```

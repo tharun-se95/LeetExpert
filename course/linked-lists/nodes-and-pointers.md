@@ -83,31 +83,31 @@ that muscle gets built.
     {
       "question": "Why is there no useful binary search on a sorted linked list?",
       "options": [
-        "Linked lists can't be sorted",
         "Binary search's power comes from O(1) jumps to the middle; a list reaches ITS middle only by an O(n) walk, so each 'jump' costs as much as scanning",
-        "Comparisons are slower on nodes"
+        "Comparisons are slower on nodes — dereferencing a node to read its value before comparing adds enough per-step overhead that binary search's advantage over a linear scan disappears in practice",
+        "Linked lists can't be sorted — without random access, there's no way to place elements into sorted order in the first place, so the premise of a sorted linked list is itself unachievable"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The log n bound rides entirely on random access. Without address arithmetic, halving the search space still costs a linear walk to get there — the discards save comparisons but not movement."
     },
     {
       "question": "\"Insert x after the node containing 42\" — what does this really cost in a singly linked list?",
       "options": [
-        "O(1) — list insertions are O(1)",
         "O(n): finding the node containing 42 is a walk; only the two-pointer splice AFTER you hold it is O(1)",
-        "O(log n)"
+        "O(1) — list insertions are O(1); the operation only ever touches a fixed number of pointer fields regardless of where in the list the target node happens to be located",
+        "O(log n) — locating a node by its stored value can exploit the same halving strategy as binary search, since the list's traversal order still lets you discard a fraction of candidates each step"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The O(1) claim is conditional on holding the neighbor. Search + splice = O(n) + O(1). Lists pay off when the algorithm already walks past the splice point anyway."
     },
     {
       "question": "Arrays and singly linked lists both delete an element. When does the LIST version actually win?",
       "options": [
-        "Always — no shifting",
         "When you already hold a reference to the predecessor node (e.g., mid-traversal): the splice is O(1) while the array must shift O(n−i) regardless",
-        "Never — arrays are always faster"
+        "Always — no shifting; a linked list never has to move other elements to close a gap, so its deletion is unconditionally faster than an array's regardless of how the target node was located",
+        "Never — arrays are always faster; contiguous memory and cache locality give arrays enough of a constant-factor advantage that they outperform linked-list splicing in every practical scenario"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Both structures pay O(n) to FIND an arbitrary element. The difference is pure edit cost afterward: two pointer writes vs a shift. Held-position edits are the linked list's entire value proposition."
     }
   ]

@@ -75,7 +75,11 @@ def check_inclusion(s1: str, s2: str) -> bool:
     for ch in s1:
         need[ord(ch) - a] += 1
 
-    matches = 0                              # letters with need == window count
+    # Before any character has entered the window, window[idx] == 0 for
+    # every idx — which already EQUALS need[idx] for every letter absent
+    # from s1. Those trivial matches must be counted from the start, or
+    # `matches` can never reach 26 even on a genuine hit.
+    matches = sum(1 for count in need if count == 0)
 
     def bump(idx: int, delta: int) -> None:
         nonlocal matches
@@ -111,7 +115,11 @@ function checkInclusion(s1: string, s2: string): boolean {
   const window = new Array(26).fill(0);
   for (const ch of s1) need[ch.charCodeAt(0) - a]++;
 
-  let matches = 0; // letters with need == window count
+  // Before any character has entered the window, window[idx] === 0 for
+  // every idx — which already EQUALS need[idx] for every letter absent
+  // from s1. Those trivial matches must be counted from the start, or
+  // `matches` can never reach 26 even on a genuine hit.
+  let matches = need.filter((count) => count === 0).length;
 
   function bump(idx: number, delta: number): void {
     if (window[idx] === need[idx]) matches--; // about to break a match
@@ -165,9 +173,9 @@ to special-case which direction the count moved.
 {
   "question": "Why does bump() check `window[idx] === need[idx]` BEFORE applying delta, not just after?",
   "options": [
-    "It's redundant — checking only after would give the same result",
+    "It's redundant — checking only after would give the same result; since matches only ever changes by at most one per bump call, checking window[idx] against need[idx] at the end captures the same transition either way",
     "matches must be decremented if the letter WAS matching before this change (since the change is about to disturb that equality) — checking only after would miss cases where a match breaks, since by then the 'before' state is already lost",
-    "To avoid negative array indices"
+    "To avoid negative array indices — checking before applying delta ensures idx never goes out of bounds, which is the real reason the order matters rather than anything about correctness of the matches count"
   ],
   "answer": 1,
   "explanation": "matches counts letters where need equals window RIGHT NOW. A single delta can only move one letter's count by 1, so it can affect matches by at most ±1 — but which direction depends on the state before the change. Checking only the after-state would double-count or miss transitions; the before/after pair captures the transition correctly in all four cases."

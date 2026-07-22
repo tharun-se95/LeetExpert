@@ -101,31 +101,31 @@ O(n) despite its nested-looking while loop.
     {
       "question": "Why does a stack — rather than counters — correctly validate multi-type brackets like ([{}])?",
       "options": [
-        "Counters would be O(n²)",
-        "Counters check only that opens equal closes per type; they'd accept ([)] where counts balance but ORDER is wrong. The stack enforces that each closer matches the MOST RECENT open obligation",
-        "Stacks handle longer inputs"
+        "Counters would be O(n²) — maintaining a separate running count for each bracket type requires re-scanning the counts on every character to check they're still consistent with each other, which is what makes it slow",
+        "Stacks handle longer inputs — a stack's dynamic resizing lets it validate strings well beyond what a fixed set of counters could track before running into overflow, which is the real advantage here",
+        "Counters check only that opens equal closes per type; they'd accept ([)] where counts balance but ORDER is wrong. The stack enforces that each closer matches the MOST RECENT open obligation"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "One counter per bracket type passes `([)]` — every count is fine. Nesting is an ordering property, and LIFO is the ordering. (For a SINGLE bracket type, a counter that must never go negative genuinely suffices — knowing why both facts are true is the real understanding.)"
     },
     {
       "question": "In remove_adjacent_dupes(\"abba\"), how does the cascade (bb removal exposing aa) happen without any re-scan?",
       "options": [
-        "The function calls itself recursively on the result",
-        "After popping b, the stack top is the first a — precisely the character now adjacent to the incoming second a; the very next comparison handles it",
-        "It doesn't — 'abba' needs two passes"
+        "It doesn't — 'abba' needs two passes; the first pass removes the inner 'bb' and a second, separate scan over the shortened string is required to notice and remove the newly-adjacent 'aa'",
+        "The function calls itself recursively on the result — after processing the string once, it feeds its own output back into another call, and this recursive re-application is what catches cascades like 'aa'",
+        "After popping b, the stack top is the first a — precisely the character now adjacent to the incoming second a; the very next comparison handles it"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "The stack top IS the current end of the surviving prefix, so newly-exposed adjacencies are always the next comparison. Trace: push a, push b, b cancels b, then a cancels a — empty. One pass, cascade included."
     },
     {
       "question": "Which input triggers the 'pop on empty' failure mode of bracket matching?",
       "options": [
+        "\"(])\"",
         "\"(()\"",
-        "\"())\"",
-        "\"(])\""
+        "\"())\""
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "The third character of \"())\" is a closer arriving when the stack is already empty — nothing is open to close. \"(()\" fails the OTHER way (leftover obligation at end), and \"(])\" is a wrong-closer mismatch. Naming which mode an input hits is how you test your own implementation."
     }
   ]

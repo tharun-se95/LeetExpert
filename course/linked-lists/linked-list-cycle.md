@@ -174,9 +174,9 @@ module — worth reproducing on paper once. It's modular arithmetic
     {
       "question": "What guarantees fast and slow MEET inside a cycle, rather than fast skipping over slow forever?",
       "options": [
-        "Random chance, high probability",
+        "Fast eventually slows down at the end of the list — once the runner detects it has looped back past a previously visited region, its step size automatically reduces to let the slower pointer catch up",
         "The circular gap between them changes by exactly 1 per step (speeds differ by 1), so it decrements 1-by-1 to 0 — landing both on the same node within one lap",
-        "Fast eventually slows down at the end of the list"
+        "Random chance, high probability — with enough steps taken, it becomes statistically overwhelmingly likely the two pointers land on the same node at some point, though not strictly guaranteed"
       ],
       "answer": 1,
       "explanation": "Relative speed 1 means no jumps in the gap sequence: d, d−1, …, 1, 0. A speed-3 hare against a speed-1 tortoise changes the gap by 2 — and CAN dodge slow forever on even-length cycles. The 1-2 speed pair isn't arbitrary; it's what makes the proof one line."
@@ -184,9 +184,9 @@ module — worth reproducing on paper once. It's modular arithmetic
     {
       "question": "Why must the meeting test compare node IDENTITY rather than node values?",
       "options": [
-        "Identity comparison is faster",
+        "Values can be null — a null or undefined value stored in a node could compare equal to itself in unexpected ways, so identity comparison sidesteps that edge case rather than the real correctness issue",
         "Distinct nodes may hold equal values — a value match between different nodes would report a phantom cycle in a plain list like 1→1",
-        "Values can be null"
+        "Identity comparison is faster — comparing two references is a cheaper CPU operation than comparing two arbitrary values, so identity is chosen purely for a constant-factor speed advantage"
       ],
       "answer": 1,
       "explanation": "A cycle is a property of the POINTER graph, not the data. `is`/`===` on references asks 'same node?', which is the actual question. Same discipline as the visited-set warm-up storing nodes, not values."

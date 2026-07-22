@@ -129,11 +129,11 @@ feasible is exactly 4, matching the expected answer.
 {
   "question": "Why is it safe to bound the search range at hi = max(piles) rather than searching all the way up to some larger number?",
   "options": [
-    "max(piles) is just a convenient round number",
-    "Any speed >= max(piles) finishes EVERY pile in exactly 1 hour each (since min(k, pile) caps at the pile size) — going faster than max(piles) can never reduce total hours further, so max(piles) is already the fastest speed that could possibly matter",
-    "The problem guarantees the answer is at most max(piles)"
+    "max(piles) is just a convenient round number — it happens to be a value already available from the input without further computation, which is why it was chosen as the upper bound rather than any deeper property of the feasibility function",
+    "The problem guarantees the answer is at most max(piles) — this bound is stated explicitly in the problem's constraints section, so the search range is set directly from that guarantee rather than derived independently",
+    "Any speed >= max(piles) finishes EVERY pile in exactly 1 hour each (since min(k, pile) caps at the pile size) — going faster than max(piles) can never reduce total hours further, so max(piles) is already the fastest speed that could possibly matter"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "This is an argument about the feasibility function's behavior, not a guessed bound: hours_needed(speed) is constant (equal to piles.length) for every speed >= max(piles), so searching beyond that point can never find a DIFFERENT, smaller feasible answer — it would just re-confirm the same feasibility."
 }
 ```

@@ -77,9 +77,9 @@ are saved locally in your browser, nowhere else.
 {
   "question": "What should you do when you hit a problem lesson?",
   "options": [
-    "Read the optimal solution first so you learn the right approach",
+    "Skip it if the concept lesson made sense",
     "Attempt it seriously, then take hints one at a time as needed",
-    "Skip it if the concept lesson made sense"
+    "Read the optimal solution first so you learn the right approach"
   ],
   "answer": 1,
   "explanation": "Retrieval — struggling to produce an answer — is what builds durable skill. Solutions you only read are the ones you forget."

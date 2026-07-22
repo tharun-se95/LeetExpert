@@ -118,21 +118,21 @@ one, add one" update:
     {
       "question": "Why does sliding a fixed window turn an O(n·k) brute force into O(n)?",
       "options": [
-        "The window itself gets smaller as it slides",
         "Each slide reuses the previous window's sum, updating it with one subtraction and one addition instead of re-summing all k elements — O(1) per slide instead of O(k)",
-        "Because k is always small"
+        "The window itself gets smaller as it slides — each slide narrows the range of elements under consideration by one, so later windows require progressively less work to sum than earlier ones",
+        "Because k is always small — the problem's constraints keep the window size bounded by a small constant, which is what makes the per-window O(k) summation cost negligible regardless of how the algorithm is written"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The saving is incremental maintenance: adjacent windows overlap in k−1 elements, and only the boundary changes. Recomputing from scratch discards that overlap; sliding exploits it."
     },
     {
       "question": "Why can't the sliding-sum template be reused directly for a sliding MAXIMUM?",
       "options": [
-        "Maximum is more expensive to compute than sum",
         "Sum is incrementally maintainable (new = old − leaving + entering); max is not — if the leaving element WAS the max, nothing about the update tells you the new max without rescanning or tracking candidates",
-        "Windows can't have a maximum"
+        "Windows can't have a maximum — a contiguous slice of an array has no well-defined single largest element once duplicates or ties are involved, which is why the sliding-sum approach doesn't generalize",
+        "Maximum is more expensive to compute than sum — comparing values to find the largest one takes more CPU cycles per element than adding them together, which is the real obstacle to sliding a maximum the same way"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The technique's applicability hinges on whether the aggregate can be updated from 'what changed' alone. This is exactly why Sliding Window Maximum needed a monotonic deque — a structure that tracks enough candidates to answer 'what's next' after the max leaves."
     }
   ]

@@ -97,29 +97,29 @@ quantity that governs how bad things get — the load factor.
     {
       "question": "Why must dictionary keys be immutable?",
       "options": [
-        "Immutable objects hash faster",
-        "The table files a key by hash-derived slot at insert time; mutating the key would change its hash, so lookups would compute a different slot and miss it — the entry becomes unreachable",
-        "It prevents memory leaks"
+        "Immutable objects hash faster — since the runtime can cache a hash value permanently once computed without worrying about staleness, avoiding a recomputation cost every time the key is used again",
+        "It prevents memory leaks — allowing a key to be mutated after insertion would let outside code hold a persistent reference to internal table state, preventing garbage collection from ever reclaiming it",
+        "The table files a key by hash-derived slot at insert time; mutating the key would change its hash, so lookups would compute a different slot and miss it — the entry becomes unreachable"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Determinism must hold ACROSS TIME: the slot computed at insert and at lookup must agree. Mutation breaks the agreement silently — the entry is still there, but nobody can compute its address."
     },
     {
       "question": "Why is summing character codes a poor string hash?",
       "options": [
-        "Addition is slow",
-        "It's order-blind: every anagram of a string produces the identical hash, so a structural family of keys is GUARANTEED to collide — the opposite of uniformity",
-        "The sums grow too large"
+        "The sums grow too large — summing character codes for long strings can overflow the integer type used to store the running total, corrupting the hash value before it's even reduced",
+        "Addition is slow — repeatedly adding character codes one at a time in a loop is a slower CPU operation than the multiply-and-add step a polynomial hash uses, which is the real performance gap",
+        "It's order-blind: every anagram of a string produces the identical hash, so a structural family of keys is GUARANTEED to collide — the opposite of uniformity"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Uniformity fails worst when collisions are systematic, not random. Position-weighted (polynomial) mixing makes rearranged keys diverge."
     },
     {
       "question": "A table has 1,000,000 slots. Roughly when should you expect the FIRST collision under uniform random hashing?",
       "options": [
-        "Around 500,000 inserts",
+        "Around 500,000 inserts — collisions should become likely once roughly half the table's capacity is filled, since that's the point at which more than half the available slots are already occupied",
         "Around 1,000 inserts — the birthday paradox: collisions appear near √m",
-        "Only after 1,000,000 inserts"
+        "Only after 1,000,000 inserts — with uniform hashing spreading keys evenly, no two keys are expected to collide until literally every slot has already been claimed"
       ],
       "answer": 1,
       "explanation": "Pairwise collision chances accumulate quadratically: k keys create ~k²/2 pairs, each colliding with probability 1/m — crossing 50% near k ≈ √(2m ln 2) ≈ 1.2√m. Collisions are early, normal, and must be designed for."

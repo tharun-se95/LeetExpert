@@ -37,11 +37,11 @@ function drill1(nums: number[]): number {
 {
   "question": "Drill 1 — time and auxiliary space?",
   "options": [
-    "O(n²) time, O(1) space",
     "O(n) time, O(1) space",
-    "O(n) time, O(n) space"
+    "O(n) time, O(n) space",
+    "O(n²) time, O(1) space"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "Two *sequential* loops add: O(n) + O(n) = O(n). One accumulator variable: O(1) auxiliary."
 }
 ```
@@ -76,11 +76,11 @@ function drill2(nums: number[]): number[] {
 {
   "question": "Drill 2 — time complexity?",
   "options": [
-    "O(n log n) — the inner loop shrinks",
-    "O(n²) — the shrinking bound only halves the constant",
-    "O(n)"
+    "O(n) — since the inner loop's range shrinks every pass, the total inner work across all passes collapses down to a single linear scan overall",
+    "O(n log n) — the inner loop shrinks each pass, and a shrinking iteration count is exactly the code-shape that produces a logarithmic factor",
+    "O(n²) — the shrinking bound only halves the constant"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Inner iterations: (n−1) + (n−2) + … + 1 = n(n−1)/2. The ½ is a constant factor; the class is quadratic. (Space: up to O(n²) appends in pathological inputs — worth noticing that output size can dominate space.)"
 }
 ```
@@ -113,8 +113,12 @@ function drill3(n: number): number {
 ```quiz
 {
   "question": "Drill 3 — time complexity?",
-  "options": ["O(n)", "O(log n)", "O(n log n)"],
-  "answer": 2,
+  "options": [
+    "O(log n) — the outer loop halves i every iteration, and since the inner loop's cost doesn't change that halving pattern, the whole function's growth is dictated only by the outer loop's log n iterations",
+    "O(n log n)",
+    "O(n) — the inner loop's n iterations are the dominant cost, and the outer loop's halving only adds a small constant number of repeats on top of that single linear pass"
+  ],
+  "answer": 1,
   "explanation": "Outer loop halves i: log₂ n iterations. Inner loop is a full n each time regardless of i. Multiply: n · log n."
 }
 ```
@@ -149,11 +153,11 @@ function drill4(nums: number[], target: number): boolean {
 {
   "question": "Drill 4 — time and auxiliary space?",
   "options": [
-    "O(n) time, O(1) space — one loop",
-    "O(n²) time, O(n) space — the body hides a linear slice and a linear scan",
-    "O(n²) time, O(1) space"
+    "O(n) time, O(1) space — one loop, and since slicing and membership-checking are built-in operations rather than explicit nested loops, they don't count toward the complexity the way a hand-written loop would",
+    "O(n²) time, O(1) space — the slice-and-scan body does cost O(n) per outer iteration, but since the slice is a temporary discarded immediately after the check, it never persists long enough to count as auxiliary space",
+    "O(n²) time, O(n) space — the body hides a linear slice and a linear scan"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Pricing the body: the slice copies ~n elements (O(n) time AND O(n) auxiliary), then the membership scan is O(n). Loop × body = O(n²) time; the temporary slice is O(n) space. Innocent-looking one-liners are where quadratic hides."
 }
 ```
@@ -180,11 +184,11 @@ function drill5(n: number): number {
 {
   "question": "Drill 5 — time complexity? (Careful: it branches twice AND halves.)",
   "options": [
-    "O(log n) — it halves",
-    "O(n) — 2 branches × log n depth gives ~2^(log n) = n leaf calls",
-    "O(2ⁿ) — it branches twice"
+    "O(log n) — it halves, and since halving is always the dominant signal for recursion cost regardless of how many branches fan out at each level, the branching factor doesn't change the log n conclusion",
+    "O(2ⁿ) — it branches twice, and any recursion with two recursive calls per invocation produces exponential blowup no matter how much the input shrinks between calls",
+    "O(n) — 2 branches × log n depth gives ~2^(log n) = n leaf calls"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Recursion tree: doubling width per level, log₂ n levels deep → about 2^(log₂ n) = n total calls of O(1) each. Branching twice is not automatically exponential — depth decides. (Space: O(log n) stack.)"
 }
 ```
@@ -221,9 +225,9 @@ function drill6(matrix: number[][]): number {
 {
   "question": "Drill 6 — is this O(n²) 'bad'?",
   "options": [
-    "Yes — nested loops should be optimized away",
+    "It's O(n) because each row is one iteration — the outer loop over rows is what determines the growth rate, and the inner per-row scan is a constant-time detail that doesn't add to it",
     "It's O(n²) in n, but that's linear in the input size (n² cells), and you can't find a max without reading every cell — this is optimal",
-    "It's O(n) because each row is one iteration"
+    "Yes — nested loops should be optimized away; a well-designed algorithm should never need to touch every cell of its input directly, no matter what the problem is asking for"
   ],
   "answer": 1,
   "explanation": "Complexity is relative to what n names. The input has n² cells; touching each once is the floor for a max. 'Quadratic in n' and 'linear in input size' are the same statement here — always know what your variable counts."
@@ -236,7 +240,7 @@ state after this module. The rules (add / multiply / price the body / draw
 the tree) are complete — what's left is fluency, and fluency comes from the
 per-module analyses ahead, starting with real data structures in Stage 1.
 
-**Next module: Math for DSA** (coming soon), or jump ahead to **Arrays &
-Dynamic Arrays** when it lands — where the amortized-doubling argument you
-learned here becomes load-bearing.
+**Next module: Math for DSA**, or jump ahead to **Arrays & Dynamic
+Arrays** — where the amortized-doubling argument you learned here
+becomes load-bearing.
 ````

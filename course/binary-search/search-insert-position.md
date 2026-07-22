@@ -103,11 +103,11 @@ the end" answer, for free, from the half-open range convention.
 {
   "question": "Why does this problem's DISTINCT-values constraint matter for reusing lower_bound unmodified?",
   "options": [
-    "It doesn't matter — lower_bound works the same either way",
     "With distinct values, 'first index >= target' and 'the index of target if present' are the same index — with duplicates, lower_bound still finds the FIRST occurrence, which is usually what you want, but the problem's guarantee of distinctness is what makes 'found' and 'insertion point' collapse into a single unambiguous answer",
-    "Distinctness is needed to avoid infinite loops"
+    "Distinctness is needed to avoid infinite loops — without it, two adjacent equal elements could cause the search range to stop shrinking on certain inputs, since the predicate wouldn't reliably distinguish between them",
+    "It doesn't matter — lower_bound works the same either way; the function's behavior and output are entirely unaffected by whether the input array contains duplicate values"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "lower_bound is well-defined regardless of duplicates — but THIS problem's phrasing ('find target OR return insertion point') only makes sense as a single coherent question because distinctness guarantees at most one correct index either way."
 }
 ```

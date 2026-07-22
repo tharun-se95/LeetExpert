@@ -122,29 +122,29 @@ cycle closes); Rotate Array offers it as the expert variant, and
     {
       "question": "In the write-pointer template, why is `nums[write] = nums[read]` never destroying data we still need?",
       "options": [
-        "Because the array is copied first",
         "Because write ≤ read at all times — the target slot's original value was already read on an earlier iteration",
-        "Because keepers are always to the left of non-keepers initially"
+        "Because keepers are always to the left of non-keepers initially — the input's original arrangement already satisfies the invariant before the loop starts, so overwriting is safe by construction",
+        "Because the array is copied first — the function reads from a hidden snapshot of the original array while writing into the live one, so nothing in the live array is ever needed again"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "write advances at most as fast as read, so the write target is always in already-scanned territory. This ordering argument is the template's entire safety proof."
     },
     {
       "question": "After running keep_if, what do nums[write..n) contain?",
       "options": [
-        "The dropped elements, in order",
         "Leftover garbage — a mix of old values the algorithm never cleaned up",
-        "Zeroes"
+        "The dropped elements, in order — the algorithm shifts non-keepers to the tail as a side effect of how the write pointer advances, preserving their relative order back there",
+        "Zeroes — the write pointer's advance logic explicitly clears each slot it passes over before moving on, so anything past write is reset to a default empty value"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The invariant only governs [0, write). The tail is whatever history left behind — which is why these functions return the new logical length, exactly like the dynamic array's length-vs-capacity split."
     },
     {
       "question": "Reversing an array with converging pointers — what is the invariant that makes it correct?",
       "options": [
-        "Elements inside [left, right] are sorted",
+        "Elements inside [left, right] are sorted — each swap places the smaller of the two compared elements closer to the front, gradually sorting the unfinished region as a side effect",
         "Elements outside [left, right] are already in their final reversed positions",
-        "left always equals n − right"
+        "left always equals n − right — the two pointers move in lockstep from opposite ends by the same amount each step, so their positions stay related by this fixed arithmetic identity"
       ],
       "answer": 1,
       "explanation": "Each swap fixes two more elements permanently and shrinks the unfinished region. When left ≥ right the unfinished region is empty — done. Stating the invariant IS the correctness proof."

@@ -110,19 +110,19 @@ selling same-day yields 0, which `best` starts at anyway).
     {
       "question": "Why does the one-pass algorithm never miss the optimal (buy, sell) pair?",
       "options": [
+        "It assumes prices are sorted — since a monotonically increasing sequence makes every later day a valid sell day for the current minimum, the sweep only needs to work correctly under that assumption",
         "It implicitly checks all pairs — when the optimal sell day arrives, min_so_far already equals the optimal buy price, since the buy day is earlier and minima only improve",
-        "It assumes prices are sorted",
-        "It doesn't — it's a heuristic that happens to pass the tests"
+        "It doesn't — it's a heuristic that happens to pass the tests; there could exist an adversarial price sequence where the true optimal pair is never captured by tracking only a running minimum"
       ],
-      "answer": 0,
+      "answer": 1,
       "explanation": "Fix the optimal pair (b, s). When the sweep reaches s, min_so_far ≤ prices[b] (day b was already seen), so best is updated with at least the optimal profit. The invariant is the proof."
     },
     {
       "question": "What if the two update lines were swapped — min first, then profit?",
       "options": [
-        "Nothing changes",
+        "The algorithm breaks entirely — computing the profit against a stale min_so_far value from the previous iteration produces a completely wrong result on nearly every input",
         "Same-day buy-and-sell becomes possible, computing prices[i] − prices[i] = 0 — which is harmless here but the invariant becomes 'sell on or after buy'; in variants where same-day trades are forbidden with different payoffs, the order is load-bearing",
-        "The algorithm breaks entirely"
+        "Nothing changes — since both lines update independent pieces of state, the order in which they execute has no effect on which values end up being compared"
       ],
       "answer": 1,
       "explanation": "Here profit-vs-itself is 0 and best starts at 0, so answers match. But noticing that the statement's guarantee shifted is the level of care in-place and sweep algorithms demand — update order IS part of the invariant."

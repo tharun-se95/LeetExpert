@@ -140,11 +140,11 @@ module.
 {
   "question": "In the vertical scan, why must `col == len(s)` be checked BEFORE `s[col] != ch`?",
   "options": [
-    "It's faster",
     "Short-circuit ordering is the bounds check: with col past s's end, Python raises IndexError and JS compares against undefined — the length test must win the OR first",
-    "The order doesn't matter"
+    "The order doesn't matter — both conditions independently detect a valid stopping point, so evaluating `s[col] != ch` first would short-circuit to the same overall behavior on every input",
+    "It's faster — checking the length first lets the loop skip past already-exhausted strings without evaluating the character comparison at all, saving a constant amount of work per column"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "A string shorter than the current column ENDS the common prefix (correct answer: stop) — and simultaneously makes s[col] illegal. One condition, ordered correctly, handles both meanings."
 }
 ```

@@ -91,11 +91,18 @@ needing to precompute anything — the **accounting method**, and it's the
 standard tool for amortized proofs you'll meet again later in the course.
 Pretend every append is charged **3 units**, not 1: one unit pays for the
 write happening right now, and two units go into a bank tied to that
-element. When a resize copies n/2 elements, those are exactly the n/2
-elements appended since the *last* resize — and each one banked 2 units,
-for exactly n units sitting in the bank, exactly enough to pay for copying
-them. No operation ever needs to draw on an empty bank, so a flat charge
-of 3 units genuinely covers everything, spikes included. That's the proof
+element. Consider the moment the array fills up and the next append
+triggers a resize, which must copy every one of its **n** current
+elements. The array was last resized when it held **n/2** elements (that
+resize doubled its capacity to n), so exactly the newest **n/2** of the
+current elements were appended *since* that last resize — and each of
+those is still carrying its 2 banked units, for exactly **n** units
+sitting in the bank. That's exactly enough to pay for copying all **n**
+elements at 1 unit each: the older surviving n/2 elements already spent
+their own banked units paying for the *previous* resize, so it's the
+newer half's bank, not their own, that covers this one. No operation
+ever needs to draw on an empty bank, so a flat charge of 3 units
+genuinely covers everything, spikes included. That's the proof
 — and it exposes *why* the growth factor has to be multiplicative. Grow by
 a fixed +10 slots instead of doubling, and a resize (cost ~n) comes due
 every 10 appends regardless of how large the array already is: total work
@@ -124,31 +131,31 @@ come from.
     {
       "question": "Dynamic-array append is 'O(1) amortized.' What does that claim actually say?",
       "options": [
-        "Each individual append takes O(1) time",
-        "Appends are O(1) if you get lucky with resizes",
-        "Any sequence of n appends totals O(n) work, even though single appends can cost Θ(n)"
+        "Any sequence of n appends totals O(n) work, even though single appends can cost Θ(n)",
+        "Appends are O(1) if you get lucky with resizes — the amortized guarantee only holds for input sequences that happen to avoid triggering too many resizes in a row",
+        "Each individual append takes O(1) time — every single call into append, including the ones that trigger a resize, completes in constant time because the array's capacity is pre-allocated generously enough"
       ],
-      "answer": 2,
+      "answer": 0,
       "explanation": "Amortized bounds are exact statements about worst-case *totals* over sequences — no luck involved. Individual spikes are real but paid for by the cheap operations around them."
     },
     {
       "question": "Why does growing a dynamic array by a fixed 10 slots (instead of doubling) ruin the amortized bound?",
       "options": [
-        "Allocation of small blocks is slow",
-        "A copy of the whole array (cost ~n) then happens every 10 appends, totaling ~n²/20 for n appends — O(n) amortized",
-        "It wastes memory"
+        "Allocation of small blocks is slow — requesting memory from the operating system in tiny 10-slot increments incurs high per-call overhead compared to requesting one large block up front",
+        "It wastes memory — growing by a fixed amount leaves more unused slack in the backing array on average than doubling does, which is the actual problem with the fixed-increment strategy",
+        "A copy of the whole array (cost ~n) then happens every 10 appends, totaling ~n²/20 for n appends — O(n) amortized"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "With additive growth, each spike costs ~n and spikes come at a constant rate, so total work is quadratic. Multiplicative growth spaces the spikes out exponentially — that's the whole trick."
     },
     {
       "question": "Amortized analysis differs from average-case analysis because…",
       "options": [
-        "amortized is a worst-case statement about operation sequences; average-case is an expectation over a distribution of inputs",
-        "amortized is only an empirical estimate",
-        "they are two names for the same idea"
+        "they are two names for the same idea — both amortized and average-case analysis produce a single number by averaging costs, so the underlying mathematics is identical even if the terminology differs",
+        "amortized is only an empirical estimate — you have to actually run the algorithm and measure real operation sequences to arrive at an amortized bound, unlike a worst-case bound which is proven mathematically",
+        "amortized is a worst-case statement about operation sequences; average-case is an expectation over a distribution of inputs"
       ],
-      "answer": 0,
+      "answer": 2,
       "explanation": "Amortized bounds hold for *every* sequence, adversarial included — no probability anywhere. Average case needs an assumed input distribution (or the algorithm's own randomness)."
     }
   ]

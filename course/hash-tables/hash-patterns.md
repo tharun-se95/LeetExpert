@@ -124,21 +124,21 @@ and knowing the difference is part of knowing hash tables.
     {
       "question": "\"Return the first element that appears exactly once\" — which verb(s)?",
       "options": [
-        "Seen (set)",
         "Count (map → int), then a second pass over the ORIGINAL sequence asking counts[x] == 1",
-        "Group"
+        "Seen (set) — membership alone can determine when a character has appeared before, and the first character never previously seen in a forward scan is exactly the one that appears once",
+        "Group — bucketing characters by which other characters co-occur near them would let you read off, group by group, exactly which one is unique and appears earliest"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "'Exactly once' is a frequency fact — a set can't distinguish once from thrice. And 'first' forces the re-scan in input order, since map iteration order is not the answer's order."
     },
     {
       "question": "In JavaScript you want to group points {x, y} by coordinates-as-value. Why does `map.get({x: 1, y: 2})` fail, and what's the fix?",
       "options": [
-        "Objects can't be Map keys at all",
         "Map compares object keys by reference — two structurally-equal literals are different keys; canonicalize to a string like `${x},${y}` so equality is by value",
-        "You must use WeakMap"
+        "Objects can't be Map keys at all — the Map API only accepts primitive values like strings, numbers, and symbols as keys, rejecting any object literal passed directly",
+        "You must use WeakMap — WeakMap performs structural comparison on its keys instead of Map's reference comparison, so switching container types alone would make coordinate-based lookups work"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Hash structures need key EQUALITY to match your intent. JS object identity is reference identity, so by-value grouping requires a by-value key — the canonical-string trick. (Python solves it with tuples, which hash by content.)"
     }
   ]

@@ -117,21 +117,21 @@ with; you'll rewrite this solution there in one line of diff.
     {
       "question": "Why does the 26-slot count array legitimately count as O(1) space while a hash map of counts is O(k)?",
       "options": [
-        "Arrays are smaller than maps",
-        "Its size is a constant fixed by the problem's alphabet guarantee, independent of input length; the map grows with the number of distinct characters actually seen",
-        "It doesn't — both are O(n)"
+        "Arrays are smaller than maps — a fixed 26-element array occupies less physical memory than a hash map's bucket structure would need for the same number of entries",
+        "It doesn't — both are O(n); any structure that stores per-character counts scales with the number of characters processed, whether it's an array or a map",
+        "Its size is a constant fixed by the problem's alphabet guarantee, independent of input length; the map grows with the number of distinct characters actually seen"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "O() measures growth with input. 26 never grows. Drop the alphabet guarantee and the honest bound becomes O(alphabet) or O(distinct chars) — which is why the Unicode follow-up changes the structure."
     },
     {
       "question": "The sorting approach is O(n log n) vs counting's O(n). At n = 5·10⁴, is the difference decisive?",
       "options": [
-        "Yes — sorting would time out",
-        "No — log₂(5·10⁴) ≈ 16, both finish in milliseconds; counting wins on elegance and on scaling, but 'sort + compare' is a legitimate answer to state before refining",
-        "They're the same complexity"
+        "They're the same complexity — n log n and n both describe roughly linear growth once you account for how slowly the logarithm increases, so treating them as equivalent is reasonable here",
+        "Yes — sorting would time out; a typical judge's time limit is tuned tightly enough that the extra log n factor at n = 5·10⁴ pushes the sorting approach past the allowed runtime",
+        "No — log₂(5·10⁴) ≈ 16, both finish in milliseconds; counting wins on elegance and on scaling, but 'sort + compare' is a legitimate answer to state before refining"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Constraints-reading cuts both ways: n² (2.5×10⁹) is out, but n log n (~8×10⁵) is comfortable. Knowing an approach is ADEQUATE — and saying you can do better — beats silently reaching for the fancy one."
     }
   ]

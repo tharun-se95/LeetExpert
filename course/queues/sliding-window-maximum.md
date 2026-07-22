@@ -156,21 +156,21 @@ linear structures for everything the Big O module said was possible.
     {
       "question": "Why is the expiry check a single `if` rather than a `while`?",
       "options": [
-        "A while would be incorrect",
         "Deque indices are in increasing order and the window slides by ONE per step — only the front can be out of range, and by at most one position. The while would be harmless but the if is provably sufficient, and knowing which is the difference between reading code and owning it",
-        "To keep the loop O(1)"
+        "To keep the loop O(1) — swapping in a while loop would let a single slide's expiry check run an unbounded number of times, which is what a plain if is specifically there to cap",
+        "A while would be incorrect — checking repeatedly for expired fronts risks discarding a still-valid candidate whenever more than one element happens to share the same index value"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Every element behind the front is newer, hence in-window if the front is. One slide can expire at most one index. (After the dominance pops, some implementations do expiry first — order between the two rules doesn't matter, another fact the invariant settles.)"
     },
     {
       "question": "Where does the heap solution lose to the deque, given both handle expiry lazily?",
       "options": [
-        "The heap gives wrong answers on duplicates",
         "The heap pays O(log n) per insertion to maintain TOTAL order among all candidates — order the problem never asks for. The deque maintains only the dominance-filtered decreasing list: every comparison it makes is one the answer actually needs",
-        "Heaps can't hold indices"
+        "Heaps can't hold indices — a heap's internal comparator is restricted to numeric values, so tracking which index a value came from would require a separate parallel structure the deque doesn't need",
+        "The heap gives wrong answers on duplicates — when two window elements share the same value, a heap's arbitrary tie-breaking during comparisons can surface a stale, already-expired entry as the reported maximum"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "A recurring optimality theme: the log factor buys sorted-ness among elements that dominance already proved irrelevant. Matching the structure's invariant to EXACTLY the question — no more — is where optimal algorithms come from."
     }
   ]

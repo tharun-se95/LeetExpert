@@ -47,7 +47,9 @@ here?”
 **The problem.** Number of Islands: count groups of land (`'1'`) touching up /
 down / left / right.
 
-**Naive idea.** No visit plan → double-count or loop.
+**Naive idea.** No visit plan → double-count or loop: a 3×3 grid of all land
+would get counted as up to 9 separate islands (or infinitely recurse) if you
+never remember which cells you already painted.
 
 **The stuck part.** The same land cell can be reached many ways.
 
@@ -56,6 +58,16 @@ then add 1 to the count. Marks make each cell count once.
 
 **Kid analogy.** Exploring a cave with chalk on the walls so you never re-enter
 a chamber.
+
+**Second sketch — Max Area of Island.** Same flood, but each `dfs` call now
+*returns* the size of the island instead of just marking it: `1 + dfs(up) +
+dfs(down) + dfs(left) + dfs(right)` after marking the cell visited. Track the
+running max across every flood you start.
+
+**Third sketch — Clone Graph.** DFS (or BFS) the original graph while keeping
+a map from old node → new node. The first time you meet a node, create its
+clone and store the mapping *before* recursing into its neighbors — that stops
+infinite loops on cycles and reuses clones instead of duplicating them.
 
 ### Visualization
 
@@ -104,6 +116,9 @@ neighbor; each fresh land start is a new island.
 - Using DFS when the question wants fewest steps (use BFS)
 - Stack overflow on deep recursion — switch to a loop + stack
 - Word Search needs undo marks (Backtracking), not permanent paint only
+- Recursing into diagonal neighbors when the problem only allows
+  up/down/left/right adjacency (or the reverse — check the grid's own
+  definition of "touching")
 
 > ⚠️ **Common Mistake:** Surrounded Regions is still DFS/BFS paint — the clever
 > bit is which cells you seed from (the border).
@@ -115,7 +130,6 @@ neighbor; each fresh land start is a new island.
 **Medium:** Number of Islands · Clone Graph · Path Sum II
 
 **Hard:** Longest Increasing Path in a Matrix · Critical Connections in a Network
-Longest Increasing Path in a Matrix
 
 ### Engineering Connections
 
@@ -125,69 +139,9 @@ set — same chalk-mark walk as islands/clone.
 > 🏗️ **Engineering Connection:** “Show everything this package pulls in” is
 > DFS from a root.
 
-### Depth Note — Recurse Into Neighbors
-
-DFS (depth-first search) means: explore one path as far as it goes before
-backtracking to the next branch. On a grid, flood-fill an island by recursing
-to four neighbors and marking visited. On a graph, recurse through the
-adjacency list.
-
-Bottleneck of nested “scan whole grid for each land cell”: you re-walk water.
-DFS (or BFS) marks visited once so each cell pays work once.
-
-Path problems (unique paths with obstacles, path sum in trees) are DFS with a
-running state. Graph representation lives in Graph Traversal; this chapter owns
-the recursive walk template: `visit → for neighbor: if not seen: dfs(neighbor)`.
-
-### Worked Recognition
-
-Number of Islands / Max Area of Island: for each land cell, DFS floods and
-marks water; count how many floods you started. Clone Graph is DFS/BFS with a
-map from old node to new node. Path Sum wanders with a running total.
-
-Always mark visited (or sink the island to water) when you enter a cell so you
-do not thrash. Graph Traversal owns adj-list construction; you own the recurse
-template.
-
-### Interview Dialogue
-
-Interviewer: “Count islands.” You: “Scan the grid; when I see land, DFS flood
-to mark the whole component, then bump the count.” Mention visited (or sink to
-water). For Clone Graph, show the old→new map. For path problems, carry state
-down and return up. Point to Graph Traversal for adj-list construction, but
-still walk a tiny example here so the chapter is not a stub.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+File-system tools like `du` recurse into every subdirectory depth-first to add
+up disk usage, and static site generators crawl a page's linked pages the same
+way to build a full site map before rendering.
 
 ### Summary
 
@@ -225,7 +179,9 @@ means “in what order do I say hello?”
 (count edges).
 
 **Naive idea.** For every node, measure all pairs — lots of repeated height
-work.
+work: computing height from scratch at every node costs O(n) per node, so
+O(n²) total, and most of that height math is recomputed identically for
+overlapping subtrees.
 
 **The stuck part.** Heights overlap.
 
@@ -237,6 +193,17 @@ update `diameter = max(diameter, leftHeight + rightHeight)`.
 - preorder: announce yourself, then tour left cousins, then right
 - inorder: finish left cousins, announce yourself, then right
 - postorder: settle the kids’ stories before you speak
+
+**Second sketch — Validate BST.** Either walk inorder and check the values are
+strictly increasing, or DFS each node with a running `(low, high)` bound — a
+left child tightens the high bound to the parent’s value, a right child
+tightens the low bound. Both catch the classic bug of comparing a node only
+to its direct children instead of the whole allowed range.
+
+**Third sketch — Construct Binary Tree from Preorder and Inorder.** Preorder’s
+first value is always the current root. Find that value inside the matching
+inorder slice — everything left of it is the left subtree, everything right
+is the right subtree. Recurse on both slices with the next preorder values.
 
 ### Visualization
 
@@ -282,6 +249,8 @@ do your combine step when kids’ answers exist.
 - Forgetting the null base case
 - Treating every binary tree like a BST (inorder sorted only for BSTs)
 - Coding level-order with recursion and no queue (that’s BFS)
+- Returning a negative subtree sum unclamped in Max Path Sum — a node should
+  only add a child’s contribution if that contribution actually helps
 
 > 💡 **Insight:** Diameter and Max Path Sum are both “postorder combine”
 > problems — only the math in `combine` changes.
@@ -302,69 +271,10 @@ pre/in/post choices (attributes vs children vs cleanup).
 > 🏗️ **Engineering Connection:** Postorder feels like “free the kids, then
 > free the parent” in an ownership tree.
 
-### Depth Note — Preorder, Inorder, Postorder
-
-Trees are graphs without cycles and with a root. Traversal order is the ticket:
-
-- **Preorder** — node, then left, then right (serialize / copy shape)
-- **Inorder** — left, node, right (BST yields sorted values)
-- **Postorder** — left, right, node (delete children before parent)
-
-Naive “I forgot which order” is the bottleneck behind wrong BST validations.
-Level-order is BFS with a queue — see Family 6 / Queue — not a recursive
-preorder cousin.
-
-Worked BST: inorder walk proves sortedness; a violate means not a BST.
-
-### Worked Recognition
-
-Validate BST is inorder (or bounded DFS). Construct tree from preorder+inorder
-uses preorder’s root + inorder’s split. Serialize/deserialize often uses
-preorder with null markers. Postorder fits “process children before parent”
-deletion order in compilers.
-
-Level order is BFS — send readers to the BFS/Queue chapters for the queue
-loop; keep recursive orders here.
-
-### Interview Dialogue
-
-Interviewer: “Validate BST.” You: “Inorder should be strictly increasing,” or
-“I’ll DFS with low/high bounds.” Name which traversal fits before coding.
-Serialize often wants preorder with nulls; free/delete shape wants postorder.
-Level averages want a queue — say Level Order / BFS out loud so you don’t force
-recursion.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+File-system deletion walks a directory tree postorder — every file inside a
+folder must be freed before the folder itself can be removed — and dependency
+graphs in build tools resolve in the same child-before-parent order when
+cleaning up generated artifacts.
 
 ### Summary
 
@@ -402,7 +312,9 @@ and MapReduce are famous cousins.
 **The problem.** Maximum Subarray (D&C teaching version): biggest continuous
 sum.
 
-**Naive idea.** Try every subarray — slow.
+**Naive idea.** Try every subarray — slow: n starting points times n ending
+points means O(n²) candidate sums, and summing each one from scratch pushes
+that to O(n³) unless you're careful.
 
 **The stuck part.** Overlap. (Kadane’s DP is faster in practice — D&C still
 teaches the shape.)
@@ -413,6 +325,16 @@ candidates; take the max.
 
 **Kid analogy.** Two scout teams search half a building each; a third check
 covers the doorway between them — then pick the best of three reports.
+
+**Second sketch — Count of Range Sum.** A modified merge step counts, for each
+right-half value, how many left-half values land in the needed range — since
+both halves are already sorted by merge time, that counting rides for free on
+top of the merge you were doing anyway.
+
+**Contrast — Quickselect.** Finding the kth largest value also partitions
+around a pivot, but only recurses into the *one* side that holds the answer
+and never merges anything back together — that's Quickselect (a Heap-family
+cousin), not Divide and Conquer.
 
 ### Visualization
 
@@ -453,6 +375,9 @@ cross case, return the winner.
 - Using D&C when a simple linear scan/DP is clearer (still fine to discuss)
 - Halves that secretly share mutable state (not clean D&C)
 - Mixing up with Backtracking (D&C returns answers; it doesn’t undo)
+- Recomputing the cross-mid case from scratch instead of reusing the left and
+  right halves’ own running sums, which quietly turns an O(n log n) solution
+  back into O(n²)
 
 > 🚀 **Interview Tip:** Name the three candidates (left, right, cross) before
 > you code.
@@ -473,66 +398,10 @@ sort’s merge step.
 > 🏗️ **Engineering Connection:** Cluster “split the data, merge the answers”
 > is interview D&C at warehouse scale.
 
-### Depth Note — Split, Solve, Merge
-
-Divide and Conquer splits a problem into independent halves, solves each, then
-merges answers. Merge Sort: split array, sort halves, merge two sorted runs.
-Maximum subarray (Kadane is DP; classic D&C also splits mid and tracks best
-crossing sum).
-
-Bottleneck: solving the whole at once when halves share almost no dependency
-except a cheap merge. Different from DP (overlapping subproblems). Different
-from pure DFS (no “merge step” of two solved halves).
-
-Kid analogy: two teams sort their half of the toys; one adult zips the two
-sorted piles into one — merge step.
-
-### Worked Recognition
-
-Merge sort interview: write `merge(left,right)` carefully. Count of Range Sum /
-reverse pairs use modified merge (Hard). Different from Quickselect (partition
-for kth) though both “split.” Say the merge step out loud — without merge you
-only have recursion, not D&C.
-
-### Interview Dialogue
-
-Interviewer: “Explain merge sort.” You: “Split until one element, then merge
-two sorted runs with two fingers.” Emphasize the merge is where order is
-reconstructed. If the problem only needs kth largest, pivot to Quickselect /
-Heap instead of full sort merge. D&C shines when halves are independent and
-merge is cheap relative to n log n.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+Multi-threaded rendering engines split a frame into independent tiles, render
+each tile on its own core, then composite (merge) the tiles back into one
+image — the same split/solve/combine shape, minus any tricky "crosses the
+middle" case since pixels don't interact across tile boundaries.
 
 ### Summary
 
@@ -566,7 +435,10 @@ for permutations, subsets, N-Queens, Sudoku, and grid word search.
 **The problem.** Word Search: does the word snake through adjacent cells
 without reusing a cell?
 
-**Naive idea.** Try every start and every path — explode without undo.
+**Naive idea.** Try every start and every path — explode without undo: a board
+with even modest branching (4 directions, a handful of steps) produces
+thousands of candidate paths, and without pruning you'd explore every one of
+them to the end before checking whether the word even still matches.
 
 **The stuck part.** Exponential paths; need prune + restore.
 
@@ -575,6 +447,14 @@ Same skeleton as Permutations with a path list and a used[] flag.
 
 **Kid analogy.** Maze with breadcrumbs you pick up when you retreat so another
 path can reuse the hallway.
+
+**Second sketch — Permutations.** Instead of a `used[]` flag, swap the current
+index into place, recurse on the rest of the array, then swap back before
+trying the next candidate — same choose/undo habit, done in place.
+
+**Third sketch — Combination Sum.** Choose a coin, recurse with the remaining
+target reduced by that coin's value, then pop the coin back off before trying
+the next one. Prune as soon as the remaining target goes negative.
 
 ### Visualization
 
@@ -621,6 +501,9 @@ deeper, then take the move back.
 - Saving the live mutable path without copying
 - Using backtracking when DP/memo can share overlapping states for a count
 - Forgetting sort + skip for Combination Sum duplicates
+- Checking the goal condition only at the very end of the recursion instead of
+  pruning as soon as a partial path is already invalid — that's the difference
+  between exploring a handful of branches and exploring all of them
 
 > 💡 **Intuition:** Pruning is speed; undo is correctness.
 
@@ -642,72 +525,11 @@ conflict — production backtracking with smarter “what to try next” heurist
 > 🏗️ **Engineering Connection:** Mentally map apply/revoke to “flip a trial
 > setting, run checks, flip it back.”
 
-### Depth Note — Choose, Explore, Undo
-
-Backtracking builds candidates one choice at a time. When a choice fails
-constraints, **undo** and try the next. Permutations, subsets, N-Queens, Word
-Search: the template is identical — choose → recurse → un-choose.
-
-Bottleneck: generating every full arrangement into a giant list when pruning
-could have stopped early. Also missing the undo step so later branches see
-stale state.
-
-Easy warmups that are truly Easy: subsets of a short distinct array; letter
-case permutations. Sudoku / N-Queens are Hard because the constraint board is
-dense.
-
-Kid analogy: packing a backpack for a trip — try an item, see if the rest
-still fits; if not, take it out (undo) and try another.
-
-### Worked Recognition
-
-Subsets: for each index, choose take/skip then undo. Permutations: swap-in /
-swap-back. Combination Sum: choose a coin, recurse with remaining target, pop.
-Word Search: mark board cell '#', recurse 4-way, unmark. Prune when remaining
-target goes negative or prefix cannot match.
-
-That choose/undo pair is the whole pattern — memorize the habit, not one
-problem’s AST.
-
-### Interview Dialogue
-
-Interviewer: “Generate permutations.” You: “I’ll choose an unused index, mark
-it used, recurse, then unmark — choose / explore / undo.” For Word Search,
-mark the cell, recurse four ways, unmark. Call out pruning: stop when the
-remaining target is negative or the prefix cannot match any word. Without undo,
-later branches inherit ghost state.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+Regex engines with backtracking (as opposed to compiled NFA engines) try one
+matching path, undo and try the next alternative on failure, and dependency
+resolvers try a candidate package version, undo it if it conflicts with
+another constraint, and try the next version — the same choose/explore/undo
+loop as N-Queens, just over versions instead of board squares.
 
 ### Summary
 

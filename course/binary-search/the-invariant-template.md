@@ -138,9 +138,9 @@ an *answer space* that was never an array at all.
     {
       "question": "Why must the loop use `lo <= hi` rather than `lo < hi` for this template?",
       "options": [
-        "Either works identically",
+        "lo <= hi runs faster — the extra equality check shaves a comparison off the loop's exit condition in a way that measurably speeds up the search compared to a strict inequality",
         "The invariant is that the answer (if present) lies in the INCLUSIVE range [lo, hi] — when lo == hi, that's a single unchecked candidate, and lo < hi would exit the loop without checking it",
-        "lo <= hi runs faster"
+        "Either works identically — since both conditions eventually converge on the same lo and hi values by the time the loop would naturally end, swapping one for the other doesn't change the algorithm's observable behavior"
       ],
       "answer": 1,
       "explanation": "The loop condition must match what the invariant claims. An inclusive range can validly contain exactly one element (lo == hi) that still needs checking — only lo <= hi keeps the loop running for that case."
@@ -149,8 +149,8 @@ an *answer space* that was never an array at all.
       "question": "After `arr[mid] < target`, why does `lo` become `mid + 1` and not `mid`?",
       "options": [
         "mid has already been proven not to be the answer and proven to be on the excluded side — leaving it in the range would mean either an infinite loop (if lo stays at mid) or re-examining an eliminated element",
-        "mid + 1 makes the algorithm faster",
-        "It doesn't matter which, as long as the loop terminates"
+        "It doesn't matter which, as long as the loop terminates — any choice that eventually shrinks the range to empty is equally valid, since correctness only depends on the loop ending, not on which specific boundary value is chosen",
+        "mid + 1 makes the algorithm faster — advancing past mid by one extra position shaves an iteration off the average search compared to setting lo to mid directly, which is the actual reason for the +1"
       ],
       "answer": 0,
       "explanation": "Every eliminated element must actually leave the range. mid was just examined and ruled out; excluding it via +1 is what guarantees progress and correctness together — using mid instead of mid+1 is the single most common infinite-loop bug in binary search."
@@ -158,9 +158,9 @@ an *answer space* that was never an array at all.
     {
       "question": "What does the underlying requirement for binary search really need to be true, beyond 'the array is sorted'?",
       "options": [
-        "The array must contain only unique elements",
+        "The array must have an odd number of elements — an even-length array has no single true middle element, which breaks the clean elimination argument that odd-length arrays rely on",
         "Comparing against the midpoint must reliably indicate which half can be eliminated — i.e., there's a monotonic predicate (false...false, true...true with no flips) over the search space, which sorted-array membership happens to satisfy but many other conditions do too",
-        "The array must have an odd number of elements"
+        "The array must contain only unique elements — duplicate values would make the predicate ambiguous at the point of comparison, since arr[mid] could no longer reliably indicate which half to eliminate"
       ],
       "answer": 1,
       "explanation": "Sortedness is one way to get a monotonic predicate, not the only way. This reframing is what licenses binary search over answer spaces, feasibility checks, and other structures that were never sorted arrays — the next two lessons build on exactly this generalization."

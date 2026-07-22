@@ -103,31 +103,31 @@ chaining version next lesson; the complexity story is the same for both.
     {
       "question": "What EXACTLY does the load factor α = n/m measure, and why does keeping it constant make lookups O(1) on average?",
       "options": [
-        "The fraction of memory used; smaller is faster",
         "Entries per bucket. Under a uniform hash, expected chain length equals α — so bounded α means each operation scans an expected-constant number of entries",
-        "The probability of any collision existing"
+        "The fraction of memory used; smaller is faster — α measures how much of the allocated table capacity sits empty, and a sparser table always means less work per lookup",
+        "The probability of any collision existing — α directly gives the chance that at least one pair of keys shares a bucket, so keeping it low is about avoiding collisions rather than bounding their cost"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The average-case theorem is literally 'expected chain length = α'. Both premises matter: uniformity spreads keys; resizing bounds α. Break either and the average degrades."
     },
     {
       "question": "Why does doubling the bucket count force re-hashing every stored entry?",
       "options": [
-        "To defragment memory",
         "Slots are computed as hash(key) mod m — changing m changes almost every key's slot, so entries must be re-filed under the new modulus",
-        "It doesn't; entries stay put"
+        "It doesn't; entries stay put — the new, larger bucket array is populated by copying each existing chain to the same index it already occupied, since the relative bucket structure is preserved",
+        "To defragment memory — repeated inserts and deletes fragment the chains' underlying memory over time, and a full re-file during resize is really a cleanup pass rather than a consequence of the modulus changing"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The address was never stored WITH the entry — it's recomputed from the key each time. New m, new addresses. This is also why rehashing costs a full O(n)."
     },
     {
       "question": "In open addressing, why can't delete simply mark a slot empty?",
       "options": [
-        "It can — that's how it works",
         "A later key may have probed PAST this slot at insert time; a hole would stop lookups early and make that key unfindable — hence tombstones ('keep probing')",
-        "Because the slot is shared by a chain"
+        "Because the slot is shared by a chain — open addressing still keeps a linked list of colliding entries at each index behind the scenes, so clearing the slot would only remove the chain's head",
+        "It can — that's how it works; open addressing tables are designed so that lookups always restart from a fresh probe sequence, unaffected by holes left behind by earlier deletions"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Probe sequences are paths; an entry's reachability depends on every slot along its path staying non-empty-looking. Tombstones preserve paths while freeing slots for reuse."
     }
   ]

@@ -110,27 +110,31 @@ Two facts you'll use in the Hash Tables module:
     {
       "question": "A problem says 'return the count modulo 10⁹+7'. Your loop multiplies many numbers together. When must you apply the modulo?",
       "options": [
-        "Once, at the very end",
         "At every multiplication — the identity (a·b) mod m = ((a mod m)(b mod m)) mod m guarantees the same answer",
-        "Only when the product happens to exceed 10⁹+7"
+        "Only when the product happens to exceed 10⁹+7 — reducing preemptively wastes work, so the efficient approach checks the running product's magnitude and reduces only on the rare step where it would actually overflow",
+        "Once, at the very end — since (a·b) mod m only needs the true, fully-multiplied product before reduction, applying the modulo any earlier would change which number gets reduced"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Reducing at each step keeps values small and is provably equivalent. Reducing only at the end requires holding the true product — astronomically large, and in JS/TS numerically wrong long before that."
     },
     {
       "question": "In TypeScript, `(i - 1) % n` for a circular buffer is buggy. Why, and what's the fix?",
       "options": [
-        "It's fine — JS % already wraps",
         "At i = 0 it yields -1 (JS keeps the dividend's sign); use ((i - 1) % n + n) % n",
-        "It overflows for large i"
+        "It overflows for large i — JS numbers lose integer precision once the subtraction result grows past Number.MAX_SAFE_INTEGER, corrupting the index silently instead of throwing",
+        "It's fine — JS % already wraps negative results back into the [0, n) range automatically, the same way Python's modulo operator does"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "JS % takes the dividend's sign, so -1 % n = -1, an invalid index. Adding n and re-reducing shifts into [0, n). Python's % doesn't have this trap."
     },
     {
       "question": "What is -13 mod 5, as a clock position in [0, 5)?",
-      "options": ["-3", "2", "3"],
-      "answer": 1,
+      "options": [
+        "-3",
+        "3",
+        "2"
+      ],
+      "answer": 2,
       "explanation": "-13 + 15 = 2, and 15 is a multiple of 5, so -13 and 2 share a clock position. (Python: -13 % 5 == 2. JS: -13 % 5 == -3, which needs the +m fix.)"
     }
   ]

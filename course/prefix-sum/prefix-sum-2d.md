@@ -129,19 +129,19 @@ and "count/sum of B" when A and B might overlap.
     {
       "question": "In the build recurrence, why does the formula SUBTRACT prefix[i-1][j-1] rather than just adding prefix[i-1][j] + prefix[i][j-1]?",
       "options": [
-        "To keep the numbers smaller",
-        "The rectangle 'above' and the rectangle 'to the left' both include the same top-left overlapping rectangle — adding them both counts that overlap twice, so subtracting it once corrects the double-count. This is inclusion-exclusion",
-        "It's a normalization step required for correctness of unrelated cells"
+        "To keep the numbers smaller — subtracting the overlapping cell periodically resets the running totals to prevent them from growing unboundedly large as the grid dimensions increase",
+        "It's a normalization step required for correctness of unrelated cells — the subtraction keeps every other cell in the prefix array internally consistent with each other, independent of what's actually being double-counted at this specific cell",
+        "The rectangle 'above' and the rectangle 'to the left' both include the same top-left overlapping rectangle — adding them both counts that overlap twice, so subtracting it once corrects the double-count. This is inclusion-exclusion"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Draw the two rectangles: they share a smaller rectangle in their intersection. Any time you combine two overlapping regions by addition, you must subtract the overlap once — this is the identical logic used later for the query formula, just running the same correction in reverse."
     },
     {
       "question": "The query formula for a rectangle subtracts prefix[r1][c2+1] and prefix[r2+1][c1], then ADDS BACK prefix[r1][c1]. Why does the corner need to be added back rather than left subtracted?",
       "options": [
-        "It's an arbitrary sign convention",
+        "It's an arbitrary sign convention — the formula could equally correctly subtract the corner term instead of adding it back, and the choice of sign here is just a matter of how the derivation happens to have been written",
         "The top strip and the left strip both include the same top-left corner region OUTSIDE the target rectangle — subtracting both strips removes that corner TWICE, so it must be added back once to correct the over-subtraction",
-        "Because grid indices start at 0"
+        "Because grid indices start at 0 — the zero-based indexing scheme is what forces the corner term to be added rather than subtracted, and a 1-based grid would need the opposite sign at this step"
       ],
       "answer": 1,
       "explanation": "Same inclusion-exclusion principle as the build step, applied to REMOVAL instead of addition: over-subtracting a shared region needs a compensating addition, exactly mirroring how over-adding needs a compensating subtraction."

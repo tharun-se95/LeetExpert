@@ -111,31 +111,31 @@ differing only in who owns the stack.
     {
       "question": "Why are all stack operations O(1) when general array insertion is O(n)?",
       "options": [
-        "Stacks use linked lists internally",
-        "The discipline confines every mutation to the array's END — the one position where contiguity requires no shifting (Module 4's fact, promoted to a design principle)",
-        "Stacks are small in practice"
+        "Stacks are small in practice — real workloads rarely push enough elements for the O(n) cost of interior array operations to matter, so the O(1) claim is really just an empirical observation about typical depths",
+        "Stacks use linked lists internally — swapping the backing array for a linked list gives O(1) insertion and removal at a single end, which is the actual mechanism behind the guarantee",
+        "The discipline confines every mutation to the array's END — the one position where contiguity requires no shifting (Module 4's fact, promoted to a design principle)"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "O(n) insertion was the cost of preserving order at interior positions. LIFO forbids interior mutation entirely — the restriction IS the performance."
     },
     {
       "question": "Rewriting a recursive function with an explicit stack changes which of the following?",
       "options": [
-        "The asymptotic time complexity",
-        "Where the bookkeeping lives (runtime frames → heap array) and the depth ceiling (recursion limit → available memory); the algorithm itself is unchanged",
-        "The order in which work is completed — explicit stacks reverse it"
+        "The asymptotic time complexity — trading the runtime's implicit call stack for an explicit array-backed one changes the algorithm's big-picture growth rate, typically improving it by a full order of magnitude",
+        "The order in which work is completed — explicit stacks reverse it; controlling the pop order directly instead of relying on automatic call unwinding makes tasks finish in the opposite sequence from the recursive version",
+        "Where the bookkeeping lives (runtime frames → heap array) and the depth ceiling (recursion limit → available memory); the algorithm itself is unchanged"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Same pushes, same pops, same asymptotics — the machine's stack and yours are interchangeable. That's precisely why deep inputs that crash recursion (Python ~1000 frames) run fine iteratively."
     },
     {
       "question": "Which of these is NOT naturally stack-shaped?",
       "options": [
-        "Undo history in an editor",
-        "A print queue serving jobs in submission order",
-        "Matching nested brackets while parsing"
+        "Undo history in an editor — each undo action needs to know about every previous action ever taken, not just the most recent one, which is closer to a full history log than a strict LIFO discipline",
+        "Matching nested brackets while parsing — since brackets can be matched in any order as long as the counts balance, this is really about tracking totals rather than about which one closes first",
+        "A print queue serving jobs in submission order"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Submission-order service is first-in-FIRST-out — a queue (next module). Undo and nesting both resolve the MOST RECENT thing first: LIFO. Recognizing which order a problem's 'pending work' resolves in is how you choose the structure."
     }
   ]

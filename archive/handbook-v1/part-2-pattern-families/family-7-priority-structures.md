@@ -46,8 +46,9 @@ string” all need that most-recent unfinished thing on top.
 
 **The problem.** Valid Parentheses: is `"([])"` okay? Is `"([)]"` okay?
 
-**Naive idea.** Count each bracket type. Fails on `"([)]"` — counts match, order
-doesn’t.
+**Naive idea.** Count each bracket type. Fails on `"([)]"` — counts match
+(one of each), order doesn't: the closer `)` shows up while `[` is still the
+most recently opened, unmatched bracket, and a count can't see that.
 
 **The stuck part.** Counts forget order.
 
@@ -55,6 +56,12 @@ doesn’t.
 stack at the end means success.
 
 **Kid analogy.** Browser back button / undo — last action reversed first.
+
+**Second sketch — Decode String.** Push a `(count, string-so-far)` frame every
+time you meet `[`. On `]`, pop the frame, repeat the string built since then
+by that count, and glue it onto the popped string. Nested brackets just mean
+nested frames — the stack remembers every unfinished outer layer while you
+finish the inner one.
 
 ### Visualization
 
@@ -95,6 +102,8 @@ plate; nothing left at the end.
 - Popping an empty stack
 - Putting next-greater problems here (Monotonic Stack)
 - Min Stack forgotten second stack of running mins
+- Basic Calculator: forgetting that a `-` before an opening `(` must flip the
+  sign of everything inside that parenthesis, not just the next number
 
 > ⚠️ **Common Mistake:** Histogram rectangle looks “stacky” but needs a
 > monotonic rule — see Monotonic Stack.
@@ -117,62 +126,10 @@ discipline as parentheses matching.
 > 🏗️ **Engineering Connection:** Every function call pushes a frame and every
 > return pops one.
 
-### Depth Note — Last In, First Out
-
-A stack is a springy plate pile: last plate down is first plate up. Valid
-parentheses: push openers; on a closer, pop and match. Decode String / basic
-calculator: push nesting frames so inner work finishes before outer work.
-
-Bottleneck of nested scanning with indexes: you lose the “most recent open”
-context. The stack remembers it.
-
-Queues are first-in-first-out; monotonic stacks keep values increasing/decreasing
-for next-greater — different chapters even though both use a stack shell.
-
-### Worked Recognition
-
-Valid Parentheses / Min Stack / Decode String / Basic Calculator II. Always
-ask: “do I need the most recent unfinished opener or frame?” If yes, stack. If
-you need next greater, escalate to Monotonic Stack.
-
-### Interview Dialogue
-
-Interviewer: “Valid parentheses.” You: “Push openers; on closer, pop and
-match.” Escalate to Decode String with a stack of frames (count + string). If
-they ask next warmer day, switch to Monotonic Stack. Clear LIFO ownership keeps
-you from overusing deques.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+JSON and XML parsers push a frame per open bracket/tag to know which object
+or element is currently being filled in, and text editors' redo/undo stacks
+are literally two stacks — pop one, push onto the other — to move actions
+back and forth.
 
 ### Summary
 
@@ -206,7 +163,9 @@ join the back; expired samples leave the front.
 **The problem.** Moving Average size `k`: after each `next(val)`, average the
 last at most `k` values.
 
-**Naive idea.** Store forever; rescan last k each time.
+**Naive idea.** Store forever; rescan last k each time: every single call to
+`next` re-sums the last k values from scratch, so m calls cost O(m·k) instead
+of O(m).
 
 **The stuck part.** Drop the expired front cheaply while updating a sum.
 
@@ -215,6 +174,12 @@ dequeue front and subtract.
 
 **Kid analogy.** Ticket line — leave from the front; join at the back. Priority
 cutting is a Heap, not a Queue.
+
+**Second sketch — Implement Queue using Stacks.** Keep two stacks: `in` for
+enqueue, `out` for dequeue. Push new items onto `in`. When `out` is empty and
+a dequeue is needed, pour everything from `in` onto `out` (reversing the order
+once), then pop from `out`. Each element only gets poured once, so the
+amortized cost per operation stays O(1).
 
 ### Visualization
 
@@ -251,6 +216,8 @@ return the average.
 - Confusing queue (fair) with heap (priority)
 - Circular queue wrap math bugs
 - Calling Sliding Window Maximum “just a queue” without the mono deque rule
+- Design Hit Counter: keeping every timestamp forever instead of evicting ones
+  older than the window, which silently grows memory without bound
 
 > ⚠️ **Common Mistake:** Task Scheduler is mostly Heap + cooldown, not plain
 > FIFO.
@@ -261,8 +228,7 @@ return the average.
 
 **Medium:** Binary Tree Level Order Traversal · Design Hit Counter · Moving Average from Data Stream
 
-**Hard:** Sliding Window Maximum · Design Snake Game
-Shortest Subarray with Sum at Least K _(mono deque)_
+**Hard:** Sliding Window Maximum · Design Snake Game · Shortest Subarray with Sum at Least K _(mono deque)_
 
 ### Engineering Connections
 
@@ -272,62 +238,10 @@ until a worker pulls the front.
 > 🏗️ **Engineering Connection:** Oldest ready message first = this chapter;
 > hottest priority first = Heap.
 
-### Depth Note — First In, First Out
-
-A queue is a lunch line: first in, first out. Tree/graph level order is the
-interview classic — enqueue root; while queue non-empty, drain one level’s
-worth of nodes (or drain until empty while tracking size).
-
-BFS owns the “shortest unweighted distance” story; this chapter owns the data
-structure and the level-size loop. Sliding windows sometimes use deques (double
-ended queues) for max — see Monotonic Stack / Window Maximum.
-
-Easy: Implement Queue using Stacks; number of recent calls in a counter queue.
-
-### Worked Recognition
-
-Implement Queue using Stacks; Design Circular Queue; Binary Tree Level Order;
-Number of Recent Calls (sliding timeline queue). Dual-home with BFS: you
-explain FIFO here; they explain distance layers there.
-
-### Interview Dialogue
-
-Interviewer: “Level order traversal.” You: “Queue; while not empty, process
-`size = queue.length` nodes as one level.” That size loop is the tell. BFS
-shortest path reuses it with distances. Recent Calls is a time queue: pop from
-front while too old. Dual-home quietly: structure here, distance story in BFS.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+Rate limiters that count "requests in the last N seconds" keep a queue of
+timestamps and evict expired ones the same way Moving Average evicts old
+samples, and video buffering keeps a fixed-size queue of frames so playback
+stays smooth even if decoding briefly outpaces or lags the display.
 
 ### Summary
 
@@ -364,7 +278,9 @@ winners.
 
 **The problem.** Top K Frequent: `[1,1,1,2,2,3]`, `k=2` → `[1,2]`.
 
-**Naive idea.** Sort every unique by count.
+**Naive idea.** Sort every unique by count: sorting all the distinct values
+costs O(u log u) for u unique values, most of which you then throw away —
+you only ever wanted the top K, not a full ranking.
 
 **The stuck part.** Full sort when only K winners matter.
 
@@ -374,6 +290,12 @@ trophy (the root).
 
 **Kid analogy.** A shelf that only holds K medals — challengers fight the
 weakest medal on the shelf.
+
+**Second sketch — Merge k Sorted Lists.** Push the head node of each of the k
+lists onto a min-heap keyed by value. Pop the smallest, append it to the
+answer, and if that node has a `next`, push the next node from the same list.
+The heap holds at most k candidates at any time, so each pop/push is
+O(log k) across n total pops.
 
 ### Visualization
 
@@ -417,6 +339,9 @@ keyed by frequency — kick the weakest frequency so the shelf holds Top K.
 - Heaping without counting first
 - Merge k lists only under Linked List Ops — picking the next smallest head is
   Heap-owned
+- Running Median: using one heap instead of two — a single heap can give you
+  the min or the max, but the median needs a max-heap of the smaller half and
+  a min-heap of the larger half, kept balanced in size
 
 > 💡 **Insight:** Say `O(n log K)` when K is clearly smaller than n.
 
@@ -437,66 +362,11 @@ OS schedulers pop the next highest-priority ready task — heaps under the hood.
 
 > 🏗️ **Engineering Connection:** `heap.pop()` ≈ “who runs next?”
 
-### Depth Note — Top K Frequent Template
-
-A heap keeps the extreme (min or max) at the front. Interview king path — **Top
-K Frequent Elements**:
-
-1. Hash map: count frequencies.
-2. Keep a **size-K min-heap** of `(freq, key)` (or max-heap of size n — less common).
-3. For each key, push; if heap size > K, pop the smallest frequency.
-4. Remaining heap entries are the Top K.
-
-“K largest numbers” is the same muscle with values instead of frequencies.
-Merge k sorted lists: heap of current heads. Do not stop the Generic Template
-at “push all, pop K” when frequency ranking is the real lesson — **count map
-first, then sized heap**.
-
-### Worked Recognition
-
-Top K Frequent (count → size-K heap) is the canon template. K Closest Points
-and Kth Largest Element are cousins. Merge k Sorted Lists pushes list heads.
-Say “min-heap of size K keyed by frequency” in the first minute of the interview.
-
-### Interview Dialogue
-
-Interviewer: “Top K frequent words/elements.” You: “Count with a hash map, then
-a size-K min-heap of (freq, key); pop when size exceeds K.” That two-step is
-mandatory. Kth largest is the same heap muscle on raw values. Median data
-stream uses two heaps — Hard cousin. Never skip the count map when the metric
-is frequency.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+Event-driven simulations keep a min-heap of "next event time" so they can
+always jump straight to the next thing that happens instead of scanning a
+clock tick by tick, and search engines keep a size-K heap of top-scoring
+documents while scanning an index so they never have to fully sort millions
+of candidates just to return the top 10.
 
 ### Summary
 
@@ -531,7 +401,9 @@ Temperatures and stock span use this.
 **The problem.** Daily Temperatures: days until a warmer day.
 `[73,74,75,71,69,72,76,73]` → `[1,1,4,2,1,1,0,0]`.
 
-**Naive idea.** For each day, scan forward — slow.
+**Naive idea.** For each day, scan forward — slow: for n days that's up to n²
+comparisons, and on a long streak of falling temperatures almost every scan
+runs nearly to the end before finding a warmer day.
 
 **The stuck part.** Repeated forward scans.
 
@@ -540,6 +412,12 @@ than the top, pop and write the wait. Push today. Each index enters/leaves once.
 
 **Kid analogy.** Kids in line facing forward — shorter kids leave when a taller
 kid appears behind them (they found next greater).
+
+**Second sketch — Largest Rectangle in Histogram.** For each bar, you need the
+first shorter bar to its left and to its right — the same monotonic-stack scan
+as Daily Temperatures, run once left-to-right. Once both boundaries are known,
+that bar's best rectangle is `height × (right − left − 1)`; take the max over
+all bars.
 
 ### Visualization
 
@@ -585,6 +463,8 @@ then today joins the waiting line.
 - Wrong `<` vs `<=` with duplicates
 - Telling a “parentheses stack” story without the mono house rule
 - Circular next-greater needs a second pass
+- Online Stock Span: forgetting that a popped day's own span should be folded
+  into the current day's span, not discarded — spans can chain together
 
 > 🚀 **Interview Tip:** Say “decreasing stack of indexes” up front.
 
@@ -604,62 +484,10 @@ pop-while-beaten loop.
 > 🏗️ **Engineering Connection:** Threshold-breach waits on a live series are
 > next-greater on a stream.
 
-### Depth Note — Next Greater and Histogram
-
-A monotonic stack stays strictly increasing or decreasing so the top always
-answers “previous / next greater or smaller.” Daily Temperatures: indices of
-warmer days — while stack top is cooler than today, pop and label distance.
-
-Largest Rectangle in Histogram: for each bar, know first shorter bar left and
-right; width = right−left−1; area = height×width. Same mono stack of indices.
-
-This is not Valid Parentheses (plain Stack). Name the invariant (“stack
-values increasing”) before coding.
-
-### Worked Recognition
-
-Next Greater Element, Daily Temperatures, Largest Rectangle in Histogram,
-Online Stock Span. Keep indices, not only values, so you can compute widths and
-distances. State the mono invariant every time you pop.
-
-### Interview Dialogue
-
-Interviewer: “Daily temperatures.” You: “Monotonic decreasing stack of indices;
-while today is warmer than the top, pop and write the day gap.” Histogram
-rectangle: for each bar find first shorter left/right with the same mono stack
-of indices. State the invariant before you touch the keyboard.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+Compilers use a monotonic stack to match indentation levels in
+whitespace-sensitive languages, and stock-span-style analytics ("how many
+consecutive prior days closed lower than today?") are a direct product
+feature built on this exact template.
 
 ### Summary
 
@@ -692,7 +520,10 @@ perfect for `startsWith`, autocomplete, and “is this prefix even possible?”
 **The problem.** Implement Trie with `insert`, `search`, `startsWith`. After
 `"app"` and `"ape"`, `startsWith("ap")` is true, `search("ap")` is false.
 
-**Naive idea.** Hash set of whole words — `startsWith` scans every word.
+**Naive idea.** Hash set of whole words — `startsWith` scans every word: with
+a 100,000-word dictionary, every single `startsWith` query costs up to
+100,000 string comparisons, even though most words don't even start with the
+right letter.
 
 **The stuck part.** Prefix queries shouldn’t rescan the whole dictionary.
 
@@ -701,6 +532,13 @@ ends here.”
 
 **Kid analogy.** A phone book grown as a letter tree — `"app"` and `"ape"` both
 hang under `a → p`.
+
+**Second sketch — Word Search II.** Build one trie from all the target words
+first. DFS the board from every cell, walking down the trie alongside the
+board path instead of restarting a fresh search per word. The moment the
+current path no longer matches any trie edge, stop — that shared-prefix
+pruning is what makes searching for many words at once cheaper than running
+Word Search once per word.
 
 ### Visualization
 
@@ -751,6 +589,9 @@ In plain English: walk/create letter doors; `search` needs `is_end`;
 - Huge maps when a size-26 array would do
 - Building a trie when only exact match is needed (hash set enough)
 - Word Search II continuing after the trie node is already null
+- Replace Words: walking to the end of every dictionary root instead of
+  stopping at the *first* `is_end` you hit along the word's path — the
+  shortest matching root is the one that should replace the word
 
 > 💡 **Insight:** Path exists ≠ word ends here.
 
@@ -770,61 +611,10 @@ trie cousins — same letter walk as `startsWith`.
 > 🏗️ **Engineering Connection:** Typeahead filtering as you type is a trie (or
 > a sorted list + binary search) with the same mental model.
 
-### Depth Note — Prefix Trees
-
-A Trie (prefix tree) stores strings character-by-character in a tree of maps.
-`startsWith` is a walk that must not fall off the tree; `search` also checks
-an end-of-word flag. Word Search II / autocomplete: heavy prefix sharing makes
-tries beat scanning a whole dictionary each time.
-
-Recognition: many queries on shared prefixes, not a single hash of full words
-only. Implementing Trie is the Easy/Medium doorway; Word Search II is the Hard
-payoff.
-
-### Worked Recognition
-
-Implement Trie; Replace Words; Word Search II; Design Search Autocomplete.
-If queries are full exact keys only, a hash set may win. If prefixes dominate,
-Trie wins.
-
-### Interview Dialogue
-
-Interviewer: “Word Search II.” You: “Build a trie of the words, DFS the board
-while walking the trie; prune when the node dies.” For autocomplete,
-startsWith walks are the win over scanning the dictionary. If only exact full
-keys matter, say when a Hash Set is enough instead.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
+IP routers store routing tables as a trie over address bits to find the
+longest matching prefix for a packet's destination, and DNS resolvers walk a
+domain trie from the root down (`.com` → `example` → `www`) to find the
+authoritative server for a hostname.
 
 ### Summary
 

@@ -130,9 +130,9 @@ the expected whole-array answer.
 {
   "question": "Why does the map here store the FIRST index of each prefix sum, while Subarray Sum Equals K's map stores a running COUNT?",
   "options": [
-    "They're solving the same problem, so this is an arbitrary implementation choice",
+    "They're solving the same problem, so this is an arbitrary implementation choice — swapping which piece of information the map stores would produce an equally valid solution to either problem, since both are fundamentally the same underlying computation",
     "The two problems ask different questions: 'how many pairs share this prefix value' (Subarray Sum Equals K) needs a count; 'what's the WIDEST gap between two equal prefix values' (this problem) needs the earliest occurrence, since pairing with the earliest possible match always maximizes the gap",
-    "Because this problem's values are restricted to 0 and 1"
+    "Because this problem's values are restricted to 0 and 1 — the binary nature of the input caps how many distinct prefix sums can occur, which is what makes tracking the first index (rather than a count) sufficient here"
   ],
   "answer": 1,
   "explanation": "The map's payload should always be exactly what the specific question needs to extract at query time. 'Count matches' and 'find the longest gap' are different aggregations over the same underlying prefix-sum-collision idea — recognizing which one a problem needs is the actual design step, not a fixed recipe."

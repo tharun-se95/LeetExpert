@@ -138,11 +138,11 @@ becomes a structure you wield on purpose.
 {
   "question": "Both walkers start at the DUMMY, and lead marches until lead.next is null (not until lead is null). What do these two choices jointly guarantee?",
   "options": [
-    "They save one iteration",
-    "trail halts on the PREDECESSOR of the n-th-from-end node — startable even when that predecessor 'shouldn't exist' (head removal) — so the splice trail.next = trail.next.next is always exactly right",
-    "They prevent infinite loops on cycles"
+    "They prevent infinite loops on cycles — starting both walkers from the dummy node ensures the traversal has a well-defined anchor point that keeps the loop from running forever even on malformed input",
+    "They save one iteration — starting from the dummy instead of the real head shaves exactly one step off the total number of times the loop body needs to execute, a minor efficiency gain",
+    "trail halts on the PREDECESSOR of the n-th-from-end node — startable even when that predecessor 'shouldn't exist' (head removal) — so the splice trail.next = trail.next.next is always exactly right"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Stopping at the last node (not past it) plus the dummy's one-node head start is precisely the −1 offset that turns 'n from the end' into 'predecessor of n from the end'. Off-by-one design in pointer code is done with invariants and a hand trace, not trial and error."
 }
 ```

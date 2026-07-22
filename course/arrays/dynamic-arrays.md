@@ -171,9 +171,9 @@ keep:
     {
       "question": "In the implementation above, which operations can trigger the O(n) copy?",
       "options": [
-        "get and set",
+        "get and set — reading or writing an existing slot can trigger a bounds-check-triggered reallocation if the backing store's capacity tracking falls out of sync with its logical length",
         "append and insert — anything that adds an element when length == capacity",
-        "Only pop"
+        "Only pop — shrinking the logical length can force the backing store to reallocate down to a smaller block to avoid holding onto unused capacity indefinitely"
       ],
       "answer": 1,
       "explanation": "Growth happens exactly when adding to a full store. Reads never resize; pop only shrinks length."
@@ -181,21 +181,21 @@ keep:
     {
       "question": "Why does pop-at-end run in strict O(1) while insert-at-0 costs O(n)?",
       "options": [
-        "pop is implemented in native code",
         "Removing the last element leaves no gap; removing/inserting at the front requires shifting every element to keep the block contiguous",
-        "pop uses the capacity slack"
+        "pop uses the capacity slack — since capacity is usually larger than length, popping just decrements into that pre-allocated slack space instead of touching the backing store's actual boundary",
+        "pop is implemented in native code — the standard library's version bypasses the interpreter loop entirely, a language-runtime speedup unrelated to the array's underlying layout"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Contiguity is only threatened by interior changes. The end of the array is the one place you can add/remove without moving anyone else — a fact stacks (Module 8) are built on."
     },
     {
       "question": "If _grow used `capacity += 8` instead of `capacity *= 2`, appends would become…",
       "options": [
-        "O(1) amortized still",
         "O(n) amortized — a full copy every 8 appends sums to ~n²/8 total work",
-        "O(log n) amortized"
+        "O(log n) amortized — a fixed increment still spaces resizes apart in a way that mirrors a halving pattern once accounted for across the full sequence of appends",
+        "O(1) amortized still — since 8 is a constant, any constant amount of growth per resize should preserve the same amortized guarantee that doubling provides"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Additive growth means copies of size ~8, 16, 24, … n arrive at a constant rate: total Θ(n²)/n = Θ(n) per append. Multiplicative growth spaces copies exponentially apart — that's the whole theorem from the Big O module."
     }
   ]

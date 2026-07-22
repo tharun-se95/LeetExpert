@@ -139,11 +139,11 @@ an overlap and overcount rooms.
 {
   "question": "Why must an END event be processed before a START event when they occur at the exact same time?",
   "options": [
-    "It's an arbitrary tie-breaking convention with no real consequence",
-    "A meeting ending at time t genuinely frees its room at t, and a meeting starting at t can correctly reuse that same room — processing the start first would count both meetings as needing separate rooms for an instant that doesn't actually require it, overcounting the answer",
-    "Because ends are always sorted before starts in the input"
+    "Because ends are always sorted before starts in the input — the two event lists are constructed in a way that guarantees this ordering automatically, so no special tie-breaking logic is actually needed in the sweep itself",
+    "It's an arbitrary tie-breaking convention with no real consequence — processing starts before ends at a tie would just shift the peak-counting moment slightly without changing the final maximum the algorithm reports",
+    "A meeting ending at time t genuinely frees its room at t, and a meeting starting at t can correctly reuse that same room — processing the start first would count both meetings as needing separate rooms for an instant that doesn't actually require it, overcounting the answer"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "This is a real modeling choice about what 'the room is free' means at the boundary instant — not a coding formality. Getting it backwards produces a genuinely wrong (too large) room count on any input with a meeting ending exactly when another begins."
 }
 ```

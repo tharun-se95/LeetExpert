@@ -137,11 +137,11 @@ is the sliding-window discipline Module 11 builds a whole toolkit around.
 {
   "question": "The map version stores only each value's LATEST index. Why is discarding older indices provably safe?",
   "options": [
-    "Older duplicates were already checked against everything",
     "For any future position i, distance to the newest occurrence is strictly smaller than to older ones — so if ANY previous occurrence is within k of i, the newest is too",
-    "It isn't fully safe, but the constraints forbid the failing case"
+    "Older duplicates were already checked against everything — once an earlier occurrence has been compared once, revisiting it again later would only ever re-confirm a result already recorded",
+    "It isn't fully safe, but the constraints forbid the failing case — there could exist an input where an older occurrence is the one within distance k, but the given bounds on n and k happen to rule it out"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "The check i − last[x] ≤ k is monotone in the stored index: bigger j, smaller distance. Keeping the max j preserves every future YES. Arguing 'what does the future need from the past?' is how you justify any state compression."
 }
 ```

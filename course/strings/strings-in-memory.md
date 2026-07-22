@@ -130,19 +130,19 @@ lesson) safe.
     {
       "question": "Why is `result += word` in a loop O(n²) in principle, when append to a list is O(1) amortized?",
       "options": [
-        "String concatenation has a hidden log factor",
         "Immutability forces each += to copy the ENTIRE accumulated string into a fresh allocation — copies sum to 1+2+⋯+n; a list append writes one slot into over-allocated capacity",
-        "It isn't — they're the same"
+        "String concatenation has a hidden log factor — the runtime has to search for a large enough contiguous memory block to hold the growing result, and that search scales logarithmically with length",
+        "It isn't — they're the same; both += on a string and append on a list write into pre-allocated capacity, so their amortized per-operation cost is identical"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "The dynamic array's amortization needs spare capacity to write into. Immutable strings have none, so the prefix is re-copied every iteration — the triangular sum again."
     },
     {
       "question": "s == t on two million-character strings that differ at position 3 costs…",
       "options": [
-        "O(n) — the whole strings are compared",
+        "O(n log n) — the comparison first hashes both strings to check for a quick-match shortcut, and computing a reliable hash over long input takes log-linear time",
         "O(1)-ish — comparison stops at the first mismatch (position 3)",
-        "O(n log n)"
+        "O(n) — the whole strings are compared, because equality checks always scan to the very end to confirm there isn't a later difference even after finding an early one"
       ],
       "answer": 1,
       "explanation": "Equality scans until it can decide: first mismatch, or exhaustion. Worst case O(n) (equal strings), best case constant. Knowing WHICH case your data hits is Big O lesson 5 in action."
@@ -150,11 +150,11 @@ lesson) safe.
     {
       "question": "Why must dict/Map keys be immutable (the reason strings qualify)?",
       "options": [
-        "Mutable objects are larger",
         "The structure files a key by its hash at insert time; if the key later mutated, its hash would change and lookups would search the wrong place",
-        "It's a style convention"
+        "It's a style convention — language designers simply chose to disallow mutable dict/Map keys as a matter of API taste, not because of any underlying correctness requirement",
+        "Mutable objects are larger — the extra bookkeeping a mutable type needs to support in-place changes takes up more memory than a hash table's key-storage slots can accommodate"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Hash structures locate entries BY key content. A key that changes after filing becomes unfindable — so hashable types must promise immutability. Full story in Module 6."
     }
   ]

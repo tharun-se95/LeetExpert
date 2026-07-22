@@ -142,11 +142,11 @@ longer present. Off-by-one-duplicate is THE bug in this variant.
 {
   "question": "Why does the two-stack design achieve O(1) getMin when a single min variable cannot?",
   "options": [
-    "Two stacks let you search twice as fast",
     "Because pops restore PAST states, min must be stored per-depth, not as one mutable value — the snapshot stack keeps every still-relevant historical minimum, and LIFO expiry keeps exactly the right one on top",
-    "The second stack caches recent queries"
+    "Two stacks let you search twice as fast — having a second stack available in parallel means getMin can search both structures simultaneously, halving the number of elements each one needs to scan",
+    "The second stack caches recent queries — it remembers the results of the most recently asked getMin calls, so repeated queries for the same minimum are served from cache instead of being recomputed"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "A single variable answers 'min now' but not 'min after this pop' — that answer was overwritten. The insight generalizes: any aggregate you must UNWIND (min, max, running sum) rides shotgun on the stack as per-depth snapshots. The call stack does the same for your local variables."
 }
 ```

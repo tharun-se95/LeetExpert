@@ -132,9 +132,9 @@ the decomposition handles what division couldn't.
     {
       "question": "Why exactly does the division approach fail, motivating the ban?",
       "options": [
-        "Division is slower than multiplication",
+        "Division is slower than multiplication — CPUs take many more cycles to execute a division instruction than a multiplication, so the ban exists purely for performance, not correctness",
         "One zero in the input makes total = 0, and recovering answer[zero_position] requires 0/0; the prefix/suffix split never divides, so zeroes flow through correctly",
-        "Floating-point precision"
+        "Floating-point precision — dividing the running total by nums[i] introduces rounding error that compounds across n divisions, producing answers that are close but not exactly correct"
       ],
       "answer": 1,
       "explanation": "The division trick needs to 'un-multiply' nums[i] out of the total — impossible when nums[i] is 0. The decomposition sidesteps it by never forming the full product at position i."
@@ -142,11 +142,11 @@ the decomposition handles what division couldn't.
     {
       "question": "The O(1)-extra-space version reuses the output for left products and a scalar for right products. Why can't BOTH be scalars?",
       "options": [
-        "They could, with more care",
         "Each answer[i] needs left(i) and right(i) at the same moment, but a single sweep direction forms lefts and rights in opposite orders — one side must be materialized for all i before the combining pass",
-        "JavaScript arrays can't be written backward"
+        "JavaScript arrays can't be written backward — descending for-loops over array indices are disallowed by the language specification, forcing the right-product sweep to use a scalar instead",
+        "They could, with more care — a single carefully-ordered scalar variable could track both the running left and right products simultaneously if updated in exactly the right sequence"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "left(i) grows with i, right(i) shrinks with i. A forward sweep meets left values on time but right values too late (they need future elements). So one family is precomputed into storage — and the problem hands you a free array: the output."
     }
   ]

@@ -72,11 +72,11 @@ the two biggest modules in the course, each internally staged.
 {
   "question": "Why does Sliding Window (Stage 2) come after Arrays and Hash Tables (Stage 1)?",
   "options": [
-    "It's historically more recent",
     "Window problems usually maintain state in a hash map over an array — the technique operates on those structures",
-    "It's harder than everything in Stage 1"
+    "Difficulty ranks stages: each stage is strictly harder than the last, so ordering follows a difficulty curve rather than a dependency graph",
+    "The stages follow the order these techniques were invented historically, so Sliding Window's 1970s-era origin places it after the older array and hashing ideas"
   ],
-  "answer": 1,
+  "answer": 0,
   "explanation": "Stage 2 techniques are algorithms over Stage 1 structures. A dynamic window is typically \"an array plus a hash map tracking what's inside the window\" — so those come first."
 }
 ```

@@ -306,19 +306,6 @@ apps rate-limit bursty senders with the same timeline window.
 > per minute” by expiring old timestamps from a windowed counter — sliding
 > window on a clock, not an array.
 
-### Depth Note — One Pass Enter and Leave
-
-Remember the contract: every index enters the window at most once and leaves
-at most once. That is why a nested `while` shrink is still O(n). Keep a small
-state object (counts, distinct tally, sum) that you update in O(1) or O(alphabet)
-per move.
-
-Fixed-K warmups train the muscle without a complex validity rule: add right,
-remove `right-K`, refresh best. Variable windows add the `while invalid: left++`
-loop. Minimum covering windows update the answer only while valid after each
-shrink. If negatives break monotonic shrink logic, leave this chapter for
-Prefix Sum.
-
 ### Summary
 
 - Continuous + running rule ⇒ sliding window
@@ -445,18 +432,6 @@ same meet-up test without building a giant “seen” set on the failure path.
 
 > 🏗️ **Engineering Connection:** Kernel allocators detect a corrupted circular
 > free list with tortoise/hare — O(1) extra memory on the failure path.
-
-### Depth Note — Meetup Math Without Fear
-
-You do not need a formal proof in interviews, but you should narrate: if a
-cycle exists, the faster runner closes the gap one step per turn inside the
-loop and must meet. For the entrance, resetting one pointer to head equalizes
-the remaining distance into the loop. Middle-finding is the same two-speed walk
-with a null stop instead of a meetup stop.
-
-Find the Duplicate Number models `i → nums[i]` as a functional graph with one
-cycle; Fast & Slow finds it in O(1) extra space. That is why it is Hard owned
-here, not a casual sort+scan Easy.
 
 ### Summary
 
@@ -612,49 +587,6 @@ the front on every hit.
 > 🏗️ **Engineering Connection:** Linux kernel intrusive lists rewrite `next` /
 > `prev` locally under locks — reverse/splice bugs here crash the machine the
 > same way losing `nextTemp` fails an interview reverse.
-
-### Depth Note — Dummy Heads and Bridges
-
-Dummy (sentinel) nodes erase special cases at the real head. Merge, remove,
-and rotate almost always get simpler with `dummy.next = head` and returning
-`dummy.next`. For k-group reverse, keep an explicit bridge pointer to the node
-before the group; after reverse, reconnect `bridge.next` to the new group head
-and move the bridge to the group’s new tail.
-
-Interviewers listen for “I saved next before rewiring.” Say it. Draw it. Then
-code it.
-
-### Why Reach For This
-
-Patterns exist so you stop reinventing the same bottleneck fix under interview
-pressure. Name the wasted work first — nested pair scans, rebuilding range
-sums, rescanning a grid, forgetting visited marks, sorting when membership was
-enough. Then name the structure that removes that waste. Practice saying the
-bottleneck in one sentence before you touch the keyboard; that sentence is how
-interviewers score pattern recognition.
-
-When the pattern is dual-homed, say the primary owner and the helper out loud.
-When an Easy list is a warmup rather than a famous LeetCode Easy, label it as
-prep for the Medium that carries the real idea. Prefer deriving the template
-from the mental model over memorizing a number. If you can redraw the diagram
-from memory and retell the naive-to-insight arc, you own the chapter.
-
-Engineering systems reuse these habits daily: indexed lookups, rollups, layer
-exploration, schedulers, prefix trees, and priority queues. Connecting the toy
-example to a named production mechanism keeps the knowledge sticky beyond the
-whiteboard.
-
-Re-check complexity after you pick the pattern: time should match a single
-pass, a log factor from sort or heap, or a bounded state space — not a hidden
-quadratic walk disguised as a helper list scan. Space should match the map,
-queue, recursion depth, or heap you actually allocated. If a follow-up forbids
-extra memory, revisit in-place index surgery. If weights appear on edges,
-upgrade from BFS to Dijkstra. If the answer is any feasible set of choices with
-overlap, upgrade from greedy to DP. Those upgrades are pattern recognition too.
-
-Finally, keep the voice simple: short sentences, one worked example, one
-diagram, one template. That is the handbook bar that Hash Maps set — clarity
-first, then implementation.
 
 ### Summary
 

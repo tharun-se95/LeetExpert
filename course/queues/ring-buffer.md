@@ -158,19 +158,19 @@ dynamic array's rare-but-real O(n) copy.
     {
       "question": "Why does head == tail need a tie-breaker (size counter or sacrificial slot)?",
       "options": [
-        "Because tail can overtake head",
         "Both a completely empty and a completely full ring place tail on head — the index pair alone carries log₂(capacity²) bits but the state space has capacity+1 distinct fills; one configuration must encode two states without extra information",
-        "It doesn't — head == tail always means empty"
+        "It doesn't — head == tail always means empty; a full ring is structurally prevented from ever advancing tail back onto head, so the collision this question describes can't actually occur",
+        "Because tail can overtake head — without a tie-breaker, a fast enqueue sequence could let tail lap past head entirely, silently overwriting unread entries before dequeue ever gets a chance to read them"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "After capacity enqueues, tail wraps exactly onto head — the same picture as never having enqueued. The counter (or the wasted slot) adds the missing bit. Catching where a representation ALIASES two states is a core design-review skill."
     },
     {
       "question": "The ring's O(1) is 'worst case', the dynamic array's push is 'O(1) amortized'. When does this distinction actually matter?",
       "options": [
-        "Never — amortized and worst case are equivalent in practice",
+        "Never — amortized and worst case are equivalent in practice; since both bounds average out to the same constant over any sufficiently long run of operations, no real system could actually observe a difference between them",
         "When individual-operation latency matters (audio callbacks, real-time systems): the array's rare O(n) resize is a latency spike the ring structurally cannot have — at the price of fixed capacity",
-        "Only for very large queues"
+        "Only for very large queues — the resize spike's cost grows with the structure's size, so the distinction only becomes practically relevant once a queue holds enough elements for that one-time cost to matter"
       ],
       "answer": 1,
       "explanation": "Amortized bounds promise cheap TOTALS while permitting expensive moments. Fixed capacity is what the ring pays for eliminating the moments. Choosing between them is a requirements question — throughput vs latency — not a Big O question."
@@ -178,11 +178,11 @@ dynamic array's rare-but-real O(n) copy.
     {
       "question": "In enqueue, tail = (head + size) % capacity. Why is deriving tail preferable to storing it?",
       "options": [
-        "It's faster to compute than to read",
         "A stored tail is a second mutable variable whose consistency with head/size must be maintained by EVERY method — deriving it makes desync structurally impossible, the same move as computing rather than caching any redundant state",
-        "Stored tails waste memory"
+        "Stored tails waste memory — a dedicated integer field for tail occupies additional space in the struct that a purely derived value wouldn't need, which is the primary cost being avoided",
+        "It's faster to compute than to read — a modular-arithmetic computation executes in fewer CPU cycles than a plain memory read of a stored field, making derivation the faster option on every call"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Module 7's delete-forgot-the-tail bug was exactly a redundant-variable desync. Where a value is cheaply derivable, deriving it deletes a whole bug class. (Cache it only when profiling says the recomputation hurts — it's one add and one mod.)"
     }
   ]

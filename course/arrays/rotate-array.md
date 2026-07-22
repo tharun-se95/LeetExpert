@@ -180,11 +180,11 @@ discuss when asked "can you do fewer writes?"
 {
   "question": "Why must k be reduced mod n before rotating?",
   "options": [
-    "To keep k positive",
-    "Rotating by n returns the array to its start, so only k mod n matters — and unreduced k would break reverse_range's index bounds",
-    "It's an optional micro-optimization"
+    "To keep k positive — without the mod reduction, a large k value passed in could otherwise be interpreted as a negative rotation amount by the reversal logic",
+    "It's an optional micro-optimization — reducing k first just avoids a few redundant full-cycle rotations and makes the algorithm run slightly faster, but skipping it wouldn't change correctness",
+    "Rotating by n returns the array to its start, so only k mod n matters — and unreduced k would break reverse_range's index bounds"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Rotation by n is the identity (every element returns home — the clock wraps). The constraints allow k up to 10⁵ with n as small as 1, so reduction is correctness, not style: reverse_range(nums, 0, k−1) with k > n would index out of range."
 }
 ```

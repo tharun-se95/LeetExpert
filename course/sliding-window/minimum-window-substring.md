@@ -201,9 +201,9 @@ dedicated toolkit — including Kadane's algorithm as the capstone.
     {
       "question": "Why does `satisfied` track distinct SATISFIED characters rather than total matched character count?",
       "options": [
-        "It's simpler to implement",
+        "Total character count would overflow — summing every matched character's count across a long string risks exceeding the range a standard counter variable can safely hold",
         "Comparing satisfied === required is an O(1) check regardless of t's length or alphabet size; recomputing or comparing full frequency maps on every single expand/shrink would cost O(distinct characters) per step, turning an O(n) algorithm back into something slower",
-        "Total character count would overflow"
+        "It's simpler to implement — tracking distinct satisfied characters avoids having to write the nested loop logic that comparing total matched counts across two frequency maps would otherwise require"
       ],
       "answer": 1,
       "explanation": "This is the same move as Permutation in String's `matches` counter: replace 'compare two frequency structures' with 'maintain one integer that summarizes whether they'd compare equal.' The O(1) validity check is what keeps the whole algorithm at O(n) instead of O(n · alphabet)."
@@ -211,11 +211,11 @@ dedicated toolkit — including Kadane's algorithm as the capstone.
     {
       "question": "On the shrink step, why does the code check `have[left_ch] < need[left_ch]` rather than `have[left_ch] == need[left_ch] - 1` or similar?",
       "options": [
-        "They're equivalent for this problem's purposes",
-        "Because have[left_ch] can be decremented below need[left_ch] by exactly 1 each removal, `< need[left_ch]` and `== need[left_ch] - 1` happen to coincide here — but `<` is the more ROBUST condition: it directly states the validity-breaking fact ('no longer meets requirement') rather than assuming a specific prior value",
-        "Because have[left_ch] could be negative"
+        "They're equivalent for this problem's purposes — both expressions describe the exact same underlying event, so there's no meaningful difference in what they check or when they'd fire during the shrink loop",
+        "Because have[left_ch] could be negative — allowing the count to dip below zero during shrinking is what forces the code to use a range check like `<` rather than testing for one specific value",
+        "Because have[left_ch] can be decremented below need[left_ch] by exactly 1 each removal, `< need[left_ch]` and `== need[left_ch] - 1` happen to coincide here — but `<` is the more ROBUST condition: it directly states the validity-breaking fact ('no longer meets requirement') rather than assuming a specific prior value"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Both conditions fire at the same moment in this specific code, since decrements are always by 1. But writing the check as the actual semantic condition ('did we drop below what's needed') rather than an arithmetic coincidence ('is it exactly one less') is the more defensible, bug-resistant way to state it — worth the habit even when a shortcut would technically work."
     }
   ]

@@ -162,11 +162,11 @@ out, ring buffers, and the deque that closes the monotonic story.
 {
   "question": "When bar j pops, why is the CURRENT stack top (after the pop) guaranteed to be the nearest strictly-shorter bar to j's left?",
   "options": [
-    "Because the stack is sorted by height",
-    "The increasing-stack invariant: everything between that top and j was ≥ heights[j] and has already been popped (by j or earlier arrivals) — the survivor below j is the first element leftward that stayed, i.e. the first one shorter",
-    "It's an approximation the sentinel corrects"
+    "Because the stack is sorted by height — the algorithm maintains the surviving indices in fully sorted order by height at all times, so the element just below any popped index is trivially the next-shortest one",
+    "It's an approximation the sentinel corrects — the boundary claim only holds approximately during the main scan, and it's the trailing height-0 sentinel pass that fixes up any bars whose left boundary was recorded incorrectly",
+    "The increasing-stack invariant: everything between that top and j was ≥ heights[j] and has already been popped (by j or earlier arrivals) — the survivor below j is the first element leftward that stayed, i.e. the first one shorter"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Same certificate logic as next-greater, mirrored: survival on an increasing stack MEANS 'shorter than everything above me'. The pop moment thus hands you both boundaries at once — right (the arriver) and left (the survivor) — which is what lets one pass replace two."
 }
 ```

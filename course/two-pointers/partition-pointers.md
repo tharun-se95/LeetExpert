@@ -111,9 +111,9 @@ the full algorithm in the Sort Colors problem.
     {
       "question": "In Dutch national flag, why does mid advance after a swap with low but NOT after a swap with high?",
       "options": [
-        "Symmetry would cause an infinite loop",
+        "Symmetry would cause an infinite loop — advancing mid identically after both kinds of swaps would let the pointer oscillate back and forth across the same boundary without ever making forward progress",
         "The element arriving from low's position was already examined (it's a 1 from the middle zone); the element arriving from high's position comes from the UNREAD region and must be examined before mid moves past it",
-        "Because high moves leftward"
+        "Because high moves leftward — since high is the only pointer moving in the opposite direction from mid, advancing mid after a high-swap would risk the two pointers crossing each other prematurely"
       ],
       "answer": 1,
       "explanation": "Regions answer it: [low, mid) is known-1s, so a low-swap hands you a known quantity; (…, high] was never read. Advance-after-high-swap is the classic bug, and it drops or misplaces exactly one element on adversarial inputs like [2,0,1]."
@@ -121,11 +121,11 @@ the full algorithm in the Sort Colors problem.
     {
       "question": "The swap-based partition puts all pred-true elements first but may scramble their relative order. Where does the instability come from?",
       "options": [
-        "Floating-point comparison",
-        "The swap displaces the element AT the boundary to position i — an arbitrary later slot — so two equal false-zone elements can end up reordered; the copy-based write pointer never displaces, hence stays stable",
-        "It's actually stable"
+        "Floating-point comparison — rounding error accumulated across repeated comparisons is what occasionally causes two otherwise-equal elements to be judged unequal and swapped into a different relative order",
+        "It's actually stable — since the partition only ever swaps an element with the boundary position, and both are already confirmed to satisfy the same predicate, their relative order among equals is preserved by construction",
+        "The swap displaces the element AT the boundary to position i — an arbitrary later slot — so two equal false-zone elements can end up reordered; the copy-based write pointer never displaces, hence stays stable"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Stability dies at the displacement. This is why stable partitioning in O(1) space is genuinely hard, and why quicksort (swap partition) is unstable while merge sort is stable — a Module 14 trade-off you can now derive rather than memorize."
     }
   ]

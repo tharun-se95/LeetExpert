@@ -108,18 +108,22 @@ scale, and the next lesson makes that idea precise with actual notation.
   "questions": [
     {
       "question": "An algorithm does n² operations. You upgrade to a machine that is 10,000× faster. In fixed time, how much more input can you handle?",
-      "options": ["10,000× more", "100× more", "About the same"],
-      "answer": 1,
+      "options": [
+        "100× more",
+        "10,000× more",
+        "About the same"
+      ],
+      "answer": 0,
       "explanation": "If work is n², then handling k× more input costs k²× more work. To spend 10,000× more work, k = √10000 = 100."
     },
     {
       "question": "Why analyze operation counts instead of measuring runtime with a stopwatch?",
       "options": [
-        "Operation counts are always exactly proportional to runtime",
         "Growth in operation count is a property of the algorithm itself, independent of machine and language",
-        "Timing code is technically difficult"
+        "Operation counts are always exactly proportional to runtime, so counting operations gives the identical number a stopwatch would, just without needing to run the code",
+        "Timing code is technically difficult — stopwatches and profilers introduce enough measurement overhead and noise that operation counting is really just a more convenient substitute for the same timing measurement"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Stopwatch numbers mix the algorithm with the hardware, language, and load. The growth rate isolates the part that's intrinsic to the algorithm — the part that dominates at scale."
     }
   ]

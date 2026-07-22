@@ -85,31 +85,31 @@ Big O module.
     {
       "question": "Why is reading `arr[500000]` O(1) rather than requiring a walk to position 500,000?",
       "options": [
-        "The runtime keeps an index of every position",
         "Its address is computed directly: base + 500000 × slot_size — contiguity plus equal slot sizes make location a formula, not a search",
-        "Caches make walks fast"
+        "Caches make walks fast — the CPU's prefetcher recognizes the access pattern of stepping through a sequence and pre-loads the target position before the walk even reaches it",
+        "The runtime keeps an index of every position — a hidden lookup table maps each index to a memory address so that access doesn't need to be computed on the fly"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Random access is address arithmetic. This is THE defining array property, and it requires both contiguity and uniform slot size."
     },
     {
       "question": "A loop builds a list by always inserting each new item at index 0. Total cost for n items?",
       "options": [
-        "O(n) — each insert is one operation",
         "O(n²) — insert at the front shifts all existing elements, giving 1 + 2 + ⋯ + n shifts",
-        "O(n log n)"
+        "O(n log n) — each front-insertion shifts a shrinking fraction of the array as later inserts land closer to a full block, giving the same total as a merge-style halving pattern",
+        "O(n) — each insert is one operation, and since it's a single built-in call rather than an explicit loop, its cost is counted as constant regardless of how many elements it touches"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Front insertion is O(current length) because contiguity forbids gaps. Summing over the loop is the triangular series. Build at the end (O(1) amortized) and reverse once, or use a deque."
     },
     {
       "question": "Array scan and linked-list scan are both O(n). Why is the array scan often 10–100× faster in practice?",
       "options": [
-        "It isn't — same class, same speed",
         "Cache lines: contiguous elements arrive in fast cache together and get prefetched; scattered nodes miss cache on every hop",
-        "Arrays use less total memory"
+        "It isn't — same class, same speed; any measured difference in practice is noise from benchmarking methodology rather than a real property of the two data layouts",
+        "Arrays use less total memory — linked-list nodes carry pointer overhead per element, and it's this smaller total footprint, not access pattern, that accounts for the speedup"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "Big O counts operations, not memory-hierarchy behavior. Contiguity turns most element accesses into cache hits — a constant factor, but a huge one."
     }
   ]

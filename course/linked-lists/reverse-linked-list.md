@@ -138,11 +138,11 @@ mostly buys elegance at stack-space cost.
 {
   "question": "In the recursive version, what is head.next at the moment `head.next.next = head` executes, and why does the assignment work?",
   "options": [
-    "null — the recursion cleared it",
-    "Still head's ORIGINAL successor — untouched by the recursive call — which is now the TAIL of the reversed sublist; pointing its next at head appends head to the reversed part",
-    "The new head of the reversed sublist"
+    "The new head of the reversed sublist — the recursive call returns having already rewired head.next to point at the front of the newly reversed portion, which is exactly what the assignment then extends",
+    "null — the recursion cleared it; since the recursive call fully processes everything below head, it also resets head's own next field to null as part of unwinding back up the call stack",
+    "Still head's ORIGINAL successor — untouched by the recursive call — which is now the TAIL of the reversed sublist; pointing its next at head appends head to the reversed part"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "The recursion rewired everything BEYOND head.next but never touched head or head.next itself. So head.next is a handle to the reversed sublist's end — exactly where head must attach. Then head.next = None makes head the new tail. Draw it once; it stops being magic."
 }
 ```

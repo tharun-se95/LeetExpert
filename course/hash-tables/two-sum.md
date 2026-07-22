@@ -119,11 +119,11 @@ yields two distinct indices.
 {
   "question": "Why does the one-pass version insert nums[i] AFTER checking for its partner, rather than building the whole map first and then scanning?",
   "options": [
-    "It saves one pass but is otherwise equivalent",
-    "Build-then-scan must handle 'partner is myself' explicitly (target − nums[i] == nums[i] finds its OWN index) — check-then-insert makes the map contain only strictly-earlier elements, so self-pairing is structurally impossible",
-    "Insert-after is required for the map to fit in memory"
+    "Insert-after is required for the map to fit in memory — checking before inserting avoids ever holding more than n−1 entries at once, keeping the map within a tighter memory bound than build-then-scan would need",
+    "It saves one pass but is otherwise equivalent — both orderings produce the same map contents by the time the scan finishes, so the only real difference is the minor speedup from combining two loops into one",
+    "Build-then-scan must handle 'partner is myself' explicitly (target − nums[i] == nums[i] finds its OWN index) — check-then-insert makes the map contain only strictly-earlier elements, so self-pairing is structurally impossible"
   ],
-  "answer": 1,
+  "answer": 2,
   "explanation": "Both can be made correct, but check-then-insert gets distinctness from its INVARIANT (map = past only) instead of from a patch (`index_of[partner] != i`). Invariant-shaped correctness survives modification; patch-shaped correctness breaks in variants."
 }
 ```

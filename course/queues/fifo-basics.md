@@ -102,19 +102,19 @@ is → queue. If BOTH ends are active → deque (lesson 3).
     {
       "question": "Why is list.pop(0) / array.shift() O(n) when pop() / push() are O(1)?",
       "options": [
-        "The front element is harder to find",
-        "Removing the front leaves a gap at index 0; contiguity demands every remaining element shift left one slot — the mirrored version of Module 4's insert-at-front cost",
-        "Language implementations are unoptimized"
+        "Language implementations are unoptimized — a sufficiently well-tuned runtime could in principle make front removal as fast as back removal, so O(n) here just reflects today's engineering effort, not anything fundamental",
+        "The front element is harder to find — indexing from the front requires walking forward from the start of the array's allocated block, so locating it costs more than indexing from the already-known back position",
+        "Removing the front leaves a gap at index 0; contiguity demands every remaining element shift left one slot — the mirrored version of Module 4's insert-at-front cost"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "Same array fact from two sides: ends are free, interiors (and the front is adjacent to nothing on its left) cost movement. Every efficient queue design is a way of NOT moving data — moving an index, a pointer, or wrapping around."
     },
     {
       "question": "The SimpleQueue advances a head index instead of shifting. What did this change, in one phrase?",
       "options": [
-        "It caches the front element",
+        "It caches the front element — storing a separate reference to whatever value currently sits at the front avoids having to look it up through the array on every peek, which is the real speedup",
         "It redefined WHERE the front is instead of moving data to where the front was — the queue's contents are items[head..], and dequeue is head++",
-        "It made the array circular"
+        "It made the array circular — wrapping indices around the end of the backing array via modular arithmetic is what lets the front advance without ever needing to shift or reallocate"
       ],
       "answer": 1,
       "explanation": "Logical position vs physical position — the same length-vs-capacity divorce the dynamic array made. The occasional compaction keeps memory bounded and amortizes to O(1), by the standard doubling-style argument."
@@ -122,11 +122,11 @@ is → queue. If BOTH ends are active → deque (lesson 3).
     {
       "question": "A task scheduler must always run the job that has been WAITING LONGEST. Stack, queue, or neither?",
       "options": [
-        "Stack — most efficient",
         "Queue — longest-waiting = earliest-arrived = FIFO front",
-        "Neither — it needs sorting"
+        "Stack — most efficient; since push and pop both happen at the same end, a stack avoids the front-access costs a queue can incur, making it the faster choice regardless of what ordering the scheduler needs",
+        "Neither — it needs sorting; ranking jobs by wait time requires comparing every pair's arrival timestamps against each other, which is fundamentally a sorting problem rather than a fixed-discipline container"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "'Longest waiting' is arrival order read backwards — exactly the queue's front. (If jobs instead had PRIORITIES trumping arrival, neither discipline fits — that's the heap, Module 19.)"
     }
   ]

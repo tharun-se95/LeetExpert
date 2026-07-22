@@ -229,9 +229,9 @@ SAME direction and the window between them becomes the object of study.
 {
   "question": "In the two-pointer version, the left branch settles cell `left` using only left_max. What justifies ignoring the true right-side maximum?",
   "options": [
-    "The right side rarely matters in practice",
+    "Because water can only flow rightward — physically, water trapped above a cell can only drain toward the right wall, so the left wall's height is the only side whose exact value the settle calculation ever needs",
     "The settle needs min(left_max, true_right_max); the branch guarantees right_max ≥ left_max, and true_right_max ≥ right_max — so the min is left_max regardless of the right side's exact value. A lower bound that clears your own max resolves the min completely",
-    "Because water can only flow rightward"
+    "The right side rarely matters in practice — on most realistic elevation profiles the right wall tends to be tall enough that its exact value rarely changes the outcome of the min computation anyway"
   ],
   "answer": 1,
   "explanation": "min(a, b) is decided the moment you know b ≥ a — b's exact value adds nothing. That's the entire compression: replace 'know the future max exactly' (the O(n) array) with 'know a bound that already beats my side' (a scalar you hold). The same one-sided-bound trick returns in DP space optimizations."

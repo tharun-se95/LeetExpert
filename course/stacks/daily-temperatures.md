@@ -114,9 +114,9 @@ input.
     {
       "question": "The input [100, 99, 98, ..., 31] (strictly descending). What happens in the stack version, and what does it cost?",
       "options": [
-        "The stack thrashes — worst case O(n²)",
+        "The algorithm fails — nothing is ever recorded; a strictly descending sequence violates the loop's assumption that some warmer day eventually arrives, so the answer array is left in an undefined state",
         "No pop ever fires; all n indices pile up and every answer stays 0 — one O(n) pass with the stack at maximum depth. The input that made brute force quadratic is the stack's EASIEST case",
-        "The algorithm fails — nothing is ever recorded"
+        "The stack thrashes — worst case O(n²); every new colder temperature has to be compared against the full depth of the stack before it can be pushed, and that comparison cost compounds across n days"
       ],
       "answer": 1,
       "explanation": "Descending input = zero pops = pure pushes. Answers of 0 are correct (never warmer). The adversarial input and the expensive input have swapped places — a sign the algorithm's work is proportional to ANSWERS FOUND, not searching done."
@@ -124,9 +124,9 @@ input.
     {
       "question": "Why must the stack hold indices rather than temperature values?",
       "options": [
-        "Values would overflow",
+        "Indices compare faster — integer index comparisons execute in fewer CPU cycles than comparing arbitrary temperature values, which is the actual reason the stack is built around indices instead",
         "The answer is a DISTANCE i − j; at pop time you must know where j was, and a value-only stack has discarded that. Indices always suffice (values are one lookup away); values alone often don't",
-        "Indices compare faster"
+        "Values would overflow — temperatures accumulated across a long descending run can exceed the range a stack of raw values is able to hold, forcing the switch to smaller index values instead"
       ],
       "answer": 1,
       "explanation": "temps[j] is recoverable from j, but j is not recoverable from temps[j] (duplicates!). Index stacks strictly dominate — which is why the module's template never stacks raw values."

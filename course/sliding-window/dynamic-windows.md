@@ -162,9 +162,9 @@ outer step.
     {
       "question": "Why does 'shrink while sum ≥ target' require non-negative numbers?",
       "options": [
-        "Negative numbers are slower to add",
+        "It doesn't — the technique works for any numbers; the shrink loop's stop condition only checks the current sum against the target, which stays a valid check no matter what sign the array's elements happen to have",
         "The shrink logic relies on validity being monotonic in window size — with negative numbers, removing an element could INCREASE the sum, so a window that looks invalid after shrinking might become valid again later, breaking the one-directional stop condition",
-        "It doesn't — the technique works for any numbers"
+        "Negative numbers are slower to add — arithmetic involving a sign bit takes marginally more CPU cycles than unsigned addition, which is the actual reason the technique's performance guarantee depends on non-negative inputs"
       ],
       "answer": 1,
       "explanation": "Monotonicity is the load-bearing assumption, not a technicality. Without it, 'shrink until invalid, then stop' can skip over valid windows or stop too early — the algorithm would need a fundamentally different approach (like prefix sums with a sorted structure)."
@@ -172,9 +172,9 @@ outer step.
     {
       "question": "A dynamic-window solution has a nested while loop inside a for loop. Why is the total cost still O(n) and not O(n²)?",
       "options": [
-        "The while loop rarely executes",
+        "Because the window has bounded size — since the window can never grow past a fixed maximum length for this kind of problem, the inner while loop is capped at that same constant regardless of how large the input array gets",
         "left and right EACH advance at most n times across the entire run — they never reset — so total iterations of both loops combined is bounded by 2n, regardless of how the work is distributed across outer steps",
-        "Because the window has bounded size"
+        "The while loop rarely executes — on typical, non-adversarial inputs the shrink condition fails most of the time, so the nested loop's real-world behavior stays close to linear even though its worst case looks quadratic"
       ],
       "answer": 1,
       "explanation": "Same accounting discipline as the monotonic stack: sum the total movement of each pointer across the WHOLE execution, not the worst case of a single outer iteration. Neither pointer ever moves backward, which is what caps the total at O(n)."
@@ -182,11 +182,11 @@ outer step.
     {
       "question": "In the 'longest valid' template, why is best updated AFTER the shrink loop rather than inside it?",
       "options": [
-        "Style preference — either position works",
-        "The window is only guaranteed valid once the shrink loop exits (that's its exit condition) — recording during shrinking would credit an invalid window's length as if it were a valid answer",
-        "To save one comparison per iteration"
+        "Style preference — either position works; recording the best length before or after the shrink loop produces the identical final answer, since the loop always converges to the same valid window regardless of when the measurement is taken",
+        "To save one comparison per iteration — moving the update outside the shrink loop means it only runs once per outer iteration instead of once per shrink step, which is purely a minor performance optimization",
+        "The window is only guaranteed valid once the shrink loop exits (that's its exit condition) — recording during shrinking would credit an invalid window's length as if it were a valid answer"
       ],
-      "answer": 1,
+      "answer": 2,
       "explanation": "The two templates are mirror images for a reason: 'shrink WHILE valid' means every window seen mid-shrink IS still valid (record inside); 'shrink UNTIL valid' means windows mid-shrink are NOT yet valid (record only after). Placing the record on the wrong side of the loop is the classic bug this lesson warns about."
     }
   ]

@@ -168,29 +168,29 @@ lcm for "when do two cycles align" scheduling problems.
     {
       "question": "Why does trial division only need to check divisors up to √n?",
       "options": [
-        "Numbers above √n are usually prime",
         "If n = d·k with d ≤ k, then d ≤ √n — divisors pair up around √n, so a composite always has a small witness",
-        "It's a heuristic that occasionally misses composites"
+        "Numbers above √n are usually prime — composite numbers become increasingly rare as they grow, so skipping divisors past √n only sacrifices a negligible, vanishing chance of missing one",
+        "It's a heuristic that occasionally misses composites — trial division trades a small amount of accuracy for speed, similar to how randomized primality tests work"
       ],
-      "answer": 1,
+      "answer": 0,
       "explanation": "If both factors of n exceeded √n their product would exceed n. So finding no divisor ≤ √n is a proof, not a guess."
     },
     {
       "question": "gcd(48, 18) by Euclid — trace it:",
       "options": [
-        "gcd(48,18) → gcd(18,12) → gcd(12,6) → gcd(6,0) = 6",
-        "gcd(48,18) → gcd(24,9) → gcd(9,6) = 3",
-        "gcd(48,18) → gcd(30,18) → gcd(18,12) = 12"
+        "gcd(48,18) → gcd(24,9) → gcd(9,6) = 3 (halving both numbers each step instead of taking a true remainder)",
+        "gcd(48,18) → gcd(30,18) → gcd(18,12) = 12 (subtracting the smaller from the larger just once per step instead of using mod)",
+        "gcd(48,18) → gcd(18,12) → gcd(12,6) → gcd(6,0) = 6"
       ],
-      "answer": 0,
+      "answer": 2,
       "explanation": "48 mod 18 = 12, 18 mod 12 = 6, 12 mod 6 = 0. When the second number hits 0, the first (6) is the gcd."
     },
     {
       "question": "You need primality for every number up to 10⁶. Best plan?",
       "options": [
-        "Call the O(√n) test on each — about 10⁶ × 10³ = 10⁹ operations",
+        "Memoize the O(√n) test — cache each result so repeated queries for the same value skip re-running trial division",
         "Sieve once for O(n log log n) ≈ a few million operations, then answer each query in O(1)",
-        "Memoize the O(√n) test"
+        "Call the O(√n) test on each — about 10⁶ × 10³ = 10⁹ operations"
       ],
       "answer": 1,
       "explanation": "Batch queries over a dense range are exactly what sieves are for — precompute all answers for near-linear cost, then each lookup is free. Memoizing trial division still pays √n per distinct number."
