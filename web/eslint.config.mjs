@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Reference solutions are DATA, not modules: the harness reads them as
+    // source text and evaluates them, so nothing imports the functions they
+    // declare. Linting them as modules yields one unused-var warning per
+    // file — noise that trains people to ignore lint output.
+    "tests/reference/**",
   ]),
   {
     rules: {

@@ -40,7 +40,9 @@ three failure modes with your own test inputs before running anything.
     { "args": ["(]"], "expect": false },
     { "args": ["([])"], "expect": true },
     { "args": ["([)]"], "expect": false },
-    { "args": ["]"], "expect": false }
+    { "args": ["]"], "expect": false },
+    { "args": ["("], "expect": false },
+    { "args": ["([{"], "expect": false }
   ]
 }
 ```

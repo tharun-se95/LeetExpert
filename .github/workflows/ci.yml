@@ -27,6 +27,14 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
 
+      # The reference-solution tests execute every sandbox in BOTH runtimes.
+      # Without Python here, half that guarantee silently disappears — so the
+      # suite asserts python3 is present rather than skipping quietly.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Install
         working-directory: web
         run: npm ci
