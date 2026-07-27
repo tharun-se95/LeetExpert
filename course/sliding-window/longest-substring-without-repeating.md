@@ -26,6 +26,29 @@ Validity here is "no duplicate in the window" — figure out what state
 answers "is the incoming character already in the window?" in O(1),
 and what invalidates the window when it arrives.
 
+
+```sandbox
+{
+  "id": "longest-substring-without-repeating",
+  "fn": { "python": "length_of_longest_substring", "javascript": "lengthOfLongestSubstring" },
+  "check": "return",
+  "starter": {
+    "python": "def length_of_longest_substring(s):\n    # Return the length of the longest substring with no repeated character.\n    pass\n",
+    "javascript": "function lengthOfLongestSubstring(s) {\n  // Return the length of the longest substring with no repeated character.\n}\n"
+  },
+  "cases": [
+    { "args": ["abcabcbb"], "expect": 3 },
+    { "args": ["bbbbb"], "expect": 1 },
+    { "args": ["pwwkew"], "expect": 3 },
+    { "args": [""], "expect": 0 },
+    { "args": [" "], "expect": 1 },
+    { "args": ["dvdf"], "expect": 3 },
+    { "args": ["abba"], "expect": 2 },
+    { "args": ["tmmzuxt"], "expect": 5 }
+  ]
+}
+```
+
 ````reveal Hint 1 — what breaks validity, and how do you know?
 A window is invalid the instant it contains the SAME character twice.
 Track a set (or map to last-seen index) of characters currently in the

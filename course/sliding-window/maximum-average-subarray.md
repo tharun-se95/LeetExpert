@@ -24,6 +24,27 @@ The whole exercise is noticing that maximizing average is the same as
 maximizing sum (k is fixed, so dividing by it at the end doesn't change
 which window wins) — then applying the slide template directly.
 
+
+```sandbox
+{
+  "id": "maximum-average-subarray",
+  "fn": { "python": "find_max_average", "javascript": "findMaxAverage" },
+  "check": "return",
+  "starter": {
+    "python": "def find_max_average(nums, k):\n    # Return the maximum average over any window of length k.\n    pass\n",
+    "javascript": "function findMaxAverage(nums, k) {\n  // Return the maximum average over any window of length k.\n}\n"
+  },
+  "cases": [
+    { "args": [[1, 12, -5, -6, 50, 3], 4], "expect": 12.75 },
+    { "args": [[5], 1], "expect": 5 },
+    { "args": [[-1, -2, -3, -4], 2], "expect": -1.5 },
+    { "args": [[1, 2, 4], 3], "expect": 2.3333333333333335 },
+    { "args": [[0, 1, 1, 3, 3], 4], "expect": 2 },
+    { "args": [[4, 0, 4, 3, 3], 5], "expect": 2.8 }
+  ]
+}
+```
+
 ````reveal Hint — reduce to the lesson's exact template
 Maximize sum over all windows of size k (the lesson's template, verbatim),
 then divide the best sum by k once, at the very end.

@@ -27,6 +27,29 @@ counts match). Combine them: slide a window of size `len(s1)` across
 `s2`, and ask at each position whether the window's fingerprint matches
 `s1`'s.
 
+
+```sandbox
+{
+  "id": "permutation-in-string",
+  "fn": { "python": "check_inclusion", "javascript": "checkInclusion" },
+  "check": "return",
+  "starter": {
+    "python": "def check_inclusion(s1, s2):\n    # Return True if some window of s2 is a permutation of s1.\n    pass\n",
+    "javascript": "function checkInclusion(s1, s2) {\n  // Return true if some window of s2 is a permutation of s1.\n}\n"
+  },
+  "cases": [
+    { "args": ["ab", "eidbaooo"], "expect": true },
+    { "args": ["ab", "eidboaoo"], "expect": false },
+    { "args": ["a", "a"], "expect": true },
+    { "args": ["adc", "dcda"], "expect": true },
+    { "args": ["hello", "ooolleoooleh"], "expect": false },
+    { "args": ["abc", "ccccbbbbaaaa"], "expect": false },
+    { "args": ["aa", "aab"], "expect": true },
+    { "args": ["abc", "bbbca"], "expect": true }
+  ]
+}
+```
+
 ````reveal Hint 1 — the naive combination, and its cost
 Compute s1's count array once. At each window position, compute the
 window's count array from scratch and compare: O(26) per window,

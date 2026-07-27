@@ -28,6 +28,29 @@ window meeting a lower-bound condition, which is exactly the "shrink
 while valid, record the smallest" template. Notice which constraint
 makes the whole technique legal before you write a line.
 
+
+```sandbox
+{
+  "id": "minimum-size-subarray-sum",
+  "fn": { "python": "min_subarray_len", "javascript": "minSubArrayLen" },
+  "check": "return",
+  "starter": {
+    "python": "def min_subarray_len(target, nums):\n    # Return the length of the shortest subarray summing to at least target, or 0.\n    pass\n",
+    "javascript": "function minSubArrayLen(target, nums) {\n  // Return the length of the shortest subarray summing to at least target, or 0.\n}\n"
+  },
+  "cases": [
+    { "args": [7, [2, 3, 1, 2, 4, 3]], "expect": 2 },
+    { "args": [4, [1, 4, 4]], "expect": 1 },
+    { "args": [11, [1, 1, 1, 1, 1, 1, 1, 1]], "expect": 0 },
+    { "args": [1, [1]], "expect": 1 },
+    { "args": [5, [1]], "expect": 0 },
+    { "args": [11, [1, 2, 3, 4, 5]], "expect": 3 },
+    { "args": [15, [1, 2, 3, 4, 5]], "expect": 5 },
+    { "args": [213, [12, 28, 83, 4, 25, 26, 25, 2, 25, 25, 25, 12]], "expect": 8 }
+  ]
+}
+```
+
 ````reveal Hint 1 — which constraint licenses this?
 All values are POSITIVE. That's what makes 'sum ≥ target' monotonic:
 growing the window can only raise the sum (never valid → invalid by

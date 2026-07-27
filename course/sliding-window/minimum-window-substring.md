@@ -29,6 +29,29 @@ frequency matching (need vs. have counts) — except the window is now
 contiguous or exactly `len(t)` long in `s`. Define "valid" precisely
 before writing anything.
 
+
+```sandbox
+{
+  "id": "minimum-window-substring",
+  "fn": { "python": "min_window", "javascript": "minWindow" },
+  "check": "return",
+  "starter": {
+    "python": "def min_window(s, t):\n    # Return the smallest substring of s covering all of t, or \"\".\n    pass\n",
+    "javascript": "function minWindow(s, t) {\n  // Return the smallest substring of s covering all of t, or \"\".\n}\n"
+  },
+  "cases": [
+    { "args": ["ADOBECODEBANC", "ABC"], "expect": "BANC" },
+    { "args": ["a", "aa"], "expect": "" },
+    { "args": ["a", "a"], "expect": "a" },
+    { "args": ["ab", "b"], "expect": "b" },
+    { "args": ["aa", "aa"], "expect": "aa" },
+    { "args": ["bba", "ab"], "expect": "ba" },
+    { "args": ["cabwefgewcwaefgcf", "cae"], "expect": "cwae" },
+    { "args": ["ADOBECODEBANC", "ABCC"], "expect": "CODEBANC" }
+  ]
+}
+```
+
 ````reveal Hint 1 — what does "valid" mean here?
 The window is valid when it contains AT LEAST need[c] copies of every
 character c in t. Track have[c] (window's counts) and a single number
