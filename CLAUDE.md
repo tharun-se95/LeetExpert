@@ -49,8 +49,10 @@ content to fit the tool, and do not ship a version that "mostly" works.
 The content is the product. Code exists to serve it.
 
 - **Every problem lesson gets a working sandbox** with starter code in both
-  languages. The five documented structural exclusions are the only
-  permitted gaps, and each must be resolved by extending the harness.
+  languages. There are **no permitted exclusions**: the runner now expresses
+  every problem shape in the course (structural inputs, operation sequences,
+  order-independent answers). If a new problem does not fit, extend the
+  runner — do not add an exclusion.
 - **Test cases must cover the stated constraints.** If the lesson says
   "k can exceed n" or "may be empty", there is a case for it. Cases are
   chosen to catch real mistakes, not to be passed easily.
