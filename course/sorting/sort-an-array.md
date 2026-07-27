@@ -24,6 +24,28 @@ O(n log n) sort **correctly**, from the ground up, using the concept
 lessons directly. Pick merge sort or quicksort and implement it fully
 before checking anything.
 
+
+```sandbox
+{
+  "id": "sort-an-array",
+  "fn": { "python": "sort_array", "javascript": "sortArray" },
+  "check": "return",
+  "starter": {
+    "python": "def sort_array(nums):\n    # Return nums in ascending order, without a built-in sort.\n    pass\n",
+    "javascript": "function sortArray(nums) {\n  // Return nums in ascending order, without a built-in sort.\n}\n"
+  },
+  "cases": [
+    { "args": [[5, 2, 3, 1]], "expect": [1, 2, 3, 5] },
+    { "args": [[5, 1, 1, 2, 0, 0]], "expect": [0, 0, 1, 1, 2, 5] },
+    { "args": [[1]], "expect": [1] },
+    { "args": [[2, 1]], "expect": [1, 2] },
+    { "args": [[-1, -5, 3, 0, -2]], "expect": [-5, -2, -1, 0, 3] },
+    { "args": [[9, 8, 7, 6, 5, 4, 3, 2, 1, 0]], "expect": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
+    { "args": [[10, 9, 100, 1, 2]], "expect": [1, 2, 9, 10, 100] }
+  ]
+}
+```
+
 ````reveal Hint — which one, and why it matters here
 Merge sort's O(n log n) holds for EVERY input, no exceptions. Quicksort
 with a naive pivot (e.g. always the last element) degrades to O(n²) on

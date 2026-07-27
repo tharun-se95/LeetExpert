@@ -26,6 +26,29 @@ answers "which arrangement of THESE TWO pieces is bigger?" Find the
 comparator before opening the hint; the sort itself is one line once
 you have it.
 
+
+```sandbox
+{
+  "id": "largest-number",
+  "fn": { "python": "largest_number", "javascript": "largestNumber" },
+  "check": "return",
+  "starter": {
+    "python": "def largest_number(nums):\n    # Return the largest number these digits can form, as a string.\n    pass\n",
+    "javascript": "function largestNumber(nums) {\n  // Return the largest number these digits can form, as a string.\n}\n"
+  },
+  "cases": [
+    { "args": [[10, 2]], "expect": "210" },
+    { "args": [[3, 30, 34, 5, 9]], "expect": "9534330" },
+    { "args": [[0, 0]], "expect": "0" },
+    { "args": [[1]], "expect": "1" },
+    { "args": [[0]], "expect": "0" },
+    { "args": [[121, 12]], "expect": "12121" },
+    { "args": [[8308, 8308, 830]], "expect": "83088308830" },
+    { "args": [[432, 43243]], "expect": "43243432" }
+  ]
+}
+```
+
 ````reveal Hint — compare by CONCATENATION, not by value
 For two numbers (as strings) a and b, which should come first? Compare
 a+b against b+a as strings (or numbers) — whichever concatenation is

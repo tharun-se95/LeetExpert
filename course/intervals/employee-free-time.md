@@ -37,6 +37,30 @@ why merging across ALL employees together (not per-employee) is the
 right first step, and what "a gap between two sorted, non-overlapping
 intervals" looks like as a formula.
 
+
+```sandbox
+{
+  "id": "employee-free-time",
+  "fn": { "python": "employee_free_time", "javascript": "employeeFreeTime" },
+  "check": "return",
+  "starter": {
+    "python": "def employee_free_time(schedule):\n    # Return the finite intervals during which everyone is free.\n    pass\n",
+    "javascript": "function employeeFreeTime(schedule) {\n  // Return the finite intervals during which everyone is free.\n}\n"
+  },
+  "cases": [
+    { "args": [[[[1, 2], [5, 6]], [[1, 3]], [[4, 10]]]], "expect": [[3, 4]] },
+    {
+      "args": [[[[1, 3], [6, 7]], [[2, 4]], [[2, 5], [9, 12]]]],
+      "expect": [[5, 6], [7, 9]]
+    },
+    { "args": [[[[1, 2]]]], "expect": [] },
+    { "args": [[[[1, 4]], [[2, 3]]]], "expect": [] },
+    { "args": [[[[1, 2], [3, 4]], [[2, 3]]]], "expect": [] },
+    { "args": [[[[1, 2], [4, 5]], [[1, 2], [4, 5]]]], "expect": [[2, 4]] }
+  ]
+}
+```
+
 ````reveal Hint — flatten everyone's intervals, merge once, then read off the gaps
 Don't try to reason about multiple employees' schedules simultaneously —
 collapse the problem back to one you've already solved. Take every

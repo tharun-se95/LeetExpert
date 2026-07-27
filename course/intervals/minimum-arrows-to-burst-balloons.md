@@ -35,6 +35,27 @@ least one common x. So "minimum arrows" is "minimum number of groups such
 that every balloon in a group has a common piercing point." Try to see
 that this is the same sort-by-end greedy before opening the hint.
 
+
+```sandbox
+{
+  "id": "minimum-arrows-to-burst-balloons",
+  "fn": { "python": "find_min_arrow_shots", "javascript": "findMinArrowShots" },
+  "check": "return",
+  "starter": {
+    "python": "def find_min_arrow_shots(points):\n    # Return the fewest arrows that burst every balloon.\n    pass\n",
+    "javascript": "function findMinArrowShots(points) {\n  // Return the fewest arrows that burst every balloon.\n}\n"
+  },
+  "cases": [
+    { "args": [[[10, 16], [2, 8], [1, 6], [7, 12]]], "expect": 2 },
+    { "args": [[[1, 2], [3, 4], [5, 6], [7, 8]]], "expect": 4 },
+    { "args": [[[1, 2], [2, 3], [3, 4], [4, 5]]], "expect": 2 },
+    { "args": [[[1, 2]]], "expect": 1 },
+    { "args": [[[1, 10], [2, 3], [4, 5], [6, 7]]], "expect": 3 },
+    { "args": [[[1, 5], [1, 5], [1, 5]]], "expect": 1 }
+  ]
+}
+```
+
 ````reveal Hint — sort by end, plant an arrow at the earliest end
 Sort balloons by their **end** coordinate. Shoot the first arrow at the
 end of the earliest-ending balloon — that's the position most likely to

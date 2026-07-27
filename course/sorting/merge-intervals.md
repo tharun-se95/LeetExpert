@@ -24,6 +24,28 @@ hard to detect in arbitrary order, but trivial once **sorted by start
 time** — overlaps can then only happen between neighbors. Find the
 one-line reduction before opening the hint.
 
+
+```sandbox
+{
+  "id": "merge-intervals",
+  "fn": { "python": "merge_intervals", "javascript": "mergeIntervals" },
+  "check": "return",
+  "starter": {
+    "python": "def merge_intervals(intervals):\n    # Return the intervals with every overlap merged.\n    pass\n",
+    "javascript": "function mergeIntervals(intervals) {\n  // Return the intervals with every overlap merged.\n}\n"
+  },
+  "cases": [
+    { "args": [[[1, 3], [2, 6], [8, 10], [15, 18]]], "expect": [[1, 6], [8, 10], [15, 18]] },
+    { "args": [[[1, 4], [4, 5]]], "expect": [[1, 5]] },
+    { "args": [[[1, 4], [2, 3]]], "expect": [[1, 4]] },
+    { "args": [[[1, 4]]], "expect": [[1, 4]] },
+    { "args": [[[5, 6], [1, 2], [3, 4]]], "expect": [[1, 2], [3, 4], [5, 6]] },
+    { "args": [[[1, 10], [2, 3], [4, 5], [6, 7]]], "expect": [[1, 10]] },
+    { "args": [[[2, 3], [2, 3]]], "expect": [[2, 3]] }
+  ]
+}
+```
+
 ````reveal Hint — sort, then one linear sweep
 Sort by start. Walk the sorted list keeping a 'current merged interval.'
 Each next interval either overlaps the current one (start <= current

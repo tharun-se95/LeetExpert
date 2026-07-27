@@ -29,6 +29,28 @@ one asks only "is one room ever enough?", i.e. "do any two meetings
 overlap at all?" That is a strictly easier question, and it should need
 strictly less machinery. Find the one-pass check before opening the hint.
 
+
+```sandbox
+{
+  "id": "meeting-rooms",
+  "fn": { "python": "can_attend_meetings", "javascript": "canAttendMeetings" },
+  "check": "return",
+  "starter": {
+    "python": "def can_attend_meetings(intervals):\n    # Return True if no two meetings overlap.\n    pass\n",
+    "javascript": "function canAttendMeetings(intervals) {\n  // Return true if no two meetings overlap.\n}\n"
+  },
+  "cases": [
+    { "args": [[[0, 30], [5, 10], [15, 20]]], "expect": false },
+    { "args": [[[7, 10], [2, 4]]], "expect": true },
+    { "args": [[[1, 5], [5, 8]]], "expect": true },
+    { "args": [[]], "expect": true },
+    { "args": [[[1, 5]]], "expect": true },
+    { "args": [[[5, 8], [1, 5], [8, 9]]], "expect": true },
+    { "args": [[[1, 5], [4, 8]]], "expect": false }
+  ]
+}
+```
+
 ````reveal Hint — sort by start, then check adjacent pairs only
 Sort by start time. Once sorted, if *any* two meetings overlap, two
 **adjacent** meetings in sorted order must overlap — so you only need to

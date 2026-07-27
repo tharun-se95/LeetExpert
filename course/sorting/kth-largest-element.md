@@ -27,6 +27,28 @@ recursing into both sides, finds the kth element in **expected linear
 time**. Reason through why before opening the hints; this is the payoff
 of understanding partition as its own tool, not just sorting's engine.
 
+
+```sandbox
+{
+  "id": "kth-largest-element",
+  "fn": { "python": "find_kth_largest", "javascript": "findKthLargest" },
+  "check": "return",
+  "starter": {
+    "python": "def find_kth_largest(nums, k):\n    # Return the kth largest value, counting duplicates.\n    pass\n",
+    "javascript": "function findKthLargest(nums, k) {\n  // Return the kth largest value, counting duplicates.\n}\n"
+  },
+  "cases": [
+    { "args": [[3, 2, 1, 5, 6, 4], 2], "expect": 5 },
+    { "args": [[3, 2, 3, 1, 2, 4, 5, 5, 6], 4], "expect": 4 },
+    { "args": [[1], 1], "expect": 1 },
+    { "args": [[2, 2, 2, 2], 3], "expect": 2 },
+    { "args": [[7, 6, 5, 4, 3, 2, 1], 1], "expect": 7 },
+    { "args": [[7, 6, 5, 4, 3, 2, 1], 7], "expect": 1 },
+    { "args": [[-1, -5, -3], 2], "expect": -3 }
+  ]
+}
+```
+
 ````reveal Hint 1 — what does ONE partition call give you for free?
 Partitioning around a pivot places it at its FINAL sorted index — call
 it p. If p is exactly the rank you want, you're done instantly. If your

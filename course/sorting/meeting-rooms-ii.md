@@ -25,6 +25,28 @@ ranges, it asks how many are simultaneously in progress at the busiest
 moment. Separate the starts and ends and think about what a "room in
 use" count does as time moves forward.
 
+
+```sandbox
+{
+  "id": "meeting-rooms-ii",
+  "fn": { "python": "min_meeting_rooms", "javascript": "minMeetingRooms" },
+  "check": "return",
+  "starter": {
+    "python": "def min_meeting_rooms(intervals):\n    # Return the fewest rooms that hold every meeting without a clash.\n    pass\n",
+    "javascript": "function minMeetingRooms(intervals) {\n  // Return the fewest rooms that hold every meeting without a clash.\n}\n"
+  },
+  "cases": [
+    { "args": [[[0, 30], [5, 10], [15, 20]]], "expect": 2 },
+    { "args": [[[7, 10], [2, 4]]], "expect": 1 },
+    { "args": [[[1, 5]]], "expect": 1 },
+    { "args": [[[1, 5], [5, 9]]], "expect": 1 },
+    { "args": [[[1, 10], [2, 7], [3, 19], [8, 12], [10, 20], [11, 30]]], "expect": 4 },
+    { "args": [[[2, 11], [6, 16], [11, 16]]], "expect": 2 },
+    { "args": [[[1, 2], [1, 2], [1, 2]]], "expect": 3 }
+  ]
+}
+```
+
 ````reveal Hint 1 — separate starts from ends, sort each
 Every meeting START is a +1 to rooms-needed; every meeting END is a −1.
 Collect all starts into one sorted list and all ends into another

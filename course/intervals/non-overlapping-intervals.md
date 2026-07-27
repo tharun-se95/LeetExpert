@@ -30,6 +30,27 @@ set of mutually non-overlapping intervals.** That's a classic. Try to
 find the greedy rule before opening the hint — and be careful which
 endpoint you sort on.
 
+
+```sandbox
+{
+  "id": "non-overlapping-intervals",
+  "fn": { "python": "erase_overlap_intervals", "javascript": "eraseOverlapIntervals" },
+  "check": "return",
+  "starter": {
+    "python": "def erase_overlap_intervals(intervals):\n    # Return the fewest intervals to drop so the rest do not overlap.\n    pass\n",
+    "javascript": "function eraseOverlapIntervals(intervals) {\n  // Return the fewest intervals to drop so the rest do not overlap.\n}\n"
+  },
+  "cases": [
+    { "args": [[[1, 2], [2, 3], [3, 4], [1, 3]]], "expect": 1 },
+    { "args": [[[1, 2], [1, 2], [1, 2]]], "expect": 2 },
+    { "args": [[[1, 2], [2, 3]]], "expect": 0 },
+    { "args": [[[1, 2]]], "expect": 0 },
+    { "args": [[[1, 100], [11, 22], [1, 11], [2, 12]]], "expect": 2 },
+    { "args": [[[1, 2], [3, 4], [5, 6]]], "expect": 0 }
+  ]
+}
+```
+
 ````reveal Hint 1 — it's the "activity selection" problem in disguise
 "Choose the most non-overlapping intervals" is the activity-selection
 problem: given intervals (activities with a start and finish), select as

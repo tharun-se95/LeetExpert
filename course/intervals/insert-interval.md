@@ -34,6 +34,31 @@ you'd be throwing away: **already sorted**. Merge Intervals pays
 O(n log n) *because* it starts from arbitrary order. Here the order is a
 gift. Can you insert in a single linear pass and never sort at all?
 
+
+```sandbox
+{
+  "id": "insert-interval",
+  "fn": { "python": "insert", "javascript": "insert" },
+  "check": "return",
+  "starter": {
+    "python": "def insert(intervals, new_interval):\n    # Return the sorted, non-overlapping list after inserting new_interval.\n    pass\n",
+    "javascript": "function insert(intervals, newInterval) {\n  // Return the sorted, non-overlapping list after inserting newInterval.\n}\n"
+  },
+  "cases": [
+    { "args": [[[1, 3], [6, 9]], [2, 5]], "expect": [[1, 5], [6, 9]] },
+    {
+      "args": [[[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]], [4, 8]],
+      "expect": [[1, 2], [3, 10], [12, 16]]
+    },
+    { "args": [[], [5, 7]], "expect": [[5, 7]] },
+    { "args": [[[1, 5]], [2, 3]], "expect": [[1, 5]] },
+    { "args": [[[1, 5]], [6, 8]], "expect": [[1, 5], [6, 8]] },
+    { "args": [[[3, 5]], [1, 2]], "expect": [[1, 2], [3, 5]] },
+    { "args": [[[1, 2], [5, 6]], [2, 5]], "expect": [[1, 6]] }
+  ]
+}
+```
+
 ````reveal Hint — the input splits into exactly three zones
 Because the list is sorted and non-overlapping, and `newInterval` is one
 contiguous range, the existing intervals fall into three consecutive
