@@ -27,6 +27,29 @@ constraint is the tell: it rules out Module 11's sliding window (which
 needed non-negativity for its shrink logic) and points straight at the
 hash-map technique instead.
 
+
+```sandbox
+{
+  "id": "subarray-sum-equals-k",
+  "fn": { "python": "subarray_sum", "javascript": "subarraySum" },
+  "check": "return",
+  "starter": {
+    "python": "def subarray_sum(nums, k):\n    # Return how many contiguous subarrays sum to exactly k.\n    pass\n",
+    "javascript": "function subarraySum(nums, k) {\n  // Return how many contiguous subarrays sum to exactly k.\n}\n"
+  },
+  "cases": [
+    { "args": [[1, 1, 1], 2], "expect": 2 },
+    { "args": [[1, 2, 3], 3], "expect": 2 },
+    { "args": [[1, -1, 0], 0], "expect": 3 },
+    { "args": [[1], 0], "expect": 0 },
+    { "args": [[0, 0, 0], 0], "expect": 6 },
+    { "args": [[1, 2, 1, 2, 1], 3], "expect": 4 },
+    { "args": [[-1, -1, 1], 0], "expect": 1 },
+    { "args": [[3, 4, 7, 2, -3, 1, 4, 2], 7], "expect": 4 }
+  ]
+}
+```
+
 ````reveal Hint — restate the reduction
 sum(nums[l..r]) = k  ⟺  prefix[r+1] - prefix[l] = k  ⟺
 prefix[l] = prefix[r+1] - k. At each r, ask a hash map: 'how many

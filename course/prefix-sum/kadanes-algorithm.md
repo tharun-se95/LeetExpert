@@ -26,6 +26,28 @@ running minimum and a running best profit in a single pass. This
 problem asks something structurally identical, phrased differently:
 find the connection before opening any hints.
 
+
+```sandbox
+{
+  "id": "kadanes-algorithm",
+  "fn": { "python": "max_subarray", "javascript": "maxSubArray" },
+  "check": "return",
+  "starter": {
+    "python": "def max_subarray(nums):\n    # Return the largest sum over any contiguous subarray.\n    pass\n",
+    "javascript": "function maxSubArray(nums) {\n  // Return the largest sum over any contiguous subarray.\n}\n"
+  },
+  "cases": [
+    { "args": [[-2, 1, -3, 4, -1, 2, 1, -5, 4]], "expect": 6 },
+    { "args": [[1]], "expect": 1 },
+    { "args": [[5, 4, -1, 7, 8]], "expect": 23 },
+    { "args": [[-1]], "expect": -1 },
+    { "args": [[-3, -2, -5]], "expect": -2 },
+    { "args": [[-2, -1]], "expect": -1 },
+    { "args": [[8, -19, 5, -4, 20]], "expect": 21 }
+  ]
+}
+```
+
 ````reveal Hint 1 — the reduction to a prefix-sum question
 Every subarray's sum is a prefix difference: sum(nums[l..r]) =
 prefix[r+1] - prefix[l]. Maximizing this over all l < r+1 means, for

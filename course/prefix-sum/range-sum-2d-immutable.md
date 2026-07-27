@@ -30,6 +30,57 @@ class-shaped harness as Range Sum Query — Immutable. Build the padded
 2D prefix array once in the constructor; answer each query with the
 four-term inclusion-exclusion formula.
 
+
+```sandbox
+{
+  "id": "range-sum-2d-immutable",
+  "fn": { "python": "NumMatrix", "javascript": "NumMatrix" },
+  "class": { "python": "NumMatrix", "javascript": "NumMatrix" },
+  "check": "sequence",
+  "starter": {
+    "python": "class NumMatrix:\n    def __init__(self, matrix):\n        # Precompute here so sumRegion is O(1).\n        pass\n\n    def sumRegion(self, row1, col1, row2, col2):\n        # Return the sum of the rectangle, corners included.\n        pass\n",
+    "javascript": "class NumMatrix {\n  constructor(matrix) {\n    // Precompute here so sumRegion is O(1).\n  }\n\n  sumRegion(row1, col1, row2, col2) {\n    // Return the sum of the rectangle, corners included.\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [
+        [
+          [3, 0, 1, 4, 2],
+          [5, 6, 3, 2, 1],
+          [1, 2, 0, 1, 5],
+          [4, 1, 0, 1, 7],
+          [1, 0, 3, 0, 5]
+        ]
+      ],
+      "ops": [
+        ["sumRegion", [2, 1, 4, 3], 8],
+        ["sumRegion", [1, 1, 2, 2], 11],
+        ["sumRegion", [1, 2, 2, 4], 12],
+        ["sumRegion", [0, 0, 4, 4], 58]
+      ]
+    },
+    { "construct": [[[1]]], "ops": [["sumRegion", [0, 0, 0, 0], 1]] },
+    {
+      "construct": [[[1, 2], [3, 4]]],
+      "ops": [
+        ["sumRegion", [0, 0, 1, 1], 10],
+        ["sumRegion", [0, 0, 0, 1], 3],
+        ["sumRegion", [1, 0, 1, 1], 7],
+        ["sumRegion", [0, 1, 1, 1], 6]
+      ]
+    },
+    {
+      "construct": [[[-1, -2], [-3, -4]]],
+      "ops": [["sumRegion", [0, 0, 1, 1], -10], ["sumRegion", [1, 1, 1, 1], -4]]
+    },
+    {
+      "construct": [[[3, 0, 1], [5, 6, 3]]],
+      "ops": [["sumRegion", [0, 1, 1, 2], 10], ["sumRegion", [0, 0, 0, 2], 4]]
+    }
+  ]
+}
+```
+
 ````reveal Hint — the two formulas from the lesson
 Build: prefix[i][j] = grid[i-1][j-1] + prefix[i-1][j] + prefix[i][j-1]
 - prefix[i-1][j-1]. Query: sum = prefix[r2+1][c2+1] - prefix[r1][c2+1]

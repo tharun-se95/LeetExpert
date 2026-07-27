@@ -28,6 +28,50 @@ class. The whole exercise is placing the O(n) work in the constructor
 and the O(1) work in the query — get that placement backwards and the
 solution technically works but fails the *reason* the problem exists.
 
+
+```sandbox
+{
+  "id": "range-sum-query-immutable",
+  "fn": { "python": "NumArray", "javascript": "NumArray" },
+  "class": { "python": "NumArray", "javascript": "NumArray" },
+  "check": "sequence",
+  "starter": {
+    "python": "class NumArray:\n    def __init__(self, nums):\n        # Precompute here so sumRange is O(1).\n        pass\n\n    def sumRange(self, left, right):\n        # Return the sum of nums[left..right], inclusive.\n        pass\n",
+    "javascript": "class NumArray {\n  constructor(nums) {\n    // Precompute here so sumRange is O(1).\n  }\n\n  sumRange(left, right) {\n    // Return the sum of nums[left..right], inclusive.\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [[-2, 0, 3, -5, 2, -1]],
+      "ops": [
+        ["sumRange", [0, 2], 1],
+        ["sumRange", [2, 5], -1],
+        ["sumRange", [0, 5], -3],
+        ["sumRange", [3, 3], -5],
+        ["sumRange", [0, 0], -2]
+      ]
+    },
+    { "construct": [[1]], "ops": [["sumRange", [0, 0], 1]] },
+    {
+      "construct": [[1, 2, 3, 4, 5]],
+      "ops": [
+        ["sumRange", [1, 3], 9],
+        ["sumRange", [0, 4], 15],
+        ["sumRange", [4, 4], 5],
+        ["sumRange", [0, 0], 1]
+      ]
+    },
+    {
+      "construct": [[-1, -2, -3]],
+      "ops": [["sumRange", [0, 2], -6], ["sumRange", [1, 2], -5]]
+    },
+    {
+      "construct": [[0, 0, 0, 0]],
+      "ops": [["sumRange", [0, 3], 0], ["sumRange", [2, 2], 0]]
+    }
+  ]
+}
+```
+
 ````reveal Hint — where does each cost belong?
 Build the prefix array ONCE, in __init__/constructor. sumRange should
 do only prefix[right+1] - prefix[left] — no loops, no recomputation.

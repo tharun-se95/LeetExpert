@@ -25,6 +25,28 @@ first glance ("equal 0s and 1s" isn't obviously a sum), but a one-line
 transformation turns it into exactly Subarray Sum Equals K's shape.
 Find the transformation before opening the hint.
 
+
+```sandbox
+{
+  "id": "contiguous-array",
+  "fn": { "python": "find_max_length", "javascript": "findMaxLength" },
+  "check": "return",
+  "starter": {
+    "python": "def find_max_length(nums):\n    # Return the length of the longest subarray with equally many 0s and 1s.\n    pass\n",
+    "javascript": "function findMaxLength(nums) {\n  // Return the length of the longest subarray with equally many 0s and 1s.\n}\n"
+  },
+  "cases": [
+    { "args": [[0, 1]], "expect": 2 },
+    { "args": [[0, 1, 0]], "expect": 2 },
+    { "args": [[0, 0, 1, 0, 1, 1]], "expect": 6 },
+    { "args": [[0]], "expect": 0 },
+    { "args": [[1, 1, 1]], "expect": 0 },
+    { "args": [[1, 0, 1, 0, 1]], "expect": 4 },
+    { "args": [[0, 1, 1, 0, 1, 1, 1, 0]], "expect": 4 }
+  ]
+}
+```
+
 ````reveal Hint 1 — turn counting into summing
 Treat each 0 as -1 and each 1 as +1. A subarray has EQUAL 0s and 1s
 exactly when its transformed values sum to 0 — count(1s) - count(0s) =
