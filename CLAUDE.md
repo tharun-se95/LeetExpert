@@ -110,6 +110,7 @@ The content is the product. Code exists to serve it.
 | `web/` | Next.js app that renders the course |
 | `video/` | Remotion video subproject (see `video/HANDOFF.md`) |
 | `docs/superpowers/specs/` | Design specs; write one before large work |
+| `HANDOFF.md` | Current state, next task, and traps already paid for |
 | `web/tests/` | Content validation — runs in CI before build |
 
 `web/AGENTS.md` carries Next.js-specific guidance and still applies.
