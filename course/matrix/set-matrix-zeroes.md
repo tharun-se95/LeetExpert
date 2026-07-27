@@ -34,6 +34,34 @@ example above and trace carefully.** Something goes wrong almost
 immediately. Understand *what* goes wrong before reading on; it's the
 observation the whole problem is built around.
 
+
+```sandbox
+{
+  "id": "set-matrix-zeroes",
+  "fn": { "python": "set_zeroes", "javascript": "setZeroes" },
+  "check": "mutate",
+  "starter": {
+    "python": "def set_zeroes(matrix):\n    # Zero out the row and column of every zero, in place. Return nothing.\n    pass\n",
+    "javascript": "function setZeroes(matrix) {\n  // Zero out the row and column of every zero, in place. Return nothing.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [[[1, 1, 1], [1, 0, 1], [1, 1, 1]]],
+      "expect": [[1, 0, 1], [0, 0, 0], [1, 0, 1]]
+    },
+    {
+      "args": [[[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]]],
+      "expect": [[0, 0, 0, 0], [0, 4, 5, 0], [0, 3, 1, 0]]
+    },
+    { "args": [[[1]]], "expect": [[1]] },
+    { "args": [[[0]]], "expect": [[0]] },
+    { "args": [[[1, 0], [1, 1]]], "expect": [[0, 0], [1, 0]] },
+    { "args": [[[0, 1], [1, 1]]], "expect": [[0, 0], [0, 1]] },
+    { "args": [[[1, 1], [1, 1]]], "expect": [[1, 1], [1, 1]] }
+  ]
+}
+```
+
 ````reveal Hint — why zeroing eagerly corrupts the grid
 If you zero a row/column the moment you find a `0`, those freshly-written
 zeros are indistinguishable from *original* zeros when your scan reaches

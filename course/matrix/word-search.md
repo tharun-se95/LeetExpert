@@ -36,6 +36,41 @@ different one" shape should sound familiar even before Module 16
 work out: what has to be undone when a path attempt fails, and why does
 skipping that step break the *next* attempt, not the current one?
 
+
+```sandbox
+{
+  "id": "word-search",
+  "fn": { "python": "exist", "javascript": "exist" },
+  "check": "return",
+  "starter": {
+    "python": "def exist(board, word):\n    # Return True if word can be spelled along adjacent, non-reused cells.\n    pass\n",
+    "javascript": "function exist(board, word) {\n  // Return true if word can be spelled along adjacent, non-reused cells.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [[["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]], "ABCCED"],
+      "expect": true
+    },
+    {
+      "args": [[["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]], "SEE"],
+      "expect": true
+    },
+    {
+      "args": [[["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]], "ABCB"],
+      "expect": false
+    },
+    { "args": [[["a"]], "a"], "expect": true },
+    { "args": [[["a"]], "b"], "expect": false },
+    { "args": [[["a", "b"], ["c", "d"]], "abcd"], "expect": false },
+    { "args": [[["a", "b"], ["c", "d"]], "acdb"], "expect": true },
+    {
+      "args": [[["A", "B", "C", "E"], ["S", "F", "E", "S"], ["A", "D", "E", "E"]], "ABCESEEEFS"],
+      "expect": true
+    }
+  ]
+}
+```
+
 ````reveal Hint — mark, recurse, un-mark
 You need a way to prevent the current path from reusing a cell — but
 unlike Number of Islands, that marking must be **temporary**. If path

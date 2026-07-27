@@ -37,6 +37,30 @@ like?** If you see it, you'll know exactly which Module 13 technique
 applies and you're most of the way done. Try to name the structure before
 revealing the hint.
 
+
+```sandbox
+{
+  "id": "search-a-2d-matrix",
+  "fn": { "python": "search_matrix", "javascript": "searchMatrix" },
+  "check": "return",
+  "starter": {
+    "python": "def search_matrix(matrix, target):\n    # Return True if target appears anywhere in the matrix.\n    pass\n",
+    "javascript": "function searchMatrix(matrix, target) {\n  // Return true if target appears anywhere in the matrix.\n}\n"
+  },
+  "cases": [
+    { "args": [[[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 3], "expect": true },
+    { "args": [[[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 13], "expect": false },
+    { "args": [[[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 1], "expect": true },
+    { "args": [[[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 60], "expect": true },
+    { "args": [[[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 0], "expect": false },
+    { "args": [[[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 61], "expect": false },
+    { "args": [[[1]], 1], "expect": true },
+    { "args": [[[1]], 2], "expect": false },
+    { "args": [[[1, 3], [5, 7]], 5], "expect": true }
+  ]
+}
+```
+
 ````reveal Hint — flatten it in your head
 Read the matrix in row-major order: `1, 3, 5, 7, 10, 11, 16, 20, 23, …`.
 Property 1 keeps each row ascending; property 2 guarantees the jump from

@@ -34,6 +34,38 @@ anything, try to answer: if you land on an unvisited `'1'`, how do you
 mark an *entire* connected blob of land as counted, without re-counting
 it, and without walking off the grid?
 
+
+```sandbox
+{
+  "id": "number-of-islands",
+  "fn": { "python": "num_islands", "javascript": "numIslands" },
+  "check": "return",
+  "starter": {
+    "python": "def num_islands(grid):\n    # Return how many 4-directionally connected groups of \"1\" there are.\n    pass\n",
+    "javascript": "function numIslands(grid) {\n  // Return how many 4-directionally connected groups of \"1\" there are.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          ["1", "1", "0", "0", "0"],
+          ["1", "1", "0", "0", "0"],
+          ["0", "0", "1", "0", "0"],
+          ["0", "0", "0", "1", "1"]
+        ]
+      ],
+      "expect": 3
+    },
+    { "args": [[["1"]]], "expect": 1 },
+    { "args": [[["0"]]], "expect": 0 },
+    { "args": [[["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]]], "expect": 1 },
+    { "args": [[["1", "0"], ["0", "1"]]], "expect": 2 },
+    { "args": [[["1", "1", "1"], ["0", "1", "0"], ["1", "1", "1"]]], "expect": 1 },
+    { "args": [[["1", "0", "1", "0", "1"]]], "expect": 3 }
+  ]
+}
+```
+
 ````reveal Hint — flood fill, and the marking trick
 Standard graph traversal: from an unvisited `'1'`, explore every
 4-directional neighbor that is also `'1'` and not yet visited, then their

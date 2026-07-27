@@ -37,6 +37,31 @@ revealing anything, write the four edge-walks and ask yourself: **after
 I've walked the top row and the right column, what goes wrong on a grid
 that has only one row, or only one column, left?**
 
+
+```sandbox
+{
+  "id": "spiral-matrix",
+  "fn": { "python": "spiral_order", "javascript": "spiralOrder" },
+  "check": "return",
+  "starter": {
+    "python": "def spiral_order(matrix):\n    # Return every element in clockwise spiral order.\n    pass\n",
+    "javascript": "function spiralOrder(matrix) {\n  // Return every element in clockwise spiral order.\n}\n"
+  },
+  "cases": [
+    { "args": [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], "expect": [1, 2, 3, 6, 9, 8, 7, 4, 5] },
+    {
+      "args": [[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]],
+      "expect": [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]
+    },
+    { "args": [[[1]]], "expect": [1] },
+    { "args": [[[1, 2, 3]]], "expect": [1, 2, 3] },
+    { "args": [[[1], [2], [3]]], "expect": [1, 2, 3] },
+    { "args": [[[1, 2], [3, 4], [5, 6]]], "expect": [1, 2, 4, 6, 5, 3] },
+    { "args": [[[1, 2, 3], [4, 5, 6]]], "expect": [1, 2, 3, 6, 5, 4] }
+  ]
+}
+```
+
 ````reveal Hint — where the non-square grids bite
 The four walks are: top row left→right, right column top→bottom, bottom
 row right→left, left column bottom→top, shrinking `top`, `right`,
