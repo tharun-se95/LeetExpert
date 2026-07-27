@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy } from "@phosphor-icons/react";
 
 export function CopyButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);

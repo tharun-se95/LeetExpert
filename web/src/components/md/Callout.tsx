@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 interface CalloutProps {
@@ -13,7 +13,7 @@ const TYPE_STYLES: Record<string, string> = {
   tip: "border-l-accent bg-accent/5",
   warn: "border-l-amber-500 bg-amber-500/5",
   rocket: "border-l-sky-500 bg-sky-500/5",
-  build: "border-l-emerald-500 bg-emerald-500/5",
+  build: "border-l-good bg-good/5",
   brain: "border-l-violet-500 bg-violet-500/5",
   default: "border-l-border bg-surface",
 };
@@ -38,7 +38,7 @@ export function Callout({ children, type = "default" }: CalloutProps) {
     <blockquote
       id={id}
       className={cn(
-        "group relative my-5 rounded-r-lg border border-border border-l-4 px-4 py-3 not-italic",
+        "riso-halftone group relative my-5 rounded-r-lg border border-border border-l-4 px-4 py-3 not-italic",
         TYPE_STYLES[type] ?? TYPE_STYLES.default,
       )}
     >

@@ -26,54 +26,27 @@ meet again inside merge sort (Module 14) and k-way merging (Module 19).
 The rewire-don't-copy discipline from the surgery lesson is the whole
 game. Sketch two short lists and stitch them on paper first.
 
-````reveal Hint 1 — the invariant
-Keep a `tail` pointer to the END of the merged result built so far
-(seeded with a dummy). At each step, both remaining lists have a front;
-the SMALLER front is the next node of the answer — splice it on, advance
-that list. Sortedness is exactly what makes the local choice globally
-right.
-````
 
-````reveal Hint 2 — the leftover
-When one list empties, the other is entirely ≥ everything merged so far
-(why?). You don't loop over it — attach the WHOLE remainder with one
-pointer write.
-````
 
-## Brute force, for contrast
-
-Collect all values into an array, sort, rebuild: O((m+n) log(m+n)) and
-it throws away BOTH gifts — the inputs' sortedness and the reusability
-of their nodes. The splice merge is O(m+n) time, O(1) extra space, zero
-allocations (beyond the dummy).
-
-## The insight
-
-> Two sorted streams merge in one pass because the global minimum of
-> everything remaining is always one of the two FRONTS — take it, and
-> the claim holds again. The dummy + tail turns "append to result" into
-> a uniform two-write splice with no head special case.
-
-## Solution
-
-`````reveal Solution — dummy + tail splice
-````tabs
-```python
-def merge_two_lists(l1, l2):
-    dummy = Node(0)
-    tail = dummy                          # end of merged prefix
-    while l1 is not None and l2 is not None:
-        if l1.value <= l2.value:          # <= keeps the merge stable
-            tail.next = l1                # splice existing node
-            l1 = l1.next
-        else:
-            tail.next = l2
-            l2 = l2.next
-        tail = tail.next
-    tail.next = l1 if l1 is not None else l2   # attach the remainder
-    return dummy.next
+```sandbox
+{
+  "id": "merge-two-sorted",
+  "fn": {"python": "merge_two_lists", "javascript": "mergeTwoLists"},
+  "check": "return",
+  "shape": {"0": "list", "1": "list"},
+  "returns": "list",
+  "starter": {
+    "python": "# ListNode is already defined for you:\n#   class ListNode:\n#       def __init__(self, val=0, next=None): ...\ndef merge_two_lists(list1, list2):\n    # Return the merged sorted head.\n    pass\n",
+    "javascript": "// ListNode is already defined for you:\n//   class ListNode { constructor(val, next) {...} }\nfunction mergeTwoLists(list1, list2) {\n  // Return the merged sorted head.\n}\n"
+  },
+  "cases": [
+    { "args": [[1, 2, 4], [1, 3, 4]], "expect": [1, 1, 2, 3, 4, 4] },
+    { "args": [[], []], "expect": [] },
+    { "args": [[], [0]], "expect": [0] },
+    { "args": [[5], [1, 2, 3]], "expect": [1, 2, 3, 5] }
+  ]
+}
 ```
-
 ```typescript
 function mergeTwoLists(
   l1: ListNode | null,

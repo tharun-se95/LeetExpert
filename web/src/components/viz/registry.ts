@@ -13,6 +13,8 @@ import { BinarySearchViz } from "@/components/viz/vizzes/BinarySearchViz";
 import { DynamicWindowViz } from "@/components/viz/vizzes/DynamicWindowViz";
 import { PrefixSumViz } from "@/components/viz/vizzes/PrefixSumViz";
 import { KadaneViz } from "@/components/viz/vizzes/KadaneViz";
+import { CyclicRotateViz } from "@/components/viz/vizzes/CyclicRotateViz";
+import { BlockReversalViz } from "@/components/viz/vizzes/BlockReversalViz";
 
 export type VizComponent = ComponentType<Record<string, unknown>>;
 
@@ -35,4 +37,6 @@ export const VIZ_REGISTRY: Record<string, VizComponent> = {
   "dynamic-window": DynamicWindowViz,
   "prefix-sum": PrefixSumViz,
   "kadane": KadaneViz,
+  "cyclic-rotate": CyclicRotateViz,
+  "block-reversal": BlockReversalViz,
 };

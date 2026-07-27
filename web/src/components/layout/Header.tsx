@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { List as Menu, X , MagnifyingGlass } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useProgress } from "@/components/providers/ProgressProvider";
 
 interface HeaderProps {
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
+  onOpenSearch: () => void;
 }
 
-export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
+export function Header({ sidebarOpen, onToggleSidebar, onOpenSearch }: HeaderProps) {
   const { visitedCount, totalCount } = useProgress();
   const pct = totalCount > 0 ? Math.round((visitedCount / totalCount) * 100) : 0;
 
@@ -33,6 +34,17 @@ export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
           DSA Course
         </span>
       </Link>
+
+      <button
+        type="button"
+        onClick={onOpenSearch}
+        aria-label="Search lessons"
+        className="flex items-center gap-2 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted transition-colors hover:border-accent/50 hover:text-foreground"
+      >
+        <MagnifyingGlass size={12} aria-hidden />
+        <span className="hidden sm:inline">Search</span>
+        <kbd className="hidden font-mono text-[10px] sm:inline">⌘K</kbd>
+      </button>
 
       <div className="hidden items-center gap-2 sm:flex">
         <div

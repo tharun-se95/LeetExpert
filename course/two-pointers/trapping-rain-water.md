@@ -31,6 +31,24 @@ O(n)-space solution honestly, and only then compress it to two
 pointers. Each stage is a legitimate interview answer; the progression
 is the point.
 
+
+```sandbox
+{
+  "id": "trapping-rain-water",
+  "fn": { "python": "trap", "javascript": "trap" },
+  "check": "return",
+  "starter": {
+    "python": "def trap(height):\n    # Return total trapped water.\n    pass\n",
+    "javascript": "function trap(height) {\n  // Return total trapped water.\n}\n"
+  },
+  "cases": [
+    { "args": [[0,1,0,2,1,0,1,3,2,1,2,1]], "expect": 6 },
+    { "args": [[4,2,0,3,2,5]], "expect": 9 },
+    { "args": [[3,0,2]], "expect": 2 },
+    { "args": [[1,2,3]], "expect": 0 }
+  ]
+}
+```
 ````reveal Hint 1 — one cell at a time
 Water above cell i rises to the lower of the two walls guarding it:
 level = min(max height to my LEFT, max height to my RIGHT). Water held

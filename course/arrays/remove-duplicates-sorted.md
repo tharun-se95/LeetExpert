@@ -25,6 +25,28 @@ O(1) auxiliary space required.
 You have every tool: this is the write-pointer template from the previous
 lesson, with one twist to find. Genuinely try before opening anything.
 
+Return `k`. The tests read only `nums[0..k)` — whatever you leave past it
+is ignored, exactly as the problem says.
+
+```sandbox
+{
+  "id": "remove-duplicates-sorted",
+  "fn": { "python": "remove_duplicates", "javascript": "removeDuplicates" },
+  "check": "prefix",
+  "starter": {
+    "python": "def remove_duplicates(nums):\n    # Compact in place, return the new length k.\n    return 0\n",
+    "javascript": "function removeDuplicates(nums) {\n  // Compact in place, return the new length k.\n  return 0;\n}\n"
+  },
+  "cases": [
+    { "args": [[1,1,2]], "expect": [1,2] },
+    { "args": [[0,0,1,1,1,2,2,3,3,4]], "expect": [0,1,2,3,4] },
+    { "args": [[5]], "expect": [5] },
+    { "args": [[2,2,2,2]], "expect": [2] },
+    { "args": [[-100,-100,0,100]], "expect": [-100,0,100] }
+  ]
+}
+```
+
 ````reveal Hint 1 — what does "keeper" mean here?
 An element is a keeper if it's *not equal to the previous keeper*. In a
 sorted array, duplicates are adjacent — so comparing against the last

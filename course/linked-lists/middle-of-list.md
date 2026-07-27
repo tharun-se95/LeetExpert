@@ -24,41 +24,27 @@ lesson-worthy version is one pass — the runner from the surgery lesson.
 Work out for yourself where slow lands for BOTH parities before opening
 the solution; the even case is where implementations differ.
 
-````reveal Hint — speeds and stopping condition
-slow steps 1, fast steps 2. When fast runs off the end, slow has covered
-half the distance. The whole correctness question hides in the loop
-condition: `while fast and fast.next` — trace it on lengths 5 AND 6 and
-watch which node slow ends on.
-````
 
-## Brute force, for contrast
 
-Count length n in one pass, walk ⌊n/2⌋ nodes in a second: O(n) time,
-O(1) space, two passes. Nothing wrong with it — the runner isn't faster
-asymptotically; it's *one pass*, which matters for streams and matters
-because this exact two-speed setup is the engine of the next problem's
-cycle detection. This problem is the runner's warm-up track.
-
-## The insight
-
-> Position can be carried as a RELATIONSHIP between two walkers instead
-> of as a number you compute first. fast at the end ⇔ slow at the middle,
-> always, because fast moves exactly twice as fast — the invariant
-> "fast's distance = 2 × slow's distance" holds at every step.
-
-## Solution
-
-`````reveal Solution — slow & fast
-````tabs
-```python
-def middle_node(head):
-    slow = fast = head
-    while fast is not None and fast.next is not None:
-        slow = slow.next           # +1
-        fast = fast.next.next      # +2
-    return slow
+```sandbox
+{
+  "id": "middle-of-list",
+  "fn": {"python": "middle_node", "javascript": "middleNode"},
+  "check": "return",
+  "shape": {"0": "list"},
+  "returns": "list",
+  "starter": {
+    "python": "# ListNode is already defined for you:\n#   class ListNode:\n#       def __init__(self, val=0, next=None): ...\ndef middle_node(head):\n    # Return the middle node (second middle if even).\n    pass\n",
+    "javascript": "// ListNode is already defined for you:\n//   class ListNode { constructor(val, next) {...} }\nfunction middleNode(head) {\n  // Return the middle node (second middle if even).\n}\n"
+  },
+  "cases": [
+    { "args": [[1, 2, 3, 4, 5]], "expect": [3, 4, 5] },
+    { "args": [[1, 2, 3, 4, 5, 6]], "expect": [4, 5, 6] },
+    { "args": [[1]], "expect": [1] },
+    { "args": [[1, 2]], "expect": [2] }
+  ]
+}
 ```
-
 ```typescript
 function middleNode(head: ListNode | null): ListNode | null {
   let slow = head;

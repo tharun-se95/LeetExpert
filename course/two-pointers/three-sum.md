@@ -26,6 +26,26 @@ sort-based); the sort-based one wins here for a reason worth
 discovering — the **duplicate handling**, which is 3Sum's real
 difficulty and the reason interviewers love it.
 
+
+```sandbox
+{
+  "id": "three-sum",
+  "fn": { "python": "three_sum", "javascript": "threeSum" },
+  "check": "return",
+  "compare": "set-of-sets",
+  "starter": {
+    "python": "def three_sum(nums):\n    # Return every unique triplet summing to zero.\n    return []\n",
+    "javascript": "function threeSum(nums) {\n  // Return every unique triplet summing to zero.\n  return [];\n}\n"
+  },
+  "cases": [
+    { "args": [[-1, 0, 1, 2, -1, -4]], "expect": [[-1, -1, 2], [-1, 0, 1]] },
+    { "args": [[0, 1, 1]], "expect": [] },
+    { "args": [[0, 0, 0]], "expect": [[0, 0, 0]] },
+    { "args": [[0, 0, 0, 0]], "expect": [[0, 0, 0]] },
+    { "args": [[-2, 0, 1, 1, 2]], "expect": [[-2, 0, 2], [-2, 1, 1]] }
+  ]
+}
+```
 ````reveal Hint 1 — fix one, solve two
 Sort the array. For each index i, the remaining task is: find pairs in
 nums[i+1..] summing to −nums[i] — Two Sum II on a sorted slice,

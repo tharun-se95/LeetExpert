@@ -33,6 +33,29 @@ export const BRUTAL = {
   muted: "#5b564a",
 } as const;
 
+/**
+ * Neon Depth palette — dark neon-glow with real dimensional (Three.js)
+ * depth. Multi-color on purpose, unlike BRUTAL's one-accent rule: each
+ * *structure type* draws from one dominant hue (stacks = purple, trees/
+ * graphs = cyan) rather than mixing every accent into one scene. Orange/
+ * green/pink are reserved for cross-cutting meaning (current index,
+ * complexity tiers) that repeats across every video.
+ * See docs/superpowers/specs/2026-07-19-neon-depth-visual-system-design.md
+ */
+export const NEON = {
+  bg: "#070a10",
+  cyan: "#00e6ff",
+  purple: "#7c4dff",
+  orange: "#ffbb00",
+  green: "#00f0a1",
+  pink: "#ff4d6d",
+  textMuted: "#c7d2e0",
+  textBright: "#eafcff",
+  structureMuted: "#22304a",
+  structureMutedAlt: "#2c3c56",
+  emissiveMuted: "#26344e",
+} as const;
+
 /** Family accent colors, mirrored from web/src/lib/visual/familyTheme.ts */
 export const FAMILY_ACCENTS: { id: string; label: string; accent: string }[] = [
   { id: "linear-traversal", label: "Linear Traversal", accent: "#0A7A6A" },

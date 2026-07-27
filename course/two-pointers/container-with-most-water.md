@@ -28,6 +28,24 @@ push on the proof. The input is NOT sorted this time, so the lesson's
 sortedness argument doesn't transfer directly — something else must
 justify elimination. Find the rule, then find the reason.
 
+
+```sandbox
+{
+  "id": "container-with-most-water",
+  "fn": { "python": "max_area", "javascript": "maxArea" },
+  "check": "return",
+  "starter": {
+    "python": "def max_area(height):\n    # Return the largest area.\n    pass\n",
+    "javascript": "function maxArea(height) {\n  // Return the largest area.\n}\n"
+  },
+  "cases": [
+    { "args": [[1,8,6,2,5,4,8,3,7]], "expect": 49 },
+    { "args": [[1,1]], "expect": 1 },
+    { "args": [[4,3,2,1,4]], "expect": 16 },
+    { "args": [[1,2,1]], "expect": 2 }
+  ]
+}
+```
 ````reveal Hint 1 — what does area depend on?
 Area = width × min(left height, right height). Starting from the widest
 container, any inward move SHRINKS width — so a move is only worth it

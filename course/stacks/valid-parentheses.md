@@ -24,6 +24,26 @@ The matching lesson gave you the algorithm in prose and the three
 failure modes by name. Your job is a clean translation — and hitting all
 three failure modes with your own test inputs before running anything.
 
+
+```sandbox
+{
+  "id": "valid-parentheses",
+  "fn": { "python": "is_valid", "javascript": "isValid" },
+  "check": "return",
+  "starter": {
+    "python": "def is_valid(s):\n    # Return True or False.\n    pass\n",
+    "javascript": "function isValid(s) {\n  // Return true or false.\n}\n"
+  },
+  "cases": [
+    { "args": ["()"], "expect": true },
+    { "args": ["()[]{}"], "expect": true },
+    { "args": ["(]"], "expect": false },
+    { "args": ["([])"], "expect": true },
+    { "args": ["([)]"], "expect": false },
+    { "args": ["]"], "expect": false }
+  ]
+}
+```
 ````reveal Hint — the mapping trick
 Store closer → opener in a map: on a closer c, valid iff the stack is
 non-empty AND its top equals map[c]. One comparison covers failure

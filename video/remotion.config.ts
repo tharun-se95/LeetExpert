@@ -11,5 +11,3 @@ import { enableTailwind } from '@remotion/tailwind-v4';
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
 Config.overrideWebpackConfig(enableTailwind);
-// Required for @remotion/three (WebGL) to render in headless Chromium.
-Config.setChromiumOpenGlRenderer("angle");

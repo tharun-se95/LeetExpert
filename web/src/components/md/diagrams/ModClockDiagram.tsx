@@ -98,7 +98,7 @@ export function ModClockDiagram({
         fontSize={9}
         fill="var(--muted)"
         textAnchor="middle"
-        fontFamily="var(--font-geist-mono), monospace"
+        fontFamily="var(--font-mono), monospace"
       >
         +1
       </text>
@@ -127,7 +127,7 @@ export function ModClockDiagram({
               fill={isHighlighted ? "var(--foreground)" : "var(--muted)"}
               textAnchor="middle"
               dominantBaseline="middle"
-              fontFamily="var(--font-geist-mono), monospace"
+              fontFamily="var(--font-mono), monospace"
             >
               {position}
             </text>
@@ -151,7 +151,7 @@ export function ModClockDiagram({
                 fill="var(--accent)"
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontFamily="var(--font-geist-mono), monospace"
+                fontFamily="var(--font-mono), monospace"
               >
                 {v}
               </text>

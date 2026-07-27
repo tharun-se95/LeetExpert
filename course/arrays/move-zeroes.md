@@ -20,9 +20,33 @@ writes (follow-up).
 
 ## Attempt it first
 
-Same family as the last problem — but this time nothing is discarded: the
-zeroes must survive, at the end. Decide what your invariant says about
+Same family as the last problem — but this time ==nothing is discarded: the
+zeroes must survive, at the end==. Decide what your invariant says about
 *three* regions before coding.
+
+```aside
+I wrote the two-pass version for years before noticing the swap version is
+the same invariant, just fused into one loop.
+```
+
+```sandbox
+{
+  "id": "move-zeroes",
+  "fn": { "python": "move_zeroes", "javascript": "moveZeroes" },
+  "check": "mutate",
+  "starter": {
+    "python": "def move_zeroes(nums):\n    # Modify nums in place. Return nothing.\n    pass\n",
+    "javascript": "function moveZeroes(nums) {\n  // Modify nums in place. Return nothing.\n}\n"
+  },
+  "cases": [
+    { "args": [[0,1,0,3,12]], "expect": [1,3,12,0,0] },
+    { "args": [[0]], "expect": [0] },
+    { "args": [[1,2,3]], "expect": [1,2,3] },
+    { "args": [[0,0,0,1]], "expect": [1,0,0,0] },
+    { "args": [[4,0,5,0,0,6]], "expect": [4,5,6,0,0,0] }
+  ]
+}
+```
 
 ````reveal Hint 1 — reuse, then patch
 Run the write-pointer template with keep = "is non-zero". Afterward,

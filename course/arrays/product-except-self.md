@@ -27,6 +27,24 @@ the zero's own position), and two zeroes make every answer 0 in a way the
 trick can't see. The ban isn't arbitrary; the division "solution" is
 genuinely broken. Now find the real one.
 
+
+```sandbox
+{
+  "id": "product-except-self",
+  "fn": { "python": "product_except_self", "javascript": "productExceptSelf" },
+  "check": "return",
+  "starter": {
+    "python": "def product_except_self(nums):\n    # Return a new array. No division.\n    pass\n",
+    "javascript": "function productExceptSelf(nums) {\n  // Return a new array. No division.\n}\n"
+  },
+  "cases": [
+    { "args": [[1,2,3,4]], "expect": [24,12,8,6] },
+    { "args": [[-1,1,0,-3,3]], "expect": [0,0,9,0,0] },
+    { "args": [[2,3]], "expect": [3,2] },
+    { "args": [[1,1,1,1]], "expect": [1,1,1,1] }
+  ]
+}
+```
 ````reveal Hint 1 — split the product at i
 Everything-except-i = (product of all elements LEFT of i) × (product of
 all elements RIGHT of i). Would knowing all the left-products and all the

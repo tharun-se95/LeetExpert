@@ -24,6 +24,25 @@ Small constraints — almost anything passes. So this problem is about
 *clean decomposition*, not speed. There are two natural shapes; find at
 least one, ideally both.
 
+
+```sandbox
+{
+  "id": "longest-common-prefix",
+  "fn": { "python": "longest_common_prefix", "javascript": "longestCommonPrefix" },
+  "check": "return",
+  "starter": {
+    "python": "def longest_common_prefix(strs):\n    # Return the shared prefix, or \"\".\n    pass\n",
+    "javascript": "function longestCommonPrefix(strs) {\n  // Return the shared prefix, or \"\".\n}\n"
+  },
+  "cases": [
+    { "args": [["flower","flow","flight"]], "expect": "fl" },
+    { "args": [["dog","racecar","car"]], "expect": "" },
+    { "args": [["a"]], "expect": "a" },
+    { "args": [["abc","abc"]], "expect": "abc" },
+    { "args": [["","a"]], "expect": "" }
+  ]
+}
+```
 ````reveal Hint 1 — vertical scanning
 Compare column by column: does every string agree at index 0? At index 1?
 Stop at the first column where any string ends or disagrees. The answer is

@@ -13,6 +13,9 @@ import { CodeTabs } from "@/components/course/CodeTabs";
 import { Reveal } from "@/components/course/Reveal";
 import { Complexity } from "@/components/course/Complexity";
 import { Viz } from "@/components/viz/Viz";
+import { Sandbox } from "@/components/sandbox/Sandbox";
+import { MarginNote } from "@/components/md/MarginNote";
+import { remarkHighlight } from "@/lib/content/remarkHighlight";
 import { Diagram } from "@/components/md/Diagram";
 import { codeHighlightKey, type TabBlock } from "@/lib/content/highlightBlocks";
 import type { ReactNode } from "react";
@@ -93,6 +96,20 @@ export function Markdown({
         if (className.includes("language-diagram")) {
           return <Diagram source={text()} />;
         }
+        if (className.includes("language-sandbox")) {
+          return <Sandbox source={text()} />;
+        }
+        if (className.includes("language-aside")) {
+          return (
+            <MarginNote>
+              <Markdown
+                source={text()}
+                highlightedBlocks={highlightedBlocks}
+                highlightedTabs={highlightedTabs}
+              />
+            </MarginNote>
+          );
+        }
         if (className.includes("language-reveal")) {
           const label = codeEl.props.node?.data?.meta?.trim() || "Reveal";
           return (
@@ -123,7 +140,18 @@ export function Markdown({
       const { type } = detectCalloutType(children);
       return <Callout type={type}>{children}</Callout>;
     },
-    a({ href, children }) {
+    a({ href, children, className }) {
+      // rehype-autolink-headings wraps every heading in an anchor carrying
+      // `anchor-link`. This override used to replace that class outright,
+      // so each heading inherited link styling and rendered as a coloured,
+      // underlined link. Headings must look like headings.
+      if (className?.includes("anchor-link")) {
+        return (
+          <a href={href} className="anchor-link">
+            {children}
+          </a>
+        );
+      }
       return (
         <a
           href={href}
@@ -172,7 +200,7 @@ export function Markdown({
   return (
     <div className="handbook-prose prose-headings:scroll-mt-24">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkHighlight]}
         rehypePlugins={[
           rehypeSlug,
           [

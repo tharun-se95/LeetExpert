@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { CaretRight as ChevronRight } from "@phosphor-icons/react/dist/ssr";
 
 export interface Crumb {
   label: string;

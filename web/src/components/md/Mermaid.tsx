@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useTheme } from "next-themes";
-import { Maximize2, X } from "lucide-react";
+import { ArrowsOut as Maximize2, X } from "@phosphor-icons/react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +36,7 @@ async function loadMermaid(): Promise<MermaidAPI> {
 function themeConfig(isDark: boolean) {
   return {
     theme: (isDark ? "dark" : "neutral") as "dark" | "neutral",
-    fontFamily: "var(--font-geist-sans), ui-sans-serif, system-ui",
+    fontFamily: "var(--font-sans), ui-sans-serif, system-ui",
     themeVariables: isDark
       ? {
           primaryColor: "#1a1a1a",

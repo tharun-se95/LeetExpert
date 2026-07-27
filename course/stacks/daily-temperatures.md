@@ -27,6 +27,24 @@ instead of a value. If you can adapt the template without re-opening the
 lesson, the pattern is yours. One extra wrinkle: which flavor row, and
 what exactly gets recorded on each pop?
 
+
+```sandbox
+{
+  "id": "daily-temperatures",
+  "fn": { "python": "daily_temperatures", "javascript": "dailyTemperatures" },
+  "check": "return",
+  "starter": {
+    "python": "def daily_temperatures(temperatures):\n    # Return days-to-wait for each day.\n    pass\n",
+    "javascript": "function dailyTemperatures(temperatures) {\n  // Return days-to-wait for each day.\n}\n"
+  },
+  "cases": [
+    { "args": [[73,74,75,71,69,72,76,73]], "expect": [1,1,4,2,1,1,0,0] },
+    { "args": [[30,40,50,60]], "expect": [1,1,1,0] },
+    { "args": [[30,60,90]], "expect": [1,1,0] },
+    { "args": [[50,50,50]], "expect": [0,0,0] }
+  ]
+}
+```
 ````reveal Hint — indices are the payload
 Stack indices of days still awaiting warmth, values strictly decreasing.
 When day i's temperature beats the top index j's, day j's wait is

@@ -25,6 +25,24 @@ spend real time. Don't reach for the stack immediately; first find the
 **O(n²) structural insight** (Hint 1), which is 80% of the solution.
 The stack is "merely" how that insight gets computed in one pass.
 
+
+```sandbox
+{
+  "id": "largest-rectangle",
+  "fn": { "python": "largest_rectangle_area", "javascript": "largestRectangleArea" },
+  "check": "return",
+  "starter": {
+    "python": "def largest_rectangle_area(heights):\n    # Return the largest rectangle area.\n    pass\n",
+    "javascript": "function largestRectangleArea(heights) {\n  // Return the largest rectangle area.\n}\n"
+  },
+  "cases": [
+    { "args": [[2,1,5,6,2,3]], "expect": 10 },
+    { "args": [[2,4]], "expect": 4 },
+    { "args": [[1,1,1]], "expect": 3 },
+    { "args": [[5,4,3,2,1]], "expect": 9 }
+  ]
+}
+```
 ````reveal Hint 1 — think per BAR, not per rectangle
 The best rectangle is limited by its shortest bar. So ask, for EACH bar
 i: if the rectangle's height is exactly heights[i], how wide can it be?

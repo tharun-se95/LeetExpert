@@ -62,7 +62,7 @@ export function LogHalvingDiagram({ n = 8 }: LogHalvingDiagramProps) {
               dominantBaseline="middle"
               fill={isLast ? "var(--accent)" : "var(--muted)"}
               fontWeight={isLast ? 700 : 500}
-              fontFamily="var(--font-geist-mono), monospace"
+              fontFamily="var(--font-mono), monospace"
             >
               n = {value}
               {isLast ? `  (${halvings} halvings = log₂ ${n})` : ""}

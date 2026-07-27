@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookOpen, Puzzle } from "lucide-react";
+import { BookOpen, PuzzlePiece as Puzzle } from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { getModule, STAGES } from "@/lib/course/manifest";
 import { allModuleSlugs } from "@/lib/course/load";
@@ -38,7 +38,7 @@ export default async function ModulePage({ params }: PageProps) {
       <p className="mb-2 text-xs font-medium uppercase tracking-wider text-accent">
         Stage {mod.stage} — {stage?.title} · Module {mod.number}
       </p>
-      <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-[2rem]">
+      <h1 className="riso-overprint font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]">
         {mod.title}
       </h1>
       <p className="mt-3 max-w-2xl text-lg leading-relaxed text-muted">
@@ -67,7 +67,7 @@ export default async function ModulePage({ params }: PageProps) {
                 {lesson.type === "problem" ? (
                   <Puzzle className="h-4 w-4 shrink-0 text-accent" />
                 ) : (
-                  <BookOpen className="h-4 w-4 shrink-0 text-accent" />
+                  <BookOpen weight="bold" className="h-4 w-4 shrink-0 text-accent" />
                 )}
                 <span className="font-medium">{lesson.title}</span>
                 <span className="ml-auto text-xs uppercase tracking-wide text-muted/70">

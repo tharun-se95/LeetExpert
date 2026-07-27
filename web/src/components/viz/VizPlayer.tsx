@@ -3,15 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { MotionConfig, useReducedMotion } from "motion/react";
-import {
-  Maximize2,
-  Minimize2,
-  Pause,
-  Play,
-  RotateCcw,
-  StepBack,
-  StepForward,
-} from "lucide-react";
+import { ArrowsOut as Maximize2, ArrowsIn as Minimize2, Pause, Play, ArrowCounterClockwise as RotateCcw, SkipBack as StepBack, SkipForward as StepForward } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { CodePanel } from "@/components/viz/CodePanel";
 import type { VizCode, VizStep } from "@/components/viz/types";

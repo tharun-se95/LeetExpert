@@ -24,6 +24,24 @@ Plain Contains Duplicate is the Seen verb from the patterns lesson. The
 distance condition is the new ingredient — there are two clean ways to
 absorb it, one per hint. Find at least one.
 
+
+```sandbox
+{
+  "id": "contains-duplicate-ii",
+  "fn": { "python": "contains_nearby_duplicate", "javascript": "containsNearbyDuplicate" },
+  "check": "return",
+  "starter": {
+    "python": "def contains_nearby_duplicate(nums, k):\n    # Return True or False.\n    pass\n",
+    "javascript": "function containsNearbyDuplicate(nums, k) {\n  // Return true or false.\n}\n"
+  },
+  "cases": [
+    { "args": [[1,2,3,1],3], "expect": true },
+    { "args": [[1,0,1,1],1], "expect": true },
+    { "args": [[1,2,3,1,2,3],2], "expect": false },
+    { "args": [[99,99],0], "expect": false }
+  ]
+}
+```
 ````reveal Hint 1 — remember more: value → last index
 Upgrade Seen to Index: map each value to its MOST RECENT index. On
 seeing x at i, if the map has x at j and i − j ≤ k → true; either way

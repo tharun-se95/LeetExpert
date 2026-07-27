@@ -27,6 +27,24 @@ of operations is *encoded in the token order itself* — which is exactly
 why compilers convert your infix code to this form. The evaluation rule
 is one sentence; find it by evaluating `2 1 + 3 *` by hand.
 
+
+```sandbox
+{
+  "id": "evaluate-rpn",
+  "fn": { "python": "eval_rpn", "javascript": "evalRPN" },
+  "check": "return",
+  "starter": {
+    "python": "def eval_rpn(tokens):\n    # Return the integer result.\n    pass\n",
+    "javascript": "function evalRPN(tokens) {\n  // Return the integer result.\n}\n"
+  },
+  "cases": [
+    { "args": [["2","1","+","3","*"]], "expect": 9 },
+    { "args": [["4","13","5","/","+"]], "expect": 6 },
+    { "args": [["3","-4","+"]], "expect": -1 },
+    { "args": [["10","6","9","3","+","-11","*","/","*","17","+","5","+"]], "expect": 22 }
+  ]
+}
+```
 ````reveal Hint — what does an operator apply to?
 An operator acts on the two most recent values that haven't been
 consumed yet. "Most recent unconsumed" — the module's phrase. Numbers

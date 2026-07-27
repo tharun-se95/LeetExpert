@@ -25,6 +25,25 @@ auxiliary space.
 The easy version (clean the string, compare with its reverse) is worth 60
 seconds. The real target is the follow-up: no cleaned copy at all.
 
+```sandbox
+{
+  "id": "valid-palindrome",
+  "fn": { "python": "is_palindrome", "javascript": "isPalindrome" },
+  "check": "return",
+  "starter": {
+    "python": "def is_palindrome(s):\n    # Return True or False.\n    return False\n",
+    "javascript": "function isPalindrome(s) {\n  // Return true or false.\n  return false;\n}\n"
+  },
+  "cases": [
+    { "args": ["A man, a plan, a canal: Panama"], "expect": true },
+    { "args": ["race a car"], "expect": false },
+    { "args": [" "], "expect": true },
+    { "args": ["0P"], "expect": false },
+    { "args": ["ab_a"], "expect": true }
+  ]
+}
+```
+
 ````reveal Hint 1 — the O(n)-space version, for grounding
 Filter alphanumerics, lowercase, compare against the reversal. One line in
 either language. Its space cost is the cleaned copy — what the follow-up

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { ArrowLeft, Orbit, Sparkles, RotateCcw } from "lucide-react";
+import { ArrowLeft, Atom as Orbit, Sparkle as Sparkles, ArrowCounterClockwise as RotateCcw } from "@phosphor-icons/react";
 import {
   MASTER_DECISION_TREE,
   collectNodes,

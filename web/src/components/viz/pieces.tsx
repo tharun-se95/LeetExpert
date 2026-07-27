@@ -18,8 +18,8 @@ const TONE_CLASS: Record<CellTone, string> = {
   kept: "border-accent/60 bg-accent/14 text-foreground",
   junk: "border-border bg-surface text-muted opacity-60",
   active: "border-accent bg-accent text-white",
-  dropped: "border-red-500/60 bg-red-500/10 text-muted",
-  resolved: "border-emerald-500/50 bg-emerald-500/10 text-foreground",
+  dropped: "border-bad/60 bg-bad/10 text-muted",
+  resolved: "border-good/50 bg-good/10 text-foreground",
 };
 
 export function Cell({

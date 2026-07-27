@@ -1,4 +1,4 @@
-import { Clock3, Database } from "lucide-react";
+import { Clock as Clock3, Database } from "@phosphor-icons/react/dist/ssr";
 
 interface OperationRow {
   name: string;
@@ -25,7 +25,7 @@ export function Complexity({ source }: { source: string }) {
   const spec = parseSpec(source);
   if (!spec) {
     return (
-      <div className="rounded-lg border border-red-500/40 bg-red-500/5 p-3 text-sm text-muted">
+      <div className="rounded-lg border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
         Invalid complexity block.
       </div>
     );
@@ -50,7 +50,7 @@ export function Complexity({ source }: { source: string }) {
         ) : null}
         {spec.space ? (
           <div className="flex items-start gap-2.5">
-            <Database className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+            <Database weight="bold" className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
             <p className="text-sm">
               <span className="font-mono font-medium">{spec.space}</span>
               <span className="ml-2 text-muted">space</span>

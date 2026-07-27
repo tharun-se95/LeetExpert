@@ -1,24 +1,112 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* ============================================================
+   RISO LAB — design tokens
+
+   Two tiers. Tier 1 is raw material (the inks and the paper);
+   tier 2 is what components actually consume. Only tier 1 is
+   redefined for dark mode — tier 2 resolves at use time, so it
+   follows automatically and never needs a second definition.
+
+   Rule: nothing outside this file references a `--riso-*` value
+   directly. Components use the semantic names.
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  --muted: #71717a;
-  --border: #e4e4e7;
-  --surface: #fafafa;
-  --code: #f4f4f5;
-  --accent: #0070f3;
+  /* --- tier 1: ground ------------------------------------- */
+  --riso-paper: #fbf5e9;
+  --riso-paper-sunk: #f4ebd9;
+  --riso-ink: #17150f;
+  --riso-ink-soft: #6e6455;
+  --riso-rule: #ded2ba;
+
+  /*
+    Accent is contrast-corrected, not picked by eye. The original
+    #d8256e measured 4.39:1 on this paper — below the 4.5 that AA
+    requires for body-size text, and accent carries links and inline
+    emphasis. #c41d60 measures 5.24:1. Re-measure before changing.
+  */
+  /*
+    Two roles, because a bright ink physically cannot do both.
+
+    Lime measures 1.30:1 as text on this paper — illegible — but 12.89:1 as
+    a FIELD with ink printed over it. That is how two-colour riso actually
+    works: light inks are laid as blocks, never set as small type. So --pop
+    is only ever a fill, and --riso-olive carries anything that must be
+    coloured *text*. Dark mode drops the split (see .dark) because lime on
+    an ink ground is legible as type.
+  */
+  --riso-lime: #c8e639;
+  --riso-olive: #4f6208; /* 6.27:1 — the readable companion to lime */
+  --riso-blue: #2a56a8; /* the teacher's voice — asides and marks only */
+  --riso-green: #046b4f; /* 6.00:1 */
+  --riso-red: #a8321f; /* 6.44:1 */
+  --riso-amber: #8a5a05; /* 5.24:1 */
+
+  /* the highlighter is the pop ink too — one bright ink, several jobs */
+  --riso-highlight: color-mix(in oklab, var(--riso-lime) 70%, transparent);
+  --riso-halftone: rgba(23, 21, 15, 0.16);
+
+  /* --- tier 2: semantic ----------------------------------- */
+  --background: var(--riso-paper);
+  --foreground: var(--riso-ink);
+  --muted: var(--riso-ink-soft);
+  --border: var(--riso-rule);
+  --surface: var(--riso-paper-sunk);
+  --code: var(--riso-paper-sunk);
+  --accent: var(--riso-olive);
+  /* the pop ink — fills and marks ONLY, never text on paper */
+  --pop: var(--riso-lime);
+  /* what you print on top of a pop field */
+  --on-pop: var(--riso-ink);
+
+  /*
+    Status colours. These did not exist before, which is why several
+    components hardcode Tailwind emerald/red and so survive a palette
+    change unaltered. Route new work through these.
+  */
+  --good: var(--riso-green);
+  --bad: var(--riso-red);
+  --warn: var(--riso-amber);
+
+  /* the pen layer */
+  --mark: var(--riso-blue);
+  --highlight: var(--riso-highlight);
+  --halftone: var(--riso-halftone);
+
+  /* --- motion -------------------------------------------- */
+  --dur-fast: 120ms;
+  --dur: 240ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* --- focus --------------------------------------------- */
+  --focus-ring: 2px;
+  --focus-offset: 2px;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --muted: #a1a1aa;
-  --border: #27272a;
-  --surface: #111111;
-  --code: #171717;
-  --accent: #3b9eff;
+  /*
+    Riso is a print idiom, so dark is a translation rather than an
+    inversion: the paper becomes ink-black but the inks stay inks,
+    lifted in value so they still read as saturated on a dark ground.
+  */
+  --riso-paper: #13110e;
+  --riso-paper-sunk: #1b1813;
+  --riso-ink: #f3ece0;
+  --riso-ink-soft: #948b7c;
+  --riso-rule: #2e2820;
+
+  --riso-lime: #d8f24a; /* 15.01:1 on this ground */
+  --riso-olive: #d8f24a; /* on ink, lime needs no darker stand-in */
+  --riso-blue: #7fa9ff;
+  --riso-green: #24d69a;
+  --riso-red: #ff7a66;
+  --riso-amber: #f5b942;
+
+  --riso-highlight: color-mix(in oklab, var(--riso-lime) 26%, transparent);
+  --riso-halftone: rgba(243, 236, 224, 0.13);
+  --on-pop: #13110e;
 }
 
 @theme inline {
@@ -29,8 +117,16 @@
   --color-surface: var(--surface);
   --color-code: var(--code);
   --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --color-warn: var(--warn);
+  --color-mark: var(--mark);
+  --color-pop: var(--pop);
+  --color-on-pop: var(--on-pop);
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans-face);
+  --font-mono: var(--font-mono-face);
 }
 
 html {
@@ -40,35 +136,92 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans-face), ui-sans-serif, system-ui, sans-serif;
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--accent) 25%, transparent);
+  background: var(--highlight);
+}
+
+/*
+  One focus treatment for the whole app. Previously each component
+  invented its own, which meant keyboard users got different feedback
+  depending on where they were.
+*/
+:focus-visible {
+  outline: var(--focus-ring) solid var(--accent);
+  outline-offset: var(--focus-offset);
+  border-radius: 2px;
+}
+
+/*
+  Riso is a flat, printed idiom: depth comes from ink and rules, never
+  from blur. Shadows are deliberately absent from the token set — if a
+  surface needs to lift, give it a border or an offset block.
+*/
+
+/* A printed dot screen for raised panels. Applied per surface, not page-wide. */
+.riso-halftone {
+  position: relative;
+}
+.riso-halftone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(var(--halftone) 1px, transparent 1.2px);
+  background-size: 7px 7px;
+  opacity: 0.5;
+}
+.riso-halftone > * {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .handbook-prose {
-  max-width: 65ch;
-  font-size: 1.015rem;
-  line-height: 1.75;
-  color: color-mix(in oklab, var(--foreground) 92%, transparent);
+  /*
+    19px, matching what sites built for sustained technical reading
+    actually use (Red Blob Games 20px, Ciechanowski 19.2px). The old
+    16.2px was app-sized, not reading-sized.
+  */
+  max-width: 68ch;
+  font-size: 1.1875rem;
+  line-height: 1.62;
+  color: color-mix(in oklab, var(--foreground) 94%, transparent);
 }
 
 .handbook-prose h2 {
   margin-top: 2.25rem;
   margin-bottom: 0.75rem;
-  font-size: 1.35rem;
+  /*
+    Section headings take the display face but stay sentence case.
+    Uppercase is reserved for the lesson title and small labels —
+    at 191 lessons, uppercase on every h2 reads as shouting.
+  */
+  font-family: var(--font-display), var(--font-sans-face), sans-serif;
+  font-size: 1.44em;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   color: var(--foreground);
 }
 
 .handbook-prose h3 {
   margin-top: 1.75rem;
   margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  font-family: var(--font-display), var(--font-sans-face), sans-serif;
+  font-size: 1.14em;
   font-weight: 600;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   color: var(--foreground);
 }
 
@@ -153,6 +306,38 @@ body {
 
 .dark .viz-shiki .viz-code-token {
   color: var(--shiki-dark);
+}
+
+/*
+ * Editor token palette — the CodeMirror half of the code colours.
+ *
+ * These MIRROR `src/lib/content/codePalette.ts`, which feeds Shiki. Two
+ * engines paint code on this site (Shiki server-side for code blocks,
+ * CodeMirror client-side for the sandbox editor); the only thing keeping
+ * them identical is that both read the same values. Change one, change both.
+ */
+:root {
+  --tok-comment: #8a8071;
+  --tok-keyword: #c41d60;
+  --tok-string: #046b4f;
+  --tok-constant: #2a56a8;
+  --tok-entity: #7a3ea8;
+  --tok-variable: #a85a17;
+  --tok-name: #17150f;
+  --tok-tag: #046b4f;
+  --tok-invalid: #a8321f;
+}
+
+.dark {
+  --tok-comment: #7c7466;
+  --tok-keyword: #ff5c9c;
+  --tok-string: #24d69a;
+  --tok-constant: #7fa9ff;
+  --tok-entity: #c9a6ff;
+  --tok-variable: #ffab70;
+  --tok-name: #f3ece0;
+  --tok-tag: #24d69a;
+  --tok-invalid: #ff7a66;
 }
 
 /* Visual OS / PatternLab stage */
@@ -290,5 +475,104 @@ body {
 
   .print-chapter:first-child {
     break-before: avoid;
+  }
+}
+
+/*
+  The highlighter swipe, from `==text==`.
+
+  A background-image rather than a background-color so the ink sits low on
+  the line like a real marker pass, leaving the ascenders clear instead of
+  boxing the whole line-height.
+*/
+.handbook-prose mark {
+  background: linear-gradient(var(--highlight), var(--highlight));
+  background-size: 100% 0.62em;
+  background-repeat: no-repeat;
+  background-position: 0 0.72em;
+  color: inherit;
+  padding: 0 0.1em;
+}
+
+/*
+  The stamp — now a solid pop field with ink lettering, rather than an
+  outline. On paper a light ink cannot be read as type, so the stamp is
+  printed the way a real one is: the colour is the block, the letters are
+  the ink knocked into it.
+*/
+.riso-stamp {
+  display: inline-flex;
+  align-items: center;
+  transform: rotate(-11deg);
+  background: var(--pop);
+  border: 2px solid var(--on-pop);
+  color: var(--on-pop);
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.7rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: 3px;
+  opacity: 0.9;
+}
+
+/*
+  Print rules for the Riso elements.
+
+  The block above predates the design system; these cover what it doesn't
+  know about. The governing constraint is that most people print in
+  greyscale: a yellow highlighter band renders as near-invisible grey, and a
+  halftone dot screen just burns toner.
+
+  Reveals stay collapsed on paper. Their content is conditionally rendered
+  rather than hidden, so no stylesheet can expand it — and that is worth
+  keeping, because it is also what stops Ctrl+F leaking solutions in a
+  solve-first course.
+*/
+@media print {
+  /* the dot screen is texture, and texture does not survive a laser printer */
+  .riso-halftone::before {
+    display: none !important;
+  }
+
+  /* yellow prints as pale grey; an underline carries the same emphasis */
+  .handbook-prose mark {
+    background: none !important;
+    border-bottom: 1.5pt solid #000;
+    color: black !important;
+  }
+
+  /* the teacher's aside keeps its rule, loses its ink */
+  .handbook-prose aside {
+    border-color: #000 !important;
+    color: #333 !important;
+  }
+
+  .riso-stamp {
+    border-color: #000 !important;
+    color: #000 !important;
+  }
+}
+
+/*
+  Off-register overprint.
+
+  Two inks laid down fractionally out of alignment — the defining artefact of
+  cheap two-colour printing, and the thing that makes a page read as printed
+  rather than rendered. Done with text-shadow rather than a duplicated
+  pseudo-element: a `z-index: -1` copy can fall behind the page background
+  and vanish, and blend modes behave differently per theme.
+
+  Reserved for page titles. On body text it would just look like a rendering
+  fault.
+*/
+.riso-overprint {
+  text-shadow: 3px 3px 0 var(--mark);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .riso-overprint {
+    transition: text-shadow var(--dur) var(--ease);
   }
 }

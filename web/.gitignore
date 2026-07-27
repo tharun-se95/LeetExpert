@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Pyodide runtime, copied from node_modules at build time
+/public/pyodide/
+/public/search-index.json

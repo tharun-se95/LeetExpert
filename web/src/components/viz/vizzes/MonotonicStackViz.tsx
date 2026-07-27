@@ -173,7 +173,7 @@ export function MonotonicStackViz(props: Record<string, unknown>) {
                     "flex h-10 w-10 items-center justify-center rounded-lg border font-mono text-sm font-semibold tabular-nums",
                     a === null
                       ? "border-dashed border-border text-muted"
-                      : "border-emerald-500/50 bg-emerald-500/10 text-foreground",
+                      : "border-good/50 bg-good/10 text-foreground",
                   )}
                 >
                   {a === null ? (

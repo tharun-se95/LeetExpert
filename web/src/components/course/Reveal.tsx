@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { ChevronRight } from "lucide-react";
+import { CaretRight as ChevronRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 export function Reveal({
@@ -14,7 +14,7 @@ export function Reveal({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="my-4 rounded-xl border border-border bg-surface/40">
+    <div className="riso-halftone my-4 rounded-xl border border-border bg-surface/40">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

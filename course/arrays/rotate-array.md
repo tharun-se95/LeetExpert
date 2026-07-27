@@ -22,6 +22,29 @@ follow-up: O(1) auxiliary space.
 The O(n)-space version is warm-up; get it working mentally first. The real
 problem is O(1) space — and the trick is *not* an incremental shuffle.
 
+Note the constraint: ==k can exceed n==, so normalise it before you index
+anything.
+
+```sandbox
+{
+  "id": "rotate-array",
+  "fn": { "python": "rotate", "javascript": "rotate" },
+  "check": "mutate",
+  "starter": {
+    "python": "def rotate(nums, k):\n    # Rotate nums right by k, in place. Return nothing.\n    pass\n",
+    "javascript": "function rotate(nums, k) {\n  // Rotate nums right by k, in place. Return nothing.\n}\n"
+  },
+  "cases": [
+    { "args": [[1,2,3,4,5,6,7],3], "expect": [5,6,7,1,2,3,4] },
+    { "args": [[-1,-100,3,99],2], "expect": [3,99,-1,-100] },
+    { "args": [[1,2],3], "expect": [2,1] },
+    { "args": [[1,2,3,4],6], "expect": [3,4,1,2] },
+    { "args": [[1,2,3],0], "expect": [1,2,3] },
+    { "args": [[1],0], "expect": [1] }
+  ]
+}
+```
+
 ````reveal Hint 1 — normalize k, and find the destination map
 Rotating by n changes nothing, so first take k = k mod n (the clock
 arithmetic from the Math module). Then: where does the element at index i
@@ -63,6 +86,14 @@ space.
 reverse all   → [7,6,5,4,3,2,1]
 reverse [0,k) → [6,7,5,4,3,2,1]
 reverse [k,n) → [6,7,1,2,3,4,5]   ✓
+```
+
+Step it through. The state worth watching is the one after the first
+reversal: the blocks are already in the right ==order==, and both are
+merely backwards — which is exactly what the next two reversals undo.
+
+```viz
+{ "id": "block-reversal", "data": [1, 2, 3, 4, 5, 6, 7], "k": 3 }
 ```
 
 ## Solution
@@ -163,6 +194,19 @@ function rotateCycles(nums: number[], k: number): void {
 }
 ```
 ````
+
+Step through it — watch the token carry each displaced value around the
+ring, and watch the first cycle close having placed only half the array:
+
+```viz
+{ "id": "cyclic-rotate", "data": [1, 2, 3, 4, 5, 6], "k": 2 }
+```
+
+That is the termination subtlety made concrete. With n = 6 and k = 2,
+gcd(6, 2) = 2, so index 0 chases 0 → 2 → 4 → 0 and stops with 1, 3 and 5
+still untouched. Chasing further from 0 would just retrace the same three
+slots forever. The `for start in range(gcd(n, k))` header is what picks up
+the second cycle at index 1.
 
 Same O(n)/O(1), fewer element writes; the price is the cycle-termination
 subtlety. Reversal is what you write under pressure; cycles are what you

@@ -210,11 +210,11 @@ function TreeCanvas({ flat, state }: { flat: TreeNode[]; state: FibTreeState }) 
                 className={cn(
                   "flex h-full w-full flex-col items-center justify-center rounded-full border font-mono text-[10px] font-semibold leading-none transition-colors duration-300",
                   isRecomputeFlash
-                    ? "border-red-500 bg-red-500/20 text-foreground"
+                    ? "border-bad bg-bad/20 text-foreground"
                     : isActive
                       ? "border-accent bg-accent text-white"
                       : value !== undefined
-                        ? "border-emerald-500/50 bg-emerald-500/10 text-foreground"
+                        ? "border-good/50 bg-good/10 text-foreground"
                         : "border-accent/50 bg-accent/12 text-foreground",
                 )}
               >
@@ -222,7 +222,7 @@ function TreeCanvas({ flat, state }: { flat: TreeNode[]; state: FibTreeState }) 
                 {value !== undefined ? <span className="text-[9px] opacity-80">= {value}</span> : null}
               </div>
               {isRecomputeFlash ? (
-                <span className="absolute -top-2 -right-1 rounded-full bg-red-500 px-1 text-[8px] font-bold text-white">
+                <span className="absolute -top-2 -right-1 rounded-full bg-bad px-1 text-[8px] font-bold text-white">
                   !
                 </span>
               ) : null}
@@ -249,7 +249,7 @@ export function FibCallTreeViz(props: Record<string, unknown>) {
             <span>
               calls so far <span className="text-foreground">{state.visible.size}</span>
             </span>
-            <span className="rounded-md border border-red-500/40 bg-red-500/10 px-1.5 py-0.5 text-red-500">
+            <span className="rounded-md border border-bad/40 bg-bad/10 px-1.5 py-0.5 text-bad">
               recomputed{" "}
               <motion.span
                 key={state.recomputeCount}

@@ -27,6 +27,25 @@ This problem is the boundary-search lesson's `lower_bound`, verbatim —
 the same question when values are distinct. The exercise is recognizing
 that identity, not writing new code.
 
+
+```sandbox
+{
+  "id": "search-insert-position",
+  "fn": { "python": "search_insert", "javascript": "searchInsert" },
+  "check": "return",
+  "starter": {
+    "python": "def search_insert(nums, target):\n    # Return the index where target is or belongs.\n    pass\n",
+    "javascript": "function searchInsert(nums, target) {\n  // Return the index where target is or belongs.\n}\n"
+  },
+  "cases": [
+    { "args": [[1,3,5,6],5], "expect": 2 },
+    { "args": [[1,3,5,6],2], "expect": 1 },
+    { "args": [[1,3,5,6],7], "expect": 4 },
+    { "args": [[1,3,5,6],0], "expect": 0 },
+    { "args": [[1],1], "expect": 0 }
+  ]
+}
+```
 ````reveal Hint — it's lower_bound, unmodified
 The insertion point for target is exactly the first index where
 arr[i] >= target — if target is present, that's its index (found); if

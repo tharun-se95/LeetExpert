@@ -26,6 +26,24 @@ applied to Search in Rotated Sorted Array's "one sorted half" insight
 positions and this becomes a single clean binary search — no target to
 compare against, just structure.
 
+
+```sandbox
+{
+  "id": "find-min-rotated",
+  "fn": { "python": "find_min", "javascript": "findMin" },
+  "check": "return",
+  "starter": {
+    "python": "def find_min(nums):\n    # Return the minimum value.\n    pass\n",
+    "javascript": "function findMin(nums) {\n  // Return the minimum value.\n}\n"
+  },
+  "cases": [
+    { "args": [[3,4,5,1,2]], "expect": 1 },
+    { "args": [[4,5,6,7,0,1,2]], "expect": 0 },
+    { "args": [[11,13,15,17]], "expect": 11 },
+    { "args": [[2,1]], "expect": 1 }
+  ]
+}
+```
 ````reveal Hint 1 — what's monotonic here?
 The minimum is the ROTATION POINT — the one index where nums[i] <
 nums[i-1]. Compare each candidate against the array's LAST element:

@@ -26,6 +26,24 @@ obvious good solution — sort, scan for runs — is O(n log n), and the
 problem explicitly bans it. Sit with it for a while; the trick is a new
 *kind* of move, and meeting it cold is worth real struggle.
 
+
+```sandbox
+{
+  "id": "longest-consecutive-sequence",
+  "fn": { "python": "longest_consecutive", "javascript": "longestConsecutive" },
+  "check": "return",
+  "starter": {
+    "python": "def longest_consecutive(nums):\n    # Return the longest run length.\n    pass\n",
+    "javascript": "function longestConsecutive(nums) {\n  // Return the longest run length.\n}\n"
+  },
+  "cases": [
+    { "args": [[100,4,200,1,3,2]], "expect": 4 },
+    { "args": [[0,3,7,2,5,8,4,6,0,1]], "expect": 9 },
+    { "args": [[]], "expect": 0 },
+    { "args": [[1,2,0,1]], "expect": 3 }
+  ]
+}
+```
 ````reveal Hint 1 — what does a set make cheap?
 Put everything in a set: now "is value v present?" is O(1). A run of
 consecutive values 5,6,7,8 is fully described by: 5 is present, 4 is

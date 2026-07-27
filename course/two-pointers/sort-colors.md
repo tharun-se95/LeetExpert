@@ -28,6 +28,24 @@ the three possible values at mid. If you get stuck on whether mid
 advances, you're at the exact spot the lesson said you would be; go back
 to the regions, not to trial and error.
 
+
+```sandbox
+{
+  "id": "sort-colors",
+  "fn": { "python": "sort_colors", "javascript": "sortColors" },
+  "check": "mutate",
+  "starter": {
+    "python": "def sort_colors(nums):\n    # Sort 0s, 1s, 2s in place. Return nothing.\n    pass\n",
+    "javascript": "function sortColors(nums) {\n  // Sort 0s, 1s, 2s in place. Return nothing.\n}\n"
+  },
+  "cases": [
+    { "args": [[2,0,2,1,1,0]], "expect": [0,0,1,1,2,2] },
+    { "args": [[2,0,1]], "expect": [0,1,2] },
+    { "args": [[0]], "expect": [0] },
+    { "args": [[1,2,0,2,1,0,1]], "expect": [0,0,1,1,1,2,2] }
+  ]
+}
+```
 ````reveal Hint 1 — the two-pass warm-up
 Counting sort in miniature: count the 0s, 1s, 2s (Module 6's Count
 verb — or just three integers), then overwrite the array in order. Two

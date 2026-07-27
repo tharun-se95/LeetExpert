@@ -26,6 +26,24 @@ The pipeline version should take you two minutes with the toolkit lesson.
 Then think hard about the follow-up — it has a genuinely pretty trick, and
 you've already met its main ingredient in Rotate Array.
 
+
+```sandbox
+{
+  "id": "reverse-words",
+  "fn": { "python": "reverse_words", "javascript": "reverseWords" },
+  "check": "return",
+  "starter": {
+    "python": "def reverse_words(s):\n    # Return the words in reverse order, single-spaced.\n    pass\n",
+    "javascript": "function reverseWords(s) {\n  // Return the words in reverse order, single-spaced.\n}\n"
+  },
+  "cases": [
+    { "args": ["the sky is blue"], "expect": "blue is sky the" },
+    { "args": ["  hello world  "], "expect": "world hello" },
+    { "args": ["a good   example"], "expect": "example good a" },
+    { "args": ["single"], "expect": "single" }
+  ]
+}
+```
 ````reveal Hint 1 — the pipeline
 split (handling space runs) → reverse the word list → join with single
 spaces. Mind the Python/JS split asymmetry from the toolkit lesson.

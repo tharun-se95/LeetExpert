@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle as CheckCircle2, XCircle } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 interface QuizQuestion {
@@ -127,14 +127,14 @@ function QuestionCard({ question }: { question: QuizQuestion }) {
                 answered &&
                   isSelected &&
                   !isAnswer &&
-                  "border-red-500/60 bg-red-500/10",
+                  "border-bad/60 bg-bad/10",
                 answered && !isSelected && !isAnswer && "border-border opacity-60",
               )}
             >
               {answered && isAnswer ? (
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
               ) : answered && isSelected && !isAnswer ? (
-                <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+                <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-bad" />
               ) : (
                 <span className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-border text-[10px] text-muted">
                   {String.fromCharCode(65 + i)}
@@ -171,7 +171,7 @@ export function Quiz({ source }: { source: string }) {
 
   if (!spec) {
     return (
-      <div className="rounded-lg border border-red-500/40 bg-red-500/5 p-3 text-sm text-muted">
+      <div className="rounded-lg border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
         Invalid quiz block.
       </div>
     );

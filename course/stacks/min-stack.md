@@ -28,6 +28,60 @@ the exact operation where, before reading on (the example above walks
 you right into it). Then ask: what information would you have needed to
 keep?
 
+
+```sandbox
+{
+  "id": "min-stack",
+  "check": "sequence",
+  "class": {"python": "MinStack", "javascript": "MinStack"},
+  "methods": {
+    "getMin": { "python": "get_min", "javascript": "getMin" }
+  },
+  "fn": {"python": "MinStack", "javascript": "MinStack"},
+  "starter": {
+    "python": "class MinStack:\n    def __init__(self):\n        pass\n\n    def push(self, val):\n        pass\n\n    def pop(self):\n        pass\n\n    def top(self):\n        pass\n\n    def get_min(self):\n        pass\n",
+    "javascript": "class MinStack {\n  constructor() {}\n\n  push(val) {}\n\n  pop() {}\n\n  top() {}\n\n  getMin() {}\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [],
+      "ops": [
+        ["push", [-2], null],
+        ["push", [0], null],
+        ["push", [-3], null],
+        ["getMin", [], -3],
+        ["pop", [], null],
+        ["top", [], 0],
+        ["getMin", [], -2]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["push", [1], null],
+        ["getMin", [], 1],
+        ["push", [1], null],
+        ["getMin", [], 1],
+        ["pop", [], null],
+        ["getMin", [], 1]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["push", [5], null],
+        ["push", [3], null],
+        ["push", [7], null],
+        ["getMin", [], 3],
+        ["pop", [], null],
+        ["getMin", [], 3],
+        ["pop", [], null],
+        ["getMin", [], 5]
+      ]
+    }
+  ]
+}
+```
 ````reveal Hint 1 — why one variable fails
 When the minimum itself is popped, the new minimum is whatever was
 minimal BEFORE it arrived — information a single overwritten variable

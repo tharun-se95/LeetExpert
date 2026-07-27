@@ -24,6 +24,25 @@ This one isn't a write-pointer problem — it's here to teach a different
 single-pass discipline. The constraint n ≤ 10⁵ rules out one obvious
 approach (you know which, and you know why — you read constraints now).
 
+```sandbox
+{
+  "id": "best-time-to-buy-sell-stock",
+  "fn": { "python": "max_profit", "javascript": "maxProfit" },
+  "check": "return",
+  "starter": {
+    "python": "def max_profit(prices):\n    # Return the maximum profit, or 0.\n    return 0\n",
+    "javascript": "function maxProfit(prices) {\n  // Return the maximum profit, or 0.\n  return 0;\n}\n"
+  },
+  "cases": [
+    { "args": [[7,1,5,3,6,4]], "expect": 5 },
+    { "args": [[7,6,4,3,1]], "expect": 0 },
+    { "args": [[1]], "expect": 0 },
+    { "args": [[2,4,1]], "expect": 2 },
+    { "args": [[3,3,3]], "expect": 0 }
+  ]
+}
+```
+
 ````reveal Hint 1 — what makes a day a good SELL day?
 Selling on day i earns prices[i] − (the cheapest price on ANY earlier
 day). If you knew that "cheapest so far" for every i, each day's best

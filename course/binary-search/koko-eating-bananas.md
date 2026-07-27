@@ -29,6 +29,24 @@ recognize the three-signal pattern from the concept lesson before
 writing anything: minimum value satisfying a condition, a feasibility
 check, monotonic feasibility.
 
+
+```sandbox
+{
+  "id": "koko-eating-bananas",
+  "fn": { "python": "min_eating_speed", "javascript": "minEatingSpeed" },
+  "check": "return",
+  "starter": {
+    "python": "def min_eating_speed(piles, h):\n    # Return the smallest workable speed.\n    pass\n",
+    "javascript": "function minEatingSpeed(piles, h) {\n  // Return the smallest workable speed.\n}\n"
+  },
+  "cases": [
+    { "args": [[3,6,7,11],8], "expect": 4 },
+    { "args": [[30,11,23,4,20],5], "expect": 30 },
+    { "args": [[30,11,23,4,20],6], "expect": 23 },
+    { "args": [[1],1], "expect": 1 }
+  ]
+}
+```
 ````reveal Hint 1 — confirm all three signals
 Asked for: MINIMUM speed satisfying 'finishes within h hours' — signal
 1. Feasibility check: given a candidate speed k, compute total hours

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="DSA course">
+  <title>DSA</title>
+  <!--
+    A riso overprint: two inks laid down slightly out of register, the way a
+    two-colour zine prints. The blue block is offset from the pink one, and
+    the four cells read as an array with its first two settled — the write
+    pointer, which is the idea the whole course is built on.
+  -->
+  <rect width="64" height="64" rx="12" fill="#fbf5e9" />
+  <g transform="translate(3 3)">
+    <rect x="8" y="20" width="44" height="22" rx="3" fill="#2a56a8" opacity="0.55" />
+  </g>
+  <rect x="8" y="20" width="44" height="22" rx="3" fill="#c41d60" />
+  <g fill="#fbf5e9">
+    <rect x="13" y="25" width="8" height="12" rx="1.5" />
+    <rect x="24" y="25" width="8" height="12" rx="1.5" />
+  </g>
+  <g fill="none" stroke="#fbf5e9" stroke-width="1.6" opacity="0.9">
+    <rect x="35" y="25" width="8" height="12" rx="1.5" />
+  </g>
+</svg>

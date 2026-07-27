@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { Markdown } from "@/components/md/Markdown";
 import { TableOfContents } from "@/components/md/TableOfContents";
 import { Breadcrumbs, type Crumb } from "@/components/layout/Breadcrumbs";
@@ -38,7 +38,7 @@ export function LessonView({
         <p className="mb-2 text-xs font-medium uppercase tracking-wider text-accent">
           {eyebrow}
         </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-[2rem]">
+        <h1 className="riso-overprint font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]">
           {lesson.title}
         </h1>
         <p className="mt-2 flex items-center gap-3 text-sm text-muted">
@@ -61,7 +61,7 @@ export function LessonView({
               href={prev.href}
               className="group flex max-w-[45%] items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm transition hover:border-foreground/25 hover:bg-surface"
             >
-              <ArrowLeft className="h-4 w-4 shrink-0 text-muted transition group-hover:text-foreground" />
+              <ArrowLeft weight="bold" className="h-4 w-4 shrink-0 text-muted transition group-hover:text-foreground" />
               <span className="min-w-0">
                 <span className="block text-xs text-muted">Previous</span>
                 <span className="block truncate font-medium">{prev.title}</span>
@@ -79,7 +79,7 @@ export function LessonView({
                 <span className="block text-xs text-muted">Next</span>
                 <span className="block truncate font-medium">{next.title}</span>
               </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-muted transition group-hover:text-foreground" />
+              <ArrowRight weight="bold" className="h-4 w-4 shrink-0 text-muted transition group-hover:text-foreground" />
             </Link>
           ) : (
             <span />

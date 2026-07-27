@@ -26,6 +26,25 @@ this problem is that observation and nothing more. Prove it to yourself
 before opening hints — including the early exit that makes many calls
 O(1).
 
+
+```sandbox
+{
+  "id": "valid-anagram",
+  "fn": { "python": "is_anagram", "javascript": "isAnagram" },
+  "check": "return",
+  "starter": {
+    "python": "def is_anagram(s, t):\n    # Return True or False.\n    pass\n",
+    "javascript": "function isAnagram(s, t) {\n  // Return true or false.\n}\n"
+  },
+  "cases": [
+    { "args": ["anagram","nagaram"], "expect": true },
+    { "args": ["rat","car"], "expect": false },
+    { "args": ["a","a"], "expect": true },
+    { "args": ["ab","a"], "expect": false },
+    { "args": ["aacc","ccac"], "expect": false }
+  ]
+}
+```
 ````reveal Hint 1 — what property is invariant under rearrangement?
 Order changes; COUNTS don't. Two strings are anagrams iff every character
 appears the same number of times in both. So compare fingerprints, not

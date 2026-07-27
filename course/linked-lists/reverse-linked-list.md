@@ -27,36 +27,27 @@ hand before you code it. This is THE canonical pointer exercise — worth
 doing honestly enough that you can rewrite it cold in an interview,
 because sub-range reversal shows up inside harder problems constantly.
 
-````reveal Hint — the invariant to maintain
-prev heads the reversed prefix (initially null — the empty reversed
-list); curr heads the untouched suffix. Each step: save curr's forward
-route, flip curr onto prev, march both names forward. Termination: curr
-is null, and prev is the answer.
-````
 
-## Brute force, for contrast
 
-Copy values into an array, reverse it, write them back (or rebuild a new
-list): O(n) time but O(n) space — and it's *value* surgery, which the
-surgery lesson called "the array algorithm in worse clothing." The point
-of the exercise is O(1) space by pointer rewiring.
-
-## Solution
-
-`````reveal Solution — iterative three-pointer walk
-````tabs
-```python
-def reverse_list(head):
-    prev = None                    # reversed prefix: empty
-    curr = head                    # untouched suffix: everything
-    while curr is not None:
-        nxt = curr.next            # 1) save the lifeline
-        curr.next = prev           # 2) the flip
-        prev = curr                # 3) march
-        curr = nxt
-    return prev                    # curr is null; prev heads it all
+```sandbox
+{
+  "id": "reverse-linked-list",
+  "fn": {"python": "reverse_list", "javascript": "reverseList"},
+  "check": "return",
+  "shape": {"0": "list"},
+  "returns": "list",
+  "starter": {
+    "python": "# ListNode is already defined for you:\n#   class ListNode:\n#       def __init__(self, val=0, next=None): ...\ndef reverse_list(head):\n    # Return the new head.\n    pass\n",
+    "javascript": "// ListNode is already defined for you:\n//   class ListNode { constructor(val, next) {...} }\nfunction reverseList(head) {\n  // Return the new head.\n}\n"
+  },
+  "cases": [
+    { "args": [[1, 2, 3, 4, 5]], "expect": [5, 4, 3, 2, 1] },
+    { "args": [[1, 2]], "expect": [2, 1] },
+    { "args": [[1]], "expect": [1] },
+    { "args": [[]], "expect": [] }
+  ]
+}
 ```
-
 ```typescript
 function reverseList(head: ListNode | null): ListNode | null {
   let prev: ListNode | null = null; // reversed prefix: empty

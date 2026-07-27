@@ -27,6 +27,25 @@ shortcut — find target once, then scan outward — breaks the O(log n)
 requirement (a run of equal values can be O(n) long). Two independent
 boundary searches are the only way to keep the guarantee.
 
+
+```sandbox
+{
+  "id": "find-first-and-last",
+  "fn": { "python": "search_range", "javascript": "searchRange" },
+  "check": "return",
+  "starter": {
+    "python": "def search_range(nums, target):\n    # Return [first, last], or [-1, -1].\n    pass\n",
+    "javascript": "function searchRange(nums, target) {\n  // Return [first, last], or [-1, -1].\n}\n"
+  },
+  "cases": [
+    { "args": [[5,7,7,8,8,10],8], "expect": [3,4] },
+    { "args": [[5,7,7,8,8,10],6], "expect": [-1,-1] },
+    { "args": [[],0], "expect": [-1,-1] },
+    { "args": [[1],1], "expect": [0,0] },
+    { "args": [[2,2],2], "expect": [0,1] }
+  ]
+}
+```
 ````reveal Hint 1 — the first index, directly
 lower_bound(target): first index where arr[i] >= target. If that index
 is out of bounds OR arr[that index] != target, target isn't present —

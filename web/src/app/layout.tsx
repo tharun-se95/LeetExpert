@@ -1,9 +1,38 @@
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import { Bricolage_Grotesque, IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
+
+/**
+ * Three faces, three jobs.
+ *
+ * Display carries the poster headings of the Riso system; body is a humanist
+ * face chosen for long technical reading; mono serves both code blocks and
+ * the interface labels that borrow the code voice.
+ *
+ * Bricolage and JetBrains are variable, so each ships one file across all
+ * weights. IBM Plex Sans is not, so its weights are pinned explicitly rather
+ * than pulling the whole family.
+ */
+const display = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const sans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans-face",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono-face",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -23,7 +52,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}
+      className={`${display.variable} ${sans.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background font-sans text-foreground">
         <ThemeProvider>

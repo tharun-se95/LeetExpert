@@ -1,6 +1,34 @@
 # Neon Depth — visual system for DSA pattern videos
 
-**Status:** approved, ready for implementation
+**Status: SUPERSEDED (2026-07-19, same day).** This was an exploratory
+session ("playing around to see what we can achieve with Remotion"), not a
+production decision. The 3D layer (`@remotion/three`) documented below was
+built, validated end-to-end (two working prototypes, a full multi-frame
+render with no WebGL errors), and then **deliberately dropped** in favor of
+staying 2D-only — `@remotion/three`, `three`, `@react-three/fiber`,
+`@react-three/drei` have been uninstalled, `neon3d.tsx` and the
+`test-neon-depth` composition have been deleted, and
+`Config.setChromiumOpenGlRenderer("angle")` has been removed from
+`remotion.config.ts`.
+
+**What's still real and in the codebase:** the 2D half of this system —
+`lib/theme.ts`'s `NEON` palette, `lib/fonts.ts`'s `neonSansFont`/
+`neonCodeFont`, and `lib/neon2d.tsx`'s overlay primitives (`NeonBackground`,
+`NeonLabel`, `NeonTag`, `NeonCodePanel`, `NeonComplexityBar`,
+`NeonChapterMark`, `NeonOutroCard`) — these are plain CSS/HTML, not
+WebGL-dependent, and remain available for a future 2D-only video in this
+palette if that direction is picked up again.
+
+**Why this doc is kept, not deleted:** it's an accurate record of what was
+tried and why it didn't stick — see the portable playbook doc
+(`video/REMOTION-PLAYBOOK.md`) for the distilled, project-agnostic version
+of these lessons (mainly: 3D works technically but the lighting/camera/
+material tuning cost and WebGL render fragility weren't worth it here).
+Don't treat anything below as current guidance for this repo.
+
+---
+
+**Original status (no longer active):** approved, ready for implementation
 **Supersedes:** brutalist/papercut system (`video/src/lib/brutalist.tsx`) as the
 default for new videos. Existing rendered videos (ch01, family7, family3-sorting)
 are NOT being redone — this applies going forward only.

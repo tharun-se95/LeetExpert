@@ -29,6 +29,25 @@ Write the naive version cleanly — every alignment, checked honestly. Then
 find the worst case that makes it slow, because knowing *when* naive fails
 is this lesson's actual content.
 
+
+```sandbox
+{
+  "id": "find-the-index",
+  "fn": { "python": "str_str", "javascript": "strStr" },
+  "check": "return",
+  "starter": {
+    "python": "def str_str(haystack, needle):\n    # Return the first index of needle, or -1.\n    pass\n",
+    "javascript": "function strStr(haystack, needle) {\n  // Return the first index of needle, or -1.\n}\n"
+  },
+  "cases": [
+    { "args": ["sadbutsad","sad"], "expect": 0 },
+    { "args": ["leetcode","leeto"], "expect": -1 },
+    { "args": ["hello","ll"], "expect": 2 },
+    { "args": ["aaa","aaaa"], "expect": -1 },
+    { "args": ["abc",""], "expect": 0 }
+  ]
+}
+```
 ````reveal Hint 1 — alignments
 needle can start at haystack positions 0 … n − m (n, m = lengths). Each
 candidate start is an "alignment"; verify one with a character loop or a

@@ -35,6 +35,13 @@ jobs:
         working-directory: web
         run: npm run lint
 
+      # Content validation runs before the build: a bad fence id or malformed
+      # spec still builds successfully and only fails in the browser, so the
+      # build passing is not evidence the content is intact.
+      - name: Test
+        working-directory: web
+        run: npm test
+
       - name: Build
         working-directory: web
         run: npm run build

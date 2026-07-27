@@ -27,6 +27,24 @@ structure you carry and creates one ordering subtlety the examples above
 hint at (`[3,2,4]` and `[3,3]` are both traps for specific wrong
 versions).
 
+
+```sandbox
+{
+  "id": "two-sum",
+  "fn": { "python": "two_sum", "javascript": "twoSum" },
+  "check": "return",
+  "starter": {
+    "python": "def two_sum(nums, target):\n    # Return the two indices, smaller first.\n    pass\n",
+    "javascript": "function twoSum(nums, target) {\n  // Return the two indices, smaller first.\n}\n"
+  },
+  "cases": [
+    { "args": [[2,7,11,15],9], "expect": [0,1] },
+    { "args": [[3,2,4],6], "expect": [1,2] },
+    { "args": [[3,3],6], "expect": [0,1] },
+    { "args": [[-1,-2,-3,-4],-7], "expect": [2,3] }
+  ]
+}
+```
 ````reveal Hint 1 — which verb?
 "Find the partner" is the INDEX verb: you need each value's location, not
 just its existence. Carry value → index. A set loses exactly the

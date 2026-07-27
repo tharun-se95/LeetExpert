@@ -3,12 +3,42 @@ title: Divisibility, Primes & GCD
 type: concept
 ---
 
-## Divisors come in pairs
+Three ideas show up constantly in DSA problems: checking whether a number
+is prime, finding every prime up to some limit, and finding the greatest
+common divisor. Each one rests on a single insight. Get the insight and
+the algorithm writes itself.
 
-d divides n ("d | n") when n = d · k for some integer k. The observation
-that powers half the algorithms in this area: **divisors pair up across
-√n** — if d | n then (n/d) | n, and one of the pair is ≤ √n. So to
-enumerate divisors or test primality you only probe up to √n:
+## 1. Divisibility & prime checking — O(√n)
+
+### The core insight
+
+**Divisors come in pairs.** If d divides n, then n/d divides n too.
+
+Take n = 36. Every divisor sits in exactly one pair:
+
+| pair | small | large |
+| --- | --- | --- |
+| (1, 36) | 1 | 36 |
+| (2, 18) | 2 | 18 |
+| (3, 12) | 3 | 12 |
+| (4, 9) | 4 | 9 |
+| (6, 6) | 6 | 6 |
+
+Now look at the small column. It never exceeds 6, and √36 = 6.
+
+That is not a coincidence about 36. In every pair, at least one member is
+≤ √n — because if both members were larger than √n, their product would
+be larger than n. But their product *is* n. So one of them has to be
+small.
+
+### Why it matters
+
+To check whether n is prime, you do not need to test every divisor up to
+n − 1. You only need to test up to √n.
+
+If n is composite, it has a divisor pair, and the small member of that
+pair is ≤ √n. Your loop will find it. So if the loop finishes without
+finding anything, n is prime. That is a proof, not a guess.
 
 ````tabs
 ```python
@@ -35,24 +65,49 @@ function isPrime(n: number): boolean {
 ```
 ````
 
+Note `d * d <= n` rather than `d <= Math.sqrt(n)`. Same loop, but it
+stays in integer arithmetic and avoids a float rounding edge case at
+perfect squares.
+
 ```complexity
 {
   "time": "O(√n)",
   "space": "O(1)",
-  "why": "Any composite n has a divisor ≤ √n (divisors pair as d · n/d), so an absent divisor below √n proves primality. Note this is √ of the VALUE n — exponential in the number's digit count, which is why cryptography can still rely on factoring being hard."
+  "why": "The loop runs until d exceeds √n, so at most √n iterations. Each does one modulo. Space is a single counter variable."
 }
 ```
 
-That last point deserves emphasis: complexity is measured against what you
-name. O(√n) in the *value* is O(√(10^digits)) in the *input length* — fine
-for n up to ~10¹², useless for 300-digit numbers.
+**One caveat worth carrying with you.** That √n is the square root of the
+*value* n, not of the input size. A 300-digit number has n ≈ 10³⁰⁰, so
+√n ≈ 10¹⁵⁰ iterations — completely impossible. Measured against the
+number of digits you typed, this algorithm is exponential. That is
+exactly why RSA can rest on factoring being hard.
 
-## Many primality checks? Sieve instead
+In practice: fine up to n ≈ 10¹², useless beyond that.
 
-Testing k different numbers up to n costs O(k√n) with the function above.
-When you need "is prime?" for *everything* up to n, the **Sieve of
-Eratosthenes** precomputes all answers in one pass: mark multiples of each
-prime as composite.
+## 2. Sieve of Eratosthenes — O(n log log n)
+
+### The core insight
+
+Suppose you need primality for many numbers, not one. Running the O(√n)
+test k times costs O(k√n). For k = n = 10⁶ that is around 10⁹
+operations — too slow.
+
+So stop asking one number at a time. **Compute every answer up front, in
+one pass.**
+
+The method is to mark composites rather than find primes:
+
+1. Make a boolean array, `True` for every number from 2 to n. Assume
+   everything is prime.
+2. Walk upward. When you reach a number p still marked `True`, it is
+   prime — nothing below it divided it. Mark all its multiples `False`.
+3. Start marking at p², not at 2p.
+
+Step 3 is the one that looks wrong and isn't. Every multiple of p below
+p² is p·m for some m < p. That m has a prime factor smaller than p, and
+that smaller prime already struck the number out on an earlier pass. So
+the work is already done and starting at p² skips it.
 
 ````tabs
 ```python
@@ -82,37 +137,66 @@ function sieve(n: number): boolean[] {
 ```
 ````
 
+The outer loop also stops at √n, for the same reason as before: any
+composite ≤ n has a prime factor ≤ √n, so by the time p passes √n every
+composite has already been marked.
+
 ```complexity
 {
   "time": "O(n log log n)",
   "space": "O(n)",
-  "why": "Marking multiples of p costs n/p; summing n/2 + n/3 + n/5 + … over primes gives n · (1/2 + 1/3 + 1/5 + …) = n log log n — effectively linear. Starting each inner loop at p² is safe because smaller multiples of p were already struck out by smaller primes."
+  "why": "Marking multiples of p costs about n/p steps. Summing n/2 + n/3 + n/5 + … over the primes up to n gives n · (1/2 + 1/3 + 1/5 + …), and that sum of prime reciprocals grows like log log n. So the total is n log log n."
 }
 ```
 
-## GCD and Euclid's algorithm
+### Why it matters
 
-gcd(a, b) is the largest integer dividing both. The 2,300-year-old
-algorithm rests on one identity:
+log log n is a brutally slow-growing function. For n = 10⁶ it is about 3.
+So O(n log log n) is near-linear in practice — treat it as "roughly O(n)"
+when you are estimating.
+
+The cost you actually have to think about is space. The array *is* the
+data structure, so you pay O(n) memory whether or not you use every entry.
+
+**Reach for the sieve when:** n ≤ 10⁷ and you need many primality
+answers. That builds in well under a second, costs a few tens of MB, and
+afterward every "is p prime?" is a single O(1) array read.
+
+**Past that:** memory breaks first. Switch to a segmented sieve, or to a
+probabilistic test like Miller–Rabin if you only need scattered
+individual numbers.
+
+## 3. GCD & Euclid's algorithm — O(log min(a, b))
+
+### The core insight
+
+gcd(a, b) is the largest integer that divides both. Euclid's algorithm
+computes it from one identity:
 
 > **gcd(a, b) = gcd(b, a mod b)**
 
-*Why it's true:* let q = a // b (integer division), so by definition
-a = q·b + (a mod b). Now check both directions:
+Replace the pair with a smaller pair. Repeat until the second number is
+0. The first number is then the answer.
 
-- If d divides both a and b, it divides q·b (a multiple of b) and
-  therefore divides a − q·b, which is exactly a mod b.
-- If d divides both b and a mod b, it divides q·b (a multiple of b)
-  and a mod b, so it divides their sum q·b + (a mod b), which is exactly
-  a.
+### Why it works
 
-Either way, d divides the FULL pair — (a, b) and (b, a mod b) have
-identically the same set of common divisors, so in particular the same
-GREATEST one. That's the whole proof: two pairs that agree on every
-common divisor must agree on the largest.
+Write a = q·b + r, where q is the integer quotient and r = a mod b. That
+is just what division means.
 
-Watch it happen on 48 and 18 — each row divides the bar into copies of
-the shorter length, and the leftover (accent) becomes next row's bar:
+The claim is that (a, b) and (b, r) have *exactly the same* common
+divisors. Check both directions:
+
+- Suppose d divides a and b. Then d divides q·b. So d divides
+  a − q·b, which is r.
+- Suppose d divides b and r. Then d divides q·b. So d divides
+  q·b + r, which is a.
+
+So any common divisor of one pair is a common divisor of the other. The
+two sets are identical. Identical sets have the same largest element —
+which is the gcd. The reduction loses nothing.
+
+Watch it on 48 and 18. Each row divides the bar into copies of the
+shorter length, and the leftover (accent) becomes the next row's bar:
 
 ```diagram
 { "id": "euclid-shrink", "a": 48, "b": 18 }
@@ -148,19 +232,48 @@ function lcm(a: number, b: number): number {
 {
   "time": "O(log min(a, b))",
   "space": "O(1)",
-  "why": "After every TWO steps, the smaller number at least halves. Case 1: b <= a/2, so a mod b (which is always < b) is automatically < a/2 too — one step does the halving. Case 2: b > a/2, so a is less than 2b, meaning the division a / b happens exactly once (quotient 1) and a mod b = a - b, which is < a/2 precisely because b > a/2. Either way, two steps at most halve the smaller value, so the process ends in O(log min(a,b)) steps."
+  "why": "Every two steps, the smaller number is cut at least in half. So the number of steps is bounded by log₂ of the smaller input."
 }
 ```
 
-Concretely, watch case 2 fire: gcd(100, 60) → b=60 > 100/2=50, so
-a mod b = 100 − 60 = 40 (one subtraction, not a real "division" in
-spirit) → gcd(60, 40) → next round continues. The halving isn't always
-visually dramatic step-to-step, but it's guaranteed within every pair of
-steps — which is all the O(log) bound needs.
+**Why the halving is guaranteed.** It is not obvious, so split it into
+two cases based on b:
 
-Where you'll actually use it: reducing fractions to lowest terms (compare
-slopes exactly without floating point), array-rotation cycle counts, and
-lcm for "when do two cycles align" scheduling problems.
+- **b ≤ a/2.** Then a mod b is smaller than b, which is already ≤ a/2.
+  Halved in one step.
+- **b > a/2.** Then a < 2b, so the quotient is exactly 1 and
+  a mod b = a − b. And since b > a/2, that remainder is < a/2. Halved
+  again.
+
+Either way the value drops below half within two steps, which is all the
+O(log) bound needs.
+
+Trace the second case: gcd(100, 60). Here 60 > 50, so the step is really
+just a subtraction: 100 − 60 = 40. Then gcd(60, 40) → gcd(40, 20) →
+gcd(20, 0) = 20. Step to step the shrinking looks uneven, but it never
+stalls.
+
+### Why it matters: lcm and the overflow trap
+
+The least common multiple comes straight from the gcd:
+
+> **lcm(a, b) = a · b / gcd(a, b)**
+
+But write it as `a / gcd(a, b) * b`, dividing **before** you multiply.
+
+The division is exact — gcd(a, b) divides a by definition, so nothing is
+truncated. Both orderings give the same answer mathematically. What
+differs is the largest value that ever exists in a register:
+
+- Divide first, and the intermediate never exceeds the final lcm.
+- Multiply first, and you materialize a · b, which overflows a 64-bit
+  integer once a and b reach about 3·10⁹ — even when the true lcm would
+  have fit comfortably.
+
+**Where this shows up in problems:** reducing fractions to lowest terms
+(so you can compare slopes exactly, with no floating point), counting
+cycles in array rotation, and using lcm to answer "when do two repeating
+intervals line up again?"
 
 ```quiz
 {

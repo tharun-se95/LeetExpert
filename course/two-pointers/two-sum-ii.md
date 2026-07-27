@@ -27,6 +27,27 @@ argument — so the test here is whether you can reproduce the *proof*,
 not just the loop. Write the solution AND, in a comment, the one-sentence
 reason each pointer move is safe. Then compare.
 
+Indices are **1-based**, as the problem states — a common way to get this
+right in logic and wrong in output.
+
+```sandbox
+{
+  "id": "two-sum-ii",
+  "fn": { "python": "two_sum", "javascript": "twoSum" },
+  "check": "return",
+  "starter": {
+    "python": "def two_sum(numbers, target):\n    # Return the two 1-based indices as a list.\n    return []\n",
+    "javascript": "function twoSum(numbers, target) {\n  // Return the two 1-based indices as an array.\n  return [];\n}\n"
+  },
+  "cases": [
+    { "args": [[2,7,11,15],9], "expect": [1,2] },
+    { "args": [[2,3,4],6], "expect": [1,3] },
+    { "args": [[-1,0],-1], "expect": [1,2] },
+    { "args": [[1,2,3,4,4,9,56,90],8], "expect": [4,5] }
+  ]
+}
+```
+
 ````reveal Hint — restate the elimination
 Sum at the ends too big ⇒ right's SMALLEST possible partner already
 overshoots ⇒ right can't be in any pair ⇒ discard it. Too small ⇒

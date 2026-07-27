@@ -24,6 +24,24 @@ The patterns-lesson quiz literally contained this problem's shape. The
 one design decision worth pausing on: *why must there be two passes, and
 over what?*
 
+
+```sandbox
+{
+  "id": "first-unique-character",
+  "fn": { "python": "first_uniq_char", "javascript": "firstUniqChar" },
+  "check": "return",
+  "starter": {
+    "python": "def first_uniq_char(s):\n    # Return the index, or -1.\n    pass\n",
+    "javascript": "function firstUniqChar(s) {\n  // Return the index, or -1.\n}\n"
+  },
+  "cases": [
+    { "args": ["leetcode"], "expect": 0 },
+    { "args": ["loveleetcode"], "expect": 2 },
+    { "args": ["aabb"], "expect": -1 },
+    { "args": ["z"], "expect": 0 }
+  ]
+}
+```
 ````reveal Hint — count, then re-scan the ORIGINAL
 "Exactly once" is the Count verb. But no map tells you FIRST — map
 iteration order is not input order (and even insertion-ordered maps give

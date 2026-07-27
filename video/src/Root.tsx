@@ -12,8 +12,6 @@ import {
   Family3Sorting,
   family3SortingCalculateMetadata,
 } from "./compositions/family3-sorting";
-import { StyleTestThree } from "./compositions/style-test-three";
-import { StyleTestTree } from "./compositions/style-test-tree";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -44,22 +42,6 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         durationInFrames={300}
         calculateMetadata={family3SortingCalculateMetadata}
-      />
-      <Composition
-        id="style-test-three"
-        component={StyleTestThree}
-        fps={30}
-        width={1920}
-        height={1080}
-        durationInFrames={60}
-      />
-      <Composition
-        id="style-test-tree"
-        component={StyleTestTree}
-        fps={30}
-        width={1920}
-        height={1080}
-        durationInFrames={60}
       />
     </>
   );

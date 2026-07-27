@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { CaretDown as ChevronDown, CaretRight as ChevronRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import {
   buildCourseNav,
@@ -59,11 +59,13 @@ function ModuleNode({
         <Link
           href={module.href}
           className={cn(
-            "min-w-0 flex-1 truncate rounded-md py-1 pl-1.5 pr-1.5 text-[13px] transition",
+            "min-w-0 flex-1 truncate rounded-[4px] py-1 pl-1.5 pr-1.5 text-[13px] transition-colors",
             module.status === "coming-soon" && "text-muted/60",
             selfActive
-              ? "bg-accent/10 text-foreground"
-              : "text-muted hover:bg-surface hover:text-foreground",
+              // a printed block, not a wash — the old bg-accent/10 was a 10%
+              // tint that all but vanished against the paper
+              ? "bg-pop font-semibold text-on-pop"
+              : "text-foreground/80 hover:bg-surface hover:text-foreground",
           )}
         >
           <span className="mr-1.5 tabular-nums text-[11px] text-muted/70">
@@ -74,8 +76,17 @@ function ModuleNode({
             <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted/50">
               soon
             </span>
-          ) : hasLessons && doneCount > 0 ? (
-            <span className="ml-1.5 tabular-nums text-[10px] text-muted/60">
+          ) : hasLessons ? (
+            <span
+              className={cn(
+                "ml-1.5 font-mono text-[10px] tabular-nums",
+                selfActive
+                  ? "text-on-pop/70"
+                  : doneCount === module.lessons.length
+                    ? "text-accent"
+                    : "text-muted/60",
+              )}
+            >
               {doneCount}/{module.lessons.length}
             </span>
           ) : null}
@@ -91,8 +102,10 @@ function ModuleNode({
                 <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center">
                   <span
                     className={cn(
-                      "h-1.5 w-1.5 rounded-full",
-                      isDone ? "bg-accent" : "bg-border",
+                      "h-2 w-2 rounded-[1px] transition-colors",
+                      isDone
+                        ? "bg-accent"
+                        : "border border-border bg-transparent",
                     )}
                     title={isDone ? "Completed" : "Not completed"}
                   />
@@ -100,9 +113,9 @@ function ModuleNode({
                 <Link
                   href={lesson.href}
                   className={cn(
-                    "min-w-0 flex-1 truncate rounded-md py-1 pl-1.5 pr-1.5 text-[13px] transition",
+                    "min-w-0 flex-1 truncate rounded-[4px] py-1 pl-1.5 pr-1.5 text-[13px] transition-colors",
                     active
-                      ? "bg-accent/10 text-foreground"
+                      ? "bg-pop font-semibold text-on-pop"
                       : "text-muted hover:bg-surface hover:text-foreground",
                   )}
                 >
@@ -154,9 +167,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           <Link
             href="/"
             className={cn(
-              "mb-1 block rounded-md py-1 pl-2 text-[13px] font-medium transition",
+              "mb-1 block rounded-[4px] py-1 pl-2 text-[13px] font-medium transition-colors",
               pathname === "/"
-                ? "bg-accent/10 text-foreground"
+                ? "bg-pop font-semibold text-on-pop"
                 : "text-foreground hover:bg-surface",
             )}
           >
@@ -164,8 +177,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </Link>
           {nav.map((stage) => (
             <div key={stage.number} className="mt-4 first:mt-2">
-              <p className="px-2 pb-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted/70">
-                Stage {stage.number} — {stage.title}
+              <p className="mb-1.5 border-b border-border px-2 pb-1.5 font-display text-[11px] font-bold uppercase tracking-[0.1em] text-foreground/70">
+                <span className="text-accent">{stage.number}</span>{" "}
+                {stage.title}
               </p>
               {stage.modules.map((m) => (
                 <ModuleNode key={m.slug} module={m} pathname={pathname} />

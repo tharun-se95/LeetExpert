@@ -17,7 +17,7 @@ function parseSpec(source: string): Record<string, unknown> | null {
 
 function ErrorCard({ message }: { message: string }) {
   return (
-    <div className="rounded-lg border border-red-500/40 bg-red-500/5 p-3 text-sm text-muted">
+    <div className="rounded-lg border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
       {message}
     </div>
   );

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Lock } from "lucide-react";
+import { ArrowRight, BookOpen, Lock } from "@phosphor-icons/react/dist/ssr";
 import { MODULES, STAGES, modulesByStage } from "@/lib/course/manifest";
 import { moduleHref } from "@/lib/course/nav";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,7 @@ export default function HomePage() {
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-accent">
           A complete DSA course
         </p>
-        <h1 className="mt-3 max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+        <h1 className="riso-overprint mt-3 max-w-2xl font-display text-4xl font-bold tracking-tight text-balance uppercase sm:text-5xl">
           Learn data structures &amp; algorithms properly
         </h1>
         <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
@@ -31,10 +31,10 @@ export default function HomePage() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/course/getting-started/course-introduction"
-            className="inline-flex h-10 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-medium text-background transition hover:opacity-90"
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-pop px-4 text-sm font-semibold text-on-pop transition hover:opacity-90"
           >
             Start the course
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight weight="bold" className="h-4 w-4" />
           </Link>
           <Link
             href="/course/big-o"
@@ -66,7 +66,7 @@ export default function HomePage() {
                     key={module.slug}
                     href={moduleHref(module.slug)}
                     className={cn(
-                      "group flex flex-col rounded-xl border border-border p-4 transition hover:border-foreground/25 hover:bg-surface",
+                      "riso-halftone group flex flex-col rounded-xl border border-border p-4 transition hover:border-accent/40 hover:bg-surface",
                       !available && "opacity-70",
                     )}
                   >
@@ -75,16 +75,16 @@ export default function HomePage() {
                         {String(module.number).padStart(2, "0")}
                       </span>
                       {available ? (
-                        <BookOpen className="h-3.5 w-3.5 text-accent" />
+                        <BookOpen weight="bold" className="h-3.5 w-3.5 text-accent" />
                       ) : (
-                        <Lock className="h-3.5 w-3.5 text-muted/60" />
+                        <Lock weight="bold" className="h-3.5 w-3.5 text-muted/60" />
                       )}
                       {!available ? (
                         <span className="ml-auto rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted/70">
                           Soon
                         </span>
                       ) : (
-                        <span className="ml-auto rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-accent">
+                        <span className="ml-auto font-mono text-[10px] tracking-wide text-muted">
                           {module.lessons.length} lessons
                         </span>
                       )}
