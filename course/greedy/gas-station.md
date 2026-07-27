@@ -36,6 +36,27 @@ to; it clarifies the mechanics. Then look for the two structural facts
 that let you find the answer in a *single* pass. Both are provable, and
 the second one is the real prize.
 
+
+```sandbox
+{
+  "id": "gas-station",
+  "fn": { "python": "can_complete_circuit", "javascript": "canCompleteCircuit" },
+  "check": "return",
+  "starter": {
+    "python": "def can_complete_circuit(gas, cost):\n    # Return the starting station index, or -1 if the circuit is impossible.\n    pass\n",
+    "javascript": "function canCompleteCircuit(gas, cost) {\n  // Return the starting station index, or -1 if the circuit is impossible.\n}\n"
+  },
+  "cases": [
+    { "args": [[1, 2, 3, 4, 5], [3, 4, 5, 1, 2]], "expect": 3 },
+    { "args": [[2, 3, 4], [3, 4, 3]], "expect": -1 },
+    { "args": [[5], [5]], "expect": 0 },
+    { "args": [[1], [2]], "expect": -1 },
+    { "args": [[5, 1, 2, 3, 4], [4, 4, 1, 5, 1]], "expect": 4 },
+    { "args": [[3, 1, 1], [1, 2, 2]], "expect": 0 }
+  ]
+}
+```
+
 ````reveal Hint — two facts to prove
 (1) A feasibility fact: if the total gas across all stations is at least
 the total cost, a valid start is *guaranteed to exist*; if it's less,

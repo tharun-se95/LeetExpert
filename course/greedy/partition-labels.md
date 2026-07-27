@@ -31,6 +31,27 @@ position while scanning left to right, whether it's *safe* to end the
 current partition right there — what single piece of information about
 each letter would let you answer that in O(1) per character?
 
+
+```sandbox
+{
+  "id": "partition-labels",
+  "fn": { "python": "partition_labels", "javascript": "partitionLabels" },
+  "check": "return",
+  "starter": {
+    "python": "def partition_labels(s):\n    # Return the length of each partition, in order.\n    pass\n",
+    "javascript": "function partitionLabels(s) {\n  // Return the length of each partition, in order.\n}\n"
+  },
+  "cases": [
+    { "args": ["ababcbacadefegdehijhklij"], "expect": [9, 7, 8] },
+    { "args": ["eccbbbbdec"], "expect": [10] },
+    { "args": ["a"], "expect": [1] },
+    { "args": ["abc"], "expect": [1, 1, 1] },
+    { "args": ["abac"], "expect": [3, 1] },
+    { "args": ["aaaa"], "expect": [4] }
+  ]
+}
+```
+
 ````reveal Hint — precompute each letter's last occurrence, then extend to match
 Precompute, in one pass, the LAST index at which each letter appears
 anywhere in `s`. Then scan left to right, maintaining the current

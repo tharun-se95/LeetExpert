@@ -33,6 +33,28 @@ because it never looked back after the fact to the right-side
 constraint, and think about what a second pass would need to do to fix
 it.
 
+
+```sandbox
+{
+  "id": "candy",
+  "fn": { "python": "candy", "javascript": "candy" },
+  "check": "return",
+  "starter": {
+    "python": "def candy(ratings):\n    # Return the minimum total candies satisfying both neighbours.\n    pass\n",
+    "javascript": "function candy(ratings) {\n  // Return the minimum total candies satisfying both neighbours.\n}\n"
+  },
+  "cases": [
+    { "args": [[1, 0, 2]], "expect": 5 },
+    { "args": [[1, 2, 2]], "expect": 4 },
+    { "args": [[1]], "expect": 1 },
+    { "args": [[1, 2, 3, 4, 5]], "expect": 15 },
+    { "args": [[5, 4, 3, 2, 1]], "expect": 15 },
+    { "args": [[1, 3, 2, 2, 1]], "expect": 7 },
+    { "args": [[1, 2, 87, 87, 87, 2, 1]], "expect": 13 }
+  ]
+}
+```
+
 ````reveal Hint — two one-directional passes, then take the max at each position
 A single pass genuinely cannot satisfy both directions' constraints at
 once, because when you're deciding child `i`'s candy count while

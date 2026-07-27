@@ -30,6 +30,28 @@ at each index. The trap here is thinking you have to decide *which*
 specific jump to take. You don't. Sit with what information you truly
 need before revealing the hint.
 
+
+```sandbox
+{
+  "id": "jump-game",
+  "fn": { "python": "can_jump", "javascript": "canJump" },
+  "check": "return",
+  "starter": {
+    "python": "def can_jump(nums):\n    # Return True if the last index is reachable from index 0.\n    pass\n",
+    "javascript": "function canJump(nums) {\n  // Return true if the last index is reachable from index 0.\n}\n"
+  },
+  "cases": [
+    { "args": [[2, 3, 1, 1, 4]], "expect": true },
+    { "args": [[3, 2, 1, 0, 4]], "expect": false },
+    { "args": [[0]], "expect": true },
+    { "args": [[0, 1]], "expect": false },
+    { "args": [[2, 0, 0]], "expect": true },
+    { "args": [[1, 1, 1, 0]], "expect": true },
+    { "args": [[1, 0, 1, 0]], "expect": false }
+  ]
+}
+```
+
 ````reveal Hint — reframe the question
 Don't ask "which sequence of jumps reaches the end?" — that's an
 exponential search over jump choices. Ask instead: "what is the

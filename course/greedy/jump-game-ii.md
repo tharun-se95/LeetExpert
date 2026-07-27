@@ -30,6 +30,28 @@ first instinct is a shortest-path / BFS framing. Try to write it that
 way before revealing the hint, then look for how to get the same answer
 without an explicit queue.
 
+
+```sandbox
+{
+  "id": "jump-game-ii",
+  "fn": { "python": "jump", "javascript": "jump" },
+  "check": "return",
+  "starter": {
+    "python": "def jump(nums):\n    # Return the minimum number of jumps to reach the last index.\n    pass\n",
+    "javascript": "function jump(nums) {\n  // Return the minimum number of jumps to reach the last index.\n}\n"
+  },
+  "cases": [
+    { "args": [[2, 3, 1, 1, 4]], "expect": 2 },
+    { "args": [[2, 3, 0, 1, 4]], "expect": 2 },
+    { "args": [[0]], "expect": 0 },
+    { "args": [[1, 1, 1, 1]], "expect": 3 },
+    { "args": [[2, 1]], "expect": 1 },
+    { "args": [[5, 1, 1, 1, 1]], "expect": 1 },
+    { "args": [[1, 2, 3]], "expect": 2 }
+  ]
+}
+```
+
 ````reveal Hint — think in "levels" of one jump each
 Group indices by *how many jumps it takes to first reach them*. Level 0
 is just index 0. Level 1 is every index reachable in one jump from level
