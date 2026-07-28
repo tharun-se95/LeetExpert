@@ -27,6 +27,80 @@ you can *produce*, not just consume. The naive version (make every push
 keep order) works but does O(n) per push. The good version does better
 by being lazier. Find the laziness.
 
+```sandbox
+{
+  "id": "queue-using-stacks",
+  "fn": { "python": "MyQueue", "javascript": "MyQueue" },
+  "class": { "python": "MyQueue", "javascript": "MyQueue" },
+  "check": "sequence",
+  "starter": {
+    "python": "class MyQueue:\n    def __init__(self):\n        # Two stacks (plain lists) — an inbox and an outbox.\n        pass\n\n    def push(self, x):\n        # Add x to the back of the queue.\n        pass\n\n    def pop(self):\n        # Remove and return the front element.\n        pass\n\n    def peek(self):\n        # Return the front element without removing it.\n        pass\n\n    def empty(self):\n        # Return True if the queue has no elements.\n        pass\n",
+    "javascript": "class MyQueue {\n  constructor() {\n    // Two stacks (plain arrays) — an inbox and an outbox.\n  }\n\n  push(x) {\n    // Add x to the back of the queue.\n  }\n\n  pop() {\n    // Remove and return the front element.\n  }\n\n  peek() {\n    // Return the front element without removing it.\n  }\n\n  empty() {\n    // Return true if the queue has no elements.\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [],
+      "ops": [
+        ["push", [1]],
+        ["push", [2]],
+        ["peek", [], 1],
+        ["pop", [], 1],
+        ["empty", [], false],
+        ["pop", [], 2],
+        ["empty", [], true]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["empty", [], true],
+        ["push", [7]],
+        ["empty", [], false],
+        ["peek", [], 7],
+        ["pop", [], 7],
+        ["empty", [], true]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["push", [1]],
+        ["pop", [], 1],
+        ["push", [2]],
+        ["push", [3]],
+        ["peek", [], 2],
+        ["pop", [], 2],
+        ["peek", [], 3],
+        ["pop", [], 3],
+        ["empty", [], true]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["push", [1]],
+        ["push", [2]],
+        ["pop", [], 1],
+        ["push", [3]],
+        ["pop", [], 2],
+        ["pop", [], 3],
+        ["empty", [], true]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["push", [5]],
+        ["peek", [], 5],
+        ["peek", [], 5],
+        ["pop", [], 5],
+        ["empty", [], true]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint 1 — one reversal makes FIFO from LIFO
 Pouring a stack into another stack reverses it: pop-pop-pour puts the
 OLDEST element on top of the second stack. So: an inbox stack for

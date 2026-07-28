@@ -29,6 +29,67 @@ the string per query: O(n) per report, O(n²) for the stream. The
 challenge: **amortized O(1) per arrival**. The Count verb still
 provides half the answer; the new half is what this module adds.
 
+```sandbox
+{
+  "id": "stream-first-unique",
+  "fn": { "python": "FirstUnique", "javascript": "FirstUnique" },
+  "class": { "python": "FirstUnique", "javascript": "FirstUnique" },
+  "check": "sequence",
+  "starter": {
+    "python": "class FirstUnique:\n    def __init__(self):\n        # Track counts, and the arrival order you still care about.\n        pass\n\n    def add(self, ch):\n        # Record ch, then return the first character seen exactly once,\n        # or \"#\" if there is none.\n        pass\n",
+    "javascript": "class FirstUnique {\n  constructor() {\n    // Track counts, and the arrival order you still care about.\n  }\n\n  add(ch) {\n    // Record ch, then return the first character seen exactly once,\n    // or \"#\" if there is none.\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [],
+      "ops": [
+        ["add", ["a"], "a"],
+        ["add", ["b"], "a"],
+        ["add", ["a"], "b"],
+        ["add", ["b"], "#"],
+        ["add", ["c"], "c"],
+        ["add", ["b"], "c"]
+      ]
+    },
+    { "construct": [], "ops": [["add", ["a"], "a"]] },
+    {
+      "construct": [],
+      "ops": [
+        ["add", ["a"], "a"],
+        ["add", ["a"], "#"]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["add", ["a"], "a"],
+        ["add", ["a"], "#"],
+        ["add", ["a"], "#"]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["add", ["x"], "x"],
+        ["add", ["y"], "x"],
+        ["add", ["z"], "x"]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["add", ["a"], "a"],
+        ["add", ["b"], "a"],
+        ["add", ["c"], "a"],
+        ["add", ["a"], "b"],
+        ["add", ["b"], "c"],
+        ["add", ["c"], "#"]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint 1 — what breaks, what survives
 Counts update in O(1) per arrival — that half survives. What broke is
 the RE-SCAN for "first with count 1": the scan's answer only ever moves

@@ -26,6 +26,57 @@ The module's warm-up: a real rate-limiter's counting half. The
 strictly-increasing guarantee is doing quiet, heavy work — identify
 what it buys before opening the hint.
 
+```sandbox
+{
+  "id": "recent-calls",
+  "fn": { "python": "RecentCounter", "javascript": "RecentCounter" },
+  "class": { "python": "RecentCounter", "javascript": "RecentCounter" },
+  "check": "sequence",
+  "starter": {
+    "python": "class RecentCounter:\n    def __init__(self):\n        # Keep the pings that are still inside the window.\n        pass\n\n    def ping(self, t):\n        # Record a request at time t, return how many fall in [t - 3000, t].\n        pass\n",
+    "javascript": "class RecentCounter {\n  constructor() {\n    // Keep the pings that are still inside the window.\n  }\n\n  ping(t) {\n    // Record a request at time t, return how many fall in [t - 3000, t].\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [],
+      "ops": [
+        ["ping", [1], 1],
+        ["ping", [100], 2],
+        ["ping", [3001], 3],
+        ["ping", [3002], 3]
+      ]
+    },
+    { "construct": [], "ops": [["ping", [1], 1]] },
+    {
+      "construct": [],
+      "ops": [
+        ["ping", [1], 1],
+        ["ping", [3001], 2],
+        ["ping", [3002], 2],
+        ["ping", [6002], 2]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["ping", [1], 1],
+        ["ping", [2], 2],
+        ["ping", [3], 3],
+        ["ping", [4], 4],
+        ["ping", [5], 5]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        ["ping", [10000], 1],
+        ["ping", [20000], 1]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — expiry happens at the front
 Requests arrive in time order, so they EXPIRE in the same order — the
 oldest first. Keep them in a queue: on ping(t), enqueue t, then dequeue

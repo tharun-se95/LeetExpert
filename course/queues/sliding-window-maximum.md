@@ -28,6 +28,29 @@ needs and proved its two rules; your work is assembling it into
 windowed form and getting the off-by-ones right. If you internalized
 the dominance argument, you can write this without looking back — try.
 
+```sandbox
+{
+  "id": "sliding-window-maximum",
+  "fn": { "python": "max_sliding_window", "javascript": "maxSlidingWindow" },
+  "check": "return",
+  "starter": {
+    "python": "def max_sliding_window(nums, k):\n    # Return the maximum of each window of size k, left to right.\n    pass\n",
+    "javascript": "function maxSlidingWindow(nums, k) {\n  // Return the maximum of each window of size k, left to right.\n}\n"
+  },
+  "cases": [
+    { "args": [[1, 3, -1, -3, 5, 3, 6, 7], 3], "expect": [3, 3, 5, 5, 6, 7] },
+    { "args": [[1], 1], "expect": [1] },
+    { "args": [[1, -1], 1], "expect": [1, -1] },
+    { "args": [[9, 8, 7, 6], 2], "expect": [9, 8, 7] },
+    { "args": [[1, 2, 3, 4], 2], "expect": [2, 3, 4] },
+    { "args": [[4, 4, 4, 4], 2], "expect": [4, 4, 4] },
+    { "args": [[7, 2, 4], 3], "expect": [7] },
+    { "args": [[1, 3, 1, 2, 0, 5], 3], "expect": [3, 3, 2, 5] },
+    { "args": [[-7, -8, -9], 2], "expect": [-7, -8] }
+  ]
+}
+```
+
 ````reveal Hint 1 — why the obvious speedups fail
 Brute force is O(n·k). A max-variable can't slide: when the CURRENT
 max exits the window, the runner-up is unknown (Min Stack's lesson,
