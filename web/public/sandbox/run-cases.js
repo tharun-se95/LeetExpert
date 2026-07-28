@@ -98,6 +98,7 @@
           const built = raw.map((v, idx) =>
             S.decodeArg(v, (shape && shape[idx]) || "value"),
           );
+          S.resolveNodeArgs(built, raw, shape);
           const result = captureLogs(logs, () => target(...built));
           ret = jsonSafe(S.encodeResult(result, returns || "value"));
           argAfter = jsonSafe(

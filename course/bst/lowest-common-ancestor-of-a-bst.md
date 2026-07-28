@@ -38,6 +38,179 @@ invariant lets you conclude, from a single comparison at the current
 node, about which side (or whether *this* node itself) the LCA must be
 on — without recursing into both sides to find out.
 
+```sandbox
+{
+  "id": "lowest-common-ancestor-of-a-bst",
+  "fn": {
+    "python": "lowest_common_ancestor",
+    "javascript": "lowestCommonAncestor"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree",
+    "1": "node",
+    "2": "node"
+  },
+  "returns": "tree",
+  "starter": {
+    "python": "def lowest_common_ancestor(root, p, q):\n    # p and q are nodes in the tree. Return their lowest common ancestor.\n    pass\n",
+    "javascript": "function lowestCommonAncestor(root, p, q) {\n  // p and q are nodes in the tree. Return their lowest common ancestor.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9,
+          null,
+          null,
+          3,
+          5
+        ],
+        2,
+        8
+      ],
+      "expect": [
+        6,
+        2,
+        8,
+        0,
+        4,
+        7,
+        9,
+        null,
+        null,
+        3,
+        5
+      ]
+    },
+    {
+      "args": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9,
+          null,
+          null,
+          3,
+          5
+        ],
+        2,
+        4
+      ],
+      "expect": [
+        2,
+        0,
+        4,
+        null,
+        null,
+        3,
+        5
+      ]
+    },
+    {
+      "args": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9,
+          null,
+          null,
+          3,
+          5
+        ],
+        3,
+        5
+      ],
+      "expect": [
+        4,
+        3,
+        5
+      ]
+    },
+    {
+      "args": [
+        [
+          2,
+          1
+        ],
+        2,
+        1
+      ],
+      "expect": [
+        2,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9,
+          null,
+          null,
+          3,
+          5
+        ],
+        0,
+        5
+      ],
+      "expect": [
+        2,
+        0,
+        4,
+        null,
+        null,
+        3,
+        5
+      ]
+    },
+    {
+      "args": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9,
+          null,
+          null,
+          3,
+          5
+        ],
+        7,
+        9
+      ],
+      "expect": [
+        8,
+        7,
+        9
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — compare both targets' values against the current node
 At any node, compare `p.val` and `q.val` against `node.val`. Three cases:
 (1) both `p.val` and `q.val` are LESS than `node.val` → by the BST

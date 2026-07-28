@@ -125,6 +125,32 @@ def __encode(value, shape):
     if shape == "tree": return __ser_tree(value)
     return value
 
+def __find_node(root, val):
+    if root is None:
+        return None
+    if root.val == val:
+        return root
+    return __find_node(root.left, val) or __find_node(root.right, val)
+
+def __resolve_nodes(built, raw, shape):
+    # A "node" arg is written as a plain value; the learner receives the node
+    # carrying it, out of the SAME tree they are handed — resolving against a
+    # second copy would break the identity comparisons (node is p) these
+    # problems rely on.
+    root = None
+    for key in shape:
+        if shape[key] == "tree":
+            root = built[int(key)]
+            break
+    for key in shape:
+        if shape[key] != "node":
+            continue
+        idx = int(key)
+        found = __find_node(root, raw[idx])
+        if found is None:
+            raise ValueError("no node with value " + repr(raw[idx]) + " in the tree")
+        built[idx] = found
+
 def __safe(v):
     try:
         json.dumps(v); return v
@@ -164,6 +190,7 @@ def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_js
                 else:
                     raw = copy.deepcopy(case["args"])
                     built = [__decode(v, shape.get(str(idx), "value")) for idx, v in enumerate(raw)]
+                    __resolve_nodes(built, raw, shape)
                     result = target(*built)
                     ret = __safe(__encode(result, returns))
                     if arg_index < len(built):

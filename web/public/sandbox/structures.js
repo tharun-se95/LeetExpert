@@ -134,6 +134,45 @@ function encodeResult(value, shape) {
   return value;
 }
 
+/** Depth-first search for the node carrying `val`. Values are unique. */
+function findNode(root, val) {
+  if (!root) return null;
+  if (root.val === val) return root;
+  return findNode(root.left, val) || findNode(root.right, val);
+}
+
+/**
+ * Resolves `node` arguments, which a lesson author writes as a plain value.
+ *
+ * Lowest Common Ancestor takes two TreeNodes, and case JSON cannot express a
+ * reference — so the value names the node and the learner receives the node
+ * itself, as they would in an interview. This runs after every argument is
+ * decoded because the node must come from the very tree the learner is
+ * handed: resolving against a second copy would make the identity
+ * comparisons these problems are built on (`node is p`) silently false.
+ */
+function resolveNodeArgs(built, raw, shape) {
+  if (!shape) return;
+  let root = null;
+  for (const key of Object.keys(shape)) {
+    if (shape[key] === "tree") {
+      root = built[Number(key)];
+      break;
+    }
+  }
+  for (const key of Object.keys(shape)) {
+    if (shape[key] !== "node") continue;
+    const idx = Number(key);
+    const found = findNode(root, raw[idx]);
+    if (found === null) {
+      throw new Error(
+        `no node with value ${JSON.stringify(raw[idx])} in the tree`,
+      );
+    }
+    built[idx] = found;
+  }
+}
+
 self.SANDBOX_STRUCTURES = {
   ListNode,
   TreeNode,
@@ -143,4 +182,5 @@ self.SANDBOX_STRUCTURES = {
   serializeTree,
   decodeArg,
   encodeResult,
+  resolveNodeArgs,
 };

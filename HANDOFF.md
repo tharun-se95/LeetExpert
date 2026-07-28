@@ -12,18 +12,18 @@
 | | Now | Target |
 | --- | --- | --- |
 | Lessons | 191 (75 concept, 116 problem) | — |
-| Problem lessons with a sandbox | **83** | 116 |
-| Backlog (`web/tests/sandbox-backlog.json`) | **33** | 0, then delete the file |
+| Problem lessons with a sandbox | **110** | 116 |
+| Backlog (`web/tests/sandbox-backlog.json`) | **6** | 0, then delete the file |
 | Lessons with a visual | **25** | triaged set (est. 100–120) |
-| Tests | 266, all green | grows with each batch |
+| Tests | 347, all green | grows with each batch |
 
 **Done:** the Riso design system; the sandbox runner for every problem shape
 the authored lessons need, including cyclic lists; the reference-solution
 pipeline with CI gate; search; content tests; icons.
 
-**Not done:** authoring the remaining 33 sandboxes — 28 mechanical, 5 blocked
-on runner work described below — and the entire visualisation programme
-(needs a decision from the owner — see below).
+**Not done:** the last 6 sandboxes, every one of them blocked on a runner
+capability (below) — there is no mechanical authoring left — and the entire
+visualisation programme (needs a decision from the owner — see below).
 
 ---
 
@@ -59,8 +59,8 @@ reason. If you move this logic into TypeScript, that guarantee dies.
   "starter":{ "python": "...", "javascript": "..." },
   "check":  "return|mutate|prefix|sequence",
   "compare":"exact|sorted|set-of-sets",   // order-independent answers
-  "shape":  { "0": "list|tree|graph" },   // arg index -> structure to build
-  "returns":"value|list|tree|graph",
+  "shape":  { "0": "list|tree|graph|node" }, // arg index -> what to build
+  "returns":"value|list|tree|graph",      // `node` is argument-only
   "arg":    0,                            // which arg mutate/prefix inspects
   "class":  { ... },                      // sequence mode only
   "methods":{ "getMin": { "python": "get_min", "javascript": "getMin" } },
@@ -108,14 +108,21 @@ consume the semantic names, so a palette change is one edit.
 11. **Sequence ops are named per language via `methods`** and the reference
     test applies the same mapping the browser does — so a wrong map fails
     CI rather than only breaking Python at runtime.
+12. **A `node` argument must resolve out of the tree the learner is handed.**
+    Binary Tree LCA compares by identity (`root is p`); resolving against a
+    fresh node with the same value passes the BST version and fails only the
+    general one, which is a nasty way to find out.
 
 ---
 
-## Next task: author the remaining 33 sandboxes
+## Next task: the last 6 sandboxes, each blocked on runner work
 
-Mechanical and safe now. Work **one module per batch**, commit per batch.
+**There is no mechanical authoring left.** 110 of 116 problem lessons carry a
+sandbox; the six below each need a runner capability that does not exist yet.
+Build one capability at a time, all the way (both runtimes, content test,
+browser), and author its lessons in the same batch.
 
-Recipe:
+The authoring recipe, once a capability exists:
 
 1. Read the lesson. Cases must cover the constraints it states — the worked
    examples, stated boundaries (empty, single, "k can exceed n"), the
@@ -126,14 +133,8 @@ Recipe:
    reference, then let the test prove it.
 4. Remove the entry from `web/tests/sandbox-backlog.json`.
 5. `npm test` — the suite proves both runtimes agree, and that the starter
-   still fails.
+   still fails. Then sabotage a reference and watch it go red.
 6. Commit.
-
-Backlog by module (structural ones need `shape`, already supported):
-
-```
-dynamic-programming 10   binary-trees 7*   graphs 7*   heaps 6*   bst 3*
-```
 
 **When the backlog hits zero: delete the file and convert the coverage test
 into a hard gate.** It is migration scaffolding with a stated end (Rule 1).
@@ -143,42 +144,45 @@ A derivation helper is worth rebuilding in a scratchpad each session: load
 the checked-in `.js` reference, and print `runCases` outcomes. That is how
 expectations get derived without hand-writing one.
 
-### The runner does NOT yet express every problem shape
+### The runner does not yet express these four things
 
-The claim above that it does was wrong; five remaining problems need runner
-work first. Each is a real capability, so build it deliberately — a
-half-built one is worse than none (Rule 1).
+The `node` shape (below, item 0) has since been built and both LCA lessons
+are authored — it is the worked example of what "build the capability" looks
+like: decode in `structures.js` AND the Python DRIVER, widen `ArgShape`,
+widen the content test, prove it with a sabotage, verify in the browser.
 
-1. **Answers that are correct in more than one form.** `bst/delete-node-in-a-bst`
-   (promote the inorder successor *or* predecessor) and
-   `bst/convert-sorted-array-to-bst` (any height-balanced BST whose inorder
-   is `nums`) both say so in their own problem statements. Pinning one tree
-   fails a correct learner, which is worse than no test. Needs a check mode
-   where the expectation is a **property** — "is a BST, inorder == nums,
-   heights differ by ≤ 1" — not a value. `compare` cannot express this;
-   it is a new `check`, and the property has to run in both runtimes.
-2. **Arguments that are node references.** `bst/lowest-common-ancestor-of-a-bst`
-   takes `(root, p, q)` where p and q are `TreeNode`s. Case JSON has no way
-   to point at a node. Suggested: a `"node"` shape meaning "the node in
-   arg 0's tree whose value is this" — resolved after the tree is built.
-   Same need in `binary-trees/lowest-common-ancestor-of-a-binary-tree`.
-3. **A list of linked lists.** `heaps/merge-k-sorted-lists` takes
-   `list[ListNode]`. `shape` maps one arg to one structure; this needs an
-   element-wise form (`"list[]"`).
-4. **Graphs are a pass-through, not a structure.** `decodeArg` returns the
-   adjacency list unchanged, so a learner would receive a raw array where
-   `graphs/clone-graph` hands them a `Node`. The shape is accepted by the
-   content test and implemented by nobody — no lesson uses it yet, which is
-   why this was not caught. Clone Graph additionally has to prove the result
-   is a *copy*: serialising equal is not enough, since `return node` would
-   pass. Compare node identity against the input.
-5. **A round trip, not a call.** `binary-trees/serialize-and-deserialize-binary-tree`
-   is a `Codec` whose `serialize` output is implementation-defined; the only
-   honest assertion is `deserialize(serialize(root))` equals `root`.
-   `sequence` mode cannot feed one op's result into the next.
-
-Everything else in the backlog (dynamic-programming 10, most of
-binary-trees, heaps and graphs) is mechanical with today's runner.
+0. ~~**Arguments that are node references.**~~ **Done.** `shape: "node"` takes
+   a plain value and hands the learner the node carrying it, resolved out of
+   the tree built for the `tree` argument. It must be the same tree object:
+   Binary Tree LCA compares `root is p` by identity, so resolving against a
+   copy passes the BST version and silently fails the general one. There is a
+   sabotage for exactly this.
+1. **Answers that are correct in more than one form** — 3 lessons.
+   `bst/delete-node-in-a-bst` (promote the inorder successor *or*
+   predecessor), `bst/convert-sorted-array-to-bst` (any height-balanced BST
+   whose inorder is `nums`), and `graphs/course-schedule-ii` (any valid
+   topological order) all say so in their own problem statements. Pinning one
+   answer fails a correct learner, which is worse than no test. Needs a check
+   mode where the expectation is a **property** — "is a BST, inorder ==
+   nums, heights differ by ≤ 1"; "every prerequisite precedes its course" —
+   not a value. `compare` cannot express this: it is a new `check`, and the
+   property has to run in both runtimes.
+2. **A list of linked lists** — 1 lesson. `heaps/merge-k-sorted-lists` takes
+   `list[ListNode]`. `shape` maps one argument to one structure; this needs
+   an element-wise form (`"list[]"`).
+3. **Graphs are a pass-through, not a structure** — 1 lesson. `decodeArg`
+   returns the adjacency list unchanged, so a learner would receive a raw
+   array where `graphs/clone-graph` hands them a `Node`. The shape is
+   accepted by the content test and implemented by nobody; no authored lesson
+   uses it, which is why this was never caught — the five graph problems that
+   ARE authored take plain edge lists. Clone Graph additionally has to prove
+   the result is a *copy*: serialising equal is not enough, since
+   `return node` would pass. Compare node identity against the input.
+4. **A round trip, not a call** — 1 lesson.
+   `binary-trees/serialize-and-deserialize-binary-tree` is a `Codec` whose
+   `serialize` output is implementation-defined; the only honest assertion is
+   that `deserialize(serialize(root))` equals `root`. `sequence` mode cannot
+   feed one op's result into the next.
 
 ---
 
@@ -209,7 +213,7 @@ never tested against a real touch keyboard.
 cd web
 npx tsc --noEmit      # 0
 npx eslint src tests  # 0
-npm test              # 266 passing
+npm test              # 347 passing
 npm run build         # 0, 220 static pages
 ```
 

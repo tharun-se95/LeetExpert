@@ -39,6 +39,175 @@ out what a recursive function `find(node)` should return so that a
 parent, given its two children's return values, can determine whether
 *it* is the LCA — and try to state the exact condition precisely.
 
+```sandbox
+{
+  "id": "lowest-common-ancestor-of-a-binary-tree",
+  "fn": {
+    "python": "lowest_common_ancestor",
+    "javascript": "lowestCommonAncestor"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree",
+    "1": "node",
+    "2": "node"
+  },
+  "returns": "tree",
+  "starter": {
+    "python": "def lowest_common_ancestor(root, p, q):\n    # p and q are nodes in the tree. Return their lowest common ancestor.\n    pass\n",
+    "javascript": "function lowestCommonAncestor(root, p, q) {\n  // p and q are nodes in the tree. Return their lowest common ancestor.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          3,
+          5,
+          1,
+          6,
+          2,
+          0,
+          8,
+          null,
+          null,
+          7,
+          4
+        ],
+        5,
+        1
+      ],
+      "expect": [
+        3,
+        5,
+        1,
+        6,
+        2,
+        0,
+        8,
+        null,
+        null,
+        7,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          3,
+          5,
+          1,
+          6,
+          2,
+          0,
+          8,
+          null,
+          null,
+          7,
+          4
+        ],
+        5,
+        4
+      ],
+      "expect": [
+        5,
+        6,
+        2,
+        null,
+        null,
+        7,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ],
+        1,
+        2
+      ],
+      "expect": [
+        1,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          3,
+          5,
+          1,
+          6,
+          2,
+          0,
+          8,
+          null,
+          null,
+          7,
+          4
+        ],
+        7,
+        4
+      ],
+      "expect": [
+        2,
+        7,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          3,
+          5,
+          1,
+          6,
+          2,
+          0,
+          8,
+          null,
+          null,
+          7,
+          4
+        ],
+        6,
+        8
+      ],
+      "expect": [
+        3,
+        5,
+        1,
+        6,
+        2,
+        0,
+        8,
+        null,
+        null,
+        7,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ],
+        2,
+        3
+      ],
+      "expect": [
+        1,
+        2,
+        3
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — a node IS the LCA exactly when both searches return non-null
 Define `find(node)` to search the subtree rooted at `node` for `p` OR
 `q`, returning: `node` itself if `node` is `p` or `q`; otherwise, if

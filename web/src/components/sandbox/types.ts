@@ -39,6 +39,14 @@ export type CheckMode = "return" | "mutate" | "prefix" | "sequence";
  */
 export type Shape = "value" | "list" | "tree" | "graph";
 
+/**
+ * Arguments can additionally be a `node`: written as a plain value, handed to
+ * the learner as the node carrying it, out of the tree built for another
+ * argument. Only an argument can be one — a result serialises as a `tree`,
+ * so there is nothing for `returns: "node"` to mean.
+ */
+export type ArgShape = Shape | "node";
+
 /** One call in a `sequence` case: method, arguments, expected return. */
 export type SequenceOp = [string, unknown[], unknown];
 
@@ -67,7 +75,7 @@ export interface SandboxSpec {
   /** How equality is decided; see lib/sandbox/compare.ts */
   compare: CompareMode;
   /** Argument index -> structure to build. Absent entries stay plain JSON. */
-  shape: Record<string, Shape>;
+  shape: Record<string, ArgShape>;
   /** How to serialise the return value back to JSON */
   returns: Shape;
   /** `sequence` mode only — the class to instantiate, per language */
@@ -126,7 +134,7 @@ export interface RunnerRequest {
   cases: SandboxCase[];
   arg: number;
   check: CheckMode;
-  shape: Record<string, Shape>;
+  shape: Record<string, ArgShape>;
   returns: Shape;
   cls: string | null;
 }

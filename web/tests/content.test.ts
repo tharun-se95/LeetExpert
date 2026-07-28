@@ -223,7 +223,7 @@ describe("hand-authored JSON fences", () => {
             broken.push(`${at} — "shape" must be an object`);
           } else {
             for (const [k, v] of Object.entries(shape)) {
-              if (!["value", "list", "tree", "graph"].includes(v as string)) {
+              if (!["value", "list", "tree", "graph", "node"].includes(v as string)) {
                 broken.push(`${at} — arg ${k} has unknown shape "${String(v)}"`);
               }
             }

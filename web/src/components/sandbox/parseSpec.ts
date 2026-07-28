@@ -6,8 +6,12 @@ import type {
   SandboxSpec,
   SequenceOp,
   Shape,
+  ArgShape,
 } from "@/components/sandbox/types";
 
+// `node` is argument-only: a result serialises as a tree, so `returns`
+// keeps the narrower list.
+const ARG_SHAPES = ["value", "list", "tree", "graph", "node"] as const;
 const SHAPES = ["value", "list", "tree", "graph"] as const;
 const COMPARES = ["exact", "sorted", "set-of-sets"] as const;
 
@@ -53,11 +57,11 @@ export function parseSandboxSpec(source: string): SandboxSpec | null {
     : "exact";
 
   // Argument index -> structure. Unlisted arguments stay plain JSON.
-  const shape: Record<string, Shape> = {};
+  const shape: Record<string, ArgShape> = {};
   if (spec.shape && typeof spec.shape === "object") {
     for (const [k, v] of Object.entries(spec.shape as Record<string, unknown>)) {
-      if ((SHAPES as readonly string[]).includes(v as string)) {
-        shape[k] = v as Shape;
+      if ((ARG_SHAPES as readonly string[]).includes(v as string)) {
+        shape[k] = v as ArgShape;
       }
     }
   }
