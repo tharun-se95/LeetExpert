@@ -54,11 +54,8 @@ export const arraysDemo: PatternDemoModule = {
                   style={{
                     borderColor: isHi ? accent : "var(--border)",
                     background: isHi ? accent : "var(--background)",
-                    color: isHi ? "#fff" : "var(--foreground)",
+                    color: isHi ? "var(--background)" : "var(--foreground)",
                     transform: leap,
-                    boxShadow: leap
-                      ? `0 8px 16px color-mix(in oklab, ${accent} 30%, transparent)`
-                      : undefined,
                   }}
                 >
                   {v}
@@ -130,7 +127,7 @@ export const hashSetsDemo: PatternDemoModule = {
                 className="relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-2 font-mono text-sm font-bold transition-all duration-300"
                 style={{
                   borderColor: isDupBeat
-                    ? "#e11d48"
+                    ? "var(--bad)"
                     : active || already
                       ? accent
                       : "var(--border)",
@@ -149,7 +146,7 @@ export const hashSetsDemo: PatternDemoModule = {
                 {t}
                 {already && !isDupBeat ? (
                   <span
-                    className="absolute -bottom-1 rounded px-1 font-mono text-[9px] font-semibold text-white"
+                    className="absolute -bottom-1 rounded px-1 font-mono text-[9px] font-semibold text-background"
                     style={{ background: accent }}
                   >
                     seen
@@ -158,7 +155,7 @@ export const hashSetsDemo: PatternDemoModule = {
                 {isDupBeat ? (
                   <span
                     className="absolute inset-0 flex items-center justify-center text-2xl font-black"
-                    style={{ color: "#e11d48" }}
+                    style={{ color: "var(--bad)" }}
                     aria-hidden
                   >
                     ✕
@@ -186,7 +183,7 @@ export const hashSetsDemo: PatternDemoModule = {
             </span>
           )}
           {reject ? (
-            <span className="ml-1 font-semibold" style={{ color: "#e11d48" }}>
+            <span className="ml-1 font-semibold" style={{ color: "var(--bad)" }}>
               · dup rejected
             </span>
           ) : null}
@@ -284,7 +281,7 @@ export const prefixSumDemo: PatternDemoModule = {
                       : leftGate && i === 0
                         ? `color-mix(in oklab, ${accent} 15%, transparent)`
                         : "transparent",
-                  color: band && i === 3 ? "#fff" : accent,
+                  color: band && i === 3 ? "var(--background)" : accent,
                   textDecoration:
                     leftGate && i === 0 ? "line-through" : undefined,
                 }}
@@ -350,7 +347,7 @@ export const fastSlowDemo: PatternDemoModule = {
     ];
     const p = poses[Math.min(step, poses.length - 1)];
     const meet = step >= 4;
-    const slowColor = "#0A7A6A";
+    const slowColor = "var(--good)";
     const fastColor = accent;
     return (
       <svg
@@ -403,7 +400,7 @@ export const fastSlowDemo: PatternDemoModule = {
                 fontSize={11}
                 fontFamily="var(--font-mono, monospace)"
                 fontWeight={700}
-                fill={isMeet ? "#fff" : "var(--foreground)"}
+                fill={isMeet ? "var(--background)" : "var(--foreground)"}
               >
                 {n.label}
               </text>
@@ -516,7 +513,7 @@ export const linkedListOpsDemo: PatternDemoModule = {
                   x={x2}
                   y={y - 8}
                   fontSize={9}
-                  fill="var(--muted-foreground, #888)"
+                  fill="var(--muted)"
                   fontFamily="monospace"
                 >
                   null
@@ -585,7 +582,7 @@ export const linkedListOpsDemo: PatternDemoModule = {
                 fontSize={12}
                 fontWeight={700}
                 fontFamily="monospace"
-                fill={isHead ? "#fff" : "var(--foreground)"}
+                fill={isHead ? "var(--background)" : "var(--foreground)"}
               >
                 {lab}
               </text>
@@ -651,7 +648,7 @@ export const sortingDemo: PatternDemoModule = {
               step >= 2 && step < 4
                 ? half === "L"
                   ? `color-mix(in oklab, ${accent} 45%, transparent)`
-                  : `color-mix(in oklab, ${accent} 20%, #2F6FED)`
+                  : `color-mix(in oklab, ${accent} 20%, var(--mark))`
                 : step >= 4
                   ? accent
                   : `color-mix(in oklab, ${accent} 30%, transparent)`;
@@ -668,7 +665,7 @@ export const sortingDemo: PatternDemoModule = {
                     borderColor: accent,
                     background: tint,
                     transform: pull,
-                    color: step >= 4 ? "#fff" : undefined,
+                    color: step >= 4 ? "var(--background)" : undefined,
                   }}
                 />
                 <span className="mt-1 font-mono text-[10px] tabular-nums text-muted">
@@ -782,7 +779,7 @@ export const intervalsDemo: PatternDemoModule = {
               y={98}
               fontSize={8}
               textAnchor="middle"
-              fill="var(--muted-foreground, #888)"
+              fill="var(--muted)"
               fontFamily="monospace"
             >
               {t}
@@ -821,7 +818,7 @@ export const intervalsDemo: PatternDemoModule = {
                   fontSize={8}
                   fontFamily="monospace"
                   fontWeight={600}
-                  fill={glow ? "#fff" : "var(--foreground)"}
+                  fill={glow ? "var(--background)" : "var(--foreground)"}
                 >
                   [{c.lo},{c.hi}]
                 </text>

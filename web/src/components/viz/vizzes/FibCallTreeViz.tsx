@@ -212,7 +212,7 @@ function TreeCanvas({ flat, state }: { flat: TreeNode[]; state: FibTreeState }) 
                   isRecomputeFlash
                     ? "border-bad bg-bad/20 text-foreground"
                     : isActive
-                      ? "border-accent bg-accent text-white"
+                      ? "border-pop bg-pop text-on-pop"
                       : value !== undefined
                         ? "border-good/50 bg-good/10 text-foreground"
                         : "border-accent/50 bg-accent/12 text-foreground",
@@ -222,7 +222,7 @@ function TreeCanvas({ flat, state }: { flat: TreeNode[]; state: FibTreeState }) 
                 {value !== undefined ? <span className="text-[9px] opacity-80">= {value}</span> : null}
               </div>
               {isRecomputeFlash ? (
-                <span className="absolute -top-2 -right-1 rounded-full bg-bad px-1 text-[8px] font-bold text-white">
+                <span className="absolute -top-2 -right-1 rounded-full bg-bad px-1 text-[8px] font-bold text-background">
                   !
                 </span>
               ) : null}

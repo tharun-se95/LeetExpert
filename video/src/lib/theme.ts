@@ -1,8 +1,12 @@
 /**
  * Cinematic motion-graphics palette for the Part 1 videos: warm near-black,
  * warm off-white, one confident amber→coral gradient accent used for every
- * glow/highlight. Distinct from the web app's flat blue theme on purpose —
- * this is a premium video treatment, not a screenshot of the site.
+ * glow/highlight.
+ *
+ * Video palettes are intentionally separate from the web app's Riso system
+ * (web/src/app/globals.css). Motion graphics may use glow, gradient, and
+ * multi-hue treatments that the course UI deliberately forbids. Do not
+ * import Riso tokens here, and do not import these colours into web/.
  */
 export const COLORS = {
   bg: "#0b0a08",

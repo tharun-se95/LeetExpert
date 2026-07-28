@@ -19,7 +19,7 @@ export default function HomePage() {
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-accent">
           A complete DSA course
         </p>
-        <h1 className="riso-overprint mt-3 max-w-2xl font-display text-4xl font-bold tracking-tight text-balance uppercase sm:text-5xl">
+        <h1 className="mt-3 max-w-2xl font-display text-4xl font-bold tracking-tight text-balance uppercase sm:text-5xl">
           Learn data structures &amp; algorithms properly
         </h1>
         <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">

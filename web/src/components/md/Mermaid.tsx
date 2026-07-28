@@ -142,7 +142,7 @@ export function Mermaid({ chart }: MermaidProps) {
 
   if (error) {
     return (
-      <pre className="overflow-x-auto rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-800 dark:text-amber-200">
+      <pre className="overflow-x-auto rounded-lg border border-warn/30 bg-warn/5 p-4 text-sm text-warn">
         {chart}
       </pre>
     );
@@ -173,7 +173,7 @@ export function Mermaid({ chart }: MermaidProps) {
           )}
         </button>
         {svg ? (
-          <span className="pointer-events-none absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-border bg-background/90 px-2 py-1 text-[10px] font-medium text-muted opacity-0 shadow-sm transition group-hover:opacity-100">
+          <span className="pointer-events-none absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-border bg-background/90 px-2 py-1 text-[10px] font-medium text-muted opacity-0 transition group-hover:opacity-100">
             <Maximize2 className="h-3 w-3" />
             Expand
           </span>
@@ -183,7 +183,7 @@ export function Mermaid({ chart }: MermaidProps) {
       <AnimatePresence>
         {expanded && svg ? (
           <motion.div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-foreground/70 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -194,7 +194,7 @@ export function Mermaid({ chart }: MermaidProps) {
             aria-label="Fullscreen diagram"
           >
             <motion.div
-              className="relative max-h-[92vh] w-full max-w-5xl overflow-auto rounded-2xl border border-border bg-background p-6 shadow-2xl"
+              className="relative max-h-[92vh] w-full max-w-5xl overflow-auto rounded-2xl border border-border bg-background p-6"
               initial={reduceMotion ? false : { opacity: 0, scale: 0.97, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}

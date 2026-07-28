@@ -76,7 +76,26 @@
       let error = null;
 
       try {
-        if (isSequence) {
+        if (check === "roundtrip") {
+          // Serialize/Deserialize: the intermediate string is the learner's
+          // own design, so asserting on it would mandate one encoding. The
+          // only honest claim is that the pair is each other's inverse.
+          const raw = JSON.parse(JSON.stringify(testCase.args));
+          const input = S.decodeArg(raw[0], (shape && shape[0]) || "value");
+          ret = captureLogs(logs, () => {
+            const instance = new target();
+            const [encode, decode] = req.roundtrip;
+            if (typeof instance[encode] !== "function") {
+              throw new Error(`No method \`${encode}\` on the class`);
+            }
+            if (typeof instance[decode] !== "function") {
+              throw new Error(`No method \`${decode}\` on the class`);
+            }
+            return jsonSafe(
+              S.encodeResult(instance[decode](instance[encode](input)), returns),
+            );
+          });
+        } else if (isSequence) {
           const instance = captureLogs(logs, () => {
             const ctorArgs = JSON.parse(JSON.stringify(testCase.construct ?? []));
             return new target(...ctorArgs);

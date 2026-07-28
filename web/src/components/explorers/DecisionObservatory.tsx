@@ -236,7 +236,7 @@ export function DecisionObservatory() {
               animate={{ opacity: 1, y: 0 }}
               exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
               transition={{ duration: 0.28 }}
-              className="rounded-2xl border border-border bg-background/55 p-5 shadow-[0_8px_40px_rgb(0,0,0,0.04)] backdrop-blur-md dark:bg-background/40"
+              className="rounded-2xl border border-border bg-surface p-5"
             >
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
                 Question
@@ -250,7 +250,7 @@ export function DecisionObservatory() {
                 </p>
               ) : null}
               {branch.trapNote ? (
-                <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/8 px-3 py-2.5 text-sm text-amber-900 dark:text-amber-100">
+                <div className="mt-4 rounded-xl border border-warn/30 bg-warn/8 px-3 py-2.5 text-sm text-warn">
                   <span className="font-semibold">Dual-home trap. </span>
                   {branch.trapNote}
                 </div>
@@ -290,9 +290,10 @@ export function DecisionObservatory() {
               animate={{ opacity: 1, scale: 1 }}
               exit={reduceMotion ? undefined : { opacity: 0 }}
               transition={{ duration: 0.32 }}
-              className="rounded-2xl border border-border bg-background/55 p-6 shadow-[0_8px_40px_rgb(0,0,0,0.04)] backdrop-blur-md"
+              className="rounded-2xl border border-border bg-surface p-6"
               style={{
-                boxShadow: `inset 0 0 0 1px color-mix(in oklab, ${leafAccent} 35%, transparent), 0 8px 40px rgb(0 0 0 / 0.04)`,
+                outline: `1px solid color-mix(in oklab, ${leafAccent} 35%, transparent)`,
+                outlineOffset: "-1px",
               }}
             >
               <div className="flex items-center gap-2">
@@ -317,7 +318,7 @@ export function DecisionObservatory() {
               <div className="mt-6 flex flex-wrap gap-2">
                 <Link
                   href={leaf.patternHref}
-                  className="inline-flex h-11 items-center rounded-xl px-5 text-sm font-semibold text-white transition hover:opacity-90"
+                  className="inline-flex h-11 items-center rounded-xl px-5 text-sm font-semibold text-background transition hover:opacity-90"
                   style={{ background: leafAccent }}
                 >
                   Open {leaf.patternLabel}

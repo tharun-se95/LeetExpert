@@ -66,11 +66,12 @@ export function ArrayStrip({
                   : inWin
                     ? `color-mix(in oklab, ${accent} 12%, transparent)`
                     : "var(--background)",
-                color: isHi ? "#ffffff" : "var(--foreground)",
-                boxShadow:
+                color: isHi ? "var(--background)" : "var(--foreground)",
+                outline:
                   inWin && !isHi
-                    ? `inset 0 0 0 1px color-mix(in oklab, ${accent} 40%, transparent)`
+                    ? `1px solid color-mix(in oklab, ${accent} 40%, transparent)`
                     : undefined,
+                outlineOffset: inWin && !isHi ? "-1px" : undefined,
               }}
             >
               {v}

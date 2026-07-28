@@ -188,8 +188,7 @@ export function DemoPlayer({
               forward();
             }}
             disabled={step >= last}
-            className="h-8 rounded-lg px-3 text-xs font-medium text-white disabled:opacity-40"
-            style={{ background: accent }}
+            className="h-8 rounded-lg bg-pop px-3 text-xs font-medium text-on-pop disabled:opacity-40"
           >
             Step
           </button>

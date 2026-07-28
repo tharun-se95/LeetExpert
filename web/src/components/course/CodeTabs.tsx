@@ -26,7 +26,7 @@ export function CodeTabs({ tabs }: { tabs: TabBlock[] }) {
               className={cn(
                 "rounded-md px-2.5 py-1 text-xs font-medium transition",
                 i === active
-                  ? "bg-background text-foreground shadow-sm"
+                  ? "bg-background text-foreground"
                   : "text-muted hover:text-foreground",
               )}
             >

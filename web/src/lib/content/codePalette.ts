@@ -8,10 +8,11 @@
  * globals.css, which mirror this file — change one, change both.
  *
  * A note on the ink discipline: the Riso page chrome is strictly limited to
- * pink, blue and yellow. Code is the deliberate exception. Syntax colour is
- * functional, not decorative — a reader has to tell a string from a number
- * at a glance — so this palette carries the extra hues it needs. They are
- * tuned warm to sit on the riso paper rather than fight it.
+ * olive/lime (accent + pop), blue (mark), and the status inks. Code is the
+ * deliberate exception. Syntax colour is functional, not decorative — a
+ * reader has to tell a string from a number at a glance — so this palette
+ * carries the extra hues it needs. They are tuned warm to sit on the riso
+ * paper rather than fight it.
  */
 
 export interface CodeInk {

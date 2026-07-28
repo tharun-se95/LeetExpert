@@ -15,7 +15,9 @@ importScripts("/sandbox/structures.js", "/sandbox/run-cases.js");
 
 self.onmessage = (event) => {
   const req = event.data;
-  const exportName = req.check === "sequence" ? req.cls : req.fnName;
+  // `roundtrip` instantiates the class too — both modes export a class.
+  const usesClass = req.check === "sequence" || req.check === "roundtrip";
+  const exportName = usesClass ? req.cls : req.fnName;
 
   let target;
   try {
@@ -28,10 +30,9 @@ self.onmessage = (event) => {
   if (typeof target !== "function") {
     self.postMessage({
       kind: "fatal",
-      message:
-        req.check === "sequence"
-          ? `No class named \`${exportName}\` was defined. Keep the given class name — the tests construct it directly.`
-          : `No function named \`${exportName}\` was defined. Keep the given function name — the tests call it directly.`,
+      message: usesClass
+        ? `No class named \`${exportName}\` was defined. Keep the given class name — the tests construct it directly.`
+        : `No function named \`${exportName}\` was defined. Keep the given function name — the tests call it directly.`,
     });
     return;
   }

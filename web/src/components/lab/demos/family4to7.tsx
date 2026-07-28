@@ -22,11 +22,8 @@ function pill(
           : ghost
             ? `color-mix(in oklab, ${accent} 18%, transparent)`
             : "var(--background)",
-        color: active ? "#fff" : "var(--foreground)",
+        color: active ? "var(--background)" : "var(--foreground)",
         opacity: dim ? 0.35 : ghost ? 0.55 : 1,
-        boxShadow: active
-          ? `0 0 12px color-mix(in oklab, ${accent} 55%, transparent)`
-          : undefined,
       }}
     >
       {label}
@@ -79,11 +76,8 @@ function GraphNodes({
                   : isFront
                     ? `color-mix(in oklab, ${accent} 18%, transparent)`
                     : "var(--background)",
-              color: isGlow ? "#fff" : "var(--foreground)",
+              color: isGlow ? "var(--background)" : "var(--foreground)",
               opacity: isGhost && !isGlow ? 0.4 : 1,
-              boxShadow: isGlow
-                ? `0 0 14px color-mix(in oklab, ${accent} 60%, transparent)`
-                : undefined,
             }}
           >
             {lab}
@@ -334,10 +328,7 @@ export const treeTraversalsDemo: PatternDemoModule = {
                     : on
                       ? `color-mix(in oklab, ${accent} 28%, transparent)`
                       : "var(--background)",
-                  color: isCurrent ? "#fff" : "var(--foreground)",
-                  boxShadow: isCurrent
-                    ? `0 0 12px color-mix(in oklab, ${accent} 55%, transparent)`
-                    : undefined,
+                  color: isCurrent ? "var(--background)" : "var(--foreground)",
                 }}
               >
                 <span>{lab}</span>
@@ -594,12 +585,12 @@ export const memoizationDemo: PatternDemoModule = {
           {cache.map((c) => (
             <div
               key={c.n}
-              className="flex h-14 w-14 rotate-[-2deg] flex-col items-center justify-center rounded-md border-2 font-mono text-xs shadow-sm transition-all"
+              className="flex h-14 w-14 rotate-[-2deg] flex-col items-center justify-center rounded-md border-2 font-mono text-xs transition-all"
               style={{
                 borderColor: c.v != null ? accent : "var(--border)",
                 background:
                   c.v != null
-                    ? `color-mix(in oklab, ${accent} 16%, #fef9c3)`
+                    ? `color-mix(in oklab, ${accent} 16%, var(--pop))`
                     : "var(--background)",
                 transform:
                   hit && c.n === 3 ? "rotate(3deg) scale(1.08)" : undefined,
@@ -669,10 +660,7 @@ export const dynamicProgrammingDemo: PatternDemoModule = {
                         ? accent
                         : `color-mix(in oklab, ${accent} 22%, transparent)`
                       : "var(--background)",
-                    color: newest ? "#fff" : "var(--foreground)",
-                    boxShadow: newest
-                      ? `0 0 14px color-mix(in oklab, ${accent} 50%, transparent)`
-                      : undefined,
+                    color: newest ? "var(--background)" : "var(--foreground)",
                     opacity: on ? 1 : 0.35,
                   }}
                 >
@@ -1287,7 +1275,7 @@ export const stackDemo: PatternDemoModule = {
                 style={{
                   borderColor: accent,
                   background: accent,
-                  color: "#fff",
+                  color: "var(--background)",
                   transform:
                     i === f.stack.length - 1 ? "translateY(-2px)" : undefined,
                 }}
@@ -1423,7 +1411,7 @@ export const heapDemo: PatternDemoModule = {
                   top: `${p.y}%`,
                   borderColor: on ? accent : "var(--border)",
                   background: on ? accent : "var(--background)",
-                  color: on ? "#fff" : "var(--foreground)",
+                  color: on ? "var(--background)" : "var(--foreground)",
                 }}
               >
                 {v}

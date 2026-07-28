@@ -22,12 +22,17 @@ export const LANG_LABEL: Record<SandboxLang, string> = {
  * - `return` — compare the function's return value to `expect`
  * - `mutate` — ignore the return value, compare args[arg] after the call
  * - `prefix` — call, take the returned length k, compare args[arg][:k]
+ * - `roundtrip` — construct the class, call `decode(encode(args[0]))`, compare
+ *   that to `expect`
  *
  * `prefix` exists for the "return the new length" family (Remove Duplicates,
  * Remove Element), where everything past k is explicitly undefined and
- * comparing the whole array would fail correct solutions.
+ * comparing the whole array would fail correct solutions. `roundtrip` exists
+ * for Serialize/Deserialize, whose intermediate string is the learner's own
+ * design — asserting on it would mandate one encoding, so the only honest
+ * claim is that the two methods invert each other.
  */
-export type CheckMode = "return" | "mutate" | "prefix" | "sequence";
+export type CheckMode = "return" | "mutate" | "prefix" | "sequence" | "roundtrip";
 
 /**
  * How an argument (or the return value) is materialised before the call.
@@ -40,12 +45,15 @@ export type CheckMode = "return" | "mutate" | "prefix" | "sequence";
 export type Shape = "value" | "list" | "tree" | "graph";
 
 /**
- * Arguments can additionally be a `node`: written as a plain value, handed to
- * the learner as the node carrying it, out of the tree built for another
- * argument. Only an argument can be one — a result serialises as a `tree`,
- * so there is nothing for `returns: "node"` to mean.
+ * Two shapes only an argument can have.
+ *
+ * `node` is written as a plain value and handed to the learner as the node
+ * carrying it, out of the tree built for another argument — a result
+ * serialises as a `tree`, so `returns: "node"` would mean nothing.
+ * `list[]` is k linked lists, which Merge K Sorted Lists takes and no
+ * problem returns.
  */
-export type ArgShape = Shape | "node";
+export type ArgShape = Shape | "node" | "list[]";
 
 /** One call in a `sequence` case: method, arguments, expected return. */
 export type SequenceOp = [string, unknown[], unknown];
@@ -88,6 +96,11 @@ export interface SandboxSpec {
    * Names absent from this map are used as-is in both languages.
    */
   methods: Record<string, Record<SandboxLang, string>>;
+  /**
+   * `roundtrip` mode only — the encode/decode method pair, per language.
+   * Ordered [encode, decode]; the runner calls decode(encode(input)).
+   */
+  roundtrip: Record<SandboxLang, string[]> | null;
 }
 
 /**
@@ -137,4 +150,6 @@ export interface RunnerRequest {
   shape: Record<string, ArgShape>;
   returns: Shape;
   cls: string | null;
+  /** `roundtrip` mode only — [encode, decode] for the language being run. */
+  roundtrip?: string[];
 }

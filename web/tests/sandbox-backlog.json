@@ -1,8 +1,6 @@
 [
-  "binary-trees/serialize-and-deserialize-binary-tree",
   "bst/convert-sorted-array-to-bst",
   "bst/delete-node-in-a-bst",
   "graphs/clone-graph",
-  "graphs/course-schedule-ii",
-  "heaps/merge-k-sorted-lists"
+  "graphs/course-schedule-ii"
 ]

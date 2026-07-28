@@ -30,6 +30,8 @@ export interface RunRequest {
   check: string;
   shape: Record<string, string>;
   returns: string;
+  /** `roundtrip` only: [encodeMethod, decodeMethod] for this language. */
+  roundtrip?: string[];
 }
 
 export interface Outcome {
@@ -59,7 +61,8 @@ async function loadJsHarness() {
 
 export async function runJavaScript(req: RunRequest): Promise<Outcome[]> {
   const harness = await loadJsHarness();
-  const exportName = req.check === "sequence" ? req.cls! : req.fnName;
+  const exportName =
+    req.check === "sequence" || req.check === "roundtrip" ? req.cls! : req.fnName;
   const target = harness.compile(req.source, exportName);
   if (typeof target !== "function") {
     throw new Error(`reference does not define \`${exportName}\``);
@@ -86,12 +89,14 @@ export function runPython(req: RunRequest): Outcome[] {
   try {
     const payload = {
       source: req.source,
-      exportName: req.check === "sequence" ? req.cls : req.fnName,
+      exportName:
+        req.check === "sequence" || req.check === "roundtrip" ? req.cls : req.fnName,
       cases: req.cases,
       arg: req.arg,
       check: req.check,
       shape: req.shape ?? {},
       returns: req.returns ?? "value",
+      roundtrip: req.roundtrip ?? [],
     };
     writeFileSync(join(dir, "payload.json"), JSON.stringify(payload));
     writeFileSync(
@@ -103,6 +108,7 @@ p = json.load(open(${JSON.stringify(join(dir, "payload.json"))}))
 out = __run_cases(
     p["source"], p["exportName"], json.dumps(p["cases"]),
     p["arg"], p["check"], json.dumps(p["shape"]), p["returns"],
+    json.dumps(p["roundtrip"]),
 )
 sys.stdout.write(out)
 `,

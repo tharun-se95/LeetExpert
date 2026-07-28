@@ -24,7 +24,8 @@ export function AnalogyCard({
       <div
         className="flex h-[140px] w-[140px] items-center justify-center rounded-2xl border border-border bg-background/70 p-3"
         style={{
-          boxShadow: `inset 0 0 0 1px color-mix(in oklab, ${accent} 15%, transparent)`,
+          outline: `1px solid color-mix(in oklab, ${accent} 15%, transparent)`,
+          outlineOffset: "-1px",
         }}
       >
         <MotifMark motif={motif} accent={accent} className="h-full w-full" />

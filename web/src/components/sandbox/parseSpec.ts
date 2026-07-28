@@ -11,7 +11,7 @@ import type {
 
 // `node` is argument-only: a result serialises as a tree, so `returns`
 // keeps the narrower list.
-const ARG_SHAPES = ["value", "list", "tree", "graph", "node"] as const;
+const ARG_SHAPES = ["value", "list", "list[]", "tree", "graph", "node"] as const;
 const SHAPES = ["value", "list", "tree", "graph"] as const;
 const COMPARES = ["exact", "sorted", "set-of-sets"] as const;
 
@@ -46,7 +46,8 @@ export function parseSandboxSpec(source: string): SandboxSpec | null {
     spec.check === "mutate" ||
     spec.check === "prefix" ||
     spec.check === "return" ||
-    spec.check === "sequence"
+    spec.check === "sequence" ||
+    spec.check === "roundtrip"
       ? spec.check
       : "return";
 
@@ -72,11 +73,22 @@ export function parseSandboxSpec(source: string): SandboxSpec | null {
     ? (spec.returns as Shape)
     : "value";
 
-  // `sequence` cases construct a class instead of calling a function, so the
-  // class name is required in that mode and meaningless otherwise.
-  const cls =
-    check === "sequence" ? langRecord(spec.class) : null;
-  if (check === "sequence" && !cls) return null;
+  // `sequence` and `roundtrip` cases construct a class instead of calling a
+  // function, so the class name is required in those modes and meaningless
+  // otherwise.
+  const usesClass = check === "sequence" || check === "roundtrip";
+  const cls = usesClass ? langRecord(spec.class) : null;
+  if (usesClass && !cls) return null;
+
+  // [encode, decode] per language — the pair `roundtrip` composes.
+  let roundtrip: Record<SandboxLang, string[]> | null = null;
+  if (check === "roundtrip") {
+    const rec = spec.roundtrip as Record<string, unknown> | undefined;
+    const ok = (v: unknown): v is string[] =>
+      Array.isArray(v) && v.length === 2 && v.every((x) => typeof x === "string");
+    if (!rec || !ok(rec.python) || !ok(rec.javascript)) return null;
+    roundtrip = { python: rec.python, javascript: rec.javascript };
+  }
 
   const methods: Record<string, Record<SandboxLang, string>> = {};
   if (spec.methods && typeof spec.methods === "object") {
@@ -103,7 +115,7 @@ export function parseSandboxSpec(source: string): SandboxSpec | null {
 
   return {
     id, fn, starter, cases, check, arg, timeoutMs,
-    compare, shape, returns, cls, methods,
+    compare, shape, returns, cls, methods, roundtrip,
   };
 }
 

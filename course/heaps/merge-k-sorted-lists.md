@@ -31,6 +31,145 @@ heads* of the lists and take the smallest. With k lists, you have k heads
 to compare each time — what structure turns "find the smallest of k things,
 repeatedly, as they change" into something cheap?
 
+```sandbox
+{
+  "id": "merge-k-sorted-lists",
+  "fn": {
+    "python": "merge_k_lists",
+    "javascript": "mergeKLists"
+  },
+  "check": "return",
+  "shape": {
+    "0": "list[]"
+  },
+  "returns": "list",
+  "starter": {
+    "python": "def merge_k_lists(lists):\n    # lists is a list of k sorted list heads. Merge them, return the head.\n    pass\n",
+    "javascript": "function mergeKLists(lists) {\n  // lists is an array of k sorted list heads. Merge them, return the head.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            2,
+            6
+          ]
+        ]
+      ],
+      "expect": [
+        1,
+        1,
+        2,
+        3,
+        4,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": []
+    },
+    {
+      "args": [
+        [
+          []
+        ]
+      ],
+      "expect": []
+    },
+    {
+      "args": [
+        [
+          [
+            1
+          ]
+        ]
+      ],
+      "expect": [
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          [],
+          [
+            1
+          ],
+          []
+        ]
+      ],
+      "expect": [
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            -2,
+            -1
+          ],
+          [
+            -3,
+            0
+          ]
+        ]
+      ],
+      "expect": [
+        -3,
+        -2,
+        -1,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            5
+          ],
+          [
+            4
+          ],
+          [
+            3
+          ],
+          [
+            2
+          ],
+          [
+            1
+          ]
+        ]
+      ],
+      "expect": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — the repeated-minimum shape
 "Repeatedly take the smallest among k competing candidates, then replace
 the one you took with its successor" is the exact access pattern a heap is

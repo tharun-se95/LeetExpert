@@ -167,7 +167,7 @@ function SlotRow({
                 c === null
                   ? "border-dashed border-border text-muted"
                   : hot
-                    ? "border-accent bg-accent text-white"
+                    ? "border-pop bg-pop text-on-pop"
                     : retiredLook
                       ? "border-border bg-surface text-muted opacity-60"
                       : "border-accent/50 bg-accent/12 text-foreground",

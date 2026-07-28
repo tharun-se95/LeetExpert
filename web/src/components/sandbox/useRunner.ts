@@ -212,6 +212,7 @@ export function useRunner(spec: SandboxSpec) {
 
       worker.postMessage({
         source,
+        roundtrip: spec.roundtrip?.[lang],
         fnName: spec.fn[lang],
         cases,
         arg: spec.arg,

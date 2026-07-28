@@ -17,7 +17,7 @@ const TONE_CLASS: Record<CellTone, string> = {
   plain: "border-border bg-background text-foreground",
   kept: "border-accent/60 bg-accent/14 text-foreground",
   junk: "border-border bg-surface text-muted opacity-60",
-  active: "border-accent bg-accent text-white",
+  active: "border-pop bg-pop text-on-pop",
   dropped: "border-bad/60 bg-bad/10 text-muted",
   resolved: "border-good/50 bg-good/10 text-foreground",
 };

@@ -36,6 +36,159 @@ Before opening anything, work out why recording explicit null markers
 during a SINGLE preorder pass makes that pass, on its own, sufficient to
 reconstruct the exact tree — no second traversal required.
 
+```sandbox
+{
+  "id": "serialize-and-deserialize-binary-tree",
+  "fn": {
+    "python": "Codec",
+    "javascript": "Codec"
+  },
+  "class": {
+    "python": "Codec",
+    "javascript": "Codec"
+  },
+  "check": "roundtrip",
+  "roundtrip": {
+    "python": [
+      "serialize",
+      "deserialize"
+    ],
+    "javascript": [
+      "serialize",
+      "deserialize"
+    ]
+  },
+  "shape": {
+    "0": "tree"
+  },
+  "returns": "tree",
+  "starter": {
+    "python": "class Codec:\n    def serialize(self, root):\n        # Encode the tree as a string. The format is yours to choose.\n        pass\n\n    def deserialize(self, data):\n        # Rebuild the identical tree from your own string.\n        pass\n",
+    "javascript": "class Codec {\n  serialize(root) {\n    // Encode the tree as a string. The format is yours to choose.\n  }\n\n  deserialize(data) {\n    // Rebuild the identical tree from your own string.\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          null,
+          null,
+          4,
+          5
+        ]
+      ],
+      "expect": [
+        1,
+        2,
+        3,
+        null,
+        null,
+        4,
+        5
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": []
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expect": [
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ]
+      ],
+      "expect": [
+        1,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          -2147483648,
+          2147483647
+        ]
+      ],
+      "expect": [
+        -2147483648,
+        2147483647
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          null,
+          2,
+          null,
+          3
+        ]
+      ],
+      "expect": [
+        1,
+        null,
+        2,
+        null,
+        3
+      ]
+    },
+    {
+      "args": [
+        [
+          5,
+          3,
+          6,
+          2,
+          4,
+          null,
+          null,
+          1
+        ]
+      ],
+      "expect": [
+        5,
+        3,
+        6,
+        2,
+        4,
+        null,
+        null,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          0,
+          -1,
+          1
+        ]
+      ],
+      "expect": [
+        0,
+        -1,
+        1
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — preorder with explicit null markers is self-sufficient
 Serialize with a preorder DFS, but instead of skipping null children,
 emit an explicit sentinel (e.g. `"#"` or `"null"`) for each one. So a

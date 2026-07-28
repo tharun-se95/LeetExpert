@@ -65,8 +65,8 @@ export function PatternLab({
     >
       <header className="relative z-[1] mb-4 flex flex-wrap items-center gap-2">
         <span
-          className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-white"
-          style={{ background: accent }}
+          className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider"
+          style={{ borderColor: accent, color: accent }}
         >
           {theme.label}
         </span>

@@ -359,11 +359,9 @@ body {
       transparent 55%
     ),
     var(--surface);
-  box-shadow: 0 20px 50px rgb(0 0 0 / 0.04);
 }
 
 .dark .lab-stage {
-  box-shadow: none;
   background:
     linear-gradient(to bottom, rgb(255 255 255 / 0.06), transparent 1px),
     radial-gradient(
@@ -558,17 +556,12 @@ body {
 /*
   Off-register overprint.
 
-  Two inks laid down fractionally out of alignment — the defining artefact of
-  cheap two-colour printing, and the thing that makes a page read as printed
-  rather than rendered. Done with text-shadow rather than a duplicated
-  pseudo-element: a `z-index: -1` copy can fall behind the page background
-  and vanish, and blend modes behave differently per theme.
-
-  Reserved for page titles. On body text it would just look like a rendering
-  fault.
+  Two inks laid fractionally out of alignment — a print artefact, not a
+  drop shadow. Kept to 1px and a diluted mark so titles stay sharp; a 3px
+  solid offset read as double vision on multi-line display type.
 */
 .riso-overprint {
-  text-shadow: 3px 3px 0 var(--mark);
+  text-shadow: 1px 1px 0 color-mix(in oklab, var(--mark) 40%, transparent);
 }
 
 @media (prefers-reduced-motion: no-preference) {

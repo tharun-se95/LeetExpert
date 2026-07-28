@@ -123,7 +123,7 @@ function QuestionCard({ question }: { question: QuizQuestion }) {
                 "flex items-start gap-2 rounded-lg border px-3 py-2 text-left text-sm transition",
                 !answered &&
                   "border-border hover:border-foreground/25 hover:bg-surface",
-                answered && isAnswer && "border-green-500/60 bg-green-500/10",
+                answered && isAnswer && "border-good/60 bg-good/10",
                 answered &&
                   isSelected &&
                   !isAnswer &&
@@ -132,7 +132,7 @@ function QuestionCard({ question }: { question: QuizQuestion }) {
               )}
             >
               {answered && isAnswer ? (
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-good" />
               ) : answered && isSelected && !isAnswer ? (
                 <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-bad" />
               ) : (
@@ -152,7 +152,7 @@ function QuestionCard({ question }: { question: QuizQuestion }) {
           className={cn(
             "mt-3 rounded-lg border px-3 py-2 text-sm leading-relaxed",
             correct
-              ? "border-green-500/40 bg-green-500/5 text-foreground"
+              ? "border-good/40 bg-good/5 text-foreground"
               : "border-border bg-surface text-foreground",
           )}
         >

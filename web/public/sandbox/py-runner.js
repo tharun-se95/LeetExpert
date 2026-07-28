@@ -117,6 +117,8 @@ def __ser_tree(root):
 
 def __decode(value, shape):
     if shape == "list": return __build_list(value)
+    # Merge K Sorted Lists takes k of them; one array per list, built in place.
+    if shape == "list[]": return [__build_list(v) for v in (value or [])]
     if shape == "tree": return __build_tree(value)
     return value
 
@@ -157,10 +159,11 @@ def __safe(v):
     except TypeError:
         return repr(v)
 
-def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_json, returns):
+def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_json, returns, roundtrip_json="[]"):
     cases = json.loads(cases_json)
     shape = json.loads(shape_json)
     is_seq = check == "sequence"
+    round_pair = json.loads(roundtrip_json)
 
     ns = {"ListNode": ListNode, "TreeNode": TreeNode}
     exec(user_source, ns)
@@ -187,6 +190,21 @@ def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_js
                         if fn is None:
                             raise AttributeError("No method " + method + " on " + export_name)
                         op_results.append(__safe(fn(*copy.deepcopy(op_args))))
+                elif check == "roundtrip":
+                    # Serialize/Deserialize: the intermediate string is the
+                    # learner's own design, so asserting on it would mandate one
+                    # encoding. The only honest claim is that the pair inverts.
+                    raw = copy.deepcopy(case["args"])
+                    value = __decode(raw[0], shape.get("0", "value"))
+                    inst = target()
+                    encode_name, decode_name = round_pair[0], round_pair[1]
+                    encode = getattr(inst, encode_name, None)
+                    decode = getattr(inst, decode_name, None)
+                    if encode is None:
+                        raise AttributeError("No method " + encode_name + " on " + export_name)
+                    if decode is None:
+                        raise AttributeError("No method " + decode_name + " on " + export_name)
+                    ret = __safe(__encode(decode(encode(value)), returns))
                 else:
                     raw = copy.deepcopy(case["args"])
                     built = [__decode(v, shape.get(str(idx), "value")) for idx, v in enumerate(raw)]
@@ -214,8 +232,9 @@ function cleanTraceback(message) {
 }
 
 self.onmessage = async (event) => {
-  const { source, fnName, cases, arg, check, shape, returns, cls } = event.data;
-  const exportName = check === "sequence" ? cls : fnName;
+  const { source, fnName, cases, arg, check, shape, returns, cls, roundtrip } =
+    event.data;
+  const exportName = check === "sequence" || check === "roundtrip" ? cls : fnName;
 
   let pyodide;
   try {
@@ -239,6 +258,7 @@ self.onmessage = async (event) => {
       check,
       JSON.stringify(shape || {}),
       returns || "value",
+      JSON.stringify(roundtrip || []),
     );
     run.destroy();
     const parsed = JSON.parse(raw);

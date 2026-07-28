@@ -208,7 +208,7 @@ function RingSlots({
                 v === null
                   ? "border-dashed border-border text-muted"
                   : hot
-                    ? "border-accent bg-accent text-white"
+                    ? "border-pop bg-pop text-on-pop"
                     : "border-accent/50 bg-accent/12 text-foreground",
               )}
             >

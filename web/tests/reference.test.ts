@@ -75,7 +75,14 @@ function request(f: Fence, source: string): RunRequest {
     check: (f.spec.check as string) ?? "return",
     shape: (f.spec.shape as Record<string, string>) ?? {},
     returns: (f.spec.returns as string) ?? "value",
+    roundtrip: roundtripFor(f, "javascript"),
   };
+}
+
+/** `roundtrip`'s [encode, decode] pair for one language. */
+function roundtripFor(f: Fence, lang: "python" | "javascript"): string[] | undefined {
+  const rec = f.spec.roundtrip as Record<string, string[]> | undefined;
+  return rec?.[lang];
 }
 
 /** Mirrors useRunner: derive the compared value from the raw outcome. */
@@ -213,6 +220,7 @@ describe("reference solutions prove every expectation", () => {
       req.fnName = fn.python;
       req.cls = cls?.python ?? null;
       req.cases = localiseOps(f, "python");
+      req.roundtrip = roundtripFor(f, "python");
       const outcomes = runPython(req);
 
       const bad: string[] = [];

@@ -254,7 +254,7 @@ function PlayerButton({
       className={cn(
         "flex h-8 w-8 items-center justify-center rounded-lg border text-foreground transition disabled:opacity-40",
         primary
-          ? "border-accent bg-accent text-white hover:bg-accent/90"
+          ? "border-pop bg-pop text-on-pop hover:opacity-90"
           : "border-border hover:bg-surface",
       )}
     >

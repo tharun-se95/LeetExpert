@@ -12,21 +12,21 @@ const CURVES: {
   color: string;
   fn: (n: number) => number;
 }[] = [
-  { key: "o1", label: "O(1)", color: "#0A7A6A", fn: () => 1 },
+  { key: "o1", label: "O(1)", color: "var(--good)", fn: () => 1 },
   {
     key: "logn",
     label: "O(log n)",
-    color: "#2F6FED",
+    color: "var(--mark)",
     fn: (n) => Math.log2(Math.max(n, 2)),
   },
-  { key: "n", label: "O(n)", color: "#C9A227", fn: (n) => n },
+  { key: "n", label: "O(n)", color: "var(--warn)", fn: (n) => n },
   {
     key: "nlogn",
     label: "O(n log n)",
-    color: "#6B4CE6",
+    color: "var(--accent)",
     fn: (n) => n * Math.log2(Math.max(n, 2)),
   },
-  { key: "n2", label: "O(n²)", color: "#E11D48", fn: (n) => n * n },
+  { key: "n2", label: "O(n²)", color: "var(--bad)", fn: (n) => n * n },
 ];
 
 type Preset = {
@@ -135,8 +135,8 @@ export function BigOObservatory() {
       data-family="ordering-search"
       style={
         {
-          "--family-accent": "#2F6FED",
-          "--family-wash": "color-mix(in oklab, #2F6FED 12%, transparent)",
+          "--family-accent": "var(--mark)",
+          "--family-wash": "color-mix(in oklab, var(--mark) 12%, transparent)",
         } as CSSProperties
       }
     >
@@ -176,7 +176,7 @@ export function BigOObservatory() {
       </div>
 
       <div className="relative z-[1] grid gap-5 lg:grid-cols-[1fr_220px]">
-        <div className="rounded-2xl border border-border bg-background/50 p-3 backdrop-blur-sm">
+        <div className="rounded-2xl border border-border bg-surface p-3">
           <svg
             viewBox={`0 0 ${W} ${H}`}
             className="h-[240px] w-full sm:h-[300px]"
@@ -339,8 +339,8 @@ export function BigOObservatory() {
             className="rounded-2xl border border-border p-3"
             style={{
               background: willFinish
-                ? "color-mix(in oklab, #0A7A6A 10%, var(--surface))"
-                : "color-mix(in oklab, #E11D48 10%, var(--surface))",
+                ? "color-mix(in oklab, var(--good) 10%, var(--surface))"
+                : "color-mix(in oklab, var(--bad) 10%, var(--surface))",
             }}
           >
             <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
@@ -356,7 +356,7 @@ export function BigOObservatory() {
               <motion.div
                 className="h-full rounded-full"
                 style={{
-                  background: willFinish ? "#0A7A6A" : "#E11D48",
+                  background: willFinish ? "var(--good)" : "var(--bad)",
                   width: `${Math.min(finishRatio * 50, 100)}%`,
                 }}
                 initial={false}
@@ -366,7 +366,7 @@ export function BigOObservatory() {
             </div>
             <p
               className="mt-2 text-xs font-semibold"
-              style={{ color: willFinish ? "#0A7A6A" : "#E11D48" }}
+              style={{ color: willFinish ? "var(--good)" : "var(--bad)" }}
             >
               {willFinish
                 ? "Yes — under the teaching budget."

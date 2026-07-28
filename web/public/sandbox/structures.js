@@ -124,6 +124,8 @@ function serializeTree(root) {
 
 function decodeArg(value, shape) {
   if (shape === "list") return buildList(value);
+  // Merge K Sorted Lists takes k of them; one array per list, built in place.
+  if (shape === "list[]") return (value || []).map(buildList);
   if (shape === "tree") return buildTree(value);
   return value; // "graph" is already an adjacency list; "value" is plain JSON
 }

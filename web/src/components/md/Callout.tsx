@@ -11,10 +11,10 @@ interface CalloutProps {
 
 const TYPE_STYLES: Record<string, string> = {
   tip: "border-l-accent bg-accent/5",
-  warn: "border-l-amber-500 bg-amber-500/5",
-  rocket: "border-l-sky-500 bg-sky-500/5",
+  warn: "border-l-warn bg-warn/5",
+  rocket: "border-l-mark bg-mark/5",
   build: "border-l-good bg-good/5",
-  brain: "border-l-violet-500 bg-violet-500/5",
+  brain: "border-l-mark bg-mark/5",
   default: "border-l-border bg-surface",
 };
 

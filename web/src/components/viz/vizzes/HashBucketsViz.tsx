@@ -183,7 +183,7 @@ function BucketColumn({ index, keys, state }: { index: number; keys: number[]; s
               className={cn(
                 "flex h-6 w-6 shrink-0 items-center justify-center rounded-md border font-mono text-[10px] font-semibold",
                 hot
-                  ? "border-accent bg-accent text-white"
+                  ? "border-pop bg-pop text-on-pop"
                   : "border-accent/50 bg-accent/12 text-foreground",
               )}
             >

@@ -80,7 +80,7 @@ export function CodePanel({
             className={cn(
               "rounded-md px-2.5 py-1 text-xs font-medium transition",
               lang === tab.lang
-                ? "bg-background text-foreground shadow-sm"
+                ? "bg-background text-foreground"
                 : "text-muted hover:text-foreground",
             )}
           >

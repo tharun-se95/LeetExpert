@@ -123,7 +123,7 @@ function SandboxBody({
               className={cn(
                 "rounded-[6px] px-2.5 py-1 font-mono text-[0.7rem] transition-colors",
                 lang === l
-                  ? "bg-pop text-on-pop shadow-sm"
+                  ? "bg-pop text-on-pop"
                   : "text-muted hover:text-foreground",
               )}
             >
