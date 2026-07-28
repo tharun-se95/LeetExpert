@@ -27,6 +27,142 @@ two equal-sum subsets is even possible, and what SINGLE knapsack
 question — about ONE target capacity — is equivalent to "can this array
 be split into two equal halves"?
 
+```sandbox
+{
+  "id": "partition-equal-subset-sum",
+  "fn": {
+    "python": "can_partition",
+    "javascript": "canPartition"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def can_partition(nums):\n    # Return True if nums splits into two subsets of equal sum.\n    pass\n",
+    "javascript": "function canPartition(nums) {\n  // Return true if nums splits into two subsets of equal sum.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          5,
+          11,
+          5
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          5
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        [
+          2,
+          2
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        [
+          1,
+          1,
+          1,
+          1
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          99
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        [
+          3,
+          3,
+          3,
+          4,
+          5
+        ]
+      ],
+      "expect": true
+    }
+  ]
+}
+```
+
 ````reveal Hint — reduce to "can a subset sum to exactly total/2"
 If the total sum `S` is ODD, an equal split is impossible immediately —
 return false without any further computation (two equal integer halves

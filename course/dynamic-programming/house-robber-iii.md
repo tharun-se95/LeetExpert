@@ -37,6 +37,95 @@ number can't convey that. Before opening anything, think about what a
 node needs to return to its parent so the parent can correctly decide
 its OWN rob-or-skip choice.
 
+```sandbox
+{
+  "id": "house-robber-iii",
+  "fn": {
+    "python": "rob",
+    "javascript": "rob"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree"
+  },
+  "starter": {
+    "python": "def rob(root):\n    # Return the most money robbable with no two directly-connected houses.\n    pass\n",
+    "javascript": "function rob(root) {\n  // Return the most money robbable with no two directly-connected houses.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          3,
+          2,
+          3,
+          null,
+          3,
+          null,
+          1
+        ]
+      ],
+      "expect": 7
+    },
+    {
+      "args": [
+        [
+          3,
+          4,
+          5,
+          1,
+          3,
+          null,
+          1
+        ]
+      ],
+      "expect": 9
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          0
+        ]
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        [
+          2,
+          1,
+          3,
+          null,
+          4
+        ]
+      ],
+      "expect": 7
+    },
+    {
+      "args": [
+        [
+          4,
+          1,
+          null,
+          2,
+          null,
+          3
+        ]
+      ],
+      "expect": 7
+    }
+  ]
+}
+```
+
 ````reveal Hint — return a PAIR: best-if-robbed and best-if-not-robbed
 Have each node's recursive call return TWO values: `(rob_this, skip_this)`
 — the best achievable in this node's subtree if this node IS robbed,

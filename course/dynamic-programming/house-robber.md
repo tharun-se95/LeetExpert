@@ -28,6 +28,95 @@ what genuine CHOICE exists at house `i`, and why the adjacency
 constraint means that choice has a direct consequence for what's
 available at house `i-1`.
 
+```sandbox
+{
+  "id": "house-robber",
+  "fn": {
+    "python": "rob",
+    "javascript": "rob"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def rob(nums):\n    # Return the most money robbable without taking two adjacent houses.\n    pass\n",
+    "javascript": "function rob(nums) {\n  // Return the most money robbable without taking two adjacent houses.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          1
+        ]
+      ],
+      "expect": 4
+    },
+    {
+      "args": [
+        [
+          2,
+          7,
+          9,
+          3,
+          1
+        ]
+      ],
+      "expect": 12
+    },
+    {
+      "args": [
+        [
+          5
+        ]
+      ],
+      "expect": 5
+    },
+    {
+      "args": [
+        [
+          2,
+          1
+        ]
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        [
+          2,
+          1,
+          1,
+          2
+        ]
+      ],
+      "expect": 4
+    },
+    {
+      "args": [
+        [
+          100,
+          1,
+          1,
+          100
+        ]
+      ],
+      "expect": 200
+    }
+  ]
+}
+```
+
 ````reveal Hint — at each house, decide: rob it, or don't
 At house `i`, there are exactly two options: **rob it** (collect
 `nums[i]`, but then house `i-1` is now off-limits, so the best you can

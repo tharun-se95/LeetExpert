@@ -30,6 +30,72 @@ cases the recurrence must handle: what happens when `text1[i-1] ==
 text2[j-1]` (the two strings' NEXT characters happen to match), and what
 happens when they don't.
 
+```sandbox
+{
+  "id": "longest-common-subsequence",
+  "fn": {
+    "python": "longest_common_subsequence",
+    "javascript": "longestCommonSubsequence"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def longest_common_subsequence(text1, text2):\n    # Return the length of the longest common subsequence.\n    pass\n",
+    "javascript": "function longestCommonSubsequence(text1, text2) {\n  // Return the length of the longest common subsequence.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        "abcde",
+        "ace"
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        "abc",
+        "def"
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        "abc",
+        "abc"
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        "a",
+        "a"
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        "a",
+        "b"
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        "bsbininm",
+        "jmjkbkjkv"
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        "oxcpqrsvwf",
+        "shmtulqrypy"
+      ],
+      "expect": 2
+    }
+  ]
+}
+```
+
 ````reveal Hint — matching characters extend a diagonal; mismatches take the best of two options
 **If `text1[i-1] == text2[j-1]`:** this character can be part of the
 common subsequence — extend the best LCS found using one FEWER

@@ -27,6 +27,59 @@ step `n`: what are the only two possibilities for that final move, and
 what does each one imply about how many ways exist to have reached the
 step just before it?
 
+```sandbox
+{
+  "id": "climbing-stairs",
+  "fn": {
+    "python": "climb_stairs",
+    "javascript": "climbStairs"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def climb_stairs(n):\n    # Return the number of distinct ways to climb n steps.\n    pass\n",
+    "javascript": "function climbStairs(n) {\n  // Return the number of distinct ways to climb n steps.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        2
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        3
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        1
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        5
+      ],
+      "expect": 8
+    },
+    {
+      "args": [
+        10
+      ],
+      "expect": 89
+    },
+    {
+      "args": [
+        45
+      ],
+      "expect": 1836311903
+    }
+  ]
+}
+```
+
 ````reveal Hint — condition on the last move, not the first
 The last move to reach step n is either a 1-step move (from step n-1)
 or a 2-step move (from step n-2) — there are no other options. Every

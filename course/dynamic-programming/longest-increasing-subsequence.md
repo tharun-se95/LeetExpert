@@ -29,6 +29,107 @@ subsequence that ENDS AT index `i` specifically (not "using the first i
 elements" — this distinction matters), and work out the recurrence in
 terms of all `j < i` with `nums[j] < nums[i]`.
 
+```sandbox
+{
+  "id": "longest-increasing-subsequence",
+  "fn": {
+    "python": "length_of_lis",
+    "javascript": "lengthOfLIS"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def length_of_lis(nums):\n    # Return the length of the longest strictly increasing subsequence.\n    pass\n",
+    "javascript": "function lengthOfLIS(nums) {\n  // Return the length of the longest strictly increasing subsequence.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          10,
+          9,
+          2,
+          5,
+          3,
+          7,
+          101,
+          18
+        ]
+      ],
+      "expect": 4
+    },
+    {
+      "args": [
+        [
+          0,
+          1,
+          0,
+          3,
+          2,
+          3
+        ]
+      ],
+      "expect": 4
+    },
+    {
+      "args": [
+        [
+          7,
+          7,
+          7,
+          7
+        ]
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ],
+      "expect": 5
+    },
+    {
+      "args": [
+        [
+          4,
+          10,
+          4,
+          3,
+          8,
+          9
+        ]
+      ],
+      "expect": 3
+    }
+  ]
+}
+```
+
 ````reveal Hint — dp[i] looks BACKWARD at every smaller, earlier, smaller-valued element
 `dp[i]` = 1 (the element by itself is always a valid subsequence of
 length 1) plus the best `dp[j]` among every earlier index `j < i` where

@@ -31,6 +31,103 @@ counterexample the Greedy module (Module 22) raised: denominations
 `{1, 3, 4}`, target `6`. Work out what greedy produces versus what the
 true optimum is, and only then think about the DP recurrence.
 
+```sandbox
+{
+  "id": "coin-change",
+  "fn": {
+    "python": "coin_change",
+    "javascript": "coinChange"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def coin_change(coins, amount):\n    # Return the fewest coins summing to amount, or -1 if impossible.\n    pass\n",
+    "javascript": "function coinChange(coins, amount) {\n  // Return the fewest coins summing to amount, or -1 if impossible.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          5
+        ],
+        11
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        [
+          2
+        ],
+        3
+      ],
+      "expect": -1
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        0
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        [
+          2
+        ],
+        0
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        [
+          1,
+          3,
+          4
+        ],
+        6
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        [
+          5
+        ],
+        5
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          186,
+          419,
+          83,
+          408
+        ],
+        6249
+      ],
+      "expect": 20
+    },
+    {
+      "args": [
+        [
+          7,
+          9
+        ],
+        11
+      ],
+      "expect": -1
+    }
+  ]
+}
+```
+
 ````reveal Hint — greedy fails; build up dp[amount] from smaller amounts
 Greedy on {1,3,4} targeting 6: take 4 (largest that fits), leaving 2;
 take 1, leaving 1; take 1, leaving 0 — that's 3 coins (4+1+1). But 3+3=6

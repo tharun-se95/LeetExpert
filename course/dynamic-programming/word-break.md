@@ -30,6 +30,95 @@ reachability — is precisely what makes DP applicable here where
 Module 16 used backtracking, and define `dp[i]` = "can the prefix
 `s[0:i]` be fully segmented using dictionary words."
 
+```sandbox
+{
+  "id": "word-break",
+  "fn": {
+    "python": "word_break",
+    "javascript": "wordBreak"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def word_break(s, word_dict):\n    # Return True if s splits into a sequence of dictionary words.\n    pass\n",
+    "javascript": "function wordBreak(s, wordDict) {\n  // Return true if s splits into a sequence of dictionary words.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        "leetcode",
+        [
+          "leet",
+          "code"
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        "catsandog",
+        [
+          "cats",
+          "dog",
+          "sand",
+          "and",
+          "cat"
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        "applepenapple",
+        [
+          "apple",
+          "pen"
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        "a",
+        [
+          "a"
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        "a",
+        [
+          "b"
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        "aaaaaaa",
+        [
+          "aaaa",
+          "aaa"
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        "cars",
+        [
+          "car",
+          "ca",
+          "rs"
+        ]
+      ],
+      "expect": true
+    }
+  ]
+}
+```
+
 ````reveal Hint — dp[i] depends on trying every earlier split point j
 `dp[i]` is true if there EXISTS some split point `j < i` such that
 `dp[j]` is true (the prefix up to `j` is segmentable) AND `s[j:i]` is

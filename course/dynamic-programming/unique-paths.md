@@ -27,6 +27,79 @@ sequence counters. Before opening anything, work out: how can the robot
 have arrived at cell `(i, j)`, given the only two legal moves are right
 and down — and what does that tell you about `dp[i][j]`'s dependencies?
 
+```sandbox
+{
+  "id": "unique-paths",
+  "fn": {
+    "python": "unique_paths",
+    "javascript": "uniquePaths"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def unique_paths(m, n):\n    # Return the number of right/down paths across an m x n grid.\n    pass\n",
+    "javascript": "function uniquePaths(m, n) {\n  // Return the number of right/down paths across an m x n grid.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        3,
+        7
+      ],
+      "expect": 28
+    },
+    {
+      "args": [
+        3,
+        2
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        1,
+        1
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        1,
+        10
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        10,
+        1
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        2,
+        2
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        7,
+        3
+      ],
+      "expect": 28
+    },
+    {
+      "args": [
+        10,
+        10
+      ],
+      "expect": 48620
+    }
+  ]
+}
+```
+
 ````reveal Hint — the last move was either from above or from the left
 The only way to arrive at `(i, j)` is either from directly ABOVE
 (`(i-1, j)`, via a down-move) or directly to the LEFT (`(i, j-1)`, via a

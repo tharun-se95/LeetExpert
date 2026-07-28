@@ -31,6 +31,79 @@ implicit two (match or skip). Before opening anything, define
 each of the three operations DOES to the indices `i` and `j` — that's
 the whole derivation.
 
+```sandbox
+{
+  "id": "edit-distance",
+  "fn": {
+    "python": "min_distance",
+    "javascript": "minDistance"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def min_distance(word1, word2):\n    # Return the fewest insert/delete/replace steps turning word1 into word2.\n    pass\n",
+    "javascript": "function minDistance(word1, word2) {\n  // Return the fewest insert/delete/replace steps turning word1 into word2.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        "horse",
+        "ros"
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        "intention",
+        "execution"
+      ],
+      "expect": 5
+    },
+    {
+      "args": [
+        "",
+        ""
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        "",
+        "abc"
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        "abc",
+        ""
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        "abc",
+        "abc"
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        "a",
+        "b"
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        "sunday",
+        "saturday"
+      ],
+      "expect": 3
+    }
+  ]
+}
+```
+
 ````reveal Hint — derive each operation's index effect, then take the min
 **If `word1[i-1] == word2[j-1]`:** no edit needed for this pair of
 characters — carry forward `dp[i-1][j-1]` unchanged (exactly LCS's match
