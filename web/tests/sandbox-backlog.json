@@ -1,10 +1,5 @@
 [
-  "binary-trees/binary-tree-level-order-traversal",
-  "binary-trees/binary-tree-right-side-view",
-  "binary-trees/construct-binary-tree-from-preorder-and-inorder",
-  "binary-trees/diameter-of-binary-tree",
   "binary-trees/lowest-common-ancestor-of-a-binary-tree",
-  "binary-trees/maximum-depth-of-binary-tree",
   "binary-trees/serialize-and-deserialize-binary-tree",
   "bst/convert-sorted-array-to-bst",
   "bst/delete-node-in-a-bst",

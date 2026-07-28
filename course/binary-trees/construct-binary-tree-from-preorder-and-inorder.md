@@ -35,6 +35,139 @@ you know the root's *value*, what does that tell you about how
 `inorder` splits into "everything in the left subtree" and "everything
 in the right subtree"?
 
+```sandbox
+{
+  "id": "construct-binary-tree-from-preorder-and-inorder",
+  "fn": {
+    "python": "build_tree",
+    "javascript": "buildTree"
+  },
+  "check": "return",
+  "returns": "tree",
+  "starter": {
+    "python": "def build_tree(preorder, inorder):\n    # Rebuild the tree from its two traversals and return the root.\n    pass\n",
+    "javascript": "function buildTree(preorder, inorder) {\n  // Rebuild the tree from its two traversals and return the root.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          3,
+          9,
+          20,
+          15,
+          7
+        ],
+        [
+          9,
+          3,
+          15,
+          20,
+          7
+        ]
+      ],
+      "expect": [
+        3,
+        9,
+        20,
+        null,
+        null,
+        15,
+        7
+      ]
+    },
+    {
+      "args": [
+        [
+          -1
+        ],
+        [
+          -1
+        ]
+      ],
+      "expect": [
+        -1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "expect": [
+        1,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "expect": [
+        1,
+        null,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          2,
+          1,
+          3
+        ]
+      ],
+      "expect": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "args": [
+        [
+          3,
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "expect": [
+        3,
+        1,
+        4,
+        null,
+        2
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — preorder's first element is the root; inorder splits around it
 **Fact 1:** preorder visits a node BEFORE either of its subtrees (that's
 the definition — root, then left, then right). So `preorder[0]` is

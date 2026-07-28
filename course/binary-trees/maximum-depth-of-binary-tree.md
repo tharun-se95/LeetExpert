@@ -33,6 +33,91 @@ returns, decide how a node combines its two children's answers into its
 own. If you internalize this one, maximum depth becomes the template you
 pattern-match every harder tree problem against.
 
+```sandbox
+{
+  "id": "maximum-depth-of-binary-tree",
+  "fn": {
+    "python": "max_depth",
+    "javascript": "maxDepth"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree"
+  },
+  "starter": {
+    "python": "def max_depth(root):\n    # Return the number of nodes on the longest root-to-leaf path.\n    pass\n",
+    "javascript": "function maxDepth(root) {\n  // Return the number of nodes on the longest root-to-leaf path.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          3,
+          9,
+          20,
+          null,
+          null,
+          15,
+          7
+        ]
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        [
+          1,
+          null,
+          2
+        ]
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          null,
+          3,
+          null,
+          4
+        ]
+      ],
+      "expect": 4
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      ],
+      "expect": 3
+    }
+  ]
+}
+```
+
 ````reveal Hint — ask the right question at a node
 A node cannot know the tree's depth by looking at itself. But it *can*
 answer a local question if its children answer theirs first: "given how

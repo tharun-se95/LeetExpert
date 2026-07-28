@@ -35,6 +35,106 @@ opening anything — or, if you want the alternative framing, think about
 what a DFS that visits **right child before left child** would need to
 track to get the same answer without a queue at all.
 
+```sandbox
+{
+  "id": "binary-tree-right-side-view",
+  "fn": {
+    "python": "right_side_view",
+    "javascript": "rightSideView"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree"
+  },
+  "starter": {
+    "python": "def right_side_view(root):\n    # Return the rightmost value of each level, top to bottom.\n    pass\n",
+    "javascript": "function rightSideView(root) {\n  // Return the rightmost value of each level, top to bottom.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          null,
+          5,
+          null,
+          4
+        ]
+      ],
+      "expect": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": []
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expect": [
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          null,
+          3
+        ]
+      ],
+      "expect": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "expect": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          null,
+          2,
+          null,
+          3
+        ]
+      ],
+      "expect": [
+        1,
+        2,
+        3
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — two valid framings, pick one
 **BFS framing:** reuse the level-order traversal exactly, but instead of
 appending every value to a per-level list, just remember the value of

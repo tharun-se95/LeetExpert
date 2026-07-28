@@ -29,6 +29,141 @@ the level-boundary technique (snapshotting the queue's size at the start
 of each level) without re-deriving it. Try writing it before opening
 anything.
 
+```sandbox
+{
+  "id": "binary-tree-level-order-traversal",
+  "fn": {
+    "python": "level_order",
+    "javascript": "levelOrder"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree"
+  },
+  "starter": {
+    "python": "def level_order(root):\n    # Return the values level by level, left to right, one list per level.\n    pass\n",
+    "javascript": "function levelOrder(root) {\n  // Return the values level by level, left to right, one list per level.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          3,
+          9,
+          20,
+          null,
+          null,
+          15,
+          7
+        ]
+      ],
+      "expect": [
+        [
+          3
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          15,
+          7
+        ]
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": []
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expect": [
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          null,
+          3
+        ]
+      ],
+      "expect": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          null,
+          2,
+          null,
+          3
+        ]
+      ],
+      "expect": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      ],
+      "expect": [
+        [
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5,
+          6,
+          7
+        ]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — snapshot the queue length before draining it
 A plain queue-based BFS visits nodes in level order but doesn't, by
 itself, tell you *where one level ends and the next begins* — nodes from

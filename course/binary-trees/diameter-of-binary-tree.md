@@ -35,6 +35,104 @@ its left, up through the node, down its right) is a great candidate for the
 answer — but can a function return that quantity to its parent and have the
 parent use it? Work out why not; that dead end is the whole lesson.
 
+```sandbox
+{
+  "id": "diameter-of-binary-tree",
+  "fn": {
+    "python": "diameter_of_binary_tree",
+    "javascript": "diameterOfBinaryTree"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree"
+  },
+  "starter": {
+    "python": "def diameter_of_binary_tree(root):\n    # Return the number of edges on the longest path between any two nodes.\n    pass\n",
+    "javascript": "function diameterOfBinaryTree(root) {\n  // Return the number of edges on the longest path between any two nodes.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ]
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          null,
+          3,
+          null,
+          4,
+          null,
+          5
+        ]
+      ],
+      "expect": 4
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          null,
+          null,
+          5,
+          6,
+          null,
+          null,
+          7
+        ]
+      ],
+      "expect": 6
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          null,
+          null,
+          6,
+          7
+        ]
+      ],
+      "expect": 4
+    }
+  ]
+}
+```
+
 ````reveal Hint — separate two quantities that want to be one
 At each node there are two different numbers in play. (1) The longest path
 that **bends** at this node = leftHeight + rightHeight (go down the left as
