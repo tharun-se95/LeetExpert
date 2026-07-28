@@ -37,6 +37,126 @@ then ask yourself: does it catch the second example above? Specifically
 at the node with value 5? Try to *break* your own solution before
 reading on.
 
+```sandbox
+{
+  "id": "validate-binary-search-tree",
+  "fn": {
+    "python": "is_valid_bst",
+    "javascript": "isValidBST"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree"
+  },
+  "starter": {
+    "python": "def is_valid_bst(root):\n    # Return True if the whole tree is a valid BST.\n    pass\n",
+    "javascript": "function isValidBST(root) {\n  // Return true if the whole tree is a valid BST.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          2,
+          1,
+          3
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        [
+          5,
+          1,
+          4,
+          null,
+          null,
+          3,
+          6
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        [
+          10,
+          5,
+          15,
+          null,
+          null,
+          6,
+          20
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        [
+          2,
+          2,
+          2
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        [
+          -2147483648
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        [
+          2147483647
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        [
+          5,
+          4,
+          6,
+          null,
+          null,
+          3,
+          7
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        [
+          3,
+          1,
+          5,
+          0,
+          2,
+          4,
+          6
+        ]
+      ],
+      "expect": true
+    }
+  ]
+}
+```
+
 ````reveal Hint — the trap has a name
 The tempting check is "at each node, verify `left.val < node.val <
 right.val`," recursing into both children. This is the children-only

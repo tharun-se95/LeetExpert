@@ -37,6 +37,117 @@ of a BST produces. Before writing anything, state what the k-th
 smallest element *is* in terms of that traversal, and then think about
 whether you actually need to finish the traversal to find it.
 
+```sandbox
+{
+  "id": "kth-smallest-element-in-a-bst",
+  "fn": {
+    "python": "kth_smallest",
+    "javascript": "kthSmallest"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree"
+  },
+  "starter": {
+    "python": "def kth_smallest(root, k):\n    # Return the k-th smallest value in the BST (k starts at 1).\n    pass\n",
+    "javascript": "function kthSmallest(root, k) {\n  // Return the k-th smallest value in the BST (k starts at 1).\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          3,
+          1,
+          4,
+          null,
+          2
+        ],
+        1
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          3,
+          1,
+          4,
+          null,
+          2
+        ],
+        3
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        [
+          5,
+          3,
+          6,
+          2,
+          4,
+          null,
+          null,
+          1
+        ],
+        3
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        1
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          3,
+          1,
+          4,
+          null,
+          2
+        ],
+        4
+      ],
+      "expect": 4
+    },
+    {
+      "args": [
+        [
+          5,
+          3,
+          6,
+          2,
+          4,
+          null,
+          null,
+          1
+        ],
+        1
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          2,
+          1,
+          3
+        ],
+        2
+      ],
+      "expect": 2
+    }
+  ]
+}
+```
+
 ````reveal Hint
 Inorder traversal of a BST visits values in ascending sorted order
 (concept lesson 1, proved from the invariant). So the k-th smallest is

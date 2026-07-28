@@ -35,6 +35,150 @@ iterative form, and articulate exactly why the spot you land on is the
 search for `val` end up in a tree that doesn't contain `val`, and why
 is that endpoint automatically a legal insertion point?
 
+```sandbox
+{
+  "id": "insert-into-a-binary-search-tree",
+  "fn": {
+    "python": "insert_into_bst",
+    "javascript": "insertIntoBST"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree"
+  },
+  "returns": "tree",
+  "starter": {
+    "python": "def insert_into_bst(root, val):\n    # Insert val as a new leaf and return the root.\n    pass\n",
+    "javascript": "function insertIntoBST(root, val) {\n  // Insert val as a new leaf and return the root.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          4,
+          2,
+          7,
+          1,
+          3
+        ],
+        5
+      ],
+      "expect": [
+        4,
+        2,
+        7,
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "args": [
+        [],
+        8
+      ],
+      "expect": [
+        8
+      ]
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        2
+      ],
+      "expect": [
+        1,
+        null,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        0
+      ],
+      "expect": [
+        1,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          40,
+          20,
+          60,
+          10,
+          30,
+          50,
+          70
+        ],
+        25
+      ],
+      "expect": [
+        40,
+        20,
+        60,
+        10,
+        30,
+        50,
+        70,
+        null,
+        null,
+        25
+      ]
+    },
+    {
+      "args": [
+        [
+          4,
+          2,
+          7,
+          1,
+          3
+        ],
+        8
+      ],
+      "expect": [
+        4,
+        2,
+        7,
+        1,
+        3,
+        null,
+        8
+      ]
+    },
+    {
+      "args": [
+        [
+          4,
+          2,
+          7,
+          1,
+          3
+        ],
+        0
+      ],
+      "expect": [
+        4,
+        2,
+        7,
+        1,
+        3,
+        null,
+        null,
+        0
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint
 Search for `val`. Since it isn't in the tree, the search "falls off"
 the bottom at some empty child slot. That slot is the one and only
