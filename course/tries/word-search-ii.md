@@ -40,6 +40,151 @@ the question this whole module has been building toward: **when many
 words share prefixes, how much of that per-word DFS work is being
 repeated?**
 
+```sandbox
+{
+  "id": "word-search-ii",
+  "fn": {
+    "python": "find_words",
+    "javascript": "findWords"
+  },
+  "check": "return",
+  "compare": "sorted",
+  "starter": {
+    "python": "def find_words(board, words):\n    # Return every word that can be traced on the board.\n    pass\n",
+    "javascript": "function findWords(board, words) {\n  // Return every word that can be traced on the board.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            "o",
+            "a",
+            "a",
+            "n"
+          ],
+          [
+            "e",
+            "t",
+            "a",
+            "e"
+          ],
+          [
+            "i",
+            "h",
+            "k",
+            "r"
+          ],
+          [
+            "i",
+            "f",
+            "l",
+            "v"
+          ]
+        ],
+        [
+          "oath",
+          "pea",
+          "eat",
+          "rain"
+        ]
+      ],
+      "expect": [
+        "oath",
+        "eat"
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "a",
+            "b"
+          ],
+          [
+            "c",
+            "d"
+          ]
+        ],
+        [
+          "abcb"
+        ]
+      ],
+      "expect": []
+    },
+    {
+      "args": [
+        [
+          [
+            "a"
+          ]
+        ],
+        [
+          "a"
+        ]
+      ],
+      "expect": [
+        "a"
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "a"
+          ]
+        ],
+        [
+          "b"
+        ]
+      ],
+      "expect": []
+    },
+    {
+      "args": [
+        [
+          [
+            "a",
+            "b"
+          ],
+          [
+            "c",
+            "d"
+          ]
+        ],
+        [
+          "ab",
+          "cd",
+          "ac",
+          "abcd",
+          "ba"
+        ]
+      ],
+      "expect": [
+        "ac",
+        "ab",
+        "ba",
+        "cd"
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "a",
+            "a"
+          ]
+        ],
+        [
+          "aaa"
+        ]
+      ],
+      "expect": []
+    }
+  ]
+}
+```
+
 ````reveal Hint — what does running Word Search 30,000 times waste?
 Suppose `words` contains `"aaa"`, `"aab"`, and `"aac"`. Running Word
 Search separately for each re-explores every grid path spelling `"aa"`

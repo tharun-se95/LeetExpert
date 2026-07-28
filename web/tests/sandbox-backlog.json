@@ -34,9 +34,5 @@
   "heaps/kth-largest-element-in-a-stream",
   "heaps/merge-k-sorted-lists",
   "heaps/task-scheduler",
-  "heaps/top-k-frequent-elements",
-  "tries/design-add-and-search-words",
-  "tries/implement-trie",
-  "tries/longest-word-in-dictionary",
-  "tries/word-search-ii"
+  "heaps/top-k-frequent-elements"
 ]

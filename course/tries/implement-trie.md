@@ -37,6 +37,219 @@ for `"app"` after only `"apple"` was inserted, you've forgotten the
 `is_end_of_word` flag. Write all three methods and trace that example by
 hand.
 
+```sandbox
+{
+  "id": "implement-trie",
+  "fn": {
+    "python": "Trie",
+    "javascript": "Trie"
+  },
+  "class": {
+    "python": "Trie",
+    "javascript": "Trie"
+  },
+  "check": "sequence",
+  "methods": {
+    "startsWith": {
+      "python": "starts_with",
+      "javascript": "startsWith"
+    }
+  },
+  "starter": {
+    "python": "class Trie:\n    def __init__(self):\n        # Build the empty trie.\n        pass\n\n    def insert(self, word):\n        # Add word to the trie.\n        pass\n\n    def search(self, word):\n        # Return True only if word itself was inserted.\n        pass\n\n    def starts_with(self, prefix):\n        # Return True if any inserted word begins with prefix.\n        pass\n",
+    "javascript": "class Trie {\n  constructor() {\n    // Build the empty trie.\n  }\n\n  insert(word) {\n    // Add word to the trie.\n  }\n\n  search(word) {\n    // Return true only if word itself was inserted.\n  }\n\n  startsWith(prefix) {\n    // Return true if any inserted word begins with prefix.\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [],
+      "ops": [
+        [
+          "insert",
+          [
+            "apple"
+          ]
+        ],
+        [
+          "search",
+          [
+            "apple"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "app"
+          ],
+          false
+        ],
+        [
+          "startsWith",
+          [
+            "app"
+          ],
+          true
+        ],
+        [
+          "insert",
+          [
+            "app"
+          ]
+        ],
+        [
+          "search",
+          [
+            "app"
+          ],
+          true
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "search",
+          [
+            "a"
+          ],
+          false
+        ],
+        [
+          "startsWith",
+          [
+            "a"
+          ],
+          false
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "insert",
+          [
+            "a"
+          ]
+        ],
+        [
+          "search",
+          [
+            "a"
+          ],
+          true
+        ],
+        [
+          "startsWith",
+          [
+            "a"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "ab"
+          ],
+          false
+        ],
+        [
+          "startsWith",
+          [
+            "ab"
+          ],
+          false
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "insert",
+          [
+            "apple"
+          ]
+        ],
+        [
+          "insert",
+          [
+            "apple"
+          ]
+        ],
+        [
+          "search",
+          [
+            "apple"
+          ],
+          true
+        ],
+        [
+          "startsWith",
+          [
+            "appl"
+          ],
+          true
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "insert",
+          [
+            "car"
+          ]
+        ],
+        [
+          "insert",
+          [
+            "card"
+          ]
+        ],
+        [
+          "search",
+          [
+            "car"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "card"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "ca"
+          ],
+          false
+        ],
+        [
+          "startsWith",
+          [
+            "ca"
+          ],
+          true
+        ],
+        [
+          "startsWith",
+          [
+            "cards"
+          ],
+          false
+        ]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — what distinguishes the two lookups
 Both `search` and `startsWith` walk the query character by character
 from the root, following child edges and failing the instant an edge is

@@ -36,6 +36,285 @@ far has always been **deterministic** — at each character there was
 exactly one edge to follow, or none. What does a `.` do to that? At a
 `.`, *which* child do you descend into?
 
+```sandbox
+{
+  "id": "design-add-and-search-words",
+  "fn": {
+    "python": "WordDictionary",
+    "javascript": "WordDictionary"
+  },
+  "class": {
+    "python": "WordDictionary",
+    "javascript": "WordDictionary"
+  },
+  "check": "sequence",
+  "methods": {
+    "addWord": {
+      "python": "add_word",
+      "javascript": "addWord"
+    }
+  },
+  "starter": {
+    "python": "class WordDictionary:\n    def __init__(self):\n        # Build the empty dictionary.\n        pass\n\n    def add_word(self, word):\n        # Store word.\n        pass\n\n    def search(self, word):\n        # Return True if any stored word matches; \".\" matches any letter.\n        pass\n",
+    "javascript": "class WordDictionary {\n  constructor() {\n    // Build the empty dictionary.\n  }\n\n  addWord(word) {\n    // Store word.\n  }\n\n  search(word) {\n    // Return true if any stored word matches; \".\" matches any letter.\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [],
+      "ops": [
+        [
+          "addWord",
+          [
+            "bad"
+          ]
+        ],
+        [
+          "addWord",
+          [
+            "dad"
+          ]
+        ],
+        [
+          "addWord",
+          [
+            "mad"
+          ]
+        ],
+        [
+          "search",
+          [
+            "pad"
+          ],
+          false
+        ],
+        [
+          "search",
+          [
+            "bad"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            ".ad"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "b.."
+          ],
+          true
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "search",
+          [
+            "a"
+          ],
+          false
+        ],
+        [
+          "search",
+          [
+            "."
+          ],
+          false
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "addWord",
+          [
+            "a"
+          ]
+        ],
+        [
+          "search",
+          [
+            "a"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "."
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            ".."
+          ],
+          false
+        ],
+        [
+          "search",
+          [
+            "a."
+          ],
+          false
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "addWord",
+          [
+            "ab"
+          ]
+        ],
+        [
+          "addWord",
+          [
+            "ac"
+          ]
+        ],
+        [
+          "search",
+          [
+            "a."
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "."
+          ],
+          false
+        ],
+        [
+          "search",
+          [
+            ".c"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            ".."
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "ad"
+          ],
+          false
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "addWord",
+          [
+            "at"
+          ]
+        ],
+        [
+          "addWord",
+          [
+            "and"
+          ]
+        ],
+        [
+          "addWord",
+          [
+            "an"
+          ]
+        ],
+        [
+          "addWord",
+          [
+            "add"
+          ]
+        ],
+        [
+          "search",
+          [
+            "a"
+          ],
+          false
+        ],
+        [
+          "search",
+          [
+            ".at"
+          ],
+          false
+        ],
+        [
+          "addWord",
+          [
+            "bat"
+          ]
+        ],
+        [
+          "search",
+          [
+            ".at"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "an."
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "a.d."
+          ],
+          false
+        ],
+        [
+          "search",
+          [
+            "b."
+          ],
+          false
+        ],
+        [
+          "search",
+          [
+            "a.d"
+          ],
+          true
+        ],
+        [
+          "search",
+          [
+            "."
+          ],
+          false
+        ]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — a wildcard has no single next edge
 For a concrete letter, you follow the one matching edge. For `.`, **any**
 child could be the right one — `.ad` succeeds through the `b` child

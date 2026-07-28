@@ -35,6 +35,92 @@ anything, think about how you'd walk the trie to find the longest such
 "fully-buildable" path, and how you'd break ties toward the
 lexicographically smallest word without sorting the whole input first.
 
+```sandbox
+{
+  "id": "longest-word-in-dictionary",
+  "fn": {
+    "python": "longest_word",
+    "javascript": "longestWord"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def longest_word(words):\n    # Return the longest word whose every proper prefix is also in words,\n    # breaking ties lexicographically. \"\" if none qualifies.\n    pass\n",
+    "javascript": "function longestWord(words) {\n  // Return the longest word whose every proper prefix is also in words,\n  // breaking ties lexicographically. \"\" if none qualifies.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          "w",
+          "wo",
+          "wor",
+          "worl",
+          "world"
+        ]
+      ],
+      "expect": "world"
+    },
+    {
+      "args": [
+        [
+          "a",
+          "banana",
+          "app",
+          "appl",
+          "ap",
+          "apply",
+          "apple"
+        ]
+      ],
+      "expect": "apple"
+    },
+    {
+      "args": [
+        [
+          "abc"
+        ]
+      ],
+      "expect": ""
+    },
+    {
+      "args": [
+        [
+          "a"
+        ]
+      ],
+      "expect": "a"
+    },
+    {
+      "args": [
+        [
+          "a",
+          "b",
+          "ab",
+          "ba"
+        ]
+      ],
+      "expect": "ab"
+    },
+    {
+      "args": [
+        [
+          "yo",
+          "ew",
+          "fgerfe",
+          "fgerfew",
+          "fgerf",
+          "fg",
+          "f",
+          "fger",
+          "fgerf"
+        ]
+      ],
+      "expect": "fg"
+    }
+  ]
+}
+```
+
 ````reveal Hint — DFS the trie, only descending through end-of-word nodes
 Insert every word into a trie as usual. Then DFS from the root,
 descending into a child ONLY IF that child is itself flagged
