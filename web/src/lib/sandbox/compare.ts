@@ -86,13 +86,30 @@ export function pretty(value: unknown, max = 80): string {
 }
 
 /**
+ * `{ values, pos }` is how a lesson author writes a list whose tail points
+ * back into it. That object is harness encoding — the learner's function
+ * receives a linked list, never a dict — so showing it raw would describe
+ * the wrong call. Render the list, and say where the tail lands.
+ */
+function renderArg(a: unknown): string {
+  if (a && typeof a === "object" && !Array.isArray(a)) {
+    const o = a as Record<string, unknown>;
+    if (Array.isArray(o.values) && typeof o.pos === "number") {
+      const list = pretty(o.values, Number.MAX_SAFE_INTEGER);
+      return o.pos < 0 ? list : `${list} with tail → index ${o.pos}`;
+    }
+  }
+  return pretty(a, Number.MAX_SAFE_INTEGER);
+}
+
+/**
  * Renders a case as the call that will actually be made — `moveZeroes([0, 1,
  * 0, 3, 12])` rather than a bare `[[0,1,0,3,12]]`. The doubled brackets in
  * the latter are the args array wrapping the first argument, which reads as
  * a typo rather than as information.
  */
 export function formatCall(fnName: string, args: unknown[], max = 72): string {
-  const rendered = args.map((a) => pretty(a, Number.MAX_SAFE_INTEGER)).join(", ");
+  const rendered = args.map((a) => renderArg(a)).join(", ");
   const call = `${fnName}(${rendered})`;
   return call.length > max ? `${call.slice(0, max - 1)}…)` : call;
 }

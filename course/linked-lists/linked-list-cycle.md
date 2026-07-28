@@ -27,6 +27,29 @@ Floyd's tortoise-and-hare — you have both runners already; the work here
 is convincing yourself the meeting is *guaranteed*, not lucky. Try to
 argue it before opening the hints.
 
+```sandbox
+{
+  "id": "linked-list-cycle",
+  "fn": { "python": "has_cycle", "javascript": "hasCycle" },
+  "check": "return",
+  "shape": { "0": "list" },
+  "starter": {
+    "python": "def has_cycle(head):\n    # Return True if the list contains a cycle.\n    pass\n",
+    "javascript": "function hasCycle(head) {\n  // Return true if the list contains a cycle.\n}\n"
+  },
+  "cases": [
+    { "args": [{ "values": [3, 2, 0, -4], "pos": 1 }], "expect": true },
+    { "args": [{ "values": [1, 2], "pos": 0 }], "expect": true },
+    { "args": [{ "values": [1], "pos": 0 }], "expect": true },
+    { "args": [[1, 2]], "expect": false },
+    { "args": [[1]], "expect": false },
+    { "args": [[]], "expect": false },
+    { "args": [{ "values": [1, 2, 3, 4, 5], "pos": 4 }], "expect": true },
+    { "args": [[1, 1, 1, 1]], "expect": false }
+  ]
+}
+```
+
 ````reveal Hint 1 — the O(n)-space warm-up
 Seen verb: walk with a set of visited NODES (node identity, not value —
 values can repeat). Revisit ⇒ cycle; null ⇒ no cycle.

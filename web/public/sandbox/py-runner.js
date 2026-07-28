@@ -46,13 +46,28 @@ class TreeNode:
         self.right = right
 
 def __build_list(values):
+    # Cycle problems need a tail that points back into the list, which a plain
+    # array of values cannot express. {values, pos} is the form learners
+    # already meet: pos is the index the tail links to, -1 for an open list.
+    pos = -1
+    if isinstance(values, dict):
+        pos = values.get("pos", -1)
+        values = values.get("values")
     if not values:
         return None
     head = ListNode(values[0])
+    nodes = [head]
     tail = head
     for v in values[1:]:
         tail.next = ListNode(v)
         tail = tail.next
+        nodes.append(tail)
+    # A pos past the end is an authoring mistake; failing loudly beats silently
+    # handing the learner an open list and marking their correct answer wrong.
+    if pos is not None and pos >= 0:
+        if pos >= len(nodes):
+            raise ValueError("cycle pos " + str(pos) + " is past the end of the list")
+        tail.next = nodes[pos]
     return head
 
 def __ser_list(node):

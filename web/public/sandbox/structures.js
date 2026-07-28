@@ -31,12 +31,30 @@ class TreeNode {
 }
 
 function buildList(values) {
+  // Cycle problems need a tail that points back into the list, which a plain
+  // array of values cannot express. `{ values, pos }` is the form learners
+  // already meet: `pos` is the index the tail links to, -1 for an open list.
+  let pos = -1;
+  if (values && !Array.isArray(values) && typeof values === "object") {
+    pos = values.pos === undefined ? -1 : values.pos;
+    values = values.values;
+  }
   if (!Array.isArray(values) || values.length === 0) return null;
   const head = new ListNode(values[0]);
+  const nodes = [head];
   let tail = head;
   for (let i = 1; i < values.length; i++) {
     tail.next = new ListNode(values[i]);
     tail = tail.next;
+    nodes.push(tail);
+  }
+  // A pos past the end is an authoring mistake; failing loudly beats silently
+  // handing the learner an open list and marking their correct answer wrong.
+  if (pos >= 0) {
+    if (pos >= nodes.length) {
+      throw new Error("cycle pos " + pos + " is past the end of the list");
+    }
+    tail.next = nodes[pos];
   }
   return head;
 }

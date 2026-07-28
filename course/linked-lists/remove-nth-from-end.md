@@ -26,6 +26,29 @@ pattern 3), the dummy node (pattern 1), and the stand-on-the-predecessor
 discipline — all in ~10 lines. The examples deliberately include
 head-removal; let that steer your setup.
 
+```sandbox
+{
+  "id": "remove-nth-from-end",
+  "fn": { "python": "remove_nth_from_end", "javascript": "removeNthFromEnd" },
+  "check": "return",
+  "shape": { "0": "list" },
+  "returns": "list",
+  "starter": {
+    "python": "def remove_nth_from_end(head, n):\n    # Remove the n-th node from the end and return the head.\n    pass\n",
+    "javascript": "function removeNthFromEnd(head, n) {\n  // Remove the n-th node from the end and return the head.\n}\n"
+  },
+  "cases": [
+    { "args": [[1, 2, 3, 4, 5], 2], "expect": [1, 2, 3, 5] },
+    { "args": [[1], 1], "expect": [] },
+    { "args": [[1, 2], 2], "expect": [2] },
+    { "args": [[1, 2], 1], "expect": [1] },
+    { "args": [[1, 2, 3], 3], "expect": [2, 3] },
+    { "args": [[1, 2, 3], 1], "expect": [1, 2] },
+    { "args": [[7, 7, 7, 7], 4], "expect": [7, 7, 7] }
+  ]
+}
+```
+
 ````reveal Hint 1 — two passes, for grounding
 Count length L; the target is node L − n + 1; walk to its PREDECESSOR
 and splice. Works — but the follow-up wants the length-free version.

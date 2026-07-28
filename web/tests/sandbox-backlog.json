@@ -35,8 +35,6 @@
   "heaps/merge-k-sorted-lists",
   "heaps/task-scheduler",
   "heaps/top-k-frequent-elements",
-  "linked-lists/linked-list-cycle",
-  "linked-lists/remove-nth-from-end",
   "queues/queue-using-stacks",
   "queues/recent-calls",
   "queues/sliding-window-maximum",
