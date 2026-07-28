@@ -12,17 +12,18 @@
 | | Now | Target |
 | --- | --- | --- |
 | Lessons | 191 (75 concept, 116 problem) | — |
-| Problem lessons with a sandbox | **31** | 116 |
-| Backlog (`web/tests/sandbox-backlog.json`) | **85** | 0, then delete the file |
+| Problem lessons with a sandbox | **83** | 116 |
+| Backlog (`web/tests/sandbox-backlog.json`) | **33** | 0, then delete the file |
 | Lessons with a visual | **25** | triaged set (est. 100–120) |
-| Tests | 103, all green | grows with each batch |
+| Tests | 266, all green | grows with each batch |
 
-**Done:** the Riso design system; the sandbox runner including every problem
-shape; the reference-solution pipeline with CI gate; search; content tests;
-icons.
+**Done:** the Riso design system; the sandbox runner for every problem shape
+the authored lessons need, including cyclic lists; the reference-solution
+pipeline with CI gate; search; content tests; icons.
 
-**Not done:** authoring the remaining 85 sandboxes (mechanical), and the
-entire visualisation programme (needs a decision from the owner — see below).
+**Not done:** authoring the remaining 33 sandboxes — 28 mechanical, 5 blocked
+on runner work described below — and the entire visualisation programme
+(needs a decision from the owner — see below).
 
 ---
 
@@ -100,10 +101,17 @@ consume the semantic names, so a palette change is one edit.
 8. **Viz line references drift.** Verify them programmatically against the
    snippet — this has bitten twice.
 9. **Reference solutions are data, not modules** — eslint-ignored on purpose.
+10. **A list arg may be `{ values, pos }`** — `pos` is the index the tail
+    links back to, `-1` for an open list. Cycle problems have no other
+    encoding. `formatCall` renders it as the list plus where the tail lands,
+    because the learner receives a list and never sees the object.
+11. **Sequence ops are named per language via `methods`** and the reference
+    test applies the same mapping the browser does — so a wrong map fails
+    CI rather than only breaking Python at runtime.
 
 ---
 
-## Next task: author the remaining 85 sandboxes
+## Next task: author the remaining 33 sandboxes
 
 Mechanical and safe now. Work **one module per batch**, commit per batch.
 
@@ -124,14 +132,53 @@ Recipe:
 Backlog by module (structural ones need `shape`, already supported):
 
 ```
-dynamic-programming 10   binary-trees 7*   graphs 7*   bst 6*   heaps 6*
-matrix 6   recursion-backtracking 6   greedy 5   intervals 5
-prefix-sum 5   sliding-window 5   sorting 5   queues 4   tries 4*
-linked-lists 2*   binary-search 1   hash-tables 1
+dynamic-programming 10   binary-trees 7*   graphs 7*   heaps 6*   bst 3*
 ```
 
 **When the backlog hits zero: delete the file and convert the coverage test
 into a hard gate.** It is migration scaffolding with a stated end (Rule 1).
+
+A derivation helper is worth rebuilding in a scratchpad each session: load
+`public/sandbox/structures.js` + `run-cases.js` behind a `self` shim, compile
+the checked-in `.js` reference, and print `runCases` outcomes. That is how
+expectations get derived without hand-writing one.
+
+### The runner does NOT yet express every problem shape
+
+The claim above that it does was wrong; five remaining problems need runner
+work first. Each is a real capability, so build it deliberately — a
+half-built one is worse than none (Rule 1).
+
+1. **Answers that are correct in more than one form.** `bst/delete-node-in-a-bst`
+   (promote the inorder successor *or* predecessor) and
+   `bst/convert-sorted-array-to-bst` (any height-balanced BST whose inorder
+   is `nums`) both say so in their own problem statements. Pinning one tree
+   fails a correct learner, which is worse than no test. Needs a check mode
+   where the expectation is a **property** — "is a BST, inorder == nums,
+   heights differ by ≤ 1" — not a value. `compare` cannot express this;
+   it is a new `check`, and the property has to run in both runtimes.
+2. **Arguments that are node references.** `bst/lowest-common-ancestor-of-a-bst`
+   takes `(root, p, q)` where p and q are `TreeNode`s. Case JSON has no way
+   to point at a node. Suggested: a `"node"` shape meaning "the node in
+   arg 0's tree whose value is this" — resolved after the tree is built.
+   Same need in `binary-trees/lowest-common-ancestor-of-a-binary-tree`.
+3. **A list of linked lists.** `heaps/merge-k-sorted-lists` takes
+   `list[ListNode]`. `shape` maps one arg to one structure; this needs an
+   element-wise form (`"list[]"`).
+4. **Graphs are a pass-through, not a structure.** `decodeArg` returns the
+   adjacency list unchanged, so a learner would receive a raw array where
+   `graphs/clone-graph` hands them a `Node`. The shape is accepted by the
+   content test and implemented by nobody — no lesson uses it yet, which is
+   why this was not caught. Clone Graph additionally has to prove the result
+   is a *copy*: serialising equal is not enough, since `return node` would
+   pass. Compare node identity against the input.
+5. **A round trip, not a call.** `binary-trees/serialize-and-deserialize-binary-tree`
+   is a `Codec` whose `serialize` output is implementation-defined; the only
+   honest assertion is `deserialize(serialize(root))` equals `root`.
+   `sequence` mode cannot feed one op's result into the next.
+
+Everything else in the backlog (dynamic-programming 10, most of
+binary-trees, heaps and graphs) is mechanical with today's runner.
 
 ---
 
@@ -162,7 +209,7 @@ never tested against a real touch keyboard.
 cd web
 npx tsc --noEmit      # 0
 npx eslint src tests  # 0
-npm test              # 103 passing
+npm test              # 266 passing
 npm run build         # 0, 220 static pages
 ```
 
