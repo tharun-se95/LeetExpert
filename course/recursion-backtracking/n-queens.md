@@ -35,6 +35,53 @@ the choice at each recursion level is *which column* in that row, not
 placing a queen at `(row, col)` doesn't share a diagonal with any
 already-placed queen?
 
+
+```sandbox
+{
+  "id": "n-queens",
+  "fn": { "python": "solve_n_queens", "javascript": "solveNQueens" },
+  "check": "return",
+  "compare": "sorted",
+  "starter": {
+    "python": "def solve_n_queens(n):\n    # Return every board, each a list of n strings of \".\" and \"Q\".\n    pass\n",
+    "javascript": "function solveNQueens(n) {\n  // Return every board, each a list of n strings of \".\" and \"Q\".\n}\n"
+  },
+  "cases": [
+    {
+      "args": [4],
+      "expect": [[".Q..", "...Q", "Q...", "..Q."], ["..Q.", "Q...", "...Q", ".Q.."]]
+    },
+    { "args": [1], "expect": [["Q"]] },
+    { "args": [2], "expect": [] },
+    { "args": [3], "expect": [] },
+    {
+      "args": [5],
+      "expect": [
+        ["Q....", "..Q..", "....Q", ".Q...", "...Q."],
+        ["Q....", "...Q.", ".Q...", "....Q", "..Q.."],
+        [".Q...", "...Q.", "Q....", "..Q..", "....Q"],
+        [".Q...", "....Q", "..Q..", "Q....", "...Q."],
+        ["..Q..", "Q....", "...Q.", ".Q...", "....Q"],
+        ["..Q..", "....Q", ".Q...", "...Q.", "Q...."],
+        ["...Q.", "Q....", "..Q..", "....Q", ".Q..."],
+        ["...Q.", ".Q...", "....Q", "..Q..", "Q...."],
+        ["....Q", ".Q...", "...Q.", "Q....", "..Q.."],
+        ["....Q", "..Q..", "Q....", "...Q.", ".Q..."]
+      ]
+    },
+    {
+      "args": [6],
+      "expect": [
+        [".Q....", "...Q..", ".....Q", "Q.....", "..Q...", "....Q."],
+        ["..Q...", ".....Q", ".Q....", "....Q.", "Q.....", "...Q.."],
+        ["...Q..", "Q.....", "....Q.", ".Q....", ".....Q", "..Q..."],
+        ["....Q.", "..Q...", "Q.....", ".....Q", "...Q..", ".Q...."]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — one queen per row, and diagonals via row±col
 Since no two queens can share a row, you can place exactly one queen per
 row and recurse row by row — the state-space tree's branching at each

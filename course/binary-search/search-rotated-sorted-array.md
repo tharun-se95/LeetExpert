@@ -28,6 +28,30 @@ half of any split is always fully sorted.** Find that fact yourself by
 sketching a few rotated examples and splitting them at the midpoint
 before opening the hint.
 
+
+```sandbox
+{
+  "id": "search-rotated-sorted-array",
+  "fn": { "python": "search", "javascript": "search" },
+  "check": "return",
+  "starter": {
+    "python": "def search(nums, target):\n    # Return the index of target in the rotated array, or -1.\n    pass\n",
+    "javascript": "function search(nums, target) {\n  // Return the index of target in the rotated array, or -1.\n}\n"
+  },
+  "cases": [
+    { "args": [[4, 5, 6, 7, 0, 1, 2], 0], "expect": 4 },
+    { "args": [[4, 5, 6, 7, 0, 1, 2], 3], "expect": -1 },
+    { "args": [[1], 0], "expect": -1 },
+    { "args": [[1], 1], "expect": 0 },
+    { "args": [[4, 5, 6, 7, 0, 1, 2], 4], "expect": 0 },
+    { "args": [[4, 5, 6, 7, 0, 1, 2], 2], "expect": 6 },
+    { "args": [[0, 1, 2, 4, 5, 6, 7], 4], "expect": 3 },
+    { "args": [[5, 1, 3], 3], "expect": 2 },
+    { "args": [[3, 1], 1], "expect": 1 }
+  ]
+}
+```
+
 ````reveal Hint 1 — which half is sorted?
 Split at mid. Compare nums[lo] to nums[mid]: if nums[lo] <= nums[mid],
 the LEFT half [lo, mid] is sorted (no rotation point inside it — a

@@ -35,6 +35,28 @@ subset/combination. Specifically: after you pick `candidates[i]`, what
 should the *next* call's start index be — `i` or `i + 1`? Your answer to
 that is the entire trick.
 
+
+```sandbox
+{
+  "id": "combination-sum",
+  "fn": { "python": "combination_sum", "javascript": "combinationSum" },
+  "check": "return",
+  "compare": "set-of-sets",
+  "starter": {
+    "python": "def combination_sum(candidates, target):\n    # Return every unique multiset of candidates summing to target.\n    pass\n",
+    "javascript": "function combinationSum(candidates, target) {\n  // Return every unique multiset of candidates summing to target.\n}\n"
+  },
+  "cases": [
+    { "args": [[2, 3, 6, 7], 7], "expect": [[2, 2, 3], [7]] },
+    { "args": [[2, 3, 5], 8], "expect": [[2, 2, 2, 2], [2, 3, 3], [3, 5]] },
+    { "args": [[2], 1], "expect": [] },
+    { "args": [[2], 4], "expect": [[2, 2]] },
+    { "args": [[7, 3, 2], 7], "expect": [[7], [3, 2, 2]] },
+    { "args": [[8, 9], 4], "expect": [] }
+  ]
+}
+```
+
 ````reveal Hint — the start index that does NOT advance
 In Subsets we recursed with `start = i + 1` so each element was used at
 most once. Here reuse is allowed, so after choosing `candidates[i]` we

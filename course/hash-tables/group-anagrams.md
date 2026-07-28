@@ -27,6 +27,34 @@ The whole design problem is one question: **what canonical key makes
 "same key" mean exactly "are anagrams"?** There are two good answers with
 a real trade-off.
 
+
+```sandbox
+{
+  "id": "group-anagrams",
+  "fn": { "python": "group_anagrams", "javascript": "groupAnagrams" },
+  "check": "return",
+  "compare": "set-of-sets",
+  "starter": {
+    "python": "def group_anagrams(strs):\n    # Return the strings grouped so each group is one set of anagrams.\n    pass\n",
+    "javascript": "function groupAnagrams(strs) {\n  // Return the strings grouped so each group is one set of anagrams.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [["eat", "tea", "tan", "ate", "nat", "bat"]],
+      "expect": [["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]
+    },
+    { "args": [[""]], "expect": [[""]] },
+    { "args": [["a"]], "expect": [["a"]] },
+    { "args": [["abc", "bca", "cab", "xyz"]], "expect": [["abc", "bca", "cab"], ["xyz"]] },
+    {
+      "args": [["ab", "ba", "abb", "bab", "aab"]],
+      "expect": [["ab", "ba"], ["abb", "bab"], ["aab"]]
+    },
+    { "args": [["a", "b", "c"]], "expect": [["a"], ["b"], ["c"]] }
+  ]
+}
+```
+
 ````reveal Hint 1 — key candidate #1
 Valid Anagram's sorting variant: anagrams share a sorted form.
 sorted("eat") = sorted("tea") = "aet". Sort each word, use the result as

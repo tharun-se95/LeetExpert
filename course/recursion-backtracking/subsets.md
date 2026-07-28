@@ -30,6 +30,53 @@ choice?** If you can name the choice, the tree — and the code — follows
 almost mechanically. Try to write it fully with the choose/explore/
 unchoose skeleton from the concept lesson.
 
+
+```sandbox
+{
+  "id": "subsets",
+  "fn": { "python": "subsets", "javascript": "subsets" },
+  "check": "return",
+  "compare": "set-of-sets",
+  "starter": {
+    "python": "def subsets(nums):\n    # Return every subset of nums, including the empty one.\n    pass\n",
+    "javascript": "function subsets(nums) {\n  // Return every subset of nums, including the empty one.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [[1, 2, 3]],
+      "expect": [[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]]
+    },
+    { "args": [[0]], "expect": [[], [0]] },
+    { "args": [[1, 2]], "expect": [[], [1], [1, 2], [2]] },
+    {
+      "args": [[1, 2, 3, 4]],
+      "expect": [
+        [],
+        [1],
+        [1, 2],
+        [1, 2, 3],
+        [1, 2, 3, 4],
+        [1, 2, 4],
+        [1, 3],
+        [1, 3, 4],
+        [1, 4],
+        [2],
+        [2, 3],
+        [2, 3, 4],
+        [2, 4],
+        [3],
+        [3, 4],
+        [4]
+      ]
+    },
+    {
+      "args": [[-1, 0, 1]],
+      "expect": [[], [-1], [-1, 0], [-1, 0, 1], [-1, 1], [0], [0, 1], [1]]
+    }
+  ]
+}
+```
+
 ````reveal Hint — the choice at each element
 For each element, there are exactly two options: **include it** in the
 current subset, or **exclude it**. That's a binary choice, made once per

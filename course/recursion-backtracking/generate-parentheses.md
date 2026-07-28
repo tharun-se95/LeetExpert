@@ -30,6 +30,91 @@ exact rule for when it's still legal to place a `(`, and when it's still
 legal to place a `)`? Get that rule right and the recursion is a direct
 translation of it.
 
+
+```sandbox
+{
+  "id": "generate-parentheses",
+  "fn": { "python": "generate_parenthesis", "javascript": "generateParenthesis" },
+  "check": "return",
+  "compare": "sorted",
+  "starter": {
+    "python": "def generate_parenthesis(n):\n    # Return every well-formed string of n pairs of parentheses.\n    pass\n",
+    "javascript": "function generateParenthesis(n) {\n  // Return every well-formed string of n pairs of parentheses.\n}\n"
+  },
+  "cases": [
+    { "args": [3], "expect": ["((()))", "(()())", "(())()", "()(())", "()()()"] },
+    { "args": [1], "expect": ["()"] },
+    { "args": [2], "expect": ["(())", "()()"] },
+    {
+      "args": [4],
+      "expect": [
+        "(((())))",
+        "((()()))",
+        "((())())",
+        "((()))()",
+        "(()(()))",
+        "(()()())",
+        "(()())()",
+        "(())(())",
+        "(())()()",
+        "()((()))",
+        "()(()())",
+        "()(())()",
+        "()()(())",
+        "()()()()"
+      ]
+    },
+    {
+      "args": [5],
+      "expect": [
+        "((((()))))",
+        "(((()())))",
+        "(((())()))",
+        "(((()))())",
+        "(((())))()",
+        "((()(())))",
+        "((()()()))",
+        "((()())())",
+        "((()()))()",
+        "((())(()))",
+        "((())()())",
+        "((())())()",
+        "((()))(())",
+        "((()))()()",
+        "(()((())))",
+        "(()(()()))",
+        "(()(())())",
+        "(()(()))()",
+        "(()()(()))",
+        "(()()()())",
+        "(()()())()",
+        "(()())(())",
+        "(()())()()",
+        "(())((()))",
+        "(())(()())",
+        "(())(())()",
+        "(())()(())",
+        "(())()()()",
+        "()(((())))",
+        "()((()()))",
+        "()((())())",
+        "()((()))()",
+        "()(()(()))",
+        "()(()()())",
+        "()(()())()",
+        "()(())(())",
+        "()(())()()",
+        "()()((()))",
+        "()()(()())",
+        "()()(())()",
+        "()()()(())",
+        "()()()()()"
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — track open-count and close-count, not raw characters
 Track two running counters as you build the path: how many `(` have been
 placed (`openCount`) and how many `)` have been placed (`closeCount`).

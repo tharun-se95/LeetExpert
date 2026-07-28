@@ -28,6 +28,28 @@ opening anything, work out: at a given start index, how many different
 "next cuts" are legal candidates to try, and what has to be true about
 each candidate substring before it's worth recursing past it?
 
+
+```sandbox
+{
+  "id": "palindrome-partitioning",
+  "fn": { "python": "partition", "javascript": "partition" },
+  "check": "return",
+  "compare": "sorted",
+  "starter": {
+    "python": "def partition(s):\n    # Return every partition of s whose every piece is a palindrome.\n    pass\n",
+    "javascript": "function partition(s) {\n  // Return every partition of s whose every piece is a palindrome.\n}\n"
+  },
+  "cases": [
+    { "args": ["aab"], "expect": [["a", "a", "b"], ["aa", "b"]] },
+    { "args": ["a"], "expect": [["a"]] },
+    { "args": ["ab"], "expect": [["a", "b"]] },
+    { "args": ["aaa"], "expect": [["a", "a", "a"], ["a", "aa"], ["aa", "a"], ["aaa"]] },
+    { "args": ["aba"], "expect": [["a", "b", "a"], ["aba"]] },
+    { "args": ["cdd"], "expect": [["c", "d", "d"], ["c", "dd"]] }
+  ]
+}
+```
+
 ````reveal Hint — try every end index, but only recurse past valid cuts
 From a start index, try every possible end index for the next piece:
 `s[start:end+1]` for `end` ranging from `start` to `len(s) - 1`. For each

@@ -30,6 +30,61 @@ that one question determines the entire structure of the solution. Try to
 write it, and if you find yourself reaching for a start index, stop and
 ask what that index was actually *for*.
 
+
+```sandbox
+{
+  "id": "permutations",
+  "fn": { "python": "permute", "javascript": "permute" },
+  "check": "return",
+  "compare": "sorted",
+  "starter": {
+    "python": "def permute(nums):\n    # Return every ordering of nums.\n    pass\n",
+    "javascript": "function permute(nums) {\n  // Return every ordering of nums.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [[1, 2, 3]],
+      "expect": [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+    },
+    { "args": [[0, 1]], "expect": [[0, 1], [1, 0]] },
+    { "args": [[1]], "expect": [[1]] },
+    {
+      "args": [[1, 2, 3, 4]],
+      "expect": [
+        [1, 2, 3, 4],
+        [1, 2, 4, 3],
+        [1, 3, 2, 4],
+        [1, 3, 4, 2],
+        [1, 4, 2, 3],
+        [1, 4, 3, 2],
+        [2, 1, 3, 4],
+        [2, 1, 4, 3],
+        [2, 3, 1, 4],
+        [2, 3, 4, 1],
+        [2, 4, 1, 3],
+        [2, 4, 3, 1],
+        [3, 1, 2, 4],
+        [3, 1, 4, 2],
+        [3, 2, 1, 4],
+        [3, 2, 4, 1],
+        [3, 4, 1, 2],
+        [3, 4, 2, 1],
+        [4, 1, 2, 3],
+        [4, 1, 3, 2],
+        [4, 2, 1, 3],
+        [4, 2, 3, 1],
+        [4, 3, 1, 2],
+        [4, 3, 2, 1]
+      ]
+    },
+    {
+      "args": [[-1, 0, 5]],
+      "expect": [[-1, 0, 5], [-1, 5, 0], [0, -1, 5], [0, 5, -1], [5, -1, 0], [5, 0, -1]]
+    }
+  ]
+}
+```
+
 ````reveal Hint — why the start index is wrong here, and what replaces it
 In Subsets, `[1,2]` and `[2,1]` are the *same* subset, so we used a start
 index to build subsets in one fixed order and never look back — that's how
