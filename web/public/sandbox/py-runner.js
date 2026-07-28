@@ -45,6 +45,51 @@ class TreeNode:
         self.left = left
         self.right = right
 
+class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+def __build_graph(adjacency):
+    # Conventional 1-indexed adjacency list: [[2,4],[1,3],...] is node 1
+    # joined to 2 and 4. Returns node 1, or None for an empty graph.
+    if not adjacency:
+        return None
+    nodes = [Node(i + 1) for i in range(len(adjacency))]
+    for i, neighbors in enumerate(adjacency):
+        nodes[i].neighbors = [nodes[label - 1] for label in (neighbors or [])]
+    return nodes[0]
+
+def __graph_nodes(node):
+    out, stack = {}, [node] if node is not None else []
+    while stack:
+        cur = stack.pop()
+        if id(cur) in out:
+            continue
+        out[id(cur)] = cur
+        for n in cur.neighbors or []:
+            stack.append(n)
+    return out
+
+def __ser_graph(node):
+    if node is None:
+        return []
+    by_label = {}
+    for cur in __graph_nodes(node).values():
+        by_label[cur.val] = cur
+    return [[n.val for n in (by_label[label].neighbors or [])]
+            for label in sorted(by_label)]
+
+def __shares_nodes(result, original):
+    # Clone Graph is only satisfied by NEW objects: a returned original
+    # serialises exactly like a correct clone, so equality cannot separate
+    # them. Raw observation only - the main thread decides.
+    originals = __graph_nodes(original)
+    for key in __graph_nodes(result):
+        if key in originals:
+            return True
+    return False
+
 def __build_list(values):
     # Cycle problems need a tail that points back into the list, which a plain
     # array of values cannot express. {values, pos} is the form learners
@@ -120,11 +165,13 @@ def __decode(value, shape):
     # Merge K Sorted Lists takes k of them; one array per list, built in place.
     if shape == "list[]": return [__build_list(v) for v in (value or [])]
     if shape == "tree": return __build_tree(value)
+    if shape == "graph": return __build_graph(value)
     return value
 
 def __encode(value, shape):
     if shape == "list": return __ser_list(value)
     if shape == "tree": return __ser_tree(value)
+    if shape == "graph": return __ser_graph(value)
     return value
 
 def __find_node(root, val):
@@ -165,7 +212,7 @@ def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_js
     is_seq = check == "sequence"
     round_pair = json.loads(roundtrip_json)
 
-    ns = {"ListNode": ListNode, "TreeNode": TreeNode}
+    ns = {"ListNode": ListNode, "TreeNode": TreeNode, "Node": Node}
     exec(user_source, ns)
     target = ns.get(export_name)
     if target is None or not callable(target):
@@ -179,6 +226,7 @@ def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_js
     for i, case in enumerate(cases):
         buf = io.StringIO()
         ret, arg_after, op_results, error = None, None, None, None
+        aliased = None
         try:
             with contextlib.redirect_stdout(buf):
                 if is_seq:
@@ -211,6 +259,8 @@ def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_js
                     __resolve_nodes(built, raw, shape)
                     result = target(*built)
                     ret = __safe(__encode(result, returns))
+                    if returns == "graph":
+                        aliased = __shares_nodes(result, built[0])
                     if arg_index < len(built):
                         arg_after = __safe(__encode(built[arg_index], shape.get(str(arg_index), "value")))
         except Exception as exc:
@@ -219,6 +269,7 @@ def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_js
         outcomes.append({
             "index": i, "ret": ret, "argAfter": arg_after,
             "logs": logs, "error": error, "opResults": op_results,
+            "aliased": aliased,
         })
     return json.dumps({"outcomes": outcomes})
 `;

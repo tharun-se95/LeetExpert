@@ -30,6 +30,75 @@ class TreeNode {
   }
 }
 
+class Node {
+  constructor(val, neighbors) {
+    this.val = val === undefined ? 0 : val;
+    this.neighbors = neighbors === undefined ? [] : neighbors;
+  }
+}
+
+/**
+ * Adjacency list to real `Node`s, in the conventional 1-indexed form:
+ * `[[2,4],[1,3],[2,4],[1,3]]` is node 1 joined to 2 and 4, and so on.
+ * Returns the node the learner is handed — node 1, or null for an empty
+ * graph.
+ */
+function buildGraph(adjacency) {
+  if (!Array.isArray(adjacency) || adjacency.length === 0) return null;
+  const nodes = adjacency.map((_, i) => new Node(i + 1));
+  adjacency.forEach((neighbors, i) => {
+    nodes[i].neighbors = (neighbors || []).map((label) => nodes[label - 1]);
+  });
+  return nodes[0];
+}
+
+/** Back to the adjacency list, walking from `node` in label order. */
+function serializeGraph(node) {
+  if (!node) return [];
+  const seen = new Map();
+  const stack = [node];
+  while (stack.length) {
+    const cur = stack.pop();
+    if (seen.has(cur.val)) continue;
+    seen.set(cur.val, cur);
+    for (const n of cur.neighbors || []) stack.push(n);
+  }
+  const labels = [...seen.keys()].sort((a, b) => a - b);
+  return labels.map((label) =>
+    (seen.get(label).neighbors || []).map((n) => n.val),
+  );
+}
+
+/** Every node reachable from `node`, as a Set of object identities. */
+function graphNodes(node) {
+  const out = new Set();
+  if (!node) return out;
+  const stack = [node];
+  while (stack.length) {
+    const cur = stack.pop();
+    if (out.has(cur)) continue;
+    out.add(cur);
+    for (const n of cur.neighbors || []) stack.push(n);
+  }
+  return out;
+}
+
+/**
+ * Does the returned graph reuse any node from the input?
+ *
+ * Clone Graph is only satisfied by NEW objects, and a returned original
+ * serialises identically to a correct clone — so equality alone cannot tell
+ * `return node` from a real deep copy. This is reported as a raw observation;
+ * the main thread decides what it means, like every other outcome field.
+ */
+function sharesNodes(result, input) {
+  const originals = graphNodes(input);
+  for (const n of graphNodes(result)) {
+    if (originals.has(n)) return true;
+  }
+  return false;
+}
+
 function buildList(values) {
   // Cycle problems need a tail that points back into the list, which a plain
   // array of values cannot express. `{ values, pos }` is the form learners
@@ -127,12 +196,14 @@ function decodeArg(value, shape) {
   // Merge K Sorted Lists takes k of them; one array per list, built in place.
   if (shape === "list[]") return (value || []).map(buildList);
   if (shape === "tree") return buildTree(value);
-  return value; // "graph" is already an adjacency list; "value" is plain JSON
+  if (shape === "graph") return buildGraph(value);
+  return value; // "value" is plain JSON
 }
 
 function encodeResult(value, shape) {
   if (shape === "list") return serializeList(value);
   if (shape === "tree") return serializeTree(value);
+  if (shape === "graph") return serializeGraph(value);
   return value;
 }
 
@@ -178,6 +249,10 @@ function resolveNodeArgs(built, raw, shape) {
 self.SANDBOX_STRUCTURES = {
   ListNode,
   TreeNode,
+  Node,
+  buildGraph,
+  serializeGraph,
+  sharesNodes,
   buildList,
   serializeList,
   buildTree,

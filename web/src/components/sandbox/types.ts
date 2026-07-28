@@ -121,6 +121,12 @@ export interface CaseOutcome {
    * name the operation index rather than just saying "wrong".
    */
   opResults?: unknown[];
+  /**
+   * `returns: "graph"` only — did the result reuse any node from the input?
+   * A returned original serialises identically to a real clone, so this is
+   * the only way to tell them apart. Raw observation; the main thread judges.
+   */
+  aliased?: boolean | null;
 }
 
 /** Derived on the main thread from a CaseOutcome. */

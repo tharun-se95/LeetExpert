@@ -121,6 +121,11 @@ export function useRunner(spec: SandboxSpec) {
           actual = outcome.ret;
         }
 
+        // A "deep copy" answer that reuses input nodes serialises exactly
+        // like a correct one, so structural equality is necessary but not
+        // sufficient — `aliased` is the worker's raw observation, judged here.
+        const reusedInput = spec.returns === "graph" && outcome.aliased === true;
+
         return {
           index: outcome.index,
           name:
@@ -128,10 +133,17 @@ export function useRunner(spec: SandboxSpec) {
             (spec.check === "sequence"
               ? sequenceLabel(spec.cls?.[lang] ?? "", testCase, outcome)
               : formatCall(spec.fn[lang], testCase.args)),
-          passed: outcome.error === null && matches(actual, want, spec.compare),
+          passed:
+            outcome.error === null &&
+            !reusedInput &&
+            matches(actual, want, spec.compare),
           got: outcome.error === null ? pretty(actual) : null,
           expected: pretty(want),
-          error: outcome.error,
+          error:
+            outcome.error ??
+            (reusedInput
+              ? "This returns the original graph, not a copy — the shape is right, but at least one node is the very same object."
+              : null),
           logs: outcome.logs,
         };
       }),

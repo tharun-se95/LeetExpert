@@ -41,6 +41,7 @@ export interface Outcome {
   logs: string[];
   error: string | null;
   opResults?: unknown[];
+  aliased?: boolean | null;
 }
 
 /* ------------------------------- JavaScript ------------------------------ */

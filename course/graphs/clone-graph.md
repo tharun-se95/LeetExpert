@@ -32,6 +32,171 @@ duplicate clones of the same original node. Before opening anything,
 think about what single piece of extra state, tracked during the
 traversal, prevents both problems at once.
 
+```sandbox
+{
+  "id": "clone-graph",
+  "fn": {
+    "python": "clone_graph",
+    "javascript": "cloneGraph"
+  },
+  "check": "return",
+  "shape": {
+    "0": "graph"
+  },
+  "returns": "graph",
+  "starter": {
+    "python": "def clone_graph(node):\n    # Return a deep copy of the graph: same connectivity, all new Nodes.\n    pass\n",
+    "javascript": "function cloneGraph(node) {\n  // Return a deep copy of the graph: same connectivity, all new Nodes.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            2,
+            4
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      ],
+      "expect": [
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          []
+        ]
+      ],
+      "expect": [
+        []
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": []
+    },
+    {
+      "args": [
+        [
+          [
+            2
+          ],
+          [
+            1
+          ]
+        ]
+      ],
+      "expect": [
+        [
+          2
+        ],
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      ],
+      "expect": [
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3
+          ]
+        ]
+      ],
+      "expect": [
+        [
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3
+        ]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — a map from original node to its clone, checked BEFORE recursing
 Maintain a hash map from `original node → its clone`. Before creating a
 new clone for a node, check whether it's already in the map — if so,

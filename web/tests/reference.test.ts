@@ -202,6 +202,11 @@ describe("reference solutions prove every expectation", () => {
       const bad: string[] = [];
       outcomes.forEach((o, i) => {
         if (o.error) return bad.push(`case ${i} threw: ${o.error}`);
+        // Same judgement useRunner makes: a clone that reuses input nodes
+        // serialises identically to a correct one.
+        if (f.spec.returns === "graph" && o.aliased === true) {
+          return bad.push(`case ${i}: returned the input's own nodes, not a copy`);
+        }
         if (!matches(actualFor(f, o, i), expectedFor(f, i), compare)) {
           bad.push(
             `case ${i}: expected ${JSON.stringify(expectedFor(f, i))}, reference produced ${JSON.stringify(actualFor(f, o, i))}`,
@@ -226,6 +231,11 @@ describe("reference solutions prove every expectation", () => {
       const bad: string[] = [];
       outcomes.forEach((o, i) => {
         if (o.error) return bad.push(`case ${i} threw: ${o.error}`);
+        // Same judgement useRunner makes: a clone that reuses input nodes
+        // serialises identically to a correct one.
+        if (f.spec.returns === "graph" && o.aliased === true) {
+          return bad.push(`case ${i}: returned the input's own nodes, not a copy`);
+        }
         if (!matches(actualFor(f, o, i), expectedFor(f, i), compare)) {
           bad.push(
             `case ${i}: expected ${JSON.stringify(expectedFor(f, i))}, reference produced ${JSON.stringify(actualFor(f, o, i))}`,

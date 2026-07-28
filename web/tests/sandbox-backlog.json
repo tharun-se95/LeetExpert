@@ -1,6 +1,5 @@
 [
   "bst/convert-sorted-array-to-bst",
   "bst/delete-node-in-a-bst",
-  "graphs/clone-graph",
   "graphs/course-schedule-ii"
 ]

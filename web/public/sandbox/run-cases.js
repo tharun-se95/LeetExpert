@@ -32,17 +32,18 @@
   }
 
   /**
-   * Builds the learner's export with ListNode/TreeNode already in scope, so a
-   * tree problem is solved the way it would be in an interview rather than by
-   * first re-declaring the node class.
+   * Builds the learner's export with ListNode/TreeNode/Node already in scope,
+   * so a tree or graph problem is solved the way it would be in an interview
+   * rather than by first re-declaring the node class.
    */
   function compile(source, exportName) {
     const factory = new Function(
       "ListNode",
       "TreeNode",
+      "Node",
       `${source}\n;return typeof ${exportName} !== "undefined" ? ${exportName} : null;`,
     );
-    return factory(S.ListNode, S.TreeNode);
+    return factory(S.ListNode, S.TreeNode, S.Node);
   }
 
   function captureLogs(logs, run) {
@@ -73,6 +74,7 @@
       let ret = null;
       let argAfter = null;
       let opResults;
+      let aliased = null;
       let error = null;
 
       try {
@@ -120,6 +122,10 @@
           S.resolveNodeArgs(built, raw, shape);
           const result = captureLogs(logs, () => target(...built));
           ret = jsonSafe(S.encodeResult(result, returns || "value"));
+          // "Return a deep copy" problems: a returned original serialises
+          // exactly like a correct clone, so equality alone cannot separate
+          // them. Report the raw observation and let the main thread judge.
+          if (returns === "graph") aliased = S.sharesNodes(result, built[0]);
           argAfter = jsonSafe(
             S.encodeResult(built[arg], (shape && shape[arg]) || "value"),
           );
@@ -128,7 +134,7 @@
         error = describe(err);
       }
 
-      outcomes.push({ index: i, ret, argAfter, logs, error, opResults });
+      outcomes.push({ index: i, ret, argAfter, logs, error, opResults, aliased });
     }
 
     return outcomes;
