@@ -34,6 +34,141 @@ endpoints already connected before this edge was added" — and why
 Union-Find's `find` operation answers exactly that question in near-O(1)
 per edge, without needing a separate detection pass.
 
+```sandbox
+{
+  "id": "redundant-connection",
+  "fn": {
+    "python": "find_redundant_connection",
+    "javascript": "findRedundantConnection"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def find_redundant_connection(edges):\n    # Return the edge to remove — the last one that closes a cycle.\n    pass\n",
+    "javascript": "function findRedundantConnection(edges) {\n  // Return the edge to remove — the last one that closes a cycle.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      ],
+      "expect": [
+        2,
+        3
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ]
+        ]
+      ],
+      "expect": [
+        1,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      ],
+      "expect": [
+        2,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            3,
+            4
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      ],
+      "expect": [
+        1,
+        3
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ]
+        ]
+      ],
+      "expect": [
+        3,
+        1
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — process edges in order; the first "already connected" edge is the answer
 Process edges one at a time, in the given order, using Union-Find. For
 each edge `(u, v)`: check `find(u) == find(v)` BEFORE unioning. If

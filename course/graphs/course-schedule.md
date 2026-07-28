@@ -32,6 +32,133 @@ question: does a valid ordering of this directed graph exist at all?
 Before opening anything, recall precisely what property of a directed
 graph determines whether it does.
 
+```sandbox
+{
+  "id": "course-schedule",
+  "fn": {
+    "python": "can_finish",
+    "javascript": "canFinish"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def can_finish(num_courses, prerequisites):\n    # Return True if every course can be taken.\n    pass\n",
+    "javascript": "function canFinish(numCourses, prerequisites) {\n  // Return true if every course can be taken.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        2,
+        [
+          [
+            1,
+            0
+          ]
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        1,
+        []
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        3,
+        []
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        4,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        5,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      ],
+      "expect": true
+    }
+  ]
+}
+```
+
 ````reveal Hint — this is exactly "does this directed graph have a cycle"
 A valid course order exists if and only if the prerequisite graph is a
 DAG (directed, acyclic) — the Topological Sort concept lesson proved

@@ -33,6 +33,136 @@ has been reached). Before opening anything, work out why taking the
 MAXIMUM (not the sum, not the minimum) of all the shortest distances is
 the right combination for this specific question.
 
+```sandbox
+{
+  "id": "network-delay-time",
+  "fn": {
+    "python": "network_delay_time",
+    "javascript": "networkDelayTime"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def network_delay_time(times, n, k):\n    # Return the time for a signal from k to reach all n nodes, or -1.\n    pass\n",
+    "javascript": "function networkDelayTime(times, n, k) {\n  // Return the time for a signal from k to reach all n nodes, or -1.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            2,
+            1,
+            1
+          ],
+          [
+            2,
+            3,
+            1
+          ],
+          [
+            3,
+            4,
+            1
+          ]
+        ],
+        4,
+        2
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            1
+          ]
+        ],
+        2,
+        2
+      ],
+      "expect": -1
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            1
+          ]
+        ],
+        2,
+        1
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [],
+        1,
+        1
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            1
+          ],
+          [
+            2,
+            3,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        3,
+        1
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            1
+          ],
+          [
+            2,
+            3,
+            7
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            2,
+            1,
+            2
+          ]
+        ],
+        3,
+        1
+      ],
+      "expect": 4
+    }
+  ]
+}
+```
+
 ````reveal Hint — run Dijkstra from k, then take the max finite distance
 Run Dijkstra's algorithm (exactly as derived in the concept lesson,
 edge weights here are all positive, satisfying its non-negative

@@ -6,10 +6,5 @@
   "bst/lowest-common-ancestor-of-a-bst",
   "graphs/clone-graph",
   "graphs/course-schedule-ii",
-  "graphs/course-schedule",
-  "graphs/min-cost-to-connect-all-points",
-  "graphs/network-delay-time",
-  "graphs/number-of-provinces",
-  "graphs/redundant-connection",
   "heaps/merge-k-sorted-lists"
 ]

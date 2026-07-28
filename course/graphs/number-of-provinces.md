@@ -33,6 +33,145 @@ component, increment a counter, repeat). Then, separately, work out how
 Union-Find would answer the exact same question, so you can compare both
 approaches on the same problem below.
 
+```sandbox
+{
+  "id": "number-of-provinces",
+  "fn": {
+    "python": "find_circle_num",
+    "javascript": "findCircleNum"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def find_circle_num(is_connected):\n    # Return how many provinces the adjacency matrix describes.\n    pass\n",
+    "javascript": "function findCircleNum(isConnected) {\n  // Return how many provinces the adjacency matrix describes.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ]
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ]
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        [
+          [
+            1
+          ]
+        ]
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            1
+          ]
+        ]
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            1
+          ]
+        ]
+      ],
+      "expect": 1
+    }
+  ]
+}
+```
+
 ````reveal Hint — two entirely different, both-correct tools
 **DFS/BFS approach:** scan every city; whenever an unvisited city is
 found, that's a new province — flood-fill (DFS or BFS) from it, marking

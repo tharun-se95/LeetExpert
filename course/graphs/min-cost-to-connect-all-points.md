@@ -32,6 +32,133 @@ happens to Kruskal's edge list, and to the cost of even constructing it,
 when `E` is `O(n²)` instead of some smaller number tied to a sparser
 structure?
 
+```sandbox
+{
+  "id": "min-cost-to-connect-all-points",
+  "fn": {
+    "python": "min_cost_connect_points",
+    "javascript": "minCostConnectPoints"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def min_cost_connect_points(points):\n    # Return the least total Manhattan cost connecting every point.\n    pass\n",
+    "javascript": "function minCostConnectPoints(points) {\n  // Return the least total Manhattan cost connecting every point.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            7,
+            0
+          ]
+        ]
+      ],
+      "expect": 20
+    },
+    {
+      "args": [
+        [
+          [
+            3,
+            12
+          ],
+          [
+            -2,
+            5
+          ],
+          [
+            -4,
+            1
+          ]
+        ]
+      ],
+      "expect": 18
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            0
+          ]
+        ]
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        [
+          [
+            -1000,
+            -1000
+          ],
+          [
+            1000,
+            1000
+          ]
+        ]
+      ],
+      "expect": 4000
+    }
+  ]
+}
+```
+
 ````reveal Hint — a complete graph favors Prim's over Kruskal's
 Kruskal's algorithm needs to sort ALL edges upfront. With `n` up to
 1000, a complete graph has up to `1000 · 999 / 2 ≈ 500,000` edges —
