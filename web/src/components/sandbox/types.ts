@@ -101,6 +101,12 @@ export interface SandboxSpec {
    * Ordered [encode, decode]; the runner calls decode(encode(input)).
    */
   roundtrip: Record<SandboxLang, string[]> | null;
+  /**
+   * Names a check in lib/sandbox/properties.ts instead of comparing to
+   * `expect`. For problems whose own statement says several answers are
+   * correct — pinning one would fail a correct learner.
+   */
+  property: string | null;
 }
 
 /**

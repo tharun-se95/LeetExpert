@@ -31,6 +31,127 @@ exactly which variable in Kahn's algorithm already contains — as a side
 effect of its normal operation — precisely the sequence this problem
 asks for.
 
+```sandbox
+{
+  "id": "course-schedule-ii",
+  "fn": {
+    "python": "find_order",
+    "javascript": "findOrder"
+  },
+  "check": "return",
+  "property": "topological-order",
+  "starter": {
+    "python": "def find_order(num_courses, prerequisites):\n    # Return any order that satisfies every prerequisite, or [] if none does.\n    pass\n",
+    "javascript": "function findOrder(numCourses, prerequisites) {\n  // Return any order that satisfies every prerequisite, or [] if none does.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        4,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      ]
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ]
+    },
+    {
+      "args": [
+        1,
+        []
+      ]
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            1,
+            0
+          ]
+        ]
+      ]
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      ]
+    },
+    {
+      "args": [
+        5,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      ]
+    },
+    {
+      "args": [
+        3,
+        []
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — the queue's dequeue order already IS the topological order
 Kahn's algorithm, run for Course Schedule, dequeues each course only
 after all its prerequisites have already been dequeued — which means

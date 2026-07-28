@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { propertyNames } from "../src/lib/sandbox/properties";
+import { parseSandboxSpec } from "@/components/sandbox/parseSpec";
 
 /**
  * Content validation across every lesson.
@@ -18,6 +20,7 @@ import { join, relative } from "node:path";
  */
 
 const COURSE_DIR = join(__dirname, "..", "..", "course");
+const PROPERTY_NAMES = propertyNames();
 const WEB_SRC = join(__dirname, "..", "src");
 
 function walk(dir: string): string[] {
@@ -261,10 +264,18 @@ describe("hand-authored JSON fences", () => {
             });
           });
         } else {
+          // A `property` grades the answer's shape, not its equality to one
+          // value, so those cases carry no `expect` — see lib/sandbox/properties.
+          const graded = typeof spec.property === "string";
+          if (graded && !PROPERTY_NAMES.includes(spec.property as string)) {
+            broken.push(`${at} — unknown property "${String(spec.property)}"`);
+          }
           cases.forEach((raw, ci) => {
             const c = raw as Record<string, unknown>;
             if (!Array.isArray(c.args)) broken.push(`${at} case ${ci} — "args" must be an array`);
-            if (!("expect" in c)) broken.push(`${at} case ${ci} — missing "expect"`);
+            if (!graded && !("expect" in c)) {
+              broken.push(`${at} case ${ci} — missing "expect"`);
+            }
           });
         }
 
@@ -286,37 +297,54 @@ describe("hand-authored JSON fences", () => {
 });
 
 /**
- * Sandbox coverage, as a ratchet.
+ * The parser the browser actually uses, run over every authored fence.
  *
- * 90 problem lessons still have no sandbox. Asserting "every problem has
- * one" would just fail CI forever and get skipped, so instead the backlog is
- * checked in and pinned: the set may only shrink. Add a sandbox and this
- * fails until you delete the entry; add a new problem lesson without one and
- * it fails until you make a deliberate choice.
+ * The checks above describe the contract; `parseSpec` enforces it at runtime
+ * and returns null for anything it dislikes, which renders as "Invalid
+ * sandbox block" on the page. Two validators will drift — this has already
+ * happened once, when property-graded cases (no `expect`) passed every check
+ * above and were rejected by the parser. Running the real thing closes it.
+ */
+describe("every sandbox fence survives the real parser", () => {
+  it("parseSpec accepts all of them", () => {
+    const rejected: string[] = [];
+    for (const lesson of LESSONS) {
+      for (const f of fences(lesson.body, "sandbox")) {
+        // Fed the fence body verbatim, exactly as the page does.
+        if (parseSandboxSpec(f.json) === null) {
+          rejected.push(`${lesson.rel}:${f.line}`);
+        }
+      }
+    }
+    expect(rejected).toEqual([]);
+  });
+});
+
+/**
+ * Sandbox coverage, as a hard gate.
  *
- * Some problems will stay on the list permanently and that is correct — the
- * runner calls a single function, so class-design problems (Min Stack, Range
- * Sum Query) do not fit it, and problems with order-independent answers
- * (3Sum, Group Anagrams) cannot be graded by equality without failing
- * correct solutions.
+ * This was a ratchet against a checked-in backlog while 85 problem lessons
+ * were still missing a sandbox. That migration is finished — every problem
+ * lesson has one — so the scaffolding is gone and the rule is now absolute
+ * (Rule 1: scaffolding that outlives its migration is debt pretending to be
+ * process).
+ *
+ * There are no permitted exclusions. Every problem shape in the course is
+ * expressible: structural inputs via `shape`, operation sequences via
+ * `sequence`, encode/decode pairs via `roundtrip`, order-independent answers
+ * via `compare`, and answers that are correct in more than one form via
+ * `property`. A new problem lesson that does not fit means the runner needs
+ * extending, not that the lesson is exempt.
  */
 describe("sandbox coverage", () => {
-  it("matches the checked-in backlog exactly", () => {
-    const backlog: string[] = JSON.parse(
-      readFileSync(join(__dirname, "sandbox-backlog.json"), "utf8"),
-    );
-    const actual = LESSONS.filter((l) => {
+  it("every problem lesson has a sandbox", () => {
+    const missing = LESSONS.filter((l) => {
       const fm = /^---\n([\s\S]*?)\n---/.exec(l.body);
       return fm?.[1].includes("type: problem") && !l.body.includes("```sandbox");
     })
       .map((l) => l.rel.replace(/\.md$/, ""))
       .sort();
 
-    const added = actual.filter((x) => !backlog.includes(x));
-    const done = backlog.filter((x) => !actual.includes(x));
-    expect({ newlyMissing: added, nowCoveredRemoveFromBacklog: done }).toEqual({
-      newlyMissing: [],
-      nowCoveredRemoveFromBacklog: [],
-    });
+    expect(missing).toEqual([]);
   });
 });

@@ -2,6 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { matches, pretty, formatCall, canonical } from "@/lib/sandbox/compare";
+import { checkProperty } from "@/lib/sandbox/properties";
+
+/** What the "expected" column says when a property, not a value, is the bar. */
+const PROPERTY_LABEL: Record<string, string> = {
+  "bst-minus-key": "a valid BST without the key",
+  "balanced-bst-of-nums": "a height-balanced BST with that inorder",
+  "topological-order": "any order satisfying every prerequisite",
+};
 import type {
   CaseOutcome,
   CaseResult,
@@ -126,6 +134,13 @@ export function useRunner(spec: SandboxSpec) {
         // sufficient — `aliased` is the worker's raw observation, judged here.
         const reusedInput = spec.returns === "graph" && outcome.aliased === true;
 
+        // Problems with several correct answers are graded by a property of
+        // the answer rather than by equality to one of them.
+        const propertyFailure =
+          spec.property && outcome.error === null
+            ? checkProperty(spec.property, actual, testCase.args)
+            : null;
+
         return {
           index: outcome.index,
           name:
@@ -136,11 +151,14 @@ export function useRunner(spec: SandboxSpec) {
           passed:
             outcome.error === null &&
             !reusedInput &&
-            matches(actual, want, spec.compare),
+            (spec.property
+              ? propertyFailure === null
+              : matches(actual, want, spec.compare)),
           got: outcome.error === null ? pretty(actual) : null,
-          expected: pretty(want),
+          expected: spec.property ? PROPERTY_LABEL[spec.property] ?? spec.property : pretty(want),
           error:
             outcome.error ??
+            propertyFailure ??
             (reusedInput
               ? "This returns the original graph, not a copy — the shape is right, but at least one node is the very same object."
               : null),

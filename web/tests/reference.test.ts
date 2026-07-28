@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { matches, type CompareMode } from "../src/lib/sandbox/compare";
+import { checkProperty } from "../src/lib/sandbox/properties";
 import {
   runJavaScript,
   runPython,
@@ -157,9 +158,18 @@ describe("case sets are load-bearing", () => {
       } catch {
         return; // a starter that will not even compile plainly fails
       }
-      const passed = outcomes.filter(
-        (o, i) => !o.error && matches(actualFor(f, o, i), expectedFor(f, i), compare),
-      );
+      // Judge the starter by the same rule the learner will be judged by,
+      // or a property-graded lesson would be checked against equality here.
+      const passes = (o: Outcome, i: number) => {
+        if (o.error) return false;
+        if (f.spec.returns === "graph" && o.aliased === true) return false;
+        if (typeof f.spec.property === "string") {
+          const args = (f.spec.cases as { args: unknown[] }[])[i].args;
+          return checkProperty(f.spec.property, actualFor(f, o, i), args) === null;
+        }
+        return matches(actualFor(f, o, i), expectedFor(f, i), compare);
+      };
+      const passed = outcomes.filter(passes);
       expect(
         passed.length,
         `${passed.length} of ${outcomes.length} cases pass with the untouched starter — those cases cannot detect a wrong answer`,
@@ -207,6 +217,13 @@ describe("reference solutions prove every expectation", () => {
         if (f.spec.returns === "graph" && o.aliased === true) {
           return bad.push(`case ${i}: returned the input's own nodes, not a copy`);
         }
+        // Several-correct-answers problems are graded by a property.
+        if (typeof f.spec.property === "string") {
+          const args = (f.spec.cases as { args: unknown[] }[])[i].args;
+          const why = checkProperty(f.spec.property, actualFor(f, o, i), args);
+          if (why) bad.push(`case ${i}: ${why}`);
+          return;
+        }
         if (!matches(actualFor(f, o, i), expectedFor(f, i), compare)) {
           bad.push(
             `case ${i}: expected ${JSON.stringify(expectedFor(f, i))}, reference produced ${JSON.stringify(actualFor(f, o, i))}`,
@@ -235,6 +252,13 @@ describe("reference solutions prove every expectation", () => {
         // serialises identically to a correct one.
         if (f.spec.returns === "graph" && o.aliased === true) {
           return bad.push(`case ${i}: returned the input's own nodes, not a copy`);
+        }
+        // Several-correct-answers problems are graded by a property.
+        if (typeof f.spec.property === "string") {
+          const args = (f.spec.cases as { args: unknown[] }[])[i].args;
+          const why = checkProperty(f.spec.property, actualFor(f, o, i), args);
+          if (why) bad.push(`case ${i}: ${why}`);
+          return;
         }
         if (!matches(actualFor(f, o, i), expectedFor(f, i), compare)) {
           bad.push(

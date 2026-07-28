@@ -1,3 +1,4 @@
+import { propertyNames } from "@/lib/sandbox/properties";
 import type {
   CheckMode,
   CompareMode,
@@ -39,7 +40,14 @@ export function parseSandboxSpec(source: string): SandboxSpec | null {
   const starter = langRecord(spec.starter);
   if (!fn || !starter) return null;
 
-  const cases = parseCases(spec.cases);
+  // Resolved before the cases, because a property-graded spec's cases carry
+  // no `expect` — the property is the bar.
+  const property =
+    typeof spec.property === "string" && propertyNames().includes(spec.property)
+      ? spec.property
+      : null;
+
+  const cases = parseCases(spec.cases, property !== null);
   if (!cases) return null;
 
   const check: CheckMode =
@@ -115,7 +123,7 @@ export function parseSandboxSpec(source: string): SandboxSpec | null {
 
   return {
     id, fn, starter, cases, check, arg, timeoutMs,
-    compare, shape, returns, cls, methods, roundtrip,
+    compare, shape, returns, cls, methods, roundtrip, property,
   };
 }
 
@@ -128,7 +136,7 @@ function langRecord(value: unknown): Record<SandboxLang, string> | null {
   return { python: rec.python, javascript: rec.javascript };
 }
 
-function parseCases(value: unknown): SandboxCase[] | null {
+function parseCases(value: unknown, graded: boolean): SandboxCase[] | null {
   if (!Array.isArray(value) || value.length === 0) return null;
   const out: SandboxCase[] = [];
   for (const entry of value) {
@@ -153,7 +161,7 @@ function parseCases(value: unknown): SandboxCase[] | null {
     }
 
     if (!Array.isArray(c.args)) return null;
-    if (!("expect" in c)) return null;
+    if (!graded && !("expect" in c)) return null;
     out.push({
       args: c.args,
       expect: c.expect,

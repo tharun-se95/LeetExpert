@@ -12,18 +12,18 @@
 | | Now | Target |
 | --- | --- | --- |
 | Lessons | 191 (75 concept, 116 problem) | — |
-| Problem lessons with a sandbox | **110** | 116 |
-| Backlog (`web/tests/sandbox-backlog.json`) | **6** | 0, then delete the file |
+| Problem lessons with a sandbox | **116** | 116 ✅ |
+| Backlog | **0** — file deleted, coverage is a hard gate ✅ | — |
 | Lessons with a visual | **25** | triaged set (est. 100–120) |
-| Tests | 347, all green | grows with each batch |
+| Tests | 371, all green | grows with each batch |
 
-**Done:** the Riso design system; the sandbox runner for every problem shape
-the authored lessons need, including cyclic lists; the reference-solution
-pipeline with CI gate; search; content tests; icons.
+**Done:** the Riso design system; **the sandbox programme, complete** — every
+one of the 116 problem lessons has a working sandbox, validated against both
+runtimes, and the runner expresses every problem shape in the course; the
+reference-solution pipeline with CI gate; search; content tests; icons.
 
-**Not done:** the last 6 sandboxes, every one of them blocked on a runner
-capability (below) — there is no mechanical authoring left — and the entire
-visualisation programme (needs a decision from the owner — see below).
+**Not done:** the entire visualisation programme (needs a decision from the
+owner — see below).
 
 ---
 
@@ -57,10 +57,11 @@ reason. If you move this logic into TypeScript, that guarantee dies.
   "id": "...",                      // stable; also the localStorage draft key
   "fn":     { "python": "...", "javascript": "..." },
   "starter":{ "python": "...", "javascript": "..." },
-  "check":  "return|mutate|prefix|sequence",
+  "check":  "return|mutate|prefix|sequence|roundtrip",
   "compare":"exact|sorted|set-of-sets",   // order-independent answers
-  "shape":  { "0": "list|tree|graph|node" }, // arg index -> what to build
-  "returns":"value|list|tree|graph",      // `node` is argument-only
+  "shape":  { "0": "list|list[]|tree|graph|node" }, // arg -> what to build
+  "returns":"value|list|tree|graph",      // `node`/`list[]` are argument-only
+  "property":"<name from lib/sandbox/properties.ts>",
   "arg":    0,                            // which arg mutate/prefix inspects
   "class":  { ... },                      // sequence mode only
   "methods":{ "getMin": { "python": "get_min", "javascript": "getMin" } },
@@ -69,7 +70,8 @@ reason. If you move this logic into TypeScript, that guarantee dies.
 ```
 
 `sequence` cases use `construct` + `ops: [[method, args, expected]]` instead
-of `args`/`expect`.
+of `args`/`expect`. `property` cases carry `args` and no `expect` at all —
+the property is the bar.
 
 ### Design tokens
 
@@ -112,17 +114,52 @@ consume the semantic names, so a palette change is one edit.
     Binary Tree LCA compares by identity (`root is p`); resolving against a
     fresh node with the same value passes the BST version and fails only the
     general one, which is a nasty way to find out.
+13. **Clone Graph cannot be graded by equality** — a returned original
+    serialises exactly like a correct copy. The runners report `aliased`;
+    the main thread turns it into a failure.
+14. **The content test and `parseSpec` are two validators and WILL drift.**
+    Property cases carry no `expect`; they passed every content check and
+    were rejected by the parser, rendering "Invalid sandbox block" on a page
+    CI called green. A test now runs the real `parseSpec` over every fence.
 
 ---
 
-## Next task: the last 6 sandboxes, each blocked on runner work
+## The sandbox programme is finished
 
-**There is no mechanical authoring left.** 110 of 116 problem lessons carry a
-sandbox; the six below each need a runner capability that does not exist yet.
-Build one capability at a time, all the way (both runtimes, content test,
-browser), and author its lessons in the same batch.
+All 116 problem lessons have a sandbox. `sandbox-backlog.json` is deleted and
+the coverage test is a hard gate: a new problem lesson without a sandbox
+fails CI. **There are no permitted exclusions** — if a new problem does not
+fit, extend the runner.
 
-The authoring recipe, once a capability exists:
+### What the runner can express
+
+| Need | Mechanism |
+| --- | --- |
+| Linked list / tree argument or result | `shape` / `returns`: `list`, `tree` |
+| A list whose tail points back | `{ values, pos }` as a `list` argument |
+| k linked lists | `shape: "list[]"` (argument only) |
+| A specific node of a tree | `shape: "node"` (argument only) |
+| Graph of real `Node`s | `shape`/`returns`: `graph`, 1-indexed adjacency list |
+| Class with a script of calls | `check: "sequence"` + `class` + `methods` |
+| encode/decode pair | `check: "roundtrip"` + `roundtrip: [enc, dec]` |
+| Order-independent answers | `compare: "sorted"` / `"set-of-sets"` |
+| Several answers all correct | `property: "<name>"` |
+
+**Two rules govern where logic lives.** Workers report raw outcomes and never
+decide pass/fail, so `compare` and `property` run once on the main thread
+rather than twice per runtime. Anything that must *observe* the objects —
+whether a returned graph reuses input nodes — is reported by the worker as a
+raw fact (`aliased`) and judged on the main thread.
+
+### Adding a property
+
+`web/src/lib/sandbox/properties.ts` holds them, one function of
+`(result, args) => string | null`, returning the learner-facing reason it
+failed. Register the name and both the content test and `parseSpec` accept
+it. Use one only when the problem statement itself says several answers are
+correct — otherwise pin the value.
+
+### The authoring recipe
 
 1. Read the lesson. Cases must cover the constraints it states — the worked
    examples, stated boundaries (empty, single, "k can exceed n"), the
@@ -131,58 +168,14 @@ The authoring recipe, once a capability exists:
 3. Add the ` ```sandbox ` fence to "Attempt it first".
    **Never hand-write an expected value** — derive it by running the
    reference, then let the test prove it.
-4. Remove the entry from `web/tests/sandbox-backlog.json`.
-5. `npm test` — the suite proves both runtimes agree, and that the starter
+4. `npm test` — the suite proves both runtimes agree, and that the starter
    still fails. Then sabotage a reference and watch it go red.
-6. Commit.
-
-**When the backlog hits zero: delete the file and convert the coverage test
-into a hard gate.** It is migration scaffolding with a stated end (Rule 1).
+5. Commit.
 
 A derivation helper is worth rebuilding in a scratchpad each session: load
 `public/sandbox/structures.js` + `run-cases.js` behind a `self` shim, compile
 the checked-in `.js` reference, and print `runCases` outcomes. That is how
 expectations get derived without hand-writing one.
-
-### The runner does not yet express these four things
-
-The `node` shape (below, item 0) has since been built and both LCA lessons
-are authored — it is the worked example of what "build the capability" looks
-like: decode in `structures.js` AND the Python DRIVER, widen `ArgShape`,
-widen the content test, prove it with a sabotage, verify in the browser.
-
-0. ~~**Arguments that are node references.**~~ **Done.** `shape: "node"` takes
-   a plain value and hands the learner the node carrying it, resolved out of
-   the tree built for the `tree` argument. It must be the same tree object:
-   Binary Tree LCA compares `root is p` by identity, so resolving against a
-   copy passes the BST version and silently fails the general one. There is a
-   sabotage for exactly this.
-1. **Answers that are correct in more than one form** — 3 lessons.
-   `bst/delete-node-in-a-bst` (promote the inorder successor *or*
-   predecessor), `bst/convert-sorted-array-to-bst` (any height-balanced BST
-   whose inorder is `nums`), and `graphs/course-schedule-ii` (any valid
-   topological order) all say so in their own problem statements. Pinning one
-   answer fails a correct learner, which is worse than no test. Needs a check
-   mode where the expectation is a **property** — "is a BST, inorder ==
-   nums, heights differ by ≤ 1"; "every prerequisite precedes its course" —
-   not a value. `compare` cannot express this: it is a new `check`, and the
-   property has to run in both runtimes.
-2. **A list of linked lists** — 1 lesson. `heaps/merge-k-sorted-lists` takes
-   `list[ListNode]`. `shape` maps one argument to one structure; this needs
-   an element-wise form (`"list[]"`).
-3. **Graphs are a pass-through, not a structure** — 1 lesson. `decodeArg`
-   returns the adjacency list unchanged, so a learner would receive a raw
-   array where `graphs/clone-graph` hands them a `Node`. The shape is
-   accepted by the content test and implemented by nobody; no authored lesson
-   uses it, which is why this was never caught — the five graph problems that
-   ARE authored take plain edge lists. Clone Graph additionally has to prove
-   the result is a *copy*: serialising equal is not enough, since
-   `return node` would pass. Compare node identity against the input.
-4. **A round trip, not a call** — 1 lesson.
-   `binary-trees/serialize-and-deserialize-binary-tree` is a `Codec` whose
-   `serialize` output is implementation-defined; the only honest assertion is
-   that `deserialize(serialize(root))` equals `root`. `sequence` mode cannot
-   feed one op's result into the next.
 
 ---
 
@@ -213,7 +206,7 @@ never tested against a real touch keyboard.
 cd web
 npx tsc --noEmit      # 0
 npx eslint src tests  # 0
-npm test              # 347 passing
+npm test              # 371 passing
 npm run build         # 0, 220 static pages
 ```
 

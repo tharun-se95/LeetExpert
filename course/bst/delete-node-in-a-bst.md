@@ -38,6 +38,121 @@ invariant. Before revealing anything, enumerate the cases by *how many
 children* the target node has — there are three — and work out which
 one is genuinely tricky and why.
 
+```sandbox
+{
+  "id": "delete-node-in-a-bst",
+  "fn": {
+    "python": "delete_node",
+    "javascript": "deleteNode"
+  },
+  "check": "return",
+  "shape": {
+    "0": "tree"
+  },
+  "returns": "tree",
+  "property": "bst-minus-key",
+  "starter": {
+    "python": "def delete_node(root, key):\n    # Remove the node holding key and return the root of a valid BST.\n    pass\n",
+    "javascript": "function deleteNode(root, key) {\n  // Remove the node holding key and return the root of a valid BST.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          5,
+          3,
+          6,
+          2,
+          4,
+          null,
+          7
+        ],
+        3
+      ]
+    },
+    {
+      "args": [
+        [
+          5,
+          3,
+          6,
+          2,
+          4,
+          null,
+          7
+        ],
+        0
+      ]
+    },
+    {
+      "args": [
+        [],
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          5,
+          3,
+          6,
+          2,
+          4,
+          null,
+          7
+        ],
+        5
+      ]
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          5,
+          3,
+          6,
+          2,
+          4,
+          null,
+          7
+        ],
+        7
+      ]
+    },
+    {
+      "args": [
+        [
+          2,
+          1
+        ],
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          5,
+          3,
+          6,
+          2,
+          4,
+          null,
+          7
+        ],
+        4
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — the three cases
 Split on the number of children of the node to delete:
 

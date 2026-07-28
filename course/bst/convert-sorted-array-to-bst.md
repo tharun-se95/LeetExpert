@@ -35,6 +35,87 @@ element as the root, recursively, sidesteps the degenerate-insertion
 problem entirely, rather than being a clever trick layered on top of
 insertion.
 
+```sandbox
+{
+  "id": "convert-sorted-array-to-bst",
+  "fn": {
+    "python": "sorted_array_to_bst",
+    "javascript": "sortedArrayToBst"
+  },
+  "check": "return",
+  "returns": "tree",
+  "property": "balanced-bst-of-nums",
+  "starter": {
+    "python": "def sorted_array_to_bst(nums):\n    # Build a height-balanced BST from the sorted values, return the root.\n    pass\n",
+    "javascript": "function sortedArrayToBst(nums) {\n  // Build a height-balanced BST from the sorted values, return the root.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          -10,
+          -3,
+          0,
+          5,
+          9
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          3
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          -5,
+          -4,
+          -3,
+          -2,
+          -1
+        ]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — always root at the middle; recurse on both halves
 Don't insert elements one at a time at all. Instead, build the tree
 directly from array structure: the middle element of `nums` becomes the
