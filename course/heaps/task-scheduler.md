@@ -34,6 +34,120 @@ possible for the future? And separately: why might a most-frequent-task
 strategy sometimes force idle slots that a less greedy strategy
 wouldn't?
 
+```sandbox
+{
+  "id": "task-scheduler",
+  "fn": {
+    "python": "least_interval",
+    "javascript": "leastInterval"
+  },
+  "check": "return",
+  "starter": {
+    "python": "def least_interval(tasks, n):\n    # Return the fewest time units needed, cooldown included.\n    pass\n",
+    "javascript": "function leastInterval(tasks, n) {\n  // Return the fewest time units needed, cooldown included.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          "A",
+          "A",
+          "A",
+          "B",
+          "B",
+          "B"
+        ],
+        2
+      ],
+      "expect": 8
+    },
+    {
+      "args": [
+        [
+          "A",
+          "A",
+          "A",
+          "B",
+          "B",
+          "B"
+        ],
+        0
+      ],
+      "expect": 6
+    },
+    {
+      "args": [
+        [
+          "A"
+        ],
+        5
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        4
+      ],
+      "expect": 10
+    },
+    {
+      "args": [
+        [
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G"
+        ],
+        2
+      ],
+      "expect": 16
+    },
+    {
+      "args": [
+        [
+          "A",
+          "B"
+        ],
+        2
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        [
+          "A",
+          "A",
+          "B",
+          "B"
+        ],
+        1
+      ],
+      "expect": 4
+    }
+  ]
+}
+```
+
 ````reveal Hint — always run the most frequent remaining task that's off cooldown
 Greedy idea: at each time step, among tasks that are currently allowed
 to run (not on cooldown), run whichever one has the MOST remaining

@@ -29,6 +29,174 @@ your current top-k sat at the root, ready to be evicted the instant
 something larger arrived. Here, what quantity do you want sitting at
 the root, ready for eviction, as you scan through candidate points?
 
+```sandbox
+{
+  "id": "k-closest-points-to-origin",
+  "fn": {
+    "python": "k_closest",
+    "javascript": "kClosest"
+  },
+  "check": "return",
+  "compare": "sorted",
+  "starter": {
+    "python": "def k_closest(points, k):\n    # Return the k points nearest the origin, in any order.\n    pass\n",
+    "javascript": "function kClosest(points, k) {\n  // Return the k points nearest the origin, in any order.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            1,
+            3
+          ],
+          [
+            -2,
+            2
+          ]
+        ],
+        1
+      ],
+      "expect": [
+        [
+          -2,
+          2
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            3,
+            3
+          ],
+          [
+            5,
+            -1
+          ],
+          [
+            -2,
+            4
+          ]
+        ],
+        2
+      ],
+      "expect": [
+        [
+          3,
+          3
+        ],
+        [
+          -2,
+          4
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            0
+          ]
+        ],
+        1
+      ],
+      "expect": [
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        2
+      ],
+      "expect": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        2
+      ],
+      "expect": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            -5,
+            4
+          ],
+          [
+            -6,
+            -5
+          ],
+          [
+            4,
+            6
+          ]
+        ],
+        2
+      ],
+      "expect": [
+        [
+          -5,
+          4
+        ],
+        [
+          4,
+          6
+        ]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — max-heap by distance, evict the farthest
 You want the k points with the SMALLEST distances — the opposite
 direction from Kth Largest's "keep the k biggest." So maintain a

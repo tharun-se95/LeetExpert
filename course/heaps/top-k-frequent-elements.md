@@ -31,6 +31,119 @@ order* all `m` values by frequency to name the top k? Sorting them is one
 option — what does it cost, and can you do better when `k` is much smaller
 than `m`?
 
+```sandbox
+{
+  "id": "top-k-frequent-elements",
+  "fn": {
+    "python": "top_k_frequent",
+    "javascript": "topKFrequent"
+  },
+  "check": "return",
+  "compare": "sorted",
+  "starter": {
+    "python": "def top_k_frequent(nums, k):\n    # Return the k most frequent values, in any order.\n    pass\n",
+    "javascript": "function topKFrequent(nums, k) {\n  // Return the k most frequent values, in any order.\n}\n"
+  },
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          1,
+          1,
+          2,
+          2,
+          3
+        ],
+        2
+      ],
+      "expect": [
+        1,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        1
+      ],
+      "expect": [
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4
+        ],
+        4
+      ],
+      "expect": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          4,
+          4,
+          4,
+          5,
+          5,
+          6
+        ],
+        1
+      ],
+      "expect": [
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          -1,
+          -1,
+          2,
+          2,
+          2,
+          3
+        ],
+        2
+      ],
+      "expect": [
+        2,
+        -1
+      ]
+    },
+    {
+      "args": [
+        [
+          5,
+          5,
+          4,
+          4,
+          3
+        ],
+        3
+      ],
+      "expect": [
+        5,
+        4,
+        3
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — you don't need a total order
 Sorting all m distinct values by frequency is O(m log m) and gives you far
 more than asked — a full ranking when you only need the top k. As in the

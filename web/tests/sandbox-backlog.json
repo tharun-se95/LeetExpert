@@ -16,10 +16,5 @@
   "graphs/network-delay-time",
   "graphs/number-of-provinces",
   "graphs/redundant-connection",
-  "heaps/find-median-from-data-stream",
-  "heaps/k-closest-points-to-origin",
-  "heaps/kth-largest-element-in-a-stream",
-  "heaps/merge-k-sorted-lists",
-  "heaps/task-scheduler",
-  "heaps/top-k-frequent-elements"
+  "heaps/merge-k-sorted-lists"
 ]

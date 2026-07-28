@@ -36,6 +36,222 @@ elements smaller than the kth largest — can you throw them away? And of
 the elements you keep, which single one is the answer, and where would it
 sit in a heap so you can read it in O(1)?
 
+```sandbox
+{
+  "id": "kth-largest-element-in-a-stream",
+  "fn": {
+    "python": "KthLargest",
+    "javascript": "KthLargest"
+  },
+  "class": {
+    "python": "KthLargest",
+    "javascript": "KthLargest"
+  },
+  "check": "sequence",
+  "starter": {
+    "python": "class KthLargest:\n    def __init__(self, k, nums):\n        # Keep only what you need to answer for the kth largest.\n        pass\n\n    def add(self, val):\n        # Append val to the stream, return the kth largest so far.\n        pass\n",
+    "javascript": "class KthLargest {\n  constructor(k, nums) {\n    // Keep only what you need to answer for the kth largest.\n  }\n\n  add(val) {\n    // Append val to the stream, return the kth largest so far.\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [
+        3,
+        [
+          4,
+          5,
+          8,
+          2
+        ]
+      ],
+      "ops": [
+        [
+          "add",
+          [
+            3
+          ],
+          4
+        ],
+        [
+          "add",
+          [
+            5
+          ],
+          5
+        ],
+        [
+          "add",
+          [
+            10
+          ],
+          5
+        ],
+        [
+          "add",
+          [
+            9
+          ],
+          8
+        ],
+        [
+          "add",
+          [
+            4
+          ],
+          8
+        ]
+      ]
+    },
+    {
+      "construct": [
+        1,
+        []
+      ],
+      "ops": [
+        [
+          "add",
+          [
+            -3
+          ],
+          -3
+        ],
+        [
+          "add",
+          [
+            -2
+          ],
+          -2
+        ],
+        [
+          "add",
+          [
+            -4
+          ],
+          -2
+        ],
+        [
+          "add",
+          [
+            0
+          ],
+          0
+        ],
+        [
+          "add",
+          [
+            4
+          ],
+          4
+        ]
+      ]
+    },
+    {
+      "construct": [
+        2,
+        [
+          0
+        ]
+      ],
+      "ops": [
+        [
+          "add",
+          [
+            -1
+          ],
+          -1
+        ],
+        [
+          "add",
+          [
+            1
+          ],
+          0
+        ],
+        [
+          "add",
+          [
+            -2
+          ],
+          0
+        ],
+        [
+          "add",
+          [
+            -4
+          ],
+          0
+        ],
+        [
+          "add",
+          [
+            3
+          ],
+          1
+        ]
+      ]
+    },
+    {
+      "construct": [
+        4,
+        [
+          7,
+          7,
+          7,
+          7
+        ]
+      ],
+      "ops": [
+        [
+          "add",
+          [
+            7
+          ],
+          7
+        ],
+        [
+          "add",
+          [
+            8
+          ],
+          7
+        ]
+      ]
+    },
+    {
+      "construct": [
+        2,
+        [
+          5,
+          5
+        ]
+      ],
+      "ops": [
+        [
+          "add",
+          [
+            5
+          ],
+          5
+        ],
+        [
+          "add",
+          [
+            6
+          ],
+          5
+        ],
+        [
+          "add",
+          [
+            6
+          ],
+          6
+        ]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — how much state do you truly need?
 At any moment the answer is the kth largest value. The `k−1` values above
 it and the answer itself are the only ones that can ever be returned;

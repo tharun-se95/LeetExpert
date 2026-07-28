@@ -34,6 +34,225 @@ heaps together so that the median always sits at a boundary between
 them, accessible in O(1) — this is the module's centerpiece technique,
 worth genuinely struggling with before reading on.
 
+```sandbox
+{
+  "id": "find-median-from-data-stream",
+  "fn": {
+    "python": "MedianFinder",
+    "javascript": "MedianFinder"
+  },
+  "class": {
+    "python": "MedianFinder",
+    "javascript": "MedianFinder"
+  },
+  "check": "sequence",
+  "methods": {
+    "addNum": {
+      "python": "add_num",
+      "javascript": "addNum"
+    },
+    "findMedian": {
+      "python": "find_median",
+      "javascript": "findMedian"
+    }
+  },
+  "starter": {
+    "python": "class MedianFinder:\n    def __init__(self):\n        # Hold the stream so the middle stays cheap to reach.\n        pass\n\n    def add_num(self, num):\n        # Add num to the data set.\n        pass\n\n    def find_median(self):\n        # Return the median of everything added so far.\n        pass\n",
+    "javascript": "class MedianFinder {\n  constructor() {\n    // Hold the stream so the middle stays cheap to reach.\n  }\n\n  addNum(num) {\n    // Add num to the data set.\n  }\n\n  findMedian() {\n    // Return the median of everything added so far.\n  }\n}\n"
+  },
+  "cases": [
+    {
+      "construct": [],
+      "ops": [
+        [
+          "addNum",
+          [
+            1
+          ]
+        ],
+        [
+          "addNum",
+          [
+            2
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          1.5
+        ],
+        [
+          "addNum",
+          [
+            3
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          2
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "addNum",
+          [
+            5
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          5
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "addNum",
+          [
+            -1
+          ]
+        ],
+        [
+          "addNum",
+          [
+            -2
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          -1.5
+        ],
+        [
+          "addNum",
+          [
+            -3
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          -2
+        ],
+        [
+          "addNum",
+          [
+            -4
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          -2.5
+        ],
+        [
+          "addNum",
+          [
+            -5
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          -3
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "addNum",
+          [
+            2
+          ]
+        ],
+        [
+          "addNum",
+          [
+            2
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          2
+        ],
+        [
+          "addNum",
+          [
+            2
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          2
+        ]
+      ]
+    },
+    {
+      "construct": [],
+      "ops": [
+        [
+          "addNum",
+          [
+            6
+          ]
+        ],
+        [
+          "addNum",
+          [
+            10
+          ]
+        ],
+        [
+          "addNum",
+          [
+            2
+          ]
+        ],
+        [
+          "addNum",
+          [
+            6
+          ]
+        ],
+        [
+          "addNum",
+          [
+            5
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          6
+        ],
+        [
+          "addNum",
+          [
+            0
+          ]
+        ],
+        [
+          "findMedian",
+          [],
+          5.5
+        ]
+      ]
+    }
+  ]
+}
+```
+
 ````reveal Hint — split the data into a "lower half" and an "upper half"
 Maintain two heaps: a MAX-heap holding the smaller half of the numbers
 seen so far, and a MIN-heap holding the larger half. Keep them balanced
