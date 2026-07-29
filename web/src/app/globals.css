@@ -569,3 +569,52 @@ body {
     transition: text-shadow var(--dur) var(--ease);
   }
 }
+
+/*
+  Problem lessons: three fixed DOM nodes (before / sandbox / after)
+  reflow via named grid areas instead of duplicating the sandbox in the
+  DOM for a second, CSS-hidden layout. Mobile-first: stacked, reading
+  order unchanged from before this existed. At `xl:` (the same breakpoint
+  `TableOfContents` already gates on) the sandbox column becomes sticky —
+  same sticky mechanics TableOfContents already uses, just holding the
+  table of contents and the editor together.
+*/
+.problem-layout {
+  display: grid;
+  grid-template-areas: "before" "sandbox" "after";
+  column-gap: 2.5rem;
+}
+.problem-layout > .problem-layout-before {
+  grid-area: before;
+  /*
+    Trailing space before whatever comes next in DOM order. A grid
+    `row-gap` would do this too, but at `xl:` the sandbox area spans both
+    rows — a row-gap would cut a visible seam through the middle of that
+    spanning, sticky column. Per-element margin only affects the column
+    it's in, at every breakpoint, so it can't do that.
+  */
+  margin-bottom: 2.5rem;
+}
+.problem-layout > .problem-layout-sandbox {
+  grid-area: sandbox;
+  margin-bottom: 2.5rem;
+}
+.problem-layout > .problem-layout-after {
+  grid-area: after;
+}
+
+@media (min-width: 1280px) {
+  .problem-layout {
+    grid-template-columns: 1fr 24rem;
+    grid-template-areas: "before sandbox" "after sandbox";
+  }
+  .problem-layout > .problem-layout-sandbox {
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    border-left: 1px solid var(--border);
+    padding-left: 1.5rem;
+  }
+}
