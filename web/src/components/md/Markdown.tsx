@@ -13,7 +13,6 @@ import { CodeTabs } from "@/components/course/CodeTabs";
 import { Reveal } from "@/components/course/Reveal";
 import { Complexity } from "@/components/course/Complexity";
 import { Viz } from "@/components/viz/Viz";
-import { Sandbox } from "@/components/sandbox/Sandbox";
 import { MarginNote } from "@/components/md/MarginNote";
 import { remarkHighlight } from "@/lib/content/remarkHighlight";
 import { Diagram } from "@/components/md/Diagram";
@@ -95,9 +94,6 @@ export function Markdown({
         }
         if (className.includes("language-diagram")) {
           return <Diagram source={text()} />;
-        }
-        if (className.includes("language-sandbox")) {
-          return <Sandbox source={text()} />;
         }
         if (className.includes("language-aside")) {
           return (

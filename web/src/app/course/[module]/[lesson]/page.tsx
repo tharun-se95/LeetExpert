@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LessonView } from "@/components/course/LessonView";
+import { ProblemLessonView } from "@/components/course/ProblemLessonView";
 import { LESSON_EMBEDS } from "@/components/course/embeds";
 import {
   allLessonParams,
@@ -36,18 +37,38 @@ export default async function LessonPage({ params }: PageProps) {
   const { prev, next } = getLessonNeighbors(moduleSlug, lessonSlug);
   const Embed = LESSON_EMBEDS[lessonId(moduleSlug, lessonSlug)];
 
+  const breadcrumbs = [
+    { label: "Course", href: "/" },
+    { label: mod.shortTitle, href: moduleHref(mod.slug) },
+    { label: meta.lesson.title },
+  ];
+  const prevLink = prev
+    ? { href: lessonHref(prev.module, prev.lesson), title: prev.title }
+    : null;
+  const nextLink = next
+    ? { href: lessonHref(next.module, next.lesson), title: next.title }
+    : null;
+
+  if (lesson.sandbox) {
+    return (
+      <ProblemLessonView
+        lesson={{ ...lesson, sandbox: lesson.sandbox }}
+        eyebrow={`Module ${mod.number} · ${mod.title}`}
+        breadcrumbs={breadcrumbs}
+        prev={prevLink}
+        next={nextLink}
+      />
+    );
+  }
+
   return (
     <LessonView
       lesson={lesson}
       eyebrow={`Module ${mod.number} · ${mod.title}`}
       typeLabel={meta.lesson.type === "problem" ? "Problem" : "Concept"}
-      breadcrumbs={[
-        { label: "Course", href: "/" },
-        { label: mod.shortTitle, href: moduleHref(mod.slug) },
-        { label: meta.lesson.title },
-      ]}
-      prev={prev ? { href: lessonHref(prev.module, prev.lesson), title: prev.title } : null}
-      next={next ? { href: lessonHref(next.module, next.lesson), title: next.title } : null}
+      breadcrumbs={breadcrumbs}
+      prev={prevLink}
+      next={nextLink}
       stage={Embed ? <Embed /> : undefined}
     />
   );

@@ -617,4 +617,27 @@ body {
     border-left: 1px solid var(--border);
     padding-left: 1.5rem;
   }
+  /*
+    TableOfContents' own <nav> carries its own sticky/max-height/overflow —
+    correct where it's normally used (a lone child of a plain, non-sticky
+    <aside>), wrong here: nested inside a column that is ITSELF now sticky
+    and scrollable, the nav's own stickiness doesn't reserve space for its
+    stuck position, so the Sandbox below it lays out as if the nav were
+    still at its unstuck height and the two visually overlap. Neutralised
+    only in this one context, not in TableOfContents.tsx, which stays
+    correct for LessonView's unrelated layout.
+  */
+  .problem-layout-sandbox nav[aria-label="On this page"] {
+    /*
+      Tailwind v4 emits its utilities inside a cascade layer; a plain
+      selector here loses to `.sticky`/`.top-24`/etc regardless of
+      specificity. `!important` is the established way this file already
+      overrides utility classes in a specific context (see the print and
+      reduced-motion rules above) — same tool, same reason.
+    */
+    position: static !important;
+    top: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
 }
