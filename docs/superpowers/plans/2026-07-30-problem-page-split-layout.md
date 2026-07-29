@@ -16,6 +16,12 @@ never duplicating the sandbox component in the DOM. Three content-test
 invariants make the split's assumptions permanent CI guarantees rather than
 one-time observations.
 
+**Execution order:** the visible feature (Tasks 1–4) ships before the
+exhaustive across-all-116-lessons hardening (Task 5) — deliberately
+reordered from the first draft of this plan so the layout is renderable and
+reviewable in the browser as early as possible, with the CI safety net
+following once there's something working to protect.
+
 **Tech Stack:** Next.js (App Router, React Server Components), TypeScript
 strict, Tailwind CSS v4, `unified`/`remark-parse`/`remark-gfm` (existing
 deps), Vitest.
@@ -173,8 +179,8 @@ export interface SandboxExtraction {
  * `aside`/`tabs` fence's body is stored as an opaque string on a leaf
  * node, never as nested AST children, so this can never reach inside one;
  * there is no recursion flag to get wrong. `content.test.ts`'s "sandbox
- * fence is safe to extract" suite is what guarantees every lesson only
- * ever has a fence this function can actually find.
+ * fence is safe to extract" suite (Task 5) is what guarantees every
+ * lesson only ever has a fence this function can actually find.
  */
 export function extractSandboxFence(markdown: string): SandboxExtraction | null {
   const tree = unified().use(remarkParse).use(remarkGfm).parse(markdown) as Root;
@@ -211,180 +217,14 @@ git commit -m "Add extractSandboxFence: splits a lesson's markdown around its sa
 
 ---
 
-### Task 2: Content-test invariants that keep the split safe forever
-
-**Files:**
-- Modify: `tests/content.test.ts`
-
-**Interfaces:**
-- Consumes: `extractSandboxFence` from Task 1 (`../src/lib/content/extractSandboxFence`), the existing `fences()` helper and `LESSONS` array already in this file.
-- Produces: nothing new for later tasks — this is a terminal safety net.
-
-- [ ] **Step 1: Add the imports**
-
-At the top of `tests/content.test.ts`, after the existing imports (currently
-ending at line 5, `import { parseSandboxSpec } from "@/components/sandbox/parseSpec";`), add:
-
-```ts
-import matter from "gray-matter";
-import { extractSandboxFence } from "../src/lib/content/extractSandboxFence";
-```
-
-- [ ] **Step 2: Write the three new tests**
-
-Insert this new `describe` block immediately after the closing `});` of
-the existing `describe("every sandbox fence survives the real parser", ...)`
-block (that block currently ends at line 321) and before the comment block
-that starts `/**\n * Sandbox coverage, as a hard gate.` (currently line 323):
-
-```ts
-/**
- * The split-pane problem view (a follow-up piece of work) hoists the
- * sandbox fence out of the markdown into its own pane by parsing at build
- * time and slicing on real AST offsets — see
- * `lib/content/extractSandboxFence.ts`. That extraction is only correct
- * if three things hold about every lesson; these tests make sure they
- * hold forever, not just as of this writing.
- */
-describe("the sandbox fence is safe to extract", () => {
-  it("every problem lesson has exactly one sandbox fence", () => {
-    const bad: string[] = [];
-    for (const lesson of LESSONS) {
-      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
-      if (!fm?.[1].includes("type: problem")) continue;
-      const count = fences(lesson.body, "sandbox").length;
-      if (count !== 1) bad.push(`${lesson.rel} — found ${count}`);
-    }
-    expect(bad).toEqual([]);
-  });
-
-  it("no sandbox fence is nested inside a reveal/aside/tabs fence", () => {
-    const bad: string[] = [];
-    // Fence bodies here can carry a label after the lang word
-    // ("````reveal Hint 1 — ..."), so `fences()`'s exact-match regex
-    // can't be reused — this matches the same shape, tolerant of
-    // trailing text on the opening line.
-    const outer = /^(`{4,8})(?:reveal|aside|tabs)[^\n]*\n([\s\S]*?)^\1\s*$/gm;
-    for (const lesson of LESSONS) {
-      for (const m of lesson.body.matchAll(outer)) {
-        if (/^```sandbox\s*$/m.test(m[2])) bad.push(lesson.rel);
-      }
-    }
-    expect(bad).toEqual([]);
-  });
-
-  it("no problem lesson has a heading duplicated across its sandbox split", () => {
-    // beforeSandbox/afterSandbox render as two independent <Markdown>
-    // instances, each running its own rehype-slug pass — a heading with
-    // the same text on both sides would collide on the same DOM id.
-    const heading = /^#{2,3}\s+(.+)$/gm;
-    const bad: string[] = [];
-    for (const lesson of LESSONS) {
-      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
-      if (!fm?.[1].includes("type: problem")) continue;
-
-      const { content } = matter(lesson.body);
-      const split = extractSandboxFence(content.trim());
-      if (!split) continue;
-
-      const before = new Set(
-        [...split.beforeSandbox.matchAll(heading)].map((m) => m[1].trim()),
-      );
-      for (const m of split.afterSandbox.matchAll(heading)) {
-        if (before.has(m[1].trim())) {
-          bad.push(`${lesson.rel} — "${m[1].trim()}"`);
-        }
-      }
-    }
-    expect(bad).toEqual([]);
-  });
-});
-```
-
-- [ ] **Step 3: Run the new tests, confirm they pass against real content**
-
-Run: `npx vitest run tests/content.test.ts -t "safe to extract"`
-Expected: PASS — 3 tests passed (this is expected: the earlier design
-work already verified these hold across all 116 problem lessons; this
-step confirms the *test code itself* is correct, not that the invariant
-is new)
-
-- [ ] **Step 4: Prove each test can actually fail — sabotage one lesson at a time**
-
-Run each of these, confirm the named test goes red with the shown
-message, then restore the file before moving to the next:
-
-```bash
-# Sabotage 1: a second sandbox fence
-cp course/recursion-backtracking/subsets.md /tmp/subsets.md.bak
-cat >> course/recursion-backtracking/subsets.md <<'EOF'
-
-```sandbox
-{"id": "subsets-2"}
-```
-EOF
-npx vitest run tests/content.test.ts -t "exactly one sandbox fence"
-# Expected: FAIL, "recursion-backtracking/subsets.md — found 2"
-cp /tmp/subsets.md.bak course/recursion-backtracking/subsets.md
-```
-
-```bash
-# Sabotage 2: a sandbox fence nested inside a reveal
-cp course/recursion-backtracking/subsets.md /tmp/subsets.md.bak
-python3 - <<'PY'
-path = "course/recursion-backtracking/subsets.md"
-s = open(path).read()
-anchor = "````reveal Hint — the choice at each element"
-assert anchor in s
-injected = anchor + "\n```sandbox\n{\"id\": \"nested\"}\n```\n"
-open(path, "w").write(s.replace(anchor, injected, 1))
-PY
-npx vitest run tests/content.test.ts -t "nested inside a reveal"
-# Expected: FAIL, "recursion-backtracking/subsets.md"
-cp /tmp/subsets.md.bak course/recursion-backtracking/subsets.md
-```
-
-```bash
-# Sabotage 3: a heading duplicated across the split
-cp course/recursion-backtracking/subsets.md /tmp/subsets.md.bak
-python3 - <<'PY'
-path = "course/recursion-backtracking/subsets.md"
-s = open(path).read()
-anchor = "## Variants"
-assert anchor in s
-s = s.replace(anchor, "## Attempt it first\n\n" + anchor, 1)
-open(path, "w").write(s)
-PY
-npx vitest run tests/content.test.ts -t "heading duplicated"
-# Expected: FAIL, mentioning "Attempt it first"
-cp /tmp/subsets.md.bak course/recursion-backtracking/subsets.md
-```
-
-- [ ] **Step 5: Confirm the file is restored and the full suite is green**
-
-Run: `git diff --stat course/recursion-backtracking/subsets.md`
-Expected: empty output (no diff — the three sabotages were each reverted)
-
-Run: `npm test`
-Expected: all tests pass, same total count as before this task
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add tests/content.test.ts
-git commit -m "Guarantee the sandbox-fence split stays safe: exactly one, never nested, no heading collision"
-```
-
----
-
-### Task 3: Wire the extraction into `loadLesson`
+### Task 2: Wire the extraction into `loadLesson`
 
 **Files:**
 - Modify: `src/lib/course/load.ts`
 
 **Interfaces:**
 - Consumes: `extractSandboxFence`, `SandboxExtraction` from Task 1.
-- Produces: `LoadedLesson.sandbox: SandboxExtraction | null`, read by Task 4's `ProblemLessonView` and Task 5's route.
+- Produces: `LoadedLesson.sandbox: SandboxExtraction | null`, read by Task 3's `ProblemLessonView` and Task 4's route.
 
 - [ ] **Step 1: Add the import**
 
@@ -519,7 +359,8 @@ Expected output: `sandbox is null: true`
 - [ ] **Step 6: Run the full test suite**
 
 Run: `npm test`
-Expected: all tests pass (same count as end of Task 2)
+Expected: all tests pass (same count as end of Task 1 — this task adds
+no new tests of its own)
 
 - [ ] **Step 7: Commit**
 
@@ -530,17 +371,17 @@ git commit -m "Wire extractSandboxFence into loadLesson: LoadedLesson.sandbox"
 
 ---
 
-### Task 4: `ProblemLessonView` — the split/stacked layout
+### Task 3: `ProblemLessonView` — the split/stacked layout
 
 **Files:**
 - Create: `src/components/course/ProblemLessonView.tsx`
 - Modify: `src/app/globals.css`
 
 **Interfaces:**
-- Consumes: `LoadedLesson`/`SandboxExtraction` (Tasks 1 & 3), the existing
+- Consumes: `LoadedLesson`/`SandboxExtraction` (Tasks 1 & 2), the existing
   `Markdown`, `TableOfContents`, `Sandbox`, `Breadcrumbs` components
   (unchanged — none of their props change in this plan).
-- Produces: `ProblemLessonView` component, consumed by Task 5's route.
+- Produces: `ProblemLessonView` component, consumed by Task 4's route.
 
 Scoping note: no `type: problem` lesson currently uses a `stage` embed
 (`LESSON_EMBEDS` has exactly one entry, `big-o/common-complexity-classes`,
@@ -625,7 +466,7 @@ interface NeighborLink {
 }
 
 interface ProblemLessonViewProps {
-  /** `sandbox` narrowed non-null by the caller — see the route in Task 5 */
+  /** `sandbox` narrowed non-null by the caller — see the route in Task 4 */
   lesson: LoadedLesson & { sandbox: SandboxExtraction };
   breadcrumbs: Crumb[];
   eyebrow: string;
@@ -720,26 +561,27 @@ export function ProblemLessonView({
 
 Run: `npx tsc --noEmit && npx eslint src tests`
 Expected: both exit 0 (this component isn't imported by anything yet, so
-this only proves the file itself is well-typed — Task 5 proves it renders)
+this only proves the file itself is well-typed — Task 4 proves it renders)
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add src/components/course/ProblemLessonView.tsx src/app/globals.css
-git commit -m "Add ProblemLessonView: split-pane layout for problem lessons, unused until Task 5 wires the route"
+git commit -m "Add ProblemLessonView: split-pane layout for problem lessons, unused until Task 4 wires the route"
 ```
 
 ---
 
-### Task 5: Wire the route, remove the dead Markdown.tsx branch
+### Task 4: Wire the route, remove the dead Markdown.tsx branch
 
 **Files:**
 - Modify: `src/app/course/[module]/[lesson]/page.tsx`
 - Modify: `src/components/md/Markdown.tsx`
 
 **Interfaces:**
-- Consumes: `ProblemLessonView` (Task 4), `LoadedLesson.sandbox` (Task 3).
-- Produces: nothing further — this is the last functional task.
+- Consumes: `ProblemLessonView` (Task 3), `LoadedLesson.sandbox` (Task 2).
+- Produces: nothing further for later tasks — this is where the feature
+  becomes visible and testable in the browser.
 
 - [ ] **Step 1: Branch the route on `lesson.sandbox`**
 
@@ -925,6 +767,177 @@ git commit -m "Route problem lessons through ProblemLessonView; remove the now-d
 
 ---
 
+### Task 5: Content-test invariants that keep the split safe forever
+
+The visible feature is done and verified as of Task 4. This task is the
+across-all-116-lessons hardening pass: it makes the three assumptions the
+split depends on into permanent CI guarantees, rather than the one-time
+manual verification done during design.
+
+**Files:**
+- Modify: `tests/content.test.ts`
+
+**Interfaces:**
+- Consumes: `extractSandboxFence` from Task 1 (`../src/lib/content/extractSandboxFence`), the existing `fences()` helper and `LESSONS` array already in this file.
+- Produces: nothing new for later tasks — this is a terminal safety net.
+
+- [ ] **Step 1: Add the imports**
+
+At the top of `tests/content.test.ts`, after the existing imports (currently
+ending at line 5, `import { parseSandboxSpec } from "@/components/sandbox/parseSpec";`), add:
+
+```ts
+import matter from "gray-matter";
+import { extractSandboxFence } from "../src/lib/content/extractSandboxFence";
+```
+
+- [ ] **Step 2: Write the three new tests**
+
+Insert this new `describe` block immediately after the closing `});` of
+the existing `describe("every sandbox fence survives the real parser", ...)`
+block (that block currently ends at line 321) and before the comment block
+that starts `/**\n * Sandbox coverage, as a hard gate.` (currently line 323):
+
+```ts
+/**
+ * The split-pane problem view (ProblemLessonView, Task 3) hoists the
+ * sandbox fence out of the markdown into its own pane by parsing at build
+ * time and slicing on real AST offsets — see
+ * `lib/content/extractSandboxFence.ts`. That extraction is only correct
+ * if three things hold about every lesson; these tests make sure they
+ * hold forever, not just as of this writing.
+ */
+describe("the sandbox fence is safe to extract", () => {
+  it("every problem lesson has exactly one sandbox fence", () => {
+    const bad: string[] = [];
+    for (const lesson of LESSONS) {
+      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+      if (!fm?.[1].includes("type: problem")) continue;
+      const count = fences(lesson.body, "sandbox").length;
+      if (count !== 1) bad.push(`${lesson.rel} — found ${count}`);
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("no sandbox fence is nested inside a reveal/aside/tabs fence", () => {
+    const bad: string[] = [];
+    // Fence bodies here can carry a label after the lang word
+    // ("````reveal Hint 1 — ..."), so `fences()`'s exact-match regex
+    // can't be reused — this matches the same shape, tolerant of
+    // trailing text on the opening line.
+    const outer = /^(`{4,8})(?:reveal|aside|tabs)[^\n]*\n([\s\S]*?)^\1\s*$/gm;
+    for (const lesson of LESSONS) {
+      for (const m of lesson.body.matchAll(outer)) {
+        if (/^```sandbox\s*$/m.test(m[2])) bad.push(lesson.rel);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("no problem lesson has a heading duplicated across its sandbox split", () => {
+    // beforeSandbox/afterSandbox render as two independent <Markdown>
+    // instances, each running its own rehype-slug pass — a heading with
+    // the same text on both sides would collide on the same DOM id.
+    const heading = /^#{2,3}\s+(.+)$/gm;
+    const bad: string[] = [];
+    for (const lesson of LESSONS) {
+      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+      if (!fm?.[1].includes("type: problem")) continue;
+
+      const { content } = matter(lesson.body);
+      const split = extractSandboxFence(content.trim());
+      if (!split) continue;
+
+      const before = new Set(
+        [...split.beforeSandbox.matchAll(heading)].map((m) => m[1].trim()),
+      );
+      for (const m of split.afterSandbox.matchAll(heading)) {
+        if (before.has(m[1].trim())) {
+          bad.push(`${lesson.rel} — "${m[1].trim()}"`);
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+});
+```
+
+- [ ] **Step 3: Run the new tests, confirm they pass against real content**
+
+Run: `npx vitest run tests/content.test.ts -t "safe to extract"`
+Expected: PASS — 3 tests passed (this is expected: the earlier design
+work already verified these hold across all 116 problem lessons; this
+step confirms the *test code itself* is correct, not that the invariant
+is new)
+
+- [ ] **Step 4: Prove each test can actually fail — sabotage one lesson at a time**
+
+Run each of these, confirm the named test goes red with the shown
+message, then restore the file before moving to the next:
+
+```bash
+# Sabotage 1: a second sandbox fence
+cp course/recursion-backtracking/subsets.md /tmp/subsets.md.bak
+cat >> course/recursion-backtracking/subsets.md <<'EOF'
+
+```sandbox
+{"id": "subsets-2"}
+```
+EOF
+npx vitest run tests/content.test.ts -t "exactly one sandbox fence"
+# Expected: FAIL, "recursion-backtracking/subsets.md — found 2"
+cp /tmp/subsets.md.bak course/recursion-backtracking/subsets.md
+```
+
+```bash
+# Sabotage 2: a sandbox fence nested inside a reveal
+cp course/recursion-backtracking/subsets.md /tmp/subsets.md.bak
+python3 - <<'PY'
+path = "course/recursion-backtracking/subsets.md"
+s = open(path).read()
+anchor = "````reveal Hint — the choice at each element"
+assert anchor in s
+injected = anchor + "\n```sandbox\n{\"id\": \"nested\"}\n```\n"
+open(path, "w").write(s.replace(anchor, injected, 1))
+PY
+npx vitest run tests/content.test.ts -t "nested inside a reveal"
+# Expected: FAIL, "recursion-backtracking/subsets.md"
+cp /tmp/subsets.md.bak course/recursion-backtracking/subsets.md
+```
+
+```bash
+# Sabotage 3: a heading duplicated across the split
+cp course/recursion-backtracking/subsets.md /tmp/subsets.md.bak
+python3 - <<'PY'
+path = "course/recursion-backtracking/subsets.md"
+s = open(path).read()
+anchor = "## Variants"
+assert anchor in s
+s = s.replace(anchor, "## Attempt it first\n\n" + anchor, 1)
+open(path, "w").write(s)
+PY
+npx vitest run tests/content.test.ts -t "heading duplicated"
+# Expected: FAIL, mentioning "Attempt it first"
+cp /tmp/subsets.md.bak course/recursion-backtracking/subsets.md
+```
+
+- [ ] **Step 5: Confirm the file is restored and the full suite is green**
+
+Run: `git diff --stat course/recursion-backtracking/subsets.md`
+Expected: empty output (no diff — the three sabotages were each reverted)
+
+Run: `npm test`
+Expected: all tests pass, same total count as before this task
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add tests/content.test.ts
+git commit -m "Guarantee the sandbox-fence split stays safe: exactly one, never nested, no heading collision"
+```
+
+---
+
 ### Task 6: Final full-suite verification
 
 **Files:** none (verification only)
@@ -937,20 +950,21 @@ npx eslint src tests
 npm test
 npm run build
 ```
-Expected: all four exit 0. `npm test` reports 3 more tests than before
-this plan started (Task 1's 3 unit tests) plus 3 more (Task 2's 3
-invariant tests) = 6 net new tests; content-test totals otherwise
-unchanged.
+Expected: all four exit 0. `npm test` reports 6 more tests than before
+this plan started: Task 1's 3 unit tests plus Task 5's 3 invariant tests;
+content-test totals otherwise unchanged.
 
 - [ ] **Step 2: Print preview sanity check**
 
 ```
 mcp__Claude_Browser__navigate { url: "http://localhost:3002/course/recursion-backtracking/subsets" }
 ```
-Open the browser's print preview (or use the page's own print stylesheet
-via a screenshot after forcing print media, if the tool supports it —
-otherwise inspect computed style on `.problem-layout-sandbox` at print
-media and confirm `display: none` is applied).
+Open the browser's print preview (or inspect computed style on
+`.problem-layout-sandbox` under print media). It should compute
+`display: none` — not from any CSS in `globals.css` (Task 3 deliberately
+didn't duplicate a print rule there), but from the `print:hidden` Tailwind
+class already on that div, the same mechanism `Sandbox`'s own root
+element already relies on today.
 Expected: no editor, no floating panel — continuous problem text, hints,
 solution, variants, matching how this lesson printed before this plan.
 
