@@ -5,6 +5,10 @@ import readingTime from "reading-time";
 import { slugify } from "@/lib/slugify";
 import { getLesson, getModule, MODULES } from "./manifest";
 import { highlightBlocks, type TabBlock } from "@/lib/content/highlightBlocks";
+import {
+  extractSandboxFence,
+  type SandboxExtraction,
+} from "@/lib/content/extractSandboxFence";
 
 export interface TocItem {
   id: string;
@@ -66,6 +70,8 @@ export interface LoadedLesson {
   sourcePath: string;
   highlightedBlocks: Record<string, string | null>;
   highlightedTabs: Record<string, TabBlock[]>;
+  /** Non-null only for problem lessons — see extractSandboxFence.ts */
+  sandbox: SandboxExtraction | null;
 }
 
 export async function loadLesson(
@@ -99,6 +105,7 @@ export async function loadLesson(
     sourcePath: relative,
     highlightedBlocks: blocks,
     highlightedTabs: tabs,
+    sandbox: extractSandboxFence(trimmed),
   };
 }
 
