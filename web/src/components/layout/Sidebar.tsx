@@ -23,10 +23,10 @@ function activeModuleSlug(
   pathname: string,
 ): string | null {
   for (const stage of stages) {
-    for (const module of stage.modules) {
-      if (pathname === module.href) return module.slug;
-      if (module.lessons.some((l) => isActivePath(pathname, l.href))) {
-        return module.slug;
+    for (const navModule of stage.modules) {
+      if (pathname === navModule.href) return navModule.slug;
+      if (navModule.lessons.some((l) => isActivePath(pathname, l.href))) {
+        return navModule.slug;
       }
     }
   }
@@ -34,21 +34,21 @@ function activeModuleSlug(
 }
 
 function ModuleNode({
-  module,
+  navModule,
   pathname,
   open,
   onToggle,
 }: {
-  module: CourseNavModule;
+  navModule: CourseNavModule;
   pathname: string;
   open: boolean;
   onToggle: () => void;
 }) {
   const { visited } = useProgress();
-  const hasLessons = module.lessons.length > 0;
-  const selfActive = pathname === module.href;
+  const hasLessons = navModule.lessons.length > 0;
+  const selfActive = pathname === navModule.href;
 
-  const doneCount = module.lessons.filter((l) => visited.has(l.id)).length;
+  const doneCount = navModule.lessons.filter((l) => visited.has(l.id)).length;
 
   return (
     <div>
@@ -71,10 +71,10 @@ function ModuleNode({
           <span className="inline-flex h-6 w-6 shrink-0" />
         )}
         <Link
-          href={module.href}
+          href={navModule.href}
           className={cn(
             "min-w-0 flex-1 truncate rounded-[4px] py-1 pl-1.5 pr-1.5 text-[13px] transition-colors",
-            module.status === "coming-soon" && "text-muted/60",
+            navModule.status === "coming-soon" && "text-muted/60",
             selfActive
               // a printed block, not a wash — the old bg-accent/10 was a 10%
               // tint that all but vanished against the paper
@@ -83,10 +83,10 @@ function ModuleNode({
           )}
         >
           <span className="mr-1.5 tabular-nums text-[11px] text-muted/70">
-            {module.number}.
+            {navModule.number}.
           </span>
-          {module.shortTitle}
-          {module.status === "coming-soon" ? (
+          {navModule.shortTitle}
+          {navModule.status === "coming-soon" ? (
             <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted/50">
               soon
             </span>
@@ -96,19 +96,19 @@ function ModuleNode({
                 "ml-1.5 font-mono text-[10px] tabular-nums",
                 selfActive
                   ? "text-on-pop/70"
-                  : doneCount === module.lessons.length
+                  : doneCount === navModule.lessons.length
                     ? "text-accent"
                     : "text-muted/60",
               )}
             >
-              {doneCount}/{module.lessons.length}
+              {doneCount}/{navModule.lessons.length}
             </span>
           ) : null}
         </Link>
       </div>
       {hasLessons && open ? (
         <div className="ml-2 border-l border-border pl-1">
-          {module.lessons.map((lesson) => {
+          {navModule.lessons.map((lesson) => {
             const active = pathname === lesson.href;
             const isDone = visited.has(lesson.id);
             return (
@@ -222,7 +222,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               {stage.modules.map((m) => (
                 <ModuleNode
                   key={m.slug}
-                  module={m}
+                  navModule={m}
                   pathname={pathname}
                   open={openModuleSlug === m.slug}
                   onToggle={() =>
