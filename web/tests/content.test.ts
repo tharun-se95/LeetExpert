@@ -3,6 +3,8 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { propertyNames } from "../src/lib/sandbox/properties";
 import { parseSandboxSpec } from "@/components/sandbox/parseSpec";
+import matter from "gray-matter";
+import { extractSandboxFence } from "../src/lib/content/extractSandboxFence";
 
 /**
  * Content validation across every lesson.
@@ -317,6 +319,92 @@ describe("every sandbox fence survives the real parser", () => {
       }
     }
     expect(rejected).toEqual([]);
+  });
+});
+
+/**
+ * The split-pane problem view hoists the sandbox fence out of the
+ * markdown into its own pane by parsing at build time and slicing on
+ * real AST offsets — see `lib/content/extractSandboxFence.ts`. That
+ * extraction is only correct if three things hold about every lesson;
+ * these tests make sure they hold forever, not just as of this writing.
+ */
+describe("the sandbox fence is safe to extract", () => {
+  it("every problem lesson has exactly one sandbox fence", () => {
+    const bad: string[] = [];
+    for (const lesson of LESSONS) {
+      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+      if (!fm?.[1].includes("type: problem")) continue;
+      const count = fences(lesson.body, "sandbox").length;
+      if (count !== 1) bad.push(`${lesson.rel} — found ${count}`);
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("no sandbox fence is nested inside a reveal/aside/tabs fence", () => {
+    const bad: string[] = [];
+    // Fence bodies here can carry a label after the lang word
+    // ("````reveal Hint 1 — ..."), so `fences()`'s exact-match regex
+    // can't be reused — this matches the same shape, tolerant of
+    // trailing text on the opening line.
+    const outer = /^(`{4,8})(?:reveal|aside|tabs)[^\n]*\n([\s\S]*?)^\1\s*$/gm;
+    for (const lesson of LESSONS) {
+      for (const m of lesson.body.matchAll(outer)) {
+        if (/^```sandbox\s*$/m.test(m[2])) bad.push(lesson.rel);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("no problem lesson has a heading duplicated across its sandbox split", () => {
+    // beforeSandbox/afterSandbox render as two independent <Markdown>
+    // instances, each running its own rehype-slug pass — a heading with
+    // the same text on both sides would collide on the same DOM id.
+    const heading = /^#{2,3}\s+(.+)$/gm;
+    const bad: string[] = [];
+    for (const lesson of LESSONS) {
+      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+      if (!fm?.[1].includes("type: problem")) continue;
+
+      const { content } = matter(lesson.body);
+      const split = extractSandboxFence(content.trim());
+      if (!split) continue;
+
+      const before = new Set(
+        [...split.beforeSandbox.matchAll(heading)].map((m) => m[1].trim()),
+      );
+      for (const m of split.afterSandbox.matchAll(heading)) {
+        if (before.has(m[1].trim())) {
+          bad.push(`${lesson.rel} — "${m[1].trim()}"`);
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+/**
+ * `/problems/[slug]` addresses a problem by slug alone, scanning every
+ * module for a match (`findProblemBySlug`) — safe only because no two
+ * problem lessons anywhere in the course share a slug. Verified true for
+ * all 116 before this plan was written; this is what keeps it true.
+ */
+describe("problem slugs are globally unique", () => {
+  it("no two problem lessons share a slug", () => {
+    const seenAt = new Map<string, string>();
+    const bad: string[] = [];
+    for (const lesson of LESSONS) {
+      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+      if (!fm?.[1].includes("type: problem")) continue;
+      const slug = lesson.rel.replace(/\.md$/, "").split("/").pop()!;
+      const existing = seenAt.get(slug);
+      if (existing) {
+        bad.push(`"${slug}" used by both ${existing} and ${lesson.rel}`);
+      } else {
+        seenAt.set(slug, lesson.rel);
+      }
+    }
+    expect(bad).toEqual([]);
   });
 });
 
