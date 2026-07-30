@@ -37,16 +37,24 @@ function ErrorCard({ message }: { message: string }) {
   );
 }
 
-export function Sandbox({ source }: { source: string }) {
+export function Sandbox({
+  source,
+  onSolved,
+}: {
+  source: string;
+  onSolved?: () => void;
+}) {
   const spec = useMemo(() => parseSandboxSpec(source), [source]);
   if (!spec) return <ErrorCard message="Invalid sandbox block." />;
-  return <SandboxBody spec={spec} />;
+  return <SandboxBody spec={spec} onSolved={onSolved} />;
 }
 
 function SandboxBody({
   spec,
+  onSolved,
 }: {
   spec: NonNullable<ReturnType<typeof parseSandboxSpec>>;
+  onSolved?: () => void;
 }) {
   const [lang, setLang] = useState<SandboxLang>("python");
   const [drafts, setDrafts] = useState<Record<SandboxLang, string>>({
@@ -95,6 +103,13 @@ function SandboxBody({
   const passed = results?.filter((r) => r.passed).length ?? 0;
   const total = spec.cases.length;
   const allPassed = results !== null && passed === total;
+
+  // A side effect synchronized to derived state, not a write during
+  // render — the standard React idiom for "call this once when a value
+  // transitions," and safe under Strict Mode's dev-only double-invoke.
+  useEffect(() => {
+    if (allPassed) onSolved?.();
+  }, [allPassed, onSolved]);
 
   return (
     <div
