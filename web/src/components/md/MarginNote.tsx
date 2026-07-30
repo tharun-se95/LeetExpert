@@ -5,8 +5,8 @@ import type { ReactNode } from "react";
  *
  * This is the "I got this wrong for years" voice, deliberately set apart from
  * the lesson's own register. It uses `--mark` (the blue) rather than
- * `--accent` (olive text / lime fill): olive-lime means *pay attention to
- * this*, blue means *someone is talking to you*. Keeping those separate is
+ * `--accent` (brand indigo): accent means *pay attention to this*;
+ * `--mark` means *someone is talking to you*. Keeping those separate is
  * what stops the page turning into undifferentiated colour.
  *
  * Keep them short. An aside that runs longer than a couple of sentences is

@@ -7,8 +7,10 @@ import { join, relative } from "node:path";
  * change or break dark mode.
  *
  * Components must consume semantic tokens (bg-accent, text-good, …), not
- * Tailwind palette classes and not `text-white` on accent fills — in dark
- * mode --accent is lime, so white-on-accent is illegible.
+ * Tailwind palette classes and not `text-white` on accent fills — prefer
+ * `text-on-pop` on `bg-pop` (brand accent #6E63FF in both themes).
+ * Prefer `hover:bg-accent-hover` / `active:bg-accent-active` on pop CTAs when
+ * refining interactions; opacity hover remains acceptable.
  */
 
 const SRC = join(__dirname, "..", "src");

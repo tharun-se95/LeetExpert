@@ -35,13 +35,11 @@ export function CopyButton({ code }: { code: string }) {
 export function CodeBody({ code, html }: { code: string; html: string | null }) {
   return html ? (
     <div
-      className="overflow-x-auto px-4 py-3 text-[0.85rem] leading-relaxed [&_code]:font-mono [&_pre]:m-0 [&_pre]:bg-transparent [&_pre]:p-0"
+      className="code-body [&_code]:font-mono [&_pre]:m-0 [&_pre]:bg-transparent [&_pre]:p-0"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   ) : (
-    <pre className="overflow-x-auto px-4 py-3 font-mono text-[0.85rem] leading-relaxed">
-      {code}
-    </pre>
+    <pre className="code-body px-4 font-mono whitespace-pre-wrap">{code}</pre>
   );
 }
 
@@ -55,8 +53,8 @@ export function CodeBlock({
   html: string | null;
 }) {
   return (
-    <div className="group my-5 overflow-hidden rounded-lg border border-border bg-code">
-      <div className="flex items-center justify-between border-b border-border px-4 py-1.5">
+    <div className="code-surface group my-5">
+      <div className="code-surface-header">
         <span className="font-mono text-xs text-muted">{language}</span>
         <CopyButton code={code} />
       </div>

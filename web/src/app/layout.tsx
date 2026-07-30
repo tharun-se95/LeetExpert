@@ -1,29 +1,23 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Sora } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
 
 /**
- * Three faces, three jobs.
+ * Three faces, three jobs (Linear/educational sheet).
  *
- * Display carries the poster headings of the Riso system; body is a humanist
- * face chosen for long technical reading; mono serves both code blocks and
- * the interface labels that borrow the code voice.
- *
- * Bricolage and JetBrains are variable, so each ships one file across all
- * weights. IBM Plex Sans is not, so its weights are pinned explicitly rather
- * than pulling the whole family.
+ * Display (Sora) carries logo + headings; Inter is the long-read body;
+ * JetBrains Mono serves code blocks and mono UI labels.
  */
-const display = Bricolage_Grotesque({
+const display = Sora({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
 });
 
-const sans = IBM_Plex_Sans({
+const sans = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   variable: "--font-sans-face",
   display: "swap",
 });
@@ -36,11 +30,11 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "DSA Course",
-    template: "%s · DSA Course",
+    default: "codeMacha",
+    template: "%s · codeMacha",
   },
   description:
-    "A complete data structures & algorithms course — every structure from first principles, implemented from scratch, drilled with solve-first problems.",
+    "Learn. Practice. Build. Master. — DSA from first principles, implemented from scratch, drilled with solve-first problems.",
 };
 
 export default function RootLayout({

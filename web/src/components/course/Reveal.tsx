@@ -14,7 +14,7 @@ export function Reveal({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="riso-halftone my-4 rounded-xl border border-border bg-surface/40">
+    <div className="my-4 rounded-xl border border-border bg-surface/40">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

@@ -21,8 +21,9 @@ different mechanics.
 
 ```mermaid
 flowchart LR
-  subgraph RAM["one contiguous block, base = 0x1000, 8-byte slots"]
-    A0["idx 0<br/>0x1000"] --- A1["idx 1<br/>0x1008"] --- A2["idx 2<br/>0x1010"] --- A3["idx 3<br/>0x1018"] --- A4["idx 4<br/>0x1020"]
+  subgraph RAM["one contiguous block · base 1000h · 8-byte slots"]
+    direction LR
+    A0["idx 0<br/>1000h"] --- A1["idx 1<br/>1008h"] --- A2["idx 2<br/>1010h"] --- A3["idx 3<br/>1018h"] --- A4["idx 4<br/>1020h"]
   end
 ```
 

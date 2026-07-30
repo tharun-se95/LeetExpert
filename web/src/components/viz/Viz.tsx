@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { VIZ_REGISTRY } from "@/components/viz/registry";
+import { VizChromeContext } from "@/components/viz/vizChrome";
 
 function parseSpec(source: string): Record<string, unknown> | null {
   try {
@@ -24,8 +25,16 @@ function ErrorCard({ message }: { message: string }) {
 }
 
 /** Entry point for the `viz` markdown fence: JSON body, `id` picks the tracer. */
-export function Viz({ source }: { source: string }) {
+export function Viz({
+  source,
+  embedded = false,
+}: {
+  source: string;
+  /** Drop the player's outer card when already inside a parent surface. */
+  embedded?: boolean;
+}) {
   const spec = useMemo(() => parseSpec(source), [source]);
+  const chrome = useMemo(() => ({ embedded }), [embedded]);
 
   if (!spec || typeof spec.id !== "string") {
     return <ErrorCard message="Invalid viz block." />;
@@ -36,5 +45,9 @@ export function Viz({ source }: { source: string }) {
   }
   const props = { ...spec };
   delete props.id;
-  return <Component {...props} />;
+  return (
+    <VizChromeContext.Provider value={chrome}>
+      <Component {...props} />
+    </VizChromeContext.Provider>
+  );
 }

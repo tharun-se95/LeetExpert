@@ -9,29 +9,42 @@ interface HeaderProps {
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
   onOpenSearch: () => void;
+  /** False on the landing page where the course sidebar is not mounted. */
+  showSidebarToggle?: boolean;
 }
 
-export function Header({ sidebarOpen, onToggleSidebar, onOpenSearch }: HeaderProps) {
+export function Header({
+  sidebarOpen,
+  onToggleSidebar,
+  onOpenSearch,
+  showSidebarToggle = true,
+}: HeaderProps) {
   const { visitedCount, totalCount } = useProgress();
   const pct = totalCount > 0 ? Math.round((visitedCount / totalCount) * 100) : 0;
 
   return (
     <header className="print:hidden sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md">
-      <button
-        type="button"
-        className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition hover:bg-surface hover:text-foreground lg:hidden"
-        onClick={onToggleSidebar}
-        aria-label={sidebarOpen ? "Close navigation" : "Open navigation"}
-      >
-        {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-      </button>
+      {showSidebarToggle ? (
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition hover:bg-surface hover:text-foreground lg:hidden"
+          onClick={onToggleSidebar}
+          aria-label={sidebarOpen ? "Close navigation" : "Open navigation"}
+        >
+          {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+        </button>
+      ) : null}
 
       <Link href="/" className="flex min-w-0 flex-1 items-center gap-2">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-foreground text-[11px] font-semibold text-background">
-          DSA
+        <span
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop font-mono text-[13px] font-bold text-on-pop"
+          aria-hidden
+        >
+          {"</>"}
         </span>
         <span className="truncate text-sm font-semibold tracking-tight">
-          DSA Course
+          <span className="text-foreground">code</span>
+          <span className="text-accent">Macha</span>
         </span>
       </Link>
 

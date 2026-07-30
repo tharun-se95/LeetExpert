@@ -8,9 +8,8 @@ import { tags as t } from "@lezer/highlight";
  * Every colour is a CSS custom property defined in globals.css, which means:
  *   1. light/dark switching happens in CSS, with no React re-render and no
  *      second theme object to keep in sync, and
- *   2. the palette is literally the github-light/github-dark one Shiki uses
- *      for the rest of the site, so the editor and the solution block below
- *      it are the same colours rather than merely similar ones.
+ *   2. the palette mirrors `codePalette.ts` (same ink as Shiki handbook + viz),
+ *      so all three code surfaces stay identical.
  *
  * `basicSetup.syntaxHighlighting` MUST stay false where this is used.
  * CodeMirror's built-in defaultHighlightStyle is tuned for light
@@ -72,12 +71,12 @@ export const editorHighlight = HighlightStyle.define([
   { tag: [t.emphasis], fontStyle: "italic" },
 ]);
 
-/** Chrome: gutters, caret, selection, active line — all from site variables. */
+/** Chrome: gutters, caret, selection, active line — match shared .code-body. */
 export const editorChrome = EditorView.theme({
   "&": {
     backgroundColor: "transparent",
     color: "var(--tok-name)",
-    fontSize: "0.8rem",
+    fontSize: "0.85rem",
   },
   "&.cm-focused": { outline: "none" },
   ".cm-scroller": {
@@ -85,21 +84,24 @@ export const editorChrome = EditorView.theme({
     lineHeight: "1.65",
   },
   ".cm-content": { padding: "0.75rem 0", caretColor: "var(--accent)" },
-  ".cm-line": { padding: "0 0.85rem" },
+  ".cm-line": { padding: "0 1rem 0 0" },
 
   ".cm-gutters": {
     backgroundColor: "transparent",
     color: "color-mix(in oklab, var(--muted) 55%, transparent)",
     border: "none",
-    paddingLeft: "0.35rem",
+    paddingLeft: "0.75rem",
   },
-  ".cm-lineNumbers .cm-gutterElement": { padding: "0 0.5rem 0 0.75rem", minWidth: "2ch" },
+  ".cm-lineNumbers .cm-gutterElement": {
+    padding: "0 0.75rem 0 0",
+    minWidth: "2.25rem",
+  },
   ".cm-activeLineGutter": {
     backgroundColor: "transparent",
     color: "var(--accent)",
   },
   ".cm-activeLine": {
-    backgroundColor: "color-mix(in oklab, var(--accent) 6%, transparent)",
+    backgroundColor: "color-mix(in oklab, var(--accent) 12%, transparent)",
   },
 
   ".cm-cursor, .cm-dropCursor": {

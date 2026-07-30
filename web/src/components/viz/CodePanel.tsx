@@ -13,24 +13,24 @@ const TABS: { lang: VizLang; label: string }[] = [
 ];
 
 /**
- * The trace's code pane: Python/TypeScript tabs (styled like CodeTabs) with
- * a layout-animated highlight bar behind the line executing at the current
- * step. Scrolls the active line into view within its own scroll container —
- * never the page. Syntax colors come from Shiki, tokenized client-side per
- * line (rather than rendered as one HTML blob like CodeBlock does) so each
- * line can still carry its own ref for the highlight bar and auto-scroll.
+ * Trace code pane — same brand Shiki palette and code-surface chrome as
+ * handbook CodeTabs / CodeBlock. Per-line tokens (not one HTML blob) so the
+ * active-line highlight bar and auto-scroll still work.
  */
 export function CodePanel({
   code,
   line,
   reduced,
   large = false,
+  flush = false,
 }: {
   code: VizCode;
   line: VizLineRef;
   reduced: boolean;
   /** Fullscreen mode: bigger type, taller (near-uncapped) scroll area */
   large?: boolean;
+  /** No extra border when the parent player is already framed. */
+  flush?: boolean;
 }) {
   const [lang, setLang] = useState<VizLang>("python");
   const [tokens, setTokens] = useState<Partial<Record<VizLang, ThemedToken[][]>>>({});
@@ -70,29 +70,29 @@ export function CodePanel({
   }, [active, lang, reduced]);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-code">
-      <div className="flex items-center gap-1 border-b border-border px-2 py-1.5">
-        {TABS.map((tab) => (
-          <button
-            key={tab.lang}
-            type="button"
-            onClick={() => setLang(tab.lang)}
-            className={cn(
-              "rounded-md px-2.5 py-1 text-xs font-medium transition",
-              lang === tab.lang
-                ? "bg-background text-foreground"
-                : "text-muted hover:text-foreground",
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
+    <div className={cn("code-surface", flush && "border-0")}>
+      <div className="code-surface-header">
+        <div className="code-surface-tabs" role="tablist" aria-label="Language">
+          {TABS.map((tab) => (
+            <button
+              key={tab.lang}
+              type="button"
+              role="tab"
+              aria-selected={lang === tab.lang}
+              data-active={lang === tab.lang ? "true" : "false"}
+              onClick={() => setLang(tab.lang)}
+              className="code-tab"
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
       <div
         ref={scrollRef}
         className={cn(
-          "viz-shiki overflow-x-auto overflow-y-auto py-2 font-mono leading-relaxed",
-          large ? "max-h-[70vh] text-[0.95rem]" : "max-h-[26rem] text-[0.8rem]",
+          "viz-shiki code-body overflow-y-auto",
+          large ? "max-h-[70vh]" : "max-h-[26rem]",
         )}
       >
         {lines.map((text, i) => {
@@ -102,20 +102,22 @@ export function CodePanel({
             <div
               key={i}
               ref={isActive ? activeRef : undefined}
-              className="relative flex min-w-max px-3"
+              className="relative flex min-w-max"
             >
               {isActive ? (
                 <motion.div
                   layoutId={highlightId}
-                  transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 500, damping: 40 }}
+                  transition={
+                    reduced
+                      ? { duration: 0 }
+                      : { type: "spring", stiffness: 500, damping: 40 }
+                  }
                   className="absolute inset-0 border-l-2 border-accent bg-accent/12"
                   aria-hidden
                 />
               ) : null}
-              <span className="relative w-6 shrink-0 select-none pr-3 text-right text-muted/60">
-                {i + 1}
-              </span>
-              <span className="relative whitespace-pre">
+              <span className="code-gutter relative">{i + 1}</span>
+              <span className="relative pr-4 whitespace-pre">
                 {tokensForLine && tokensForLine.length > 0
                   ? tokensForLine.map((tok, ti) => (
                       <span key={ti} className="viz-code-token" style={tok.htmlStyle}>

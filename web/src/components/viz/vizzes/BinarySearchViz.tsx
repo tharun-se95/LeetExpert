@@ -129,7 +129,7 @@ function cellTone(state: BinarySearchState, i: number): CellTone {
 }
 
 export function BinarySearchViz(props: Record<string, unknown>) {
-  const { data, target, speed } = props;
+  const { data, target, speed, autoPlay } = props;
   const arr = useMemo(
     () => [...numberArrayProp(data, [1, 3, 5, 7, 9, 11, 13])].sort((a, b) => a - b),
     [data],
@@ -138,7 +138,13 @@ export function BinarySearchViz(props: Record<string, unknown>) {
   const steps = useMemo(() => buildSteps(arr, tgt), [arr, tgt]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Binary search trace">
+    <VizPlayer
+      code={CODE}
+      steps={steps}
+      speedMs={speedProp(speed)}
+      autoPlay={autoPlay === true}
+      label="Binary search trace"
+    >
       {(state) => (
         <div className="flex flex-col items-start gap-3">
           <div className="flex gap-1.5">

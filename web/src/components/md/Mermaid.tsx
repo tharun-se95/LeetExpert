@@ -14,6 +14,8 @@ type MermaidAPI = typeof import("mermaid").default;
 
 let mermaidModule: MermaidAPI | null = null;
 let mermaidImport: Promise<MermaidAPI> | null = null;
+/** Serialize initialize + render — concurrent calls corrupt Mermaid's singleton. */
+let renderChain: Promise<unknown> = Promise.resolve();
 
 async function loadMermaid(): Promise<MermaidAPI> {
   if (mermaidModule) return mermaidModule;
@@ -33,34 +35,110 @@ async function loadMermaid(): Promise<MermaidAPI> {
   return mermaidImport;
 }
 
+function enqueueMermaid<T>(task: () => Promise<T>): Promise<T> {
+  const run = renderChain.then(task, task);
+  // Keep the chain alive even when a task fails.
+  renderChain = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
+/**
+ * Mermaid needs resolved hex — CSS vars / alpha borders are ignored or wash out.
+ * Values mirror Brand DS v1.0 (globals.css); see design-tokens allowlist for this file.
+ */
 function themeConfig(isDark: boolean) {
+  // Shared brand accents
+  const accent = "#6e63ff";
+  const fontFamily =
+    "var(--font-sans), Inter, ui-sans-serif, system-ui, sans-serif";
+
+  const flowchart = {
+    htmlLabels: true as const,
+    curve: "basis" as const,
+    padding: 16,
+    nodeSpacing: 36,
+    rankSpacing: 48,
+    diagramPadding: 8,
+    useMaxWidth: true,
+  };
+
+  if (isDark) {
+    return {
+      theme: "base" as const,
+      fontFamily,
+      flowchart,
+      themeVariables: {
+        darkMode: true,
+        background: "transparent",
+        fontFamily,
+        fontSize: "14px",
+        // Nodes
+        primaryColor: "#202533",
+        primaryTextColor: "#ffffff",
+        primaryBorderColor: "#6e63ff",
+        secondaryColor: "#181b23",
+        secondaryTextColor: "#ffffff",
+        secondaryBorderColor: "#2a2f3a",
+        tertiaryColor: "#181b23",
+        tertiaryTextColor: "#b8bcc8",
+        tertiaryBorderColor: "#2a2f3a",
+        mainBkg: "#202533",
+        nodeBkg: "#202533",
+        nodeBorder: "#6e63ff",
+        nodeTextColor: "#ffffff",
+        // Edges
+        lineColor: "#b8bcc8",
+        edgeLabelBackground: "#181b23",
+        // Clusters / subgraphs
+        clusterBkg: "#181b23",
+        clusterBorder: "#2a2f3a",
+        titleColor: "#b8bcc8",
+        // Text
+        textColor: "#ffffff",
+        noteBkgColor: "#202533",
+        noteTextColor: "#ffffff",
+        noteBorderColor: "#2a2f3a",
+        activeBorderColor: accent,
+      },
+    };
+  }
+
   return {
-    theme: (isDark ? "dark" : "neutral") as "dark" | "neutral",
-    fontFamily: "var(--font-sans), ui-sans-serif, system-ui",
-    themeVariables: isDark
-      ? {
-          primaryColor: "#1a1a1a",
-          primaryTextColor: "#ededed",
-          primaryBorderColor: "#333",
-          lineColor: "#a1a1aa",
-          secondaryColor: "#111",
-          tertiaryColor: "#0a0a0a",
-          background: "#0a0a0a",
-          mainBkg: "#171717",
-          nodeBorder: "#3f3f46",
-          clusterBkg: "#111",
-        }
-      : {
-          primaryColor: "#f4f4f5",
-          primaryTextColor: "#18181b",
-          primaryBorderColor: "#d4d4d8",
-          lineColor: "#71717a",
-          secondaryColor: "#fafafa",
-          tertiaryColor: "#ffffff",
-          background: "#ffffff",
-          mainBkg: "#fafafa",
-          nodeBorder: "#d4d4d8",
-        },
+    theme: "base" as const,
+    fontFamily,
+    flowchart,
+    themeVariables: {
+      darkMode: false,
+      background: "transparent",
+      fontFamily,
+      fontSize: "14px",
+      primaryColor: "#ffffff",
+      primaryTextColor: "#111827",
+      primaryBorderColor: "#6e63ff",
+      secondaryColor: "#f4f5f8",
+      secondaryTextColor: "#111827",
+      secondaryBorderColor: "#eceef3",
+      tertiaryColor: "#f4f5f8",
+      tertiaryTextColor: "#4b5563",
+      tertiaryBorderColor: "#eceef3",
+      mainBkg: "#ffffff",
+      nodeBkg: "#ffffff",
+      nodeBorder: "#6e63ff",
+      nodeTextColor: "#111827",
+      lineColor: "#4b5563",
+      edgeLabelBackground: "#ffffff",
+      clusterBkg: "#f4f5f8",
+      clusterBorder: "#eceef3",
+      titleColor: "#4b5563",
+      textColor: "#111827",
+      noteBkgColor: "#f4f5f8",
+      noteTextColor: "#111827",
+      noteBorderColor: "#eceef3",
+      activeBorderColor: accent,
+    },
   };
 }
 
@@ -87,24 +165,33 @@ export function Mermaid({ chart }: MermaidProps) {
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [retry, setRetry] = useState(0);
   const reduceMotion = useReducedMotion();
+  const source = chart.trim();
+  // next-themes is undefined on the first client paint — wait so we don't
+  // paint light then immediately tear down for dark (and race Mermaid).
+  const themeReady = resolvedTheme === "light" || resolvedTheme === "dark";
 
   useEffect(() => {
-    let cancelled = false;
-    const source = chart.trim();
     if (!source) {
       setError("Empty mermaid diagram");
       setSvg("");
       return;
     }
+    if (!themeReady) return;
 
-    async function render() {
-      const renderId = `mermaid-${id}-${resolvedTheme === "dark" ? "d" : "l"}-${Date.now()}`;
+    let cancelled = false;
+    const renderId = `mermaid-${id}-${resolvedTheme}-${retry}-${Math.random().toString(36).slice(2, 8)}`;
+
+    void enqueueMermaid(async () => {
       try {
         const mermaid = await loadMermaid();
-        const isDark = resolvedTheme === "dark";
-        mermaid.initialize(themeConfig(isDark));
-
+        mermaid.initialize({
+          startOnLoad: false,
+          suppressErrorRendering: true,
+          securityLevel: "loose",
+          ...themeConfig(resolvedTheme === "dark"),
+        });
         const { svg: rendered } = await mermaid.render(renderId, source);
         scrubMermaidOrphans(renderId);
         if (!cancelled) {
@@ -118,13 +205,12 @@ export function Mermaid({ chart }: MermaidProps) {
           setSvg("");
         }
       }
-    }
+    });
 
-    void render();
     return () => {
       cancelled = true;
     };
-  }, [chart, id, resolvedTheme]);
+  }, [source, id, resolvedTheme, themeReady, retry]);
 
   useEffect(() => {
     if (!expanded) return;
@@ -142,9 +228,23 @@ export function Mermaid({ chart }: MermaidProps) {
 
   if (error) {
     return (
-      <pre className="overflow-x-auto rounded-lg border border-warn/30 bg-warn/5 p-4 text-sm text-warn">
-        {chart}
-      </pre>
+      <div className="my-6 overflow-hidden rounded-lg border border-warn/30 bg-warn/5 p-4">
+        <p className="text-sm font-medium text-warn">Diagram failed to render</p>
+        <p className="mt-1 text-xs text-muted">{error}</p>
+        <button
+          type="button"
+          className="mt-3 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground transition hover:border-accent/40"
+          onClick={() => {
+            setError(null);
+            setRetry((n) => n + 1);
+          }}
+        >
+          Retry
+        </button>
+        <pre className="mt-3 max-h-40 overflow-auto font-mono text-[0.7rem] leading-relaxed text-muted">
+          {source}
+        </pre>
+      </div>
     );
   }
 
@@ -156,8 +256,8 @@ export function Mermaid({ chart }: MermaidProps) {
           onClick={() => svg && setExpanded(true)}
           disabled={!svg}
           className={cn(
-            "mermaid-diagram w-full overflow-x-auto rounded-lg border border-border bg-surface p-4 text-left transition",
-            svg && "cursor-zoom-in hover:border-foreground/20",
+            "mermaid-diagram elevated-card w-full overflow-x-auto rounded-[var(--radius-md)] border border-border bg-surface px-5 py-6 text-left transition-[border-color] duration-[var(--dur-fast)] ease-[var(--ease)]",
+            svg && "cursor-zoom-in hover:border-accent/35",
           )}
           aria-label="Expand diagram to fullscreen"
         >
@@ -173,9 +273,11 @@ export function Mermaid({ chart }: MermaidProps) {
           )}
         </button>
         {svg ? (
-          <span className="pointer-events-none absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-border bg-background/90 px-2 py-1 text-[10px] font-medium text-muted opacity-0 transition group-hover:opacity-100">
-            <Maximize2 className="h-3 w-3" />
-            Expand
+          <span
+            className="pointer-events-none absolute top-3 right-3 inline-flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] text-muted opacity-0 transition-opacity duration-[var(--dur-fast)] group-hover:opacity-100 group-focus-within:opacity-100"
+            aria-hidden
+          >
+            <Maximize2 className="h-3.5 w-3.5" />
           </span>
         ) : null}
       </div>
@@ -194,7 +296,7 @@ export function Mermaid({ chart }: MermaidProps) {
             aria-label="Fullscreen diagram"
           >
             <motion.div
-              className="relative max-h-[92vh] w-full max-w-5xl overflow-auto rounded-2xl border border-border bg-background p-6"
+              className="elevated-card relative max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[var(--radius-lg)] border border-border bg-surface p-8"
               initial={reduceMotion ? false : { opacity: 0, scale: 0.97, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
@@ -204,7 +306,7 @@ export function Mermaid({ chart }: MermaidProps) {
               <button
                 type="button"
                 onClick={() => setExpanded(false)}
-                className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-muted transition hover:text-foreground"
+                className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-muted transition hover:text-foreground"
                 aria-label="Close fullscreen diagram"
               >
                 <X className="h-4 w-4" />

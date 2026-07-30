@@ -33,7 +33,7 @@ export default async function ModulePage({ params }: PageProps) {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
       <Breadcrumbs
-        items={[{ label: "Course", href: "/" }, { label: mod.title }]}
+        items={[{ label: "Course", href: "/course" }, { label: mod.title }]}
       />
       <p className="mb-2 text-xs font-medium uppercase tracking-wider text-accent">
         Stage {mod.stage} — {stage?.title} · Module {mod.number}

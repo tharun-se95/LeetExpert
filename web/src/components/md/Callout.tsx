@@ -38,7 +38,7 @@ export function Callout({ children, type = "default" }: CalloutProps) {
     <blockquote
       id={id}
       className={cn(
-        "riso-halftone group relative my-5 rounded-r-lg border border-border border-l-4 px-4 py-3 not-italic",
+        "group relative my-5 rounded-r-lg border border-border border-l-4 px-4 py-3 not-italic",
         TYPE_STYLES[type] ?? TYPE_STYLES.default,
       )}
     >

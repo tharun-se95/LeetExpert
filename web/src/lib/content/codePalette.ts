@@ -1,18 +1,13 @@
 /**
  * The code palette — single source for both syntax highlighters.
  *
- * Shiki renders code blocks server-side; CodeMirror renders the sandbox
- * editor client-side. They are different engines, so the only way they stay
- * identical is by both painting from these values. Shiki reads them from
- * here directly; CodeMirror reads the `--tok-*` custom properties in
+ * Shiki renders code blocks + viz panes; CodeMirror renders the sandbox
+ * editor. They are different engines, so the only way they stay identical
+ * is by both painting from these values. Shiki reads them from here
+ * directly; CodeMirror reads the `--tok-*` custom properties in
  * globals.css, which mirror this file — change one, change both.
  *
- * A note on the ink discipline: the Riso page chrome is strictly limited to
- * olive/lime (accent + pop), blue (mark), and the status inks. Code is the
- * deliberate exception. Syntax colour is functional, not decorative — a
- * reader has to tell a string from a number at a glance — so this palette
- * carries the extra hues it needs. They are tuned warm to sit on the riso
- * paper rather than fight it.
+ * Tuned for the codeMacha Brand Design System v1.0 accent #6E63FF.
  */
 
 export interface CodeInk {
@@ -27,25 +22,25 @@ export interface CodeInk {
 }
 
 export const CODE_LIGHT: CodeInk = {
-  fg: "#17150f",
-  comment: "#8a8071",
-  keyword: "#c41d60",
-  string: "#046b4f",
-  constant: "#2a56a8",
-  entity: "#7a3ea8",
-  type: "#a85a17",
-  variable: "#17150f",
+  fg: "#111827",
+  comment: "#6b7280",
+  keyword: "#6e63ff",
+  string: "#047857",
+  constant: "#5c53f2",
+  entity: "#7c3aed",
+  type: "#b45309",
+  variable: "#111827",
 };
 
 export const CODE_DARK: CodeInk = {
-  fg: "#f3ece0",
-  comment: "#7c7466",
-  keyword: "#ff5c9c",
-  string: "#24d69a",
-  constant: "#7fa9ff",
-  entity: "#c9a6ff",
-  type: "#ffab70",
-  variable: "#f3ece0",
+  fg: "#ffffff",
+  comment: "#7b8193",
+  keyword: "#6e63ff",
+  string: "#34d399",
+  constant: "#7c74ff",
+  entity: "#a78bfa",
+  type: "#fbbf24",
+  variable: "#ffffff",
 };
 
 /** Minimal TextMate theme shape — enough for Shiki, without pulling its types. */
@@ -63,8 +58,6 @@ function buildTheme(name: string, type: "light" | "dark", ink: CodeInk): RawThem
   return {
     name,
     type,
-    // Backgrounds stay transparent — the page's own surface shows through,
-    // exactly as the previous github themes were overridden to do.
     colors: { "editor.background": "#00000000", "editor.foreground": ink.fg },
     tokenColors: [
       {

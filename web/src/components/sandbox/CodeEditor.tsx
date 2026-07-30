@@ -25,11 +25,16 @@ export function CodeEditor({
   onChange,
   lang,
   ariaLabel,
+  height,
+  minHeight = "10rem",
 }: {
   value: string;
   onChange: (next: string) => void;
   lang: SandboxLang;
   ariaLabel: string;
+  /** Fill a flex parent (IDE layout). When set, `minHeight` is ignored. */
+  height?: string;
+  minHeight?: string;
 }) {
   const extensions = useMemo(
     () => [
@@ -50,7 +55,7 @@ export function CodeEditor({
       value={value}
       onChange={onChange}
       extensions={extensions}
-      minHeight="10rem"
+      {...(height ? { height } : { minHeight })}
       // Without this, @uiw injects its own default LIGHT theme — an opaque
       // white background that survives into dark mode and washes the tokens
       // out. Our chrome comes from editorTheme.ts instead.

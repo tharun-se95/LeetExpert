@@ -12,6 +12,7 @@ only that one list.
 ```mermaid
 flowchart LR
   subgraph buckets["buckets (m = 8)"]
+    direction TB
     B0["0"] --> E0["('cat', 3)"]
     B1["1"]
     B2["2"] --> E1["('dog', 1)"] --> E2["('god', 7)"]

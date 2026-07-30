@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import {
   buildCourseNav,
   type CourseNavModule,
+  type CourseNavStage,
 } from "@/lib/course/nav";
 import { useProgress } from "@/components/providers/ProgressProvider";
 
@@ -16,24 +17,36 @@ function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+/** Module whose page or a lesson under it matches the current route. */
+function activeModuleSlug(
+  stages: CourseNavStage[],
+  pathname: string,
+): string | null {
+  for (const stage of stages) {
+    for (const module of stage.modules) {
+      if (pathname === module.href) return module.slug;
+      if (module.lessons.some((l) => isActivePath(pathname, l.href))) {
+        return module.slug;
+      }
+    }
+  }
+  return null;
+}
+
 function ModuleNode({
   module,
   pathname,
+  open,
+  onToggle,
 }: {
   module: CourseNavModule;
   pathname: string;
+  open: boolean;
+  onToggle: () => void;
 }) {
   const { visited } = useProgress();
   const hasLessons = module.lessons.length > 0;
-  const childActive = module.lessons.some((l) =>
-    isActivePath(pathname, l.href),
-  );
   const selfActive = pathname === module.href;
-  const [open, setOpen] = useState(childActive || selfActive);
-
-  useEffect(() => {
-    if (childActive || selfActive) setOpen(true);
-  }, [childActive, selfActive, pathname]);
 
   const doneCount = module.lessons.filter((l) => visited.has(l.id)).length;
 
@@ -43,9 +56,10 @@ function ModuleNode({
         {hasLessons ? (
           <button
             type="button"
-            onClick={() => setOpen((v) => !v)}
+            onClick={onToggle}
             className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded text-muted hover:bg-surface hover:text-foreground"
-            aria-label={open ? "Collapse" : "Expand"}
+            aria-expanded={open}
+            aria-label={open ? "Collapse module" : "Expand module"}
           >
             {open ? (
               <ChevronDown className="h-3.5 w-3.5" />
@@ -113,13 +127,28 @@ function ModuleNode({
                 <Link
                   href={lesson.href}
                   className={cn(
-                    "min-w-0 flex-1 truncate rounded-[4px] py-1 pl-1.5 pr-1.5 text-[13px] transition-colors",
+                    "flex min-w-0 flex-1 items-center gap-1 rounded-[4px] py-1 pl-1.5 pr-1.5 text-[13px] transition-colors",
                     active
                       ? "bg-pop font-semibold text-on-pop"
                       : "text-muted hover:bg-surface hover:text-foreground",
                   )}
                 >
-                  {lesson.title}
+                  <span className="min-w-0 truncate">{lesson.title}</span>
+                  {lesson.type === "problem" ? (
+                    <span
+                      className={cn(
+                        // Compact ink stamp — mirrors ProblemWorkspace’s
+                        // “Problem” chip, shrunk for dense nav density.
+                        "shrink-0 rounded border px-1 py-px font-mono text-[9px] font-semibold uppercase leading-none tracking-wide",
+                        active
+                          ? "border-on-pop/40 text-on-pop/80"
+                          : "border-border text-muted",
+                      )}
+                      title="Problem"
+                    >
+                      P
+                    </span>
+                  ) : null}
                 </Link>
               </div>
             );
@@ -138,6 +167,15 @@ interface SidebarProps {
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
   const nav = useMemo(() => buildCourseNav(), []);
+  // Accordion: at most one module expanded. Route wins when it lands in a module.
+  const [openModuleSlug, setOpenModuleSlug] = useState<string | null>(() =>
+    activeModuleSlug(nav, pathname),
+  );
+
+  useEffect(() => {
+    const active = activeModuleSlug(nav, pathname);
+    if (active) setOpenModuleSlug(active);
+  }, [nav, pathname]);
 
   useEffect(() => {
     onClose();
@@ -165,10 +203,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
         <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Course">
           <Link
-            href="/"
+            href="/course"
             className={cn(
               "mb-1 block rounded-[4px] py-1 pl-2 text-[13px] font-medium transition-colors",
-              pathname === "/"
+              pathname === "/course"
                 ? "bg-pop font-semibold text-on-pop"
                 : "text-foreground hover:bg-surface",
             )}
@@ -182,7 +220,17 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 {stage.title}
               </p>
               {stage.modules.map((m) => (
-                <ModuleNode key={m.slug} module={m} pathname={pathname} />
+                <ModuleNode
+                  key={m.slug}
+                  module={m}
+                  pathname={pathname}
+                  open={openModuleSlug === m.slug}
+                  onToggle={() =>
+                    setOpenModuleSlug((prev) =>
+                      prev === m.slug ? null : m.slug,
+                    )
+                  }
+                />
               ))}
             </div>
           ))}

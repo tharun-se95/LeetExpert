@@ -7,6 +7,7 @@ import { ArrowsOut as Maximize2, ArrowsIn as Minimize2, Pause, Play, ArrowCounte
 import { cn } from "@/lib/utils";
 import { CodePanel } from "@/components/viz/CodePanel";
 import type { VizCode, VizStep } from "@/components/viz/types";
+import { useVizChrome } from "@/components/viz/vizChrome";
 
 export interface VizRenderCtx {
   /** Honor prefers-reduced-motion: jump, don't tween */
@@ -28,6 +29,7 @@ export function VizPlayer<S>({
   code,
   steps,
   speedMs = 900,
+  autoPlay = false,
   label,
   children,
 }: {
@@ -35,17 +37,27 @@ export function VizPlayer<S>({
   steps: VizStep<S>[];
   /** Autoplay interval per step, from the fence JSON */
   speedMs?: number;
+  /**
+   * Start playing on mount when motion is allowed. Used by the landing
+   * hero — lesson embeds stay click-to-play so they don't surprise readers.
+   */
+  autoPlay?: boolean;
   /** Accessible name for the whole player */
   label: string;
   children: (state: S, ctx: VizRenderCtx) => ReactNode;
 }) {
   const last = Math.max(0, steps.length - 1);
   const reduced = useReducedMotion() ?? false;
+  const { embedded } = useVizChrome();
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const liveId = useId();
+
+  useEffect(() => {
+    if (autoPlay && !reduced) setPlaying(true);
+  }, [autoPlay, reduced]);
 
   const go = useCallback(
     (next: number) => setIndex(Math.min(last, Math.max(0, next))),
@@ -136,12 +148,17 @@ export function VizPlayer<S>({
         aria-label={label}
         {...(expanded ? { role: "dialog", "aria-modal": true } : {})}
         className={cn(
-          "print:hidden flex flex-col border-border bg-surface/40 outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
+          "print:hidden flex flex-col border-border outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
           expanded
             ? "fixed inset-0 z-50 overflow-y-auto border-0 bg-background px-4 py-6 sm:px-8"
-            : "my-6 w-full rounded-xl border",
+            : embedded
+              ? "w-full bg-transparent"
+              : "elevated-card my-6 w-full overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-surface ring-1 ring-accent/20",
         )}
       >
+        {!expanded && !embedded ? (
+          <div className="poster-roof shrink-0" aria-hidden />
+        ) : null}
         <div
           className={cn(
             "flex w-full flex-col",
@@ -150,20 +167,30 @@ export function VizPlayer<S>({
         >
           <div
             className={cn(
-              "grid gap-3 p-3",
+              "grid gap-3",
+              embedded ? "p-0" : "p-3.5",
               expanded && "md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]",
             )}
           >
             <div
               className={cn(
-                "flex min-w-0 items-center justify-center overflow-x-auto rounded-lg border border-border bg-background/60 px-3 py-4",
+                "viz-stage flex min-w-0 items-center justify-center overflow-x-auto px-3 py-5",
+                embedded
+                  ? "rounded-[length:var(--radius-sm)] border border-border"
+                  : "rounded-[length:var(--radius-sm)] border border-border",
                 expanded ? "min-h-64 md:order-1" : "order-1",
               )}
             >
               {children(step.state, { reduced, index })}
             </div>
             <div className={cn("min-w-0", expanded ? "md:order-2" : "order-2")}>
-              <CodePanel code={code} line={step.line} reduced={reduced} large={expanded} />
+              <CodePanel
+                code={code}
+                line={step.line}
+                reduced={reduced}
+                large={expanded}
+                flush={embedded}
+              />
             </div>
           </div>
 
@@ -172,11 +199,11 @@ export function VizPlayer<S>({
             aria-live="polite"
             aria-atomic="true"
             className={cn(
-              "min-h-12 px-4 leading-snug text-foreground",
+              "min-h-12 border-t border-border bg-code/40 px-4 py-3 leading-snug text-foreground",
               expanded ? "text-base" : "text-sm",
             )}
           >
-            <span className="mr-2 font-mono text-[11px] tabular-nums text-muted">
+            <span className="mr-2 font-mono text-[11px] tabular-nums text-accent">
               step {index + 1} / {steps.length}
             </span>
             {step.caption}
@@ -184,7 +211,7 @@ export function VizPlayer<S>({
 
           <div
             className={cn(
-              "flex flex-wrap items-center gap-2 px-3 py-2.5",
+              "flex flex-wrap items-center gap-2 bg-surface px-3.5 py-3",
               expanded ? "mt-2" : "border-t border-border",
             )}
           >
