@@ -1,4 +1,9 @@
-import { MODULES, STAGES, type ModuleMeta } from "./manifest";
+import {
+  MODULES,
+  STAGES,
+  findProblemBySlug,
+  type ModuleMeta,
+} from "./manifest";
 
 export interface CourseNavLesson {
   id: string;
@@ -35,6 +40,10 @@ export function moduleHref(moduleSlug: string): string {
   return `/course/${moduleSlug}`;
 }
 
+export function problemHref(slug: string): string {
+  return `/problems/${slug}`;
+}
+
 export function buildCourseNav(): CourseNavStage[] {
   return STAGES.map((stage) => ({
     number: stage.number,
@@ -56,13 +65,30 @@ export function buildCourseNav(): CourseNavStage[] {
   }));
 }
 
-/** Map a /course/[module]/[lesson] pathname to its progress id. */
+/**
+ * Map a lesson-bearing pathname to its progress id — either the course
+ * shape (/course/[module]/[lesson], concept lessons and, historically,
+ * problems too) or the hub shape (/problems/[slug]). Both resolve to the
+ * SAME `moduleSlug/lessonSlug` id, so a problem visited at its old course
+ * URL and its new hub URL count as the same lesson for progress purposes.
+ */
 export function lessonIdFromPathname(pathname: string): string | null {
-  const match = /^\/course\/([^/]+)\/([^/]+)\/?$/.exec(pathname);
-  if (!match) return null;
-  const [, moduleSlug, lessonSlug] = match;
-  const mod = MODULES.find((m) => m.slug === moduleSlug);
-  if (!mod) return null;
-  if (!mod.lessons.some((l) => l.slug === lessonSlug)) return null;
-  return lessonId(moduleSlug, lessonSlug);
+  const courseMatch = /^\/course\/([^/]+)\/([^/]+)\/?$/.exec(pathname);
+  if (courseMatch) {
+    const [, moduleSlug, lessonSlug] = courseMatch;
+    const mod = MODULES.find((m) => m.slug === moduleSlug);
+    if (!mod) return null;
+    if (!mod.lessons.some((l) => l.slug === lessonSlug)) return null;
+    return lessonId(moduleSlug, lessonSlug);
+  }
+
+  const problemMatch = /^\/problems\/([^/]+)\/?$/.exec(pathname);
+  if (problemMatch) {
+    const [, slug] = problemMatch;
+    const hit = findProblemBySlug(slug);
+    if (!hit) return null;
+    return lessonId(hit.module.slug, hit.lesson.slug);
+  }
+
+  return null;
 }
