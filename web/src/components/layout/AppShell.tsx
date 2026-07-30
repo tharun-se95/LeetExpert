@@ -7,12 +7,13 @@ import { PageEnter } from "@/components/layout/PageEnter";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ProgressProvider } from "@/components/providers/ProgressProvider";
 import { VisitTracker } from "@/components/providers/VisitTracker";
-import { allLessonIds } from "@/lib/course/manifest";
+import { allLessonIds, allProblemSlugs } from "@/lib/course/manifest";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const totalCount = allLessonIds().length;
+  const totalProblemCount = allProblemSlugs().length;
 
   // Cmd/Ctrl+K from anywhere. Bound at the shell rather than in the header so
   // it works with focus anywhere on the page — including inside the sandbox
@@ -29,7 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <ProgressProvider totalCount={totalCount}>
+    <ProgressProvider totalCount={totalCount} totalProblemCount={totalProblemCount}>
       <VisitTracker />
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       <div className="flex h-dvh flex-col overflow-hidden">
