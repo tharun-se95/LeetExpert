@@ -662,6 +662,60 @@ export function getLesson(
   return { module: mod, lesson };
 }
 
+export function findProblemBySlug(
+  slug: string,
+): { module: ModuleMeta; lesson: LessonMeta } | undefined {
+  for (const mod of MODULES) {
+    const lesson = mod.lessons.find(
+      (l) => l.slug === slug && l.type === "problem",
+    );
+    if (lesson) return { module: mod, lesson };
+  }
+  return undefined;
+}
+
+/** Prev/next among a module's OWN problems, in their authored order. */
+export function getProblemNeighbors(
+  moduleSlug: string,
+  problemSlug: string,
+): {
+  prev: { slug: string; title: string } | null;
+  next: { slug: string; title: string } | null;
+} {
+  const mod = getModule(moduleSlug);
+  if (!mod) return { prev: null, next: null };
+  const problems = mod.lessons.filter((l) => l.type === "problem");
+  const idx = problems.findIndex((l) => l.slug === problemSlug);
+  if (idx < 0) return { prev: null, next: null };
+  return {
+    prev: idx > 0 ? { slug: problems[idx - 1].slug, title: problems[idx - 1].title } : null,
+    next:
+      idx < problems.length - 1
+        ? { slug: problems[idx + 1].slug, title: problems[idx + 1].title }
+        : null,
+  };
+}
+
+export interface ProblemGroup {
+  module: ModuleMeta;
+  problems: LessonMeta[];
+}
+
+/** Every module that has at least one problem, with just its problems. */
+export function groupedProblems(): ProblemGroup[] {
+  return MODULES.map((m) => ({
+    module: m,
+    problems: m.lessons.filter((l) => l.type === "problem"),
+  })).filter((g) => g.problems.length > 0);
+}
+
+/** Every problem lesson's slug — used by /problems/[slug]'s generateStaticParams. */
+export function allProblemSlugs(): string[] {
+  return MODULES.flatMap((m) =>
+    m.lessons.filter((l) => l.type === "problem").map((l) => l.slug),
+  );
+}
+
 export function modulesByStage(stage: number): ModuleMeta[] {
   return MODULES.filter((m) => m.stage === stage);
 }
