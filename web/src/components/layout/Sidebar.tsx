@@ -3,7 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CaretDown as ChevronDown, CaretRight as ChevronRight } from "@phosphor-icons/react";
+import {
+  CaretDown as ChevronDown,
+  CaretLeft,
+  CaretRight,
+} from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import {
   buildCourseNav,
@@ -64,7 +68,7 @@ function ModuleNode({
             {open ? (
               <ChevronDown className="h-3.5 w-3.5" />
             ) : (
-              <ChevronRight className="h-3.5 w-3.5" />
+              <CaretRight className="h-3.5 w-3.5" />
             )}
           </button>
         ) : (
@@ -76,8 +80,6 @@ function ModuleNode({
             "min-w-0 flex-1 truncate rounded-[4px] py-1 pl-1.5 pr-1.5 text-[13px] transition-colors",
             navModule.status === "coming-soon" && "text-muted/60",
             selfActive
-              // a printed block, not a wash — the old bg-accent/10 was a 10%
-              // tint that all but vanished against the paper
               ? "bg-pop font-semibold text-on-pop"
               : "text-foreground/80 hover:bg-surface hover:text-foreground",
           )}
@@ -134,21 +136,6 @@ function ModuleNode({
                   )}
                 >
                   <span className="min-w-0 truncate">{lesson.title}</span>
-                  {lesson.type === "problem" ? (
-                    <span
-                      className={cn(
-                        // Compact ink stamp — mirrors ProblemWorkspace’s
-                        // “Problem” chip, shrunk for dense nav density.
-                        "shrink-0 rounded border px-1 py-px font-mono text-[9px] font-semibold uppercase leading-none tracking-wide",
-                        active
-                          ? "border-on-pop/40 text-on-pop/80"
-                          : "border-border text-muted",
-                      )}
-                      title="Problem"
-                    >
-                      P
-                    </span>
-                  ) : null}
                 </Link>
               </div>
             );
@@ -161,13 +148,19 @@ function ModuleNode({
 
 interface SidebarProps {
   open: boolean;
+  onOpen: () => void;
   onClose: () => void;
+  /** Collapse to the rail after navigation on small viewports. */
+  onNavigate: () => void;
 }
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+/**
+ * Persistent Lessons drawer: full panel when open, narrow rail with an
+ * open control when closed — never fully removed from the layout.
+ */
+export function Sidebar({ open, onOpen, onClose, onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const nav = useMemo(() => buildCourseNav(), []);
-  // Accordion: at most one module expanded. Route wins when it lands in a module.
   const [openModuleSlug, setOpenModuleSlug] = useState<string | null>(() =>
     activeModuleSlug(nav, pathname),
   );
@@ -178,64 +171,88 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   }, [nav, pathname]);
 
   useEffect(() => {
-    onClose();
+    onNavigate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (
-    <>
-      <div
-        className={cn(
-          "print:hidden fixed inset-0 z-40 bg-black/40 transition-opacity lg:hidden",
-          open ? "opacity-100" : "pointer-events-none opacity-0",
-        )}
-        onClick={onClose}
-        aria-hidden
-      />
-      <aside
-        className={cn(
-          "print:hidden fixed inset-y-0 left-0 z-50 flex w-[min(18rem,85vw)] flex-col border-r border-border bg-background transition-transform lg:static lg:z-0 lg:w-64 lg:translate-x-0",
-          open ? "translate-x-0" : "-translate-x-full",
-        )}
-      >
-        <div className="flex h-14 items-center border-b border-border px-4 lg:hidden">
-          <span className="text-sm font-semibold">Navigation</span>
-        </div>
-        <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Course">
-          <Link
-            href="/course"
-            className={cn(
-              "mb-1 block rounded-[4px] py-1 pl-2 text-[13px] font-medium transition-colors",
-              pathname === "/course"
-                ? "bg-pop font-semibold text-on-pop"
-                : "text-foreground hover:bg-surface",
-            )}
+    <aside
+      className={cn(
+        "print:hidden relative z-20 flex h-full shrink-0 flex-col border-r border-border bg-background transition-[width] duration-[var(--dur)] ease-[var(--ease)]",
+        open ? "w-[min(18rem,85vw)] sm:w-64" : "w-12",
+      )}
+    >
+      {open ? (
+        <>
+          <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-3">
+            <span className="truncate text-sm font-semibold tracking-tight">
+              Lessons
+            </span>
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border text-muted transition hover:bg-surface hover:text-foreground"
+              aria-label="Close lessons drawer"
+            >
+              <CaretLeft className="h-4 w-4" weight="bold" />
+            </button>
+          </div>
+          <nav
+            className="flex-1 overflow-y-auto px-3 py-4"
+            aria-label="Course"
           >
-            Course Overview
-          </Link>
-          {nav.map((stage) => (
-            <div key={stage.number} className="mt-4 first:mt-2">
-              <p className="mb-1.5 border-b border-border px-2 pb-1.5 font-display text-[11px] font-bold uppercase tracking-[0.1em] text-foreground/70">
-                <span className="text-accent">{stage.number}</span>{" "}
-                {stage.title}
-              </p>
-              {stage.modules.map((m) => (
-                <ModuleNode
-                  key={m.slug}
-                  navModule={m}
-                  pathname={pathname}
-                  open={openModuleSlug === m.slug}
-                  onToggle={() =>
-                    setOpenModuleSlug((prev) =>
-                      prev === m.slug ? null : m.slug,
-                    )
-                  }
-                />
-              ))}
-            </div>
-          ))}
-        </nav>
-      </aside>
-    </>
+            <Link
+              href="/course"
+              className={cn(
+                "mb-1 block rounded-[4px] py-1 pl-2 text-[13px] font-medium transition-colors",
+                pathname === "/course"
+                  ? "bg-pop font-semibold text-on-pop"
+                  : "text-foreground hover:bg-surface",
+              )}
+            >
+              All modules
+            </Link>
+            {nav.map((stage) => (
+              <div key={stage.number} className="mt-4 first:mt-2">
+                <p className="mb-1.5 border-b border-border px-2 pb-1.5 font-display text-[11px] font-bold uppercase tracking-[0.1em] text-foreground/70">
+                  <span className="text-accent">{stage.number}</span>{" "}
+                  {stage.title}
+                </p>
+                {stage.modules.map((m) => (
+                  <ModuleNode
+                    key={m.slug}
+                    navModule={m}
+                    pathname={pathname}
+                    open={openModuleSlug === m.slug}
+                    onToggle={() =>
+                      setOpenModuleSlug((prev) =>
+                        prev === m.slug ? null : m.slug,
+                      )
+                    }
+                  />
+                ))}
+              </div>
+            ))}
+          </nav>
+        </>
+      ) : (
+        <div className="flex h-full flex-col items-center py-3">
+          <button
+            type="button"
+            onClick={onOpen}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
+            aria-label="Open lessons drawer"
+          >
+            <CaretRight className="h-4 w-4" weight="bold" />
+          </button>
+          <span
+            className="mt-4 origin-center rotate-180 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase"
+            style={{ writingMode: "vertical-rl" }}
+          >
+            Lessons
+          </span>
+        </div>
+      )}
+    </aside>
   );
 }

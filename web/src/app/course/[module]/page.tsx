@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookOpen, PuzzlePiece as Puzzle } from "@phosphor-icons/react/dist/ssr";
+import { BookOpen, Target } from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { getModule, STAGES } from "@/lib/course/manifest";
+import { getModule, STAGES, isLessonsNavLesson } from "@/lib/course/manifest";
 import { allModuleSlugs } from "@/lib/course/load";
 import { lessonHref } from "@/lib/course/nav";
 
@@ -29,11 +29,13 @@ export default async function ModulePage({ params }: PageProps) {
   if (!mod) notFound();
 
   const stage = STAGES.find((s) => s.number === mod.stage);
+  const navLessons = mod.lessons.filter(isLessonsNavLesson);
+  const problemCount = mod.lessons.filter((l) => l.type === "problem").length;
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 lg:px-8 lg:py-10">
       <Breadcrumbs
-        items={[{ label: "Course", href: "/course" }, { label: mod.title }]}
+        items={[{ label: "Lessons", href: "/course" }, { label: mod.title }]}
       />
       <p className="mb-2 text-xs font-medium uppercase tracking-wider text-accent">
         Stage {mod.stage} — {stage?.title} · Module {mod.number}
@@ -54,29 +56,47 @@ export default async function ModulePage({ params }: PageProps) {
           </p>
         </div>
       ) : (
-        <ol className="mt-10 grid gap-2">
-          {mod.lessons.map((lesson, i) => (
-            <li key={lesson.slug}>
+        <>
+          {problemCount > 0 ? (
+            <p className="mt-4 text-sm text-muted">
               <Link
-                href={lessonHref(mod.slug, lesson.slug)}
-                className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm transition hover:border-foreground/25 hover:bg-surface"
+                href={lessonHref(mod.slug, "practice")}
+                className="font-medium text-accent underline decoration-accent/30 underline-offset-2 hover:decoration-accent"
               >
-                <span className="w-6 shrink-0 tabular-nums text-muted">
-                  {i + 1}.
-                </span>
-                {lesson.type === "problem" ? (
-                  <Puzzle className="h-4 w-4 shrink-0 text-accent" />
-                ) : (
-                  <BookOpen weight="bold" className="h-4 w-4 shrink-0 text-accent" />
-                )}
-                <span className="font-medium">{lesson.title}</span>
-                <span className="ml-auto text-xs uppercase tracking-wide text-muted/70">
-                  {lesson.type}
-                </span>
+                {problemCount} problems in Practice
               </Link>
-            </li>
-          ))}
-        </ol>
+            </p>
+          ) : null}
+          <ol className="mt-10 grid gap-2">
+            {navLessons.map((lesson, i) => (
+              <li key={lesson.slug}>
+                <Link
+                  href={lessonHref(mod.slug, lesson.slug)}
+                  className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm transition hover:border-foreground/25 hover:bg-surface"
+                >
+                  <span className="w-6 shrink-0 tabular-nums text-muted">
+                    {i + 1}.
+                  </span>
+                  {lesson.type === "practice" ? (
+                    <Target
+                      className="h-4 w-4 shrink-0 text-accent"
+                      weight="bold"
+                    />
+                  ) : (
+                    <BookOpen
+                      weight="bold"
+                      className="h-4 w-4 shrink-0 text-accent"
+                    />
+                  )}
+                  <span className="font-medium">{lesson.title}</span>
+                  <span className="ml-auto text-xs uppercase tracking-wide text-muted/70">
+                    {lesson.type}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </>
       )}
     </div>
   );

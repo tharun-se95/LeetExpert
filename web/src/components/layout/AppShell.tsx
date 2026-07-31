@@ -9,14 +9,13 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { ProgressProvider } from "@/components/providers/ProgressProvider";
 import { ScrollbarAutoHide } from "@/components/providers/ScrollbarAutoHide";
 import { VisitTracker } from "@/components/providers/VisitTracker";
-import { allLessonIds, allProblemSlugs, getLesson } from "@/lib/course/manifest";
+import { allLessonsNavIds, allProblemSlugs } from "@/lib/course/manifest";
 import { cn } from "@/lib/utils";
 
+const SIDEBAR_KEY = "dsa-sidebar-open";
+
 function isIdePath(pathname: string): boolean {
-  if (/^\/problems\/[^/]+\/?$/.test(pathname)) return true;
-  const course = /^\/course\/([^/]+)\/([^/]+)\/?$/.exec(pathname);
-  if (!course) return false;
-  return getLesson(course[1], course[2])?.lesson.type === "problem";
+  return /^\/problems\/[^/]+\/?$/.test(pathname);
 }
 
 /** Course overview is a full-width landing — no course nav chrome. */
@@ -24,20 +23,43 @@ function isLandingPath(pathname: string): boolean {
   return pathname === "/";
 }
 
+function isMobileViewport(): boolean {
+  return window.matchMedia("(max-width: 1023px)").matches;
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
-  const totalCount = allLessonIds().length;
+  const lessonProgressIds = allLessonsNavIds();
+  const totalCount = lessonProgressIds.length;
   const totalProblemCount = allProblemSlugs().length;
   const pathname = usePathname();
-  // Problem lessons (hub + course) use a fixed IDE viewport — panes scroll
-  // inside, the shell must not. Concept lessons keep document scroll.
   const ideViewport = isIdePath(pathname);
   const showSidebar = !isLandingPath(pathname);
 
-  // Cmd/Ctrl+K from anywhere. Bound at the shell rather than in the header so
-  // it works with focus anywhere on the page — including inside the sandbox
-  // editor, which otherwise swallows keystrokes.
+  useEffect(() => {
+    if (!showSidebar) return;
+    try {
+      const raw = localStorage.getItem(SIDEBAR_KEY);
+      if (raw === "0" || raw === "1") {
+        setSidebarOpen(raw === "1");
+        return;
+      }
+    } catch {
+      /* ignore */
+    }
+    setSidebarOpen(!isMobileViewport());
+  }, [showSidebar]);
+
+  useEffect(() => {
+    if (!showSidebar) return;
+    try {
+      localStorage.setItem(SIDEBAR_KEY, sidebarOpen ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }, [sidebarOpen, showSidebar]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -49,27 +71,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Landing has no sidebar — clear mobile drawer state so it doesn't reopen
-  // when navigating back into a shell route.
-  useEffect(() => {
-    if (!showSidebar) setSidebarOpen(false);
-  }, [showSidebar]);
-
   return (
-    <ProgressProvider totalCount={totalCount} totalProblemCount={totalProblemCount}>
+    <ProgressProvider
+      totalCount={totalCount}
+      totalProblemCount={totalProblemCount}
+      lessonProgressIds={lessonProgressIds}
+    >
       <VisitTracker />
       <ScrollbarAutoHide />
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       <div className="flex h-dvh flex-col overflow-hidden">
-        <Header
-          sidebarOpen={sidebarOpen}
-          onToggleSidebar={() => setSidebarOpen((v) => !v)}
-          onOpenSearch={() => setSearchOpen(true)}
-          showSidebarToggle={showSidebar}
-        />
+        <Header onOpenSearch={() => setSearchOpen(true)} />
         <div className="flex min-h-0 flex-1">
           {showSidebar ? (
-            <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <Sidebar
+              open={sidebarOpen}
+              onOpen={() => setSidebarOpen(true)}
+              onClose={() => setSidebarOpen(false)}
+              onNavigate={() => {
+                if (isMobileViewport()) setSidebarOpen(false);
+              }}
+            />
           ) : null}
           <main
             className={cn(

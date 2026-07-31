@@ -109,9 +109,9 @@ export function HeroStatsArray({ tiles }: { tiles: readonly HeroStatTile[] }) {
   } as const;
 
   return (
-    <div className="elevated-card overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-surface p-3 sm:p-4">
-      <p className="font-mono text-[0.65rem] tracking-wide text-muted uppercase">
-        Your learning progress
+    <div className="overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-background p-3 sm:p-4">
+      <p className="text-[0.65rem] font-medium tracking-wide text-muted uppercase">
+        Curriculum at a glance
       </p>
       <p className="mt-0.5 text-xs text-muted">
         <span className="font-mono text-muted">read</span> leads ·{" "}

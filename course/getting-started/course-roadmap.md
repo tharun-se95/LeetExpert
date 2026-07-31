@@ -9,6 +9,7 @@ The 24 modules are grouped into five stages. The order isn't arbitrary —
 each stage leans on the ones before it, and most confusion in DSA comes from
 meeting ideas before their prerequisites.
 
+```roadmap
 ### Stage 0 — Foundations
 
 *How to Learn This Course · Big O & Complexity Analysis · Math for DSA*
@@ -57,6 +58,7 @@ Problems where the answer depends on the whole input at once. Greedy is
 taught with exchange arguments — proving the greedy choice is safe, since
 "it felt locally best" is how greedy solutions go wrong. Graphs and DP are
 the two biggest modules in the course, each internally staged.
+```
 
 ## How to move through it
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -32,6 +32,9 @@ const TABS: { id: LeftTab; label: string }[] = [
   { id: "solution", label: "Solution" },
 ];
 
+/** Matches Tailwind `lg` — side-by-side IDE needs this width. */
+const IDE_WIDE_MQ = "(min-width: 1024px)";
+
 interface ProblemWorkspaceProps {
   lesson: LoadedLesson & { sandbox: SandboxExtraction };
   eyebrow: string;
@@ -43,8 +46,8 @@ interface ProblemWorkspaceProps {
 }
 
 /**
- * LeetCode-style IDE shell for `/problems/[slug]` only.
- * Course problem lessons keep `ProblemLessonView` (document + sticky card).
+ * LeetCode-style IDE shell for problem lessons and `/problems/[slug]`.
+ * One Sandbox instance for all viewports — layout axis flips at `lg`.
  */
 export function ProblemWorkspace({
   lesson,
@@ -58,6 +61,15 @@ export function ProblemWorkspace({
   const id = lessonId(lesson.moduleSlug, lesson.lessonSlug);
   const isSolved = solved.has(id);
   const [tab, setTab] = useState<LeftTab>("description");
+  const [wide, setWide] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(IDE_WIDE_MQ);
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const { explanation, solution } = useMemo(
     () => splitProblemTabs(lesson.sandbox.afterSandbox),
@@ -70,6 +82,24 @@ export function ProblemWorkspace({
       : tab === "explanation"
         ? explanation
         : solution;
+
+  const leftPane = (
+    <LeftPane
+      tab={tab}
+      onTabChange={setTab}
+      source={tabSource}
+      highlightedBlocks={lesson.highlightedBlocks}
+      highlightedTabs={lesson.highlightedTabs}
+    />
+  );
+
+  const sandbox = (
+    <Sandbox
+      source={lesson.sandbox.sandboxSource}
+      onSolved={() => markSolved(id)}
+      variant="ide"
+    />
+  );
 
   return (
     // Fills AppShell's main pane (`overflow-hidden` on /problems/[slug]).
@@ -135,52 +165,17 @@ export function ProblemWorkspace({
       </header>
 
       {/*
-        Stacked on small screens (description capped, editor takes the rest).
-        Side-by-side from lg — the IDE feel only works with horizontal room.
+        Single Sandbox for all breakpoints. Stacked (vertical split) below lg;
+        side-by-side (horizontal) from lg. Children stay mounted across the flip.
       */}
-      <div className="flex min-h-0 flex-1 flex-col lg:hidden">
-        <div className="flex max-h-[38%] min-h-0 flex-col border-b border-border">
-          <LeftPane
-            tab={tab}
-            onTabChange={setTab}
-            source={tabSource}
-            highlightedBlocks={lesson.highlightedBlocks}
-            highlightedTabs={lesson.highlightedTabs}
-          />
-        </div>
-        <div className="min-h-0 flex-1">
-          <Sandbox
-            source={lesson.sandbox.sandboxSource}
-            onSolved={() => markSolved(id)}
-            variant="ide"
-          />
-        </div>
-      </div>
-
-      <div className="hidden min-h-0 flex-1 lg:flex">
-        <PanelSplit
-          orientation="horizontal"
-          initialPrimary={0.42}
-          minPrimary={0.28}
-          maxPrimary={0.58}
-          primary={
-            <LeftPane
-              tab={tab}
-              onTabChange={setTab}
-              source={tabSource}
-              highlightedBlocks={lesson.highlightedBlocks}
-              highlightedTabs={lesson.highlightedTabs}
-            />
-          }
-          secondary={
-            <Sandbox
-              source={lesson.sandbox.sandboxSource}
-              onSolved={() => markSolved(id)}
-              variant="ide"
-            />
-          }
-        />
-      </div>
+      <PanelSplit
+        orientation={wide ? "horizontal" : "vertical"}
+        initialPrimary={wide ? 0.42 : 0.38}
+        minPrimary={wide ? 0.28 : 0.22}
+        maxPrimary={wide ? 0.58 : 0.55}
+        primary={leftPane}
+        secondary={sandbox}
+      />
     </div>
   );
 }

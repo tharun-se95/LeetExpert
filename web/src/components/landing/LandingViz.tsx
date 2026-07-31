@@ -62,7 +62,7 @@ export function LandingVizStrip() {
   const active = STRIP_TABS.find((t) => t.id === tab) ?? STRIP_TABS[0];
 
   return (
-    <div className="elevated-card overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-elevated">
+    <div className="overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-elevated">
       <div className="border-b border-border px-3 py-3 sm:px-4">
         <div
           role="tablist"
@@ -99,7 +99,7 @@ export function LandingVizStrip() {
 /** Intuition before the landing mini-sandbox. */
 export function LandingSandboxViz() {
   return (
-    <div className="elevated-card overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-elevated p-3 sm:p-4">
+    <div className="overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-elevated p-3 sm:p-4">
       <Viz source={SANDBOX_PAIR_VIZ} embedded />
     </div>
   );

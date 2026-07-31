@@ -2,6 +2,8 @@ import {
   MODULES,
   STAGES,
   findProblemBySlug,
+  isLessonsNavLesson,
+  type LessonType,
   type ModuleMeta,
 } from "./manifest";
 
@@ -9,7 +11,7 @@ export interface CourseNavLesson {
   id: string;
   title: string;
   href: string;
-  type: "concept" | "problem";
+  type: LessonType;
 }
 
 export interface CourseNavModule {
@@ -44,6 +46,18 @@ export function problemHref(slug: string): string {
   return `/problems/${slug}`;
 }
 
+/** Count visited Lessons-nav ids only (ignore problem drills in the chip). */
+export function countLessonsProgress(
+  visited: Iterable<string>,
+  lessonProgressIds: ReadonlySet<string>,
+): number {
+  let n = 0;
+  for (const id of visited) {
+    if (lessonProgressIds.has(id)) n += 1;
+  }
+  return n;
+}
+
 export function buildCourseNav(): CourseNavStage[] {
   return STAGES.map((stage) => ({
     number: stage.number,
@@ -55,7 +69,7 @@ export function buildCourseNav(): CourseNavStage[] {
       shortTitle: m.shortTitle,
       href: moduleHref(m.slug),
       status: m.status,
-      lessons: m.lessons.map((l) => ({
+      lessons: m.lessons.filter(isLessonsNavLesson).map((l) => ({
         id: lessonId(m.slug, l.slug),
         title: l.title,
         href: lessonHref(m.slug, l.slug),

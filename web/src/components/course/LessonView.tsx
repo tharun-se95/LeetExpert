@@ -15,11 +15,13 @@ interface LessonViewProps {
   lesson: LoadedLesson;
   breadcrumbs: Crumb[];
   eyebrow: string;
-  typeLabel: "Concept" | "Problem";
+  typeLabel: "Concept" | "Problem" | "Practice";
   prev: NeighborLink | null;
   next: NeighborLink | null;
   /** Interactive explorer rendered above the markdown */
   stage?: ReactNode;
+  /** Injected after markdown (e.g. Practice problem list). */
+  afterMarkdown?: ReactNode;
 }
 
 export function LessonView({
@@ -30,6 +32,7 @@ export function LessonView({
   prev,
   next,
   stage,
+  afterMarkdown,
 }: LessonViewProps) {
   return (
     <div className="mx-auto flex w-full max-w-6xl gap-10 px-4 py-8 lg:px-8 lg:py-10">
@@ -55,6 +58,7 @@ export function LessonView({
             highlightedTabs={lesson.highlightedTabs}
           />
         </div>
+        {afterMarkdown ? <div className="mt-2">{afterMarkdown}</div> : null}
         <nav className="mt-12 flex items-stretch justify-between gap-4 border-t border-border pt-6">
           {prev ? (
             <Link

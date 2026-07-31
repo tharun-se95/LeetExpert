@@ -47,11 +47,10 @@ function enqueueMermaid<T>(task: () => Promise<T>): Promise<T> {
 
 /**
  * Mermaid needs resolved hex — CSS vars / alpha borders are ignored or wash out.
- * Values mirror Brand DS v1.0 (globals.css); see design-tokens allowlist for this file.
+ * Values mirror Indigo Modern (globals.css); see design-tokens allowlist for this file.
  */
 function themeConfig(isDark: boolean) {
-  // Shared brand accents
-  const accent = "#6e63ff";
+  const accent = isDark ? "#818cf8" : "#6366f1";
   const fontFamily =
     "var(--font-sans), Inter, ui-sans-serif, system-ui, sans-serif";
 
@@ -75,31 +74,27 @@ function themeConfig(isDark: boolean) {
         background: "transparent",
         fontFamily,
         fontSize: "14px",
-        // Nodes
-        primaryColor: "#202533",
-        primaryTextColor: "#ffffff",
-        primaryBorderColor: "#6e63ff",
+        primaryColor: "#1f2430",
+        primaryTextColor: "#f9fafc",
+        primaryBorderColor: accent,
         secondaryColor: "#181b23",
-        secondaryTextColor: "#ffffff",
+        secondaryTextColor: "#f9fafc",
         secondaryBorderColor: "#2a2f3a",
         tertiaryColor: "#181b23",
-        tertiaryTextColor: "#b8bcc8",
+        tertiaryTextColor: "#a1a1aa",
         tertiaryBorderColor: "#2a2f3a",
-        mainBkg: "#202533",
-        nodeBkg: "#202533",
-        nodeBorder: "#6e63ff",
-        nodeTextColor: "#ffffff",
-        // Edges
-        lineColor: "#b8bcc8",
+        mainBkg: "#1f2430",
+        nodeBkg: "#1f2430",
+        nodeBorder: accent,
+        nodeTextColor: "#f9fafc",
+        lineColor: "#a1a1aa",
         edgeLabelBackground: "#181b23",
-        // Clusters / subgraphs
         clusterBkg: "#181b23",
         clusterBorder: "#2a2f3a",
-        titleColor: "#b8bcc8",
-        // Text
-        textColor: "#ffffff",
-        noteBkgColor: "#202533",
-        noteTextColor: "#ffffff",
+        titleColor: "#a1a1aa",
+        textColor: "#f9fafc",
+        noteBkgColor: "#1f2430",
+        noteTextColor: "#f9fafc",
         noteBorderColor: "#2a2f3a",
         activeBorderColor: accent,
       },
@@ -117,26 +112,26 @@ function themeConfig(isDark: boolean) {
       fontSize: "14px",
       primaryColor: "#ffffff",
       primaryTextColor: "#111827",
-      primaryBorderColor: "#6e63ff",
-      secondaryColor: "#f4f5f8",
+      primaryBorderColor: accent,
+      secondaryColor: "#f3f4f6",
       secondaryTextColor: "#111827",
-      secondaryBorderColor: "#eceef3",
-      tertiaryColor: "#f4f5f8",
-      tertiaryTextColor: "#4b5563",
-      tertiaryBorderColor: "#eceef3",
+      secondaryBorderColor: "#e5e7eb",
+      tertiaryColor: "#f3f4f6",
+      tertiaryTextColor: "#6b7280",
+      tertiaryBorderColor: "#e5e7eb",
       mainBkg: "#ffffff",
       nodeBkg: "#ffffff",
-      nodeBorder: "#6e63ff",
+      nodeBorder: accent,
       nodeTextColor: "#111827",
-      lineColor: "#4b5563",
+      lineColor: "#6b7280",
       edgeLabelBackground: "#ffffff",
-      clusterBkg: "#f4f5f8",
-      clusterBorder: "#eceef3",
-      titleColor: "#4b5563",
+      clusterBkg: "#f3f4f6",
+      clusterBorder: "#e5e7eb",
+      titleColor: "#6b7280",
       textColor: "#111827",
-      noteBkgColor: "#f4f5f8",
+      noteBkgColor: "#f3f4f6",
       noteTextColor: "#111827",
-      noteBorderColor: "#eceef3",
+      noteBorderColor: "#e5e7eb",
       activeBorderColor: accent,
     },
   };

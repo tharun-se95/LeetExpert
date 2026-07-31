@@ -5,6 +5,7 @@ import { propertyNames } from "../src/lib/sandbox/properties";
 import { parseSandboxSpec } from "@/components/sandbox/parseSpec";
 import matter from "gray-matter";
 import { extractSandboxFence } from "../src/lib/content/extractSandboxFence";
+import { MODULES } from "../src/lib/course/manifest";
 
 /**
  * Content validation across every lesson.
@@ -389,6 +390,70 @@ describe("the sandbox fence is safe to extract", () => {
  * problem lessons anywhere in the course share a slug. Verified true for
  * all 116 before this plan was written; this is what keeps it true.
  */
+describe("Practice chapters", () => {
+  it("every problem-bearing module has exactly one practice lesson, last", () => {
+    const bad: string[] = [];
+    for (const mod of MODULES) {
+      const problems = mod.lessons.filter((l) => l.type === "problem");
+      const practices = mod.lessons.filter((l) => l.type === "practice");
+      if (problems.length === 0) {
+        if (practices.length !== 0) {
+          bad.push(`${mod.slug}: concept-only module has practice`);
+        }
+        continue;
+      }
+      if (practices.length !== 1) {
+        bad.push(`${mod.slug}: expected 1 practice, found ${practices.length}`);
+        continue;
+      }
+      const last = mod.lessons[mod.lessons.length - 1];
+      if (last.type !== "practice" || last.slug !== "practice") {
+        bad.push(`${mod.slug}: last lesson must be type/slug practice`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("every practice.md on disk has type: practice frontmatter", () => {
+    const bad: string[] = [];
+    for (const lesson of LESSONS) {
+      if (!lesson.rel.endsWith("/practice.md")) continue;
+      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+      if (!fm?.[1].includes("type: practice")) {
+        bad.push(lesson.rel);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("practice-problems fence slugs are a subset of that module's problems", () => {
+    const bad: string[] = [];
+    const fence = /^(`{3,8})practice-problems\s*\n([\s\S]*?)^\1\s*$/gm;
+    for (const lesson of LESSONS) {
+      if (!lesson.rel.endsWith("/practice.md")) continue;
+      const moduleSlug = lesson.rel.split("/")[0];
+      const mod = MODULES.find((m) => m.slug === moduleSlug);
+      if (!mod) {
+        bad.push(`${lesson.rel}: unknown module`);
+        continue;
+      }
+      const allowed = new Set(
+        mod.lessons.filter((l) => l.type === "problem").map((l) => l.slug),
+      );
+      for (const m of lesson.body.matchAll(fence)) {
+        const body = m[2];
+        for (const sm of body.matchAll(/^\s*-\s+slug:\s*([^\s#]+)\s*$/gm)) {
+          const slug = sm[1];
+          if (!allowed.has(slug)) {
+            bad.push(`${lesson.rel}: unknown slug "${slug}"`);
+          }
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
 describe("problem slugs are globally unique", () => {
   it("no two problem lessons share a slug", () => {
     const seenAt = new Map<string, string>();

@@ -2,12 +2,9 @@
  * The code palette — single source for both syntax highlighters.
  *
  * Shiki renders code blocks + viz panes; CodeMirror renders the sandbox
- * editor. They are different engines, so the only way they stay identical
- * is by both painting from these values. Shiki reads them from here
- * directly; CodeMirror reads the `--tok-*` custom properties in
- * globals.css, which mirror this file — change one, change both.
+ * editor. They paint from these values / mirrored `--tok-*` in globals.css.
  *
- * Tuned for the codeMacha Brand Design System v1.0 accent #6E63FF.
+ * Tuned for Indigo Modern (Primary #6366F1).
  */
 
 export interface CodeInk {
@@ -24,23 +21,23 @@ export interface CodeInk {
 export const CODE_LIGHT: CodeInk = {
   fg: "#111827",
   comment: "#6b7280",
-  keyword: "#6e63ff",
+  keyword: "#6366f1",
   string: "#047857",
-  constant: "#5c53f2",
-  entity: "#7c3aed",
+  constant: "#4f46e5",
+  entity: "#4338ca",
   type: "#b45309",
   variable: "#111827",
 };
 
 export const CODE_DARK: CodeInk = {
-  fg: "#ffffff",
-  comment: "#7b8193",
-  keyword: "#6e63ff",
-  string: "#34d399",
-  constant: "#7c74ff",
-  entity: "#a78bfa",
-  type: "#fbbf24",
-  variable: "#ffffff",
+  fg: "#f9fafc",
+  comment: "#a1a1aa",
+  keyword: "#818cf8",
+  string: "#22d497",
+  constant: "#a5b4fc",
+  entity: "#c4b5fd",
+  type: "#f59e0b",
+  variable: "#f9fafc",
 };
 
 /** Minimal TextMate theme shape — enough for Shiki, without pulling its types. */

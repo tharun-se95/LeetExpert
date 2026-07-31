@@ -25,7 +25,15 @@ const TAB_LABELS: Record<string, string> = {
   cpp: "C++",
 };
 
-const NON_CODE_LANGS = new Set(["mermaid", "quiz", "complexity"]);
+const NON_CODE_LANGS = new Set([
+  "mermaid",
+  "quiz",
+  "complexity",
+  "diagram",
+  "aside",
+  "roadmap",
+  "practice-problems",
+]);
 
 /** Must match the key format `Markdown.tsx`'s `pre` handler computes at render time. */
 export function codeHighlightKey(lang: string, code: string): string {
@@ -75,7 +83,7 @@ export async function highlightBlocks(
       if (!(value in tabs)) {
         tabs[value] = await highlightTabs(value);
       }
-    } else if (lang === "reveal") {
+    } else if (lang === "reveal" || lang === "aside" || lang === "roadmap") {
       const nested = await highlightBlocks(value);
       Object.assign(blocks, nested.blocks);
       Object.assign(tabs, nested.tabs);

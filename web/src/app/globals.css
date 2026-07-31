@@ -2,42 +2,49 @@
 @plugin "@tailwindcss/typography";
 
 /* ============================================================
-   RISO LAB — design tokens
+   Handbook press inks — Option A: Indigo Modern
 
    Two tiers. Tier 1 is raw material (the inks and the paper);
    tier 2 is what components actually consume. Only tier 1 is
-   redefined for dark mode — tier 2 resolves at use time, so it
-   follows automatically and never needs a second definition.
+   redefined for dark mode — tier 2 resolves at use time.
 
-   Rule: nothing outside this file references a `--riso-*` value
-   directly. Components use the semantic names.
+   Palette: docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md
+   Sheet: codeMacha COLOR PALETTE OPTIONS — A Indigo Modern
+   Rule: components use semantic names, never `--riso-*` directly.
+   Depth: ink, rules, and halftone — never drop shadows.
    ============================================================ */
 
 :root {
-  /* --- tier 1: ground ------------------------------------- */
+  /* --- tier 1: ground (Indigo Modern light) --------------- */
+  --riso-paper: #fcfcfd; /* sheet Background */
   /*
-    codeMacha Brand Design System v1.0 (scope A — tokens only).
-    Spec: docs/superpowers/specs/2026-07-30-codemacha-brand-ds-tokens-design.md
-    AA vs --riso-paper unless noted. Accent ~4.2:1 (large/UI).
+    Pure #fff on #fcfcfd is ~1.02:1 — cards vanish. Elevated/surface take a
+    cool indigo wash so flat faces read without shadows. ~1.05–1.08:1 vs
+    paper plus a stronger rule does the separation.
   */
-  --riso-paper: #fcfcfd;
-  --riso-paper-sunk: #ffffff; /* cards / surface */
-  --riso-ink: #111827; /* 17.30:1 */
-  --riso-ink-soft: #4b5563; /* 7.37:1 — light muted (doc omits) */
-  --riso-rule: #eceef3;
+  --riso-paper-sunk: color-mix(in oklab, #6366f1 3.5%, #ffffff);
+  --riso-ink: #111827; /* 17.30:1 — sheet Text Primary */
+  --riso-ink-soft: #6b7280; /* 4.72:1 — sheet Text Muted */
+  --riso-rule: #d1d5db; /* stronger than sheet #E5E7EB so flat faces hold */
 
   /*
-    Accent ONLY #6E63FF. Hover / active from brand sheet.
-    Status text inks are AA-safe; sheet Success/Warning/Error are fill refs.
+    Sheet Primary #6366F1 is both brand text and CTA fill (mockups).
+    On paper ~4.36:1 — large/UI / display accent; body links prefer weight.
+    White on Primary ~4.47:1 — CTA type (sheet / mockups).
   */
-  --riso-lime: #6e63ff; /* pop */
-  --riso-olive: #6e63ff; /* accent */
-  --riso-blue: #5c53f2; /* mark ≈ accent-active */
-  --riso-green: #047857; /* 5.48:1 */
-  --riso-red: #dc2626; /* 4.83:1 */
-  --riso-amber: #b45309; /* 5.02:1 */
+  --riso-lime: #6366f1; /* pop = Primary */
+  --riso-olive: #6366f1; /* accent = Primary */
+  --riso-blue: #4f46e5; /* mark / active — indigo-600 */
+  /*
+    Sheet Success/Warning/Error are bright fills (~2–3:1 as body text).
+    Text inks below keep the hue, darkened for AA on paper.
+    Sheet fills: #16C47F / #F5B301 / #EF4444.
+  */
+  --riso-green: #047857; /* 5.35:1 — Success family */
+  --riso-red: #dc2626; /* 4.71:1 — Error family */
+  --riso-amber: #b45309; /* 4.90:1 — Warning family */
 
-  --riso-highlight: color-mix(in oklab, var(--riso-olive) 16%, transparent);
+  --riso-highlight: color-mix(in oklab, var(--riso-olive) 14%, transparent);
   --riso-halftone: rgba(17, 24, 39, 0.08);
 
   /* --- tier 2: semantic ----------------------------------- */
@@ -46,21 +53,20 @@
   --muted: var(--riso-ink-soft);
   --border: var(--riso-rule);
   --surface: var(--riso-paper-sunk);
-  --code: #f4f5f8;
-  --elevated: #ffffff;
+  --code: #f3f4f6;
+  --elevated: color-mix(in oklab, #6366f1 3.5%, #ffffff);
   --accent: var(--riso-olive);
-  --accent-hover: #7c74ff;
-  --accent-active: #5c53f2;
+  --accent-hover: #818cf8; /* sheet Primary Hover */
+  --accent-active: #4f46e5;
   --pop: var(--riso-lime);
-  --on-pop: #ffffff; /* ~4.3:1 on accent */
+  --on-pop: #ffffff; /* ~4.47:1 on Primary */
 
   --good: var(--riso-green);
   --bad: var(--riso-red);
   --warn: var(--riso-amber);
 
-  /* Icon accents — variety without inventing a second brand purple */
-  --tone-sky: #0369a1; /* 5.47:1 on paper */
-  --tone-rose: #e11d48; /* 4.58:1 on paper */
+  --tone-sky: #0284c7; /* info — AA on paper */
+  --tone-rose: #e11d48;
 
   --mark: var(--riso-blue);
   --highlight: var(--riso-highlight);
@@ -70,9 +76,6 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
-
-  /* --- elevation (opt-in; prefer border + whitespace) ------ */
-  --shadow-card: 0 1px 2px rgb(17 24 39 / 0.04), 0 4px 16px rgb(17 24 39 / 0.04);
 
   /* --- motion (150–250ms) --------------------------------- */
   --dur-fast: 150ms;
@@ -85,37 +88,32 @@
 }
 
 .dark {
-  /*
-    Brand dark: charcoal ground, surface / elevated lifts, hairline borders.
-    Accent ONLY #6E63FF. Text tiers: #FFF / #B8BCC8 / #7B8193.
-  */
+  /* Indigo Modern dark — sheet Background #0F1117 */
   --riso-paper: #0f1117;
-  --riso-paper-sunk: #181b23;
-  --riso-ink: #ffffff; /* 18.87:1 */
-  --riso-ink-soft: #b8bcc8; /* 9.94:1 secondary */
-  --riso-rule: rgba(255, 255, 255, 0.06);
+  --riso-paper-sunk: #1a1e28;
+  --riso-ink: #f9fafc; /* 18.07:1 — sheet Text Primary */
+  --riso-ink-soft: #a1a1aa; /* 7.36:1 — sheet Text Muted */
+  --riso-rule: #343b4a; /* stronger rule for flat faces on charcoal */
 
-  --riso-lime: #6e63ff;
-  --riso-olive: #6e63ff;
-  --riso-blue: #7b8193; /* tertiary / mark — no second purple */
-  --riso-green: #34d399;
-  --riso-red: #f87171;
-  --riso-amber: #fbbf24;
+  --riso-lime: #6366f1; /* sheet Primary */
+  --riso-olive: #818cf8; /* Primary Hover — readable accent on charcoal */
+  --riso-blue: #818cf8;
+  --riso-green: #22d497; /* sheet Success */
+  --riso-red: #ef4444; /* sheet Error */
+  --riso-amber: #f59e0b; /* sheet Warning */
 
   --riso-highlight: color-mix(in oklab, var(--riso-olive) 22%, transparent);
-  --riso-halftone: rgba(255, 255, 255, 0.06);
-  --on-pop: #ffffff; /* ~4.3:1 */
+  --riso-halftone: rgba(249, 250, 252, 0.08);
+  --on-pop: #ffffff;
 
-  --surface: #181b23;
-  --elevated: #202533;
-  --code: #202533;
-  --accent-hover: #7c74ff;
-  --accent-active: #5c53f2;
+  --surface: #1a1e28; /* step up from paper so flat cards don't dissolve */
+  --elevated: #222733;
+  --code: #1f2430;
+  --accent-hover: #a5b4fc;
+  --accent-active: #6366f1;
 
   --tone-sky: #38bdf8;
   --tone-rose: #fb7185;
-
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 24px rgb(0 0 0 / 0.35);
 }
 
 @theme inline {
@@ -242,9 +240,11 @@ body {
   position: relative;
 }
 
-/* Brand DS soft card lift — consume --shadow-card, never Tailwind shadow-* */
+/*
+  Legacy class name kept so call sites stay stable. Soft lift was retired
+  with Brand DS — depth is border + sunk paper only.
+*/
 .elevated-card {
-  box-shadow: var(--shadow-card);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -356,6 +356,27 @@ body {
   margin-inline: auto;
 }
 
+/* Roadmap fence: kill nested prose top margin so the rail disc sits on the h3. */
+.roadmap-stage-body > .handbook-prose > :first-child {
+  margin-top: 0;
+}
+
+/* Roadmap ol must not inherit handbook list padding — that shifts nodes off the rail. */
+.handbook-prose ol.roadmap-rail {
+  margin: 2rem 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.handbook-prose ol.roadmap-rail > li {
+  margin: 0;
+  padding: 0;
+}
+
+.handbook-prose ol.roadmap-rail > li::marker {
+  content: none;
+}
+
 .handbook-prose .shiki,
 .handbook-prose .shiki span {
   color: var(--shiki-light);
@@ -403,7 +424,9 @@ body {
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--muted);
-  transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+  transition:
+    color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
 }
 
 .code-tab:hover {
@@ -412,8 +435,10 @@ body {
 
 .code-tab[aria-pressed="true"],
 .code-tab[data-active="true"] {
-  background: var(--background);
-  color: var(--foreground);
+  /* Solid accent pill — paper/ink alone was invisible on bg-surface toolbars */
+  background: var(--accent);
+  color: var(--on-pop);
+  font-weight: 600;
 }
 
 .code-body {
@@ -490,10 +515,10 @@ body {
  */
 :root {
   --tok-comment: #6b7280;
-  --tok-keyword: #6e63ff;
+  --tok-keyword: #6366f1;
   --tok-string: #047857;
-  --tok-constant: #5c53f2;
-  --tok-entity: #7c3aed;
+  --tok-constant: #4f46e5;
+  --tok-entity: #4338ca;
   --tok-variable: #b45309;
   --tok-name: #111827;
   --tok-tag: #047857;
@@ -501,15 +526,15 @@ body {
 }
 
 .dark {
-  --tok-comment: #7b8193;
-  --tok-keyword: #6e63ff;
-  --tok-string: #34d399;
-  --tok-constant: #7c74ff;
-  --tok-entity: #a78bfa;
-  --tok-variable: #fbbf24;
-  --tok-name: #ffffff;
-  --tok-tag: #34d399;
-  --tok-invalid: #f87171;
+  --tok-comment: #a1a1aa;
+  --tok-keyword: #818cf8;
+  --tok-string: #22d497;
+  --tok-constant: #a5b4fc;
+  --tok-entity: #c4b5fd;
+  --tok-variable: #f59e0b;
+  --tok-name: #f9fafc;
+  --tok-tag: #22d497;
+  --tok-invalid: #ef4444;
 }
 
 /* Visual OS / PatternLab stage */

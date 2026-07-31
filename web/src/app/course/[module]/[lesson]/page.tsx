@@ -1,21 +1,30 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
+import { Cheatsheet } from "@/components/cheatsheet/Cheatsheet";
 import { LessonView } from "@/components/course/LessonView";
-import { ProblemLessonView } from "@/components/course/ProblemLessonView";
 import { LESSON_EMBEDS } from "@/components/course/embeds";
+import { PracticeProblemsList } from "@/components/md/PracticeProblemsList";
 import {
   allLessonParams,
+  extractToc,
   getLessonNeighbors,
   loadLesson,
 } from "@/lib/course/load";
+import { getCheatsheet } from "@/lib/course/cheatsheets/registry";
 import { getLesson, getModule } from "@/lib/course/manifest";
-import { lessonHref, lessonId, moduleHref } from "@/lib/course/nav";
+import {
+  extractPracticeProblemsFence,
+  mergePracticeProblems,
+} from "@/lib/content/parsePracticeProblems";
+import { splitPracticeBody } from "@/lib/content/splitPracticeBody";
+import { lessonHref, lessonId, moduleHref, problemHref } from "@/lib/course/nav";
 
 interface PageProps {
   params: Promise<{ module: string; lesson: string }>;
 }
 
 export function generateStaticParams() {
+  // Keep problem course paths so permanentRedirect pages exist for bookmarks.
   return allLessonParams();
 }
 
@@ -31,14 +40,20 @@ export default async function LessonPage({ params }: PageProps) {
   const { module: moduleSlug, lesson: lessonSlug } = await params;
   const mod = getModule(moduleSlug);
   const meta = getLesson(moduleSlug, lessonSlug);
+  if (!mod || !meta) notFound();
+
+  if (meta.lesson.type === "problem") {
+    permanentRedirect(problemHref(lessonSlug));
+  }
+
   const lesson = await loadLesson(moduleSlug, lessonSlug);
-  if (!mod || !meta || !lesson) notFound();
+  if (!lesson) notFound();
 
   const { prev, next } = getLessonNeighbors(moduleSlug, lessonSlug);
   const Embed = LESSON_EMBEDS[lessonId(moduleSlug, lessonSlug)];
 
   const breadcrumbs = [
-    { label: "Course", href: "/course" },
+    { label: "Lessons", href: "/course" },
     { label: mod.shortTitle, href: moduleHref(mod.slug) },
     { label: meta.lesson.title },
   ];
@@ -49,14 +64,36 @@ export default async function LessonPage({ params }: PageProps) {
     ? { href: lessonHref(next.module, next.lesson), title: next.title }
     : null;
 
-  if (lesson.sandbox) {
+  if (meta.lesson.type === "practice") {
+    const { body, authored } = extractPracticeProblemsFence(lesson.markdown);
+    const { intro } = splitPracticeBody(body);
+    const rows = mergePracticeProblems(moduleSlug, authored);
+    const sheet = getCheatsheet(moduleSlug);
+    const toc = [
+      ...extractToc(intro),
+      { id: "cheatsheet", text: "Cheatsheet", level: 2 },
+      { id: "problems", text: "Problems", level: 2 },
+    ];
     return (
-      <ProblemLessonView
-        lesson={{ ...lesson, sandbox: lesson.sandbox }}
+      <LessonView
+        lesson={{ ...lesson, markdown: intro, toc }}
         eyebrow={`Module ${mod.number} · ${mod.title}`}
+        typeLabel="Practice"
         breadcrumbs={breadcrumbs}
         prev={prevLink}
         next={nextLink}
+        afterMarkdown={
+          <>
+            <Cheatsheet sheet={sheet} moduleTitle={mod.shortTitle} />
+            <h2
+              id="problems"
+              className="mt-10 font-display text-xl font-semibold tracking-tight"
+            >
+              Problems
+            </h2>
+            <PracticeProblemsList moduleSlug={moduleSlug} rows={rows} />
+          </>
+        }
       />
     );
   }
@@ -65,7 +102,7 @@ export default async function LessonPage({ params }: PageProps) {
     <LessonView
       lesson={lesson}
       eyebrow={`Module ${mod.number} · ${mod.title}`}
-      typeLabel={meta.lesson.type === "problem" ? "Problem" : "Concept"}
+      typeLabel="Concept"
       breadcrumbs={breadcrumbs}
       prev={prevLink}
       next={nextLink}

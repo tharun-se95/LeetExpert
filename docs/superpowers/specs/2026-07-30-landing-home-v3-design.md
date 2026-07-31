@@ -1,7 +1,11 @@
 # Landing home v3 — brand mockup layout
 
+> **Superseded** by `2026-07-31-codemacha-handbook-identity-design.md`
+> (handbook composition; same section inventory, new style/layout). Soft SaaS
+> chrome and Brand DS shadows are retired.
+
 **Date:** 2026-07-30  
-**Status:** implementing  
+**Status:** superseded  
 **Source:** codeMacha home mockups + Brand DS v1.0  
 
 ## Decisions

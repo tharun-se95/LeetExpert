@@ -75,10 +75,12 @@ the property is the bar.
 
 ### Design tokens
 
-Two tiers in `web/src/app/globals.css`: raw inks (`--riso-*`) then semantic
-names (`--background`, `--accent`, `--pop`, `--good`…). **Only tier 1 is
-redefined for dark mode**; tier 2 resolves at use time and follows. 48 files
-consume the semantic names, so a palette change is one edit.
+Two tiers in `web/src/app/globals.css`: raw press inks (`--riso-*` keys,
+**Indigo Modern** values) then semantic names (`--background`, `--accent`,
+`--pop`, `--good`…). **Only tier 1 is redefined for dark mode**; tier 2
+resolves at use time and follows. Palette sheet:
+`docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md`.
+Components consume semantic names, so a palette change is one edit.
 
 ---
 
@@ -92,8 +94,10 @@ consume the semantic names, so a palette change is one edit.
 3. **CodeMirror:** `basicSetup.syntaxHighlighting` must stay `false` and
    `theme="none"` must be passed, or you get an opaque white block and
    invisible tokens in dark mode.
-4. **Lime cannot be text on the paper** — 1.30:1. `--pop` is fills only;
-   `--accent` (olive) carries coloured text. Dark mode collapses the split.
+4. **Sheet Primary `#6366F1` is ~4.36:1 on paper** — fine for large/UI and
+   CTAs with white on-pop (~4.47:1); do not rely on it for small body links
+   without weight/size. Status sheet fills are bright — text roles use
+   darkened AA companions (see globals comments).
 5. **Sequence method names differ per language** (`get_min` / `getMin`) —
    declare them in `methods`. Never auto-convert casing; that is guessing.
 6. **A `null` expected value in an op means "do not assert"**, not "must
@@ -197,6 +201,51 @@ bespoke ones.
 dead vertical space; analytics is deliberately unbuilt (it ships user data to
 a third party — the owner's call); the mobile sandbox is layout-verified but
 never tested against a real touch keyboard.
+
+---
+
+## Follow-up — Practice chapter briefs
+
+v1 shipped auto-list Practice chapters for all 21 problem-bearing modules
+and a gold-template chapter for `arrays`. Fill the remaining modules to the
+same standard (playbook + `practice-problems` fence with pattern /
+difficulty / watch_for for every problem). No IA changes required — same
+renderer.
+
+Remaining modules:
+
+- strings, hash-tables, linked-lists, stacks, queues
+- two-pointers, sliding-window, prefix-sum, binary-search, sorting, matrix
+- recursion-backtracking, binary-trees, bst, heaps, tries
+- intervals, greedy, graphs, dynamic-programming
+
+---
+
+## Shipped — Practice cheatsheets (2026-07-31, enhanced same day)
+
+Every Practice chapter renders a **Cheatsheet** above the Problems list:
+module glyph header, smell→pattern cues, tone-coded pattern cards with SVG
+diagrams, complexity strip, and traps. Spec/plan:
+
+- `docs/superpowers/specs/2026-07-31-practice-cheatsheets-design.md`
+- `docs/superpowers/plans/2026-07-31-practice-cheatsheets.md`
+
+**Architecture:** typed registry at `web/src/lib/course/cheatsheets/` (not a
+markdown fence). Renderer: `web/src/components/cheatsheet/`. CI gate:
+`web/tests/cheatsheets.test.ts` fails if any practice module lacks a sheet.
+
+| Tier | Modules |
+| --- | --- |
+| Gold (9) | arrays, strings, hash-tables, two-pointers, sliding-window, **linked-lists, stacks, binary-search, graphs** |
+| Template (12) | queues, prefix-sum, sorting, matrix, recursion-backtracking, binary-trees, bst, heaps, tries, intervals, greedy, dynamic-programming |
+
+**v1.1 enhancements:** promoted 4 modules to gold; new diagrams
+`fast-slow-list` + `union-find`; SVG marker-id collision fixed; template
+sheets enriched (card smells, ≥2 traps); DP near-gold; stronger CI depth
+gates (gold variety, every DiagramId used).
+
+**Follow-up:** promote DP, heaps, binary-trees, intervals, recursion next.
+Optional: thin markdown prose overlay under the registry header.
 
 ---
 

@@ -16,6 +16,8 @@ import { Viz } from "@/components/viz/Viz";
 import { MarginNote } from "@/components/md/MarginNote";
 import { remarkHighlight } from "@/lib/content/remarkHighlight";
 import { Diagram } from "@/components/md/Diagram";
+import { Roadmap, RoadmapError } from "@/components/md/Roadmap";
+import { parseRoadmapStages } from "@/lib/content/parseRoadmapStages";
 import { codeHighlightKey, type TabBlock } from "@/lib/content/highlightBlocks";
 import type { ReactNode } from "react";
 
@@ -116,6 +118,27 @@ export function Markdown({
                 highlightedTabs={highlightedTabs}
               />
             </Reveal>
+          );
+        }
+        if (className.includes("language-roadmap")) {
+          const stages = parseRoadmapStages(text());
+          if (!stages) return <RoadmapError />;
+          return (
+            <Roadmap
+              stages={stages.map((chunk) => {
+                const num = /^### Stage (\d+)/.exec(chunk)?.[1] ?? "?";
+                return {
+                  number: num,
+                  content: (
+                    <Markdown
+                      source={chunk}
+                      highlightedBlocks={highlightedBlocks}
+                      highlightedTabs={highlightedTabs}
+                    />
+                  ),
+                };
+              })}
+            />
           );
         }
         const langMatch = /language-(\S+)/.exec(className);

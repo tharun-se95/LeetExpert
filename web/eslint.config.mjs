@@ -17,6 +17,10 @@ const eslintConfig = defineConfig([
     // declare. Linting them as modules yields one unused-var warning per
     // file — noise that trains people to ignore lint output.
     "tests/reference/**",
+    // Copied by scripts/copy-pyodide.mjs into public/ (gitignored). Vendored
+    // Emscripten output is not our source; linting it floods CI/local with
+    // thousands of false positives and can fail on `module` assignment.
+    "public/pyodide/**",
   ]),
   {
     rules: {

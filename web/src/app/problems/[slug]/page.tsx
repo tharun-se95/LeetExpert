@@ -7,7 +7,7 @@ import {
   getProblemNeighbors,
   allProblemSlugs,
 } from "@/lib/course/manifest";
-import { moduleHref, problemHref } from "@/lib/course/nav";
+import { lessonHref, moduleHref, problemHref } from "@/lib/course/nav";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -34,13 +34,20 @@ export default async function ProblemPage({ params }: PageProps) {
   if (!lesson || !lesson.sandbox) notFound();
 
   const { prev, next } = getProblemNeighbors(hit.module.slug, slug);
+  const hasPractice = hit.module.lessons.some(
+    (l) => l.type === "practice" && l.slug === "practice",
+  );
+  const backHref = hasPractice
+    ? lessonHref(hit.module.slug, "practice")
+    : moduleHref(hit.module.slug);
+  const backLabel = hasPractice ? "Practice" : hit.module.shortTitle;
 
   return (
     <ProblemWorkspace
       lesson={{ ...lesson, sandbox: lesson.sandbox }}
       eyebrow={`Module ${hit.module.number} · ${hit.module.title}`}
-      backHref={moduleHref(hit.module.slug)}
-      backLabel={hit.module.shortTitle}
+      backHref={backHref}
+      backLabel={backLabel}
       prev={prev ? { href: problemHref(prev.slug), title: prev.title } : null}
       next={next ? { href: problemHref(next.slug), title: next.title } : null}
     />

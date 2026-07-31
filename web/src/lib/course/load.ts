@@ -3,7 +3,12 @@ import path from "path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
 import { slugify } from "@/lib/slugify";
-import { getLesson, getModule, MODULES } from "./manifest";
+import {
+  getLesson,
+  getModule,
+  isLessonsNavLesson,
+  MODULES,
+} from "./manifest";
 import { highlightBlocks, type TabBlock } from "@/lib/content/highlightBlocks";
 import {
   extractSandboxFence,
@@ -20,13 +25,23 @@ export function extractToc(markdown: string): TocItem[] {
   const toc: TocItem[] = [];
   const seen = new Map<string, number>();
   let inFence = false;
+  let fenceLang = "";
 
   for (const line of markdown.split("\n")) {
-    if (/^`{3,}/.test(line.trim())) {
-      inFence = !inFence;
+    const fenceOpen = /^`{3,}(\w*)/.exec(line.trim());
+    if (fenceOpen) {
+      if (!inFence) {
+        inFence = true;
+        fenceLang = fenceOpen[1] ?? "";
+      } else {
+        inFence = false;
+        fenceLang = "";
+      }
       continue;
     }
-    if (inFence) continue;
+    // Headings inside `roadmap` fences stay in the TOC — the fence is only a
+    // layout wrapper. Other fences (quiz, reveal, …) still hide their headings.
+    if (inFence && fenceLang !== "roadmap") continue;
     const match = /^(#{2,3})\s+(.+)$/.exec(line);
     if (!match) continue;
     const level = match[1].length;
@@ -128,7 +143,7 @@ export function getLessonNeighbors(
   next: { module: string; lesson: string; title: string } | null;
 } {
   const flat = MODULES.filter((m) => m.status === "available").flatMap((m) =>
-    m.lessons.map((l) => ({
+    m.lessons.filter(isLessonsNavLesson).map((l) => ({
       module: m.slug,
       lesson: l.slug,
       title: l.title,

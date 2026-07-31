@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Lock } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, Lock } from "@phosphor-icons/react/dist/ssr";
+import { ModuleGlyph } from "@/components/course/ModuleGlyph";
 import { MODULES, STAGES, modulesByStage } from "@/lib/course/manifest";
 import { moduleHref } from "@/lib/course/nav";
 import { cn } from "@/lib/utils";
@@ -70,41 +71,39 @@ export default function CourseOverviewPage() {
                     key={module.slug}
                     href={moduleHref(module.slug)}
                     className={cn(
-                      "group flex flex-col rounded-xl border border-border p-4 transition hover:border-accent/40 hover:bg-surface",
+                      "group flex flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated transition hover:border-accent/45",
                       !available && "opacity-70",
                     )}
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs tabular-nums text-muted">
-                        {String(module.number).padStart(2, "0")}
-                      </span>
-                      {available ? (
-                        <BookOpen
-                          weight="bold"
-                          className="h-3.5 w-3.5 text-accent"
-                        />
-                      ) : (
-                        <Lock
-                          weight="bold"
-                          className="h-3.5 w-3.5 text-muted/60"
-                        />
-                      )}
+                    <div className="relative border-b border-border bg-accent/[0.08] px-3 pt-3 pb-2">
+                      <div className="h-16 w-full sm:h-[4.5rem]">
+                        <ModuleGlyph slug={module.slug} />
+                      </div>
                       {!available ? (
-                        <span className="ml-auto rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted/70">
+                        <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted">
+                          <Lock weight="bold" className="h-3 w-3" />
                           Soon
                         </span>
-                      ) : (
-                        <span className="ml-auto font-mono text-[10px] tracking-wide text-muted">
-                          {module.lessons.length} lessons
-                        </span>
-                      )}
+                      ) : null}
                     </div>
-                    <h3 className="mt-2 text-sm font-semibold">
-                      {module.title}
-                    </h3>
-                    <p className="mt-1 text-[13px] leading-relaxed text-muted">
-                      {module.description}
-                    </p>
+                    <div className="flex flex-1 flex-col p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs tabular-nums text-muted">
+                          {String(module.number).padStart(2, "0")}
+                        </span>
+                        {available ? (
+                          <span className="ml-auto font-mono text-[10px] tracking-wide text-muted">
+                            {module.lessons.length} lessons
+                          </span>
+                        ) : null}
+                      </div>
+                      <h3 className="mt-1.5 text-sm font-semibold group-hover:text-accent">
+                        {module.title}
+                      </h3>
+                      <p className="mt-1 flex-1 text-[13px] leading-relaxed text-muted">
+                        {module.description}
+                      </p>
+                    </div>
                   </Link>
                 );
               })}

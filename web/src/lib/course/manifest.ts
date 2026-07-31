@@ -1,4 +1,4 @@
-export type LessonType = "concept" | "problem";
+export type LessonType = "concept" | "problem" | "practice";
 
 export interface LessonMeta {
   slug: string;
@@ -64,6 +64,15 @@ function concept(slug: string, title: string): LessonMeta {
 
 function problem(slug: string, title: string): LessonMeta {
   return { slug, title, type: "problem" };
+}
+
+/** Fixed Practice chapter entry — always last in problem-bearing modules. */
+export function practiceLesson(): LessonMeta {
+  return { slug: "practice", title: "Practice", type: "practice" };
+}
+
+export function isLessonsNavLesson(lesson: LessonMeta): boolean {
+  return lesson.type === "concept" || lesson.type === "practice";
 }
 
 export const MODULES: ModuleMeta[] = [
@@ -142,6 +151,7 @@ export const MODULES: ModuleMeta[] = [
       problem("rotate-array", "Rotate Array"),
       problem("best-time-to-buy-sell-stock", "Best Time to Buy & Sell Stock"),
       problem("product-except-self", "Product of Array Except Self"),
+      practiceLesson(),
     ],
   },
   {
@@ -161,6 +171,7 @@ export const MODULES: ModuleMeta[] = [
       problem("longest-common-prefix", "Longest Common Prefix"),
       problem("reverse-words", "Reverse Words in a String"),
       problem("find-the-index", "Find the Index (strStr)"),
+      practiceLesson(),
     ],
   },
   {
@@ -182,6 +193,7 @@ export const MODULES: ModuleMeta[] = [
       problem("first-unique-character", "First Unique Character"),
       problem("group-anagrams", "Group Anagrams"),
       problem("longest-consecutive-sequence", "Longest Consecutive Sequence"),
+      practiceLesson(),
     ],
   },
   {
@@ -202,6 +214,7 @@ export const MODULES: ModuleMeta[] = [
       problem("linked-list-cycle", "Linked List Cycle"),
       problem("merge-two-sorted", "Merge Two Sorted Lists"),
       problem("remove-nth-from-end", "Remove Nth Node From End"),
+      practiceLesson(),
     ],
   },
   {
@@ -222,6 +235,7 @@ export const MODULES: ModuleMeta[] = [
       problem("min-stack", "Min Stack"),
       problem("daily-temperatures", "Daily Temperatures"),
       problem("largest-rectangle", "Largest Rectangle in Histogram"),
+      practiceLesson(),
     ],
   },
   {
@@ -241,6 +255,7 @@ export const MODULES: ModuleMeta[] = [
       problem("queue-using-stacks", "Implement Queue Using Stacks"),
       problem("stream-first-unique", "First Unique in a Stream"),
       problem("sliding-window-maximum", "Sliding Window Maximum"),
+      practiceLesson(),
     ],
   },
 
@@ -262,6 +277,7 @@ export const MODULES: ModuleMeta[] = [
       problem("container-with-most-water", "Container With Most Water"),
       problem("three-sum", "3Sum"),
       problem("trapping-rain-water", "Trapping Rain Water"),
+      practiceLesson(),
     ],
   },
   {
@@ -284,6 +300,7 @@ export const MODULES: ModuleMeta[] = [
       ),
       problem("permutation-in-string", "Permutation in String"),
       problem("minimum-window-substring", "Minimum Window Substring"),
+      practiceLesson(),
     ],
   },
   {
@@ -304,6 +321,7 @@ export const MODULES: ModuleMeta[] = [
       problem("contiguous-array", "Contiguous Array"),
       problem("range-sum-2d-immutable", "Range Sum Query 2D — Immutable"),
       problem("kadanes-algorithm", "Maximum Subarray (Kadane's Algorithm)"),
+      practiceLesson(),
     ],
   },
   {
@@ -327,6 +345,7 @@ export const MODULES: ModuleMeta[] = [
         "find-minimum-in-rotated-sorted-array",
         "Find Minimum in Rotated Sorted Array",
       ),
+      practiceLesson(),
     ],
   },
   {
@@ -348,6 +367,7 @@ export const MODULES: ModuleMeta[] = [
       problem("largest-number", "Largest Number"),
       problem("meeting-rooms-ii", "Meeting Rooms II"),
       problem("kth-largest-element", "Kth Largest Element in an Array"),
+      practiceLesson(),
     ],
   },
   {
@@ -369,6 +389,7 @@ export const MODULES: ModuleMeta[] = [
       problem("search-a-2d-matrix", "Search a 2D Matrix"),
       problem("number-of-islands", "Number of Islands"),
       problem("word-search", "Word Search"),
+      practiceLesson(),
     ],
   },
 
@@ -395,6 +416,7 @@ export const MODULES: ModuleMeta[] = [
       problem("generate-parentheses", "Generate Parentheses"),
       problem("palindrome-partitioning", "Palindrome Partitioning"),
       problem("n-queens", "N-Queens"),
+      practiceLesson(),
     ],
   },
   {
@@ -436,6 +458,7 @@ export const MODULES: ModuleMeta[] = [
         "serialize-and-deserialize-binary-tree",
         "Serialize and Deserialize Binary Tree",
       ),
+      practiceLesson(),
     ],
   },
   {
@@ -468,6 +491,7 @@ export const MODULES: ModuleMeta[] = [
         "lowest-common-ancestor-of-a-bst",
         "Lowest Common Ancestor of a BST",
       ),
+      practiceLesson(),
     ],
   },
   {
@@ -500,6 +524,7 @@ export const MODULES: ModuleMeta[] = [
       ),
       problem("k-closest-points-to-origin", "K Closest Points to Origin"),
       problem("task-scheduler", "Task Scheduler"),
+      practiceLesson(),
     ],
   },
   {
@@ -523,6 +548,7 @@ export const MODULES: ModuleMeta[] = [
       ),
       problem("word-search-ii", "Word Search II"),
       problem("longest-word-in-dictionary", "Longest Word in Dictionary"),
+      practiceLesson(),
     ],
   },
 
@@ -549,6 +575,7 @@ export const MODULES: ModuleMeta[] = [
       ),
       problem("meeting-rooms", "Meeting Rooms"),
       problem("employee-free-time", "Employee Free Time"),
+      practiceLesson(),
     ],
   },
   {
@@ -570,6 +597,7 @@ export const MODULES: ModuleMeta[] = [
       problem("gas-station", "Gas Station"),
       problem("partition-labels", "Partition Labels"),
       problem("candy", "Candy"),
+      practiceLesson(),
     ],
   },
   {
@@ -601,6 +629,7 @@ export const MODULES: ModuleMeta[] = [
         "min-cost-to-connect-all-points",
         "Min Cost to Connect All Points",
       ),
+      practiceLesson(),
     ],
   },
   {
@@ -643,6 +672,7 @@ export const MODULES: ModuleMeta[] = [
       ),
       problem("word-break", "Word Break"),
       problem("house-robber-iii", "House Robber III"),
+      practiceLesson(),
     ],
   },
 ];
@@ -720,7 +750,19 @@ export function modulesByStage(stage: number): ModuleMeta[] {
   return MODULES.filter((m) => m.stage === stage);
 }
 
-/** Every lesson id, used for progress denominators. Format: module/lesson. */
+/** Every lesson id, including problems. Format: module/lesson. */
 export function allLessonIds(): string[] {
   return MODULES.flatMap((m) => m.lessons.map((l) => `${m.slug}/${l.slug}`));
+}
+
+/**
+ * Lessons-sidebar + Header progress denominator: concepts and Practice
+ * chapters only — never individual problems.
+ */
+export function allLessonsNavIds(): string[] {
+  return MODULES.flatMap((m) =>
+    m.lessons
+      .filter(isLessonsNavLesson)
+      .map((l) => `${m.slug}/${l.slug}`),
+  );
 }

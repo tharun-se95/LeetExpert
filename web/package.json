@@ -19,6 +19,7 @@
     "@uiw/react-codemirror": "^4.25.11",
     "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
+    "js-yaml": "^5.2.2",
     "mermaid": "^11.16.0",
     "motion": "^12.42.2",
     "next": "16.2.10",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

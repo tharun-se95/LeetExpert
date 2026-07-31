@@ -3,17 +3,19 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 /**
- * Guard the Riso design system against regressions that survive a palette
- * change or break dark mode.
+ * Guard the handbook press identity against regressions that survive a
+ * palette change or break dark mode.
  *
  * Components must consume semantic tokens (bg-accent, text-good, …), not
  * Tailwind palette classes and not `text-white` on accent fills — prefer
- * `text-on-pop` on `bg-pop` (brand accent #6E63FF in both themes).
- * Prefer `hover:bg-accent-hover` / `active:bg-accent-active` on pop CTAs when
- * refining interactions; opacity hover remains acceptable.
+ * `text-on-pop` on `bg-pop`. Pop is fill-only on paper; accent carries
+ * coloured text.
+ *
+ * Spec: docs/superpowers/specs/2026-07-31-codemacha-handbook-identity-design.md
  */
 
 const SRC = join(__dirname, "..", "src");
+const GLOBALS = join(SRC, "app", "globals.css");
 
 /** Files that own raw hex by design — not UI chrome. */
 const HEX_ALLOW = new Set([
@@ -49,6 +51,36 @@ const WHITE_ON_ACCENT =
 
 const BOX_SHADOW_CLASS =
   /\bshadow-(?:sm|md|lg|xl|2xl|inner)\b|\bshadow-\[[^\]]+\]/;
+
+function relativeLuminance(hex: string): number {
+  const h = hex.replace("#", "");
+  const full =
+    h.length === 3
+      ? h
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : h;
+  const channels = [0, 2, 4].map((i) => {
+    const c = parseInt(full.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * channels[0]! + 0.7152 * channels[1]! + 0.0722 * channels[2]!;
+}
+
+function contrastRatio(a: string, b: string): number {
+  const L1 = relativeLuminance(a);
+  const L2 = relativeLuminance(b);
+  const [hi, lo] = L1 > L2 ? [L1, L2] : [L2, L1];
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/** First `--name: #hex` in a CSS region (non-greedy up to next brace block). */
+function firstHexVar(css: string, name: string): string | null {
+  const re = new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{3,8})`);
+  const m = css.match(re);
+  return m?.[1]?.toLowerCase() ?? null;
+}
 
 describe("design tokens", () => {
   it("no Tailwind palette colour classes in components", () => {
@@ -101,5 +133,37 @@ describe("design tokens", () => {
       if (bad.length) hits.push(`${f.rel}: ${[...new Set(bad)].join(", ")}`);
     }
     expect(hits).toEqual([]);
+  });
+
+  it("globals use Indigo Modern sheet colours", () => {
+    const css = readFileSync(GLOBALS, "utf8");
+    expect(css).not.toMatch(/--shadow-card\s*:/);
+    expect(css).not.toMatch(/\.elevated-card\s*\{[^}]*box-shadow/);
+
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    expect(firstHexVar(root, "riso-paper")).toBe("#fcfcfd");
+    expect(firstHexVar(root, "riso-ink")).toBe("#111827");
+    expect(firstHexVar(root, "riso-ink-soft")).toBe("#6b7280");
+    expect(firstHexVar(root, "riso-rule")).toBe("#d1d5db");
+    expect(firstHexVar(root, "riso-olive")).toBe("#6366f1");
+    expect(firstHexVar(root, "riso-lime")).toBe("#6366f1");
+    expect(firstHexVar(root, "on-pop")).toBe("#ffffff");
+    expect(firstHexVar(root, "accent-hover")).toBe("#818cf8");
+  });
+
+  it("body text meets AA; Primary is sheet large/UI accent", () => {
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const paper = firstHexVar(root, "riso-paper");
+    const ink = firstHexVar(root, "riso-ink");
+    const muted = firstHexVar(root, "riso-ink-soft");
+    const primary = firstHexVar(root, "riso-olive");
+    const onPop = firstHexVar(root, "on-pop");
+    expect(paper && ink && muted && primary && onPop).toBeTruthy();
+    expect(contrastRatio(ink!, paper!)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(muted!, paper!)).toBeGreaterThanOrEqual(4.5);
+    // Sheet Primary #6366F1 ≈ 4.36 on paper / white-on-primary ≈ 4.47 — large/UI.
+    expect(contrastRatio(primary!, paper!)).toBeGreaterThanOrEqual(4.3);
+    expect(contrastRatio(onPop!, primary!)).toBeGreaterThanOrEqual(4.3);
   });
 });

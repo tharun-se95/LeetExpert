@@ -154,6 +154,7 @@ function SandboxBody({
               reset();
             }}
             aria-pressed={lang === l}
+            data-active={lang === l ? "true" : "false"}
             className="code-tab font-mono"
           >
             {LANG_LABEL[l]}

@@ -169,21 +169,30 @@ export function VizPlayer<S>({
             className={cn(
               "grid gap-3",
               embedded ? "p-0" : "p-3.5",
-              expanded && "md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]",
+              // Fullscreen: code column capped. Landing embed: equal tracks so
+              // the stage is not crushed beside a 34rem code pane.
+              expanded &&
+                "md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]",
+              embedded && "md:grid-cols-2",
             )}
           >
             <div
               className={cn(
                 "viz-stage flex min-w-0 items-center justify-center overflow-x-auto px-3 py-5",
-                embedded
-                  ? "rounded-[length:var(--radius-sm)] border border-border"
-                  : "rounded-[length:var(--radius-sm)] border border-border",
-                expanded ? "min-h-64 md:order-1" : "order-1",
+                "rounded-[length:var(--radius-sm)] border border-border",
+                expanded || embedded
+                  ? "min-h-56 md:min-h-64 md:order-1"
+                  : "order-1",
               )}
             >
               {children(step.state, { reduced, index })}
             </div>
-            <div className={cn("min-w-0", expanded ? "md:order-2" : "order-2")}>
+            <div
+              className={cn(
+                "min-w-0",
+                expanded || embedded ? "md:order-2" : "order-2",
+              )}
+            >
               <CodePanel
                 code={code}
                 line={step.line}

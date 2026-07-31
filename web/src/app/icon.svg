@@ -1,10 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="codeMacha">
   <title>codeMacha</title>
-  <!--
-    Brand mark from the codeMacha sheet: a wink built from coding glyphs —
-    angle brackets for the face, | and ^ for the eyes, a curve for the mouth.
-  -->
-  <rect width="64" height="64" rx="14" fill="#6E63FF" />
+  <!-- Indigo Modern Primary plate + white strokes (on-pop). -->
+  <rect width="64" height="64" rx="14" fill="#6366F1" />
   <g
     fill="none"
     stroke="#FFFFFF"
@@ -12,15 +9,10 @@
     stroke-linecap="round"
     stroke-linejoin="round"
   >
-    <!-- left cheek < -->
     <path d="M18 18 L10 32 L18 46" />
-    <!-- right cheek > -->
     <path d="M46 18 L54 32 L46 46" />
-    <!-- open eye | -->
     <path d="M26 26 V34" />
-    <!-- wink ^ -->
     <path d="M34 32 L38 28 L42 32" />
-    <!-- smile -->
     <path d="M26 40 Q32 46 38 40" />
   </g>
 </svg>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MagnifyingGlass, ArrowRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { MODULES } from "@/lib/course/manifest";
+import { problemHref } from "@/lib/course/nav";
 
 interface Entry {
   m: string;
@@ -102,7 +103,11 @@ export function SearchDialog({
   const go = useCallback(
     (hit: Hit) => {
       onClose();
-      router.push(`/course/${hit.entry.m}/${hit.entry.s}`);
+      if (hit.entry.y === "problem") {
+        router.push(problemHref(hit.entry.s));
+      } else {
+        router.push(`/course/${hit.entry.m}/${hit.entry.s}`);
+      }
     },
     [onClose, router],
   );
@@ -144,32 +149,39 @@ export function SearchDialog({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Search lessons"
+        aria-label="Search lessons and problems"
         onKeyDown={onKeyDown}
-        className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-background"
+        className="w-full max-w-xl overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-background"
       >
-        <div className="flex items-center gap-2.5 border-b border-border px-3.5">
-          <MagnifyingGlass size={16} className="shrink-0 text-muted" aria-hidden />
+        <div className="flex min-h-12 items-center gap-3 border-b border-border px-4 focus-within:bg-accent/[0.04]">
+          <MagnifyingGlass
+            size={18}
+            className="shrink-0 text-muted"
+            aria-hidden
+          />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search lessons and sections…"
-            aria-label="Search lessons"
-            className="w-full bg-transparent py-3 text-[0.95rem] outline-none placeholder:text-muted"
+            placeholder="Search lessons and problems…"
+            aria-label="Search lessons and problems"
+            // Kill the global :focus-visible box — the row carries focus chrome.
+            className="min-w-0 flex-1 bg-transparent py-3.5 text-[0.95rem] text-foreground outline-none placeholder:text-muted focus-visible:outline-none!"
           />
-          <kbd className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-[0.62rem] text-muted">
+          <kbd className="shrink-0 rounded-[length:var(--radius-sm)] border border-border bg-surface px-1.5 py-0.5 font-mono text-[0.62rem] text-muted">
             esc
           </kbd>
         </div>
 
         <div ref={listRef} className="max-h-[52vh] overflow-y-auto">
           {query.trim().length < 2 ? (
-            <p className="px-3.5 py-6 text-center text-[0.82rem] text-muted">
-              {entries === null ? "Loading index…" : "Type at least two characters."}
+            <p className="px-4 py-8 text-center text-[0.82rem] text-muted">
+              {entries === null
+                ? "Loading index…"
+                : "Type at least two characters."}
             </p>
           ) : hits.length === 0 ? (
-            <p className="px-3.5 py-6 text-center text-[0.82rem] text-muted">
+            <p className="px-4 py-8 text-center text-[0.82rem] text-muted">
               Nothing matches “{query.trim()}”.
             </p>
           ) : (
@@ -181,8 +193,8 @@ export function SearchDialog({
                 onMouseEnter={() => setActive(i)}
                 onClick={() => go(hit)}
                 className={cn(
-                  "flex w-full items-center gap-3 px-3.5 py-2.5 text-left transition-colors",
-                  i === active ? "bg-surface" : "bg-transparent",
+                  "flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors focus-visible:outline-none!",
+                  i === active ? "bg-accent/10" : "bg-transparent hover:bg-surface",
                 )}
               >
                 <div className="min-w-0 flex-1">
@@ -198,10 +210,17 @@ export function SearchDialog({
                   <span className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-[0.6rem] text-muted">
                     problem
                   </span>
+                ) : hit.entry.y === "practice" ? (
+                  <span className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-[0.6rem] text-muted">
+                    practice
+                  </span>
                 ) : null}
                 <ArrowRight
                   size={13}
-                  className={cn("shrink-0", i === active ? "text-accent" : "text-transparent")}
+                  className={cn(
+                    "shrink-0",
+                    i === active ? "text-accent" : "text-transparent",
+                  )}
                   aria-hidden
                 />
               </button>

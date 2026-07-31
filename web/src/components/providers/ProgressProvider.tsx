@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { countLessonsProgress } from "@/lib/course/nav";
 
 const VISITED_KEY = "dsa-course-progress";
 const SOLVED_KEY = "dsa-course-solved";
@@ -47,10 +48,12 @@ export function ProgressProvider({
   children,
   totalCount,
   totalProblemCount,
+  lessonProgressIds,
 }: {
   children: React.ReactNode;
   totalCount: number;
   totalProblemCount: number;
+  lessonProgressIds: readonly string[];
 }) {
   const [visited, setVisited] = useState<Set<string>>(new Set());
   const [solved, setSolved] = useState<Set<string>>(new Set());
@@ -88,18 +91,31 @@ export function ProgressProvider({
     });
   }, []);
 
+  const progressIdSet = useMemo(
+    () => new Set(lessonProgressIds),
+    [lessonProgressIds],
+  );
+
   const value = useMemo(
     () => ({
       visited,
       markVisited,
-      visitedCount: visited.size,
+      visitedCount: countLessonsProgress(visited, progressIdSet),
       totalCount,
       solved,
       markSolved,
       solvedCount: solved.size,
       totalProblemCount,
     }),
-    [visited, markVisited, totalCount, solved, markSolved, totalProblemCount],
+    [
+      visited,
+      markVisited,
+      totalCount,
+      solved,
+      markSolved,
+      totalProblemCount,
+      progressIdSet,
+    ],
   );
 
   return (
