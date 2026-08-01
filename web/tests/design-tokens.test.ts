@@ -224,6 +224,9 @@ describe("design tokens", () => {
     expect(body).toMatch(/note:\s*"border-l-info/);
     expect(body).toMatch(/brain:\s*"border-l-insight/);
     expect(body).not.toMatch(/border-l-mark/);
+    // tip = "Interview Tip" territory — Amber (teaching-caution), not Indigo.
+    expect(body).toMatch(/tip:\s*"border-l-warn/);
+    expect(body).not.toMatch(/tip:\s*"border-l-accent/);
   });
 
   it("MarginNote, ComplexityStrip, InsightPanel use --info, not --mark", () => {

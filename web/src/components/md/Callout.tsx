@@ -32,7 +32,7 @@ interface CalloutProps {
 }
 
 const TYPE_STYLES: Record<CalloutType, string> = {
-  tip: "border-l-accent bg-accent/5",
+  tip: "border-l-warn bg-warn/5",
   note: "border-l-info bg-info/[0.06]",
   goal: "border-l-info bg-info/5",
   constraint: "border-l-good bg-good/[0.06]",
@@ -55,7 +55,7 @@ const TYPE_LABELS: Partial<Record<CalloutType, string>> = {
 };
 
 const TYPE_ICON_CLASS: Partial<Record<CalloutType, string>> = {
-  tip: "text-accent",
+  tip: "text-warn",
   note: "text-info",
   goal: "text-info",
   constraint: "text-good",
