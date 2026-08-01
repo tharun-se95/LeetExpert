@@ -13,6 +13,7 @@ const TONE_LABEL: Record<CueTone, string> = {
   bad: "Avoid",
   muted: "Extra",
   mark: "Reach",
+  insight: "Insight",
 };
 
 export function PatternCard({ card }: { card: PatternCardData }) {

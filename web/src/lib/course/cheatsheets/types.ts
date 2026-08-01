@@ -1,4 +1,11 @@
-export type CueTone = "accent" | "good" | "warn" | "bad" | "muted" | "mark";
+export type CueTone =
+  | "accent"
+  | "good"
+  | "warn"
+  | "bad"
+  | "muted"
+  | "mark"
+  | "insight";
 
 export type CheatsheetTier = "gold" | "template";
 

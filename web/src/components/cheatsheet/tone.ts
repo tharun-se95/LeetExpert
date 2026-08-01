@@ -8,6 +8,7 @@ export const TONE_RULE: Record<CueTone, string> = {
   bad: "border-l-bad bg-bad/5",
   muted: "border-l-border bg-surface",
   mark: "border-l-mark bg-mark/5",
+  insight: "border-l-insight bg-insight/5",
 };
 
 export const TONE_TEXT: Record<CueTone, string> = {
@@ -17,6 +18,7 @@ export const TONE_TEXT: Record<CueTone, string> = {
   bad: "text-bad",
   muted: "text-muted",
   mark: "text-mark",
+  insight: "text-insight",
 };
 
 export const TONE_CHIP: Record<CueTone, string> = {
@@ -26,4 +28,5 @@ export const TONE_CHIP: Record<CueTone, string> = {
   bad: "border-bad/40 text-bad bg-bad/10",
   muted: "border-border text-muted bg-surface",
   mark: "border-mark/40 text-mark bg-mark/10",
+  insight: "border-insight/40 text-insight bg-insight/10",
 };
