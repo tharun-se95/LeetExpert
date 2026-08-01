@@ -61,21 +61,24 @@ implementation, bump its weight/size rather than inventing a second ink.
 | **Insight** (new) | mental model, "remember this" — rare, deliberate | fill: `--riso-amber`-adjacent gold wash via `bg-insight/10`; text `#854D0E` (**6.68:1** on paper, computed) | text `#FACC15` (**12.3:1** on dark paper, computed) | `--insight` (new) |
 | Information | goal framing, notes, hints — activates the existing unused token | `#0284C7` (existing `--tone-sky`, unchanged) | `#38BDF8` (existing, unchanged) | `--tone-sky`, aliased `--info` |
 | Teaching caution | tip, interview tip, watch-out | `#B45309` (unchanged `--warn`) | `#F59E0B` (unchanged) | `--warn` |
-| Error | failed testcase, invalid | text stays `#DC2626` light / `#EF4444` dark (**already same hue family as Coral, already AA — 4.71:1 / 5.0:1, no change needed**); fill/badge softens from harsh `#EF4444`-as-fill to Coral `#F87171` for backgrounds/pills only | same split | `--bad` |
+| Error | failed testcase, invalid | **no change** — `#DC2626` light / `#EF4444` dark, already AA (4.71:1 / 5.0:1) | unchanged | `--bad` |
 | `--tone-rose` | stays defined, stays unused — no consumer identified this pass | — | — | unchanged |
 
 Insight fill uses the existing `bg-{token}/N` translucent convention (e.g.
 `bg-insight/10`), not a new literal hex — consistent with how `--good`/
 `--warn`/`--bad` already work. No new CSS pattern introduced.
 
-### Why Error doesn't need a hue change
+### Why Error needs no token change at all
 
 Coral `#F87171` and the current error ink `#DC2626`/`#EF4444` are the same
-hue (0°, pure red — R>G=B in both). "Coral" softens *lightness*, not hue.
-Coral itself fails AA as text (~2.7:1 on paper, computed) — same reason the
-current bright fill was never used as text. The existing darkened ink
-already does the job Coral's text companion would need to do; only the
-fill/badge/pill background moves to the softer value.
+hue (0°, pure red — R>G=B in both); "Coral" only softens *lightness*, and
+Coral itself fails AA as text (~2.7:1 on paper, computed) so it was never
+going to replace the text ink anyway. The remaining question was whether any
+*fill* usage reads as harsh — checked: every `--bad` consumer in the app
+except one already goes through the translucent `bg-bad/10` convention
+(already soft by construction). The one exception, a small opaque badge dot
+in `FibCallTreeViz.tsx`, is an unrelated viz component outside this pass's
+scope (callout/card styling). Net: zero hex changes for Error in Phase 1.
 
 ---
 
