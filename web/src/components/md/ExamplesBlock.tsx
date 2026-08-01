@@ -25,16 +25,16 @@ function OutputValue({ output }: { output: string }) {
     );
   }
   return (
-    <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-[0.78rem] text-foreground">
+    <span className="whitespace-pre-wrap font-mono text-[0.78rem] text-foreground">
       {output}
-    </pre>
+    </span>
   );
 }
 
 /**
- * One card per example — Input / Output rows, an optional explanation line.
- * Output is only pilled green/coral when it's a literal true/false; most
- * course examples return arrays or numbers and stay plain text.
+ * Input / Output on one row (reference-matched), an explanation line below
+ * when present. Output is only pilled green/coral for a literal true/false;
+ * most course examples return arrays or numbers and stay plain text.
  */
 export function ExamplesBlock({
   rows,
@@ -45,33 +45,27 @@ export function ExamplesBlock({
 }) {
   return (
     <div
-      className={cn("my-4 grid gap-2", className)}
+      className={cn("my-4 grid gap-3", className)}
       role="list"
       aria-label="Examples"
     >
       {rows.map((row, i) => (
-        <div
-          key={`${row.input}-${i}`}
-          role="listitem"
-          className="rounded-lg border border-border bg-elevated px-3.5 py-2.5"
-        >
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <span className="font-mono text-[0.65rem] text-muted uppercase tracking-wide">
-              Input
-            </span>
-            <pre className="min-w-0 overflow-x-auto whitespace-pre-wrap font-mono text-[0.78rem] text-foreground">
-              <span className="sr-only">: </span>
+        <div key={`${row.input}-${i}`} role="listitem">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <p className="min-w-0 font-mono text-[0.78rem] text-foreground">
+              <span className="text-muted">Input: </span>
               {row.input}
-            </pre>
-          </div>
-          <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <span className="font-mono text-[0.65rem] text-muted uppercase tracking-wide">
-              Output
-            </span>
-            <OutputValue output={row.output} />
+            </p>
+            <p className="flex shrink-0 items-baseline gap-1.5 font-mono text-[0.78rem]">
+              <span className="text-muted">Output:</span>
+              <OutputValue output={row.output} />
+            </p>
           </div>
           {row.note ? (
-            <p className="mt-1 text-[0.72rem] text-muted">{row.note}</p>
+            <p className="mt-1 text-[0.78rem] text-muted">
+              <span className="font-medium">Explanation: </span>
+              {row.note}
+            </p>
           ) : null}
         </div>
       ))}
