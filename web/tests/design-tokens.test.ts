@@ -225,4 +225,32 @@ describe("design tokens", () => {
     expect(body).toMatch(/brain:\s*"border-l-insight/);
     expect(body).not.toMatch(/border-l-mark/);
   });
+
+  it("MarginNote, ComplexityStrip, InsightPanel use --info, not --mark", () => {
+    const marginNote = readFileSync(
+      join(SRC, "components", "md", "MarginNote.tsx"),
+      "utf8",
+    );
+    const complexityStrip = readFileSync(
+      join(SRC, "components", "cheatsheet", "ComplexityStrip.tsx"),
+      "utf8",
+    );
+    const insightPanel = readFileSync(
+      join(SRC, "components", "insight", "InsightPanel.tsx"),
+      "utf8",
+    );
+    for (const [name, body] of [
+      ["MarginNote", marginNote],
+      ["ComplexityStrip", complexityStrip],
+      ["InsightPanel", insightPanel],
+    ] as const) {
+      expect(body, `${name} should not reference --mark`).not.toMatch(
+        /\b(?:text|border|bg)-mark\b/,
+      );
+    }
+    expect(marginNote).toMatch(/border-info/);
+    expect(marginNote).toMatch(/text-info/);
+    expect(complexityStrip).toMatch(/text-info/);
+    expect(insightPanel).toMatch(/text-info/);
+  });
 });

@@ -84,7 +84,7 @@ export function InsightPanel({
           <div className="flex items-center gap-1.5 font-mono text-[0.68rem]">
             <span className="text-accent">{insight.complexity.time}</span>
             <span className="text-border">·</span>
-            <span className="text-mark">{insight.complexity.space}</span>
+            <span className="text-info">{insight.complexity.space}</span>
             <span className="hidden text-muted sm:inline">
               {insight.complexity.source === "lesson" ? "target" : "typical"}
             </span>

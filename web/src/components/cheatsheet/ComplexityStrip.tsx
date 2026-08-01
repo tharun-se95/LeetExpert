@@ -42,7 +42,7 @@ function SpaceCell({ value }: { value: string }) {
     <span
       className={cn(
         "font-mono text-xs",
-        isTargetBigO(value) ? "text-good" : "text-mark",
+        isTargetBigO(value) ? "text-good" : "text-info",
       )}
     >
       {value}
