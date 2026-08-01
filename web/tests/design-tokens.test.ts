@@ -144,7 +144,12 @@ describe("design tokens", () => {
     expect(firstHexVar(root, "riso-paper")).toBe("#fcfcfd");
     expect(firstHexVar(root, "riso-ink")).toBe("#111827");
     expect(firstHexVar(root, "riso-ink-soft")).toBe("#6b7280");
-    expect(firstHexVar(root, "riso-rule")).toBe("#d1d5db");
+    expect(firstHexVar(root, "riso-paper-sunk")).toBe("#f7f8fa");
+    expect(firstHexVar(root, "elevated")).toBe("#ffffff");
+    expect(firstHexVar(root, "code")).toBe("#fafafb");
+    expect(root).toMatch(
+      /--riso-rule:\s*rgba\(\s*17\s*,\s*24\s*,\s*39\s*,\s*0\.08\s*\)/,
+    );
     expect(firstHexVar(root, "riso-olive")).toBe("#6366f1");
     expect(firstHexVar(root, "riso-lime")).toBe("#6366f1");
     expect(firstHexVar(root, "on-pop")).toBe("#ffffff");
@@ -159,11 +164,30 @@ describe("design tokens", () => {
     const muted = firstHexVar(root, "riso-ink-soft");
     const primary = firstHexVar(root, "riso-olive");
     const onPop = firstHexVar(root, "on-pop");
-    expect(paper && ink && muted && primary && onPop).toBeTruthy();
+    const sunk = firstHexVar(root, "riso-paper-sunk");
+    const code = firstHexVar(root, "code");
+    expect(paper && ink && muted && primary && onPop && sunk && code).toBeTruthy();
     expect(contrastRatio(ink!, paper!)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(muted!, paper!)).toBeGreaterThanOrEqual(4.5);
-    // Sheet Primary #6366F1 ≈ 4.36 on paper / white-on-primary ≈ 4.47 — large/UI.
-    expect(contrastRatio(primary!, paper!)).toBeGreaterThanOrEqual(4.3);
-    expect(contrastRatio(onPop!, primary!)).toBeGreaterThanOrEqual(4.3);
+    expect(contrastRatio(muted!, sunk!)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(muted!, code!)).toBeGreaterThanOrEqual(4.5);
+    // Primary #6366F1 ≈ 4.35 on paper / white-on-primary ≈ 4.47 — clears
+    // AA large-text/UI (3:1) by a wide margin; documented as large/UI/CTA
+    // only (CLAUDE.md §4), so 3:1 is the correct floor here, not 4.5.
+    expect(contrastRatio(primary!, paper!)).toBeGreaterThanOrEqual(3);
+    expect(contrastRatio(onPop!, primary!)).toBeGreaterThanOrEqual(3);
+  });
+
+  it("dark mode defines layered surfaces and soft borders", () => {
+    const css = readFileSync(GLOBALS, "utf8");
+    const dark = css.slice(css.indexOf(".dark"));
+    expect(firstHexVar(dark, "riso-paper")).toBe("#0f1117");
+    expect(firstHexVar(dark, "elevated")).toBe("#1a1e28");
+    expect(firstHexVar(dark, "code")).toBe("#161b24");
+    expect(firstHexVar(dark, "surface")).toBe("#13161e");
+    expect(firstHexVar(dark, "riso-lime")).toBe("#6366f1");
+    expect(dark).toMatch(
+      /--riso-rule:\s*rgba\(\s*249\s*,\s*250\s*,\s*252\s*,\s*0\.08\s*\)/,
+    );
   });
 });

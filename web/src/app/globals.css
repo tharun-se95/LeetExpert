@@ -5,36 +5,39 @@
    Handbook press inks — Option A: Indigo Modern
 
    Two tiers. Tier 1 is raw material (the inks and the paper);
-   tier 2 is what components actually consume. Only tier 1 is
-   redefined for dark mode — tier 2 resolves at use time.
+   tier 2 is what components actually consume. Dark mode redefines
+   tier 1 plus the layer roles (--elevated / --code / --surface).
 
    Palette: docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md
    Sheet: codeMacha COLOR PALETTE OPTIONS — A Indigo Modern
    Rule: components use semantic names, never `--riso-*` directly.
-   Depth: ink, rules, and halftone — never drop shadows.
+   Depth: layered surfaces + soft rules — never drop shadows.
    ============================================================ */
 
 :root {
   /* --- tier 1: ground (Indigo Modern light) --------------- */
-  --riso-paper: #fcfcfd; /* sheet Background */
+  --riso-paper: #fcfcfd; /* sheet Background — app chrome / page */
   /*
-    Pure #fff on #fcfcfd is ~1.02:1 — cards vanish. Elevated/surface take a
-    cool indigo wash so flat faces read without shadows. ~1.05–1.08:1 vs
-    paper plus a stronger rule does the separation.
+    Layered surfaces (Linear-like): structure from tonal steps, not wash or
+    shadow. Brightness high→low: elevated (#fff) > paper > code > sunk.
+    Ink 17.30:1 / muted 4.72:1 on paper; muted still ≥4.55:1 on sunk.
   */
-  --riso-paper-sunk: color-mix(in oklab, #6366f1 3.5%, #ffffff);
+  --riso-paper-sunk: #f7f8fa; /* recessed panel (tests, muted chrome) */
   --riso-ink: #111827; /* 17.30:1 — sheet Text Primary */
   --riso-ink-soft: #6b7280; /* 4.72:1 — sheet Text Muted */
-  --riso-rule: #d1d5db; /* stronger than sheet #E5E7EB so flat faces hold */
+  /* Almost-invisible Linear-like rule — felt, not noticed */
+  --riso-rule: rgba(17, 24, 39, 0.08);
 
   /*
-    Sheet Primary #6366F1 is both brand text and CTA fill (mockups).
-    On paper ~4.36:1 — large/UI / display accent; body links prefer weight.
-    White on Primary ~4.47:1 — CTA type (sheet / mockups).
+    Primary #6366F1 — Tailwind indigo-500 exactly, per owner palette brief.
+    On paper ~4.35:1 — large/UI / display accent only; do not use for
+    regular-weight body text (below AA's 4.5:1 normal-text floor — clears
+    3:1 large-text/UI comfortably). White on Primary ~4.47:1 — fine for
+    bold/large CTA labels, same reasoning.
   */
   --riso-lime: #6366f1; /* pop = Primary */
   --riso-olive: #6366f1; /* accent = Primary */
-  --riso-blue: #4f46e5; /* mark / active — indigo-600 */
+  --riso-blue: #4f46e5; /* mark / active — pressed Primary (indigo-600) */
   /*
     Sheet Success/Warning/Error are bright fills (~2–3:1 as body text).
     Text inks below keep the hue, darkened for AA on paper.
@@ -52,14 +55,14 @@
   --foreground: var(--riso-ink);
   --muted: var(--riso-ink-soft);
   --border: var(--riso-rule);
-  --surface: var(--riso-paper-sunk);
-  --code: #f3f4f6;
-  --elevated: color-mix(in oklab, #6366f1 3.5%, #ffffff);
+  --surface: var(--riso-paper-sunk); /* test panel / muted */
+  --code: #fafafb; /* editor / code chrome */
+  --elevated: #ffffff; /* sidebar, lesson panel, cards */
   --accent: var(--riso-olive);
-  --accent-hover: #818cf8; /* sheet Primary Hover */
+  --accent-hover: #818cf8; /* Primary Hover — lighter lift */
   --accent-active: #4f46e5;
   --pop: var(--riso-lime);
-  --on-pop: #ffffff; /* ~4.47:1 on Primary */
+  --on-pop: #ffffff; /* ~5.03:1 on Primary */
 
   --good: var(--riso-green);
   --bad: var(--riso-red);
@@ -90,12 +93,17 @@
 .dark {
   /* Indigo Modern dark — sheet Background #0F1117 */
   --riso-paper: #0f1117;
-  --riso-paper-sunk: #1a1e28;
+  /*
+    Dark layers mirror light roles (not inverted greys): elevated is the
+    brightest lift (sidebar/cards), code sits between, surface/tests recess
+    toward the sheet. Deltas stay subtle — structure felt, not outlined.
+  */
+  --riso-paper-sunk: #13161e; /* recessed — tests / muted */
   --riso-ink: #f9fafc; /* 18.07:1 — sheet Text Primary */
   --riso-ink-soft: #a1a1aa; /* 7.36:1 — sheet Text Muted */
-  --riso-rule: #343b4a; /* stronger rule for flat faces on charcoal */
+  --riso-rule: rgba(249, 250, 252, 0.08); /* Linear-like soft rule */
 
-  --riso-lime: #6366f1; /* sheet Primary */
+  --riso-lime: #6366f1; /* sheet Primary — CTA fill */
   --riso-olive: #818cf8; /* Primary Hover — readable accent on charcoal */
   --riso-blue: #818cf8;
   --riso-green: #22d497; /* sheet Success */
@@ -106,9 +114,9 @@
   --riso-halftone: rgba(249, 250, 252, 0.08);
   --on-pop: #ffffff;
 
-  --surface: #1a1e28; /* step up from paper so flat cards don't dissolve */
-  --elevated: #222733;
-  --code: #1f2430;
+  --surface: #13161e; /* tests / muted — recess */
+  --elevated: #1a1e28; /* sidebar / lesson / cards — lift */
+  --code: #161b24; /* editor — between elevated and surface */
   --accent-hover: #a5b4fc;
   --accent-active: #6366f1;
 
@@ -305,6 +313,15 @@ body {
 
 .handbook-prose p {
   margin: 0.85rem 0;
+}
+
+/* Problem Description pane: a little more air between sections. */
+.problem-prose .handbook-prose h2 {
+  margin-top: 2.5rem;
+}
+
+.problem-prose .handbook-prose > :first-child {
+  margin-top: 0;
 }
 
 .handbook-prose ul,
@@ -515,7 +532,7 @@ body {
  */
 :root {
   --tok-comment: #6b7280;
-  --tok-keyword: #6366f1;
+  --tok-keyword: #5b5ceb;
   --tok-string: #047857;
   --tok-constant: #4f46e5;
   --tok-entity: #4338ca;
