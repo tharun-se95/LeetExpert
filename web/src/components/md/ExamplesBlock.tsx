@@ -46,7 +46,7 @@ export function ExamplesBlock({
   return (
     <div
       className={cn(
-        "my-4 grid gap-2.5 rounded-lg border border-border bg-surface/40 px-4 py-3",
+        "my-4 rounded-lg border border-border bg-surface/40 px-3.5 py-2.5",
         className,
       )}
       role="list"
@@ -56,20 +56,20 @@ export function ExamplesBlock({
         <div
           key={`${row.input}-${i}`}
           role="listitem"
-          className={cn(i > 0 && "border-t border-border pt-2.5")}
+          className={cn(i > 0 && "mt-1.5 border-t border-border pt-1.5")}
         >
-          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <p className="min-w-0 font-mono text-[0.78rem] text-foreground">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
+            <p className="min-w-0 font-mono text-[0.78rem] leading-snug text-foreground">
               <span className="text-muted">Input: </span>
               {row.input}
             </p>
-            <p className="flex shrink-0 items-baseline gap-1.5 font-mono text-[0.78rem]">
+            <p className="flex shrink-0 items-baseline gap-1.5 font-mono text-[0.78rem] leading-snug">
               <span className="text-muted">Output:</span>
               <OutputValue output={row.output} />
             </p>
           </div>
           {row.note ? (
-            <p className="mt-1 text-[0.78rem] text-muted">
+            <p className="text-[0.78rem] leading-snug text-muted">
               <span className="font-medium">Explanation: </span>
               {row.note}
             </p>
