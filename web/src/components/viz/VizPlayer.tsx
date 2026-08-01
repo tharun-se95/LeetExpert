@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { CodePanel } from "@/components/viz/CodePanel";
 import type { VizCode, VizStep } from "@/components/viz/types";
 import { useVizChrome } from "@/components/viz/vizChrome";
+import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
+import type { FamilyId } from "@/lib/content/manifest";
 
 export interface VizRenderCtx {
   /** Honor prefers-reduced-motion: jump, don't tween */
@@ -31,6 +33,7 @@ export function VizPlayer<S>({
   speedMs = 900,
   autoPlay = false,
   label,
+  family,
   children,
 }: {
   code: VizCode;
@@ -44,6 +47,12 @@ export function VizPlayer<S>({
   autoPlay?: boolean;
   /** Accessible name for the whole player */
   label: string;
+  /**
+   * Algorithm family this tracer belongs to — drives the stage's accent
+   * color and background motif. Omit to fall back to generic --accent
+   * (every consumer already reads `var(--family-accent, var(--accent))`).
+   */
+  family?: FamilyId;
   children: (state: S, ctx: VizRenderCtx) => ReactNode;
 }) {
   const last = Math.max(0, steps.length - 1);
@@ -146,6 +155,7 @@ export function VizPlayer<S>({
         ref={rootRef}
         tabIndex={0}
         aria-label={label}
+        style={family ? familyCssVars(family) : undefined}
         {...(expanded ? { role: "dialog", "aria-modal": true } : {})}
         className={cn(
           "print:hidden flex flex-col border-border outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
@@ -177,6 +187,7 @@ export function VizPlayer<S>({
             )}
           >
             <div
+              data-motif={family ? getFamilyTheme(family).motif : undefined}
               className={cn(
                 "viz-stage flex min-w-0 items-center justify-center overflow-x-auto px-3 py-5",
                 "rounded-[length:var(--radius-sm)] border border-border",

@@ -120,7 +120,7 @@ export function KadaneViz(props: Record<string, unknown>) {
   const steps = useMemo(() => buildSteps(nums), [nums]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Kadane's algorithm trace">
+    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Kadane's algorithm trace" family="linear-traversal">
       {(state) => (
         <div className="flex flex-col items-start gap-3">
           <div className="flex gap-1.5">

@@ -134,7 +134,7 @@ export function DynamicWindowViz(props: Record<string, unknown>) {
   const steps = useMemo(() => buildSteps(nums, tgt), [nums, tgt]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Dynamic window trace">
+    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Dynamic window trace" family="pointer-movement">
       {(state) => (
         <div className="flex flex-col items-start gap-3">
           <div className="flex gap-1.5">

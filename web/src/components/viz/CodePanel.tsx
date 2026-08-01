@@ -112,7 +112,7 @@ export function CodePanel({
                       ? { duration: 0 }
                       : { type: "spring", stiffness: 500, damping: 40 }
                   }
-                  className="absolute inset-0 border-l-2 border-accent bg-accent/12"
+                  className="absolute inset-0 border-l-2 border-[var(--family-accent,var(--accent))] bg-[var(--family-accent,var(--accent))]/12"
                   aria-hidden
                 />
               ) : null}

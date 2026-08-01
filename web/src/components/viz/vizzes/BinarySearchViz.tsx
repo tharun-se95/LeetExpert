@@ -144,6 +144,7 @@ export function BinarySearchViz(props: Record<string, unknown>) {
       speedMs={speedProp(speed)}
       autoPlay={autoPlay === true}
       label="Binary search trace"
+      family="ordering-search"
     >
       {(state) => (
         <div className="flex flex-col items-start gap-3">

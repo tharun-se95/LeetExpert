@@ -15,9 +15,11 @@ export type CellTone = "plain" | "kept" | "junk" | "active" | "dropped" | "resol
 
 const TONE_CLASS: Record<CellTone, string> = {
   plain: "border-border bg-background text-foreground",
-  kept: "border-accent/60 bg-accent/14 text-foreground",
+  kept: "border-[var(--family-accent,var(--accent))]/60 bg-[var(--family-accent,var(--accent))]/14 text-foreground",
   junk: "border-border bg-surface text-muted opacity-60",
-  active: "border-pop bg-pop text-on-pop",
+  // dropped/resolved stay universal red/green — pass/fail meaning, not family identity.
+  active:
+    "border-[var(--family-accent,var(--accent))] bg-[var(--family-accent,var(--accent))] text-[var(--family-on-accent,var(--on-pop))]",
   dropped: "border-bad/60 bg-bad/10 text-muted",
   resolved: "border-good/50 bg-good/10 text-foreground",
 };
@@ -82,7 +84,7 @@ export function MarkerRow({ length, markers }: { length: number; markers: Marker
           {markers
             .filter((m) => m.index === i)
             .map((m) => {
-              const color = m.color ?? "var(--accent)";
+              const color = m.color ?? "var(--family-accent, var(--accent))";
               return (
                 <motion.div
                   key={m.label}

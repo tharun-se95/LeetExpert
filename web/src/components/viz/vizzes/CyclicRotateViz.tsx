@@ -232,6 +232,7 @@ export function CyclicRotateViz(props: Record<string, unknown>) {
       steps={steps}
       speedMs={speedProp(speed)}
       label={`Cycle-chasing rotation of ${n} elements by ${shift}`}
+      family="pointer-movement"
     >
       {(state, ctx) => {
         const tokenAt =

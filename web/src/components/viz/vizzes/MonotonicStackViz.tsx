@@ -151,7 +151,7 @@ export function MonotonicStackViz(props: Record<string, unknown>) {
   const steps = useMemo(() => buildSteps(values), [values]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Monotonic stack trace">
+    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Monotonic stack trace" family="state-transition">
       {(state) => (
         <div className="flex flex-col items-start gap-4">
           <div className="flex flex-col gap-1.5">

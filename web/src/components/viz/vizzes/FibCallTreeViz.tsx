@@ -239,7 +239,7 @@ export function FibCallTreeViz(props: Record<string, unknown>) {
   const { steps, flat } = useMemo(() => buildSteps(startN), [startN]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Fibonacci call tree trace">
+    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Fibonacci call tree trace" family="recursive-exploration">
       {(state) => (
         <div className="flex flex-col items-center gap-3">
           <div className="overflow-x-auto">

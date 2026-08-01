@@ -203,6 +203,7 @@ export function DynamicArrayGrowthViz(props: Record<string, unknown>) {
       steps={steps}
       speedMs={speedProp(speed)}
       label="Dynamic array growth trace"
+      family="linear-traversal"
     >
       {(state) => (
         <div className="flex w-full flex-col items-center gap-3">

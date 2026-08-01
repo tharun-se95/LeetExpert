@@ -155,7 +155,7 @@ export function FastSlowViz(props: Record<string, unknown>) {
   const steps = useMemo(() => buildSteps(values, cycleAt), [values, cycleAt]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Fast and slow pointers trace">
+    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Fast and slow pointers trace" family="pointer-movement">
       {(state) => (
         <div className="flex flex-col items-start gap-3">
           <div className="flex flex-col items-start gap-1">

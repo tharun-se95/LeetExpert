@@ -207,7 +207,7 @@ export function HashBucketsViz(props: Record<string, unknown>) {
   const steps = useMemo(() => buildSteps(keyList, initialCapacity), [keyList, initialCapacity]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Hash buckets trace">
+    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Hash buckets trace" family="relationships">
       {(state) => (
         <div className="flex flex-col items-center gap-3">
           <motion.div layout className="flex flex-wrap items-end justify-center gap-2">

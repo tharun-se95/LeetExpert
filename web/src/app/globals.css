@@ -666,7 +666,7 @@ body {
   background:
     radial-gradient(
       ellipse 90% 70% at 50% 0%,
-      color-mix(in oklab, var(--accent) 14%, transparent),
+      color-mix(in oklab, var(--family-accent, var(--accent)) 14%, transparent),
       transparent 60%
     ),
     var(--code);
@@ -676,10 +676,77 @@ body {
   background:
     radial-gradient(
       ellipse 90% 70% at 50% 0%,
-      color-mix(in oklab, var(--accent) 18%, transparent),
+      color-mix(in oklab, var(--family-accent, var(--accent)) 18%, transparent),
       transparent 60%
     ),
     var(--code);
+}
+
+/*
+  Family motif backgrounds — geometric, not illustrative. Same layering
+  trick as .riso-halftone: an absolutely-positioned ::before sits behind
+  everything because .viz-stage's real children get position:relative,
+  which (per CSS stacking rules) paints after an unpositioned/z-index:auto
+  sibling in source order. Ink via color-mix so light/dark both just work.
+*/
+.viz-stage > * {
+  position: relative;
+}
+
+.viz-stage[data-motif]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.viz-stage[data-motif="tiles"]::before {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--family-accent) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--family-accent) 10%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.viz-stage[data-motif="cursors"]::before {
+  background-image: repeating-linear-gradient(
+    45deg,
+    color-mix(in oklab, var(--family-accent) 10%, transparent) 0 2px,
+    transparent 2px 14px
+  );
+}
+
+.viz-stage[data-motif="ruler"]::before {
+  background-image: repeating-linear-gradient(
+    to right,
+    color-mix(in oklab, var(--family-accent) 12%, transparent) 0 1px,
+    transparent 1px 16px
+  );
+}
+
+.viz-stage[data-motif="tree"]::before {
+  background-image:
+    repeating-linear-gradient(60deg, color-mix(in oklab, var(--family-accent) 8%, transparent) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(-60deg, color-mix(in oklab, var(--family-accent) 8%, transparent) 0 1px, transparent 1px 26px);
+}
+
+.viz-stage[data-motif="switchboard"]::before {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--family-accent) 9%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--family-accent) 9%, transparent) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+.viz-stage[data-motif="constellation"]::before {
+  background-image: radial-gradient(circle, color-mix(in oklab, var(--family-accent) 16%, transparent) 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+}
+
+.viz-stage[data-motif="podium"]::before {
+  background-image: repeating-linear-gradient(
+    to top,
+    color-mix(in oklab, var(--family-accent) 10%, transparent) 0 3px,
+    transparent 3px 18px
+  );
 }
 
 @media (prefers-reduced-motion: reduce) {

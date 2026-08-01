@@ -247,7 +247,7 @@ export function RingBufferViz(props: Record<string, unknown>) {
   const steps = useMemo(() => buildSteps(cap, opsList), [cap, opsList]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Ring buffer trace">
+    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Ring buffer trace" family="state-transition">
       {(state) => (
         <div className="flex flex-col items-center gap-3">
           <RingSlots

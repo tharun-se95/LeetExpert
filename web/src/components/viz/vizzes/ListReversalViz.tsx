@@ -156,7 +156,7 @@ export function ListReversalViz(props: Record<string, unknown>) {
   const steps = useMemo(() => buildSteps(values), [values]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="List reversal trace">
+    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="List reversal trace" family="relationships">
       {(state) => (
         <div className="flex flex-col items-start gap-3">
           <div className="flex gap-1.5">

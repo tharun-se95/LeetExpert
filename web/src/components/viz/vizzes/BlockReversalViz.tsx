@@ -172,6 +172,7 @@ export function BlockReversalViz(props: Record<string, unknown>) {
       steps={steps}
       speedMs={speedProp(speed)}
       label={`Rotating ${nums.length} elements right by ${shift} using three reversals`}
+      family="pointer-movement"
     >
       {(state) => (
         <div className="flex flex-col items-start gap-3">

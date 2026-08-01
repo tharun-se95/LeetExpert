@@ -138,7 +138,7 @@ export function PrefixSumViz(props: Record<string, unknown>) {
   const steps = useMemo(() => buildSteps(nums, queryList), [nums, queryList]);
 
   return (
-    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Prefix sum trace">
+    <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Prefix sum trace" family="linear-traversal">
       {(state) => (
         <div className="flex flex-col items-start gap-3">
           <div className="flex flex-col gap-1.5">

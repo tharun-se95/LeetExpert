@@ -115,6 +115,7 @@ export function WritePointerViz(props: Record<string, unknown>) {
       steps={steps}
       speedMs={speedProp(speed)}
       label="Write-pointer compaction trace"
+      family="pointer-movement"
     >
       {(state) => (
         <div className="flex flex-col items-start gap-3">
