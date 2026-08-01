@@ -45,12 +45,19 @@ export function ExamplesBlock({
 }) {
   return (
     <div
-      className={cn("my-4 grid gap-3", className)}
+      className={cn(
+        "my-4 grid gap-2.5 rounded-lg border border-border bg-surface/40 px-4 py-3",
+        className,
+      )}
       role="list"
       aria-label="Examples"
     >
       {rows.map((row, i) => (
-        <div key={`${row.input}-${i}`} role="listitem">
+        <div
+          key={`${row.input}-${i}`}
+          role="listitem"
+          className={cn(i > 0 && "border-t border-border pt-2.5")}
+        >
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
             <p className="min-w-0 font-mono text-[0.78rem] text-foreground">
               <span className="text-muted">Input: </span>

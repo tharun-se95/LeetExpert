@@ -353,9 +353,9 @@ body {
   margin: 0.85rem 0;
 }
 
-/* Problem Description pane: a little more air between sections. */
+/* Problem Description pane: compact rhythm, reference-matched. */
 .problem-prose .handbook-prose h2 {
-  margin-top: 2.5rem;
+  margin-top: 1.75rem;
 }
 
 .problem-prose .handbook-prose > :first-child {

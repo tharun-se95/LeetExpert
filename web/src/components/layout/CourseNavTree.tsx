@@ -55,9 +55,9 @@ function ModuleNode({
   const selfActive = pathname === navModule.href;
 
   const doneCount = navModule.lessons.filter((l) => visited.has(l.id)).length;
-  // Desktop: ~36–40px rows; mobile sheet: ≥44px taps.
-  const rowPad = compact ? "min-h-9 py-2" : "min-h-11 py-2.5";
-  const chevronBox = compact ? "h-9 w-7" : "h-11 w-11";
+  // Desktop: ~32px rows; mobile sheet: ≥44px taps.
+  const rowPad = compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5";
+  const chevronBox = compact ? "h-8 w-6" : "h-11 w-11";
 
   return (
     <div>
@@ -122,7 +122,7 @@ function ModuleNode({
           className={cn(
             "border-l border-border",
             compact
-              ? "ml-4 mt-2 space-y-1.5 pl-3.5"
+              ? "ml-3.5 mt-1 space-y-0.5 pl-3"
               : "ml-3.5 mt-1.5 space-y-1 pl-3",
           )}
         >
@@ -194,8 +194,8 @@ export function CourseNavTree({
       <Link
         href="/course"
         className={cn(
-          "mb-3 block rounded-[4px] px-2 text-[13px] font-medium transition-colors",
-          compact ? "min-h-9 py-2" : "min-h-11 py-2.5",
+          "mb-2.5 block rounded-[4px] px-2 text-[13px] font-medium transition-colors",
+          compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5",
           pathname === "/course"
             ? "bg-pop font-semibold text-on-pop"
             : "text-foreground hover:bg-surface",
@@ -206,17 +206,17 @@ export function CourseNavTree({
       {nav.map((stage) => (
         <div
           key={stage.number}
-          className={cn(compact ? "mt-8 first:mt-5" : "mt-6 first:mt-4")}
+          className={cn(compact ? "mt-5 first:mt-3" : "mt-6 first:mt-4")}
         >
           <p
             className={cn(
               "border-b border-border px-2 font-display text-[11px] font-bold uppercase tracking-[0.1em] text-foreground/70",
-              compact ? "mb-3.5 pb-2.5" : "mb-3 pb-2",
+              compact ? "mb-2 pb-1.5" : "mb-3 pb-2",
             )}
           >
             {stage.title}
           </p>
-          <div className={cn(compact ? "space-y-2.5" : "space-y-1.5")}>
+          <div className={cn(compact ? "space-y-1" : "space-y-1.5")}>
             {stage.modules.map((m) => (
               <ModuleNode
                 key={m.slug}

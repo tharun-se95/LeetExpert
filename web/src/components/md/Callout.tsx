@@ -113,7 +113,7 @@ export function Callout({
     <blockquote
       id={id}
       className={cn(
-        "group relative my-5 rounded-lg border px-4 py-3 not-italic",
+        "group relative my-4 rounded-lg border px-4 py-3 not-italic",
         TYPE_STYLES[type] ?? TYPE_STYLES.default,
       )}
     >
