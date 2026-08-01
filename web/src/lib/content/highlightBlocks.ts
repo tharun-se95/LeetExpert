@@ -33,6 +33,12 @@ const NON_CODE_LANGS = new Set([
   "aside",
   "roadmap",
   "practice-problems",
+  "examples",
+  "tip",
+  "note",
+  "goal",
+  "constraint",
+  "text",
 ]);
 
 /** Must match the key format `Markdown.tsx`'s `pre` handler computes at render time. */

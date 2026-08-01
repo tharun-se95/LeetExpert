@@ -94,10 +94,12 @@ Components consume semantic names, so a palette change is one edit.
 3. **CodeMirror:** `basicSetup.syntaxHighlighting` must stay `false` and
    `theme="none"` must be passed, or you get an opaque white block and
    invisible tokens in dark mode.
-4. **Sheet Primary `#6366F1` is ~4.36:1 on paper** — fine for large/UI and
-   CTAs with white on-pop (~4.47:1); do not rely on it for small body links
+4. **Sheet Primary `#5B5CEB` is ~4.91:1 on paper** — fine for large/UI and
+   CTAs with white on-pop (~5.03:1); do not rely on it for small body links
    without weight/size. Status sheet fills are bright — text roles use
-   darkened AA companions (see globals comments).
+   darkened AA companions (see globals comments). Structure uses layered
+   surfaces (`--elevated` / `--code` / `--surface`) plus soft borders
+   (`rgba(17,24,39,0.08)`), not indigo wash or shadows.
 5. **Sequence method names differ per language** (`get_min` / `getMin`) —
    declare them in `methods`. Never auto-convert casing; that is guessing.
 6. **A `null` expected value in an op means "do not assert"**, not "must
@@ -203,6 +205,71 @@ a third party — the owner's call); the mobile sandbox is layout-verified but
 never tested against a real touch keyboard.
 
 ---
+
+## Shipped — Mobile Lessons sheet (2026-07-31)
+
+Mobile (< `lg` / 1024px) no longer shows the skinny Lessons rail or half-width
+drawer. Header List control opens a full-screen sheet (Escape, backdrop,
+focus trap, body scroll lock). Desktop keeps the collapsible sidebar; 
+`dsa-sidebar-open` is only read/written on desktop so mobile open/close does
+not clobber the preference.
+
+Files: `AppShell.tsx`, `Header.tsx`, `Sidebar.tsx`, `CourseNavTree.tsx`,
+`MobileLessonsSheet.tsx`.
+
+---
+
+## Shipped — Practice mobile polish (2026-07-31)
+
+Practice chapter + hub + workspace tuned for phone widths (desktop unchanged):
+
+- Cheatsheet: smell cues stack vertically; complexity is card rows below `sm`
+  (table from `sm` up); denser header/cards on narrow screens.
+- Chapter problem list + hub rows/chips/Playbook: ≥44px taps; difficulty
+  badges clearer; hub module progress bar visible on mobile; row chevrons
+  visible without hover.
+- Problem workspace: larger back / prev-next / tab hits.
+
+Files: `SmellCues`, `ComplexityStrip`, `Cheatsheet`, `PatternCard`,
+`PracticeProblemsList`, `ProblemsListClient`, `ProblemWorkspace`, `Header`.
+
+---
+
+## Shipped — IDE Insight panel (2026-07-31)
+
+The empty band between the problem IDE editor and testcases is now a
+collapsible **Insight** panel (teaching real estate, not a live debugger).
+
+**Live today:** selected-case memory schematic (string/array cells + gold
+L/R overlays), case args + expected, after-run output/status, complexity
+chips from the lesson `complexity` fence (works even inside reveal) or
+module cheatsheet, pattern/invariant checklist from gold configs or
+cheatsheet patterns. Badge: “Case-bound · not a live debugger.”
+
+**Not yet:** mid-execution variable snapshots / step tracing — runners still
+return raw outcomes only. VizPlayer steps are hand-authored lesson visuals,
+not wired to learner code.
+
+Spec: `docs/superpowers/specs/2026-07-31-ide-insight-panel-design.md`
+
+Files: `web/src/lib/insight/*`, `web/src/components/insight/*`,
+`Sandbox.tsx`, `ProblemWorkspace.tsx`, `web/tests/insight.test.ts`.
+
+**Follow-up for real execution tracing:** optional worker instrumentation
+emitting step snapshots (indexes + locals) for a small allowlist of
+patterns, or a sandbox opt-in `trace` mode — keep workers reporting raw
+facts; main thread still judges pass/fail.
+
+---
+
+## Shipped — Problem statement rhythm (2026-07-31)
+
+Description tabs gain modern-docs rhythm: `examples` / auto-`text`→ cards,
+`goal` / `tip` / `note` / `constraint` callout fences, accent-tinted inline
+code, existing `==mark==`. Gold exemplars: valid-palindrome,
+remove-duplicates-sorted, two-sum.
+
+Spec: `docs/superpowers/specs/2026-07-31-problem-statement-rhythm-design.md`
 
 ## Follow-up — Practice chapter briefs
 

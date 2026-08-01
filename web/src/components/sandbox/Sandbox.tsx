@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import {
   Check,
@@ -21,6 +21,9 @@ import {
 } from "@/components/sandbox/types";
 import { pretty } from "@/lib/sandbox/compare";
 import { PanelSplit } from "@/components/problems/PanelSplit";
+import { InsightPanel } from "@/components/insight/InsightPanel";
+import { resolveInsight } from "@/lib/insight/resolveInsight";
+import type { ExtractedComplexity } from "@/lib/insight/extractComplexity";
 
 const LANGS: SandboxLang[] = ["python", "javascript"];
 
@@ -55,25 +58,42 @@ export function Sandbox({
   source,
   onSolved,
   variant = "card",
+  moduleSlug,
+  extractedComplexity = null,
 }: {
   source: string;
   onSolved?: () => void;
   /** `card` is the course-lesson embed; `ide` fills the `/problems` workspace. */
   variant?: "card" | "ide";
+  /** Module for cheatsheet pattern / complexity fallbacks (IDE Insight). */
+  moduleSlug?: string;
+  extractedComplexity?: ExtractedComplexity | null;
 }) {
   const spec = useMemo(() => parseSandboxSpec(source), [source]);
   if (!spec) return <ErrorCard message="Invalid sandbox block." />;
-  return <SandboxBody spec={spec} onSolved={onSolved} variant={variant} />;
+  return (
+    <SandboxBody
+      spec={spec}
+      onSolved={onSolved}
+      variant={variant}
+      moduleSlug={moduleSlug}
+      extractedComplexity={extractedComplexity}
+    />
+  );
 }
 
 function SandboxBody({
   spec,
   onSolved,
   variant,
+  moduleSlug,
+  extractedComplexity,
 }: {
   spec: SandboxSpec;
   onSolved?: () => void;
   variant: "card" | "ide";
+  moduleSlug?: string;
+  extractedComplexity: ExtractedComplexity | null;
 }) {
   const [lang, setLang] = useState<SandboxLang>("python");
   const [drafts, setDrafts] = useState<Record<SandboxLang, string>>({
@@ -134,7 +154,7 @@ function SandboxBody({
     <div
       className={cn(
         "flex flex-wrap items-center gap-3 px-3 py-2",
-        variant === "ide" ? "border-b border-border bg-surface/40" : "",
+        variant === "ide" ? "border-b border-border bg-code" : "",
       )}
     >
       {variant === "card" ? (
@@ -212,45 +232,21 @@ function SandboxBody({
 
   if (variant === "ide") {
     return (
-      <div
-        className={cn(
-          "print:hidden flex h-full min-h-0 flex-col bg-background",
-          allPassed ? "ring-1 ring-inset ring-good/40" : "",
-        )}
-      >
-        {toolbar}
-        <PanelSplit
-          orientation="vertical"
-          initialPrimary={0.62}
-          minPrimary={0.35}
-          maxPrimary={0.8}
-          primary={
-            <div className="flex h-full min-h-0 flex-col bg-code">
-              <div className="code-body min-h-0 flex-1 overflow-hidden p-0">
-                <CodeEditor
-                  value={drafts[lang]}
-                  onChange={setDraft}
-                  lang={lang}
-                  height="100%"
-                  ariaLabel={`${LANG_LABEL[lang]} solution editor`}
-                />
-              </div>
-            </div>
-          }
-          secondary={
-            <div className="flex h-full min-h-0 flex-col bg-surface/20">
-              {statusBanner}
-              <IdeTestcases
-                spec={spec}
-                results={results}
-                passed={passed}
-                total={total}
-                idle={state.status === "idle"}
-              />
-            </div>
-          }
-        />
-      </div>
+      <IdeWorkspace
+        toolbar={toolbar}
+        statusBanner={statusBanner}
+        drafts={drafts}
+        lang={lang}
+        setDraft={setDraft}
+        spec={spec}
+        results={results}
+        passed={passed}
+        total={total}
+        idle={state.status === "idle"}
+        allPassed={allPassed}
+        moduleSlug={moduleSlug}
+        extractedComplexity={extractedComplexity}
+      />
     );
   }
 
@@ -307,6 +303,104 @@ function SandboxBody({
   );
 }
 
+function IdeWorkspace({
+  toolbar,
+  statusBanner,
+  drafts,
+  lang,
+  setDraft,
+  spec,
+  results,
+  passed,
+  total,
+  idle,
+  allPassed,
+  moduleSlug,
+  extractedComplexity,
+}: {
+  toolbar: ReactNode;
+  statusBanner: ReactNode;
+  drafts: Record<SandboxLang, string>;
+  lang: SandboxLang;
+  setDraft: (next: string) => void;
+  spec: SandboxSpec;
+  results: CaseResult[] | null;
+  passed: number;
+  total: number;
+  idle: boolean;
+  allPassed: boolean;
+  moduleSlug?: string;
+  extractedComplexity: ExtractedComplexity | null;
+}) {
+  const [activeCase, setActiveCase] = useState(0);
+  const testCase = spec.cases[activeCase];
+  const caseResult = results?.[activeCase] ?? null;
+
+  useEffect(() => {
+    if (!results) return;
+    const firstFail = results.findIndex((r) => !r.passed);
+    if (firstFail >= 0) setActiveCase(firstFail);
+  }, [results]);
+
+  const insight = useMemo(
+    () =>
+      resolveInsight({
+        spec,
+        moduleSlug: moduleSlug ?? "",
+        extractedComplexity,
+        testCase,
+        caseIndex: activeCase,
+        result: caseResult,
+      }),
+    [spec, moduleSlug, extractedComplexity, testCase, activeCase, caseResult],
+  );
+
+  return (
+    <div
+      className={cn(
+        "print:hidden flex h-full min-h-0 flex-col bg-background",
+        allPassed ? "ring-1 ring-inset ring-good/40" : "",
+      )}
+    >
+      {toolbar}
+      <PanelSplit
+        orientation="vertical"
+        initialPrimary={0.48}
+        minPrimary={0.28}
+        maxPrimary={0.72}
+        primary={
+          <div className="flex h-full min-h-0 flex-col bg-code">
+            <div className="code-body min-h-0 flex-1 overflow-hidden p-0">
+              <CodeEditor
+                value={drafts[lang]}
+                onChange={setDraft}
+                lang={lang}
+                height="100%"
+                ariaLabel={`${LANG_LABEL[lang]} solution editor`}
+              />
+            </div>
+          </div>
+        }
+        secondary={
+          <div className="flex h-full min-h-0 flex-col bg-surface">
+            {statusBanner}
+            <InsightPanel insight={insight} />
+            <IdeTestcases
+              spec={spec}
+              results={results}
+              passed={passed}
+              total={total}
+              idle={idle}
+              active={activeCase}
+              onActiveChange={setActiveCase}
+            />
+          </div>
+        }
+      />
+    </div>
+  );
+}
+
 function caseInputLabel(testCase: SandboxCase): string {
   if (testCase.name) return testCase.name;
   if (testCase.construct !== undefined) {
@@ -332,23 +426,20 @@ function IdeTestcases({
   passed,
   total,
   idle,
+  active,
+  onActiveChange,
 }: {
   spec: SandboxSpec;
   results: CaseResult[] | null;
   passed: number;
   total: number;
   idle: boolean;
+  active: number;
+  onActiveChange: (index: number) => void;
 }) {
-  const [active, setActive] = useState(0);
   const testCase = spec.cases[active];
   const result = results?.[active] ?? null;
   const allPassed = results !== null && passed === total;
-
-  useEffect(() => {
-    if (!results) return;
-    const firstFail = results.findIndex((r) => !r.passed);
-    if (firstFail >= 0) setActive(firstFail);
-  }, [results]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -386,7 +477,7 @@ function IdeTestcases({
               type="button"
               role="tab"
               aria-selected={active === i}
-              onClick={() => setActive(i)}
+              onClick={() => onActiveChange(i)}
               className={cn(
                 "rounded-md px-2.5 py-1 font-mono text-[0.7rem] transition-colors",
                 active === i
@@ -402,9 +493,9 @@ function IdeTestcases({
               <span className="inline-flex items-center gap-1.5">
                 {r ? (
                   r.passed ? (
-                    <Check size={10} strokeWidth={3} className="text-good" aria-hidden />
+                    <Check size={10} weight="bold" className="text-good" aria-hidden />
                   ) : (
-                    <X size={10} strokeWidth={3} className="text-bad" aria-hidden />
+                    <X size={10} weight="bold" className="text-bad" aria-hidden />
                   )
                 ) : null}
                 Case {i + 1}
@@ -522,9 +613,9 @@ function CardResults({
                 )}
               >
                 {result.passed ? (
-                  <Check size={10} strokeWidth={3} aria-hidden />
+                  <Check size={10} weight="bold" aria-hidden />
                 ) : (
-                  <X size={10} strokeWidth={3} aria-hidden />
+                  <X size={10} weight="bold" aria-hidden />
                 )}
               </span>
 

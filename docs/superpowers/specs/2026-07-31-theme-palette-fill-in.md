@@ -1,6 +1,6 @@
 # Theme structure — fill-in palette sheet
 
-**Active palette:** **A — Indigo Modern** (applied 2026-07-31)  
+**Active palette:** **A — Indigo Modern** (applied 2026-07-31; Primary deepened + layered surfaces 2026-07-31)  
 **Source of truth in code:** `web/src/app/globals.css`  
 **Sheet:** codeMacha COLOR PALETTE OPTIONS  
 
@@ -16,39 +16,47 @@ Tier 2  (--background, --accent, …)       semantic aliases components use
 @theme  (--color-*)    Tailwind utilities  (bg-background, text-accent, bg-pop, …)
 ```
 
+Layer roles (`--elevated` / `--code` / `--surface`) are also set in `.dark` so
+dark gets a designed lift ladder, not an invert of light greys.
+
 ---
 
 ## Indigo Modern — applied mapping
 
 ### Light
 
-| Sheet | Hex | Our token(s) |
-|-------|-----|----------------|
-| Background | `#FCFCFD` | `--riso-paper` / `--background` |
-| (cards) | indigo-wash white | `--riso-paper-sunk` / `--surface` / `--elevated` — `color-mix(indigo 3.5%, #fff)` so flat faces separate from paper without shadows |
-| Border | `#D1D5DB` | `--riso-rule` / `--border` (stronger than sheet `#E5E7EB`) |
+| Role | Hex / value | Our token(s) |
+|------|-------------|----------------|
+| Background (app chrome / page) | `#FCFCFD` | `--riso-paper` / `--background` |
+| Elevated (sidebar, lesson panel, cards, header) | `#FFFFFF` | `--elevated` |
+| Code editor | `#FAFAFB` | `--code` |
+| Surface / tests (recessed) | `#F7F8FA` | `--riso-paper-sunk` / `--surface` |
+| Border | `rgba(17, 24, 39, 0.08)` | `--riso-rule` / `--border` |
 | Text Primary | `#111827` | `--riso-ink` / `--foreground` |
 | Text Muted | `#6B7280` | `--riso-ink-soft` / `--muted` |
-| Border | `#E5E7EB` | `--riso-rule` / `--border` |
-| Primary | `#6366F1` | `--accent` + `--pop` |
+| Primary | `#5B5CEB` | `--accent` + `--pop` |
 | Primary Hover | `#818CF8` | `--accent-hover` |
+| Primary Active / mark | `#4A4BD6` | `--accent-active` / `--riso-blue` |
 | Success (sheet fill) | `#16C47F` | text role → `#047857` (`--good`) |
 | Warning (sheet fill) | `#F5B301` | text role → `#B45309` (`--warn`) |
 | Error (sheet fill) | `#EF4444` | text role → `#DC2626` (`--bad`) |
 | On-pop | `#FFFFFF` | `--on-pop` |
 
+Brightness ladder (high → low): elevated → background → code → surface.
+
 ### Dark
 
-| Sheet | Hex | Our token(s) |
-|-------|-----|----------------|
+| Role | Hex / value | Our token(s) |
+|------|-------------|----------------|
 | Background | `#0F1117` | `--riso-paper` / `--background` |
-| Surface | `#1A1E28` | `--surface` / `--riso-paper-sunk` (lifted vs sheet `#181B23`) |
-| Elevated | `#222733` | `--elevated` — card faces |
+| Elevated (sidebar / lesson / cards) | `#1A1E28` | `--elevated` |
+| Code editor | `#161B24` | `--code` |
+| Surface / tests | `#13161E` | `--surface` / `--riso-paper-sunk` |
+| Border | `rgba(249, 250, 252, 0.08)` | `--border` |
 | Text Primary | `#F9FAFC` | `--foreground` |
 | Text Muted | `#A1A1AA` | `--muted` |
-| Border | `#343B4A` | `--border` (stronger than sheet `#2A2F3A`) |
-| Primary | `#6366F1` | `--pop` / `--accent-active` |
-| Primary Hover | `#818CF8` | `--accent` (readable on charcoal) |
+| Primary (CTA fill) | `#5B5CEB` | `--pop` / `--accent-active` / `--riso-lime` |
+| Accent (readable on charcoal) | `#818CF8` | `--accent` / `--riso-olive` |
 | Success | `#22D497` | `--good` |
 | Warning | `#F59E0B` | `--warn` |
 | Error | `#EF4444` | `--bad` |
@@ -57,6 +65,8 @@ Tier 2  (--background, --accent, …)       semantic aliases components use
 
 ## Notes
 
-- Primary on paper ~**4.36:1** (large/UI). White on Primary ~**4.47:1**.
+- Primary on paper ~**4.91:1** (large/UI). White on Primary ~**5.03:1**.
+- Borders are intentionally near-invisible — structure comes from the tonal layers.
 - Sheet Success/Warning/Error are too bright for body text on light paper; light theme uses darkened AA text inks in the same hue families.
+- Depth stays flat (print language): ink, soft rules, and halftone — never drop shadows.
 - To switch to palette B–E later, provide the sheet hexes the same way.

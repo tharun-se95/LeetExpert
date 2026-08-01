@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="codeMacha">
   <title>codeMacha</title>
   <!-- Indigo Modern Primary plate + white strokes (on-pop). -->
-  <rect width="64" height="64" rx="14" fill="#6366F1" />
+  <rect width="64" height="64" rx="14" fill="#5B5CEB" />
   <g
     fill="none"
     stroke="#FFFFFF"

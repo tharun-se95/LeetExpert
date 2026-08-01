@@ -4,13 +4,29 @@ import { useId, useState } from "react";
 import { Check, Copy } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
+export type CalloutType =
+  | "tip"
+  | "note"
+  | "goal"
+  | "constraint"
+  | "warn"
+  | "rocket"
+  | "build"
+  | "brain"
+  | "default";
+
 interface CalloutProps {
   children: React.ReactNode;
-  type?: "tip" | "warn" | "rocket" | "build" | "brain" | "default";
+  type?: CalloutType;
+  /** Optional label above the body (used by fenced callouts). */
+  label?: string;
 }
 
-const TYPE_STYLES: Record<string, string> = {
+const TYPE_STYLES: Record<CalloutType, string> = {
   tip: "border-l-accent bg-accent/5",
+  note: "border-l-accent bg-accent/[0.06]",
+  goal: "border-l-mark bg-mark/5",
+  constraint: "border-l-warn bg-warn/[0.06]",
   warn: "border-l-warn bg-warn/5",
   rocket: "border-l-mark bg-mark/5",
   build: "border-l-good bg-good/5",
@@ -18,7 +34,22 @@ const TYPE_STYLES: Record<string, string> = {
   default: "border-l-border bg-surface",
 };
 
-export function Callout({ children, type = "default" }: CalloutProps) {
+const TYPE_LABELS: Partial<Record<CalloutType, string>> = {
+  tip: "Tip",
+  note: "Note",
+  goal: "Goal",
+  constraint: "Constraints",
+  warn: "Watch out",
+  brain: "Insight",
+  build: "Build",
+  rocket: "Ship",
+};
+
+export function Callout({
+  children,
+  type = "default",
+  label,
+}: CalloutProps) {
   const [copied, setCopied] = useState(false);
   const id = useId();
 
@@ -51,6 +82,11 @@ export function Callout({ children, type = "default" }: CalloutProps) {
         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       </button>
       <div className="pr-8 text-[0.95rem] leading-relaxed text-foreground/90 [&_p]:my-0">
+        {(label ?? TYPE_LABELS[type]) ? (
+          <p className="mb-1.5 !mt-0 font-mono text-[0.65rem] font-semibold tracking-[0.12em] text-muted uppercase">
+            {label ?? TYPE_LABELS[type]}
+          </p>
+        ) : null}
         {children}
       </div>
     </blockquote>

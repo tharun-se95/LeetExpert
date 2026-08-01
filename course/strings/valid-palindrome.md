@@ -7,23 +7,31 @@ type: problem
 
 A phrase is a palindrome if, after converting to lowercase and removing
 all non-alphanumeric characters, it reads the same forward and backward.
-Given `s`, return whether it is a palindrome.
+Given `s`, return whether it is a ==palindrome== under the cleaned reading.
+
+```goal
+Decide true/false for the cleaned reading — not “how to clean” yet.
+The follow-up asks for ==O(1) auxiliary space== (no cleaned copy).
+```
 
 **Examples**
 
-```text
+```examples
 "A man, a plan, a canal: Panama"  →  true   ("amanaplanacanalpanama")
 "race a car"                      →  false  ("raceacar")
 " "                               →  true   (empty after cleaning)
 ```
 
-**Constraints:** 1 ≤ n ≤ 2·10⁵ · printable ASCII · follow-up: O(1)
-auxiliary space.
+```constraint
+1 ≤ n ≤ 2·10⁵ · printable ASCII · prefer O(1) auxiliary space
+```
 
 ## Attempt it first
 
+```tip
 The easy version (clean the string, compare with its reverse) is worth 60
 seconds. The real target is the follow-up: no cleaned copy at all.
+```
 
 ```sandbox
 {

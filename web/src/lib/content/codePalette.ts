@@ -4,7 +4,7 @@
  * Shiki renders code blocks + viz panes; CodeMirror renders the sandbox
  * editor. They paint from these values / mirrored `--tok-*` in globals.css.
  *
- * Tuned for Indigo Modern (Primary #6366F1).
+ * Tuned for Indigo Modern (Primary #5B5CEB).
  */
 
 export interface CodeInk {
@@ -21,7 +21,7 @@ export interface CodeInk {
 export const CODE_LIGHT: CodeInk = {
   fg: "#111827",
   comment: "#6b7280",
-  keyword: "#6366f1",
+  keyword: "#5b5ceb",
   string: "#047857",
   constant: "#4f46e5",
   entity: "#4338ca",

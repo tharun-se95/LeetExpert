@@ -1,6 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -18,16 +27,26 @@ import { cn } from "@/lib/utils";
 import type { LoadedLesson } from "@/lib/course/load";
 import type { SandboxExtraction } from "@/lib/content/extractSandboxFence";
 import type { TabBlock } from "@/lib/content/highlightBlocks";
+import { extractComplexityFromMarkdown } from "@/lib/insight/extractComplexity";
 
 interface NeighborLink {
   href: string;
   title: string;
 }
 
-type LeftTab = "description" | "explanation" | "solution";
+type ContentTab = "description" | "explanation" | "solution";
+type WorkspaceTab = ContentTab | "code";
 
-const TABS: { id: LeftTab; label: string }[] = [
+const CONTENT_TABS: { id: ContentTab; label: string }[] = [
   { id: "description", label: "Description" },
+  { id: "explanation", label: "Explanation" },
+  { id: "solution", label: "Solution" },
+];
+
+/** Mobile: Code sits between Description and Explanation so reading comes first. */
+const MOBILE_TABS: { id: WorkspaceTab; label: string }[] = [
+  { id: "description", label: "Description" },
+  { id: "code", label: "Code" },
   { id: "explanation", label: "Explanation" },
   { id: "solution", label: "Solution" },
 ];
@@ -47,7 +66,8 @@ interface ProblemWorkspaceProps {
 
 /**
  * LeetCode-style IDE shell for problem lessons and `/problems/[slug]`.
- * One Sandbox instance for all viewports — layout axis flips at `lg`.
+ * Desktop (`lg+`): description pane + Sandbox side-by-side.
+ * Mobile: Description | Code | Explanation | Solution — Sandbox only in Code.
  */
 export function ProblemWorkspace({
   lesson,
@@ -60,12 +80,20 @@ export function ProblemWorkspace({
   const { solved, markSolved } = useProgress();
   const id = lessonId(lesson.moduleSlug, lesson.lessonSlug);
   const isSolved = solved.has(id);
-  const [tab, setTab] = useState<LeftTab>("description");
+  const [tab, setTab] = useState<WorkspaceTab>("description");
   const [wide, setWide] = useState(false);
+  const tabsId = useId();
 
   useEffect(() => {
     const mq = window.matchMedia(IDE_WIDE_MQ);
-    const sync = () => setWide(mq.matches);
+    const sync = () => {
+      const nextWide = mq.matches;
+      setWide(nextWide);
+      // Desktop has no Code tab — fall back so the left pane stays valid.
+      if (nextWide) {
+        setTab((t) => (t === "code" ? "description" : t));
+      }
+    };
     sync();
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
@@ -76,42 +104,42 @@ export function ProblemWorkspace({
     [lesson.sandbox.afterSandbox],
   );
 
+  const extractedComplexity = useMemo(
+    () => extractComplexityFromMarkdown(lesson.markdown),
+    [lesson.markdown],
+  );
+
+  const contentTab: ContentTab =
+    tab === "code" ? "description" : tab;
+
   const tabSource =
-    tab === "description"
+    contentTab === "description"
       ? lesson.sandbox.beforeSandbox
-      : tab === "explanation"
+      : contentTab === "explanation"
         ? explanation
         : solution;
-
-  const leftPane = (
-    <LeftPane
-      tab={tab}
-      onTabChange={setTab}
-      source={tabSource}
-      highlightedBlocks={lesson.highlightedBlocks}
-      highlightedTabs={lesson.highlightedTabs}
-    />
-  );
 
   const sandbox = (
     <Sandbox
       source={lesson.sandbox.sandboxSource}
       onSolved={() => markSolved(id)}
       variant="ide"
+      moduleSlug={lesson.moduleSlug}
+      extractedComplexity={extractedComplexity}
     />
   );
 
   return (
     // Fills AppShell's main pane (`overflow-hidden` on /problems/[slug]).
     // Panes scroll internally — no document scroll.
-    <div className="flex h-full flex-col overflow-hidden">
-      <header className="flex shrink-0 items-center gap-3 border-b border-border px-3 py-2 sm:px-4">
+    <div className="flex h-full flex-col overflow-hidden bg-background">
+      <header className="flex shrink-0 items-center gap-2 border-b border-border bg-elevated px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2">
         <Link
           href={backHref}
-          className="inline-flex items-center gap-1 text-xs text-muted transition hover:text-foreground"
+          className="inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-md px-2 text-xs text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
         >
           <CaretLeft size={14} weight="bold" aria-hidden />
-          {backLabel}
+          <span className="max-w-[5.5rem] truncate sm:max-w-none">{backLabel}</span>
         </Link>
         <span className="hidden text-border sm:inline" aria-hidden>
           /
@@ -132,18 +160,18 @@ export function ProblemWorkspace({
             Problem
           </span>
         )}
-        <nav className="flex shrink-0 items-center gap-0.5" aria-label="Problem navigation">
+        <nav className="flex shrink-0 items-center" aria-label="Problem navigation">
           {prev ? (
             <Link
               href={prev.href}
               title={prev.title}
               aria-label={`Previous: ${prev.title}`}
-              className="rounded-md p-1.5 text-muted transition hover:bg-surface hover:text-foreground"
+              className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-md text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
             >
               <ArrowLeft size={16} weight="bold" />
             </Link>
           ) : (
-            <span className="p-1.5 text-border" aria-hidden>
+            <span className="inline-flex h-11 w-11 items-center justify-center text-border" aria-hidden>
               <ArrowLeft size={16} />
             </span>
           )}
@@ -152,30 +180,110 @@ export function ProblemWorkspace({
               href={next.href}
               title={next.title}
               aria-label={`Next: ${next.title}`}
-              className="rounded-md p-1.5 text-muted transition hover:bg-surface hover:text-foreground"
+              className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-md text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
             >
               <ArrowRight size={16} weight="bold" />
             </Link>
           ) : (
-            <span className="p-1.5 text-border" aria-hidden>
+            <span className="inline-flex h-11 w-11 items-center justify-center text-border" aria-hidden>
               <ArrowRight size={16} />
             </span>
           )}
         </nav>
       </header>
 
-      {/*
-        Single Sandbox for all breakpoints. Stacked (vertical split) below lg;
-        side-by-side (horizontal) from lg. Children stay mounted across the flip.
-      */}
-      <PanelSplit
-        orientation={wide ? "horizontal" : "vertical"}
-        initialPrimary={wide ? 0.42 : 0.38}
-        minPrimary={wide ? 0.28 : 0.22}
-        maxPrimary={wide ? 0.58 : 0.55}
-        primary={leftPane}
-        secondary={sandbox}
+      {wide ? (
+        /*
+          Desktop: description pane + Sandbox side-by-side. Unchanged from the
+          prior IDE shell — do not stack Code into the left tablist here.
+        */
+        <PanelSplit
+          orientation="horizontal"
+          initialPrimary={0.42}
+          minPrimary={0.28}
+          maxPrimary={0.58}
+          primary={
+            <LeftPane
+              tab={contentTab}
+              onTabChange={setTab}
+              source={tabSource}
+              highlightedBlocks={lesson.highlightedBlocks}
+              highlightedTabs={lesson.highlightedTabs}
+              tabsId={tabsId}
+            />
+          }
+          secondary={sandbox}
+        />
+      ) : (
+        <MobileWorkspace
+          tab={tab}
+          onTabChange={setTab}
+          source={tabSource}
+          highlightedBlocks={lesson.highlightedBlocks}
+          highlightedTabs={lesson.highlightedTabs}
+          tabsId={tabsId}
+          sandbox={sandbox}
+        />
+      )}
+    </div>
+  );
+}
+
+function MobileWorkspace({
+  tab,
+  onTabChange,
+  source,
+  highlightedBlocks,
+  highlightedTabs,
+  tabsId,
+  sandbox,
+}: {
+  tab: WorkspaceTab;
+  onTabChange: (tab: WorkspaceTab) => void;
+  source: string;
+  highlightedBlocks: Record<string, string | null>;
+  highlightedTabs: Record<string, TabBlock[]>;
+  tabsId: string;
+  sandbox: ReactNode;
+}) {
+  const panelId = `${tabsId}-panel`;
+  const showCode = tab === "code";
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col bg-elevated">
+      <TabList
+        tabs={MOBILE_TABS}
+        active={tab}
+        onChange={onTabChange}
+        tabsId={tabsId}
+        label="Problem workspace"
+        panelId={panelId}
+        // Full-height touch targets on the only tab bar below lg.
+        className="h-11"
       />
+      {!showCode ? (
+        <div
+          role="tabpanel"
+          id={panelId}
+          aria-labelledby={`${tabsId}-tab-${tab}`}
+          className="min-h-0 flex-1 overflow-y-auto px-4 py-4"
+        >
+          <ContentBody tab={tab} source={source} highlightedBlocks={highlightedBlocks} highlightedTabs={highlightedTabs} />
+        </div>
+      ) : null}
+      {/*
+        Keep Sandbox mounted while hidden so drafts/runner state survive tab
+        switches. Drafts also live in localStorage if the tree remounts at lg.
+      */}
+      <div
+        role={showCode ? "tabpanel" : undefined}
+        id={showCode ? panelId : undefined}
+        aria-labelledby={showCode ? `${tabsId}-tab-code` : undefined}
+        aria-hidden={!showCode}
+        className={cn("min-h-0", showCode ? "flex-1" : "hidden")}
+      >
+        {sandbox}
+      </div>
     </div>
   );
 }
@@ -186,53 +294,156 @@ function LeftPane({
   source,
   highlightedBlocks,
   highlightedTabs,
+  tabsId,
 }: {
-  tab: LeftTab;
-  onTabChange: (tab: LeftTab) => void;
+  tab: ContentTab;
+  onTabChange: (tab: WorkspaceTab) => void;
+  source: string;
+  highlightedBlocks: Record<string, string | null>;
+  highlightedTabs: Record<string, TabBlock[]>;
+  tabsId: string;
+}) {
+  const panelId = `${tabsId}-panel`;
+
+  return (
+    <div className="flex h-full min-h-0 flex-col bg-elevated">
+      <TabList
+        tabs={CONTENT_TABS}
+        active={tab}
+        onChange={onTabChange}
+        tabsId={tabsId}
+        label="Problem content"
+        panelId={panelId}
+        className="h-9"
+      />
+      <div
+        role="tabpanel"
+        id={panelId}
+        aria-labelledby={`${tabsId}-tab-${tab}`}
+        className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5"
+      >
+        <ContentBody
+          tab={tab}
+          source={source}
+          highlightedBlocks={highlightedBlocks}
+          highlightedTabs={highlightedTabs}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ContentBody({
+  tab,
+  source,
+  highlightedBlocks,
+  highlightedTabs,
+}: {
+  tab: WorkspaceTab;
   source: string;
   highlightedBlocks: Record<string, string | null>;
   highlightedTabs: Record<string, TabBlock[]>;
 }) {
+  if (source.trim()) {
+    return (
+      <div className={tab === "description" ? "problem-prose" : undefined}>
+        <Markdown
+          source={source}
+          highlightedBlocks={highlightedBlocks}
+          highlightedTabs={highlightedTabs}
+        />
+      </div>
+    );
+  }
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <div
-        role="tablist"
-        aria-label="Problem content"
-        className="flex h-9 shrink-0 items-stretch overflow-x-auto border-b border-border"
-      >
-        {TABS.map((t) => (
+    <p className="text-sm text-muted">
+      {tab === "solution"
+        ? "This problem’s solution walkthrough lives under Explanation."
+        : "Nothing here yet."}
+    </p>
+  );
+}
+
+function TabList({
+  tabs,
+  active,
+  onChange,
+  tabsId,
+  label,
+  panelId,
+  className,
+}: {
+  tabs: readonly { id: WorkspaceTab; label: string }[];
+  active: WorkspaceTab;
+  onChange: (tab: WorkspaceTab) => void;
+  tabsId: string;
+  label: string;
+  panelId: string;
+  className?: string;
+}) {
+  const refs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const focusTab = useCallback((index: number) => {
+    const el = refs.current[index];
+    el?.focus();
+  }, []);
+
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const i = tabs.findIndex((t) => t.id === active);
+    if (i < 0) return;
+    let next = i;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      next = (i + 1) % tabs.length;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      next = (i - 1 + tabs.length) % tabs.length;
+    } else if (e.key === "Home") {
+      next = 0;
+    } else if (e.key === "End") {
+      next = tabs.length - 1;
+    } else {
+      return;
+    }
+    e.preventDefault();
+    onChange(tabs[next].id);
+    focusTab(next);
+  };
+
+  return (
+    <div
+      role="tablist"
+      aria-label={label}
+      onKeyDown={onKeyDown}
+      className={cn(
+        "flex shrink-0 items-stretch overflow-x-auto border-b border-border",
+        className,
+      )}
+    >
+      {tabs.map((t, i) => {
+        const selected = active === t.id;
+        return (
           <button
             key={t.id}
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
             type="button"
             role="tab"
-            aria-selected={tab === t.id}
-            onClick={() => onTabChange(t.id)}
+            id={`${tabsId}-tab-${t.id}`}
+            aria-selected={selected}
+            aria-controls={panelId}
+            tabIndex={selected ? 0 : -1}
+            onClick={() => onChange(t.id)}
             className={cn(
-              "h-full px-3.5 text-[0.75rem] font-medium transition-colors",
-              tab === t.id
+              "h-full min-w-11 touch-manipulation px-3.5 text-[0.75rem] font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
+              selected
                 ? "bg-pop text-on-pop"
                 : "text-muted hover:text-foreground",
             )}
           >
             {t.label}
           </button>
-        ))}
-      </div>
-      <div role="tabpanel" className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
-        {source.trim() ? (
-          <Markdown
-            source={source}
-            highlightedBlocks={highlightedBlocks}
-            highlightedTabs={highlightedTabs}
-          />
-        ) : (
-          <p className="text-sm text-muted">
-            {tab === "solution"
-              ? "This problem’s solution walkthrough lives under Explanation."
-              : "Nothing here yet."}
-          </p>
-        )}
-      </div>
+        );
+      })}
     </div>
   );
 }

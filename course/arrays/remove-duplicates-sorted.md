@@ -6,27 +6,32 @@ type: problem
 ## Problem
 
 Given an integer array `nums` sorted in non-decreasing order, remove the
-duplicates **in place** so that each unique element appears once, keeping
+duplicates ==in place== so that each unique element appears once, keeping
 relative order. Return `k`, the number of unique elements. The first `k`
 slots of `nums` must hold the answer; what's past them doesn't matter.
 
+```goal
+Compact uniques into the prefix. Return length `k` — tests only read
+`nums[0..k)`.
+```
+
 **Examples**
 
-```text
+```examples
 nums = [1, 1, 2]            →  k = 2,  nums = [1, 2, _]
 nums = [0,0,1,1,1,2,2,3,3,4] →  k = 5,  nums = [0,1,2,3,4,_,_,_,_,_]
 ```
 
-**Constraints:** 1 ≤ n ≤ 3·10⁴ · values in [−100, 100] · nums is sorted ·
-O(1) auxiliary space required.
+```constraint
+1 ≤ n ≤ 3·10⁴ · values in [−100, 100] · nums is sorted · O(1) auxiliary space
+```
 
 ## Attempt it first
 
+```tip
 You have every tool: this is the write-pointer template from the previous
 lesson, with one twist to find. Genuinely try before opening anything.
-
-Return `k`. The tests read only `nums[0..k)` — whatever you leave past it
-is ignored, exactly as the problem says.
+```
 
 ```sandbox
 {

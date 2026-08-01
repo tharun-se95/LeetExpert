@@ -96,7 +96,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
           them in module order, or jump to anything you want to drill.
         </p>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+        <div className="mt-8 grid grid-cols-3 gap-2 sm:gap-3">
           <StatCard
             label="Problems"
             value={String(totalProblemCount)}
@@ -132,7 +132,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
         <div className="mt-4 space-y-3">
           <label
             className={cn(
-              "flex items-center gap-3 rounded-[length:var(--radius-lg)] border border-border bg-elevated px-4 py-3.5",
+              "flex min-h-11 items-center gap-3 rounded-[length:var(--radius-lg)] border border-border bg-elevated px-4 py-3",
               "transition-[border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
               "focus-within:border-accent/45 focus-within:bg-accent/[0.04]",
             )}
@@ -153,7 +153,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="text-xs font-medium text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground motion-reduce:transition-none"
+                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-xs font-medium text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground motion-reduce:transition-none"
               >
                 Clear
               </button>
@@ -174,7 +174,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                   aria-pressed={active}
                   onClick={() => setDifficultyFilter(level)}
                   className={cn(
-                    "rounded-[length:var(--radius-md)] border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide",
+                    "inline-flex min-h-11 touch-manipulation items-center rounded-[length:var(--radius-md)] border px-3.5 py-2 font-mono text-[11px] uppercase tracking-wide",
                     "transition-[border-color,background-color,color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
                     difficultyFilterChipClass(level, active),
                   )}
@@ -201,12 +201,12 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                 key={module.slug}
                 className="overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated"
               >
-                <div className="flex flex-col gap-4 border-b border-border bg-accent/[0.06] px-4 py-4 sm:flex-row sm:items-center sm:px-5">
+                <div className="flex flex-col gap-3 border-b border-border bg-accent/[0.06] px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
                   <div className="flex min-w-0 flex-1 items-center gap-4">
                     <div className="hidden h-14 w-20 shrink-0 sm:block">
                       <ModuleGlyph slug={module.slug} />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="font-mono text-[10px] tracking-wide text-muted uppercase">
                         Stage {module.stage} · {stageTitle(module.stage)}
                       </p>
@@ -222,6 +222,15 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                           ? ` · showing ${problems.length} match${problems.length === 1 ? "" : "es"}`
                           : null}
                       </p>
+                      <div
+                        className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-border sm:hidden"
+                        aria-hidden
+                      >
+                        <div
+                          className="h-full rounded-full bg-accent transition-[width] duration-[var(--dur)] ease-[var(--ease)] motion-reduce:transition-none"
+                          style={{ width: `${modulePct}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
@@ -236,7 +245,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                     </div>
                     <Link
                       href={lessonHref(module.slug, "practice")}
-                      className="inline-flex items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-accent/40 hover:text-accent"
+                      className="inline-flex min-h-11 touch-manipulation items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-background px-3.5 text-xs font-medium text-foreground transition-[border-color,color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/40 hover:text-accent motion-reduce:transition-none"
                     >
                       <Target className="h-3.5 w-3.5" weight="bold" />
                       Playbook
@@ -254,7 +263,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                         <Link
                           href={problemHref(p.slug)}
                           className={cn(
-                            "group flex items-center gap-3 px-4 py-3.5 text-sm transition sm:px-5",
+                            "group flex min-h-11 touch-manipulation items-center gap-3 px-4 py-3.5 text-sm transition-[background-color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none sm:px-5",
                             isSolved
                               ? "bg-good/[0.04] hover:bg-good/[0.07]"
                               : "hover:bg-accent/[0.04]",
@@ -262,7 +271,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                         >
                           <span
                             className={cn(
-                              "flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-[11px] tabular-nums",
+                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-mono text-[11px] tabular-nums",
                               isSolved
                                 ? "bg-good/15 text-good"
                                 : "border border-border bg-background text-muted",
@@ -291,7 +300,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                           {difficulty ? (
                             <span
                               className={cn(
-                                "shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide",
+                                "shrink-0 rounded border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
                                 difficultyBadgeClass(difficulty),
                               )}
                             >
@@ -299,8 +308,9 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                             </span>
                           ) : null}
                           <ArrowRight
-                            className="h-4 w-4 shrink-0 text-muted opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100 group-hover:text-accent"
+                            className="h-4 w-4 shrink-0 text-muted opacity-50 transition-[opacity,transform,color] duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100 motion-reduce:transition-none sm:opacity-0 sm:group-hover:opacity-100"
                             weight="bold"
+                            aria-hidden
                           />
                         </Link>
                       </li>
@@ -352,19 +362,19 @@ function StatCard({
   tone?: "good";
 }) {
   return (
-    <div className="rounded-[length:var(--radius-lg)] border border-border bg-elevated px-4 py-3.5">
-      <p className="text-[11px] font-medium tracking-[0.12em] text-muted uppercase">
+    <div className="rounded-[length:var(--radius-lg)] border border-border bg-elevated px-2.5 py-3 sm:px-4 sm:py-3.5">
+      <p className="text-[10px] font-medium tracking-[0.12em] text-muted uppercase sm:text-[11px]">
         {label}
       </p>
       <p
         className={cn(
-          "mt-1 font-display text-2xl font-semibold tracking-tight tabular-nums",
+          "mt-1 font-display text-xl font-semibold tracking-tight tabular-nums sm:text-2xl",
           tone === "good" && "text-good",
         )}
       >
         {value}
       </p>
-      <p className="mt-0.5 text-xs text-muted">{hint}</p>
+      <p className="mt-0.5 truncate text-[11px] text-muted sm:text-xs">{hint}</p>
     </div>
   );
 }

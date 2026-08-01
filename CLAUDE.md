@@ -68,14 +68,17 @@ The content is the product. Code exists to serve it.
 ## 4. Design system
 
 - **Handbook press inks** in `web/src/app/globals.css` — **Indigo Modern**
-  (Primary `#6366F1`). Fill-in map:
+  (Primary `#5B5CEB`). Fill-in map:
   `docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md`.
 - **All colour goes through tokens.** No hardcoded Tailwind palette values
   (`emerald-500`, `red-400`) in components — they survive a palette change
   and silently break the theme.
 - **Primary drives accent + pop** in this palette (text accent and CTA fill
-  share `#6366F1`). Sheet Primary is ~4.36:1 on paper — treat as large/UI /
+  share `#5B5CEB`). Sheet Primary is ~4.91:1 on paper — treat as large/UI /
   display accent; body copy stays ink/muted.
+- **Layered surfaces** (Linear-like): `--background` / `--elevated` /
+  `--code` / `--surface` carry subtle tonal steps; borders are soft
+  (`rgba(17,24,39,0.08)` light). No drop shadows.
 - **Contrast is measured, not eyeballed.** Body ink/muted must meet WCAG AA
   (4.5:1). Status text inks are AA-darkened from sheet Success/Warning/Error
   fills. Record ratios in comments beside tokens.

@@ -27,7 +27,7 @@ export function Cheatsheet({
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-40 [background-image:radial-gradient(var(--halftone)_1px,transparent_1.2px)] [background-size:12px_12px]"
           />
-          <div className="relative flex h-16 w-28 shrink-0 items-center justify-center sm:h-[4.5rem] sm:w-36">
+          <div className="relative flex h-14 w-24 shrink-0 items-center justify-center sm:h-[4.5rem] sm:w-36">
             <ModuleGlyph slug={sheet.moduleSlug} />
           </div>
           <div className="relative min-w-0 flex-1">
@@ -48,7 +48,7 @@ export function Cheatsheet({
             </div>
             <h2
               id="cheatsheet"
-              className="mt-1 font-display text-2xl font-bold tracking-tight text-balance uppercase"
+              className="mt-1 font-display text-xl font-bold tracking-tight text-balance uppercase sm:text-2xl"
             >
               Cheatsheet
             </h2>
@@ -64,7 +64,7 @@ export function Cheatsheet({
           </div>
         </header>
 
-        <div className="space-y-8 px-4 py-6 sm:px-6">
+        <div className="space-y-6 px-4 py-5 sm:space-y-8 sm:px-6 sm:py-6">
           <div>
             <h3 className="mb-3 font-display text-sm font-semibold tracking-wide text-muted uppercase">
               Smell → pattern

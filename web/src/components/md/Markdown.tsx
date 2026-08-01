@@ -6,8 +6,13 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import type { Components } from "react-markdown";
 import { Mermaid } from "@/components/md/Mermaid";
-import { Callout } from "@/components/md/Callout";
+import { Callout, type CalloutType } from "@/components/md/Callout";
 import { CodeBlock } from "@/components/md/CodeBlock";
+import { ExamplesBlock } from "@/components/md/ExamplesBlock";
+import {
+  looksLikeExamples,
+  parseExampleRows,
+} from "@/lib/content/parseExamples";
 import { Quiz } from "@/components/course/Quiz";
 import { CodeTabs } from "@/components/course/CodeTabs";
 import { Reveal } from "@/components/course/Reveal";
@@ -96,6 +101,39 @@ export function Markdown({
         }
         if (className.includes("language-diagram")) {
           return <Diagram source={text()} />;
+        }
+        if (className.includes("language-examples")) {
+          const rows = parseExampleRows(text());
+          if (!rows) {
+            return <CodeBlock language="text" code={codeText()} html={null} />;
+          }
+          return <ExamplesBlock rows={rows} />;
+        }
+        if (
+          className.includes("language-tip") ||
+          className.includes("language-note") ||
+          className.includes("language-goal") ||
+          className.includes("language-constraint")
+        ) {
+          const lang = /language-(tip|note|goal|constraint)/.exec(className)?.[1] as
+            | CalloutType
+            | undefined;
+          return (
+            <Callout type={lang ?? "note"}>
+              <Markdown
+                source={text()}
+                highlightedBlocks={highlightedBlocks}
+                highlightedTabs={highlightedTabs}
+              />
+            </Callout>
+          );
+        }
+        if (className.includes("language-text")) {
+          const body = text();
+          if (looksLikeExamples(body)) {
+            const rows = parseExampleRows(body);
+            if (rows) return <ExamplesBlock rows={rows} />;
+          }
         }
         if (className.includes("language-aside")) {
           return (
@@ -209,7 +247,7 @@ export function Markdown({
         return <code className={className}>{children}</code>;
       }
       return (
-        <code className="rounded-md border border-border bg-surface px-1.5 py-0.5 font-mono text-[0.85em]">
+        <code className="rounded-md border border-accent/20 bg-accent/[0.07] px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">
           {children}
         </code>
       );

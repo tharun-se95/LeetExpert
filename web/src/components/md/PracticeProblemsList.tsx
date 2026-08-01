@@ -37,16 +37,28 @@ export function PracticeProblemsList({
           <li key={row.slug}>
             <Link
               href={row.href}
-              className="flex flex-col gap-1 rounded-lg border border-border px-4 py-3 text-sm transition hover:border-foreground/25 hover:bg-surface sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
+              className={cn(
+                "flex min-h-11 touch-manipulation flex-col gap-1.5 rounded-[length:var(--radius-md)] border border-border px-4 py-3.5 text-sm",
+                "transition-[border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
+                "hover:border-accent/35 hover:bg-accent/[0.04]",
+                isSolved && "border-good/25 bg-good/[0.04]",
+              )}
             >
-              <span className="min-w-0 flex-1 font-medium text-foreground">
-                {row.title}
+              <span className="flex items-start gap-3">
+                <span className="min-w-0 flex-1 font-medium text-foreground">
+                  {row.title}
+                </span>
+                {isSolved ? (
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-good/15 text-good">
+                    <Check size={14} weight="bold" aria-label="Solved" />
+                  </span>
+                ) : null}
               </span>
               <span className="flex flex-wrap items-center gap-2 text-xs text-muted">
                 {row.difficulty ? (
                   <span
                     className={cn(
-                      "rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide",
+                      "rounded border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
                       difficulty
                         ? difficultyBadgeClass(difficulty)
                         : "border-border text-muted",
@@ -56,14 +68,9 @@ export function PracticeProblemsList({
                   </span>
                 ) : null}
                 {row.pattern ? <span>{row.pattern}</span> : null}
-                {isSolved ? (
-                  <span className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-good/15 text-good sm:ml-0">
-                    <Check size={12} weight="bold" aria-label="Solved" />
-                  </span>
-                ) : null}
               </span>
               {row.watch_for ? (
-                <span className="basis-full text-xs text-muted sm:order-last">
+                <span className="text-xs leading-relaxed text-muted">
                   Watch for: {row.watch_for}
                 </span>
               ) : null}

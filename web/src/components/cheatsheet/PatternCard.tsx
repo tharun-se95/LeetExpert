@@ -19,7 +19,7 @@ export function PatternCard({ card }: { card: PatternCardData }) {
   return (
     <article
       className={cn(
-        "flex flex-col gap-3 rounded-[length:var(--radius-md)] border border-border border-l-4 p-4 transition-[border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-border hover:bg-surface/40 motion-reduce:transition-none",
+        "flex flex-col gap-3 rounded-[length:var(--radius-md)] border border-border border-l-4 p-3.5 transition-[border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-border hover:bg-surface/40 motion-reduce:transition-none sm:p-4",
         TONE_RULE[card.tone],
       )}
     >

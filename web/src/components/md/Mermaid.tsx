@@ -50,7 +50,7 @@ function enqueueMermaid<T>(task: () => Promise<T>): Promise<T> {
  * Values mirror Indigo Modern (globals.css); see design-tokens allowlist for this file.
  */
 function themeConfig(isDark: boolean) {
-  const accent = isDark ? "#818cf8" : "#6366f1";
+  const accent = isDark ? "#818cf8" : "#5b5ceb";
   const fontFamily =
     "var(--font-sans), Inter, ui-sans-serif, system-ui, sans-serif";
 

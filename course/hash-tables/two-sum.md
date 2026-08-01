@@ -5,27 +5,35 @@ type: problem
 
 ## Problem
 
-Given `nums` and `target`, return the **indices** of the two numbers that
+Given `nums` and `target`, return the ==indices== of the two numbers that
 sum to `target`. Exactly one solution exists; you may not use the same
 element twice.
 
+```goal
+Return a pair of indices — not the values. Order of the pair does not
+matter to the judge as long as both indices are correct.
+```
+
 **Examples**
 
-```text
+```examples
 nums = [2,7,11,15], target = 9   →  [0,1]
 nums = [3,2,4],     target = 6   →  [1,2]   (not [0,0]!)
 nums = [3,3],       target = 6   →  [0,1]
 ```
 
-**Constraints:** 2 ≤ n ≤ 10⁴ · values in ±10⁹ · exactly one answer.
+```constraint
+2 ≤ n ≤ 10⁴ · values in ±10⁹ · exactly one answer
+```
 
 ## Attempt it first
 
+```tip
 You've known the O(n) *decision* version ("does a pair exist?") since
 lesson one of Big O. This asks for **indices** — which changes the
-structure you carry and creates one ordering subtlety the examples above
-hint at (`[3,2,4]` and `[3,3]` are both traps for specific wrong
-versions).
+structure you carry. Watch `[3,2,4]` and `[3,3]`: both trap specific
+wrong versions.
+```
 
 
 ```sandbox
