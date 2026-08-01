@@ -130,7 +130,7 @@ function ModuleNode({
             const active = pathname === lesson.href;
             const isDone = visited.has(lesson.id);
             return (
-              <div key={lesson.id} className="flex items-center gap-1">
+              <div key={lesson.id} className="flex items-start gap-1">
                 <span
                   className={cn(
                     "inline-flex shrink-0 items-center justify-center",
@@ -150,14 +150,14 @@ function ModuleNode({
                 <Link
                   href={lesson.href}
                   className={cn(
-                    "flex min-w-0 flex-1 items-center gap-1 rounded-[4px] px-2 text-[13px] transition-colors",
+                    "flex min-w-0 flex-1 items-center rounded-[4px] px-2 text-[13px] leading-snug transition-colors",
                     rowPad,
                     active
                       ? "bg-pop font-semibold text-on-pop"
                       : "text-muted hover:bg-surface hover:text-foreground",
                   )}
                 >
-                  <span className="min-w-0 truncate">{lesson.title}</span>
+                  <span className="min-w-0">{lesson.title}</span>
                 </Link>
               </div>
             );
@@ -214,7 +214,7 @@ export function CourseNavTree({
               compact ? "mb-3.5 pb-2.5" : "mb-3 pb-2",
             )}
           >
-            <span className="text-accent">{stage.number}</span> {stage.title}
+            {stage.title}
           </p>
           <div className={cn(compact ? "space-y-2.5" : "space-y-1.5")}>
             {stage.modules.map((m) => (

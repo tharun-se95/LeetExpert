@@ -22,7 +22,7 @@ export function Sidebar({ open, onOpen, onClose }: SidebarProps) {
     <aside
       className={cn(
         "print:hidden relative z-20 hidden h-full shrink-0 flex-col border-r border-border bg-elevated transition-[width] duration-[var(--dur)] ease-[var(--ease)] lg:flex",
-        open ? "w-72" : "w-12",
+        open ? "w-80" : "w-12",
       )}
     >
       {open ? (
