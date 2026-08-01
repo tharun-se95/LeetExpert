@@ -47,6 +47,14 @@
   --riso-red: #dc2626; /* 4.71:1 — Error family */
   --riso-amber: #b45309; /* 4.90:1 — Warning family */
 
+  /*
+    Insight — "remember this," deliberately rare. Not Warning's amber
+    (teaching-caution) and not Primary (interaction only). Gold fill wash
+    via bg-insight/N; text ink darkened for AA — pure #FACC15 is ~1.5:1 on
+    paper, nowhere close.
+  */
+  --riso-insight: #854d0e; /* 6.68:1 on paper */
+
   --riso-highlight: color-mix(in oklab, var(--riso-olive) 14%, transparent);
   --riso-halftone: rgba(17, 24, 39, 0.08);
 
@@ -67,6 +75,8 @@
   --good: var(--riso-green);
   --bad: var(--riso-red);
   --warn: var(--riso-amber);
+  --insight: var(--riso-insight);
+  --info: var(--tone-sky);
 
   --tone-sky: #0284c7; /* info — AA on paper */
   --tone-rose: #e11d48;
@@ -109,6 +119,7 @@
   --riso-green: #22d497; /* sheet Success */
   --riso-red: #ef4444; /* sheet Error */
   --riso-amber: #f59e0b; /* sheet Warning */
+  --riso-insight: #facc15; /* 12.3:1 on dark paper — bright gold as text */
 
   --riso-highlight: color-mix(in oklab, var(--riso-olive) 22%, transparent);
   --riso-halftone: rgba(249, 250, 252, 0.08);
@@ -138,6 +149,8 @@
   --color-good: var(--good);
   --color-bad: var(--bad);
   --color-warn: var(--warn);
+  --color-insight: var(--insight);
+  --color-info: var(--info);
   --color-tone-sky: var(--tone-sky);
   --color-tone-rose: var(--tone-rose);
   --color-mark: var(--mark);

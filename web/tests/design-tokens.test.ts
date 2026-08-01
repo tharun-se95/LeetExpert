@@ -190,4 +190,25 @@ describe("design tokens", () => {
       /--riso-rule:\s*rgba\(\s*249\s*,\s*250\s*,\s*252\s*,\s*0\.08\s*\)/,
     );
   });
+
+  it("Insight and Information roles are defined and AA-compliant", () => {
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const dark = css.slice(css.indexOf(".dark"));
+
+    const lightInsight = firstHexVar(root, "riso-insight");
+    const darkInsight = firstHexVar(dark, "riso-insight");
+    const lightPaper = firstHexVar(root, "riso-paper");
+    const darkPaper = firstHexVar(dark, "riso-paper");
+
+    expect(lightInsight).toBe("#854d0e");
+    expect(darkInsight).toBe("#facc15");
+    expect(contrastRatio(lightInsight!, lightPaper!)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(darkInsight!, darkPaper!)).toBeGreaterThanOrEqual(4.5);
+
+    // --info aliases the existing (previously near-unused) --tone-sky token.
+    expect(root).toMatch(/--info:\s*var\(--tone-sky\)/);
+    expect(css).toMatch(/--color-insight:\s*var\(--insight\)/);
+    expect(css).toMatch(/--color-info:\s*var\(--info\)/);
+  });
 });

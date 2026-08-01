@@ -34,12 +34,14 @@ dark gets a designed lift ladder, not an invert of light greys.
 | Border | `rgba(17, 24, 39, 0.08)` | `--riso-rule` / `--border` |
 | Text Primary | `#111827` | `--riso-ink` / `--foreground` |
 | Text Muted | `#6B7280` | `--riso-ink-soft` / `--muted` |
-| Primary | `#5B5CEB` | `--accent` + `--pop` |
+| Primary | `#6366F1` | `--accent` + `--pop` |
 | Primary Hover | `#818CF8` | `--accent-hover` |
-| Primary Active / mark | `#4A4BD6` | `--accent-active` / `--riso-blue` |
+| Primary Active / mark | `#4F46E5` | `--accent-active` / `--riso-blue` |
 | Success (sheet fill) | `#16C47F` | text role → `#047857` (`--good`) |
 | Warning (sheet fill) | `#F5B301` | text role → `#B45309` (`--warn`) |
 | Error (sheet fill) | `#EF4444` | text role → `#DC2626` (`--bad`) |
+| Insight (text ink) | `#854D0E` | `--insight` |
+| Information | `#0284C7` | `--info` (alias of `--tone-sky`) |
 | On-pop | `#FFFFFF` | `--on-pop` |
 
 Brightness ladder (high → low): elevated → background → code → surface.
@@ -55,17 +57,20 @@ Brightness ladder (high → low): elevated → background → code → surface.
 | Border | `rgba(249, 250, 252, 0.08)` | `--border` |
 | Text Primary | `#F9FAFC` | `--foreground` |
 | Text Muted | `#A1A1AA` | `--muted` |
-| Primary (CTA fill) | `#5B5CEB` | `--pop` / `--accent-active` / `--riso-lime` |
+| Primary (CTA fill) | `#6366F1` | `--pop` / `--accent-active` / `--riso-lime` |
 | Accent (readable on charcoal) | `#818CF8` | `--accent` / `--riso-olive` |
 | Success | `#22D497` | `--good` |
 | Warning | `#F59E0B` | `--warn` |
 | Error | `#EF4444` | `--bad` |
+| Insight (text ink) | `#FACC15` | `--insight` |
+| Information | `#38BDF8` | `--info` (alias of `--tone-sky`) |
 
 ---
 
 ## Notes
 
-- Primary on paper ~**4.91:1** (large/UI). White on Primary ~**5.03:1**.
+- Primary on paper ~**4.35:1** (large/UI only — below 4.5:1 normal-text AA).
+  White on Primary ~**4.47:1** (bold/large CTA labels only).
 - Borders are intentionally near-invisible — structure comes from the tonal layers.
 - Sheet Success/Warning/Error are too bright for body text on light paper; light theme uses darkened AA text inks in the same hue families.
 - Depth stays flat (print language): ink, soft rules, and halftone — never drop shadows.
