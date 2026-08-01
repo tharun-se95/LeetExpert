@@ -211,4 +211,18 @@ describe("design tokens", () => {
     expect(css).toMatch(/--color-insight:\s*var\(--insight\)/);
     expect(css).toMatch(/--color-info:\s*var\(--info\)/);
   });
+
+  it("Callout: constraint is Success-toned, goal/rocket/note are Information, brain is Insight", () => {
+    const body = readFileSync(
+      join(SRC, "components", "md", "Callout.tsx"),
+      "utf8",
+    );
+    expect(body).toMatch(/constraint:\s*"border-l-good/);
+    expect(body).not.toMatch(/constraint:\s*"border-l-warn/);
+    expect(body).toMatch(/goal:\s*"border-l-info/);
+    expect(body).toMatch(/rocket:\s*"border-l-info/);
+    expect(body).toMatch(/note:\s*"border-l-info/);
+    expect(body).toMatch(/brain:\s*"border-l-insight/);
+    expect(body).not.toMatch(/border-l-mark/);
+  });
 });
