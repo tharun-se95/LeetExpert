@@ -32,15 +32,15 @@ interface CalloutProps {
 }
 
 const TYPE_STYLES: Record<CalloutType, string> = {
-  tip: "border-l-warn bg-warn/5",
-  note: "border-l-info bg-info/[0.06]",
-  goal: "border-l-info bg-info/5",
-  constraint: "border-l-good bg-good/[0.06]",
-  warn: "border-l-warn bg-warn/5",
-  rocket: "border-l-info bg-info/5",
-  build: "border-l-good bg-good/5",
-  brain: "border-l-insight bg-insight/5",
-  default: "border-l-border bg-surface",
+  tip: "border-warn/30 bg-warn-surface",
+  note: "border-info/30 bg-info-surface",
+  goal: "border-info/30 bg-info-surface",
+  constraint: "border-good/30 bg-good-surface",
+  warn: "border-warn/30 bg-warn-surface",
+  rocket: "border-info/30 bg-info-surface",
+  build: "border-good/30 bg-good-surface",
+  brain: "border-insight/30 bg-insight-surface",
+  default: "border-border bg-surface",
 };
 
 const TYPE_LABELS: Partial<Record<CalloutType, string>> = {
@@ -66,7 +66,7 @@ const TYPE_ICON_CLASS: Partial<Record<CalloutType, string>> = {
 };
 
 function TypeIcon({ type }: { type: CalloutType }) {
-  const className = cn("h-3.5 w-3.5 shrink-0", TYPE_ICON_CLASS[type]);
+  const className = cn("h-4 w-4 shrink-0", TYPE_ICON_CLASS[type]);
   switch (type) {
     case "tip":
       return <Lightbulb className={className} aria-hidden />;
@@ -113,7 +113,7 @@ export function Callout({
     <blockquote
       id={id}
       className={cn(
-        "group relative my-5 rounded-lg border border-border border-l-4 px-4 py-3 not-italic",
+        "group relative my-5 rounded-lg border px-4 py-3 not-italic",
         TYPE_STYLES[type] ?? TYPE_STYLES.default,
       )}
     >
@@ -127,7 +127,7 @@ export function Callout({
       </button>
       <div className="pr-8 text-[0.95rem] leading-relaxed text-foreground/90 [&_p]:my-0">
         {resolvedLabel ? (
-          <p className="mb-1.5 !mt-0 flex items-center gap-1.5 font-mono text-[0.65rem] font-semibold tracking-[0.12em] text-muted uppercase">
+          <p className="mb-1.5 !mt-0 flex items-center gap-2 text-[0.95rem] font-bold text-foreground">
             <TypeIcon type={type} />
             {resolvedLabel}
           </p>

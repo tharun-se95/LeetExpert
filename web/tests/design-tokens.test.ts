@@ -217,16 +217,51 @@ describe("design tokens", () => {
       join(SRC, "components", "md", "Callout.tsx"),
       "utf8",
     );
-    expect(body).toMatch(/constraint:\s*"border-l-good/);
-    expect(body).not.toMatch(/constraint:\s*"border-l-warn/);
-    expect(body).toMatch(/goal:\s*"border-l-info/);
-    expect(body).toMatch(/rocket:\s*"border-l-info/);
-    expect(body).toMatch(/note:\s*"border-l-info/);
-    expect(body).toMatch(/brain:\s*"border-l-insight/);
+    expect(body).toMatch(/constraint:\s*"border-good\/30 bg-good-surface/);
+    expect(body).toMatch(/goal:\s*"border-info\/30 bg-info-surface/);
+    expect(body).toMatch(/rocket:\s*"border-info\/30 bg-info-surface/);
+    expect(body).toMatch(/note:\s*"border-info\/30 bg-info-surface/);
+    expect(body).toMatch(/brain:\s*"border-insight\/30 bg-insight-surface/);
     expect(body).not.toMatch(/border-l-mark/);
+    expect(body).not.toMatch(/border-l-\d/); // full even border, not a left flag bar
     // tip = "Interview Tip" territory — Amber (teaching-caution), not Indigo.
-    expect(body).toMatch(/tip:\s*"border-l-warn/);
+    expect(body).toMatch(/tip:\s*"border-warn\/30 bg-warn-surface/);
     expect(body).not.toMatch(/tip:\s*"border-l-accent/);
+    // Reference-matching label: bold, foreground, not muted uppercase mono.
+    expect(body).toMatch(/font-bold/);
+    expect(body).not.toMatch(/uppercase/);
+  });
+
+  it("Callout pastel surface tokens exist and are AA-compliant against their role ink", () => {
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const dark = css.slice(css.indexOf(".dark"));
+
+    const pairs: [role: string, ink: string][] = [
+      ["info", "tone-sky"],
+      ["good", "riso-green"],
+      ["warn", "riso-amber"],
+      ["insight", "riso-insight"],
+    ];
+
+    for (const [role, inkVar] of pairs) {
+      const lightSurface = firstHexVar(root, `riso-${role}-surface`);
+      const darkSurface = firstHexVar(dark, `riso-${role}-surface`);
+      const lightInk = firstHexVar(root, inkVar);
+      const darkInk = firstHexVar(dark, inkVar);
+      expect(lightSurface, `light ${role} surface missing`).toBeTruthy();
+      expect(darkSurface, `dark ${role} surface missing`).toBeTruthy();
+      // Bold/large label + icon sitting on the surface — AA large-text floor.
+      expect(
+        contrastRatio(lightInk!, lightSurface!),
+        `light ${role} ink vs its own surface`,
+      ).toBeGreaterThanOrEqual(3);
+      expect(
+        contrastRatio(darkInk!, darkSurface!),
+        `dark ${role} ink vs its own surface`,
+      ).toBeGreaterThanOrEqual(3);
+      expect(css).toMatch(new RegExp(`--color-${role}-surface:\\s*var\\(--${role}-surface\\)`));
+    }
   });
 
   it("MarginNote, ComplexityStrip, InsightPanel use --info, not --mark", () => {

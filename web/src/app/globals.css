@@ -55,6 +55,17 @@
   */
   --riso-insight: #854d0e; /* 6.68:1 on paper */
 
+  /*
+    Pastel callout surfaces — a confident fill per role, not a faded wash of
+    the darker text ink (that read too thin against the reference). Each
+    ink clears AA large-text (3:1) against its own surface; computed, see
+    web/tests/design-tokens.test.ts.
+  */
+  --riso-info-surface: #e0f2fe; /* #0284c7 ink ≈ 3.57:1 */
+  --riso-good-surface: #dcfce7; /* #047857 ink ≈ 5.00:1 */
+  --riso-warn-surface: #fef3c7; /* #b45309 ink ≈ 4.51:1 */
+  --riso-insight-surface: #fef9c3; /* #854d0e ink ≈ 6.38:1 */
+
   --riso-highlight: color-mix(in oklab, var(--riso-olive) 14%, transparent);
   --riso-halftone: rgba(17, 24, 39, 0.08);
 
@@ -77,6 +88,10 @@
   --warn: var(--riso-amber);
   --insight: var(--riso-insight);
   --info: var(--tone-sky);
+  --info-surface: var(--riso-info-surface);
+  --good-surface: var(--riso-good-surface);
+  --warn-surface: var(--riso-warn-surface);
+  --insight-surface: var(--riso-insight-surface);
 
   --tone-sky: #0284c7; /* info — AA on paper */
   --tone-rose: #e11d48;
@@ -121,6 +136,12 @@
   --riso-amber: #f59e0b; /* sheet Warning */
   --riso-insight: #facc15; /* 12.3:1 on dark paper — bright gold as text */
 
+  /* Dark callout surfaces — saturated dark tints, not pastel. */
+  --riso-info-surface: #0c2a3d; /* #38bdf8 ink ≈ 6.93:1 */
+  --riso-good-surface: #0b2e22; /* #22d497 ink ≈ 7.66:1 */
+  --riso-warn-surface: #3a2408; /* #f59e0b ink ≈ 6.81:1 */
+  --riso-insight-surface: #3a2e05; /* #facc15 ink ≈ 8.72:1 */
+
   --riso-highlight: color-mix(in oklab, var(--riso-olive) 22%, transparent);
   --riso-halftone: rgba(249, 250, 252, 0.08);
   --on-pop: #ffffff;
@@ -151,6 +172,10 @@
   --color-warn: var(--warn);
   --color-insight: var(--insight);
   --color-info: var(--info);
+  --color-info-surface: var(--info-surface);
+  --color-good-surface: var(--good-surface);
+  --color-warn-surface: var(--warn-surface);
+  --color-insight-surface: var(--insight-surface);
   --color-tone-sky: var(--tone-sky);
   --color-tone-rose: var(--tone-rose);
   --color-mark: var(--mark);
