@@ -256,4 +256,14 @@ describe("design tokens", () => {
     expect(complexityStrip).toMatch(/text-info/);
     expect(insightPanel).toMatch(/text-info/);
   });
+
+  it("ExamplesBlock does not hardcode text-good on every output", () => {
+    const body = readFileSync(
+      join(SRC, "components", "md", "ExamplesBlock.tsx"),
+      "utf8",
+    );
+    // The old bug: a single `text-good` applied unconditionally to output.
+    expect(body).not.toMatch(/text-good"\s*>\s*\n\s*<pre/);
+    expect(body).toMatch(/isBooleanOutput/);
+  });
 });

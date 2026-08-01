@@ -1,8 +1,40 @@
 import type { ExampleRow } from "@/lib/content/parseExamples";
 import { cn } from "@/lib/utils";
 
+function isBooleanOutput(output: string): "true" | "false" | null {
+  const v = output.trim().toLowerCase();
+  if (v === "true") return "true";
+  if (v === "false") return "false";
+  return null;
+}
+
+function OutputValue({ output }: { output: string }) {
+  const bool = isBooleanOutput(output);
+  if (bool === "true") {
+    return (
+      <span className="inline-flex rounded-full border border-good/40 bg-good/10 px-2 py-0.5 font-mono text-[0.78rem] text-good">
+        {output.trim()}
+      </span>
+    );
+  }
+  if (bool === "false") {
+    return (
+      <span className="inline-flex rounded-full border border-bad/40 bg-bad/10 px-2 py-0.5 font-mono text-[0.78rem] text-bad">
+        {output.trim()}
+      </span>
+    );
+  }
+  return (
+    <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-[0.78rem] text-foreground">
+      {output}
+    </pre>
+  );
+}
+
 /**
- * Compact example rows — one quiet list, not a stack of tall cards.
+ * One card per example — Input / Output rows, an optional explanation line.
+ * Output is only pilled green/coral when it's a literal true/false; most
+ * course examples return arrays or numbers and stay plain text.
  */
 export function ExamplesBlock({
   rows,
@@ -13,10 +45,7 @@ export function ExamplesBlock({
 }) {
   return (
     <div
-      className={cn(
-        "my-4 overflow-hidden rounded-md border border-border bg-elevated",
-        className,
-      )}
+      className={cn("my-4 grid gap-2", className)}
       role="list"
       aria-label="Examples"
     >
@@ -24,32 +53,26 @@ export function ExamplesBlock({
         <div
           key={`${row.input}-${i}`}
           role="listitem"
-          className={cn(
-            "grid grid-cols-[1.25rem_minmax(0,1fr)_auto_minmax(0,0.7fr)] items-baseline gap-x-2 px-2.5 py-1.5 font-mono text-[0.78rem] leading-snug",
-            i > 0 && "border-t border-border",
-          )}
+          className="rounded-lg border border-border bg-elevated px-3.5 py-2.5"
         >
-          <span className="tabular-nums text-[0.65rem] text-muted" aria-hidden>
-            {i + 1}
-          </span>
-          <pre className="min-w-0 overflow-x-auto whitespace-pre-wrap text-foreground">
-            <span className="sr-only">Input: </span>
-            {row.input}
-          </pre>
-          <span className="text-accent" aria-hidden>
-            →
-          </span>
-          <div className="min-w-0 text-good">
-            <pre className="overflow-x-auto whitespace-pre-wrap">
-              <span className="sr-only">Expected: </span>
-              {row.output}
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span className="font-mono text-[0.65rem] text-muted uppercase tracking-wide">
+              Input
+            </span>
+            <pre className="min-w-0 overflow-x-auto whitespace-pre-wrap font-mono text-[0.78rem] text-foreground">
+              <span className="sr-only">: </span>
+              {row.input}
             </pre>
-            {row.note ? (
-              <p className="mt-0.5 truncate text-[0.65rem] text-muted">
-                {row.note}
-              </p>
-            ) : null}
           </div>
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span className="font-mono text-[0.65rem] text-muted uppercase tracking-wide">
+              Output
+            </span>
+            <OutputValue output={row.output} />
+          </div>
+          {row.note ? (
+            <p className="mt-1 text-[0.72rem] text-muted">{row.note}</p>
+          ) : null}
         </div>
       ))}
     </div>
