@@ -151,7 +151,10 @@ function sourceTone(index: number | null, i: number): CellTone {
 export function FrequencyCountViz(props: Record<string, unknown>) {
   const { s, t, speed } = props;
   const sVal = stringProp(s, "anagram");
-  const tVal = typeof t === "string" && t.length > 0 ? stringProp(t, "") : null;
+  // Distinguish "t omitted" (single-string mode) from "t explicitly empty"
+  // (two-string mode, which then correctly hits the length-mismatch check) —
+  // t.length > 0 here would wrongly collapse the latter into the former.
+  const tVal = typeof t === "string" ? stringProp(t, "") : null;
   const steps = useMemo(() => buildSteps(sVal, tVal), [sVal, tVal]);
 
   return (

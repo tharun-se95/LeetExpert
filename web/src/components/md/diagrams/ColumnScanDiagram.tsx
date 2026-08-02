@@ -28,7 +28,10 @@ function breakColumn(strs: string[]): number {
 export function ColumnScanDiagram({
   strings = ["flower", "flow", "flight"],
 }: ColumnScanDiagramProps) {
-  const strs = strings.slice(0, 5);
+  // Empty-array input bypasses the default param (only `undefined` does
+  // not) and would otherwise send Math.max(...[]) to -Infinity, producing
+  // an invalid negative viewBox.
+  const strs = (strings.length > 0 ? strings : ["flower", "flow", "flight"]).slice(0, 5);
   const brk = breakColumn(strs);
   const maxLen = Math.max(...strs.map((s) => s.length));
   const width = 90 + maxLen * (CELL + GAP);
@@ -39,7 +42,11 @@ export function ColumnScanDiagram({
       viewBox={`0 0 ${width} ${height}`}
       className="mx-auto h-auto w-full max-w-[440px]"
       role="img"
-      aria-label={`${strs.length} strings stacked and compared column by column; they agree through column ${brk - 1}, giving a shared prefix of length ${brk}`}
+      aria-label={
+        brk === 0
+          ? `${strs.length} strings stacked and compared column by column; they disagree at the very first column, so there is no shared prefix`
+          : `${strs.length} strings stacked and compared column by column; they agree through column ${brk - 1}, giving a shared prefix of length ${brk}`
+      }
     >
       {brk > 0 ? (
         <g>
