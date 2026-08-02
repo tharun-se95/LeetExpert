@@ -5,13 +5,14 @@ type: concept
 
 ## Characters as numbers
 
-Every string algorithm eventually touches character codes. The bridge
-functions:
+Every string algorithm eventually touches character codes — a computer
+stores letters as numbers, and these functions move between the two. The
+bridge functions:
 
 ````tabs
 ```python
-ord("a")          # 97 — character to code point
-chr(98)           # "b" — code point to character
+ord("a")             # 97 — character to code point
+chr(98)               # "b" — code point to character
 ord("c") - ord("a")   # 2 — letter's alphabet position
 ```
 
@@ -22,9 +23,14 @@ String.fromCharCode(98); // "b"
 ```
 ````
 
+Because `a`–`z` sit on one unbroken run of consecutive codes, subtracting
+`ord("a")` from any lowercase letter's code gives that letter's position in
+the alphabet, starting at 0 — that's what makes `ord(ch) - ord("a")` a safe
+array index.
+
 The payoff is the **count array**: when constraints promise "lowercase
 English letters," 26 integer slots replace a whole hash map — smaller,
-faster, and O(1)-iterable (26 is a constant):
+faster, and O(1)-iterable, since 26 never grows with the input:
 
 ````tabs
 ```python
@@ -47,10 +53,14 @@ function letterCounts(s: string): number[] {
 ```
 ````
 
-A count array is a **frequency fingerprint**: two strings are rearrangements
-of each other exactly when their fingerprints match. The Valid Anagram
-problem is this observation and nothing more; the Hash Tables module
-generalizes it to unrestricted alphabets.
+A count array is a **frequency fingerprint**: if two strings produce
+identical counts, they contain exactly the same letters the same number of
+times each — which is exactly what it means for one to be a rearrangement
+of the other, and rearranging can't change those counts either way. So
+matching fingerprints isn't just a good sign, it's a complete test. The
+Valid Anagram problem is this observation and nothing more; the Hash Tables
+module generalizes it to unrestricted alphabets, where a fixed 26-slot
+array stops being practical.
 
 ## Split / process / join
 
@@ -72,30 +82,40 @@ const result = words.reverse().join(" ");
 ```
 ````
 
-Note the asymmetry — Python's no-arg `split()` handles runs-of-spaces and
-edge trimming for free; JS needs `/\s+/` plus a filter for the possible
-leading empty token. Both pipelines are O(n) time and O(n) space: with
-immutable strings, token-level work *cannot* beat O(n) space without
-dropping to a mutable char array.
+Note the asymmetry — Python's no-arg `split()` treats any run of spaces as
+one separator and drops the empty strings that leading/trailing spaces
+would otherwise leave behind; JS's `split()` doesn't do either
+automatically, so it needs `/\s+/` plus a filter for the leftover empty
+tokens. Both pipelines are O(n) time and O(n) space: strings are immutable,
+so rearranging pieces of one means building a new string (or a mutable
+char-array copy) that scales with the input — there's no way to beat that
+O(n) space floor without dropping to a mutable array first.
 
 ## Scanning costs you should price correctly
 
 - **`sub in s` / `s.includes(sub)`** — substring search is **O(n·m)** in
-  the worst case (naive; libraries use better algorithms with good average
-  behavior, but never assume O(1)). Pricing a loop that calls `includes`
-  means multiplying by this — the "price the body honestly" rule.
-- **`s.startswith(p)`** — O(|p|): compares only the prefix. Cheap; the
-  Longest Common Prefix problem leans on it.
-- **`s.find(c)` / `indexOf`** — O(n) scan. Inside a loop: quadratic alarm.
+  the worst case (naive; libraries do better on average, but never assume
+  O(1)). Call it once per iteration of an n-length loop and the total
+  becomes **O(n²·m)** — the "price the body honestly" rule, and strings are
+  where it bites hardest.
+- **`s.startswith(p)`** — O(|p|): it only compares up to the prefix's
+  length and stops at the first mismatch. Cheap; the Longest Common Prefix
+  problem leans on it.
+- **`s.find(c)` / `indexOf`** — O(n): a full scan, no shortcut. Inside a
+  loop, the same multiplication applies — quadratic alarm.
 
 ## Palindrome and prefix idioms
 
 Two micro-patterns that recur enough to preload. **Palindrome check** is
-converging pointers with reads instead of swaps — O(n) time, O(1) space,
-no char-array conversion needed since nothing mutates. **Common prefix
-scan** walks index i while all candidates agree at i. Both appear as
-problems in this module; if you can derive them from their invariants
-without peeking, the Arrays module did its job.
+converging pointers with reads instead of swaps: compare `s[left]` and
+`s[right]`, close the gap until they meet. O(n) time, O(1) space — no
+char-array conversion needed, since immutability only blocks writes and a
+palindrome check never writes anything. **Common prefix scan** walks index
+`i` forward while every candidate string still agrees at position `i`,
+stopping at the first mismatch or the shortest string's end — whatever
+matched so far is the answer. Both appear as problems in this module; if
+you can derive them from their invariants without peeking, the Arrays
+module did its job.
 
 ```quiz
 {
@@ -108,7 +128,7 @@ without peeking, the Arrays module did its job.
         "Only for strings shorter than 26 characters — once the input has more characters than there are slots, some letters would need to share a slot and the counts would collide"
       ],
       "answer": 0,
-      "explanation": "The count array trades generality for constant size and direct indexing. Unicode input would need 100k+ slots — that's when the hash map (Module 6) earns its place. Constraints are the contract."
+      "explanation": "The count array trades generality for constant size and direct indexing — it only works because the alphabet is guaranteed small, which is what makes matching counts a complete test for anagrams. Unicode input would need 100k+ slots — that's when the hash map (Hash Tables module) earns its place. Constraints are the contract."
     },
     {
       "question": "A loop over n words calls `text.includes(word)` on each (text has length n). Total cost?",
@@ -118,7 +138,7 @@ without peeking, the Arrays module did its job.
         "O(n²·w)-ish — each includes is a substring search costing up to O(n·|word|), and it runs n times"
       ],
       "answer": 2,
-      "explanation": "Built-in ≠ free. Substring search is linear-times-pattern in the worst case, and the loop multiplies it. Pricing library calls honestly was the Big O module's rule; strings are where it bites hardest."
+      "explanation": "Built-in ≠ free: substring search still costs O(n·m) in the worst case, and calling it once per loop iteration multiplies that cost by n. Pricing library calls honestly was the Big O module's rule; strings are where it bites hardest."
     },
     {
       "question": "Why does a palindrome check need no char-array conversion while string reversal does?",
@@ -128,7 +148,7 @@ without peeking, the Arrays module did its job.
         "The check only READS (compare s[left] vs s[right]) — immutability blocks writes, not reads; reversal must write, so it needs a mutable copy"
       ],
       "answer": 2,
-      "explanation": "Immutability is a write-lock. Read-only two-pointer algorithms run directly on the string at O(1) auxiliary space; mutating ones pay the O(n) detour."
+      "explanation": "Immutability is a write-lock, not a read-lock. Read-only two-pointer algorithms like a palindrome check run directly on the string at O(1) auxiliary space; algorithms that need to write characters, like reversal, pay the O(n) detour into a mutable copy."
     }
   ]
 }
