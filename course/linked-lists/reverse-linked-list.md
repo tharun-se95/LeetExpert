@@ -48,6 +48,22 @@ because sub-range reversal shows up inside harder problems constantly.
   ]
 }
 ```
+
+## Solution
+
+`````reveal Solution — iterative three-pointer
+````tabs
+```python
+def reverse_list(head):
+    prev, curr = None, head       # reversed prefix: empty; untouched suffix: everything
+    while curr is not None:
+        nxt = curr.next            # 1) save the lifeline
+        curr.next = prev           # 2) the flip
+        prev = curr                # 3) march
+        curr = nxt
+    return prev                    # curr is None; prev heads it all
+```
+
 ```typescript
 function reverseList(head: ListNode | null): ListNode | null {
   let prev: ListNode | null = null; // reversed prefix: empty

@@ -139,7 +139,7 @@ keeps it strictly increasing). The final answer is the MAX over all
 to end at the last element.
 ````
 
-## Brute force / the O(n²) DP
+## Solution
 
 `````reveal Solution — O(n²) DP, looking back at every valid predecessor
 ````tabs

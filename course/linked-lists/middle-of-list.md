@@ -45,6 +45,21 @@ the solution; the even case is where implementations differ.
   ]
 }
 ```
+
+## Solution
+
+`````reveal Solution — fast & slow pointers
+````tabs
+```python
+def middle_node(head):
+    slow = head
+    fast = head
+    while fast is not None and fast.next is not None:
+        slow = slow.next       # +1
+        fast = fast.next.next  # +2
+    return slow
+```
+
 ```typescript
 function middleNode(head: ListNode | null): ListNode | null {
   let slow = head;

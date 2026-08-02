@@ -47,6 +47,27 @@ game. Sketch two short lists and stitch them on paper first.
   ]
 }
 ```
+
+## Solution
+
+`````reveal Solution — dummy head, splice don't copy
+````tabs
+```python
+def merge_two_lists(list1, list2):
+    dummy = ListNode(0)
+    tail = dummy                       # end of merged prefix
+    while list1 is not None and list2 is not None:
+        if list1.val <= list2.val:     # <= keeps the merge stable
+            tail.next = list1           # splice existing node
+            list1 = list1.next
+        else:
+            tail.next = list2
+            list2 = list2.next
+        tail = tail.next
+    tail.next = list1 if list1 is not None else list2  # attach the remainder
+    return dummy.next
+```
+
 ```typescript
 function mergeTwoLists(
   l1: ListNode | null,
@@ -55,7 +76,7 @@ function mergeTwoLists(
   const dummy = new ListNode(0);
   let tail = dummy; // end of merged prefix
   while (l1 !== null && l2 !== null) {
-    if (l1.value <= l2.value) {
+    if (l1.val <= l2.val) {
       // <= keeps the merge stable
       tail.next = l1; // splice existing node
       l1 = l1.next;
@@ -72,9 +93,9 @@ function mergeTwoLists(
 ````
 
 Invariant: *dummy.next … tail is sorted, contains exactly the consumed
-nodes, and tail.value ≤ both remaining fronts.* Each branch preserves
+nodes, and tail.val ≤ both remaining fronts.* Each branch preserves
 it; the final attachment is legal because the leftover list's every
-value ≥ tail.value (its front survived every comparison it faced).
+value ≥ tail.val (its front survived every comparison it faced).
 
 Two deliberate touches: `<=` (not `<`) takes ties from l1 first —
 **stability**, which matters when nodes carry payloads beyond the key
