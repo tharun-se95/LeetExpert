@@ -62,8 +62,8 @@ describe("mergePracticeProblems", () => {
     expect(rows.map((r) => r.slug)).toEqual([
       "remove-duplicates-sorted",
       "move-zeroes",
-      "rotate-array",
       "best-time-to-buy-sell-stock",
+      "rotate-array",
       "product-except-self",
     ]);
     expect(rows[0].href).toBe("/problems/remove-duplicates-sorted");
