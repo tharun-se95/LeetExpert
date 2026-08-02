@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import type { FamilyId } from "@/lib/content/manifest";
+import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
 import { cn } from "@/lib/utils";
 
 const Viz = dynamic(
@@ -21,7 +23,13 @@ export const SANDBOX_PAIR_VIZ = JSON.stringify({
   speed: 800,
 });
 
-const STRIP_TABS = [
+const STRIP_TABS: {
+  id: string;
+  label: string;
+  blurb: string;
+  source: string;
+  family: FamilyId;
+}[] = [
   {
     id: "pointers",
     label: "Pointers",
@@ -32,6 +40,7 @@ const STRIP_TABS = [
       target: 22,
       speed: 750,
     }),
+    family: "pointer-movement",
   },
   {
     id: "trees",
@@ -42,6 +51,7 @@ const STRIP_TABS = [
       n: 4,
       speed: 650,
     }),
+    family: "recursive-exploration",
   },
   {
     id: "hash",
@@ -53,39 +63,60 @@ const STRIP_TABS = [
       capacity: 4,
       speed: 700,
     }),
+    family: "relationships",
   },
-] as const;
+];
 
-/** One player, three stories — single outer card, no nested frames. */
+/**
+ * One player, three stories — single outer card, no nested frames. Each
+ * topic carries its real algorithm-family accent (see familyTheme.ts) so
+ * color here means something instead of being decoration.
+ */
 export function LandingVizStrip() {
   const [tab, setTab] = useState<(typeof STRIP_TABS)[number]["id"]>("pointers");
   const active = STRIP_TABS.find((t) => t.id === tab) ?? STRIP_TABS[0];
+  const activeTheme = getFamilyTheme(active.family);
 
   return (
-    <div className="overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-elevated">
+    <div
+      className="overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-elevated"
+      style={{ borderTopColor: activeTheme.accent, borderTopWidth: 2 }}
+    >
       <div className="border-b border-border px-3 py-3 sm:px-4">
         <div
           role="tablist"
           aria-label="Visualization topics"
           className="flex flex-wrap gap-1.5"
         >
-          {STRIP_TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              aria-selected={tab === t.id}
-              onClick={() => setTab(t.id)}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                tab === t.id
-                  ? "bg-pop text-on-pop"
-                  : "text-muted hover:bg-surface hover:text-foreground",
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
+          {STRIP_TABS.map((t) => {
+            const theme = getFamilyTheme(t.family);
+            const isActive = tab === t.id;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setTab(t.id)}
+                style={isActive ? familyCssVars(t.family) : undefined}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-[var(--family-accent)] text-[var(--family-on-accent)]"
+                    : "text-muted hover:bg-surface hover:text-foreground",
+                )}
+              >
+                {!isActive ? (
+                  <span
+                    aria-hidden
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: theme.accent }}
+                  />
+                ) : null}
+                {t.label}
+              </button>
+            );
+          })}
         </div>
         <p className="mt-2 text-sm text-muted">{active.blurb}</p>
       </div>

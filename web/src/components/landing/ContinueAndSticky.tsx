@@ -65,7 +65,8 @@ export function ContinueBanner() {
 }
 
 export function StickyCta() {
-  const [visible, setVisible] = useState(false);
+  const [scrolledPast, setScrolledPast] = useState(false);
+  const [closingVisible, setClosingVisible] = useState(false);
 
   useEffect(() => {
     // AppShell scrolls <main>, not the window — window.scrollY stays 0.
@@ -77,13 +78,29 @@ export function StickyCta() {
     const readTop = () =>
       root && "scrollTop" in root ? root.scrollTop : window.scrollY;
 
-    const onScroll = () => setVisible(readTop() > 480);
+    const onScroll = () => setScrolledPast(readTop() > 480);
     onScroll();
 
     const target: HTMLElement | Window = root ?? window;
     target.addEventListener("scroll", onScroll, { passive: true });
     return () => target.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    // The closing pop slab repeats this bar's exact CTAs — hide the bar once
+    // it's on screen so the two pairs never show together.
+    const closing = document.getElementById("closing-cta");
+    if (!closing) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setClosingVisible(!!entry?.isIntersecting),
+      { threshold: 0.3 },
+    );
+    observer.observe(closing);
+    return () => observer.disconnect();
+  }, []);
+
+  const visible = scrolledPast && !closingVisible;
 
   return (
     <div

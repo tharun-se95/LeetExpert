@@ -114,8 +114,10 @@ export function HeroStatsArray({ tiles }: { tiles: readonly HeroStatTile[] }) {
         Curriculum at a glance
       </p>
       <p className="mt-0.5 text-xs text-muted">
-        <span className="font-mono text-muted">read</span> leads ·{" "}
-        <span className="font-mono text-accent">write</span> fills the counts
+        Watch the counts fill in — the same{" "}
+        <span className="font-mono text-muted">read</span>/
+        <span className="font-mono text-accent">write</span> scan you’ll use
+        in Arrays.
       </p>
 
       <div
