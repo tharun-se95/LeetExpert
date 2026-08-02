@@ -9,6 +9,8 @@ import type { LoadedLesson } from "@/lib/course/load";
 interface NeighborLink {
   href: string;
   title: string;
+  /** Set only when this neighbor sits in a different module than the current lesson. */
+  module?: string;
 }
 
 interface LessonViewProps {
@@ -63,11 +65,15 @@ export function LessonView({
           {prev ? (
             <Link
               href={prev.href}
-              className="group flex max-w-[45%] items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm transition hover:border-foreground/25 hover:bg-surface"
+              className="group flex max-w-[45%] items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
             >
-              <ArrowLeft weight="bold" className="h-4 w-4 shrink-0 text-muted transition group-hover:text-foreground" />
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent transition group-hover:bg-accent/15">
+                <ArrowLeft weight="bold" className="h-4 w-4" />
+              </span>
               <span className="min-w-0">
-                <span className="block text-xs text-muted">Previous</span>
+                <span className="block text-xs text-muted">
+                  Previous{prev.module ? ` · ${prev.module}` : ""}
+                </span>
                 <span className="block truncate font-medium">{prev.title}</span>
               </span>
             </Link>
@@ -77,13 +83,17 @@ export function LessonView({
           {next ? (
             <Link
               href={next.href}
-              className="group flex max-w-[45%] items-center gap-2 rounded-lg border border-border px-4 py-3 text-right text-sm transition hover:border-foreground/25 hover:bg-surface"
+              className="group flex max-w-[45%] items-center gap-3 rounded-lg border border-border px-4 py-3 text-right text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
             >
               <span className="min-w-0">
-                <span className="block text-xs text-muted">Next</span>
+                <span className="block text-xs text-muted">
+                  Next{next.module ? ` · ${next.module}` : ""}
+                </span>
                 <span className="block truncate font-medium">{next.title}</span>
               </span>
-              <ArrowRight weight="bold" className="h-4 w-4 shrink-0 text-muted transition group-hover:text-foreground" />
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent transition group-hover:bg-accent/15">
+                <ArrowRight weight="bold" className="h-4 w-4" />
+              </span>
             </Link>
           ) : (
             <span />

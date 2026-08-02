@@ -357,31 +357,38 @@ describe("the sandbox fence is safe to extract", () => {
     expect(bad).toEqual([]);
   });
 
-  it("no problem lesson has a heading duplicated across its sandbox split", () => {
-    // beforeSandbox/afterSandbox render as two independent <Markdown>
-    // instances, each running its own rehype-slug pass — a heading with
-    // the same text on both sides would collide on the same DOM id.
-    const heading = /^#{2,3}\s+(.+)$/gm;
-    const bad: string[] = [];
-    for (const lesson of LESSONS) {
-      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
-      if (!fm?.[1].includes("type: problem")) continue;
+  it(
+    "no problem lesson has a heading duplicated across its sandbox split",
+    () => {
+      // beforeSandbox/afterSandbox render as two independent <Markdown>
+      // instances, each running its own rehype-slug pass — a heading with
+      // the same text on both sides would collide on the same DOM id.
+      const heading = /^#{2,3}\s+(.+)$/gm;
+      const bad: string[] = [];
+      for (const lesson of LESSONS) {
+        const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+        if (!fm?.[1].includes("type: problem")) continue;
 
-      const { content } = matter(lesson.body);
-      const split = extractSandboxFence(content.trim());
-      if (!split) continue;
+        const { content } = matter(lesson.body);
+        const split = extractSandboxFence(content.trim());
+        if (!split) continue;
 
-      const before = new Set(
-        [...split.beforeSandbox.matchAll(heading)].map((m) => m[1].trim()),
-      );
-      for (const m of split.afterSandbox.matchAll(heading)) {
-        if (before.has(m[1].trim())) {
-          bad.push(`${lesson.rel} — "${m[1].trim()}"`);
+        const before = new Set(
+          [...split.beforeSandbox.matchAll(heading)].map((m) => m[1].trim()),
+        );
+        for (const m of split.afterSandbox.matchAll(heading)) {
+          if (before.has(m[1].trim())) {
+            bad.push(`${lesson.rel} — "${m[1].trim()}"`);
+          }
         }
       }
-    }
-    expect(bad).toEqual([]);
-  });
+      expect(bad).toEqual([]);
+    },
+    // Parses all 212 lesson files synchronously — under full-suite worker
+    // contention (18 files running in parallel) this reliably exceeds the
+    // 5000ms default even though it finishes in ~1s isolated.
+    20000,
+  );
 });
 
 /**

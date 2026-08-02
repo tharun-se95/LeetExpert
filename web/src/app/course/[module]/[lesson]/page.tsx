@@ -58,10 +58,24 @@ export default async function LessonPage({ params }: PageProps) {
     { label: meta.lesson.title },
   ];
   const prevLink = prev
-    ? { href: lessonHref(prev.module, prev.lesson), title: prev.title }
+    ? {
+        href: lessonHref(prev.module, prev.lesson),
+        title: prev.title,
+        module:
+          prev.module !== moduleSlug
+            ? getModule(prev.module)?.shortTitle
+            : undefined,
+      }
     : null;
   const nextLink = next
-    ? { href: lessonHref(next.module, next.lesson), title: next.title }
+    ? {
+        href: lessonHref(next.module, next.lesson),
+        title: next.title,
+        module:
+          next.module !== moduleSlug
+            ? getModule(next.module)?.shortTitle
+            : undefined,
+      }
     : null;
 
   if (meta.lesson.type === "practice") {
