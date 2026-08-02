@@ -346,7 +346,7 @@ function ContentBody({
 }) {
   if (source.trim()) {
     return (
-      <div className={tab === "description" ? "problem-prose" : undefined}>
+      <div className={tab !== "code" ? "problem-prose" : undefined}>
         <Markdown
           source={source}
           highlightedBlocks={highlightedBlocks}

@@ -353,7 +353,16 @@ body {
   margin: 0.85rem 0;
 }
 
-/* Problem Description pane: compact rhythm, reference-matched. */
+/*
+  Problem workspace panes (Description/Explanation/Solution): compact
+  rhythm, default reading size — a problem statement is scanned, not read
+  the way a lesson is, so it doesn't get the lesson's upsized 19px prose.
+*/
+.problem-prose .handbook-prose {
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
 .problem-prose .handbook-prose h2 {
   margin-top: 1.75rem;
 }
