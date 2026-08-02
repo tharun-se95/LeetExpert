@@ -359,8 +359,8 @@ body {
   the way a lesson is, so it doesn't get the lesson's upsized 19px prose.
 */
 .problem-prose .handbook-prose {
-  font-size: 1rem;
-  line-height: 1.55;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .problem-prose .handbook-prose h2 {
