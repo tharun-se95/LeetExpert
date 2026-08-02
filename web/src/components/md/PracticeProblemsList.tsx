@@ -16,85 +16,128 @@ function asDifficulty(value: string): Difficulty | null {
   return null;
 }
 
+/**
+ * The module's actionable checklist — deliberately as visually weighted as
+ * the Cheatsheet card it sits beside, since solving problems (not reading
+ * about them) is why a learner opened this page.
+ */
 export function PracticeProblemsList({
   moduleSlug,
+  moduleTitle,
   rows,
 }: {
   moduleSlug: string;
+  moduleTitle: string;
   rows: PracticeProblemRow[];
 }) {
   const { solved } = useProgress();
+  const solvedCount = rows.filter((row) =>
+    solved.has(lessonId(moduleSlug, row.slug)),
+  ).length;
 
   return (
-    <ol className="mt-6 grid gap-2">
-      {rows.map((row, i) => {
-        const id = lessonId(moduleSlug, row.slug);
-        const isSolved = solved.has(id);
-        const difficulty = row.difficulty
-          ? asDifficulty(row.difficulty)
-          : null;
-        return (
-          <li key={row.slug}>
-            <Link
-              href={row.href}
-              className={cn(
-                "group flex min-h-11 touch-manipulation items-start gap-3 rounded-[length:var(--radius-md)] border border-border px-4 py-3.5 text-sm",
-                "transition-[border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
-                "hover:border-accent/35 hover:bg-accent/[0.04]",
-                isSolved && "border-good/25 bg-good/[0.04]",
-              )}
+    <section className="my-10" aria-labelledby="problems">
+      <div className="overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated">
+        <header className="relative flex flex-col gap-4 border-b border-border bg-pop/[0.06] px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="min-w-0">
+            <p className="font-mono text-[10px] tracking-[0.14em] text-muted uppercase">
+              Practice set
+            </p>
+            <h2
+              id="problems"
+              className="mt-1 font-display text-xl font-bold tracking-tight text-balance uppercase sm:text-2xl"
             >
-              <span
-                className={cn(
-                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold tabular-nums",
-                  isSolved
-                    ? "bg-good/15 text-good"
-                    : "bg-accent/10 text-accent",
-                )}
-              >
-                {isSolved ? (
-                  <Check size={14} weight="bold" aria-label="Solved" />
-                ) : (
-                  i + 1
-                )}
+              Problems
+            </h2>
+            <p className="mt-1 text-sm text-muted">
+              <span className="font-medium text-foreground">
+                {moduleTitle}
               </span>
-              <span className="min-w-0 flex-1">
-                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                  <span className="min-w-0 font-medium text-foreground">
-                    {row.title}
+              {" — "}work them in order; difficulty ascends.
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-3 sm:flex-col sm:items-end sm:gap-0">
+            <p className="font-mono text-2xl font-bold tabular-nums text-foreground">
+              {solvedCount}
+              <span className="text-muted">/{rows.length}</span>
+            </p>
+            <p className="font-mono text-[10px] tracking-wide text-muted uppercase">
+              solved
+            </p>
+          </div>
+        </header>
+
+        <ol className="grid gap-2 p-4 sm:p-6">
+          {rows.map((row, i) => {
+            const id = lessonId(moduleSlug, row.slug);
+            const isSolved = solved.has(id);
+            const difficulty = row.difficulty
+              ? asDifficulty(row.difficulty)
+              : null;
+            return (
+              <li key={row.slug}>
+                <Link
+                  href={row.href}
+                  className={cn(
+                    "group flex min-h-11 touch-manipulation items-start gap-3 rounded-[length:var(--radius-md)] border border-border bg-background px-4 py-3.5 text-sm",
+                    "transition-[border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
+                    "hover:border-accent/35 hover:bg-accent/[0.04]",
+                    isSolved && "border-good/25 bg-good/[0.04]",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold tabular-nums",
+                      isSolved
+                        ? "bg-good/15 text-good"
+                        : "bg-accent/10 text-accent",
+                    )}
+                  >
+                    {isSolved ? (
+                      <Check size={14} weight="bold" aria-label="Solved" />
+                    ) : (
+                      i + 1
+                    )}
                   </span>
-                  {row.difficulty ? (
-                    <span
-                      className={cn(
-                        "rounded border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
-                        difficulty
-                          ? difficultyBadgeClass(difficulty)
-                          : "border-border text-muted",
-                      )}
-                    >
-                      {row.difficulty}
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                      <span className="min-w-0 font-medium text-foreground">
+                        {row.title}
+                      </span>
+                      {row.difficulty ? (
+                        <span
+                          className={cn(
+                            "rounded border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
+                            difficulty
+                              ? difficultyBadgeClass(difficulty)
+                              : "border-border text-muted",
+                          )}
+                        >
+                          {row.difficulty}
+                        </span>
+                      ) : null}
                     </span>
-                  ) : null}
-                </span>
-                {row.pattern ? (
-                  <span className="mt-1 block text-xs text-muted">
-                    {row.pattern}
+                    {row.pattern ? (
+                      <span className="mt-1 block text-xs text-muted">
+                        {row.pattern}
+                      </span>
+                    ) : null}
+                    {row.watch_for ? (
+                      <span className="mt-1 block text-xs leading-relaxed text-muted">
+                        Watch for: {row.watch_for}
+                      </span>
+                    ) : null}
                   </span>
-                ) : null}
-                {row.watch_for ? (
-                  <span className="mt-1 block text-xs leading-relaxed text-muted">
-                    Watch for: {row.watch_for}
-                  </span>
-                ) : null}
-              </span>
-              <ArrowRight
-                weight="bold"
-                className="mt-1 h-4 w-4 shrink-0 text-muted transition group-hover:text-accent"
-              />
-            </Link>
-          </li>
-        );
-      })}
-    </ol>
+                  <ArrowRight
+                    weight="bold"
+                    className="mt-1 h-4 w-4 shrink-0 text-muted transition group-hover:text-accent"
+                  />
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </section>
   );
 }

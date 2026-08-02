@@ -85,8 +85,8 @@ export default async function LessonPage({ params }: PageProps) {
     const sheet = getCheatsheet(moduleSlug);
     const toc = [
       ...extractToc(intro),
-      { id: "cheatsheet", text: "Cheatsheet", level: 2 },
       { id: "problems", text: "Problems", level: 2 },
+      { id: "cheatsheet", text: "Cheatsheet", level: 2 },
     ];
     return (
       <LessonView
@@ -98,14 +98,12 @@ export default async function LessonPage({ params }: PageProps) {
         next={nextLink}
         afterMarkdown={
           <>
+            <PracticeProblemsList
+              moduleSlug={moduleSlug}
+              moduleTitle={mod.shortTitle}
+              rows={rows}
+            />
             <Cheatsheet sheet={sheet} moduleTitle={mod.shortTitle} />
-            <h2
-              id="problems"
-              className="mt-10 font-display text-xl font-semibold tracking-tight"
-            >
-              Problems
-            </h2>
-            <PracticeProblemsList moduleSlug={moduleSlug} rows={rows} />
           </>
         }
       />
