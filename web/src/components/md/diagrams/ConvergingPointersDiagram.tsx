@@ -140,7 +140,7 @@ export function ConvergingPointersDiagram({
                 y={y - 6}
                 fontSize={10}
                 fontWeight={700}
-                fill="var(--accent)"
+                fill="var(--family-accent, var(--accent))"
                 textAnchor="middle"
                 fontFamily="var(--font-mono), monospace"
               >

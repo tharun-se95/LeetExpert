@@ -61,6 +61,13 @@ There's no meaningful brute force to beat here — total input is ≤ 4·10⁴
 characters and any correct approach is near-instant. The value is in
 which version you can state, verify, and defend fastest under pressure.
 
+```diagram
+{
+  "id": "column-scan",
+  "strings": ["flower", "flow", "flight"]
+}
+```
+
 ## The insight
 
 > The common prefix is limited by the first disagreement in any column —

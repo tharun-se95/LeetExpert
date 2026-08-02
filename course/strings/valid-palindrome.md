@@ -71,6 +71,14 @@ first answer, and saying so out loud ("I'll start with the allocation
 version, then remove the allocation") is good interview craft. The
 follow-up version below removes the copy without touching the time class.
 
+```viz
+{
+  "id": "palindrome-check",
+  "s": "A man, a plan, a canal: Panama",
+  "speed": 700
+}
+```
+
 ## The insight
 
 > "Ignore some characters" doesn't require *building the ignored-free

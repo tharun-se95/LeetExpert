@@ -54,6 +54,13 @@ function joinGood(words: string[]): string {
 ```
 ````
 
+```diagram
+{
+  "id": "string-builder-cost",
+  "count": 6
+}
+```
+
 `join_bad` re-copies the accumulated prefix on every step: 1 + 2 + ⋯ + n
 character copies — the triangular sum, **O(n²)**. `join_good` is the
 dynamic array from Module 4 wearing a disguise: append pieces (O(1)

@@ -57,7 +57,7 @@ const TONE: Record<
   RegionTone,
   { fill: string; opacity: number; stroke: string; dash?: string }
 > = {
-  done: { fill: "var(--accent)", opacity: 0.85, stroke: "none" },
+  done: { fill: "var(--family-accent, var(--accent))", opacity: 0.85, stroke: "none" },
   dead: {
     fill: "var(--surface)",
     opacity: 0.5,
@@ -109,7 +109,7 @@ export function ArrayStrip({
         const mid = (left + right) / 2;
         const lineY = -10;
         const isDone = region.tone === "done";
-        const stroke = isDone ? "var(--accent)" : "var(--muted)";
+        const stroke = isDone ? "var(--family-accent, var(--accent))" : "var(--muted)";
         return (
           <g key={`bracket-${i}`}>
             <path
@@ -149,7 +149,7 @@ export function ArrayStrip({
               rx={4}
               fill={tone.fill}
               fillOpacity={tone.opacity}
-              stroke={isActive ? "var(--accent)" : tone.stroke}
+              stroke={isActive ? "var(--family-accent, var(--accent))" : tone.stroke}
               strokeWidth={isActive ? 2 : 1.25}
               strokeDasharray={isActive ? undefined : tone.dash}
             />
@@ -184,7 +184,7 @@ export function ArrayStrip({
           <g key={`marker-${marker.label}`}>
             <path
               d={`M ${mx} ${top} l -4 5 l 8 0 Z`}
-              fill="var(--accent)"
+              fill="var(--family-accent, var(--accent))"
               transform={`rotate(180, ${mx}, ${top + 3})`}
             />
             <text
@@ -192,7 +192,7 @@ export function ArrayStrip({
               y={top + 17}
               fontSize={10}
               fontWeight={700}
-              fill="var(--accent)"
+              fill="var(--family-accent, var(--accent))"
               textAnchor="middle"
               fontFamily="var(--font-mono), monospace"
             >

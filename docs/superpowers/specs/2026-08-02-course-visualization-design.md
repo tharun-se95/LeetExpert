@@ -1,9 +1,20 @@
 # Course-wide visualization plan
 
 **Date:** 2026-08-02
-**Status:** proposed — awaiting confirmation on the component roster before build
+**Status:** approved, in progress — Strings module complete (see ledger)
 **Resolves:** the `HANDOFF.md` "Blocked — needs the owner" visualisation-triage
 item — this is that decision, made by the course owner directly.
+
+**Correction found during the Strings batch:** viz components hardcode
+their source problem's exact step logic *and* code panel, not just its
+data — so `(reuse)` in the roster/ledger only holds when the target
+lesson is the literal same algorithm as the existing component (e.g. Two
+Sum II reusing `converging-pointers`, which genuinely is two-sum-sorted).
+Strings' four "reuse" lessons (palindrome, anagram, prefix, substring
+search) were each a different algorithm and needed a small new component
+instead — still built on the shared `Cell`/`MarkerRow`/`Legend`/`VizPlayer`
+primitives, just not literal registry reuse. Every remaining module's
+`(reuse)` calls in the ledger need this same check before embedding.
 
 ---
 

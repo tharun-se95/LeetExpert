@@ -70,7 +70,7 @@ export function InvariantPhasesDiagram({
               y={rowY + CELL_H / 2 - 6}
               fontSize={11}
               fontWeight={700}
-              fill={isLast ? "var(--accent)" : "var(--foreground)"}
+              fill={isLast ? "var(--family-accent, var(--accent))" : "var(--foreground)"}
               dominantBaseline="central"
               fontFamily="var(--font-mono), monospace"
             >

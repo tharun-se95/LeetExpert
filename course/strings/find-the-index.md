@@ -68,6 +68,15 @@ m − 1 characters before failing on the last. Count the total work.
 > naive version, stated with its honest bound, is the correct move at
 > these constraints.
 
+```viz
+{
+  "id": "substring-search",
+  "haystack": "mississippi",
+  "needle": "issip",
+  "speed": 500
+}
+```
+
 ## Solution
 
 `````reveal Solution — check every alignment

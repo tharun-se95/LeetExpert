@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { DIAGRAM_REGISTRY } from "@/components/md/diagrams/registry";
+import { DIAGRAM_REGISTRY, DIAGRAM_FAMILY } from "@/components/md/diagrams/registry";
+import { familyCssVars } from "@/lib/visual/familyTheme";
 
 function parseSpec(source: string): Record<string, unknown> | null {
   try {
@@ -40,8 +41,12 @@ export function Diagram({ source }: { source: string }) {
   }
   const props = { ...spec };
   delete props.id;
+  const family = DIAGRAM_FAMILY[spec.id];
   return (
-    <div className="my-6 flex justify-center rounded-xl border border-border bg-surface/40 px-4 py-6">
+    <div
+      style={family ? familyCssVars(family) : undefined}
+      className="my-6 flex justify-center rounded-xl border border-border bg-surface/40 px-4 py-6"
+    >
       <Component {...props} />
     </div>
   );

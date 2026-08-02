@@ -53,6 +53,14 @@ function letterCounts(s: string): number[] {
 ```
 ````
 
+```viz
+{
+  "id": "frequency-count",
+  "s": "letters",
+  "speed": 500
+}
+```
+
 A count array is a **frequency fingerprint**: if two strings produce
 identical counts, they contain exactly the same letters the same number of
 times each — which is exactly what it means for one to be a rearrangement
@@ -116,6 +124,14 @@ stopping at the first mismatch or the shortest string's end — whatever
 matched so far is the answer. Both appear as problems in this module; if
 you can derive them from their invariants without peeking, the Arrays
 module did its job.
+
+```viz
+{
+  "id": "palindrome-check",
+  "s": "level",
+  "speed": 700
+}
+```
 
 ```quiz
 {

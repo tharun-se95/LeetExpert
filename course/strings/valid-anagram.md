@@ -65,6 +65,15 @@ follow-up (sorting arbitrary Unicode still works, but counting adapts more
 gracefully). Knowing the sort version *is* worth something: "canonical
 form by sorting" generalizes to Group Anagrams (Module 6).
 
+```viz
+{
+  "id": "frequency-count",
+  "s": "anagram",
+  "t": "nagaram",
+  "speed": 500
+}
+```
+
 ## The insight
 
 > Anagram-ness is equality of frequency fingerprints. Fingerprints are

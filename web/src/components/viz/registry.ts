@@ -15,6 +15,9 @@ import { PrefixSumViz } from "@/components/viz/vizzes/PrefixSumViz";
 import { KadaneViz } from "@/components/viz/vizzes/KadaneViz";
 import { CyclicRotateViz } from "@/components/viz/vizzes/CyclicRotateViz";
 import { BlockReversalViz } from "@/components/viz/vizzes/BlockReversalViz";
+import { PalindromeCheckViz } from "@/components/viz/vizzes/PalindromeCheckViz";
+import { FrequencyCountViz } from "@/components/viz/vizzes/FrequencyCountViz";
+import { SubstringSearchViz } from "@/components/viz/vizzes/SubstringSearchViz";
 
 export type VizComponent = ComponentType<Record<string, unknown>>;
 
@@ -39,4 +42,7 @@ export const VIZ_REGISTRY: Record<string, VizComponent> = {
   "kadane": KadaneViz,
   "cyclic-rotate": CyclicRotateViz,
   "block-reversal": BlockReversalViz,
+  "palindrome-check": PalindromeCheckViz,
+  "frequency-count": FrequencyCountViz,
+  "substring-search": SubstringSearchViz,
 };

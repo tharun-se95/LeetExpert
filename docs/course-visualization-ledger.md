@@ -5,10 +5,22 @@ Tracks the visual-coverage pass described in
 per lesson. Update `Status` as work lands — don't reorder rows, this is a
 tracking doc, not a priority list (priority = module order, top to bottom).
 
-**Status values:** `existing` (already has a visual, no work needed) ·
-`todo` (embed pending) · `defer` (no clean reuse fit yet — bespoke, lower
-priority until the reuse-first roster is built and proven) · `none`
-(deliberately no visual — meta/drill content)
+**Status values:** `existing` (already had a visual before this pass) ·
+`done` (built and verified in this pass) · `todo` (embed pending) ·
+`defer` (no clean reuse fit yet — bespoke, lower priority until the
+reuse-first roster is built and proven) · `none` (deliberately no visual
+— meta/drill content)
+
+**Important correction from the Strings batch:** viz components turned
+out to hardcode their source problem's exact step logic and code panel,
+not just its data — `converging-pointers` (two-sum-sorted), `write-pointer`
+(compact_nonzero), and `sliding-window` (max-window-sum) cannot be
+literally reused for a different algorithm via props alone, only for
+lessons that are the *same* algorithm (which is why Two Sum II's reuse of
+`converging-pointers` was always correct — it IS two-sum-sorted). Every
+other module's `(reuse)` annotations below need the same scrutiny before
+embedding — many will turn out to need a small new component, same as
+Strings did with `palindrome-check`/`frequency-count`/`substring-search`.
 
 **Roster reference** (component → type → family): see the design spec §4
 for the original 12. Triage surfaced two more reuse-worthy additions not
@@ -19,7 +31,8 @@ in that list:
 - `union-find` (viz, relationships) — path-compression + union animation.
   Serves 2 Graphs lessons.
 
-Total: 191 lessons. `existing`: 32. `none`: 8. `todo`: 143. `defer`: 8.
+Total: 191 lessons. `existing`: 32. `done`: 7. `none`: 8. `todo`: 139.
+`defer`: 5.
 
 ---
 
@@ -66,17 +79,26 @@ Total: 191 lessons. `existing`: 32. `none`: 8. `todo`: 143. `defer`: 8.
 | rotate-array | problem | viz | (embedded) | existing |
 | product-except-self | problem | viz | `prefix-sum` (reuse) | todo |
 
-## Strings
+## Strings — done (2026-08-02)
+
+Corrected during build: `converging-pointers`, `write-pointer`, and
+`sliding-window` turned out to hardcode their source problem's exact step
+logic *and* code panel (not just data-parameterized), so embedding them
+into a different algorithm would have shown the wrong code. Built new,
+correctly-scoped components instead — still sharing `Cell`/`MarkerRow`/
+`Legend`/`VizPlayer`, just not literal registry reuse. Also built the
+diagram-family wiring (spec §3) as a prerequisite, applied retroactively
+to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| strings-in-memory | concept | diagram | bespoke (immutability cells) | defer |
-| string-toolkit | concept | viz | `converging-pointers` + `write-pointer` (reuse, 2 embeds) | todo |
-| valid-palindrome | problem | viz | `converging-pointers` (reuse) | todo |
-| valid-anagram | problem | viz | `write-pointer` (reuse) | todo |
-| longest-common-prefix | problem | diagram | bespoke (vertical scan) | defer |
-| find-the-index | problem | viz | `sliding-window` (reuse, match/mismatch mode) | todo |
-| reverse-words | problem | diagram | bespoke (3-stage pipeline) | defer |
+| strings-in-memory | concept | diagram | `string-builder-cost` (new, linear-traversal) | done |
+| string-toolkit | concept | viz | `frequency-count` + `palindrome-check` (new, 2 embeds) | done |
+| valid-palindrome | problem | viz | `palindrome-check` (new, pointer-movement) | done |
+| valid-anagram | problem | viz | `frequency-count` (new, linear-traversal) | done |
+| longest-common-prefix | problem | diagram | `column-scan` (new, linear-traversal) | done |
+| find-the-index | problem | viz | `substring-search` (new, pointer-movement) | done |
+| reverse-words | problem | diagram | `word-pipeline` (new, neutral) | done |
 
 ## Hash Tables
 

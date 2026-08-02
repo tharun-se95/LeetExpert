@@ -56,7 +56,7 @@ export function CyclicPlacementDiagram({
   const cycles = shift === 0 ? [] : buildCycles(size, shift);
 
   const colorFor = (cycleIndex: number) =>
-    cycleIndex === 0 ? "var(--accent)" : "var(--muted)";
+    cycleIndex === 0 ? "var(--family-accent, var(--accent))" : "var(--muted)";
 
   return (
     <svg

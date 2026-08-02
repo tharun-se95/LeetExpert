@@ -62,6 +62,13 @@ is if you build the answer with `result = word + " " + result` style
 prepending: that re-copies the accumulator per word, the O(n²)
 concatenation trap from the memory lesson wearing word-sized boots.
 
+```diagram
+{
+  "id": "word-pipeline",
+  "s": "the sky is blue"
+}
+```
+
 ## The insight
 
 > Reversing the whole string puts words in the right ORDER with wrong
