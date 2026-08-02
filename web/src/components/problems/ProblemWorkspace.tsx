@@ -34,13 +34,14 @@ interface NeighborLink {
   title: string;
 }
 
-type ContentTab = "description" | "explanation" | "solution";
+type ContentTab = "description" | "explanation" | "solution" | "quiz";
 type WorkspaceTab = ContentTab | "code";
 
 const CONTENT_TABS: { id: ContentTab; label: string }[] = [
   { id: "description", label: "Description" },
   { id: "explanation", label: "Explanation" },
   { id: "solution", label: "Solution" },
+  { id: "quiz", label: "Quiz" },
 ];
 
 /** Mobile: Code sits between Description and Explanation so reading comes first. */
@@ -49,6 +50,7 @@ const MOBILE_TABS: { id: WorkspaceTab; label: string }[] = [
   { id: "code", label: "Code" },
   { id: "explanation", label: "Explanation" },
   { id: "solution", label: "Solution" },
+  { id: "quiz", label: "Quiz" },
 ];
 
 /** Matches Tailwind `lg` — side-by-side IDE needs this width. */
@@ -99,7 +101,7 @@ export function ProblemWorkspace({
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  const { explanation, solution } = useMemo(
+  const { explanation, solution, quiz } = useMemo(
     () => splitProblemTabs(lesson.sandbox.afterSandbox),
     [lesson.sandbox.afterSandbox],
   );
@@ -117,7 +119,9 @@ export function ProblemWorkspace({
       ? lesson.sandbox.beforeSandbox
       : contentTab === "explanation"
         ? explanation
-        : solution;
+        : contentTab === "solution"
+          ? solution
+          : quiz;
 
   const sandbox = (
     <Sandbox
@@ -359,7 +363,9 @@ function ContentBody({
     <p className="text-sm text-muted">
       {tab === "solution"
         ? "This problem’s solution walkthrough lives under Explanation."
-        : "Nothing here yet."}
+        : tab === "quiz"
+          ? "No quiz for this problem yet."
+          : "Nothing here yet."}
     </p>
   );
 }

@@ -28,4 +28,27 @@ describe("splitProblemTabs", () => {
     expect(explanation).toBe("See the solution below.");
     expect(solution).toContain("code");
   });
+
+  it("pulls the quiz fence out of solution into its own tab", () => {
+    const { solution, quiz } = splitProblemTabs(
+      '## Solution\n\nanswer body\n\n```quiz\n{ "question": "q" }\n```\n',
+    );
+    expect(solution).not.toContain("```quiz");
+    expect(solution).toContain("answer body");
+    expect(quiz).toContain('"question": "q"');
+  });
+
+  it("pulls the quiz fence out of explanation when there is no Solution heading", () => {
+    const { explanation, quiz } = splitProblemTabs(
+      '## Variants\n\nsome variants\n\n```quiz\n{ "question": "q" }\n```\n',
+    );
+    expect(explanation).not.toContain("```quiz");
+    expect(explanation).toContain("Variants");
+    expect(quiz).toContain('"question": "q"');
+  });
+
+  it("returns an empty quiz string when the lesson has none", () => {
+    const { quiz } = splitProblemTabs("## Solution\n\nanswer body\n");
+    expect(quiz).toBe("");
+  });
 });
