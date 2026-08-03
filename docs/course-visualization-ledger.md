@@ -31,8 +31,23 @@ in that list:
 - `union-find` (viz, relationships) — path-compression + union animation.
   Serves 2 Graphs lessons.
 
-Total: 191 lessons. `existing`: 32. `done`: 7. `none`: 8. `todo`: 139.
-`defer`: 5.
+**Second correction, from the 2026-08-02 mermaid-replacement pass:** all 8
+of the course's `mermaid` fences were replaced with proper family-colored
+`diagram` components (`docs`/git: "Replace all 8 mermaid diagrams with
+custom static visuals"). Two of those — `dfs-traversals` and
+`bfs-level-order` — were sitting in this ledger as `todo` waiting on a
+`tree-traversal` viz; they now have a static `binary-tree` diagram instead
+and move to `done`. The other 6 replacements were already `existing` (they
+had a mermaid before), just upgraded in place — no tally change from those.
+Five more reusable components exist now, beyond the original 14:
+`memory-cells`, `binary-tree`, `bucket-layout`, `linked-list`,
+`grid-regions`. Note `binary-tree` is *static* — it covers lessons that
+just need to show tree *shape*, not the ones below still marked for
+`tree-traversal` (a viz), which need to show *visit order over time*
+(DFS/BFS-family traversal problems) and remain genuinely separate work.
+
+Total: 191 lessons. `existing`: 32. `done`: 9. `none`: 8. `todo`: 137.
+`defer`: 5. **Coverage: 41/191 (21%).**
 
 ---
 
@@ -70,7 +85,7 @@ Total: 191 lessons. `existing`: 32. `done`: 7. `none`: 8. `todo`: 139.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| contiguous-memory | concept | mermaid | (embedded) | existing |
+| contiguous-memory | concept | diagram | `memory-cells` (embedded, replaces mermaid) | existing |
 | dynamic-arrays | concept | viz | (embedded) | existing |
 | in-place-techniques | concept | viz+diagram | (embedded) | existing |
 | remove-duplicates-sorted | problem | viz | `write-pointer` (reuse) | todo |
@@ -105,7 +120,7 @@ to the 4 existing pointer-movement diagrams too.
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
 | hashing-fundamentals | concept | diagram | `bucket-layout` (new) | todo |
-| collision-resolution | concept | viz+mermaid | (embedded) | existing |
+| collision-resolution | concept | viz+diagram | `bucket-layout` (embedded, replaces mermaid) | existing |
 | build-a-hash-map | concept | viz | `hash-buckets` (reuse) | todo |
 | hash-patterns | concept | diagram | `bucket-layout` (reuse) | todo |
 | two-sum | problem | viz | `hash-buckets` (reuse) | todo |
@@ -118,7 +133,7 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| nodes-and-pointers | concept | mermaid | (embedded) | existing |
+| nodes-and-pointers | concept | diagram | `linked-list` (embedded, replaces mermaid) | existing |
 | build-a-linked-list | concept | diagram | bespoke (node/pointer static) | defer |
 | pointer-surgery | concept | viz | (embedded) | existing |
 | reverse-linked-list | problem | viz | (embedded) | existing |
@@ -182,7 +197,7 @@ to the 4 existing pointer-movement diagrams too.
 |---|---|---|---|---|
 | prefix-sum-basics | concept | viz | (embedded) | existing |
 | prefix-sum-hash-map | concept | viz | `prefix-sum` (reuse) | todo |
-| prefix-sum-2d | concept | mermaid | (embedded) | existing |
+| prefix-sum-2d | concept | diagram | `grid-regions` (embedded, replaces mermaid) | existing |
 | range-sum-query-immutable | problem | viz | `prefix-sum` (reuse) | todo |
 | subarray-sum-equals-k | problem | viz | `prefix-sum` + `hash-buckets` (combo, reuse) | todo |
 | contiguous-array | problem | viz | `prefix-sum` (reuse) | todo |
@@ -248,10 +263,10 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| tree-terminology-and-representation | concept | mermaid | (embedded) | existing |
-| dfs-traversals | concept | mermaid+viz | `tree-traversal` (new) | todo |
-| bfs-level-order | concept | mermaid+viz | `tree-traversal` (reuse) | todo |
-| top-down-vs-bottom-up-recursion | concept | mermaid | (embedded) | existing |
+| tree-terminology-and-representation | concept | diagram | `binary-tree` (embedded, replaces mermaid) | existing |
+| dfs-traversals | concept | diagram | `binary-tree` (done, replaces mermaid) | done |
+| bfs-level-order | concept | diagram | `binary-tree` (done, replaces mermaid) | done |
+| top-down-vs-bottom-up-recursion | concept | diagram | `binary-tree` (embedded, replaces mermaid) | existing |
 | maximum-depth-of-binary-tree | problem | viz | `tree-traversal` (reuse) | todo |
 | diameter-of-binary-tree | problem | viz | `tree-traversal` (reuse) | todo |
 | binary-tree-level-order-traversal | problem | viz | `tree-traversal` (reuse) | todo |
