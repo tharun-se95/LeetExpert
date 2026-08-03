@@ -9,19 +9,16 @@ Each bucket holds a **list** of the entries that hashed there. Insert
 appends to the bucket's list (after checking for the key); lookup scans
 only that one list.
 
-```mermaid
-flowchart LR
-  subgraph buckets["buckets (m = 8)"]
-    direction TB
-    B0["0"] --> E0["('cat', 3)"]
-    B1["1"]
-    B2["2"] --> E1["('dog', 1)"] --> E2["('god', 7)"]
-    B3["3"]
-    B4["4"] --> E3["('emu', 9)"]
-    B5["5"]
-    B6["6"]
-    B7["7"]
-  end
+```diagram
+{
+  "id": "bucket-layout",
+  "capacity": 8,
+  "buckets": [
+    { "index": 0, "entries": ["cat, 3"] },
+    { "index": 2, "entries": ["dog, 1", "god, 7"] },
+    { "index": 4, "entries": ["emu, 9"] }
+  ]
+}
 ```
 
 The cost of any operation is the length of one chain. So the whole

@@ -135,11 +135,14 @@ parameter, answer accumulated in shared/external storage.**
 
 Run both on:
 
-```mermaid
-flowchart TD
-  A["1"] --> B["2"]
-  A --> C["3"]
-  B --> D["4"]
+```diagram
+{
+  "id": "binary-tree",
+  "nodes": [
+    { "id": "1", "left": "2", "right": "3" },
+    { "id": "2", "left": "4" }
+  ]
+}
 ```
 
 - **Bottom-up** works from the leaves up. Node 4 returns 1. Node 3 returns

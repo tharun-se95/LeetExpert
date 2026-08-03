@@ -10,6 +10,11 @@ import { CyclicPlacementDiagram } from "@/components/md/diagrams/CyclicPlacement
 import { StringBuilderCostDiagram } from "@/components/md/diagrams/StringBuilderCostDiagram";
 import { ColumnScanDiagram } from "@/components/md/diagrams/ColumnScanDiagram";
 import { WordPipelineDiagram } from "@/components/md/diagrams/WordPipelineDiagram";
+import { MemoryCellsDiagram } from "@/components/md/diagrams/MemoryCellsDiagram";
+import { BinaryTreeDiagram } from "@/components/md/diagrams/BinaryTreeDiagram";
+import { BucketLayoutDiagram } from "@/components/md/diagrams/BucketLayoutDiagram";
+import { LinkedListDiagram } from "@/components/md/diagrams/LinkedListDiagram";
+import { GridRegionsDiagram } from "@/components/md/diagrams/GridRegionsDiagram";
 
 export type DiagramComponent = ComponentType<Record<string, unknown>>;
 
@@ -25,6 +30,11 @@ export const DIAGRAM_REGISTRY: Record<string, DiagramComponent> = {
   "string-builder-cost": StringBuilderCostDiagram,
   "column-scan": ColumnScanDiagram,
   "word-pipeline": WordPipelineDiagram,
+  "memory-cells": MemoryCellsDiagram,
+  "binary-tree": BinaryTreeDiagram,
+  "bucket-layout": BucketLayoutDiagram,
+  "linked-list": LinkedListDiagram,
+  "grid-regions": GridRegionsDiagram,
 };
 
 /**
@@ -41,4 +51,9 @@ export const DIAGRAM_FAMILY: Partial<Record<string, FamilyId>> = {
   "cyclic-placement": "pointer-movement",
   "string-builder-cost": "linear-traversal",
   "column-scan": "linear-traversal",
+  "memory-cells": "linear-traversal",
+  "binary-tree": "recursive-exploration",
+  "bucket-layout": "relationships",
+  "linked-list": "pointer-movement",
+  "grid-regions": "linear-traversal",
 };

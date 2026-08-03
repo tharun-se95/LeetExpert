@@ -19,12 +19,13 @@ Compare a chain of linked nodes (Linked Lists module), where reaching item
 7 means walking 7 hops: same "get the i-th item" request, completely
 different mechanics.
 
-```mermaid
-flowchart LR
-  subgraph RAM["one contiguous block · base 1000h · 8-byte slots"]
-    direction LR
-    A0["idx 0<br/>1000h"] --- A1["idx 1<br/>1008h"] --- A2["idx 2<br/>1010h"] --- A3["idx 3<br/>1018h"] --- A4["idx 4<br/>1020h"]
-  end
+```diagram
+{
+  "id": "memory-cells",
+  "count": 5,
+  "baseAddress": 4096,
+  "slotBytes": 8
+}
 ```
 
 ## The costs, from the layout

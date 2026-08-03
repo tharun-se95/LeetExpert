@@ -35,13 +35,15 @@ FIFO preserves that order on the way out. So nodes exit the queue level by
 level, left to right. The queue *sorts discoveries by depth automatically*
 — that's the whole trick.
 
-```mermaid
-flowchart TD
-  A["1"] --> B["2"]
-  A --> C["3"]
-  B --> D["4"]
-  B --> E["5"]
-  C --> F["6"]
+```diagram
+{
+  "id": "binary-tree",
+  "nodes": [
+    { "id": "1", "left": "2", "right": "3" },
+    { "id": "2", "left": "4", "right": "5" },
+    { "id": "3", "left": "6" }
+  ]
+}
 ```
 
 Queue trace: `[1]` → process 1, enqueue 2,3 → `[2,3]` → process 2, enqueue

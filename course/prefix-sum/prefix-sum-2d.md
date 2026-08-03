@@ -93,11 +93,16 @@ sum = prefix[r2+1][c2+1]
     + prefix[r1][c1]          (corner subtracted twice — restore it once)
 ```
 
-```mermaid
-flowchart LR
-  A["prefix[r2+1][c2+1]<br/>everything up to bottom-right"] -->|subtract| B["strip above region<br/>prefix[r1][c2+1]"]
-  A -->|subtract| C["strip left of region<br/>prefix[r2+1][c1]"]
-  A -->|add back| D["corner double-subtracted<br/>prefix[r1][c1]"]
+```diagram
+{
+  "id": "grid-regions",
+  "rows": 5,
+  "cols": 6,
+  "r1": 1,
+  "c1": 1,
+  "r2": 3,
+  "c2": 3
+}
 ```
 
 Four terms, four array lookups, O(1) regardless of the rectangle's size

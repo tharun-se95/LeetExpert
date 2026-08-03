@@ -11,12 +11,11 @@ abandons that: each element is a free-standing **node** — a value plus a
 happens to be free. The structure *is* the pointers; the only thing you
 hold is a reference to the first node (the **head**).
 
-```mermaid
-flowchart LR
-  H["head"] --> N1["7 | next"]
-  N1 --> N2["3 | next"]
-  N2 --> N3["12 | next"]
-  N3 --> X["null"]
+```diagram
+{
+  "id": "linked-list",
+  "values": [7, 3, 12]
+}
 ```
 
 A "pointer" here is nothing exotic: in Python and JS every object

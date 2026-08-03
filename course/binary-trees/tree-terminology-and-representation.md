@@ -58,15 +58,16 @@ reachable by following `left`/`right` pointers down from it. This is the
 same "the structure is the pointers" idea from the linked-list module,
 now branching.
 
-```mermaid
-flowchart TD
-  A["1 (root)"] --> B["2"]
-  A --> C["3"]
-  B --> D["4"]
-  B --> E["5"]
-  C --> F["6"]
-  D --> G["null"]
-  D --> H["null"]
+```diagram
+{
+  "id": "binary-tree",
+  "nodes": [
+    { "id": "1", "label": "1 (root)", "left": "2", "right": "3" },
+    { "id": "2", "left": "4", "right": "5" },
+    { "id": "3", "left": "6" },
+    { "id": "4", "nullLeft": true, "nullRight": true }
+  ]
+}
 ```
 
 ## The vocabulary, stated precisely

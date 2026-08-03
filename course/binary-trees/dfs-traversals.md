@@ -31,12 +31,14 @@ placement of the visit moves:
 The names are literal: *pre/in/post* describe where the node's own visit
 sits relative to its children's. On this tree —
 
-```mermaid
-flowchart TD
-  A["1"] --> B["2"]
-  A --> C["3"]
-  B --> D["4"]
-  B --> E["5"]
+```diagram
+{
+  "id": "binary-tree",
+  "nodes": [
+    { "id": "1", "left": "2", "right": "3" },
+    { "id": "2", "left": "4", "right": "5" }
+  ]
+}
 ```
 
 - **Preorder**: 1, 2, 4, 5, 3  (node, then its left subtree, then its right)
