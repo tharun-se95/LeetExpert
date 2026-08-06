@@ -92,7 +92,7 @@ export function UnionFindDiagram({
 
   // Normalize x per tree and offset trees.
   const treeWidths: number[] = roots.map(() => 0);
-  for (const [id, p] of placed) {
+  for (const [, p] of placed) {
     treeWidths[p.tree] = Math.max(treeWidths[p.tree]!, p.x);
   }
   // Recompute with local x
