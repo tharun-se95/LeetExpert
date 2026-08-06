@@ -64,7 +64,7 @@ function renderTree(
   title: string,
   heightLabel: string,
 ) {
-  const { byId, placed, edges, root } = layout(nodes);
+  const { byId, placed, edges } = layout(nodes);
   const xs = [...placed.values()].map((p) => p.x);
   const ys = [...placed.values()].map((p) => p.y);
   const minX = Math.min(0, ...xs);
