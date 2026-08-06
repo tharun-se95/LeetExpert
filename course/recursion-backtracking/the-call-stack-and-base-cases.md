@@ -66,14 +66,16 @@ Trace `factorial(3)`. The stack grows on the way **down** — each call
 suspends itself mid-expression, unable to compute `n * ...` until the
 inner call returns, so its frame stays on the stack:
 
-```text
-push factorial(3)   frozen at  3 * factorial(2)
-push factorial(2)   frozen at  2 * factorial(1)
-push factorial(1)   frozen at  1 * factorial(0)
-push factorial(0)   returns 1   ── base case, nothing suspended ──
-pop  → factorial(1) resumes: 1 * 1 = 1,  returns 1
-pop  → factorial(2) resumes: 2 * 1 = 2,  returns 2
-pop  → factorial(3) resumes: 3 * 2 = 6,  returns 6
+```diagram
+{
+  "id": "call-stack-frames",
+  "frames": [
+    { "label": "factorial(3)", "detail": "waiting" },
+    { "label": "factorial(2)", "detail": "waiting" },
+    { "label": "factorial(1)", "detail": "base → 1" }
+  ],
+  "caption": "winding down; returns unwind 1 → 2 → 6"
+}
 ```
 
 Two separate phases fall out of this picture, and naming them pays off
@@ -195,13 +197,10 @@ that entire `fib(3)` subtree is recomputed from scratch every time it
 appears. The same subproblems are re-solved an exponential number of
 times.
 
-```text
-              fib(5)
-          /            \
-      fib(4)          fib(3)      ← fib(3) computed here...
-      /     \         /    \
-  fib(3)  fib(2)  fib(2) fib(1)   ← ...and AGAIN here, whole subtree
-   ...      ...    ...
+```diagram
+{
+  "id": "overlap-tree"
+}
 ```
 
 Nothing is wrong with the recursion *logically* — it is wrong

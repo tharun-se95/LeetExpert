@@ -3,10 +3,17 @@ title: The Common Complexity Classes
 type: concept
 ---
 
+```diagram
+{
+  "id": "complexity-curve",
+  "mode": "ladder"
+}
+```
+
 ## The ladder
 
 Nearly every algorithm you'll meet lives in one of seven classes. Use the
-explorer above to see how brutally they separate as n grows — then meet each
+curves above to see how brutally they separate as n grows — then meet each
 class with the *reason* it shows up.
 
 | Class | Name | Shows up when… |

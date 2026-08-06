@@ -18,6 +18,21 @@ Practically, this is the "wire every house to the electrical grid for
 the least total cable" question, or "connect every server with the
 least total network cost."
 
+```diagram
+{
+  "id": "graph-representation",
+  "vertexCount": 4,
+  "edges": [
+    { "from": 0, "to": 1 },
+    { "from": 1, "to": 2 },
+    { "from": 2, "to": 3 },
+    { "from": 0, "to": 3 }
+  ],
+  "directed": false
+}
+```
+
+
 This module presents two classic MST algorithms, both greedy, both
 provably correct via the same underlying fact (the **cut property**,
 below) — but built on different data structures and suited to different

@@ -14,6 +14,19 @@ is not merely *a* way to check nesting but the canonical one:
 > match the stack's top obligation — pop on match, fail on mismatch.
 > Well-nested ⇔ the scan never fails and ends with an empty stack.
 
+```diagram
+{
+  "id": "call-stack-frames",
+  "title": "scanning ([])",
+  "frames": [
+    { "label": "(", "detail": "obligation" },
+    { "label": "[", "detail": "top · match next ]" }
+  ],
+  "caption": "opener pushes · matching closer pops"
+}
+```
+
+
 The three failure modes fall out mechanically, and enumerating them is
 what makes implementations correct rather than lucky:
 

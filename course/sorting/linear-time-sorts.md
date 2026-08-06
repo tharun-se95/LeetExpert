@@ -18,6 +18,14 @@ that's precisely what lets them run in O(n).
 If every value is a small integer in a known range `[0, k]`, you don't
 need to compare anything — you can count directly:
 
+```diagram
+{
+  "id": "hash-patterns",
+  "patterns": ["count"]
+}
+```
+
+
 ````tabs
 ```python
 def counting_sort(arr: list[int], k: int) -> list[int]:

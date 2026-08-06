@@ -14,6 +14,17 @@ revisiting a cell. This lesson catalogs the four traversal orders you'll
 actually reuse — row-major, column-major, diagonal, and spiral — and
 derives each as a disciplined index pattern, not a thing to memorize.
 
+```diagram
+{
+  "id": "grid-coords",
+  "rows": 3,
+  "cols": 4,
+  "highlight": [0, 0],
+  "labels": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+}
+```
+
+
 Throughout, the grid has `R` rows and `C` columns.
 
 ## Row-major and column-major: the two nested-loop orders

@@ -31,6 +31,8 @@ in that list:
 - `union-find` (viz, relationships) — path-compression + union animation.
   Serves 2 Graphs lessons.
 
+**Third correction, from the 2026-08-06 static-diagrams pass:** every non-meta concept module now has at least one static `diagram` on its structure lesson(s). New components: `complexity-curve`, `call-stack-frames`, `trie-branches`, `graph-representation`, `heap-array`, `interval-timeline`, `grid-coords`, `hash-pipeline`, `hash-patterns`, `sorted-prefix`, `overlap-tree`, `tree-balance`, `fifo-queue`, `search-range`, `union-find`, `dp-table`, `merge-tree`, `backtracking-tree`, `graph-layers`. Problem-lesson animated viz reuse remains `todo` / separate from this static pass.
+
 **Second correction, from the 2026-08-02 mermaid-replacement pass:** all 8
 of the course's `mermaid` fences were replaced with proper family-colored
 `diagram` components (`docs`/git: "Replace all 8 mermaid diagrams with
@@ -63,12 +65,12 @@ Total: 191 lessons. `existing`: 32. `done`: 9. `none`: 8. `todo`: 137.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| why-efficiency-matters | concept | diagram | `complexity-curve` (new) | todo |
-| big-o-notation | concept | diagram | `complexity-curve` | todo |
-| common-complexity-classes | concept | diagram | `complexity-curve` | todo |
+| why-efficiency-matters | concept | diagram | `complexity-curve` (new) | done |
+| big-o-notation | concept | diagram | `complexity-curve` | done |
+| common-complexity-classes | concept | diagram | `complexity-curve` | done |
 | analyzing-code | concept | viz | (embedded) | existing |
 | best-worst-average-amortized | concept | viz | (embedded) | existing |
-| space-complexity | concept | diagram | `complexity-curve` (space axis) | todo |
+| space-complexity | concept | diagram | `complexity-curve` + `call-stack-frames` | done |
 | complexity-drills | concept | — | — | none |
 
 ## Math for DSA
@@ -119,10 +121,10 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| hashing-fundamentals | concept | diagram | `bucket-layout` (new) | todo |
+| hashing-fundamentals | concept | diagram | `hash-pipeline` (new) | done |
 | collision-resolution | concept | viz+diagram | `bucket-layout` (embedded, replaces mermaid) | existing |
-| build-a-hash-map | concept | viz | `hash-buckets` (reuse) | todo |
-| hash-patterns | concept | diagram | `bucket-layout` (reuse) | todo |
+| build-a-hash-map | concept | diagram | `bucket-layout` (reuse) | done |
+| hash-patterns | concept | diagram | `hash-patterns` (new) | done |
 | two-sum | problem | viz | `hash-buckets` (reuse) | todo |
 | contains-duplicate-ii | problem | viz | `hash-buckets` (reuse) | todo |
 | first-unique-character | problem | viz | `hash-buckets` (reuse) | todo |
@@ -134,7 +136,7 @@ to the 4 existing pointer-movement diagrams too.
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
 | nodes-and-pointers | concept | diagram | `linked-list` (embedded, replaces mermaid) | existing |
-| build-a-linked-list | concept | diagram | bespoke (node/pointer static) | defer |
+| build-a-linked-list | concept | diagram | `linked-list` (reuse) | done |
 | pointer-surgery | concept | viz | (embedded) | existing |
 | reverse-linked-list | problem | viz | (embedded) | existing |
 | middle-of-list | problem | viz | (embedded, `fast-slow`) | existing |
@@ -146,8 +148,8 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| lifo-and-the-call-stack | concept | diagram | `call-stack-frames` (new) | todo |
-| matching-and-nesting | concept | viz | `stack-lifo` (new) | todo |
+| lifo-and-the-call-stack | concept | diagram | `call-stack-frames` (new) | done |
+| matching-and-nesting | concept | diagram | `call-stack-frames` (reuse) | done |
 | monotonic-stack | concept | viz | (embedded) | existing |
 | valid-parentheses | problem | viz | `stack-lifo` (reuse) | todo |
 | evaluate-rpn | problem | viz | `stack-lifo` (reuse) | todo |
@@ -159,9 +161,9 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| fifo-basics | concept | viz | `ring-buffer` (reuse) | todo |
+| fifo-basics | concept | diagram | `fifo-queue` (new) | done |
 | ring-buffer | concept | viz | (embedded) | existing |
-| deques-and-monotonic | concept | viz | `monotonic-stack` (deque mode, reuse) | todo |
+| deques-and-monotonic | concept | diagram | `fifo-queue` (both-ends) | done |
 | recent-calls | problem | viz | `ring-buffer` (reuse) | todo |
 | queue-using-stacks | problem | viz | `stack-lifo` (reuse, ×2) | todo |
 | stream-first-unique | problem | viz | bespoke (ring-buffer + hash combo) | defer |
@@ -172,7 +174,7 @@ to the 4 existing pointer-movement diagrams too.
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
 | converging-pointers | concept | viz | (embedded) | existing |
-| partition-pointers | concept | viz | `write-pointer` (reuse) | todo |
+| partition-pointers | concept | diagram | `invariant-regions` (reuse) | done |
 | two-sum-ii | problem | viz | (embedded) | existing |
 | sort-colors | problem | viz | `write-pointer` (3-way partition, reuse) | todo |
 | container-with-most-water | problem | viz | `converging-pointers` (reuse) | todo |
@@ -196,7 +198,7 @@ to the 4 existing pointer-movement diagrams too.
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
 | prefix-sum-basics | concept | viz | (embedded) | existing |
-| prefix-sum-hash-map | concept | viz | `prefix-sum` (reuse) | todo |
+| prefix-sum-hash-map | concept | diagram | `hash-patterns` (reuse) | done |
 | prefix-sum-2d | concept | diagram | `grid-regions` (embedded, replaces mermaid) | existing |
 | range-sum-query-immutable | problem | viz | `prefix-sum` (reuse) | todo |
 | subarray-sum-equals-k | problem | viz | `prefix-sum` + `hash-buckets` (combo, reuse) | todo |
@@ -208,9 +210,9 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| the-invariant-template | concept | viz | (embedded) | existing |
-| boundary-search | concept | viz | `binary-search` (reuse) | todo |
-| binary-search-on-the-answer | concept | viz | `binary-search` (reuse) | todo |
+| the-invariant-template | concept | viz+diagram | `search-range` (new) + existing viz | done |
+| boundary-search | concept | diagram | `search-range` (reuse) | done |
+| binary-search-on-the-answer | concept | diagram | `search-range` (reuse) | done |
 | search-insert-position | problem | viz | `binary-search` (reuse) | todo |
 | find-first-and-last | problem | viz | `binary-search` (reuse) | todo |
 | search-rotated-sorted-array | problem | viz | `binary-search` (reuse) | todo |
@@ -221,10 +223,10 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| baseline-sorts | concept | viz | `compare-swap-bars` (new) | todo |
-| merge-sort-lower-bound | concept | viz | `compare-swap-bars` (merge mode, reuse) | todo |
-| quicksort-partitioning | concept | viz | `compare-swap-bars` (partition mode, reuse) | todo |
-| linear-time-sorts | concept | viz | `compare-swap-bars` (counting/radix mode, reuse) | todo |
+| baseline-sorts | concept | diagram | `sorted-prefix` (new) | done |
+| merge-sort-lower-bound | concept | diagram | `merge-tree` (new) | done |
+| quicksort-partitioning | concept | diagram | `invariant-regions` (reuse) | done |
+| linear-time-sorts | concept | diagram | `hash-patterns` (count) | done |
 | sort-an-array | problem | viz | `compare-swap-bars` (reuse) | todo |
 | merge-intervals | problem | viz | `interval-sweep` (reuse) | todo |
 | largest-number | problem | diagram | bespoke (comparator ordering) | defer |
@@ -235,9 +237,9 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| grid-coordinates | concept | viz | `grid-traversal` (new) | todo |
-| traversal-orders | concept | viz | `grid-traversal` (reuse) | todo |
-| in-place-transformations | concept | viz | `grid-traversal` (reuse) | todo |
+| grid-coordinates | concept | diagram | `grid-coords` (new) | done |
+| traversal-orders | concept | diagram | `grid-coords` (reuse) | done |
+| in-place-transformations | concept | diagram | `grid-coords` (reuse) | done |
 | rotate-image | problem | viz | `grid-traversal` (reuse) | todo |
 | spiral-matrix | problem | viz | `grid-traversal` (reuse) | todo |
 | set-matrix-zeroes | problem | viz | `grid-traversal` (reuse) | todo |
@@ -249,9 +251,9 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| the-call-stack-and-base-cases | concept | diagram | `call-stack-frames` (reuse) | todo |
-| backtracking-choose-explore-unchoose | concept | viz | `backtracking-tree` (new) | todo |
-| recursion-vs-iteration | concept | diagram | `call-stack-frames` (reuse) | todo |
+| the-call-stack-and-base-cases | concept | diagram | `call-stack-frames` + `overlap-tree` | done |
+| backtracking-choose-explore-unchoose | concept | diagram | `backtracking-tree` (new) | done |
+| recursion-vs-iteration | concept | diagram | `call-stack-frames` (reuse) | done |
 | subsets | problem | viz | `backtracking-tree` (reuse) | todo |
 | permutations | problem | viz | `backtracking-tree` (reuse) | todo |
 | combination-sum | problem | viz | `backtracking-tree` (reuse) | todo |
@@ -279,8 +281,8 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| bst-invariant-and-operations | concept | viz | `tree-traversal` (BST mode, reuse) | todo |
-| balance-and-why-it-matters | concept | diagram | bespoke (balanced vs skewed compare) | defer |
+| bst-invariant-and-operations | concept | diagram | `binary-tree` (reuse) | done |
+| balance-and-why-it-matters | concept | diagram | `tree-balance` (new) | done |
 | validate-binary-search-tree | problem | viz | `tree-traversal` (reuse) | todo |
 | kth-smallest-element-in-a-bst | problem | viz | `tree-traversal` (reuse) | todo |
 | insert-into-a-binary-search-tree | problem | viz | `tree-traversal` (reuse) | todo |
@@ -292,8 +294,8 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| heap-property-and-array-representation | concept | viz | `heap-sift` (new) | todo |
-| heapify-sift-up-and-sift-down | concept | viz | `heap-sift` (reuse) | todo |
+| heap-property-and-array-representation | concept | diagram | `heap-array` (new) | done |
+| heapify-sift-up-and-sift-down | concept | diagram | `heap-array` (reuse) | done |
 | kth-largest-element-in-a-stream | problem | viz | `heap-sift` (reuse) | todo |
 | top-k-frequent-elements | problem | viz | `heap-sift` (reuse) | todo |
 | merge-k-sorted-lists | problem | viz | `heap-sift` (reuse) | todo |
@@ -305,7 +307,7 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| trie-structure-and-prefix-search | concept | diagram | `trie-branches` (new) | todo |
+| trie-structure-and-prefix-search | concept | diagram | `trie-branches` (new) | done |
 | implement-trie | problem | viz | `tree-traversal` (trie mode, reuse) | todo |
 | design-add-and-search-words | problem | viz | `tree-traversal` (reuse) | todo |
 | word-search-ii | problem | viz | `tree-traversal` + `grid-traversal` (combo, reuse) | todo |
@@ -315,7 +317,7 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| sorting-intervals-and-the-sweep | concept | viz | `interval-sweep` (new) | todo |
+| sorting-intervals-and-the-sweep | concept | diagram | `interval-timeline` (new) | done |
 | insert-interval | problem | viz | `interval-sweep` (reuse) | todo |
 | non-overlapping-intervals | problem | viz | `interval-sweep` (reuse) | todo |
 | minimum-arrows-to-burst-balloons | problem | viz | `interval-sweep` (reuse) | todo |
@@ -326,7 +328,7 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| greedy-choice-and-proving-correctness | concept | diagram | bespoke (exchange-argument picture) | defer |
+| greedy-choice-and-proving-correctness | concept | diagram | `interval-timeline` (activity selection) | done |
 | jump-game | problem | viz | bespoke (reach-tracking) | defer |
 | jump-game-ii | problem | viz | bespoke (reach-tracking) | defer |
 | gas-station | problem | viz | bespoke (running-tank tracker) | defer |
@@ -337,12 +339,12 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| graph-representation | concept | mermaid | (generic, reuse) | todo |
-| dfs-and-bfs-on-graphs | concept | viz | `graph-frontier` (new) | todo |
-| topological-sort | concept | viz | `graph-frontier` (reuse) | todo |
-| shortest-paths | concept | viz | `graph-frontier` (reuse) | todo |
-| union-find | concept | viz | `union-find` (new) | todo |
-| minimum-spanning-trees | concept | viz | `graph-frontier` (reuse) | todo |
+| graph-representation | concept | diagram | `graph-representation` (new) | done |
+| dfs-and-bfs-on-graphs | concept | diagram | `graph-layers` (new) | done |
+| topological-sort | concept | diagram | `graph-representation` (directed) | done |
+| shortest-paths | concept | diagram | `graph-layers` (reuse) | done |
+| union-find | concept | diagram | `union-find` (new) | done |
+| minimum-spanning-trees | concept | diagram | `graph-representation` (reuse) | done |
 | clone-graph | problem | viz | `graph-frontier` (reuse) | todo |
 | course-schedule | problem | viz | `graph-frontier` (reuse) | todo |
 | course-schedule-ii | problem | viz | `graph-frontier` (reuse) | todo |
@@ -355,11 +357,11 @@ to the 4 existing pointer-movement diagrams too.
 
 | Lesson | Type | Decision | Component | Status |
 |---|---|---|---|---|
-| from-recursion-to-memoization | concept | viz | `dp-table-fill` (new) | todo |
-| tabulation-and-space-optimization | concept | viz | `dp-table-fill` (reuse) | todo |
-| 1d-dp-patterns | concept | viz | `dp-table-fill` (reuse) | todo |
-| 2d-dp-patterns | concept | viz | `dp-table-fill` (reuse) | todo |
-| knapsack-style-dp | concept | viz | `dp-table-fill` (reuse) | todo |
+| from-recursion-to-memoization | concept | diagram | `overlap-tree` (new) | done |
+| tabulation-and-space-optimization | concept | diagram | `dp-table` (new) | done |
+| 1d-dp-patterns | concept | diagram | `dp-table` (reuse) | done |
+| 2d-dp-patterns | concept | diagram | `dp-table` (2d) | done |
+| knapsack-style-dp | concept | diagram | `dp-table` (2d) | done |
 | climbing-stairs | problem | viz | `dp-table-fill` (reuse) | todo |
 | house-robber | problem | viz | `dp-table-fill` (reuse) | todo |
 | coin-change | problem | viz | `dp-table-fill` (reuse) | todo |

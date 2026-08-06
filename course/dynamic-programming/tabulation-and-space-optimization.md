@@ -26,6 +26,17 @@ fib(i-2)` says cell `i` depends on cells `i-1` and `i-2`, both smaller.
 So filling the table left to right, `0, 1, 2, …, n`, guarantees both
 dependencies are already present when we reach `i`:
 
+```diagram
+{
+  "id": "dp-table",
+  "mode": "1d",
+  "values": [0, 1, 1, 2, 3, 5, 8],
+  "current": 6,
+  "caption": "fib tabulation: each cell uses the two before it"
+}
+```
+
+
 ````tabs
 ```python
 def fib(n: int) -> int:

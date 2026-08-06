@@ -36,6 +36,17 @@ This is literally the Fibonacci recurrence from the previous lesson,
 wearing a different name — recognizing that equivalence on sight is
 itself a useful skill.
 
+```diagram
+{
+  "id": "dp-table",
+  "mode": "1d",
+  "values": [1, 1, 2, 3, 5, 8],
+  "current": 5,
+  "caption": "climbing stairs / fib: dp[i] = dp[i-1] + dp[i-2]"
+}
+```
+
+
 **House Robber** (full treatment later in this module): `dp[i]` = the
 maximum money robbable from the first `i` houses, given adjacent houses
 can't both be robbed. At house `i`, there's a genuine CHOICE — rob it

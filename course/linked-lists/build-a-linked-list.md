@@ -9,6 +9,14 @@ The node is two fields. The list wraps a head (and a tail, to make
 push-back O(1)) plus a size counter — all invariants we'll maintain
 explicitly:
 
+```diagram
+{
+  "id": "linked-list",
+  "values": [7, 3, 12]
+}
+```
+
+
 ````tabs
 ```python
 class Node:

@@ -81,11 +81,11 @@ possibly the last, and the last level is filled strictly left-to-right
 with no gaps. Picture the nodes numbered in reading order — top to bottom,
 left to right within each level:
 
-```text
-level 0:            0
-level 1:        1       2
-level 2:      3   4   5   6
-level 3:     7 8 9 ...
+```diagram
+{
+  "id": "heap-array",
+  "values": [1, 3, 2, 7, 4, 5, 8]
+}
 ```
 
 Now write those numbers into a flat array in exactly that reading order.

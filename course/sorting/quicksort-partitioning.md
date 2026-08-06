@@ -10,6 +10,21 @@ quicksort needs: rearrange an array in place so everything less than a
 pivot comes before everything greater — the write-pointer partition
 template, with `pred = "less than the pivot"`:
 
+```diagram
+{
+  "id": "invariant-regions",
+  "size": 8,
+  "first": 3,
+  "second": 7,
+  "doneLabel": "< pivot",
+  "deadLabel": "pivot",
+  "openLabel": "≥ pivot",
+  "firstMarker": "boundary",
+  "secondMarker": "pivot"
+}
+```
+
+
 ````tabs
 ```python
 def partition(arr: list[int], lo: int, hi: int) -> int:

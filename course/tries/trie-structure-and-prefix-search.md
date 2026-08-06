@@ -39,17 +39,10 @@ you get by concatenating the edge labels from the root down to it. Two
 words that share a prefix share the *same* nodes for that prefix, then
 branch:
 
-```text
-        (root)
-          │ c
-        ( c )
-          │ a
-        ( ca )
-        ╱      ╲
-     r ╱        ╲ t
-   ( car )     ( cat )
-      │ d          │ s
-  ( card* )    ( cats* )
+```diagram
+{
+  "id": "trie-branches"
+}
 ```
 
 Here `car`, `card`, `cat`, and `cats` all descend through the shared

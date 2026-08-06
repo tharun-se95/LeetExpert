@@ -47,6 +47,20 @@ each intersection has a handful of roads. A **dense** graph has E close to
 V². Keep both numbers in view; the whole representation choice turns on
 which regime you're in.
 
+```diagram
+{
+  "id": "graph-representation",
+  "vertexCount": 4,
+  "edges": [
+    { "from": 0, "to": 1 },
+    { "from": 0, "to": 2 },
+    { "from": 1, "to": 2 },
+    { "from": 2, "to": 3 }
+  ],
+  "directed": false
+}
+```
+
 ## Adjacency list: store each vertex's neighbors
 
 The **adjacency list** stores, for each vertex, a list of the vertices it

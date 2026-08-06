@@ -21,6 +21,17 @@ result can't overwrite the original's memory footprint. Transpose of a
 non-square grid is possible but produces a differently-shaped grid, so it
 too is an in-place operation only when square.
 
+```diagram
+{
+  "id": "grid-coords",
+  "rows": 3,
+  "cols": 3,
+  "highlight": [0, 2],
+  "labels": ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+}
+```
+
+
 ## Transpose: reflect across the main diagonal
 
 The transpose swaps rows with columns: cell `(i, j)` and cell `(j, i)`

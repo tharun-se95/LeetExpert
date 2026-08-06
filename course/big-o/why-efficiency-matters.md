@@ -72,6 +72,15 @@ elements, one program finishes before you release the Enter key and the
 other finishes next week. **Nothing about correctness distinguishes them.
 Only their growth behavior does.**
 
+```diagram
+{
+  "id": "complexity-curve",
+  "mode": "compare",
+  "leftLabel": "O(n²) pairs",
+  "rightLabel": "O(n) hash"
+}
+```
+
 ## Growth beats hardware
 
 The instinctive fix — "run it on a faster machine" — doesn't work, and it's

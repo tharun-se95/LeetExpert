@@ -10,6 +10,13 @@ merges the two sorted halves — using exactly the merge step you already
 built in Module 7's Merge Two Sorted Lists, applied to arrays instead
 of linked lists:
 
+```diagram
+{
+  "id": "merge-tree"
+}
+```
+
+
 ````tabs
 ```python
 def merge_sort(arr: list[int]) -> list[int]:

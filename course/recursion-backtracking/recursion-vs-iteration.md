@@ -74,6 +74,26 @@ function sumListIter(node: Node | null): number {
 ```
 ````
 
+```diagram
+{
+  "id": "call-stack-frames",
+  "title": "recursive sum",
+  "frames": [
+    { "label": "sum(node1)" },
+    { "label": "sum(node2)" },
+    { "label": "sum(node3)" },
+    { "label": "sum(null)", "detail": "base" }
+  ],
+  "compare": {
+    "title": "iterative sum",
+    "frames": [
+      { "label": "one frame", "detail": "loop reuses locals" }
+    ]
+  },
+  "caption": "depth-n recursion vs O(1) iteration"
+}
+```
+
 When you write a complexity claim for a recursive function, the space
 term must include the recursion depth. A recursive tree traversal is
 **O(h)** space where h is the tree height, not O(1) — a fact that matters

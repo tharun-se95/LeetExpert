@@ -11,6 +11,16 @@ the real thing (a segmented ring underneath); in JS you approximate
 with the head-index wrapper from lesson 1 extended to both ends, or a
 doubly linked list (Module 7's `prev` pointers finally earning rent).
 
+```diagram
+{
+  "id": "fifo-queue",
+  "values": [1, 2, 3, 4],
+  "frontLabel": "front · push/pop",
+  "backLabel": "back · push/pop"
+}
+```
+
+
 ````tabs
 ```python
 from collections import deque

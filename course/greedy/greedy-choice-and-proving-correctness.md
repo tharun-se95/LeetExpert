@@ -30,6 +30,21 @@ greedy rule, you must prove the local choice never sacrifices the global
 optimum. This lesson teaches the two standard proof techniques with
 enough rigor that you can actually carry them out, not just name them.
 
+```diagram
+{
+  "id": "interval-timeline",
+  "intervals": [
+    { "start": 1, "end": 4, "label": "[1,4]" },
+    { "start": 3, "end": 5, "label": "[3,5]" },
+    { "start": 0, "end": 6, "label": "[0,6]" },
+    { "start": 5, "end": 7, "label": "[5,7]" },
+    { "start": 8, "end": 9, "label": "[8,9]" }
+  ],
+  "domain": [0, 10]
+}
+```
+
+
 ## The setup: Activity Selection
 
 We'll ground both techniques in one concrete problem, because a proof

@@ -31,6 +31,18 @@ at most once": by the time item `i` is being decided, its own
 contribution can only be added on top of a state that has not yet
 included item `i` at all.
 
+```diagram
+{
+  "id": "dp-table",
+  "mode": "2d",
+  "cols": 5,
+  "values": [0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0, 3, 4, 4, 0, 0, 3, 4, 6],
+  "currentCell": [3, 4],
+  "caption": "0/1 knapsack: rows = items, cols = capacity"
+}
+```
+
+
 **Partition Equal Subset Sum** (full treatment later) is 0/1 knapsack
 in disguise: "can a subset sum to exactly `target`" is "is `dp[n][target]`
 achievable," where every number is an item with weight equal to its own

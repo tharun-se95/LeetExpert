@@ -22,6 +22,14 @@ load-bearing — remove it and the algorithm doesn't just get slow, it fails
 to terminate. Everything else — the recursion for DFS, the queue for BFS —
 carries over from Module 17 essentially unchanged.
 
+```diagram
+{
+  "id": "graph-layers",
+  "caption": "BFS layers from source 0 · DFS would go deep on one path first"
+}
+```
+
+
 ## DFS on a graph
 
 Depth-first search goes as deep as it can down one path before backing up.

@@ -23,6 +23,21 @@ Represent each group as a tree, where every element points to a
 its own parent). Initially, every element is its own group — every
 element is its own root:
 
+```diagram
+{
+  "id": "union-find",
+  "nodes": [
+    { "id": 0, "parent": 0 },
+    { "id": 1, "parent": 0 },
+    { "id": 2, "parent": 0 },
+    { "id": 3, "parent": 3 },
+    { "id": 4, "parent": 3 },
+    { "id": 5, "parent": 5 }
+  ]
+}
+```
+
+
 ````tabs
 ```python
 class UnionFind:

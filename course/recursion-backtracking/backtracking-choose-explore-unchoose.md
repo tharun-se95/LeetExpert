@@ -19,6 +19,13 @@ carefully **undoes** each choice as it retreats. This lesson builds the
 template, proves why the undo step is mandatory, and shows how *pruning*
 turns an intractable tree into a merely-large one.
 
+```diagram
+{
+  "id": "backtracking-tree"
+}
+```
+
+
 ## The template: choose, explore, unchoose
 
 Every backtracking function has the same skeleton. You maintain a

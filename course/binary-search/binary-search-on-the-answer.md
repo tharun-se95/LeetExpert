@@ -14,6 +14,18 @@ technique — binary search on the answer — is the single most-tested
 generalization of binary search in interviews, precisely because it's
 not obviously binary search until you've learned to see it.
 
+```diagram
+{
+  "id": "search-range",
+  "values": [1, 2, 3, 4, 5, 6, 7, 8],
+  "lo": 3,
+  "hi": 7,
+  "mid": 5,
+  "target": "min feasible"
+}
+```
+
+
 ## The recognition pattern
 
 Three signals, together, mean "binary search on the answer":

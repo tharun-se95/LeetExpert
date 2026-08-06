@@ -25,18 +25,13 @@ function fib(n: number): number {
 
 The recursion tree for `fib(5)` shows why this is O(2ⁿ). Every internal
 node forks into two children, and the tree's depth is n, so the node
-count grows like a power of two:
+count grows like a power of two. Shaded nodes are recomputations of a
+subproblem already solved elsewhere in the tree:
 
-```text
-                      fib(5)
-              ┌──────────┴──────────┐
-           fib(4)                 fib(3)
-        ┌────┴────┐             ┌────┴────┐
-     fib(3)     fib(2)       fib(2)     fib(1)
-    ┌──┴──┐    ┌──┴──┐      ┌──┴──┐
- fib(2) fib(1) fib(1) fib(0) fib(1) fib(0)
- ┌──┴──┐
-fib(1) fib(0)
+```diagram
+{
+  "id": "overlap-tree"
+}
 ```
 
 Now **count how many times each argument appears**. `fib(3)` is

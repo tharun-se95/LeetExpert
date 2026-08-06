@@ -15,6 +15,21 @@ A→B, A appears before B. Produce such an ordering and you have a valid
 schedule: do the tasks in that order and no task ever runs before something
 it depends on.
 
+```diagram
+{
+  "id": "graph-representation",
+  "vertexCount": 4,
+  "edges": [
+    { "from": 0, "to": 1 },
+    { "from": 0, "to": 2 },
+    { "from": 1, "to": 3 },
+    { "from": 2, "to": 3 }
+  ],
+  "directed": true
+}
+```
+
+
 ## When is it even possible? Only for DAGs
 
 A topological order does not always exist. Suppose A→B, B→C, and C→A. Any

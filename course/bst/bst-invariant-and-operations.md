@@ -32,12 +32,17 @@ right subtrees, recursively, all the way down.
 Here is a tree that satisfies the weak (children-only) reading but is
 **not** a BST:
 
-```text
-        5
-       / \
-      3   8
-     / \
-    1   6      ← 6 is in 5's LEFT subtree, but 6 > 5
+```diagram
+{
+  "id": "binary-tree",
+  "nodes": [
+    { "id": "5", "left": "3", "right": "8" },
+    { "id": "3", "left": "1", "right": "6" },
+    { "id": "8" },
+    { "id": "1" },
+    { "id": "6" }
+  ]
+}
 ```
 
 Every parent-child pair looks fine locally: 3 < 5, 8 > 5, 1 < 3, 6 > 3.

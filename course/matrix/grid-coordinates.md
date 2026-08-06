@@ -35,12 +35,13 @@ column 0 is offset 0; row 0, column `C−1` is offset `C−1`; row 1, column
 what it does — the two-bracket syntax is sugar over "multiply the row
 index by the width, add the column index."
 
-```text
-grid (R=3, C=4):          flat memory (row-major):
-  col →  0  1  2  3
-row 0 [  a  b  c  d ]      [ a b c d | e f g h | i j k l ]
-row 1 [  e  f  g  h ]        0 1 2 3   4 5 6 7   8 9 ...
-row 2 [  i  j  k  l ]      offset(1,2) = 1*4 + 2 = 6  → 'g' ✓
+```diagram
+{
+  "id": "grid-coords",
+  "rows": 3,
+  "cols": 4,
+  "highlight": [1, 2]
+}
 ```
 
 Two consequences fall out immediately, and both matter later:

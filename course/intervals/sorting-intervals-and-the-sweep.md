@@ -70,6 +70,18 @@ and `[4,5]` become `[1,5]`); Meeting Rooms wants touching to be fine.
 Neither is "the" answer — you pick based on the problem, and the
 derivation is what lets you pick correctly instead of guessing.
 
+```diagram
+{
+  "id": "interval-timeline",
+  "intervals": [
+    { "start": 1, "end": 100, "label": "[1,100]" },
+    { "start": 2, "end": 3, "label": "[2,3]" },
+    { "start": 4, "end": 5, "label": "[4,5]" }
+  ],
+  "domain": [0, 105]
+}
+```
+
 ## Why sorting collapses all-pairs to neighbours
 
 Here is the load-bearing claim, the one that makes O(n log n) possible:

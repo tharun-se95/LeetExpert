@@ -19,6 +19,14 @@ of raw array values — a hash map remembers every prefix sum encountered
 so far, and each new position asks the map a single O(1) question
 instead of re-scanning backward.
 
+```diagram
+{
+  "id": "hash-patterns",
+  "patterns": ["seen", "index"]
+}
+```
+
+
 ## The pattern
 
 ````tabs

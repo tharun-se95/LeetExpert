@@ -31,6 +31,18 @@ const empty = stack.length === 0;
 ```
 ````
 
+```diagram
+{
+  "id": "call-stack-frames",
+  "frames": [
+    { "label": "bottom", "detail": "3" },
+    { "label": "top", "detail": "7 ← peek / pop" }
+  ],
+  "caption": "LIFO: last in is first out",
+  "title": "stack = [3, 7]"
+}
+```
+
 No implementation lesson is needed — `append/pop` and `push/pop` on the
 structure you built in Module 4 *are* the implementation. What deserves
 the lesson is what the discipline is **for**.
@@ -89,6 +101,26 @@ function countDownIter(n: number): void {
 }
 ```
 ````
+
+```diagram
+{
+  "id": "call-stack-frames",
+  "title": "recursive",
+  "frames": [
+    { "label": "count_down(3)" },
+    { "label": "count_down(2)" },
+    { "label": "count_down(1)" },
+    { "label": "count_down(0)", "detail": "return" }
+  ],
+  "compare": {
+    "title": "explicit stack",
+    "frames": [
+      { "label": "work stack", "detail": "[3] → pop/push on heap" }
+    ]
+  },
+  "caption": "same LIFO shape — runtime stack vs heap stack"
+}
+```
 
 The trade: recursion gets you the compiler's bookkeeping for free but
 inherits the runtime's depth limit; an explicit stack costs a few lines

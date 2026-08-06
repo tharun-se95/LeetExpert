@@ -44,6 +44,13 @@ function sortedCopy(nums: number[]): number[] {
 ```
 ````
 
+```diagram
+{
+  "id": "complexity-curve",
+  "mode": "space"
+}
+```
+
 ## The memory you don't see: the call stack
 
 Every active function call occupies a **stack frame** (parameters, locals,
@@ -77,6 +84,20 @@ function sumIter(n: number): number {
 }
 ```
 ````
+
+```diagram
+{
+  "id": "call-stack-frames",
+  "title": "sum_to(3)",
+  "frames": [
+    { "label": "sum_to(3)", "detail": "waiting on n-1" },
+    { "label": "sum_to(2)", "detail": "waiting on n-1" },
+    { "label": "sum_to(1)", "detail": "waiting on n-1" },
+    { "label": "sum_to(0)", "detail": "base → 0" }
+  ],
+  "caption": "n frames deep → O(n) auxiliary space"
+}
+```
 
 Same time complexity, different space — and the recursive one actually
 crashes: Python's default recursion limit (~1000) and JS engines' stack

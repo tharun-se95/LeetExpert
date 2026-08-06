@@ -30,6 +30,18 @@ instead of a pair. Each iteration examines the midpoint and, based on
 one comparison, **proves an entire half is impossible** and shrinks the
 range:
 
+```diagram
+{
+  "id": "search-range",
+  "values": [1, 3, 5, 7, 9, 11, 13, 15],
+  "lo": 0,
+  "hi": 7,
+  "mid": 3,
+  "target": 7
+}
+```
+
+
 ````tabs
 ```python
 def binary_search(arr: list[int], target: int) -> int:

@@ -12,37 +12,18 @@ precisely means, and the mechanism real libraries use to *guarantee*
 it.
 
 Start with the failure, concretely. Insert 1, 2, 3, 4, 5 into an empty
-BST, in that order, using the insert from the last lesson. Trace it:
+BST, in that order, using the insert from the last lesson. Every value
+is larger than everything already in the tree, so every insert turns
+right — and the "tree" collapses into a chain. Contrast that with a
+bushy tree of the same keys:
 
-```text
-insert 1:   1
-
-insert 2:   1          2 > 1, go right, attach
-             \
-              2
-
-insert 3:   1          3 > 1 → right; 3 > 2 → right, attach
-             \
-              2
-               \
-                3
-
-...continuing 4, 5:
-
-            1
-             \
-              2
-               \
-                3
-                 \
-                  4
-                   \
-                    5
+```diagram
+{
+  "id": "tree-balance"
+}
 ```
 
-Every value is larger than everything already in the tree, so every
-insert turns right, and the "tree" is a single downward chain. Its
-height is `n`, not `log n`. A search for 5 visits all 5 nodes. This is
+Its height is `n`, not `log n`. A search for 5 visits all 5 nodes. This is
 a **degenerate** BST, and it is not an exotic edge case — it's what
 you get from *sorted input*, which is extremely common (data loaded
 from an ordered file, timestamps arriving in order, an already-sorted

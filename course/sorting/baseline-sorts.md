@@ -64,6 +64,16 @@ the next element and shifts it backward through the sorted prefix until
 it finds its place — precisely the "insert into a sorted structure"
 operation:
 
+```diagram
+{
+  "id": "sorted-prefix",
+  "values": [1, 3, 4, 2, 5, 9],
+  "sortedCount": 3,
+  "activeIndex": 3,
+  "caption": "insertion sort: sorted prefix · insert active into place"
+}
+```
+
 ````tabs
 ```python
 def insertion_sort(arr: list[int]) -> None:

@@ -5,6 +5,19 @@ type: concept
 
 ## The contract
 
+
+```diagram
+{
+  "id": "bucket-layout",
+  "capacity": 8,
+  "buckets": [
+    { "index": 1, "entries": ["alice, 10"] },
+    { "index": 4, "entries": ["bob, 20", "bea, 5"] },
+    { "index": 6, "entries": ["cara, 7"] }
+  ]
+}
+```
+
 We build a string-keyed map with the full core API — `get`, `set`,
 `delete`, `size` — using **separate chaining**, the polynomial hash from
 lesson 1, and **doubling at α = 1**. Everything in the previous two

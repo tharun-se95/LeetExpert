@@ -28,14 +28,18 @@ still fine. So we only need to fix this one node, by **sifting it up**:
 compare it to its parent; if it's smaller, swap; repeat from the new
 position until it's ≥ its parent or reaches the root.
 
-```text
-insert 1 into  [2, 4, 3, 7, 5]      append → [2, 4, 3, 7, 5, 1]
-                                             index 5, parent (5-1)//2 = 1
+After appending `1`, the value sifts up until the heap property holds
+again:
 
-[2, 4, 3, 7, 5, 1]   1 < 4  → swap indices 5 and 1
-[2, 1, 3, 7, 5, 4]   1 < 2  → swap indices 1 and 0
-[1, 2, 3, 7, 5, 4]   at root, stop.  Heap restored.
+```diagram
+{
+  "id": "heap-array",
+  "values": [1, 2, 3, 7, 5, 4]
+}
 ```
+
+Trace: append into `[2, 4, 3, 7, 5]` → `[2, 4, 3, 7, 5, 1]`, then swap
+with parent 4, then with root 2, landing at `[1, 2, 3, 7, 5, 4]`.
 
 Why is this correct? When we swap the new value `v` up past its parent
 `p`, we push `p` down into the slot `v` vacated. We must check that `p`

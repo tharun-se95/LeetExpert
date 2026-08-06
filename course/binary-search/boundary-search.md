@@ -27,6 +27,18 @@ occurrence, then true from there onward — exactly the false...false,
 true...true shape. The first `true` index IS the first occurrence (or
 the correct insertion point, if target isn't present at all).
 
+```diagram
+{
+  "id": "search-range",
+  "values": [1, 2, 2, 2, 3],
+  "lo": 1,
+  "hi": 4,
+  "mid": 2,
+  "target": 2
+}
+```
+
+
 ```text
 [1, 2, 2, 2, 3], target = 2
 predicate (arr[i] >= 2):  F  T  T  T  T

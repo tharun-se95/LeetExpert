@@ -24,6 +24,15 @@ take it mod the table size and you have a slot:
 
 > slot = h(key) mod m    (m = number of buckets)
 
+```diagram
+{
+  "id": "hash-pipeline",
+  "keyLabel": "\"dog\"",
+  "hashValue": 4182,
+  "capacity": 8
+}
+```
+
 Every operation starts the same way: hash the key, jump to the slot. No
 scan; the key itself tells you where to look. That's the entire mechanism
 — the rest of the module is about the two places it leaks:

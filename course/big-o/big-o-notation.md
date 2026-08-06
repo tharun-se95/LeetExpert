@@ -18,6 +18,18 @@ Let's use the definition once, honestly. Claim: `3n² + 10n + 50 = O(n²)`.
 Pick c = 4 and n₀ = 14. For n ≥ 14: 10n + 50 ≤ 10n + 4n ≤ n² (since
 n ≥ 14 means 14n ≤ n²), so 3n² + 10n + 50 ≤ 3n² + n² = 4n². Done — the
 definition is satisfied, and you'll rarely need to do this by hand again.
+
+```diagram
+{
+  "id": "complexity-curve",
+  "mode": "bound",
+  "fLabel": "f(n)=3n²+10n+50",
+  "gLabel": "4·n²",
+  "c": 4,
+  "n0": 14
+}
+```
+
 What matters is what the definition *licenses* you to do.
 
 ## What the definition licenses

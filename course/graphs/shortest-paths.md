@@ -18,6 +18,14 @@ a path with fewer, bigger ones. This lesson covers both: why BFS solves
 the unweighted case, and Dijkstra's algorithm for the non-negative-
 weighted case.
 
+```diagram
+{
+  "id": "graph-layers",
+  "caption": "unweighted shortest path = BFS layer distance"
+}
+```
+
+
 ## BFS finds shortest paths, but only in unweighted graphs
 
 BFS explores the graph in layers: everything reachable in 1 edge, then

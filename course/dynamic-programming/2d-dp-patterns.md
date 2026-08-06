@@ -28,6 +28,18 @@ dp[i][j] = dp[i-1][j] + dp[i][j-1]
 The two indices here both describe ONE object's position in space — a
 single point on a grid, moving through it over time.
 
+```diagram
+{
+  "id": "dp-table",
+  "mode": "2d",
+  "cols": 4,
+  "values": [1, 1, 1, 1, 1, 2, 3, 4, 1, 3, 6, 10],
+  "currentCell": [2, 3],
+  "caption": "unique paths: each cell = above + left"
+}
+```
+
+
 ## Shape 2: DP over two separate sequences
 
 Here `i` and `j` are NOT a position in shared space — they're two

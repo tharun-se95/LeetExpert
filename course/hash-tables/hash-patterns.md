@@ -10,6 +10,12 @@ Naming them turns "somehow use a dict" into a decision you can make in
 ten seconds — and the five problems ahead are one or two of these verbs
 each.
 
+```diagram
+{
+  "id": "hash-patterns"
+}
+```
+
 ## 1. Seen — membership
 
 The set as a memory: *have I encountered this before?*

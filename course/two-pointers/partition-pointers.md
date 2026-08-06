@@ -13,6 +13,21 @@ Module 4: the write pointer, whose invariant carved the array into
 pass, in place — and its three-zone crown jewel, the Dutch national
 flag.
 
+```diagram
+{
+  "id": "invariant-regions",
+  "size": 8,
+  "first": 3,
+  "second": 5,
+  "doneLabel": "keepers",
+  "deadLabel": "junk",
+  "openLabel": "unread",
+  "firstMarker": "write",
+  "secondMarker": "read"
+}
+```
+
+
 ## Region invariants, formalized
 
 Every same-direction algorithm is a claim about regions. The

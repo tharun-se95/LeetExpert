@@ -12,6 +12,14 @@ first — the queue models **fair** work: things are served in arrival
 order. Print jobs, request buffers, message queues, and (in Stage 3–4)
 breadth-first search, which is nothing but "explore in discovery order."
 
+```diagram
+{
+  "id": "fifo-queue",
+  "values": [1, 2, 3, 4]
+}
+```
+
+
 ## The implementation problem stacks didn't have
 
 A stack was free: both operations at the array's end. A queue needs
