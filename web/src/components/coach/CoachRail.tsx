@@ -43,12 +43,7 @@ export function CoachRail({
   /** False while the mobile tab is hidden so we do not steal Code focus. */
   active?: boolean;
 }) {
-  const {
-    setRailOpen,
-    remaining,
-    clearThread,
-    clearUnread,
-  } = useCoach();
+  const { setRailOpen, clearThread, clearUnread } = useCoach();
   const composerRef = useRef<HTMLDivElement>(null);
   const [privacySeen, setPrivacySeen] = useState(true);
 
@@ -92,7 +87,7 @@ export function CoachRail({
         variant === "rail" ? "border-l border-border" : "",
       )}
     >
-      <header className="flex shrink-0 items-center gap-2 border-b border-border px-3 py-2">
+      <header className="flex shrink-0 items-center gap-2 border-b border-border px-3 py-1.5">
         <ChatCircle size={16} weight="bold" className="text-accent" aria-hidden />
         <h2 className="flex-1 font-display text-sm font-bold uppercase tracking-tight">
           Coach
@@ -117,10 +112,10 @@ export function CoachRail({
           </button>
         ) : null}
       </header>
-      <p className="shrink-0 border-b border-border bg-info-surface px-3 py-2 text-xs text-info">
-        Sending a message sends your code and this problem’s hints to our model
-        provider. Diagnosis stays local until you ask.
-        {!privacySeen ? (
+      {!privacySeen ? (
+        <p className="shrink-0 border-b border-border bg-info-surface px-3 py-1.5 text-xs text-info">
+          Sending a message sends your code and this problem’s hints to our model
+          provider. Diagnosis stays local until you ask.
           <button
             type="button"
             onClick={acknowledgePrivacy}
@@ -128,17 +123,12 @@ export function CoachRail({
           >
             Got it
           </button>
-        ) : null}
-      </p>
+        </p>
+      ) : null}
       <CoachThread />
       <div ref={composerRef}>
         <CoachComposer />
       </div>
-      <p className="shrink-0 border-t border-border px-3 py-1.5 text-[0.7rem] text-muted">
-        {remaining === null
-          ? "Turns remaining update after you ask."
-          : `${remaining} chat turn${remaining === 1 ? "" : "s"} left today`}
-      </p>
     </section>
   );
 }

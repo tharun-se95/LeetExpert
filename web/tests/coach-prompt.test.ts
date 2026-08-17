@@ -70,4 +70,14 @@ describe("buildModelMessages", () => {
     expect(packed.system).toMatch(/do not assign a faster/i);
     expect(packed.system).not.toContain("return [0, 1]");
   });
+
+  it("scopes the Socratic rule to this problem's solution, not language syntax", () => {
+    // A learner asking "what does [::-1] do" has a Python gap, not an
+    // algorithm gap — making them guess at slice notation teaches nothing
+    // about the lesson and just adds friction. Only the solution itself
+    // stays behind questions.
+    const packed = buildModelMessages(problem, request);
+    expect(packed.system).toMatch(/language syntax or a built-in/i);
+    expect(packed.system).toMatch(/direct,? factual answer/i);
+  });
 });
