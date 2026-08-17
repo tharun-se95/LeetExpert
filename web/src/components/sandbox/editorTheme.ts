@@ -76,7 +76,7 @@ export const editorChrome = EditorView.theme({
   "&": {
     backgroundColor: "transparent",
     color: "var(--tok-name)",
-    fontSize: "0.85rem",
+    fontSize: "var(--code-size)",
   },
   "&.cm-focused": { outline: "none" },
   ".cm-scroller": {

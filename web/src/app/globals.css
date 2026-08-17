@@ -195,6 +195,58 @@ html {
   scroll-behavior: smooth;
 }
 
+/*
+  Desktop baseline for the two sizes that must survive the laptop scale step
+  below. One definition each — .handbook-prose and .code-body/CodeMirror all
+  read these, so reading and code type cannot drift apart again.
+*/
+:root {
+  --prose-size: 1.1875rem; /* 19px */
+  --code-size: 0.85rem; /* 13.6px */
+}
+
+/*
+  The handbook is drawn for a ~1600x900 desktop. On a laptop panel the fixed
+  chrome (app bar, lesson header, tab row, rail) eats the workspace before a
+  single line of content lands, so step the whole rem system down rather than
+  special-casing each component — spacing, type, and control heights are all
+  rem-based and move together.
+
+  Height is the binding constraint on a problem page (three stacked bars over
+  a code column), so it gets its own thresholds rather than riding on width.
+
+  Percentages, never px: a reader who raised their browser's default font
+  size keeps that increase, scaled. A px root would silently discard it.
+
+  Reading and code type are deliberately NOT along for the full ride. Letting
+  the root drag .handbook-prose from 19px down to 16.6px would quietly undo
+  the reading-size decision documented on that rule, and 12px code is not a
+  size anyone should be asked to write a solution in. Both are held near
+  their desktop size by --prose-size / --code-size below, so the space comes
+  out of chrome, not out of the two things the learner actually reads.
+*/
+@media (max-width: 1600px), (max-height: 900px) {
+  html {
+    font-size: 93.75%; /* 15px against a 16px default */
+  }
+
+  :root {
+    --prose-size: 1.2rem; /* holds ~18px */
+    --code-size: 0.89rem; /* holds ~13.3px */
+  }
+}
+
+@media (max-width: 1400px), (max-height: 760px) {
+  html {
+    font-size: 81.25%; /* 13px against a 16px default */
+  }
+
+  :root {
+    --prose-size: 1.27rem; /* holds ~16.5px */
+    --code-size: 0.96rem; /* holds ~12.5px */
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -311,7 +363,7 @@ body {
     16.2px was app-sized, not reading-sized.
   */
   max-width: 68ch;
-  font-size: 1.1875rem;
+  font-size: var(--prose-size);
   line-height: 1.62;
   color: color-mix(in oklab, var(--foreground) 94%, transparent);
 }
@@ -505,11 +557,24 @@ body {
   font-weight: 600;
 }
 
+/*
+  @uiw/react-codemirror wraps the editor in its own theme div that carries no
+  height. The IDE layout passes height="100%" to .cm-editor, which then has an
+  auto-height containing block and collapses to the content — leaving a dead
+  band under the last line that swallows clicks instead of placing the cursor.
+  Handing the wrapper the pane's height is what makes height="100%" mean
+  anything. Harmless in the inline sandbox, where the pane is auto-height and
+  this resolves back to auto.
+*/
+.code-body > [class*="cm-theme"] {
+  height: 100%;
+}
+
 .code-body {
   overflow-x: auto;
   padding: 0.75rem 0;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.85rem;
+  font-size: var(--code-size);
   line-height: 1.65;
   color: var(--tok-name);
 }
