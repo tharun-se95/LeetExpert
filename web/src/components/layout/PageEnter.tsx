@@ -17,13 +17,17 @@ export function PageEnter({
   const reduceMotion = useReducedMotion();
 
   if (reduceMotion) {
-    return fill ? <div className="h-full">{children}</div> : <>{children}</>;
+    return fill ? (
+      <div className="h-full min-h-0 min-w-0 flex-1">{children}</div>
+    ) : (
+      <>{children}</>
+    );
   }
 
   return (
     <motion.div
       key={pathname}
-      className={cn(fill && "h-full")}
+      className={cn(fill && "h-full min-h-0 min-w-0 flex-1")}
       initial={{ opacity: 0, y: fill ? 0 : 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}

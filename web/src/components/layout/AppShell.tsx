@@ -126,7 +126,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <main
             className={cn(
               "min-w-0 flex-1",
-              ideViewport ? "overflow-hidden" : "overflow-y-auto",
+              ideViewport
+                ? "flex min-h-0 flex-col overflow-hidden"
+                : "overflow-y-auto",
             )}
           >
             <PageEnter fill={ideViewport}>{children}</PageEnter>

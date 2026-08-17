@@ -17,6 +17,7 @@ interface ProblemLessonViewProps {
   eyebrow: string;
   prev: NeighborLink | null;
   next: NeighborLink | null;
+  hintLabels: string[];
 }
 
 /**
@@ -29,6 +30,7 @@ export function ProblemLessonView({
   eyebrow,
   prev,
   next,
+  hintLabels,
 }: ProblemLessonViewProps) {
   const back = breadcrumbs.length >= 2 ? breadcrumbs[breadcrumbs.length - 2] : null;
 
@@ -40,6 +42,7 @@ export function ProblemLessonView({
       backLabel={back?.label ?? "Course"}
       prev={prev}
       next={next}
+      hintLabels={hintLabels}
     />
   );
 }

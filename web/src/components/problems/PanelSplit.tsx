@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,6 +21,7 @@ export function PanelSplit({
   minPrimary = 0.25,
   maxPrimary = 0.75,
   className,
+  resizeLabel,
 }: {
   orientation: "horizontal" | "vertical";
   primary: ReactNode;
@@ -23,6 +30,7 @@ export function PanelSplit({
   minPrimary?: number;
   maxPrimary?: number;
   className?: string;
+  resizeLabel?: string;
 }) {
   const [primaryFrac, setPrimaryFrac] = useState(initialPrimary);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,18 +82,27 @@ export function PanelSplit({
     <div
       ref={containerRef}
       className={cn(
-        "flex min-h-0 min-w-0 flex-1",
+        // h-full/w-full fill a sized block parent (nested splits). flex-1
+        // fills when this node is itself a flex item. Without both, the
+        // inner IDE column sizes to content and leaves a dead band below.
+        "flex h-full min-h-0 min-w-0 w-full flex-1",
         horizontal ? "flex-row" : "flex-col",
         className,
       )}
     >
-      <div className="min-h-0 min-w-0 overflow-hidden" style={primaryStyle}>
+      <div
+        className="flex h-full min-h-0 min-w-0 w-full flex-col overflow-hidden"
+        style={primaryStyle}
+      >
         {primary}
       </div>
       <button
         type="button"
         aria-label={
-          horizontal ? "Resize description and editor" : "Resize editor and tests"
+          resizeLabel ??
+          (horizontal
+            ? "Resize description and editor"
+            : "Resize editor and tests")
         }
         onPointerDown={(e) => {
           e.preventDefault();
@@ -96,7 +113,9 @@ export function PanelSplit({
           horizontal ? "w-1 cursor-col-resize" : "h-1 cursor-row-resize",
         )}
       />
-      <div className="min-h-0 min-w-0 flex-1 overflow-hidden">{secondary}</div>
+      <div className="flex h-full min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden">
+        {secondary}
+      </div>
     </div>
   );
 }
