@@ -9,13 +9,13 @@
 
 ## State, in numbers
 
-| | Now | Target |
-| --- | --- | --- |
-| Lessons | 191 (75 concept, 116 problem) | — |
-| Problem lessons with a sandbox | **116** | 116 ✅ |
-| Backlog | **0** — file deleted, coverage is a hard gate ✅ | — |
-| Lessons with a visual | **25** | triaged set (est. 100–120) |
-| Tests | 371, all green | grows with each batch |
+|                                | Now                                              | Target                     |
+| ------------------------------ | ------------------------------------------------ | -------------------------- |
+| Lessons                        | 191 (75 concept, 116 problem)                    | —                          |
+| Problem lessons with a sandbox | **116**                                          | 116 ✅                     |
+| Backlog                        | **0** — file deleted, coverage is a hard gate ✅ | —                          |
+| Lessons with a visual          | **25**                                           | triaged set (est. 100–120) |
+| Tests                          | 371, all green                                   | grows with each batch      |
 
 **Done:** the Riso design system; **the sandbox programme, complete** — every
 one of the 116 problem lessons has a working sandbox, validated against both
@@ -139,21 +139,21 @@ fit, extend the runner.
 
 ### What the runner can express
 
-| Need | Mechanism |
-| --- | --- |
-| Linked list / tree argument or result | `shape` / `returns`: `list`, `tree` |
-| A list whose tail points back | `{ values, pos }` as a `list` argument |
-| k linked lists | `shape: "list[]"` (argument only) |
-| A specific node of a tree | `shape: "node"` (argument only) |
-| Graph of real `Node`s | `shape`/`returns`: `graph`, 1-indexed adjacency list |
-| Class with a script of calls | `check: "sequence"` + `class` + `methods` |
-| encode/decode pair | `check: "roundtrip"` + `roundtrip: [enc, dec]` |
-| Order-independent answers | `compare: "sorted"` / `"set-of-sets"` |
-| Several answers all correct | `property: "<name>"` |
+| Need                                  | Mechanism                                            |
+| ------------------------------------- | ---------------------------------------------------- |
+| Linked list / tree argument or result | `shape` / `returns`: `list`, `tree`                  |
+| A list whose tail points back         | `{ values, pos }` as a `list` argument               |
+| k linked lists                        | `shape: "list[]"` (argument only)                    |
+| A specific node of a tree             | `shape: "node"` (argument only)                      |
+| Graph of real `Node`s                 | `shape`/`returns`: `graph`, 1-indexed adjacency list |
+| Class with a script of calls          | `check: "sequence"` + `class` + `methods`            |
+| encode/decode pair                    | `check: "roundtrip"` + `roundtrip: [enc, dec]`       |
+| Order-independent answers             | `compare: "sorted"` / `"set-of-sets"`                |
+| Several answers all correct           | `property: "<name>"`                                 |
 
 **Two rules govern where logic lives.** Workers report raw outcomes and never
 decide pass/fail, so `compare` and `property` run once on the main thread
-rather than twice per runtime. Anything that must *observe* the objects —
+rather than twice per runtime. Anything that must _observe_ the objects —
 whether a returned graph reuses input nodes — is reported by the worker as a
 raw fact (`aliased`) and judged on the main thread.
 
@@ -206,11 +206,49 @@ never tested against a real touch keyboard.
 
 ---
 
+## Shipped — Problem Coach (2026-08-16)
+
+Socratic coach on every problem workspace. Local fail diagnosis (every
+runner shape). Dedicated desktop rail + mobile Coach tab. Chat only when
+the learner types; hint ladder in the server corpus, solution never in
+the prompt. Daily cap via `CoachQuota` (Memory in dev, Upstash Redis in
+prod). Chat disabled without `ANTHROPIC_API_KEY` or `OPENAI_API_KEY`
+(plus Redis in production) — diagnosis still works.
+
+**Verified:** `tsc`, `eslint`, `npm run build` (359 pages, `/api/coach/chat`
+dynamic). Coach unit/API tests and the content hint-ladder gate are
+sabotage-proven. `GET /api/coach/chat` 200 on a running app. Browser: Coach
+tab, privacy line, suggested prompts, composer (“I will not write the
+code.”), and quota footer render on `/problems/find-the-index` in both
+themes. Diagnosis is local (no model). Chat against a live model is
+unverified until env keys are set. Three pre-existing Windows suite
+failures are unrelated (CRLF frontmatter regex, no `python3` on PATH,
+roadmap fence CRLF).
+
+**Thesis + thread UI (2026-08-17):** the Explanation insight is extracted
+into the server corpus as `CoachProblem.thesis`, so a post-pass chat stays
+on this lesson's bound instead of selling KMP. The all-passed CTA no longer
+says “variant”, the reply filter rejects every ` ``` ` fence, and assistant
+bubbles render a slim GFM subset (`CoachMarkdown` — not the lesson
+renderer). Suggestion chips persist after the first question and switch on
+the last diagnosis. `scripts/build-coach-corpus.mjs` now calls
+`buildCorpus.ts` through jiti instead of mirroring it — the mirror had
+already drifted (thesis never reached the JSON).
+
+Spec: `docs/superpowers/specs/2026-08-16-problem-coach-design.md`
+
+Env: `COACH_PROVIDER=ollama` + `COACH_MODEL=gemma4:cloud` (local), or
+`ANTHROPIC_API_KEY` / `OPENAI_API_KEY`. Also `COACH_DAILY_CAP`,
+`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`. Dev:
+`COACH_QUOTA=memory` is implied when not production. See `web/.env.example`.
+
+---
+
 ## Shipped — Mobile Lessons sheet (2026-07-31)
 
 Mobile (< `lg` / 1024px) no longer shows the skinny Lessons rail or half-width
 drawer. Header List control opens a full-screen sheet (Escape, backdrop,
-focus trap, body scroll lock). Desktop keeps the collapsible sidebar; 
+focus trap, body scroll lock). Desktop keeps the collapsible sidebar;
 `dsa-sidebar-open` is only read/written on desktop so mobile open/close does
 not clobber the preference.
 
@@ -301,9 +339,9 @@ diagrams, complexity strip, and traps. Spec/plan:
 markdown fence). Renderer: `web/src/components/cheatsheet/`. CI gate:
 `web/tests/cheatsheets.test.ts` fails if any practice module lacks a sheet.
 
-| Tier | Modules |
-| --- | --- |
-| Gold (9) | arrays, strings, hash-tables, two-pointers, sliding-window, **linked-lists, stacks, binary-search, graphs** |
+| Tier          | Modules                                                                                                                              |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Gold (9)      | arrays, strings, hash-tables, two-pointers, sliding-window, **linked-lists, stacks, binary-search, graphs**                          |
 | Template (12) | queues, prefix-sum, sorting, matrix, recursion-backtracking, binary-trees, bst, heaps, tries, intervals, greedy, dynamic-programming |
 
 **v1.1 enhancements:** promoted 4 modules to gold; new diagrams
