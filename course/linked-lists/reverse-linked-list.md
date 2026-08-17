@@ -49,6 +49,18 @@ because sub-range reversal shows up inside harder problems constantly.
 }
 ```
 
+````reveal Hint 1 — save the lifeline before you flip
+Each node's `next` is the only handle on the rest of the list. If you
+rewire it first, the suffix is gone. Hold three references: the
+reversed prefix, the node you are flipping, and the node after it.
+````
+
+````reveal Hint 2 — what you return
+When the walk finishes, the current pointer is null — it walked off
+the original tail. The new head is the last node you flipped, which
+is sitting in the "reversed prefix" reference.
+````
+
 ## Solution
 
 `````reveal Solution — iterative three-pointer

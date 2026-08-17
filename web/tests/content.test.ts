@@ -5,6 +5,8 @@ import { propertyNames } from "../src/lib/sandbox/properties";
 import { parseSandboxSpec } from "@/components/sandbox/parseSpec";
 import matter from "gray-matter";
 import { extractSandboxFence } from "../src/lib/content/extractSandboxFence";
+import { splitProblemTabs } from "../src/lib/content/splitProblemTabs";
+import { extractHints } from "../src/lib/coach/extractHints";
 import { MODULES } from "../src/lib/course/manifest";
 
 /**
@@ -387,6 +389,36 @@ describe("the sandbox fence is safe to extract", () => {
     // Parses all 212 lesson files synchronously — under full-suite worker
     // contention (18 files running in parallel) this reliably exceeds the
     // 5000ms default even though it finishes in ~1s isolated.
+    20000,
+  );
+});
+
+/**
+ * The coach cites the authored hint ladder. A problem without a Hint
+ * reveal leaves it inventing advice or repeating nothing — so the gate
+ * is hard: every problem lesson's Explanation slice has ≥1 `reveal`
+ * whose label matches /^Hint\b/i. No allowlist.
+ */
+describe("every problem lesson has a coach hint ladder", () => {
+  it(
+    "Explanation contains at least one Hint reveal",
+    () => {
+      const missing: string[] = [];
+      for (const lesson of LESSONS) {
+        const { data, content } = matter(lesson.body);
+        if (data.type !== "problem") continue;
+        const split = extractSandboxFence(content.trim());
+        if (!split) {
+          missing.push(`${lesson.rel} — no sandbox`);
+          continue;
+        }
+        const { explanation } = splitProblemTabs(split.afterSandbox);
+        if (extractHints(explanation).length === 0) {
+          missing.push(lesson.rel.replace(/\\/g, "/"));
+        }
+      }
+      expect(missing).toEqual([]);
+    },
     20000,
   );
 });

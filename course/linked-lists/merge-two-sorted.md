@@ -48,6 +48,19 @@ game. Sketch two short lists and stitch them on paper first.
 }
 ```
 
+````reveal Hint 1 — a dummy so the head is not a special case
+The first splice is the same shape as every later one, if you start
+from a fake node and grow a tail behind it. The real head is
+`dummy.next` when you are done.
+````
+
+````reveal Hint 2 — splice, then attach the leftover
+You are rewiring existing nodes, not allocating copies. Each step
+takes the smaller front and advances that list. When one list is
+exhausted, the other is already sorted and every remaining value is
+≥ the merged tail — one pointer write attaches the rest.
+````
+
 ## Solution
 
 `````reveal Solution — dummy head, splice don't copy

@@ -46,6 +46,19 @@ the solution; the even case is where implementations differ.
 }
 ```
 
+````reveal Hint 1 — two speeds, one pass
+A second walker that takes two steps for every one the first takes
+covers the list twice as fast. When the fast walker runs out of nodes,
+the slow one is halfway — that's the middle, without a length count.
+````
+
+````reveal Hint 2 — which middle on even length
+The problem wants the *second* middle when the length is even. That
+lives entirely in the stopping condition: how far fast is allowed to
+go before the loop ends. Trace length 4 and length 5 on paper before
+you lock the condition — they disagree by exactly one slow step.
+````
+
 ## Solution
 
 `````reveal Solution — fast & slow pointers
