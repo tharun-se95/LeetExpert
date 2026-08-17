@@ -1,6 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import dynamic from "next/dynamic";
 import {
   Check,
@@ -8,6 +16,9 @@ import {
   ArrowCounterClockwise as RotateCcw,
   Terminal as TerminalSquare,
   X,
+  ChatCircle,
+  CaretUp,
+  CaretDown,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useRunner } from "@/components/sandbox/useRunner";
@@ -20,10 +31,10 @@ import {
   type SandboxSpec,
 } from "@/components/sandbox/types";
 import { pretty } from "@/lib/sandbox/compare";
-import { PanelSplit } from "@/components/problems/PanelSplit";
 import { InsightPanel } from "@/components/insight/InsightPanel";
 import { resolveInsight } from "@/lib/insight/resolveInsight";
 import type { ExtractedComplexity } from "@/lib/insight/extractComplexity";
+import { useCoachOptional } from "@/components/coach/CoachProvider";
 
 const LANGS: SandboxLang[] = ["python", "javascript"];
 
@@ -101,6 +112,8 @@ function SandboxBody({
     javascript: spec.starter.javascript,
   });
   const { state, run, reset } = useRunner(spec);
+  const coach = useCoachOptional();
+  const lastRunSig = useRef("");
 
   // Restore saved drafts once mounted. Reading localStorage during render
   // would desync server and client HTML, so it happens in an effect.
@@ -150,6 +163,33 @@ function SandboxBody({
     if (allPassed) onSolved?.();
   }, [allPassed, onSolved]);
 
+  useEffect(() => {
+    coach?.setSource(lang, drafts[lang]);
+  }, [coach, lang, drafts]);
+
+  useEffect(() => {
+    if (!coach) return;
+    if (state.status === "done") {
+      const sig = `done:${state.results.map((r) => `${r.passed}:${r.got}`).join("|")}`;
+      if (sig === lastRunSig.current) return;
+      lastRunSig.current = sig;
+      coach.reportRun({
+        results: state.results,
+        fatal: null,
+        property: Boolean(spec.property),
+      });
+    } else if (state.status === "failed") {
+      const sig = `failed:${state.message}`;
+      if (sig === lastRunSig.current) return;
+      lastRunSig.current = sig;
+      coach.reportRun({
+        results: null,
+        fatal: state.message,
+        property: Boolean(spec.property),
+      });
+    }
+  }, [coach, state, spec.property]);
+
   const toolbar = (
     <div
       className={cn(
@@ -182,12 +222,27 @@ function SandboxBody({
         ))}
       </div>
 
-      <div className="ml-auto flex items-center gap-1">
+      <div className="ml-auto flex shrink-0 items-center gap-1">
+        {variant === "ide" && coach ? (
+          <button
+            type="button"
+            onClick={coach.openCoach}
+            aria-label="Toggle problem coach"
+            aria-expanded={coach.railOpen}
+            className="inline-flex h-11 items-center gap-1.5 rounded-lg px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
+          >
+            <ChatCircle size={12} weight="bold" aria-hidden />
+            Coach
+            {coach.unread ? (
+              <span className="h-1.5 w-1.5 rounded-full bg-pop" aria-hidden />
+            ) : null}
+          </button>
+        ) : null}
         <button
           type="button"
           onClick={restoreStarter}
           title="Restore the starter code"
-          className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
+          className="inline-flex h-11 items-center gap-1.5 rounded-lg px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
         >
           <RotateCcw size={12} aria-hidden />
           Reset
@@ -196,7 +251,7 @@ function SandboxBody({
           type="button"
           onClick={() => run(lang, drafts[lang])}
           disabled={busy}
-          className="flex items-center gap-1.5 rounded-lg bg-pop px-3 py-1.5 text-[0.72rem] font-semibold text-on-pop transition-opacity hover:opacity-90 disabled:opacity-55"
+          className="inline-flex h-11 items-center gap-1.5 whitespace-nowrap rounded-lg bg-pop px-3 text-[0.72rem] font-semibold text-on-pop transition-opacity hover:opacity-90 disabled:opacity-55"
         >
           <Play size={12} aria-hidden />
           {state.status === "booting"
@@ -242,7 +297,8 @@ function SandboxBody({
         results={results}
         passed={passed}
         total={total}
-        idle={state.status === "idle"}
+        busy={busy}
+        failed={state.status === "failed"}
         allPassed={allPassed}
         moduleSlug={moduleSlug}
         extractedComplexity={extractedComplexity}
@@ -303,6 +359,11 @@ function SandboxBody({
   );
 }
 
+const RESULTS_OPEN_KEY = "dsa:ide:results-open";
+const RESULTS_TAB_KEY = "dsa:ide:results-tab";
+
+type ResultsTab = "insight" | "tests";
+
 function IdeWorkspace({
   toolbar,
   statusBanner,
@@ -313,7 +374,8 @@ function IdeWorkspace({
   results,
   passed,
   total,
-  idle,
+  busy,
+  failed,
   allPassed,
   moduleSlug,
   extractedComplexity,
@@ -327,14 +389,63 @@ function IdeWorkspace({
   results: CaseResult[] | null;
   passed: number;
   total: number;
-  idle: boolean;
+  busy: boolean;
+  failed: boolean;
   allPassed: boolean;
   moduleSlug?: string;
   extractedComplexity: ExtractedComplexity | null;
 }) {
   const [activeCase, setActiveCase] = useState(0);
+  const [resultsOpen, setResultsOpen] = useState(false);
+  const [resultsTab, setResultsTab] = useState<ResultsTab>("tests");
+  const resultsPanelId = useId();
   const testCase = spec.cases[activeCase];
   const caseResult = results?.[activeCase] ?? null;
+
+  useEffect(() => {
+    try {
+      setResultsOpen(window.localStorage.getItem(RESULTS_OPEN_KEY) === "1");
+      const tab = window.localStorage.getItem(RESULTS_TAB_KEY);
+      if (tab === "insight" || tab === "tests") setResultsTab(tab);
+    } catch {
+      /* private mode */
+    }
+  }, []);
+
+  const persistResultsOpen = useCallback((open: boolean) => {
+    setResultsOpen(open);
+    try {
+      window.localStorage.setItem(RESULTS_OPEN_KEY, open ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const persistResultsTab = useCallback((tab: ResultsTab) => {
+    setResultsTab(tab);
+    try {
+      window.localStorage.setItem(RESULTS_TAB_KEY, tab);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const selectResultsTab = useCallback(
+    (tab: ResultsTab) => {
+      if (resultsOpen && resultsTab === tab) {
+        persistResultsOpen(false);
+        return;
+      }
+      persistResultsTab(tab);
+      persistResultsOpen(true);
+    },
+    [persistResultsOpen, persistResultsTab, resultsOpen, resultsTab],
+  );
+
+  useEffect(() => {
+    if (results === null && !failed) return;
+    persistResultsTab("tests");
+  }, [failed, persistResultsTab, results]);
 
   useEffect(() => {
     if (!results) return;
@@ -355,6 +466,56 @@ function IdeWorkspace({
     [spec, moduleSlug, extractedComplexity, testCase, activeCase, caseResult],
   );
 
+  const editor = (
+    <div className="flex h-full min-h-0 flex-col bg-code">
+      <div className="code-body min-h-0 flex-1 overflow-hidden p-0">
+        <CodeEditor
+          value={drafts[lang]}
+          onChange={setDraft}
+          lang={lang}
+          height="100%"
+          ariaLabel={`${LANG_LABEL[lang]} solution editor`}
+        />
+      </div>
+    </div>
+  );
+
+  const resultsBody = (
+    <div className="flex h-full min-h-0 flex-col bg-surface">
+      {statusBanner}
+      <CoachFailBanner />
+      <div
+        role="tabpanel"
+        id={`${resultsPanelId}-insight`}
+        aria-labelledby={`${resultsPanelId}-tab-insight`}
+        hidden={resultsTab !== "insight"}
+        className={cn(
+          "min-h-0 flex-1",
+          resultsTab === "insight" ? "flex flex-col" : "hidden",
+        )}
+      >
+        <InsightPanel insight={insight} embedded />
+      </div>
+      <div
+        role="tabpanel"
+        id={`${resultsPanelId}-tests`}
+        aria-labelledby={`${resultsPanelId}-tab-tests`}
+        hidden={resultsTab !== "tests"}
+        className={cn(
+          "min-h-0 flex-1",
+          resultsTab === "tests" ? "flex flex-col" : "hidden",
+        )}
+      >
+        <IdeTestcases
+          spec={spec}
+          results={results}
+          active={activeCase}
+          onActiveChange={setActiveCase}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div
       className={cn(
@@ -363,40 +524,187 @@ function IdeWorkspace({
       )}
     >
       {toolbar}
-      <PanelSplit
-        orientation="vertical"
-        initialPrimary={0.48}
-        minPrimary={0.28}
-        maxPrimary={0.72}
-        primary={
-          <div className="flex h-full min-h-0 flex-col bg-code">
-            <div className="code-body min-h-0 flex-1 overflow-hidden p-0">
-              <CodeEditor
-                value={drafts[lang]}
-                onChange={setDraft}
-                lang={lang}
-                height="100%"
-                ariaLabel={`${LANG_LABEL[lang]} solution editor`}
-              />
-            </div>
-          </div>
-        }
-        secondary={
-          <div className="flex h-full min-h-0 flex-col bg-surface">
-            {statusBanner}
-            <InsightPanel insight={insight} />
-            <IdeTestcases
-              spec={spec}
-              results={results}
-              passed={passed}
-              total={total}
-              idle={idle}
-              active={activeCase}
-              onActiveChange={setActiveCase}
-            />
-          </div>
-        }
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="min-h-0 flex-1 overflow-hidden">{editor}</div>
+        <div
+          id={resultsPanelId}
+          hidden={!resultsOpen}
+          className={cn(
+            "min-h-0 shrink-0 overflow-hidden border-t border-border",
+            resultsOpen ? "flex h-[min(38vh,22rem)] flex-col" : "hidden",
+          )}
+        >
+          {resultsBody}
+        </div>
+      </div>
+      <ResultsRail
+        resultsPanelId={resultsPanelId}
+        resultsOpen={resultsOpen}
+        resultsTab={resultsTab}
+        onSelectTab={selectResultsTab}
+        onToggle={() => persistResultsOpen(!resultsOpen)}
+        busy={busy}
+        failed={failed}
+        passed={passed}
+        total={total}
+        allPassed={allPassed}
+        ran={results !== null}
       />
+    </div>
+  );
+}
+
+function railStatus(
+  busy: boolean,
+  failed: boolean,
+  ran: boolean,
+  passed: number,
+  total: number,
+  allPassed: boolean,
+): { text: string; tone: "good" | "bad" | "muted" } {
+  if (busy) return { text: "Running…", tone: "muted" };
+  if (failed) return { text: "Could not run", tone: "bad" };
+  if (!ran) return { text: `${total} tests waiting`, tone: "muted" };
+  if (allPassed) return { text: `All ${total} tests passed`, tone: "good" };
+  return { text: `${passed} of ${total} tests passed`, tone: "bad" };
+}
+
+function ResultsRail({
+  resultsPanelId,
+  resultsOpen,
+  resultsTab,
+  onSelectTab,
+  onToggle,
+  busy,
+  failed,
+  passed,
+  total,
+  allPassed,
+  ran,
+}: {
+  resultsPanelId: string;
+  resultsOpen: boolean;
+  resultsTab: ResultsTab;
+  onSelectTab: (tab: ResultsTab) => void;
+  onToggle: () => void;
+  busy: boolean;
+  failed: boolean;
+  passed: number;
+  total: number;
+  allPassed: boolean;
+  ran: boolean;
+}) {
+  const status = railStatus(busy, failed, ran, passed, total, allPassed);
+
+  return (
+    <div className="flex min-h-11 shrink-0 items-stretch border-t border-border bg-elevated">
+      <div
+        role="tablist"
+        aria-label="Insight and tests"
+        className="flex items-stretch"
+        onKeyDown={(e) => {
+          if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+          e.preventDefault();
+          onSelectTab(resultsTab === "insight" ? "tests" : "insight");
+        }}
+      >
+        {(
+          [
+            ["insight", "Insight"],
+            ["tests", "Tests"],
+          ] as const
+        ).map(([id, label]) => {
+          const selected = resultsOpen && resultsTab === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              id={`${resultsPanelId}-tab-${id}`}
+              aria-selected={selected}
+              aria-controls={`${resultsPanelId}-${id}`}
+              tabIndex={
+                selected || (!resultsOpen && id === resultsTab) ? 0 : -1
+              }
+              onClick={() => onSelectTab(id)}
+              className={cn(
+                "inline-flex min-h-11 items-center gap-1.5 px-3.5 text-[0.75rem] font-medium transition-colors motion-reduce:transition-none",
+                selected
+                  ? "bg-pop text-on-pop"
+                  : "text-muted hover:bg-surface hover:text-foreground",
+              )}
+            >
+              {label}
+              {id === "tests" ? (
+                <span
+                  className={cn(
+                    "rounded px-1.5 font-mono text-[0.65rem] font-semibold",
+                    selected
+                      ? "bg-on-pop/15 text-on-pop"
+                      : ran && allPassed
+                        ? "text-good"
+                        : ran
+                          ? "text-bad"
+                          : "text-muted",
+                  )}
+                >
+                  {ran ? `${passed}/${total}` : total}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+      <p
+        className={cn(
+          "flex min-w-0 flex-1 items-center px-3 text-[0.75rem]",
+          status.tone === "good"
+            ? "text-good"
+            : status.tone === "bad"
+              ? "text-bad"
+              : "text-muted",
+        )}
+      >
+        {status.text}
+      </p>
+      <button
+        type="button"
+        aria-expanded={resultsOpen}
+        aria-controls={resultsPanelId}
+        aria-label={resultsOpen ? "Collapse panel" : "Expand panel"}
+        onClick={onToggle}
+        className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+      >
+        {resultsOpen ? (
+          <CaretDown size={14} weight="bold" aria-hidden />
+        ) : (
+          <CaretUp size={14} weight="bold" aria-hidden />
+        )}
+      </button>
+    </div>
+  );
+}
+
+function CoachFailBanner() {
+  const coach = useCoachOptional();
+  if (!coach?.diagnosis || coach.diagnosis.status === "all-passed") return null;
+  const caseLabel =
+    coach.diagnosis.caseName ??
+    (coach.diagnosis.firstFailIndex !== null
+      ? `Case ${coach.diagnosis.firstFailIndex + 1}`
+      : "A case");
+  return (
+    <div className="flex items-center justify-between gap-2 border-b border-border bg-info-surface px-3 py-2">
+      <p className="min-w-0 text-xs text-info">
+        {caseLabel} failed — Coach has a diagnosis.
+      </p>
+      <button
+        type="button"
+        onClick={coach.openCoach}
+        className="min-h-11 shrink-0 rounded-md px-2 text-xs font-medium text-accent hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        Open coach
+      </button>
     </div>
   );
 }
@@ -409,10 +717,7 @@ function caseInputLabel(testCase: SandboxCase): string {
   return pretty(testCase.args, 160);
 }
 
-function caseExpectedLabel(
-  spec: SandboxSpec,
-  testCase: SandboxCase,
-): string {
+function caseExpectedLabel(spec: SandboxSpec, testCase: SandboxCase): string {
   if (spec.property) return spec.property;
   if (testCase.ops) {
     return `${testCase.ops.length} operations`;
@@ -423,47 +728,19 @@ function caseExpectedLabel(
 function IdeTestcases({
   spec,
   results,
-  passed,
-  total,
-  idle,
   active,
   onActiveChange,
 }: {
   spec: SandboxSpec;
   results: CaseResult[] | null;
-  passed: number;
-  total: number;
-  idle: boolean;
   active: number;
   onActiveChange: (index: number) => void;
 }) {
   const testCase = spec.cases[active];
   const result = results?.[active] ?? null;
-  const allPassed = results !== null && passed === total;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2">
-        <span className="text-[0.7rem] font-semibold tracking-wide text-muted uppercase">
-          Testcases
-        </span>
-        {results ? (
-          <span
-            className={cn(
-              "font-mono text-[0.72rem] font-semibold",
-              allPassed ? "text-good" : "text-foreground",
-            )}
-          >
-            {allPassed ? `Accepted · ${total}/${total}` : `${passed}/${total} passed`}
-          </span>
-        ) : idle ? (
-          <span className="text-[0.72rem] text-muted">
-            {total} case{total === 1 ? "" : "s"} · Run to judge
-          </span>
-        ) : null}
-        {allPassed ? <span className="riso-stamp ml-auto">Solved</span> : null}
-      </div>
-
       <div
         role="tablist"
         aria-label="Test cases"
@@ -493,9 +770,19 @@ function IdeTestcases({
               <span className="inline-flex items-center gap-1.5">
                 {r ? (
                   r.passed ? (
-                    <Check size={10} weight="bold" className="text-good" aria-hidden />
+                    <Check
+                      size={10}
+                      weight="bold"
+                      className="text-good"
+                      aria-hidden
+                    />
                   ) : (
-                    <X size={10} weight="bold" className="text-bad" aria-hidden />
+                    <X
+                      size={10}
+                      weight="bold"
+                      className="text-bad"
+                      aria-hidden
+                    />
                   )
                 ) : null}
                 Case {i + 1}
@@ -607,9 +894,7 @@ function CardResults({
               <span
                 className={cn(
                   "mt-[3px] flex h-4 w-4 shrink-0 items-center justify-center rounded-full",
-                  result.passed
-                    ? "bg-good/15 text-good"
-                    : "bg-bad/15 text-bad",
+                  result.passed ? "bg-good/15 text-good" : "bg-bad/15 text-bad",
                 )}
               >
                 {result.passed ? (

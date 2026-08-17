@@ -11,12 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  CaretLeft,
-} from "@phosphor-icons/react";
+import { ArrowLeft, ArrowRight, Check, CaretLeft } from "@phosphor-icons/react";
 import { Markdown } from "@/components/md/Markdown";
 import { Sandbox } from "@/components/sandbox/Sandbox";
 import { PanelSplit } from "@/components/problems/PanelSplit";
@@ -28,6 +23,9 @@ import type { LoadedLesson } from "@/lib/course/load";
 import type { SandboxExtraction } from "@/lib/content/extractSandboxFence";
 import type { TabBlock } from "@/lib/content/highlightBlocks";
 import { extractComplexityFromMarkdown } from "@/lib/insight/extractComplexity";
+import { CoachProvider, useCoach } from "@/components/coach/CoachProvider";
+import { CoachRail } from "@/components/coach/CoachRail";
+import { IdeWithCoach } from "@/components/coach/IdeWithCoach";
 
 interface NeighborLink {
   href: string;
@@ -35,7 +33,7 @@ interface NeighborLink {
 }
 
 type ContentTab = "description" | "explanation" | "solution" | "quiz";
-type WorkspaceTab = ContentTab | "code";
+type WorkspaceTab = ContentTab | "code" | "coach";
 
 const CONTENT_TABS: { id: ContentTab; label: string }[] = [
   { id: "description", label: "Description" },
@@ -48,6 +46,7 @@ const CONTENT_TABS: { id: ContentTab; label: string }[] = [
 const MOBILE_TABS: { id: WorkspaceTab; label: string }[] = [
   { id: "description", label: "Description" },
   { id: "code", label: "Code" },
+  { id: "coach", label: "Coach" },
   { id: "explanation", label: "Explanation" },
   { id: "solution", label: "Solution" },
   { id: "quiz", label: "Quiz" },
@@ -64,6 +63,8 @@ interface ProblemWorkspaceProps {
   /** Hub or module link for the compact back control */
   backHref: string;
   backLabel?: string;
+  /** Hint reveal labels only — bodies stay on the server corpus. */
+  hintLabels: string[];
 }
 
 /**
@@ -78,6 +79,7 @@ export function ProblemWorkspace({
   next,
   backHref,
   backLabel = "Problems",
+  hintLabels,
 }: ProblemWorkspaceProps) {
   const { solved, markSolved } = useProgress();
   const id = lessonId(lesson.moduleSlug, lesson.lessonSlug);
@@ -93,7 +95,7 @@ export function ProblemWorkspace({
       setWide(nextWide);
       // Desktop has no Code tab — fall back so the left pane stays valid.
       if (nextWide) {
-        setTab((t) => (t === "code" ? "description" : t));
+        setTab((t) => (t === "code" || t === "coach" ? "description" : t));
       }
     };
     sync();
@@ -106,13 +108,22 @@ export function ProblemWorkspace({
     [lesson.sandbox.afterSandbox],
   );
 
+  const sandboxId = useMemo(() => {
+    try {
+      const spec = JSON.parse(lesson.sandbox.sandboxSource) as { id?: unknown };
+      return typeof spec.id === "string" ? spec.id : lesson.lessonSlug;
+    } catch {
+      return lesson.lessonSlug;
+    }
+  }, [lesson.sandbox.sandboxSource, lesson.lessonSlug]);
+
   const extractedComplexity = useMemo(
     () => extractComplexityFromMarkdown(lesson.markdown),
     [lesson.markdown],
   );
 
   const contentTab: ContentTab =
-    tab === "code" ? "description" : tab;
+    tab === "code" || tab === "coach" ? "description" : tab;
 
   const tabSource =
     contentTab === "description"
@@ -136,100 +147,113 @@ export function ProblemWorkspace({
   return (
     // Fills AppShell's main pane (`overflow-hidden` on /problems/[slug]).
     // Panes scroll internally — no document scroll.
-    <div className="flex h-full flex-col overflow-hidden bg-background">
-      <header className="flex shrink-0 items-center gap-2 border-b border-border bg-elevated px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2">
-        <Link
-          href={backHref}
-          className="inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-md px-2 text-xs text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
-        >
-          <CaretLeft size={14} weight="bold" aria-hidden />
-          <span className="max-w-[5.5rem] truncate sm:max-w-none">{backLabel}</span>
-        </Link>
-        <span className="hidden text-border sm:inline" aria-hidden>
-          /
-        </span>
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate font-display text-sm font-bold tracking-tight uppercase sm:text-base">
-            {lesson.title}
-          </h1>
-          <p className="truncate text-[0.7rem] text-muted">{eyebrow}</p>
-        </div>
-        {isSolved ? (
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-good/15 px-2 py-0.5 text-[0.7rem] font-medium text-good">
-            <Check size={11} strokeWidth={3} aria-hidden />
-            Solved
+    <CoachProvider sandboxId={sandboxId} hintLabels={hintLabels}>
+      <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-background">
+        <header className="flex shrink-0 items-center gap-2 border-b border-border bg-elevated px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2">
+          <Link
+            href={backHref}
+            className="inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-md px-2 text-xs text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
+          >
+            <CaretLeft size={14} weight="bold" aria-hidden />
+            <span className="max-w-[5.5rem] truncate sm:max-w-none">
+              {backLabel}
+            </span>
+          </Link>
+          <span className="hidden text-border sm:inline" aria-hidden>
+            /
           </span>
-        ) : (
-          <span className="hidden shrink-0 rounded-md border border-border px-2 py-0.5 text-[0.7rem] text-muted sm:inline">
-            Problem
-          </span>
-        )}
-        <nav className="flex shrink-0 items-center" aria-label="Problem navigation">
-          {prev ? (
-            <Link
-              href={prev.href}
-              title={prev.title}
-              aria-label={`Previous: ${prev.title}`}
-              className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-md text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
-            >
-              <ArrowLeft size={16} weight="bold" />
-            </Link>
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate font-display text-sm font-bold tracking-tight uppercase sm:text-base">
+              {lesson.title}
+            </h1>
+            <p className="truncate text-[0.7rem] text-muted">{eyebrow}</p>
+          </div>
+          {isSolved ? (
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-good/15 px-2 py-0.5 text-[0.7rem] font-medium text-good">
+              <Check size={11} strokeWidth={3} aria-hidden />
+              Solved
+            </span>
           ) : (
-            <span className="inline-flex h-11 w-11 items-center justify-center text-border" aria-hidden>
-              <ArrowLeft size={16} />
+            <span className="hidden shrink-0 rounded-md border border-border px-2 py-0.5 text-[0.7rem] text-muted sm:inline">
+              Problem
             </span>
           )}
-          {next ? (
-            <Link
-              href={next.href}
-              title={next.title}
-              aria-label={`Next: ${next.title}`}
-              className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-md text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
-            >
-              <ArrowRight size={16} weight="bold" />
-            </Link>
-          ) : (
-            <span className="inline-flex h-11 w-11 items-center justify-center text-border" aria-hidden>
-              <ArrowRight size={16} />
-            </span>
-          )}
-        </nav>
-      </header>
+          <nav
+            className="flex shrink-0 items-center"
+            aria-label="Problem navigation"
+          >
+            {prev ? (
+              <Link
+                href={prev.href}
+                title={prev.title}
+                aria-label={`Previous: ${prev.title}`}
+                className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-md text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
+              >
+                <ArrowLeft size={16} weight="bold" />
+              </Link>
+            ) : (
+              <span
+                className="inline-flex h-11 w-11 items-center justify-center text-border"
+                aria-hidden
+              >
+                <ArrowLeft size={16} />
+              </span>
+            )}
+            {next ? (
+              <Link
+                href={next.href}
+                title={next.title}
+                aria-label={`Next: ${next.title}`}
+                className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-md text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
+              >
+                <ArrowRight size={16} weight="bold" />
+              </Link>
+            ) : (
+              <span
+                className="inline-flex h-11 w-11 items-center justify-center text-border"
+                aria-hidden
+              >
+                <ArrowRight size={16} />
+              </span>
+            )}
+          </nav>
+        </header>
 
-      {wide ? (
-        /*
+        {wide ? (
+          /*
           Desktop: description pane + Sandbox side-by-side. Unchanged from the
           prior IDE shell — do not stack Code into the left tablist here.
         */
-        <PanelSplit
-          orientation="horizontal"
-          initialPrimary={0.42}
-          minPrimary={0.28}
-          maxPrimary={0.58}
-          primary={
-            <LeftPane
-              tab={contentTab}
-              onTabChange={setTab}
-              source={tabSource}
-              highlightedBlocks={lesson.highlightedBlocks}
-              highlightedTabs={lesson.highlightedTabs}
-              tabsId={tabsId}
-            />
-          }
-          secondary={sandbox}
-        />
-      ) : (
-        <MobileWorkspace
-          tab={tab}
-          onTabChange={setTab}
-          source={tabSource}
-          highlightedBlocks={lesson.highlightedBlocks}
-          highlightedTabs={lesson.highlightedTabs}
-          tabsId={tabsId}
-          sandbox={sandbox}
-        />
-      )}
-    </div>
+          <PanelSplit
+            orientation="horizontal"
+            initialPrimary={0.42}
+            minPrimary={0.28}
+            maxPrimary={0.58}
+            primary={
+              <LeftPane
+                tab={contentTab}
+                onTabChange={setTab}
+                source={tabSource}
+                highlightedBlocks={lesson.highlightedBlocks}
+                highlightedTabs={lesson.highlightedTabs}
+                tabsId={tabsId}
+              />
+            }
+            secondary={<IdeWithCoach sandbox={sandbox} />}
+          />
+        ) : (
+          <MobileWorkspace
+            tab={tab}
+            onTabChange={setTab}
+            source={tabSource}
+            highlightedBlocks={lesson.highlightedBlocks}
+            highlightedTabs={lesson.highlightedTabs}
+            tabsId={tabsId}
+            sandbox={sandbox}
+          />
+        )}
+      </div>
+    </CoachProvider>
   );
 }
 
@@ -252,6 +276,13 @@ function MobileWorkspace({
 }) {
   const panelId = `${tabsId}-panel`;
   const showCode = tab === "code";
+  const showCoach = tab === "coach";
+  const showArticle = !showCode && !showCoach;
+  const { unread, mobileCoachTick } = useCoach();
+
+  useEffect(() => {
+    if (mobileCoachTick > 0) onTabChange("coach");
+  }, [mobileCoachTick, onTabChange]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-elevated">
@@ -264,15 +295,21 @@ function MobileWorkspace({
         panelId={panelId}
         // Full-height touch targets on the only tab bar below lg.
         className="h-11"
+        badgeId={unread ? "coach" : null}
       />
-      {!showCode ? (
+      {showArticle ? (
         <div
           role="tabpanel"
           id={panelId}
           aria-labelledby={`${tabsId}-tab-${tab}`}
           className="min-h-0 flex-1 overflow-y-auto px-4 py-4"
         >
-          <ContentBody tab={tab} source={source} highlightedBlocks={highlightedBlocks} highlightedTabs={highlightedTabs} />
+          <ContentBody
+            tab={tab}
+            source={source}
+            highlightedBlocks={highlightedBlocks}
+            highlightedTabs={highlightedTabs}
+          />
         </div>
       ) : null}
       {/*
@@ -284,9 +321,21 @@ function MobileWorkspace({
         id={showCode ? panelId : undefined}
         aria-labelledby={showCode ? `${tabsId}-tab-code` : undefined}
         aria-hidden={!showCode}
-        className={cn("min-h-0", showCode ? "flex-1" : "hidden")}
+        className={cn("min-h-0", showCode ? "h-full min-h-0 flex-1" : "hidden")}
       >
         {sandbox}
+      </div>
+      <div
+        role={showCoach ? "tabpanel" : undefined}
+        id={showCoach ? panelId : undefined}
+        aria-labelledby={showCoach ? `${tabsId}-tab-coach` : undefined}
+        aria-hidden={!showCoach}
+        className={cn(
+          "min-h-0",
+          showCoach ? "h-full min-h-0 flex-1" : "hidden",
+        )}
+      >
+        <CoachRail variant="page" active={showCoach} />
       </div>
     </div>
   );
@@ -378,6 +427,7 @@ function TabList({
   label,
   panelId,
   className,
+  badgeId = null,
 }: {
   tabs: readonly { id: WorkspaceTab; label: string }[];
   active: WorkspaceTab;
@@ -386,6 +436,7 @@ function TabList({
   label: string;
   panelId: string;
   className?: string;
+  badgeId?: WorkspaceTab | null;
 }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -446,7 +497,12 @@ function TabList({
                 : "text-muted hover:text-foreground",
             )}
           >
-            {t.label}
+            <span className="inline-flex items-center gap-1.5">
+              {t.label}
+              {badgeId === t.id && !selected ? (
+                <span className="h-1.5 w-1.5 rounded-full bg-pop" aria-hidden />
+              ) : null}
+            </span>
           </button>
         );
       })}
