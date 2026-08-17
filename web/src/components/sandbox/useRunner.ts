@@ -3,6 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { matches, pretty, formatCall, canonical } from "@/lib/sandbox/compare";
 import { checkProperty } from "@/lib/sandbox/properties";
+import {
+  runnerBudgetMs,
+  runnerTimeoutMessage,
+  type RunnerTimeoutPhase,
+} from "@/lib/sandbox/runnerTimeout";
 
 /** What the "expected" column says when a property, not a value, is the bar. */
 const PROPERTY_LABEL: Record<string, string> = {
@@ -24,6 +29,15 @@ const WORKER_URL: Record<SandboxLang, string> = {
   javascript: "/sandbox/js-runner.js",
   python: "/sandbox/py-runner.js",
 };
+
+function bindWorker(
+  worker: Worker,
+  onMessage: (event: MessageEvent<RunnerResponse>) => void,
+  onError: (event: ErrorEvent) => void,
+) {
+  worker.onmessage = onMessage;
+  worker.onerror = onError;
+}
 
 /**
  * An op whose expected value is `null` is a command, not a question — `push`
@@ -79,30 +93,41 @@ export type RunState =
   | { status: "failed"; message: string };
 
 /**
- * Owns one worker per language, its timeout, and the translation from raw
- * worker outcomes into pass/fail.
+ * Owns the worker, its timeout, and the translation from raw worker
+ * outcomes into pass/fail.
  *
- * The worker is recreated for every run. That is deliberate: a run that
- * times out is killed mid-execution, so its worker is left in an unknown
- * state and must not be reused. Recreating also guarantees no state leaks
- * between runs, which would otherwise let a global set on run 1 change the
- * result of run 2.
+ * A timed-out or crashed worker is killed and must not be reused — it was
+ * stopped mid-execution. JavaScript is cheap to recreate, so every JS run
+ * gets a fresh worker (no leaked globals). Python keeps a worker that
+ * finished cleanly: a cold Pyodide boot is tens of seconds, and charging
+ * that to the case budget is what produced the false 23s "infinite loop".
+ * Each Python exec still uses a fresh namespace inside the worker.
  */
 export function useRunner(spec: SandboxSpec) {
   const [state, setState] = useState<RunState>({ status: "idle" });
   const workerRef = useRef<Worker | null>(null);
+  const workerLangRef = useRef<SandboxLang | null>(null);
+  const pythonReadyRef = useRef(false);
+  const phaseRef = useRef<RunnerTimeoutPhase | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const teardown = useCallback(() => {
+  const clearTimer = useCallback(() => {
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
+    phaseRef.current = null;
+  }, []);
+
+  const teardown = useCallback(() => {
+    clearTimer();
     if (workerRef.current) {
       workerRef.current.terminate();
       workerRef.current = null;
     }
-  }, []);
+    workerLangRef.current = null;
+    pythonReadyRef.current = false;
+  }, [clearTimer]);
 
   useEffect(() => teardown, [teardown]);
 
@@ -115,7 +140,10 @@ export function useRunner(spec: SandboxSpec) {
         let want: unknown = testCase.expect;
         if (spec.check === "sequence") {
           // Only the asserting ops are compared; see checkedReturns.
-          const pair = checkedReturns(testCase.ops ?? [], outcome.opResults ?? []);
+          const pair = checkedReturns(
+            testCase.ops ?? [],
+            outcome.opResults ?? [],
+          );
           actual = pair.actual;
           want = pair.expected;
         } else if (spec.check === "mutate") {
@@ -132,7 +160,8 @@ export function useRunner(spec: SandboxSpec) {
         // A "deep copy" answer that reuses input nodes serialises exactly
         // like a correct one, so structural equality is necessary but not
         // sufficient — `aliased` is the worker's raw observation, judged here.
-        const reusedInput = spec.returns === "graph" && outcome.aliased === true;
+        const reusedInput =
+          spec.returns === "graph" && outcome.aliased === true;
 
         // Problems with several correct answers are graded by a property of
         // the answer rather than by equality to one of them.
@@ -155,7 +184,9 @@ export function useRunner(spec: SandboxSpec) {
               ? propertyFailure === null
               : matches(actual, want, spec.compare)),
           got: outcome.error === null ? pretty(actual) : null,
-          expected: spec.property ? PROPERTY_LABEL[spec.property] ?? spec.property : pretty(want),
+          expected: spec.property
+            ? (PROPERTY_LABEL[spec.property] ?? spec.property)
+            : pretty(want),
           error:
             outcome.error ??
             propertyFailure ??
@@ -168,64 +199,101 @@ export function useRunner(spec: SandboxSpec) {
     [spec],
   );
 
-  const run = useCallback(
-    (lang: SandboxLang, source: string) => {
-      teardown();
-      setState({ status: lang === "python" ? "booting" : "running" });
-
-      let worker: Worker;
-      try {
-        // Pyodide refuses to boot in a classic worker, so the Python runner
-        // is an ES module worker. The JS runner stays classic — it has no
-        // imports and gains nothing from module semantics.
-        worker =
-          lang === "python"
-            ? new Worker(WORKER_URL[lang], { type: "module" })
-            : new Worker(WORKER_URL[lang]);
-      } catch (err) {
-        setState({
-          status: "failed",
-          message: `Could not start the ${lang} runner: ${err instanceof Error ? err.message : String(err)}`,
-        });
-        return;
-      }
-      workerRef.current = worker;
-
-      worker.onmessage = (event: MessageEvent<RunnerResponse>) => {
-        const data = event.data;
-        if (data.kind === "ready") {
-          // Python finished booting; the run itself is still in flight.
-          setState((prev) =>
-            prev.status === "booting" ? { status: "running" } : prev,
-          );
-          return;
-        }
-        teardown();
-        if (data.kind === "fatal") {
-          setState({ status: "failed", message: data.message });
-          return;
-        }
-        setState({ status: "done", results: toResults(data.outcomes, lang) });
-      };
-
-      worker.onerror = (event) => {
-        teardown();
-        setState({
-          status: "failed",
-          message: event.message || "The runner crashed.",
-        });
-      };
-
-      // The only reliable way to stop `while (true)`. Python gets extra
-      // headroom because a cold Pyodide boot is genuinely slow.
-      const budget = lang === "python" ? spec.timeoutMs + 20000 : spec.timeoutMs;
+  const armTimer = useCallback(
+    (lang: SandboxLang, phase: RunnerTimeoutPhase) => {
+      clearTimer();
+      const budget = runnerBudgetMs(lang, spec.timeoutMs, phase);
+      phaseRef.current = phase;
       timerRef.current = setTimeout(() => {
+        const timedPhase = phaseRef.current ?? phase;
         teardown();
         setState({
           status: "failed",
-          message: `Timed out after ${(budget / 1000).toFixed(0)}s — likely an infinite loop. The run was stopped.`,
+          message: runnerTimeoutMessage(timedPhase, budget),
         });
       }, budget);
+    },
+    [clearTimer, spec.timeoutMs, teardown],
+  );
+
+  const run = useCallback(
+    (lang: SandboxLang, source: string) => {
+      const reusePython =
+        lang === "python" &&
+        workerRef.current !== null &&
+        workerLangRef.current === "python";
+
+      if (!reusePython) {
+        teardown();
+      } else {
+        clearTimer();
+      }
+
+      const alreadyReady = reusePython && pythonReadyRef.current;
+      setState({
+        status: lang === "python" && !alreadyReady ? "booting" : "running",
+      });
+
+      let worker = reusePython ? workerRef.current : null;
+      if (!worker) {
+        try {
+          // Pyodide refuses to boot in a classic worker, so the Python runner
+          // is an ES module worker. The JS runner stays classic — it has no
+          // imports and gains nothing from module semantics.
+          worker =
+            lang === "python"
+              ? new Worker(WORKER_URL[lang], { type: "module" })
+              : new Worker(WORKER_URL[lang]);
+        } catch (err) {
+          setState({
+            status: "failed",
+            message: `Could not start the ${lang} runner: ${err instanceof Error ? err.message : String(err)}`,
+          });
+          return;
+        }
+        workerRef.current = worker;
+        workerLangRef.current = lang;
+        pythonReadyRef.current = false;
+      }
+
+      bindWorker(
+        worker,
+        (event: MessageEvent<RunnerResponse>) => {
+          const data = event.data;
+          if (data.kind === "ready") {
+            pythonReadyRef.current = true;
+            // Boot is done; the case budget starts now, not when Run was clicked.
+            if (phaseRef.current === "booting") {
+              armTimer(lang, "running");
+            }
+            setState((prev) =>
+              prev.status === "booting" ? { status: "running" } : prev,
+            );
+            return;
+          }
+          clearTimer();
+          if (data.kind === "fatal") {
+            teardown();
+            setState({ status: "failed", message: data.message });
+            return;
+          }
+          // JS is recreated next run. A clean Python finish keeps the runtime.
+          if (lang !== "python") teardown();
+          setState({ status: "done", results: toResults(data.outcomes, lang) });
+        },
+        (event) => {
+          teardown();
+          setState({
+            status: "failed",
+            message: event.message || "The runner crashed.",
+          });
+        },
+      );
+
+      armTimer(
+        lang,
+        lang === "python" && !alreadyReady ? "booting" : "running",
+      );
 
       // Rewrite each op to the language's own method spelling, so the
       // worker never has to know about naming conventions.
@@ -252,7 +320,7 @@ export function useRunner(spec: SandboxSpec) {
         cls: spec.cls?.[lang] ?? null,
       });
     },
-    [spec, teardown, toResults],
+    [armTimer, clearTimer, spec, teardown, toResults],
   );
 
   const reset = useCallback(() => {
