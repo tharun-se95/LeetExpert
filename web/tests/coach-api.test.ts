@@ -1,11 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   handleCoachChat,
   parseCoachRequest,
   isCoachConfigured,
   MAX_CODE_CHARS,
 } from "../src/lib/coach/handleChat";
-import { resolveCoachBackend, defaultCoachModel } from "../src/lib/coach/provider";
+import {
+  resolveCoachBackend,
+  defaultCoachModel,
+  completeCoach,
+  ollamaAccessHeaders,
+  ollamaAuthHeaders,
+  ollamaHost,
+} from "../src/lib/coach/provider";
 import { MemoryQuota } from "../src/lib/coach/quota";
 import { COACH_REFUSE } from "../src/lib/coach/types";
 import type { CoachProblem } from "../src/lib/coach/types";
@@ -117,6 +124,21 @@ describe("handleCoachChat", () => {
     if (result.status !== 200) return;
     expect(result.reply).toBe(COACH_REFUSE);
   });
+
+  it("returns a clean 503 instead of throwing when the model call fails", async () => {
+    // A remote/home backend (Ollama over a tunnel) is far more likely to be
+    // unreachable than a cloud API. Without this, the throw reaches the
+    // client as a JSON-parse error instead of a message a learner can read.
+    const result = await handleCoachChat(
+      baseBody(),
+      deps({
+        complete: async () => {
+          throw new Error("fetch failed");
+        },
+      }),
+    );
+    expect(result).toMatchObject({ status: 503, code: "coach_unavailable" });
+  });
 });
 
 describe("coach provider", () => {
@@ -146,6 +168,120 @@ describe("coach provider", () => {
     expect(
       resolveCoachBackend({ NODE_ENV: "test", ANTHROPIC_API_KEY: "sk-ant" }),
     ).toBe("anthropic");
+  });
+
+  it("omits Cloudflare Access headers when unset", () => {
+    expect(ollamaAccessHeaders({ NODE_ENV: "test" })).toEqual({});
+  });
+
+  it("omits Cloudflare Access headers when only one side is set", () => {
+    expect(
+      ollamaAccessHeaders({ NODE_ENV: "test", OLLAMA_ACCESS_CLIENT_ID: "cid" }),
+    ).toEqual({});
+  });
+
+  it("builds Cloudflare Access headers when both are set", () => {
+    expect(
+      ollamaAccessHeaders({
+        NODE_ENV: "test",
+        OLLAMA_ACCESS_CLIENT_ID: "cid",
+        OLLAMA_ACCESS_CLIENT_SECRET: "csecret",
+      }),
+    ).toEqual({
+      "CF-Access-Client-Id": "cid",
+      "CF-Access-Client-Secret": "csecret",
+    });
+  });
+
+  it("defaults to the local daemon when no key or host is set", () => {
+    expect(ollamaHost({ NODE_ENV: "test" })).toBe("http://127.0.0.1:11434");
+  });
+
+  it("defaults to Ollama Cloud when an API key is set with no explicit host", () => {
+    // gemma4:cloud already runs on Ollama's infrastructure, not the
+    // caller's — there is nothing local to default to once a key exists.
+    expect(
+      ollamaHost({ NODE_ENV: "test", OLLAMA_API_KEY: "key123" }),
+    ).toBe("https://ollama.com");
+  });
+
+  it("an explicit OLLAMA_HOST still wins over the cloud default", () => {
+    expect(
+      ollamaHost({
+        NODE_ENV: "test",
+        OLLAMA_API_KEY: "key123",
+        OLLAMA_HOST: "http://127.0.0.1:11434",
+      }),
+    ).toBe("http://127.0.0.1:11434");
+  });
+
+  it("omits the Authorization header when no key is set", () => {
+    expect(ollamaAuthHeaders({ NODE_ENV: "test" })).toEqual({});
+  });
+
+  it("builds a Bearer Authorization header from OLLAMA_API_KEY", () => {
+    expect(
+      ollamaAuthHeaders({ NODE_ENV: "test", OLLAMA_API_KEY: "key123" }),
+    ).toEqual({ Authorization: "Bearer key123" });
+  });
+
+  it("treats an API key alone (no COACH_PROVIDER, no OLLAMA_HOST) as ollama", () => {
+    expect(
+      resolveCoachBackend({ NODE_ENV: "test", OLLAMA_API_KEY: "key123" }),
+    ).toBe("ollama");
+  });
+
+  it("calls the cloud host with Bearer auth when only OLLAMA_API_KEY is set", async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const fetchMock = vi.fn(async (url: string, init: RequestInit) => {
+      calls.push({ url, init });
+      return new Response(
+        JSON.stringify({ message: { content: "cloud hi" } }),
+        { status: 200 },
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const reply = await completeCoach("system", [{ role: "user", content: "hi" }], {
+      NODE_ENV: "test",
+      OLLAMA_API_KEY: "key123",
+    });
+
+    expect(reply).toBe("cloud hi");
+    expect(calls[0].url).toBe("https://ollama.com/api/chat");
+    const headers = calls[0].init.headers as Record<string, string>;
+    expect(headers.Authorization).toBe("Bearer key123");
+  });
+
+  it("sends Access headers and a bounded timeout on the Ollama request", async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const fetchMock = vi.fn(async (url: string, init: RequestInit) => {
+      calls.push({ url, init });
+      return new Response(JSON.stringify({ message: { content: "hi" } }), {
+        status: 200,
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const reply = await completeCoach("system", [{ role: "user", content: "hi" }], {
+      NODE_ENV: "test",
+      COACH_PROVIDER: "ollama",
+      OLLAMA_HOST: "https://ollama.example.com",
+      OLLAMA_ACCESS_CLIENT_ID: "cid",
+      OLLAMA_ACCESS_CLIENT_SECRET: "csecret",
+    });
+
+    expect(reply).toBe("hi");
+    expect(calls).toHaveLength(1);
+    expect(calls[0].url).toBe("https://ollama.example.com/api/chat");
+    const headers = calls[0].init.headers as Record<string, string>;
+    expect(headers["CF-Access-Client-Id"]).toBe("cid");
+    expect(headers["CF-Access-Client-Secret"]).toBe("csecret");
+    expect(calls[0].init.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 });
 

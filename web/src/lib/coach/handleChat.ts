@@ -123,7 +123,20 @@ export async function handleCoachChat(
   }
 
   const packed = buildModelMessages(problem, parsed);
-  const raw = await deps.complete(packed.system, packed.messages);
+  let raw: string;
+  try {
+    raw = await deps.complete(packed.system, packed.messages);
+  } catch {
+    // A remote backend (Ollama over a tunnel, a cloud API blip) can fail the
+    // network call itself. Without this, the throw reaches the client as an
+    // unhandled 500 with no JSON body, which shows up as a raw parse error
+    // instead of a message a learner can read.
+    return {
+      status: 503,
+      code: "coach_unavailable",
+      message: "Coach's model didn't respond. Try again in a moment.",
+    };
+  }
   const reply = filterCoachReply(raw, problem.fn);
   return {
     status: 200,
