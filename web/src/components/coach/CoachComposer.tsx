@@ -51,7 +51,7 @@ export function CoachComposer() {
       <label className="sr-only" htmlFor="coach-input">
         Ask the coach
       </label>
-      <div className="flex items-end gap-1.5 rounded-lg border border-border bg-code px-2 py-1.5 transition-colors focus-within:border-accent focus-within:ring-2 focus-within:ring-accent">
+      <div className="flex items-end gap-1.5 rounded-lg border border-border bg-code px-2 py-1.5">
         <textarea
           id="coach-input"
           value={value}
@@ -61,7 +61,7 @@ export function CoachComposer() {
           rows={1}
           maxLength={2000}
           placeholder={locked ? "Chat unavailable" : "Ask a question — I will not write the code."}
-          className="min-h-9 flex-1 resize-none bg-transparent px-1 py-1.5 text-sm text-foreground placeholder:text-muted focus-visible:outline-none disabled:opacity-60"
+          className="min-h-9 flex-1 resize-none bg-transparent px-1 py-1.5 text-sm text-foreground placeholder:text-muted disabled:opacity-60"
         />
         {pending ? (
           <button

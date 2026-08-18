@@ -88,10 +88,18 @@ export function CoachRail({
       )}
     >
       <header className="flex shrink-0 items-center gap-2 border-b border-border px-3 py-1.5">
-        <ChatCircle size={16} weight="bold" className="text-accent" aria-hidden />
-        <h2 className="flex-1 font-display text-sm font-bold uppercase tracking-tight">
-          Coach
-        </h2>
+        {variant === "rail" ? (
+          <>
+            <ChatCircle size={16} weight="bold" className="text-accent" aria-hidden />
+            <h2 className="flex-1 font-display text-sm font-bold uppercase tracking-tight">
+              Coach
+            </h2>
+          </>
+        ) : (
+          // The mobile tab bar already reads "Coach" — a second title here
+          // would repeat it. Just the still-needed clear action stays.
+          <span className="flex-1" />
+        )}
         <button
           type="button"
           onClick={clearThread}
