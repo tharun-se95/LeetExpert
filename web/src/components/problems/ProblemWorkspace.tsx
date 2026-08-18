@@ -226,7 +226,7 @@ export function ProblemWorkspace({
         */
           <PanelSplit
             orientation="horizontal"
-            initialPrimary={0.42}
+            initialPrimary={0.3}
             minPrimary={0.28}
             maxPrimary={0.58}
             primary={

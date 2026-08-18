@@ -23,7 +23,7 @@ export function IdeWithCoach({ sandbox }: { sandbox: ReactNode }) {
   return (
     <PanelSplit
       orientation="horizontal"
-      initialPrimary={0.72}
+      initialPrimary={0.62}
       minPrimary={0.55}
       maxPrimary={0.82}
       resizeLabel="Resize editor and coach"
