@@ -362,7 +362,9 @@ function SandboxBody({
 const RESULTS_OPEN_KEY = "dsa:ide:results-open";
 const RESULTS_TAB_KEY = "dsa:ide:results-tab";
 
-type ResultsTab = "insight" | "tests";
+type ResultsTab = "insight" | "tests" | "console";
+
+const RESULTS_TABS: ResultsTab[] = ["insight", "tests", "console"];
 
 function IdeWorkspace({
   toolbar,
@@ -406,7 +408,9 @@ function IdeWorkspace({
     try {
       setResultsOpen(window.localStorage.getItem(RESULTS_OPEN_KEY) === "1");
       const tab = window.localStorage.getItem(RESULTS_TAB_KEY);
-      if (tab === "insight" || tab === "tests") setResultsTab(tab);
+      if (tab === "insight" || tab === "tests" || tab === "console") {
+        setResultsTab(tab);
+      }
     } catch {
       /* private mode */
     }
@@ -452,6 +456,11 @@ function IdeWorkspace({
     const firstFail = results.findIndex((r) => !r.passed);
     if (firstFail >= 0) setActiveCase(firstFail);
   }, [results]);
+
+  const logCount = useMemo(
+    () => results?.reduce((sum, r) => sum + r.logs.length, 0) ?? 0,
+    [results],
+  );
 
   const insight = useMemo(
     () =>
@@ -513,6 +522,18 @@ function IdeWorkspace({
           onActiveChange={setActiveCase}
         />
       </div>
+      <div
+        role="tabpanel"
+        id={`${resultsPanelId}-console`}
+        aria-labelledby={`${resultsPanelId}-tab-console`}
+        hidden={resultsTab !== "console"}
+        className={cn(
+          "min-h-0 flex-1",
+          resultsTab === "console" ? "flex flex-col" : "hidden",
+        )}
+      >
+        <IdeConsole results={results} />
+      </div>
     </div>
   );
 
@@ -549,6 +570,7 @@ function IdeWorkspace({
         total={total}
         allPassed={allPassed}
         ran={results !== null}
+        logCount={logCount}
       />
     </div>
   );
@@ -581,6 +603,7 @@ function ResultsRail({
   total,
   allPassed,
   ran,
+  logCount,
 }: {
   resultsPanelId: string;
   resultsOpen: boolean;
@@ -593,6 +616,7 @@ function ResultsRail({
   total: number;
   allPassed: boolean;
   ran: boolean;
+  logCount: number;
 }) {
   const status = railStatus(busy, failed, ran, passed, total, allPassed);
 
@@ -600,18 +624,23 @@ function ResultsRail({
     <div className="flex min-h-11 shrink-0 items-stretch border-t border-border bg-elevated">
       <div
         role="tablist"
-        aria-label="Insight and tests"
+        aria-label="Insight, tests, and console"
         className="flex items-stretch"
         onKeyDown={(e) => {
           if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
           e.preventDefault();
-          onSelectTab(resultsTab === "insight" ? "tests" : "insight");
+          const i = RESULTS_TABS.indexOf(resultsTab);
+          const delta = e.key === "ArrowRight" ? 1 : -1;
+          onSelectTab(
+            RESULTS_TABS[(i + delta + RESULTS_TABS.length) % RESULTS_TABS.length],
+          );
         }}
       >
         {(
           [
             ["insight", "Insight"],
             ["tests", "Tests"],
+            ["console", "Console"],
           ] as const
         ).map(([id, label]) => {
           const selected = resultsOpen && resultsTab === id;
@@ -649,6 +678,16 @@ function ResultsRail({
                   )}
                 >
                   {ran ? `${passed}/${total}` : total}
+                </span>
+              ) : null}
+              {id === "console" && logCount > 0 ? (
+                <span
+                  className={cn(
+                    "rounded px-1.5 font-mono text-[0.65rem] font-semibold",
+                    selected ? "bg-on-pop/15 text-on-pop" : "text-muted",
+                  )}
+                >
+                  {logCount}
                 </span>
               ) : null}
             </button>
@@ -824,6 +863,49 @@ function IdeTestcases({
             {result.logs.join("\n")}
           </pre>
         ) : null}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * All print()/console.log() output from the last run, in case order. Each
+ * case already carries its own `.logs` (shown inline under that case in
+ * Tests) — this just gives the whole run's output one continuous place to
+ * read, so output from a passing case isn't buried behind a click.
+ */
+function IdeConsole({ results }: { results: CaseResult[] | null }) {
+  const withLogs = (results ?? []).filter((r) => r.logs.length > 0);
+
+  if (withLogs.length === 0) {
+    return (
+      <div className="flex min-h-0 flex-1 items-center justify-center px-6 text-center">
+        <p className="text-[0.75rem] text-muted">
+          {results === null
+            ? "Run your code to see print()/console.log() output here."
+            : "No output. Add a print() or console.log() to see it here."}
+        </p>
+      </div>
+    );
+  }
+
+  // A case label only earns its place when there's more than one source to
+  // tell apart — one case's output doesn't need "Case 1" repeated above it.
+  const labelCases = withLogs.length > 1;
+
+  return (
+    <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+      <div className="flex flex-col gap-3 font-mono text-[0.75rem] leading-relaxed">
+        {withLogs.map((r) => (
+          <div key={r.index}>
+            {labelCases ? (
+              <p className="mb-1 text-muted">Case {r.index + 1}</p>
+            ) : null}
+            <pre className="overflow-x-auto whitespace-pre-wrap break-words text-foreground">
+              {r.logs.join("\n")}
+            </pre>
+          </div>
+        ))}
       </div>
     </div>
   );
