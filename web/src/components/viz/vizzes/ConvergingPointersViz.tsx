@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, MarkerRow, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -125,11 +124,11 @@ function buildSteps(arr: number[], target: number): VizStep<ConvergingState>[] {
   return steps;
 }
 
-function cellTone(state: ConvergingState, i: number): CellTone {
-  if (state.found && (i === state.found[0] || i === state.found[1])) return "active";
-  if (state.dead.includes(i)) return "dropped";
-  if (state.sum !== null && (i === state.left || i === state.right)) return "active";
-  return "plain";
+function toneAt(state: ConvergingState, i: number): Tone {
+  if (state.found && (i === state.found[0] || i === state.found[1])) return "result";
+  if (state.dead.includes(i)) return "eliminated";
+  if (state.sum !== null && (i === state.left || i === state.right)) return "focal";
+  return "default";
 }
 
 export function ConvergingPointersViz(props: Record<string, unknown>) {
@@ -149,55 +148,32 @@ export function ConvergingPointersViz(props: Record<string, unknown>) {
       label="Converging pointers trace"
       family="pointer-movement"
     >
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex gap-1.5">
-            {arr.map((v, i) => (
-              <Cell key={i} value={v} index={i} tone={cellTone(state, i)} />
-            ))}
-          </div>
-          <MarkerRow
-            length={arr.length}
+          <Tape
+            values={arr}
+            toneFor={(i) => toneAt(state, i)}
             markers={
               state.found
                 ? [
-                    { index: state.found[0], label: "L" },
-                    { index: state.found[1], label: "R" },
+                    { at: state.found[0], label: "L" },
+                    { at: state.found[1], label: "R" },
                   ]
                 : [
-                    { index: state.left, label: "L" },
-                    { index: state.right, label: "R", color: "var(--muted)" },
+                    { at: state.left, label: "L" },
+                    { at: state.right, label: "R", color: "var(--muted)" },
                   ]
             }
+            reduced={ctx.reduced}
           />
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              target <span className="text-foreground">{tgt}</span>
-            </span>
-            <span>
-              sum{" "}
-              <span className="text-foreground">
-                {state.sum === null ? "—" : state.sum}
-              </span>
-            </span>
-            <span className="rounded-md border border-border bg-surface px-1.5 py-0.5">
-              pairs eliminated{" "}
-              <motion.span
-                key={state.gone}
-                initial={{ scale: 1.4 }}
-                animate={{ scale: 1 }}
-                className="inline-block font-semibold text-accent"
-              >
-                {state.gone}
-              </motion.span>
-              /{state.total}
-            </span>
-          </div>
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "active", label: "current pair" },
-              { tone: "dropped", label: "eliminated" },
-              { tone: "plain", label: "live window" },
+              { label: "target", value: tgt },
+              { label: "sum", value: state.sum === null ? "—" : state.sum },
+              {
+                label: "pairs eliminated",
+                value: `${state.gone} / ${state.total}`,
+              },
             ]}
           />
         </div>

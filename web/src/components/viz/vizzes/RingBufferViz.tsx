@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { VizPlayer } from "@/components/viz/VizPlayer";
+import { StatusPanel } from "@/components/viz/pieces";
 import { speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -207,9 +208,11 @@ function RingSlots({
                 "flex h-9 w-9 items-center justify-center rounded-full border font-mono text-xs font-semibold transition-colors duration-300",
                 v === null
                   ? "border-dashed border-border text-muted"
-                  : hot
-                    ? "border-pop bg-pop text-on-pop"
-                    : "border-accent/50 bg-accent/12 text-foreground",
+                  : justCleared === i
+                    ? "border-[var(--bad)]/60 bg-[var(--bad)]/10"
+                    : justWritten === i
+                      ? "border-[var(--family-accent,var(--accent))] bg-[var(--family-accent,var(--accent))] text-[var(--family-on-accent,var(--on-pop))]"
+                      : "border-[var(--family-accent,var(--accent))]/50 bg-[var(--family-accent,var(--accent))]/12 text-foreground",
               )}
             >
               <motion.span
@@ -259,25 +262,23 @@ export function RingBufferViz(props: Record<string, unknown>) {
             justWritten={state.justWritten}
             justCleared={state.justCleared}
           />
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              op{" "}
-              <span className="text-foreground">
-                {state.op ? `${state.op}(${state.opValue ?? ""})` : "—"}
-              </span>
-            </span>
-            <span>
-              size{" "}
-              <span className="text-foreground">
-                {state.size}/{state.capacity}
-              </span>
-            </span>
-            {state.wrapped ? (
-              <span className="rounded-md border border-accent/40 bg-accent/10 px-1.5 py-0.5 text-accent">
-                {state.wrapped} wrapped
-              </span>
-            ) : null}
-          </div>
+          <StatusPanel
+            items={[
+              {
+                label: "op",
+                value: state.op
+                  ? `${state.op}(${state.opValue ?? ""})`
+                  : "—",
+              },
+              {
+                label: "size",
+                value: `${state.size}/${state.capacity}`,
+              },
+              ...(state.wrapped
+                ? [{ label: "wrap", value: state.wrapped }]
+                : []),
+            ]}
+          />
         </div>
       )}
     </VizPlayer>

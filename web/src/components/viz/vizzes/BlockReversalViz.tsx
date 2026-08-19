@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, MarkerRow, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -153,11 +153,11 @@ function buildSteps(data: number[], rawK: number): VizStep<BlockState>[] {
   return steps;
 }
 
-function cellTone(state: BlockState, i: number): CellTone {
-  if (state.swap && (state.swap[0] === i || state.swap[1] === i)) return "active";
-  if (state.done) return "resolved";
-  if (state.range && i >= state.range[0] && i <= state.range[1]) return "kept";
-  return "plain";
+function cellTone(state: BlockState, i: number): Tone {
+  if (state.swap && (state.swap[0] === i || state.swap[1] === i)) return "focal";
+  if (state.done) return "result";
+  if (state.range && i >= state.range[0] && i <= state.range[1]) return "range";
+  return "default";
 }
 
 export function BlockReversalViz(props: Record<string, unknown>) {
@@ -174,37 +174,34 @@ export function BlockReversalViz(props: Record<string, unknown>) {
       label={`Rotating ${nums.length} elements right by ${shift} using three reversals`}
       family="pointer-movement"
     >
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex flex-wrap gap-1.5">
-            {state.nums.map((v, i) => (
-              <Cell
-                key={i}
-                value={v}
-                index={i}
-                tone={cellTone(state, i)}
-                pop={state.swap?.includes(i) ?? false}
-              />
-            ))}
-          </div>
-          <MarkerRow
-            length={state.nums.length}
+          <Tape
+            values={state.nums}
+            toneFor={(i) => cellTone(state, i)}
+            focal={state.swap?.[0] ?? null}
+            window={state.range ? { lo: state.range[0], hi: state.range[1] } : null}
             markers={
-              state.range
+              state.swap
                 ? [
-                    { index: state.range[0], label: "i" },
-                    { index: state.range[1], label: "j", color: "var(--muted)" },
+                    { at: state.swap[0], label: "i" },
+                    { at: state.swap[1], label: "j", color: "var(--muted)" },
                   ]
-                : state.k !== null && state.k > 0
-                  ? [{ index: state.k, label: "k", color: "var(--muted)" }]
-                  : []
+                : state.range
+                  ? [
+                      { at: state.range[0], label: "i" },
+                      { at: state.range[1], label: "j", color: "var(--muted)" },
+                    ]
+                  : state.k !== null && state.k > 0
+                    ? [{ at: state.k, label: "k", color: "var(--muted)" }]
+                    : []
             }
+            reduced={ctx.reduced}
           />
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "kept", label: "region being reversed" },
-              { tone: "active", label: "swapping" },
-              { tone: "plain", label: "untouched" },
+              { label: "k", value: state.k ?? "—" },
+              { label: "phase", value: state.phase || "—" },
             ]}
           />
         </div>

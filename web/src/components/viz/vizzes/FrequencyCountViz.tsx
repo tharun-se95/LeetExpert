@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, type CellTone } from "@/components/viz/pieces";
+import { Node, StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { stringProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -144,8 +143,8 @@ function buildSteps(s: string, t: string | null): VizStep<FreqState>[] {
   return steps;
 }
 
-function sourceTone(index: number | null, i: number): CellTone {
-  return index === i ? "active" : "plain";
+function sourceTone(index: number | null, i: number): Tone {
+  return index === i ? "focal" : "default";
 }
 
 export function FrequencyCountViz(props: Record<string, unknown>) {
@@ -165,63 +164,65 @@ export function FrequencyCountViz(props: Record<string, unknown>) {
       label="Frequency count trace"
       family="linear-traversal"
     >
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
           <div className="flex flex-col gap-2">
-            <div className="flex gap-1.5">
-              {[...sVal].map((c, i) => (
-                <Cell key={`s${i}`} value={c} index={i} tone={sourceTone(state.sIndex, i)} />
-              ))}
-            </div>
+            <Tape
+              values={[...sVal]}
+              toneFor={(i) => sourceTone(state.sIndex, i)}
+              focal={state.sIndex}
+              markers={
+                state.sIndex !== null
+                  ? [{ at: state.sIndex, label: "s" }]
+                  : []
+              }
+              reduced={ctx.reduced}
+            />
             {tVal !== null ? (
-              <div className="flex gap-1.5">
-                {[...tVal].map((c, i) => (
-                  <Cell key={`t${i}`} value={c} index={i} tone={sourceTone(state.tIndex, i)} />
-                ))}
-              </div>
+              <Tape
+                values={[...tVal]}
+                toneFor={(i) => sourceTone(state.tIndex, i)}
+                focal={state.tIndex}
+                markers={
+                  state.tIndex !== null
+                    ? [{ at: state.tIndex, label: "t", color: "var(--muted)" }]
+                    : []
+                }
+                reduced={ctx.reduced}
+              />
             ) : null}
           </div>
 
           <div className="flex flex-wrap gap-1.5">
             {state.order.map((letter) => (
-              <div
+              <Node
                 key={letter}
-                className={`flex min-w-9 flex-col items-center rounded-md border px-1.5 py-1 ${
+                value={state.tally[letter]}
+                sub={letter}
+                shape="square"
+                size={40}
+                state={
                   state.offending === letter
-                    ? "border-bad/60 bg-bad/10"
-                    : "border-[var(--family-accent,var(--accent))]/50 bg-[var(--family-accent,var(--accent))]/10"
-                }`}
-              >
-                <motion.span
-                  key={`${letter}-${state.tally[letter]}`}
-                  initial={{ scale: 1.3 }}
-                  animate={{ scale: 1 }}
-                  className="font-mono text-sm font-semibold tabular-nums text-foreground"
-                >
-                  {state.tally[letter]}
-                </motion.span>
-                <span className="font-mono text-[10px] text-muted">{letter}</span>
-              </div>
+                    ? "held"
+                    : state.done
+                      ? "result"
+                      : "visited"
+                }
+                reduced={ctx.reduced}
+              />
             ))}
           </div>
 
           {state.result !== null ? (
-            <div className="font-mono text-[11px] text-muted">
-              result{" "}
-              <span
-                className={state.result ? "text-good" : "text-bad"}
-                style={{ fontWeight: 600 }}
-              >
-                {String(state.result)}
-              </span>
-            </div>
+            <StatusPanel
+              items={[
+                {
+                  label: "result",
+                  value: String(state.result),
+                },
+              ]}
+            />
           ) : null}
-
-          <Legend
-            items={[
-              { tone: "active", label: "current char" },
-            ]}
-          />
         </div>
       )}
     </VizPlayer>

@@ -34,13 +34,18 @@ export function ColumnScanDiagram({
   const strs = (strings.length > 0 ? strings : ["flower", "flow", "flight"]).slice(0, 5);
   const brk = breakColumn(strs);
   const maxLen = Math.max(...strs.map((s) => s.length));
+  // Room for the "shared prefix" label + bracket above the cells. The
+  // label used to sit at y≈2 inside a viewBox that started at 0, so
+  // alphabetic-baseline glyphs were clipped at the top.
+  const topPad = brk > 0 ? 22 : 4;
   const width = 90 + maxLen * (CELL + GAP);
-  const height = 24 + strs.length * (CELL + ROW_GAP);
+  const height = topPad + strs.length * (CELL + ROW_GAP) + 2;
+  const prefixRight = 90 + brk * (CELL + GAP) - GAP;
 
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className="mx-auto h-auto w-full max-w-[440px]"
+      className="mx-auto h-auto w-full max-w-[440px] overflow-visible"
       role="img"
       aria-label={
         brk === 0
@@ -50,15 +55,9 @@ export function ColumnScanDiagram({
     >
       {brk > 0 ? (
         <g>
-          <path
-            d={`M 90 12 L 90 8 L ${90 + brk * (CELL + GAP) - GAP} 8 L ${90 + brk * (CELL + GAP) - GAP} 12`}
-            fill="none"
-            stroke="var(--family-accent, var(--accent))"
-            strokeWidth={1.25}
-          />
           <text
-            x={90 + (brk * (CELL + GAP) - GAP) / 2}
-            y={2}
+            x={90 + (prefixRight - 90) / 2}
+            y={11}
             fontSize={9}
             fontWeight={600}
             fill="var(--family-accent, var(--accent))"
@@ -67,11 +66,17 @@ export function ColumnScanDiagram({
           >
             shared prefix
           </text>
+          <path
+            d={`M 90 ${topPad - 2} L 90 15 L ${prefixRight} 15 L ${prefixRight} ${topPad - 2}`}
+            fill="none"
+            stroke="var(--family-accent, var(--accent))"
+            strokeWidth={1.25}
+          />
         </g>
       ) : null}
 
       {strs.map((s, row) => {
-        const y = 20 + row * (CELL + ROW_GAP);
+        const y = topPad + row * (CELL + ROW_GAP);
         return (
           <g key={row}>
             {[...s].map((ch, col) => {

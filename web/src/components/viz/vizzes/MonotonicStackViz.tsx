@@ -2,9 +2,8 @@
 
 import { useMemo } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { cn } from "@/lib/utils";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, type CellTone } from "@/components/viz/pieces";
+import { Node, StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -114,15 +113,31 @@ function buildSteps(values: number[]): VizStep<MonoStackState>[] {
   return steps;
 }
 
-function cellTone(state: MonoStackState, i: number): CellTone {
-  if (state.current === i) return "active";
+function cellTone(state: MonoStackState, i: number): Tone {
+  if (state.current === i) return "focal";
   const onStack = state.stackIdx.includes(i);
-  if (onStack) return state.done ? "dropped" : "kept";
-  if (state.answer[i] !== null) return "resolved";
-  return "plain";
+  if (onStack) return state.done ? "eliminated" : "range";
+  if (state.answer[i] !== null) return "result";
+  return "default";
 }
 
-function StackColumn({ values, stackIdx }: { values: number[]; stackIdx: number[] }) {
+function answerTone(state: MonoStackState, i: number): Tone {
+  if (state.justPopped === i) return "focal";
+  if (state.answer[i] !== null) return "result";
+  return "default";
+}
+
+function StackColumn({
+  values,
+  stackIdx,
+  justPushed,
+  reduced,
+}: {
+  values: number[];
+  stackIdx: number[];
+  justPushed: number | null;
+  reduced: boolean;
+}) {
   return (
     <div className="flex min-h-32 w-16 flex-col-reverse items-center justify-start gap-1 rounded-lg border border-dashed border-border p-1.5">
       <AnimatePresence initial={false}>
@@ -133,11 +148,18 @@ function StackColumn({ values, stackIdx }: { values: number[]; stackIdx: number[
             initial={{ opacity: 0, y: -12, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, x: 28, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 420, damping: 34 }}
-            className="flex h-8 w-11 items-center justify-center rounded-md border border-accent/60 bg-accent/14 font-mono text-xs font-semibold text-foreground"
+            transition={
+              reduced ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 34 }
+            }
           >
-            {values[idx]}
-            <span className="ml-1 text-[9px] text-muted">{idx}</span>
+            <Node
+              value={values[idx]}
+              sub={String(idx)}
+              shape="square"
+              size={40}
+              state={justPushed === idx ? "focal" : "visited"}
+              reduced={reduced}
+            />
           </motion.div>
         ))}
       </AnimatePresence>
@@ -152,57 +174,46 @@ export function MonotonicStackViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Monotonic stack trace" family="state-transition">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-4">
           <div className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] text-muted">input</span>
-            <div className="flex gap-1.5">
-              {state.values.map((v, i) => (
-                <Cell key={i} value={v} index={i} tone={cellTone(state, i)} />
-              ))}
-            </div>
+            <Tape
+              values={state.values}
+              toneFor={(i) => cellTone(state, i)}
+              focal={state.current}
+              markers={
+                state.current !== null
+                  ? [{ at: state.current, label: "i" }]
+                  : []
+              }
+              reduced={ctx.reduced}
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] text-muted">answer</span>
-            <div className="flex gap-1.5">
-              {state.answer.map((a, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-lg border font-mono text-sm font-semibold tabular-nums",
-                    a === null
-                      ? "border-dashed border-border text-muted"
-                      : "border-good/50 bg-good/10 text-foreground",
-                  )}
-                >
-                  {a === null ? (
-                    state.done ? "none" : "?"
-                  ) : (
-                    <motion.span
-                      key={`ans-${i}-${a}`}
-                      initial={state.justPopped === i ? { scale: 1.5, opacity: 0 } : false}
-                      animate={{ scale: 1, opacity: 1 }}
-                    >
-                      {a}
-                    </motion.span>
-                  )}
-                </div>
-              ))}
-            </div>
+            <Tape
+              values={state.answer}
+              toneFor={(i) => answerTone(state, i)}
+              focal={state.justPopped}
+              reduced={ctx.reduced}
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] text-muted">stack (top ↑)</span>
-            <StackColumn values={state.values} stackIdx={state.stackIdx} />
+            <StackColumn
+              values={state.values}
+              stackIdx={state.stackIdx}
+              justPushed={state.justPushed}
+              reduced={ctx.reduced}
+            />
           </div>
 
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "active", label: "arriving" },
-              { tone: "kept", label: "on stack" },
-              { tone: "resolved", label: "answer found" },
-              { tone: "dropped", label: "never resolved" },
+              { label: "stack", value: `[${state.stackIdx.join(", ")}]` },
             ]}
           />
         </div>

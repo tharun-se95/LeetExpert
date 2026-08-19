@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, MarkerRow, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -97,11 +96,11 @@ function buildSteps(nums: number[], k: number): VizStep<SlidingWindowState>[] {
   return steps;
 }
 
-function cellTone(state: SlidingWindowState, i: number): CellTone {
-  if (state.leaving === i) return "dropped";
-  if (state.entering === i) return "active";
-  if (i >= state.left && i <= state.right) return "kept";
-  return "plain";
+function toneAt(state: SlidingWindowState, i: number): Tone {
+  if (state.leaving === i) return "eliminated";
+  if (state.entering === i) return "focal";
+  if (i >= state.left && i <= state.right) return "range";
+  return "default";
 }
 
 export function SlidingWindowViz(props: Record<string, unknown>) {
@@ -112,41 +111,23 @@ export function SlidingWindowViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Sliding window trace" family="pointer-movement">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex gap-1.5">
-            {state.nums.map((v, i) => (
-              <Cell key={i} value={v} index={i} tone={cellTone(state, i)} />
-            ))}
-          </div>
-          <MarkerRow
-            length={state.nums.length}
+          <Tape
+            values={state.nums}
+            toneFor={(i) => toneAt(state, i)}
+            focal={state.entering}
+            window={{ lo: state.left, hi: state.right }}
             markers={[
-              { index: state.left, label: "L", color: "var(--muted)" },
-              { index: state.right, label: "R" },
+              { at: state.left, label: "L", color: "var(--muted)" },
+              { at: state.right, label: "R" },
             ]}
+            reduced={ctx.reduced}
           />
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              window sum <span className="text-foreground">{state.windowSum}</span>
-            </span>
-            <span className="rounded-md border border-border bg-surface px-1.5 py-0.5">
-              best{" "}
-              <motion.span
-                key={state.best}
-                initial={{ scale: 1.4 }}
-                animate={{ scale: 1 }}
-                className="inline-block font-semibold text-accent"
-              >
-                {state.best}
-              </motion.span>
-            </span>
-          </div>
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "kept", label: "in window" },
-              { tone: "active", label: "entering" },
-              { tone: "dropped", label: "leaving" },
+              { label: "window sum", value: state.windowSum },
+              { label: "best", value: state.best },
             ]}
           />
         </div>

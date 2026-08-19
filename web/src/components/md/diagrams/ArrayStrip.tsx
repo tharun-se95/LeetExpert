@@ -36,7 +36,7 @@ export const CELL_W = 32;
 export const CELL_H = 30;
 export const CELL_GAP = 4;
 /** vertical room a region bracket + its label needs above the cells */
-export const BRACKET_BAND = 30;
+export const BRACKET_BAND = 34;
 /** vertical room a pointer marker + its label needs below the cells */
 export const MARKER_BAND = 28;
 

@@ -13,7 +13,8 @@ import {
   StickyCta,
 } from "@/components/landing/ContinueAndSticky";
 import { ApproachRail } from "@/components/landing/ApproachRail";
-import { HeroStatsArray } from "@/components/landing/HeroStatsArray";
+import { FamilySpotlight } from "@/components/landing/FamilySpotlight";
+import { LandingSandbox } from "@/components/landing/LandingSandbox";
 import { LandingVizStrip } from "@/components/landing/LandingViz";
 import { WaitlistForm } from "@/components/landing/WaitlistForm";
 import { WhoNotPractical } from "@/components/landing/WhoNotPractical";
@@ -27,28 +28,32 @@ import {
   curriculumStats,
 } from "@/lib/landing/content";
 
-const FAQ = [
-  {
-    q: "Is it really free?",
-    a: "Yes — during early bird. Access stays free until we ship a paid launch. Join the waitlist below if you want notice when that changes.",
-  },
-  {
-    q: "Which languages?",
-    a: "Lessons teach in Python and TypeScript. Sandboxes run Python and JavaScript (types stripped so the browser can execute).",
-  },
-  {
-    q: "Do I need a CS degree?",
-    a: "No. Comfortable writing basic loops and functions is enough. Stage 0 builds the analysis vocabulary the rest of the course uses.",
-  },
-  {
-    q: "How long does it take?",
-    a: "Roughly 80–120 hours of focused study across 191 lessons — pace yourself. A steady few lessons a week finishes in a few months.",
-  },
-  {
-    q: "How is this different from grinding LeetCode?",
-    a: "We teach the structure first, then make you solve before the write-up. Patterns become consequences of understanding — not flashcards.",
-  },
-] as const;
+/** FAQ items. Lesson counts come from the manifest at render time — one
+ * source of truth for what "the course has N lessons" means everywhere. */
+function buildFaq(lessonCount: number) {
+  return [
+    {
+      q: "Is it really free?",
+      a: "Yes — during early bird. Access stays free until we ship a paid launch. Join the waitlist below if you want notice when that changes.",
+    },
+    {
+      q: "Which languages?",
+      a: "Lessons teach in Python and TypeScript. Sandboxes run Python and JavaScript (types stripped so the browser can execute).",
+    },
+    {
+      q: "Do I need a CS degree?",
+      a: "No. Comfortable writing basic loops and functions is enough. Stage 0 builds the analysis vocabulary the rest of the course uses.",
+    },
+    {
+      q: "How long does it take?",
+      a: `Roughly 80–120 hours of focused study across ${lessonCount} lessons — pace yourself. A steady few lessons a week finishes in a few months.`,
+    },
+    {
+      q: "How is this different from grinding LeetCode?",
+      a: "We teach the structure first, then make you solve before the write-up. Patterns become consequences of understanding — not flashcards.",
+    },
+  ] as const;
+}
 
 const FEATURES = [
   { icon: Books, label: "Interactive lessons" },
@@ -86,12 +91,7 @@ function SectionLabel({
  */
 export default function HomePage() {
   const stats = curriculumStats();
-  const statTiles = [
-    { label: "Modules", value: stats.modules },
-    { label: "Concepts", value: stats.concepts },
-    { label: "Lessons", value: stats.lessons },
-    { label: "Problems", value: stats.problems },
-  ] as const;
+  const faq = buildFaq(stats.lessons);
 
   return (
     <div className="relative pb-24">
@@ -134,6 +134,16 @@ export default function HomePage() {
                 Explore curriculum
               </Link>
             </div>
+            <p className="mt-4 text-xs text-muted">
+              Free now —{" "}
+              <a
+                href="#paid-launch"
+                className="font-medium text-accent underline decoration-accent/40 underline-offset-2 transition hover:text-foreground hover:decoration-accent"
+              >
+                get a heads-up before we charge
+              </a>
+              .
+            </p>
             <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2.5 sm:mt-7">
               {FEATURES.map(({ icon: Icon, label }) => (
                 <li
@@ -153,7 +163,7 @@ export default function HomePage() {
             </ul>
           </div>
 
-          <HeroStatsArray tiles={statTiles} />
+          <FamilySpotlight stats={stats} />
         </section>
 
         {/* Early bird — inset panel, not full-bleed */}
@@ -197,6 +207,23 @@ export default function HomePage() {
           </div>
           <div className="mt-6">
             <LandingVizStrip />
+          </div>
+
+          {/* The product's other half — a live, judge-able sandbox, not a
+              screenshot. Same editor and test runner learners use inside
+              lessons; CodeMirror is lazy-loaded only when this mounts. */}
+          <div className="mt-8 border-t border-border pt-8">
+            <SectionLabel>Your turn</SectionLabel>
+            <h3 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
+              Solve it live — same editor, same tests.
+            </h3>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
+              Two Sum, the classic opening problem. Write the function, hit Run,
+              and watch the tests judge it — in Python or JavaScript.
+            </p>
+            <div className="mt-4">
+              <LandingSandbox />
+            </div>
           </div>
         </div>
       </section>
@@ -264,7 +291,10 @@ export default function HomePage() {
         </section>
 
         {/* Author + waitlist */}
-        <section className="overflow-hidden rounded-[length:var(--radius-lg)] border border-border">
+        <section
+          id="paid-launch"
+          className="overflow-hidden rounded-[length:var(--radius-lg)] border border-border"
+        >
           <div className="grid lg:grid-cols-[1.5fr_1fr]">
             <div className="border-b border-border p-6 lg:border-r lg:border-b-0 lg:p-8">
               <SectionLabel>Why this exists</SectionLabel>
@@ -309,8 +339,8 @@ export default function HomePage() {
           <h2 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
             Common questions
           </h2>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            {FAQ.map((item) => (
+<div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {faq.map((item) => (
               <details
                 key={item.q}
                 className="group rounded-[length:var(--radius-md)] border border-border bg-surface px-3.5 py-2.5"
@@ -318,8 +348,10 @@ export default function HomePage() {
                 <summary className="cursor-pointer list-none text-sm font-semibold [&::-webkit-details-marker]:hidden">
                   <span className="flex items-center justify-between gap-3">
                     {item.q}
-                    <span className="text-muted group-open:hidden">+</span>
-                    <span className="hidden text-muted group-open:inline">
+                    <span aria-hidden className="text-muted group-open:hidden">
+                      +
+                    </span>
+                    <span aria-hidden className="hidden text-muted group-open:inline">
                       −
                     </span>
                   </span>

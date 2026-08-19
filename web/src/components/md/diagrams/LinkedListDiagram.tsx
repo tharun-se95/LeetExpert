@@ -16,7 +16,7 @@ const NODE_W = 92;
 const NODE_H = 44;
 const GAP = 40;
 const PAD_X = 16;
-const HEAD_BAND = 28;
+const HEAD_BAND = 32;
 
 export function LinkedListDiagram({
   values = [7, 3, 12],
@@ -38,7 +38,7 @@ export function LinkedListDiagram({
     >
       <text
         x={nodeX(0) + NODE_W / 2}
-        y={12}
+        y={14}
         fontSize={11}
         fontWeight={700}
         fill="var(--family-accent, var(--accent))"
@@ -49,7 +49,7 @@ export function LinkedListDiagram({
       </text>
       <line
         x1={nodeX(0) + NODE_W / 2}
-        y1={17}
+        y1={19}
         x2={nodeX(0) + NODE_W / 2}
         y2={HEAD_BAND}
         stroke="var(--family-accent, var(--accent))"

@@ -13,6 +13,8 @@ interface HeaderProps {
   showLessonsMenu?: boolean;
   lessonsMenuOpen?: boolean;
   onToggleLessonsMenu?: () => void;
+  /** Progress chip is course chrome — hidden on the marketing landing. */
+  showProgress?: boolean;
 }
 
 export function Header({
@@ -20,6 +22,7 @@ export function Header({
   showLessonsMenu = false,
   lessonsMenuOpen = false,
   onToggleLessonsMenu,
+  showProgress = true,
 }: HeaderProps) {
   const pathname = usePathname();
   const { visitedCount, totalCount } = useProgress();
@@ -118,20 +121,22 @@ export function Header({
         </button>
 
         <div className="hidden items-center gap-2 md:flex">
-          <div
-            className="flex items-center gap-2 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted"
-            title={`${visitedCount} of ${totalCount} lessons completed`}
-          >
-            <span className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-surface lg:block">
-              <span
-                className="block h-full rounded-full bg-accent transition-all duration-500"
-                style={{ width: `${pct}%` }}
-              />
-            </span>
-            <span className="tabular-nums">
-              {visitedCount}/{totalCount}
-            </span>
-          </div>
+          {showProgress ? (
+            <div
+              className="flex items-center gap-2 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted"
+              title={`${visitedCount} of ${totalCount} lessons completed`}
+            >
+              <span className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-surface lg:block">
+                <span
+                  className="block h-full rounded-full bg-accent transition-all duration-500"
+                  style={{ width: `${pct}%` }}
+                />
+              </span>
+              <span className="tabular-nums">
+                {visitedCount}/{totalCount}
+              </span>
+            </div>
+          ) : null}
         </div>
 
         <ThemeToggle />

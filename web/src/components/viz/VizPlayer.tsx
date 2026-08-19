@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { CodePanel } from "@/components/viz/CodePanel";
 import type { VizCode, VizStep } from "@/components/viz/types";
 import { useVizChrome } from "@/components/viz/vizChrome";
-import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
+import { familyCssVars } from "@/lib/visual/familyTheme";
 import type { FamilyId } from "@/lib/content/manifest";
 
 export interface VizRenderCtx {
@@ -163,7 +163,7 @@ export function VizPlayer<S>({
             ? "fixed inset-0 z-50 overflow-y-auto border-0 bg-background px-4 py-6 sm:px-8"
             : embedded
               ? "w-full bg-transparent"
-              : "elevated-card my-6 w-full overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-surface ring-1 ring-accent/20",
+              : "my-6 w-full",
         )}
       >
         {!expanded && !embedded ? (
@@ -187,10 +187,9 @@ export function VizPlayer<S>({
             )}
           >
             <div
-              data-motif={family ? getFamilyTheme(family).motif : undefined}
               className={cn(
                 "viz-stage flex min-w-0 items-center justify-center overflow-x-auto px-3 py-5",
-                "rounded-[length:var(--radius-sm)] border border-border",
+                "rounded-[length:var(--radius-md)]",
                 expanded || embedded
                   ? "min-h-56 md:min-h-64 md:order-1"
                   : "order-1",
@@ -219,7 +218,7 @@ export function VizPlayer<S>({
             aria-live="polite"
             aria-atomic="true"
             className={cn(
-              "min-h-12 border-t border-border bg-code/40 px-4 py-3 leading-snug text-foreground",
+              "min-h-12 px-4 py-3 leading-snug text-foreground",
               expanded ? "text-base" : "text-sm",
             )}
           >
@@ -231,8 +230,8 @@ export function VizPlayer<S>({
 
           <div
             className={cn(
-              "flex flex-wrap items-center gap-2 bg-surface px-3.5 py-3",
-              expanded ? "mt-2" : "border-t border-border",
+              "flex flex-wrap items-center gap-2 px-3.5 py-3",
+              expanded ? "mt-2" : "",
             )}
           >
             <div className="flex items-center gap-1">
@@ -299,10 +298,10 @@ function PlayerButton({
       disabled={disabled}
       aria-label={ariaLabel}
       className={cn(
-        "flex h-8 w-8 items-center justify-center rounded-lg border text-foreground transition disabled:opacity-40",
+        "flex h-8 w-8 items-center justify-center rounded-lg text-foreground transition disabled:opacity-40",
         primary
-          ? "border-pop bg-pop text-on-pop hover:opacity-90"
-          : "border-border hover:bg-surface",
+          ? "bg-pop text-on-pop hover:opacity-90"
+          : "hover:bg-surface",
       )}
     >
       {children}

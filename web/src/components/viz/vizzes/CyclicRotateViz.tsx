@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -212,11 +212,11 @@ function pointAt(radius: number, angle: number): { x: number; y: number } {
   };
 }
 
-function cellTone(state: CycleState, i: number): CellTone {
-  if (state.next === i) return "active";
-  if (state.placed[i]) return "resolved";
-  if (state.current === i && state.held !== null) return "junk";
-  return "plain";
+function cellTone(state: CycleState, i: number): Tone {
+  if (state.next === i) return "focal";
+  if (state.placed[i]) return "result";
+  if (state.current === i && state.held !== null) return "eliminated";
+  return "default";
 }
 
 export function CyclicRotateViz(props: Record<string, unknown>) {
@@ -257,7 +257,7 @@ export function CyclicRotateViz(props: Record<string, unknown>) {
                   markerHeight={5}
                   orient="auto-start-reverse"
                 >
-                  <path d="M0 0 L10 5 L0 10 Z" fill="var(--accent)" />
+                  <path d="M0 0 L10 5 L0 10 Z" fill="var(--family-accent, var(--accent))" />
                 </marker>
               </defs>
 
@@ -291,7 +291,7 @@ export function CyclicRotateViz(props: Record<string, unknown>) {
                       <path
                         d={`M ${from.x} ${from.y} Q ${control.x} ${control.y} ${to.x} ${to.y}`}
                         fill="none"
-                        stroke="var(--accent)"
+                        stroke="var(--family-accent, var(--accent))"
                         strokeWidth={1.75}
                         markerEnd="url(#rotate-cycle-arrow)"
                       />
@@ -305,7 +305,7 @@ export function CyclicRotateViz(props: Record<string, unknown>) {
                 const isPlaced = state.placed[i];
                 const isStart = state.start === i;
                 const stroke = isPlaced
-                  ? "var(--accent)"
+                  ? "var(--good)"
                   : isStart
                     ? "var(--muted)"
                     : "var(--border)";
@@ -315,8 +315,8 @@ export function CyclicRotateViz(props: Record<string, unknown>) {
                       cx={at.x}
                       cy={at.y}
                       r={NODE_R}
-                      fill={isPlaced ? "var(--accent)" : "var(--background)"}
-                      fillOpacity={isPlaced ? 0.85 : 1}
+                      fill={isPlaced ? "var(--good)" : "var(--background)"}
+                      fillOpacity={isPlaced ? 0.18 : 1}
                       stroke={stroke}
                       strokeWidth={isStart ? 2.25 : 1.5}
                       strokeDasharray={isStart && !isPlaced ? "3 2" : undefined}
@@ -365,7 +365,7 @@ export function CyclicRotateViz(props: Record<string, unknown>) {
                     r={9}
                     cx={0}
                     cy={-NODE_R - 12}
-                    fill="var(--accent)"
+                    fill="var(--family-accent, var(--accent))"
                     stroke="var(--background)"
                     strokeWidth={2}
                   />
@@ -398,28 +398,20 @@ export function CyclicRotateViz(props: Record<string, unknown>) {
             </svg>
 
             <div className="flex flex-col items-start gap-3">
-              <div className="flex flex-wrap gap-1.5">
-                {state.nums.map((v, i) => (
-                  <Cell
-                    key={i}
-                    value={v}
-                    index={i}
-                    tone={cellTone(state, i)}
-                    pop={state.placed[i] && state.current === i}
-                  />
-                ))}
-              </div>
-              <Legend
+              <Tape
+                values={state.nums}
+                toneFor={(i) => cellTone(state, i)}
+                focal={state.next}
+                reduced={ctx.reduced}
+              />
+              <StatusPanel
                 items={[
-                  { tone: "resolved", label: "final position" },
-                  { tone: "active", label: "being written" },
-                  { tone: "plain", label: "not yet moved" },
+                  { label: "moved", value: `${state.moved} / ${n}` },
+                  ...(state.start !== null
+                    ? [{ label: "cycle from", value: state.start }]
+                    : []),
                 ]}
               />
-              <p className="font-mono text-[11px] text-muted">
-                {`moved ${state.moved} / ${n}`}
-                {state.start !== null ? ` · cycle from ${state.start}` : ""}
-              </p>
             </div>
           </div>
         );

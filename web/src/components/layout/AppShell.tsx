@@ -114,6 +114,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           showLessonsMenu={showCourseNav}
           lessonsMenuOpen={mobileNavOpen}
           onToggleLessonsMenu={() => setMobileNavOpen((v) => !v)}
+          showProgress={showCourseNav}
         />
         <div className="flex min-h-0 flex-1">
           {showCourseNav ? (

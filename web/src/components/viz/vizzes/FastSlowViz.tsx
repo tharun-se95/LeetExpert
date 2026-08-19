@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, MarkerRow, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -139,10 +138,10 @@ function buildSteps(values: number[], cycleAt: number | null): VizStep<FastSlowS
   return steps;
 }
 
-function cellTone(state: FastSlowState, i: number): CellTone {
-  if (state.met && (state.slowIdx === i || state.fastIdx === i)) return "active";
-  if (state.slowIdx === i || state.fastIdx === i) return "kept";
-  return "plain";
+function cellTone(state: FastSlowState, i: number): Tone {
+  if (state.met && (state.slowIdx === i || state.fastIdx === i)) return "result";
+  if (state.slowIdx === i || state.fastIdx === i) return "focal";
+  return "default";
 }
 
 export function FastSlowViz(props: Record<string, unknown>) {
@@ -156,63 +155,48 @@ export function FastSlowViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Fast and slow pointers trace" family="pointer-movement">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex flex-col items-start gap-1">
-            <div className="flex gap-1.5">
-              {state.values.map((v, i) => (
-                <Cell key={i} value={v} index={i} tone={cellTone(state, i)} />
-              ))}
-            </div>
-            <div className="flex gap-1.5">
-              {state.values.map((_, i) => (
-                <div key={i} className="flex w-10 justify-center">
-                  {i === state.values.length - 1 ? (
-                    <span className="font-mono text-[9px] text-muted">
-                      {state.cycleAt !== null ? `↺ idx ${state.cycleAt}` : "→ ∅"}
-                    </span>
-                  ) : state.cycleAt === i ? (
-                    <span className="font-mono text-[9px] text-accent">loop entry</span>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          </div>
-          <MarkerRow
-            length={state.values.length}
+          <Tape
+            values={state.values}
+            toneFor={(i) => cellTone(state, i)}
+            focal={state.slowIdx}
             markers={[
               ...(state.slowIdx !== null
-                ? [{ index: state.slowIdx, label: "slow", color: "var(--muted)" }]
+                ? [{ at: state.slowIdx, label: "slow", color: "var(--muted)" }]
                 : []),
-              ...(state.fastIdx !== null ? [{ index: state.fastIdx, label: "fast" }] : []),
+              ...(state.fastIdx !== null ? [{ at: state.fastIdx, label: "fast" }] : []),
             ]}
+            reduced={ctx.reduced}
           />
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              slow <span className="text-foreground">{state.slowIdx === null ? "null" : state.values[state.slowIdx]}</span>
-            </span>
-            <span>
-              fast <span className="text-foreground">{state.fastIdx === null ? "null" : state.values[state.fastIdx]}</span>
-            </span>
-            {state.gap !== null ? (
-              <span className="rounded-md border border-accent/40 bg-accent/10 px-1.5 py-0.5 text-accent">
-                gap{" "}
-                <motion.span
-                  key={state.gap}
-                  initial={{ scale: 1.4 }}
-                  animate={{ scale: 1 }}
-                  className="inline-block font-semibold"
-                >
-                  {state.gap}
-                </motion.span>
-              </span>
-            ) : null}
+          <div className="flex gap-[0.375rem]" aria-hidden>
+            {state.values.map((_, i) => (
+              <div key={i} className="flex w-10 justify-center">
+                {i === state.values.length - 1 ? (
+                  <span className="font-mono text-[9px] text-muted">
+                    {state.cycleAt !== null ? `↺ idx ${state.cycleAt}` : "→ ∅"}
+                  </span>
+                ) : state.cycleAt === i ? (
+                  <span className="font-mono text-[9px] text-[var(--family-accent,var(--accent))]">loop entry</span>
+                ) : null}
+              </div>
+            ))}
           </div>
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "kept", label: "slow / fast" },
-              { tone: "active", label: "met" },
-              { tone: "plain", label: "unvisited" },
+              {
+                label: "slow",
+                value:
+                  state.slowIdx === null ? "null" : state.values[state.slowIdx],
+              },
+              {
+                label: "fast",
+                value:
+                  state.fastIdx === null ? "null" : state.values[state.fastIdx],
+              },
+              ...(state.gap !== null
+                ? [{ label: "gap", value: state.gap }]
+                : []),
             ]}
           />
         </div>

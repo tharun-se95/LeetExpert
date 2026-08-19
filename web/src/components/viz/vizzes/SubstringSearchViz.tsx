@@ -1,8 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
+import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, type CellTone } from "@/components/viz/pieces";
+import {
+  SLOT_STEP_REM,
+  StatusPanel,
+  Tape,
+  type Tone,
+} from "@/components/viz/pieces";
 import { stringProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -98,22 +104,22 @@ function buildSteps(haystack: string, needle: string): VizStep<SearchState>[] {
   return steps;
 }
 
-function haystackTone(state: SearchState, i: number, m: number): CellTone {
+function haystackTone(state: SearchState, i: number, m: number): Tone {
   const offset = i - state.candidateStart;
-  if (state.found !== null && i >= state.found && i < state.found + m) return "resolved";
-  if (offset < 0 || offset >= m) return "plain";
-  if (state.failed && offset === state.compareIndex) return "dropped";
-  if (offset < state.matched) return "resolved";
-  if (offset === state.compareIndex) return "active";
-  return "plain";
+  if (state.found !== null && i >= state.found && i < state.found + m) return "result";
+  if (offset < 0 || offset >= m) return "default";
+  if (state.failed && offset === state.compareIndex) return "held";
+  if (offset < state.matched) return "result";
+  if (offset === state.compareIndex) return "focal";
+  return "default";
 }
 
-function needleTone(state: SearchState, j: number): CellTone {
-  if (state.found !== null) return "resolved";
-  if (state.failed && j === state.compareIndex) return "dropped";
-  if (j < state.matched) return "resolved";
-  if (j === state.compareIndex) return "active";
-  return "plain";
+function needleTone(state: SearchState, j: number): Tone {
+  if (state.found !== null) return "result";
+  if (state.failed && j === state.compareIndex) return "held";
+  if (j < state.matched) return "result";
+  if (j === state.compareIndex) return "focal";
+  return "default";
 }
 
 export function SubstringSearchViz(props: Record<string, unknown>) {
@@ -121,6 +127,7 @@ export function SubstringSearchViz(props: Record<string, unknown>) {
   const hVal = stringProp(haystack, "sadbutsad");
   const nVal = stringProp(needle, "sad");
   const steps = useMemo(() => buildSteps(hVal, nVal), [hVal, nVal]);
+  const m = nVal.length;
 
   return (
     <VizPlayer
@@ -130,33 +137,47 @@ export function SubstringSearchViz(props: Record<string, unknown>) {
       label="Naive substring search trace"
       family="pointer-movement"
     >
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-2">
-          <div className="flex gap-1.5">
-            {[...hVal].map((c, i) => (
-              <Cell key={`h${i}`} value={c} index={i} tone={haystackTone(state, i, nVal.length)} />
-            ))}
-          </div>
-          <div className="flex gap-1.5" style={{ paddingLeft: `${state.candidateStart * 2.875}rem` }}>
-            {[...nVal].map((c, j) => (
-              <Cell key={`n${j}`} value={c} tone={needleTone(state, j)} />
-            ))}
-          </div>
-          {state.done ? (
-            <div className="font-mono text-[11px] text-muted">
-              result{" "}
-              <span className="font-semibold text-foreground">
-                {state.found !== null ? state.found : -1}
-              </span>
-            </div>
-          ) : null}
-          <Legend
-            items={[
-              { tone: "active", label: "comparing" },
-              { tone: "resolved", label: "matched" },
-              { tone: "dropped", label: "candidate failed" },
+          <Tape
+            values={[...hVal]}
+            toneFor={(i) => haystackTone(state, i, m)}
+            focal={
+              state.compareIndex !== null
+                ? state.candidateStart + state.compareIndex
+                : null
+            }
+            window={
+              state.candidateStart + m - 1 < hVal.length
+                ? { lo: state.candidateStart, hi: state.candidateStart + m - 1 }
+                : null
+            }
+            markers={[
+              { at: state.candidateStart, label: "i", color: "var(--muted)" },
             ]}
+            reduced={ctx.reduced}
           />
+          <motion.div
+            aria-hidden
+            initial={false}
+            animate={{
+              paddingLeft: `${state.candidateStart * SLOT_STEP_REM}rem`,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 420,
+              damping: 34,
+            }}
+          >
+            <Tape values={[...nVal]} toneFor={(j) => needleTone(state, j)} hideIndices reduced={ctx.reduced} />
+          </motion.div>
+          {state.done ? (
+            <StatusPanel
+              items={[
+                { label: "result", value: state.found !== null ? state.found : -1 },
+              ]}
+            />
+          ) : null}
         </div>
       )}
     </VizPlayer>

@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, MarkerRow, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -120,11 +119,11 @@ function buildSteps(nums: number[], target: number): VizStep<DynamicWindowState>
   return steps;
 }
 
-function cellTone(state: DynamicWindowState, i: number): CellTone {
-  if (state.leaving === i) return "dropped";
-  if (state.entering === i) return "active";
-  if (state.right !== null && i >= state.left && i <= state.right) return "kept";
-  return "plain";
+function toneAt(state: DynamicWindowState, i: number): Tone {
+  if (state.leaving === i) return "eliminated";
+  if (state.entering === i) return "focal";
+  if (state.right !== null && i >= state.left && i <= state.right) return "range";
+  return "default";
 }
 
 export function DynamicWindowViz(props: Record<string, unknown>) {
@@ -135,45 +134,31 @@ export function DynamicWindowViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Dynamic window trace" family="pointer-movement">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex gap-1.5">
-            {state.nums.map((v, i) => (
-              <Cell key={i} value={v} index={i} tone={cellTone(state, i)} />
-            ))}
-          </div>
-          <MarkerRow
-            length={state.nums.length}
+          <Tape
+            values={state.nums}
+            toneFor={(i) => toneAt(state, i)}
+            focal={state.entering}
+            window={
+              state.right !== null
+                ? { lo: state.left, hi: state.right }
+                : null
+            }
             markers={[
-              { index: state.left, label: "left", color: "var(--muted)" },
-              ...(state.right !== null ? [{ index: state.right, label: "right" }] : []),
+              { at: state.left, label: "left", color: "var(--muted)" },
+              ...(state.right !== null ? [{ at: state.right, label: "right" }] : []),
             ]}
+            reduced={ctx.reduced}
           />
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              target <span className="text-foreground">{state.target}</span>
-            </span>
-            <span>
-              window sum{" "}
-              <span className={state.valid ? "text-accent" : "text-foreground"}>{state.windowSum}</span>
-            </span>
-            <span className="rounded-md border border-border bg-surface px-1.5 py-0.5">
-              best{" "}
-              <motion.span
-                key={state.best ?? "none"}
-                initial={{ scale: 1.4 }}
-                animate={{ scale: 1 }}
-                className="inline-block font-semibold text-accent"
-              >
-                {state.best ?? "∞"}
-              </motion.span>
-            </span>
-          </div>
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "kept", label: "in window" },
-              { tone: "active", label: "entering" },
-              { tone: "dropped", label: "leaving (shrink)" },
+              { label: "target", value: state.target },
+              {
+                label: "window sum",
+                value: state.windowSum,
+              },
+              { label: "best", value: state.best ?? "∞" },
             ]}
           />
         </div>

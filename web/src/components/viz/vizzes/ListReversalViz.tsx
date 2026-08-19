@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, MarkerRow, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -124,10 +124,10 @@ function buildSteps(values: number[]): VizStep<ReversalState>[] {
   return steps;
 }
 
-function cellTone(state: ReversalState, i: number): CellTone {
-  if (state.currIdx === i) return "active";
-  if (state.flipped[i]) return "resolved";
-  return "plain";
+function cellTone(state: ReversalState, i: number): Tone {
+  if (state.currIdx === i) return "focal";
+  if (state.flipped[i]) return "result";
+  return "default";
 }
 
 function NextGlyph({ i, state }: { i: number; state: ReversalState }) {
@@ -157,44 +157,50 @@ export function ListReversalViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="List reversal trace" family="relationships">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex gap-1.5">
-            {state.values.map((v, i) => (
-              <div key={i} className="flex flex-col items-center gap-1">
-                <Cell value={v} index={i} tone={cellTone(state, i)} />
-                <NextGlyph i={i} state={state} />
-              </div>
-            ))}
-          </div>
-          <MarkerRow
-            length={state.values.length}
+          <Tape
+            values={state.values}
+            toneFor={(i) => cellTone(state, i)}
+            focal={state.currIdx}
             markers={[
               ...(state.prevIdx !== null
-                ? [{ index: state.prevIdx, label: "prev", color: "var(--muted)" }]
+                ? [{ at: state.prevIdx, label: "prev", color: "var(--muted)" }]
                 : []),
-              ...(state.currIdx !== null ? [{ index: state.currIdx, label: "curr" }] : []),
+              ...(state.currIdx !== null ? [{ at: state.currIdx, label: "curr" }] : []),
               ...(state.nxtIdx !== null
-                ? [{ index: state.nxtIdx, label: "nxt", color: "color-mix(in oklab, var(--accent) 55%, var(--muted))" }]
+                ? [{ at: state.nxtIdx, label: "nxt", color: "color-mix(in oklab, var(--accent) 55%, var(--muted))" }]
                 : []),
             ]}
+            reduced={ctx.reduced}
           />
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              prev <span className="text-foreground">{state.prevIdx === null ? "null" : state.values[state.prevIdx]}</span>
-            </span>
-            <span>
-              curr <span className="text-foreground">{state.currIdx === null ? "null" : state.values[state.currIdx]}</span>
-            </span>
-            <span>
-              nxt <span className="text-foreground">{state.nxtIdx === null ? "null" : state.values[state.nxtIdx]}</span>
-            </span>
+          <div className="flex gap-[0.375rem]" aria-hidden>
+            {state.values.map((v, i) => (
+              <span
+                key={i}
+                className="flex w-10 justify-center font-mono text-[10px]"
+              >
+                <NextGlyph i={i} state={state} />
+              </span>
+            ))}
           </div>
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "active", label: "curr" },
-              { tone: "resolved", label: "flipped (reversed region)" },
-              { tone: "plain", label: "untouched suffix" },
+              {
+                label: "prev",
+                value:
+                  state.prevIdx === null ? "null" : state.values[state.prevIdx],
+              },
+              {
+                label: "curr",
+                value:
+                  state.currIdx === null ? "null" : state.values[state.currIdx],
+              },
+              {
+                label: "nxt",
+                value:
+                  state.nxtIdx === null ? "null" : state.values[state.nxtIdx],
+              },
             ]}
           />
         </div>

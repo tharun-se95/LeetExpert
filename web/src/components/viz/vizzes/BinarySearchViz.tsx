@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, MarkerRow, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -121,11 +121,11 @@ function buildSteps(arr: number[], target: number): VizStep<BinarySearchState>[]
   return steps;
 }
 
-function cellTone(state: BinarySearchState, i: number): CellTone {
-  if (state.found === i) return "active";
-  if (state.mid === i) return "active";
-  if (state.dead.includes(i)) return "dropped";
-  return "kept";
+function toneAt(state: BinarySearchState, i: number): Tone {
+  if (state.found === i) return "result";
+  if (state.mid === i) return "focal";
+  if (state.dead.includes(i)) return "eliminated";
+  return "range";
 }
 
 export function BinarySearchViz(props: Record<string, unknown>) {
@@ -146,37 +146,31 @@ export function BinarySearchViz(props: Record<string, unknown>) {
       label="Binary search trace"
       family="ordering-search"
     >
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex gap-1.5">
-            {state.arr.map((v, i) => (
-              <Cell key={i} value={v} index={i} tone={cellTone(state, i)} />
-            ))}
-          </div>
-          <MarkerRow
-            length={state.arr.length}
+          <Tape
+            values={state.arr}
+            toneFor={(i) => toneAt(state, i)}
+            focal={state.mid}
             markers={[
-              { index: state.lo, label: "lo", color: "var(--muted)" },
-              { index: state.hi, label: "hi", color: "var(--muted)" },
-              ...(state.mid !== null ? [{ index: state.mid, label: "mid" }] : []),
-            ].filter((m) => m.index >= 0 && m.index < state.arr.length)}
+              { at: state.lo, label: "lo", color: "var(--muted)" },
+              { at: state.hi, label: "hi", color: "var(--muted)" },
+              ...(state.mid !== null ? [{ at: state.mid, label: "mid" }] : []),
+            ].filter((m) => m.at >= 0 && m.at < state.arr.length)}
+            bracket={
+              state.empty || state.lo > state.hi
+                ? null
+                : { lo: state.lo, hi: state.hi }
+            }
+            reduced={ctx.reduced}
           />
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              target <span className="text-foreground">{state.target}</span>
-            </span>
-            <span>
-              range{" "}
-              <span className="text-foreground">
-                {state.empty ? "empty" : `[${state.lo}, ${state.hi}]`}
-              </span>
-            </span>
-          </div>
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "active", label: "mid / found" },
-              { tone: "kept", label: "live range" },
-              { tone: "dropped", label: "eliminated" },
+              { label: "target", value: state.target },
+              {
+                label: "range",
+                value: state.empty ? "∅" : `[${state.lo}, ${state.hi}]`,
+              },
             ]}
           />
         </div>

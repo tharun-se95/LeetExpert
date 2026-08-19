@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, MarkerRow, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -95,11 +95,11 @@ function buildSteps(data: number[]): VizStep<WritePointerState>[] {
   return steps;
 }
 
-function cellTone(state: WritePointerState, i: number): CellTone {
-  if (state.justWrote === i) return "active";
-  if (i < state.write) return "kept";
+function toneAt(state: WritePointerState, i: number): Tone {
+  if (state.justWrote === i) return "focal";
+  if (i < state.write) return "result";
   const scanned = state.done || (state.read !== null && i <= state.read);
-  return scanned ? "junk" : "plain";
+  return scanned ? "eliminated" : "default";
 }
 
 export function WritePointerViz(props: Record<string, unknown>) {
@@ -117,33 +117,27 @@ export function WritePointerViz(props: Record<string, unknown>) {
       label="Write-pointer compaction trace"
       family="pointer-movement"
     >
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex gap-1.5">
-            {state.nums.map((v, i) => (
-              <Cell
-                key={i}
-                value={v}
-                index={i}
-                tone={cellTone(state, i)}
-                pop={state.justWrote === i}
-              />
-            ))}
-          </div>
-          <MarkerRow
-            length={state.nums.length}
+          <Tape
+            values={state.nums}
+            toneFor={(i) => toneAt(state, i)}
+            focal={state.justWrote}
             markers={[
               ...(state.read !== null
-                ? [{ index: state.read, label: "read", color: "var(--muted)" }]
+                ? [{ at: state.read, label: "read", color: "var(--muted)" }]
                 : []),
-              { index: state.write, label: "write" },
+              {
+                at: Math.min(state.write, state.nums.length - 1),
+                label: "write",
+              },
             ]}
+            reduced={ctx.reduced}
           />
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "kept", label: "kept prefix" },
-              { tone: "junk", label: "scanned junk" },
-              { tone: "plain", label: "unread" },
+              { label: "write", value: state.write },
+              { label: "read", value: state.read ?? "—" },
             ]}
           />
         </div>

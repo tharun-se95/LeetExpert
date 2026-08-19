@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { VizPlayer } from "@/components/viz/VizPlayer";
+import { StatusPanel } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -167,10 +168,10 @@ function SlotRow({
                 c === null
                   ? "border-dashed border-border text-muted"
                   : hot
-                    ? "border-pop bg-pop text-on-pop"
+                    ? "border-[var(--family-accent,var(--accent))] bg-[var(--family-accent,var(--accent))] text-[var(--family-on-accent,var(--on-pop))]"
                     : retiredLook
-                      ? "border-border bg-surface text-muted opacity-60"
-                      : "border-accent/50 bg-accent/12 text-foreground",
+                      ? "border-border bg-background text-muted opacity-60"
+                      : "border-[var(--family-accent,var(--accent))]/50 bg-[var(--family-accent,var(--accent))]/12 text-foreground",
               )}
             >
               {c === null ? "" : (
@@ -219,31 +220,17 @@ export function DynamicArrayGrowthViz(props: Record<string, unknown>) {
               slideIn={state.oldStore !== null}
             />
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              capacity <span className="text-foreground">{state.capacity}</span>
-            </span>
-            <span>
-              length <span className="text-foreground">{state.length}</span>
-            </span>
-            <span>
-              appending{" "}
-              <span className="text-foreground">
-                {state.incoming === null ? "—" : state.incoming}
-              </span>
-            </span>
-            <span className="rounded-md border border-border bg-surface px-1.5 py-0.5">
-              work{" "}
-              <motion.span
-                key={state.cost}
-                initial={{ scale: 1.4 }}
-                animate={{ scale: 1 }}
-                className="inline-block font-semibold text-accent"
-              >
-                {state.cost}
-              </motion.span>
-            </span>
-          </div>
+          <StatusPanel
+            items={[
+              { label: "capacity", value: state.capacity },
+              { label: "length", value: state.length },
+              {
+                label: "appending",
+                value: state.incoming === null ? "—" : state.incoming,
+              },
+              { label: "work", value: state.cost },
+            ]}
+          />
         </div>
       )}
     </VizPlayer>

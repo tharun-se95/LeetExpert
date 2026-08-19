@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -99,19 +98,19 @@ function buildSteps(
   return steps;
 }
 
-function numsTone(state: PrefixSumState, i: number): CellTone {
+function numsTone(state: PrefixSumState, i: number): Tone {
   if (state.queryL !== null && state.queryR !== null && i >= state.queryL && i <= state.queryR) {
-    return "active";
+    return "focal";
   }
-  if (i === state.currentI) return "active";
-  if (i < state.builtUpTo) return "kept";
-  return "plain";
+  if (i === state.currentI) return "focal";
+  if (i < state.builtUpTo) return "range";
+  return "default";
 }
 
-function prefixTone(state: PrefixSumState, i: number): CellTone {
-  if (state.highlightPrefixIdx.includes(i)) return "active";
-  if (i <= state.builtUpTo) return "resolved";
-  return "plain";
+function prefixTone(state: PrefixSumState, i: number): Tone {
+  if (state.highlightPrefixIdx.includes(i)) return "focal";
+  if (i <= state.builtUpTo) return "result";
+  return "default";
 }
 
 export function PrefixSumViz(props: Record<string, unknown>) {
@@ -139,56 +138,52 @@ export function PrefixSumViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Prefix sum trace" family="linear-traversal">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
           <div className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] text-muted">nums</span>
-            <div className="flex gap-1.5">
-              {state.nums.map((v, i) => (
-                <Cell key={i} value={v} index={i} tone={numsTone(state, i)} />
-              ))}
-            </div>
+            <Tape
+              values={state.nums}
+              toneFor={(i) => numsTone(state, i)}
+              focal={state.currentI}
+              markers={
+                state.queryL !== null && state.queryR !== null
+                  ? [
+                      { at: state.queryL, label: "l", color: "var(--muted)" },
+                      { at: state.queryR, label: "r" },
+                    ]
+                  : []
+              }
+              reduced={ctx.reduced}
+            />
           </div>
           <div className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] text-muted">prefix</span>
-            <div className="flex gap-1.5">
-              {state.prefix.map((v, i) => (
-                <Cell
-                  key={i}
-                  value={i <= state.builtUpTo ? v : ""}
-                  index={i}
-                  tone={prefixTone(state, i)}
-                  pop={state.currentI !== null && i === state.currentI + 1 && i === state.builtUpTo}
-                />
-              ))}
-            </div>
+            <Tape
+              values={state.prefix.map((v, i) =>
+                i <= state.builtUpTo ? v : null,
+              )}
+              toneFor={(i) => prefixTone(state, i)}
+              focal={
+                state.highlightPrefixIdx.length === 1
+                  ? state.highlightPrefixIdx[0]
+                  : null
+              }
+              reduced={ctx.reduced}
+            />
           </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              query{" "}
-              <span className="text-foreground">
-                {state.queryL === null ? "—" : `[${state.queryL}, ${state.queryR}]`}
-              </span>
-            </span>
-            {state.queryResult !== null ? (
-              <span className="rounded-md border border-accent/40 bg-accent/10 px-1.5 py-0.5 text-accent">
-                sum{" "}
-                <motion.span
-                  key={state.queryResult}
-                  initial={{ scale: 1.4 }}
-                  animate={{ scale: 1 }}
-                  className="inline-block font-semibold"
-                >
-                  {state.queryResult}
-                </motion.span>
-              </span>
-            ) : null}
-          </div>
-          <Legend
+          <StatusPanel
             items={[
-              { tone: "kept", label: "summed in" },
-              { tone: "resolved", label: "prefix computed" },
-              { tone: "active", label: "in query / lookup" },
+              {
+                label: "query",
+                value:
+                  state.queryL === null
+                    ? "—"
+                    : `[${state.queryL}, ${state.queryR}]`,
+              },
+              ...(state.queryResult !== null
+                ? [{ label: "sum", value: state.queryResult }]
+                : []),
             ]}
           />
         </div>

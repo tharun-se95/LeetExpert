@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { VizPlayer } from "@/components/viz/VizPlayer";
+import { StatusPanel } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -169,7 +170,9 @@ function BucketColumn({ index, keys, state }: { index: number; keys: number[]; s
       <div
         className={cn(
           "flex min-h-9 w-9 flex-col-reverse items-center gap-1 rounded-lg border border-dashed p-1 transition-colors duration-300",
-          isTarget ? "border-accent bg-accent/10" : "border-border",
+          isTarget
+            ? "border-[var(--family-accent,var(--accent))] bg-[var(--family-accent,var(--accent))]/10"
+            : "border-border",
         )}
       >
         {keys.map((k) => {
@@ -183,8 +186,8 @@ function BucketColumn({ index, keys, state }: { index: number; keys: number[]; s
               className={cn(
                 "flex h-6 w-6 shrink-0 items-center justify-center rounded-md border font-mono text-[10px] font-semibold",
                 hot
-                  ? "border-pop bg-pop text-on-pop"
-                  : "border-accent/50 bg-accent/12 text-foreground",
+                  ? "border-[var(--family-accent,var(--accent))] bg-[var(--family-accent,var(--accent))] text-[var(--family-on-accent,var(--on-pop))]"
+                  : "border-[var(--family-accent,var(--accent))]/50 bg-[var(--family-accent,var(--accent))]/12 text-foreground",
               )}
             >
               {k}
@@ -215,24 +218,19 @@ export function HashBucketsViz(props: Record<string, unknown>) {
               <BucketColumn key={i} index={i} keys={chain} state={state} />
             ))}
           </motion.div>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              inserting{" "}
-              <span className="text-foreground">{state.incoming === null ? "—" : state.incoming}</span>
-            </span>
-            <span>
-              size/capacity{" "}
-              <span className="text-foreground">
-                {state.size}/{state.capacity}
-              </span>
-            </span>
-            <span>
-              load{" "}
-              <span className={cn(state.size / state.capacity >= 0.75 ? "text-accent" : "text-foreground")}>
-                {(state.size / state.capacity).toFixed(2)}
-              </span>
-            </span>
-          </div>
+          <StatusPanel
+            items={[
+              {
+                label: "inserting",
+                value: state.incoming === null ? "—" : state.incoming,
+              },
+              {
+                label: "size / capacity",
+                value: `${state.size}/${state.capacity}`,
+              },
+              { label: "load", value: (state.size / state.capacity).toFixed(2) },
+            ]}
+          />
         </div>
       )}
     </VizPlayer>

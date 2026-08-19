@@ -30,9 +30,11 @@ interface Row {
 }
 
 const PAD_X = 14;
-const TOP_PAD = 8;
+// Swap arcs lift up to 14px above the cell top; keep the apex inside the viewBox.
+const TOP_PAD = 20;
 const ROW_GAP = CELL_H + MARKER_BAND + 16;
 const MAX_ROWS = 8;
+const ARC_LIFT_MAX = 14;
 
 function buildRows(data: (string | number)[]): Row[] {
   const rows: Row[] = [];
@@ -125,7 +127,7 @@ export function ConvergingPointersDiagram({
                   const x1 = PAD_X + centerX(row.swap[0]);
                   const x2 = PAD_X + centerX(row.swap[1]);
                   const top = y - 2;
-                  const lift = Math.min(14, 4 + (x2 - x1) / 12);
+                  const lift = Math.min(ARC_LIFT_MAX, 4 + (x2 - x1) / 12);
                   return `M ${x1} ${top} Q ${(x1 + x2) / 2} ${top - lift} ${x2} ${top}`;
                 })()}
                 fill="none"

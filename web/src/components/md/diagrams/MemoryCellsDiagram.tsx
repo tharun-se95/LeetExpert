@@ -16,7 +16,9 @@ const CELL_W = 68;
 const CELL_H = 44;
 const GAP = 6;
 const PAD_X = 16;
-const BRACKET_H = 22;
+// Room for the bracket label above the cells — same failure mode as the
+// pre-fix column-scan diagram (alphabetic baseline clips at y≈0).
+const BRACKET_H = 28;
 
 export function MemoryCellsDiagram({
   count = 5,
@@ -35,16 +37,9 @@ export function MemoryCellsDiagram({
       role="img"
       aria-label={`An array of ${n} elements laid out as one contiguous block in memory, starting at address 0x${baseAddress.toString(16)}, each slot ${slotBytes} bytes apart`}
     >
-      <path
-        d={`M ${PAD_X} ${BRACKET_H - 4} L ${PAD_X} ${BRACKET_H - 8} L ${PAD_X + innerWidth} ${BRACKET_H - 8} L ${PAD_X + innerWidth} ${BRACKET_H - 4}`}
-        fill="none"
-        stroke="var(--family-accent, var(--accent))"
-        strokeWidth={1.25}
-        strokeOpacity={0.7}
-      />
       <text
         x={PAD_X + innerWidth / 2}
-        y={BRACKET_H - 13}
+        y={11}
         fontSize={10}
         fontWeight={600}
         fill="var(--family-accent, var(--accent))"
@@ -53,6 +48,13 @@ export function MemoryCellsDiagram({
       >
         one contiguous block
       </text>
+      <path
+        d={`M ${PAD_X} ${BRACKET_H - 2} L ${PAD_X} 15 L ${PAD_X + innerWidth} 15 L ${PAD_X + innerWidth} ${BRACKET_H - 2}`}
+        fill="none"
+        stroke="var(--family-accent, var(--accent))"
+        strokeWidth={1.25}
+        strokeOpacity={0.7}
+      />
 
       {Array.from({ length: n }, (_, i) => {
         const x = PAD_X + i * (CELL_W + GAP);

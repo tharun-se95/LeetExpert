@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, MarkerRow, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { stringProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -100,11 +100,11 @@ function buildSteps(chars: string[]): VizStep<PalindromeState>[] {
   return steps;
 }
 
-function cellTone(state: PalindromeState, i: number): CellTone {
-  if (state.mismatch.includes(i)) return "dropped";
-  if (state.matched.includes(i)) return "resolved";
-  if (!state.done && (i === state.left || i === state.right)) return "active";
-  return "plain";
+function cellTone(state: PalindromeState, i: number): Tone {
+  if (state.mismatch.includes(i)) return "held";
+  if (state.matched.includes(i)) return "result";
+  if (!state.done && (i === state.left || i === state.right)) return "focal";
+  return "default";
 }
 
 export function PalindromeCheckViz(props: Record<string, unknown>) {
@@ -121,42 +121,27 @@ export function PalindromeCheckViz(props: Record<string, unknown>) {
       label="Palindrome two-pointer check"
       family="pointer-movement"
     >
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex gap-1.5">
-            {chars.map((c, i) => (
-              <Cell key={i} value={c} index={i} tone={cellTone(state, i)} />
-            ))}
-          </div>
-          <MarkerRow
-            length={chars.length}
+          <Tape
+            values={chars}
+            toneFor={(i) => cellTone(state, i)}
+            focal={state.left}
             markers={
               state.done
                 ? []
                 : [
-                    { index: state.left, label: "L" },
-                    { index: state.right, label: "R" },
+                    { at: state.left, label: "L" },
+                    { at: state.right, label: "R", color: "var(--muted)" },
                   ]
             }
+            reduced={ctx.reduced}
           />
           {state.result !== null ? (
-            <div className="font-mono text-[11px] text-muted">
-              result{" "}
-              <span
-                className={state.result ? "text-good" : "text-bad"}
-                style={{ fontWeight: 600 }}
-              >
-                {String(state.result)}
-              </span>
-            </div>
+            <StatusPanel
+              items={[{ label: "result", value: String(state.result) }]}
+            />
           ) : null}
-          <Legend
-            items={[
-              { tone: "active", label: "comparing" },
-              { tone: "resolved", label: "matched" },
-              { tone: "dropped", label: "mismatch" },
-            ]}
-          />
         </div>
       )}
     </VizPlayer>

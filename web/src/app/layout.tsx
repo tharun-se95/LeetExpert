@@ -30,11 +30,11 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "codeMacha",
+    default: "codeMacha — DSA Course: Data Structures & Algorithms",
     template: "%s · codeMacha",
   },
   description:
-    "Learn. Practice. Build. Master. — DSA from first principles, implemented from scratch, drilled with solve-first problems.",
+    "Learn data structures and algorithms from first principles. Interactive lessons, live sandboxes in Python and JavaScript, visualizations, and solve-first problems — 212 lessons.",
 };
 
 export default function RootLayout({

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { VizPlayer } from "@/components/viz/VizPlayer";
+import { StatusPanel } from "@/components/viz/pieces";
 import { speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -210,12 +211,12 @@ function TreeCanvas({ flat, state }: { flat: TreeNode[]; state: FibTreeState }) 
                 className={cn(
                   "flex h-full w-full flex-col items-center justify-center rounded-full border font-mono text-[10px] font-semibold leading-none transition-colors duration-300",
                   isRecomputeFlash
-                    ? "border-bad bg-bad/20 text-foreground"
+                    ? "border-[var(--bad)]/60 bg-[var(--bad)]/20 text-foreground"
                     : isActive
-                      ? "border-pop bg-pop text-on-pop"
+                      ? "border-[var(--family-accent,var(--accent))] bg-[var(--family-accent,var(--accent))] text-[var(--family-on-accent,var(--on-pop))]"
                       : value !== undefined
                         ? "border-good/50 bg-good/10 text-foreground"
-                        : "border-accent/50 bg-accent/12 text-foreground",
+                        : "border-[var(--family-accent,var(--accent))]/50 bg-[var(--family-accent,var(--accent))]/12 text-foreground",
                 )}
               >
                 <span>fib({n.n})</span>
@@ -245,22 +246,12 @@ export function FibCallTreeViz(props: Record<string, unknown>) {
           <div className="overflow-x-auto">
             <TreeCanvas flat={flat} state={state} />
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              calls so far <span className="text-foreground">{state.visible.size}</span>
-            </span>
-            <span className="rounded-md border border-bad/40 bg-bad/10 px-1.5 py-0.5 text-bad">
-              recomputed{" "}
-              <motion.span
-                key={state.recomputeCount}
-                initial={{ scale: 1.4 }}
-                animate={{ scale: 1 }}
-                className="inline-block font-semibold"
-              >
-                {state.recomputeCount}
-              </motion.span>
-            </span>
-          </div>
+          <StatusPanel
+            items={[
+              { label: "calls so far", value: state.visible.size },
+              { label: "recomputed", value: state.recomputeCount },
+            ]}
+          />
         </div>
       )}
     </VizPlayer>

@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
-import { Cell, Legend, type CellTone } from "@/components/viz/pieces";
+import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
@@ -104,11 +103,11 @@ function buildSteps(nums: number[]): VizStep<KadaneState>[] {
   return steps;
 }
 
-function cellTone(state: KadaneState, i: number): CellTone {
-  if (state.i === i) return "active";
-  if (i >= state.start && i <= state.i) return "kept";
-  if (i >= state.bestStart && i <= state.bestEnd) return "resolved";
-  return "plain";
+function cellTone(state: KadaneState, i: number): Tone {
+  if (state.i === i) return "focal";
+  if (i >= state.start && i <= state.i) return "range";
+  if (i >= state.bestStart && i <= state.bestEnd) return "result";
+  return "default";
 }
 
 export function KadaneViz(props: Record<string, unknown>) {
@@ -121,34 +120,20 @@ export function KadaneViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Kadane's algorithm trace" family="linear-traversal">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-start gap-3">
-          <div className="flex gap-1.5">
-            {state.nums.map((v, i) => (
-              <Cell key={i} value={v} index={i} tone={cellTone(state, i)} />
-            ))}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
-            <span>
-              best_ending_here <span className="text-foreground">{state.bestEndingHere}</span>
-            </span>
-            <span className="rounded-md border border-border bg-surface px-1.5 py-0.5">
-              best{" "}
-              <motion.span
-                key={state.best}
-                initial={{ scale: 1.4 }}
-                animate={{ scale: 1 }}
-                className="inline-block font-semibold text-accent"
-              >
-                {state.best}
-              </motion.span>
-            </span>
-          </div>
-          <Legend
+          <Tape
+            values={state.nums}
+            toneFor={(i) => cellTone(state, i)}
+            focal={state.i}
+            window={{ lo: state.start, hi: state.i }}
+            markers={[{ at: state.start, label: "start", color: "var(--muted)" }]}
+            reduced={ctx.reduced}
+          />
+          <StatusPanel
             items={[
-              { tone: "kept", label: "subarray ending here" },
-              { tone: "resolved", label: "best subarray so far" },
-              { tone: "active", label: "current element" },
+              { label: "best_ending_here", value: state.bestEndingHere },
+              { label: "best", value: state.best },
             ]}
           />
         </div>
