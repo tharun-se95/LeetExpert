@@ -12,15 +12,15 @@ ALL `n` nodes, or `-1` if some node is unreachable. (LeetCode 743.)
 
 **Examples**
 
-```text
-times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2  →  2
-   (2 reaches 1 and 3 in 1 unit each — done in parallel — then reaches
-    4 via 3, at time 2; the answer is the LAST node's arrival time)
-
-n = 2, times = [[1,2,1]], k = 2  →  -1   (node 1 is unreachable from 2)
+```examples
+times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2 → 2
+times = [[1,2,1]], n = 2, k = 1 → 1
+times = [[1,2,1]], n = 2, k = 2 → -1
 ```
 
-**Constraints:** `1 ≤ k ≤ n ≤ 100`, up to `6000` edges, positive weights.
+```constraint
+`1 ≤ k ≤ n ≤ 100`, up to `6000` edges, positive weights.
+```
 
 ## Attempt it first
 

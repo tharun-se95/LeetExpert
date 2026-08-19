@@ -9,16 +9,18 @@ Implement `RecentCounter.ping(t)`: each call records a request at time
 `t` (milliseconds) and returns how many requests occurred in the window
 `[t − 3000, t]`. Successive calls use strictly increasing `t`.
 
-**Example**
+**Examples**
 
-```text
-ping(1)     → 1     window [-2999, 1],    requests {1}
-ping(100)   → 2     window [-2900, 100],  requests {1, 100}
-ping(3001)  → 3     window [1, 3001],     requests {1, 100, 3001}
-ping(3002)  → 3     window [2, 3002],     requests {100, 3001, 3002} — 1 expired
+```examples
+ping(1) → 1  (window [-2999, 1], requests {1})
+ping(100) → 2  (window [-2900, 100], requests {1, 100})
+ping(3001) → 3  (window [1, 3001], requests {1, 100, 3001})
+ping(3002) → 3  (window [2, 3002], requests {100, 3001, 3002}; 1 expired)
 ```
 
-**Constraints:** ≤ 10⁴ calls · t strictly increasing.
+```constraint
+≤ 10⁴ calls · t strictly increasing.
+```
 
 ## Attempt it first
 

@@ -12,21 +12,22 @@ the node, and *all* values in the right subtree strictly greater.
 
 **Examples**
 
-```text
-      2
-     / \
-    1   3        →  true
-
-      5
-     / \
-    1   4        →  false  (4 is in 5's right subtree, fine so far...
-       / \                  but 3 is in 5's right subtree and 3 < 5)
-      3   6
+```examples
+root = [2,1,3] → true
+root = [5,1,4,null,null,3,6] → false  (3 sits in 5's right subtree but 3 < 5)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ nodes · node values fit in a 32-bit
-signed integer (so they can be as extreme as −2³¹ or 2³¹−1 — this
-detail will bite a naive fix later).
+```text
+      2                  5
+     / \                / \
+    1   3              1   4
+                          / \
+                         3   6
+```
+
+```constraint
+1 ≤ n ≤ 10⁴ nodes · values fit in a 32-bit signed int (−2³¹ … 2³¹−1 — bites a naive bound later)
+```
 
 ## Attempt it first
 

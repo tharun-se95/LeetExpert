@@ -10,13 +10,15 @@ form the **largest possible number**, returned as a string.
 
 **Examples**
 
-```text
+```examples
 [10, 2]       →  "210"
 [3, 30, 34, 5, 9]  →  "9534330"
 [0, 0]        →  "0"    (no leading zeros in the result)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ · values in [0, 10⁹].
+```constraint
+1 ≤ n ≤ 10⁴ · values in [0, 10⁹].
+```
 
 ## Attempt it first
 

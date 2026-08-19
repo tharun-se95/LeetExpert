@@ -5,23 +5,30 @@ type: problem
 
 ## Problem
 
-Given `haystack` and `needle`, return the index of the **first**
-occurrence of `needle` in `haystack`, or −1. (This is what `s.find` /
-`indexOf` does — you're building it.)
+You are given two strings: `haystack` (the text) and `needle` (the
+pattern). Return the **starting index** of the first place where `needle`
+appears inside `haystack`. If it never appears, return `-1`.
+
+Empty `needle` is a match at index `0` — every string contains the empty
+string at its start. This is the same contract as Python's `str.find` and
+JavaScript's `String.prototype.indexOf`; here you implement it.
 
 **Examples**
 
-```text
-haystack = "sadbutsad",  needle = "sad"    →  0
-haystack = "leetcode",   needle = "leeto"  →  -1
-haystack = "mississippi", needle = "issip" →  4
-
-Verify the third by hand (index tracing is the skill here):
-m(0) i(1) s(2) s(3) i(4) s(5) s(6) i(7) p(8) p(9) i(10)
-at 4: i s s i p  ✓
+```examples
+haystack = "sadbutsad", needle = "sad" → 0  (needle begins at index 0; a later copy at 6 is ignored)
+haystack = "leetcode", needle = "leeto" → -1  (no alignment matches)
+haystack = "mississippi", needle = "issip" → 4  (slice haystack[4:9] equals "issip")
 ```
 
-**Constraints:** 1 ≤ lengths ≤ 10⁴ · lowercase letters.
+Trace the third on paper — index labeling is the skill this lesson builds:
+
+`m₀ i₁ s₂ s₃ i₄ s₅ s₆ i₇ p₈ p₉ i₁₀` → at index 4 the five characters are
+`i s s i p`.
+
+```constraint
+1 ≤ lengths ≤ 10⁴ · lowercase English letters only
+```
 
 ## Attempt it first
 

@@ -11,12 +11,14 @@ well-formed (balanced, correctly nested) parenthesis strings of length
 
 **Examples**
 
-```text
+```examples
 n = 3  →  ["((()))","(()())","(())()","()(())","()()()"]
 n = 1  →  ["()"]
 ```
 
-**Constraints:** `1 ≤ n ≤ 8`.
+```constraint
+`1 ≤ n ≤ 8`.
+```
 
 ## Attempt it first
 

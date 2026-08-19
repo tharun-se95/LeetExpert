@@ -11,13 +11,14 @@ multiplicities.
 
 **Examples**
 
-```text
+```examples
 s = "anagram", t = "nagaram"  →  true
 s = "rat",     t = "car"      →  false
 ```
 
-**Constraints:** 1 ≤ n ≤ 5·10⁴ · lowercase English letters · follow-up:
-what if inputs contain arbitrary Unicode?
+```constraint
+1 ≤ n ≤ 5·10⁴ · lowercase English letters · follow-up: what if inputs contain arbitrary Unicode?
+```
 
 ## Attempt it first
 

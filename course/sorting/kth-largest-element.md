@@ -11,12 +11,14 @@ distinct value.
 
 **Examples**
 
-```text
+```examples
 nums = [3,2,1,5,6,4], k = 2   →  5    (sorted: [1,2,3,4,5,6]; 2nd largest is 5)
 nums = [3,2,3,1,2,4,5,5,6], k = 4  →  4
 ```
 
-**Constraints:** 1 ≤ k ≤ n ≤ 10⁴.
+```constraint
+1 ≤ k ≤ n ≤ 10⁴.
+```
 
 ## Attempt it first
 

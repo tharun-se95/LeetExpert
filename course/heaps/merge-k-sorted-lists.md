@@ -9,16 +9,17 @@ You are given an array of `k` linked lists, each already sorted in
 ascending order. Merge them into one sorted linked list and return its
 head.
 
-**Example** (LeetCode 23)
+**Examples**
 
-```text
-lists = [ 1→4→5,  1→3→4,  2→6 ]   →   1→1→2→3→4→4→5→6
-lists = []                         →   null
-lists = [ [] ]                     →   null
+```examples
+lists = [[1,4,5],[1,3,4],[2,6]] → [1,1,2,3,4,4,5,6]
+lists = [] → []
+lists = [[]] → []
 ```
 
-**Constraints:** k up to 10⁴, total nodes n up to ~10⁴, node values in
-±10⁴. Lists may be empty.
+```constraint
+k up to 10⁴, total nodes n up to ~10⁴, node values in ±10⁴. Lists may be empty.
+```
 
 ## Attempt it first
 

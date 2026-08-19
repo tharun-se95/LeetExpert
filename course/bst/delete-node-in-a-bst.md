@@ -11,22 +11,28 @@ tree. The result must still be a valid BST.
 
 **Examples**
 
+```examples
+root = [5,3,6,2,4,null,7], key = 3 → [5,4,6,2,null,null,7]  (or promote 2 instead of 4)
+root = [5,3,6,2,4,null,7], key = 5 → [6,3,7,2,4]  (5 replaced by inorder successor 6)
+```
+
 ```text
       5                         5
      / \                       / \
-    3   6     delete 3   →     4   6         (or: promote 2 — see below)
+    3   6     delete 3         4   6
    / \   \                    /     \
   2   4   7                  2       7
 
       5                         6
      / \                       / \
-    3   6     delete 5   →     3   7          (5 replaced by its
-   / \   \                    / \             inorder successor, 6)
+    3   6     delete 5         3   7
+   / \   \                    / \
   2   4   7                  2   4
 ```
 
-**Constraints:** 0 ≤ n ≤ 10⁴ nodes · −10⁵ ≤ values ≤ 10⁵ · values are
-distinct.
+```constraint
+0 ≤ n ≤ 10⁴ nodes · −10⁵ ≤ values ≤ 10⁵ · values are distinct
+```
 
 ## Attempt it first
 

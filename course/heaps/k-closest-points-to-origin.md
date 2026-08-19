@@ -12,12 +12,14 @@ point on the X-Y plane, return the `k` points **closest to the origin
 
 **Examples**
 
-```text
+```examples
 points = [[1,3],[-2,2]], k = 1  →  [[-2,2]]
 points = [[3,3],[5,-1],[-2,4]], k = 2  →  [[3,3],[-2,4]]
 ```
 
-**Constraints:** `1 ≤ k ≤ points.length ≤ 10⁴`, coordinates in ±10⁴.
+```constraint
+`1 ≤ k ≤ points.length ≤ 10⁴`, coordinates in ±10⁴.
+```
 
 ## Attempt it first
 

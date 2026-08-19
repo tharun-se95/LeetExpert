@@ -12,20 +12,14 @@ it. (LeetCode 48.)
 
 **Examples**
 
-```text
-[[1,2,3],        [[7,4,1],
- [4,5,6],   →     [8,5,2],
- [7,8,9]]         [9,6,3]]
-
-[[5,1,9,11],      [[15,13, 5, 1],
- [2,4,8,10],  →    [14, 3, 4, 9],
- [13,3,6,7],       [12, 6, 8,11],
- [15,14,12,16]]    [16, 7,10,13]]
+```examples
+matrix = [[1,2,3],[4,5,6],[7,8,9]] → [[7,4,1],[8,5,2],[9,6,3]]
+matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]] → [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
 ```
 
-**Constraints:** `n == matrix.length == matrix[i].length`, `1 ≤ n ≤ 20`,
-values in ±1000. The in-place / no-extra-matrix requirement is part of
-the problem, not a bonus.
+```constraint
+`n == matrix.length == matrix[i].length`, `1 ≤ n ≤ 20`, values in ±1000. The in-place / no-extra-matrix requirement is part of the problem, not a bonus.
+```
 
 ## Attempt it first
 

@@ -11,19 +11,24 @@ return the values of the nodes you can see, ordered from top to bottom
 
 **Examples**
 
+```examples
+root = [1,2,3,null,5,null,4] → [1,3,4]  (rightmost node per level, top to bottom)
+```
+
 ```text
       1
      / \
-    2   3          →  [1, 3, 4]
+    2   3
      \    \
       5    4
 ```
 
-Note row 1 has only a left child (5) visible from the right, but it's
-*hidden* behind 3 — the answer skips it, since 3 is farther right at
-that level.
+Level 1's left child (5) is *hidden* behind 3 from the right — 3 is
+farther right at that level, so the answer skips 5.
 
-**Constraints:** `0 ≤ n ≤ 100` nodes.
+```constraint
+0 ≤ n ≤ 100 nodes
+```
 
 ## Attempt it first
 

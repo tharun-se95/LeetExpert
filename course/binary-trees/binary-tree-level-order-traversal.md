@@ -11,15 +11,21 @@ per level, left to right. (LeetCode 102.)
 
 **Examples**
 
+```examples
+root = [3,9,20,null,null,15,7] → [[3],[9,20],[15,7]]
+```
+
 ```text
       3
      / \
-    9  20        →  [[3], [9,20], [15,7]]
+    9  20
        /  \
       15   7
 ```
 
-**Constraints:** `0 ≤ n ≤ 2000` nodes.
+```constraint
+0 ≤ n ≤ 2000 nodes
+```
 
 ## Attempt it first
 

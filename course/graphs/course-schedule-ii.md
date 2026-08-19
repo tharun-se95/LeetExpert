@@ -12,15 +12,15 @@ order exists (a cycle makes it impossible). (LeetCode 210.)
 
 **Examples**
 
-```text
-numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]
-→ [0,1,2,3]   (or [0,2,1,3] — either satisfies every prerequisite)
-
-numCourses = 2, prerequisites = [[1,0],[0,1]]
-→ []          (cycle — impossible, same as Course Schedule)
+```examples
+numCourses = 2, prerequisites = [[1,0]] → [0,1]
+numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]] → [0,1,2,3]  (or [0,2,1,3])
+numCourses = 1, prerequisites = [] → [0]
 ```
 
-**Constraints:** up to `2000` courses, up to `5000` prerequisite pairs.
+```constraint
+up to `2000` courses, up to `5000` prerequisite pairs.
+```
 
 ## Attempt it first
 

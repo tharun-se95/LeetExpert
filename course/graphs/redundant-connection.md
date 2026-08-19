@@ -14,14 +14,14 @@ such edges could work, return the one that appears LAST in the input.
 
 **Examples**
 
-```text
-edges = [[1,2],[1,3],[2,3]]  →  [2,3]
-   (1-2 and 1-3 already connect all three nodes into a tree;
-    2-3 is the extra edge that creates the cycle 1-2-3-1)
+```examples
+edges = [[1,2],[1,3],[2,3]] → [2,3]
+edges = [[1,2],[2,3],[3,4],[1,4],[1,5]] → [1,4]
 ```
 
-**Constraints:** `n` nodes, exactly `n` edges (one more than a tree
-needs), no self-loops or duplicate edges.
+```constraint
+`n` nodes, exactly `n` edges (one more than a tree needs), no self-loops or duplicate edges.
+```
 
 ## Attempt it first
 

@@ -10,12 +10,14 @@ intervals and return the resulting non-overlapping set.
 
 **Examples**
 
-```text
+```examples
 [[1,3],[2,6],[8,10],[15,18]]  →  [[1,6],[8,10],[15,18]]
 [[1,4],[4,5]]                  →  [[1,5]]   (touching counts as overlapping)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ · intervals given in **arbitrary order**.
+```constraint
+1 ≤ n ≤ 10⁴ · intervals given in **arbitrary order**.
+```
 
 ## Attempt it first
 

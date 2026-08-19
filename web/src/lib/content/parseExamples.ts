@@ -29,7 +29,15 @@ export function parseExampleRows(source: string): ExampleRow[] | null {
     let note: string | undefined;
     const noteMatch = /\(([^)]+)\)\s*$/.exec(rest);
     if (noteMatch && noteMatch.index > 0) {
-      note = noteMatch[1].trim().replace(/^["']|["']$/g, "");
+      note = noteMatch[1].trim();
+      // Unwrap only when the whole note is one quoted string — do not
+      // strip a leading quote from notes like `"sad" begins at index 0`.
+      if (
+        (note.startsWith('"') && note.endsWith('"')) ||
+        (note.startsWith("'") && note.endsWith("'"))
+      ) {
+        note = note.slice(1, -1);
+      }
       rest = rest.slice(0, noteMatch.index).trim();
     }
     rows.push({ input, output: rest, note });

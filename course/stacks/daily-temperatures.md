@@ -11,13 +11,15 @@ number of days you must wait after day i for a **warmer** temperature —
 
 **Examples**
 
-```text
+```examples
 [73,74,75,71,69,72,76,73]  →  [1,1,4,2,1,1,0,0]
 [30,40,50,60]              →  [1,1,1,0]
 [30,60,90]                 →  [1,1,0]
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · temperatures in [30, 100].
+```constraint
+1 ≤ n ≤ 10⁵ · temperatures in [30, 100].
+```
 
 ## Attempt it first
 

@@ -10,12 +10,14 @@ k with the **maximum average**, and return that average.
 
 **Examples**
 
-```text
+```examples
 nums = [1,12,-5,-6,50,3], k = 4  →  12.75   (window [12,-5,-6,50], sum 51)
 nums = [5], k = 1                →  5.0
 ```
 
-**Constraints:** 1 ≤ k ≤ n ≤ 10⁵ · values in ±10⁴.
+```constraint
+1 ≤ k ≤ n ≤ 10⁵ · values in ±10⁴.
+```
 
 ## Attempt it first
 

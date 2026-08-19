@@ -12,14 +12,16 @@ of: insert a character, delete a character, or replace a character.
 
 **Examples**
 
-```text
-word1 = "horse", word2 = "ros"    →  3
-   (horse → rorse [replace h→r] → rose [delete r] → ros [delete e])
-
-word1 = "intention", word2 = "execution"  →  5
+```examples
+word1 = "horse", word2 = "ros" → 3  (horse to ros in three edits)
+word1 = "intention", word2 = "execution" → 5
 ```
 
-**Constraints:** `0 ≤ word1.length, word2.length ≤ 500`.
+One minimal path for the first: replace `h` with `r` (`horse` becomes `rorse`), delete `r` (`rose`), delete `e` (`ros`).
+
+```constraint
+`0 ≤ word1.length, word2.length ≤ 500`.
+```
 
 ## Attempt it first
 

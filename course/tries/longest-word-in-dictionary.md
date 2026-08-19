@@ -13,17 +13,14 @@ word qualifies, return the empty string. (LeetCode 720.)
 
 **Examples**
 
-```text
-words = ["w","wo","wor","worl","world"]
-→ "world"     (every prefix — w, wo, wor, worl — is also in words)
-
-words = ["a","banana","app","appl","ap","apply","apple"]
-→ "apple"     (a, ap, app, appl, apple all present; "apply" also
-               qualifies at length 5, but "apple" < "apply" lexically)
+```examples
+words = ["w","wo","wor","worl","world"] → "world"  (every prefix — w, wo, wor, worl — is also in words)
+words = ["a","banana","app","appl","ap","apply","apple"] → "apple"  (a, ap, app, appl, apple all present; "apply" also qualifies at length 5, but "apple" < "apply" lexically)
 ```
 
-**Constraints:** `1 ≤ words.length ≤ 1000`, `1 ≤ words[i].length ≤ 30`,
-lowercase letters only.
+```constraint
+`1 ≤ words.length ≤ 1000`, `1 ≤ words[i].length ≤ 30`, lowercase letters only.
+```
 
 ## Attempt it first
 

@@ -13,18 +13,15 @@ arrows** needed to burst all balloons.
 
 **Examples**
 
-```text
-[[10,16],[2,8],[1,6],[7,12]]  →  2
-  (one arrow at x=6 bursts [2,8],[1,6]; another at x=11 bursts [10,16],[7,12])
-
-[[1,2],[3,4],[5,6],[7,8]]     →  4   (no two balloons share any x — one arrow each)
-
-[[1,2],[2,3],[3,4],[4,5]]     →  2   (arrow at x=2 bursts [1,2],[2,3]; x=4 bursts [3,4],[4,5])
+```examples
+[[10,16],[2,8],[1,6],[7,12]] → 2  (arrow at x=6 bursts [2,8],[1,6]; arrow at x=11 bursts [10,16],[7,12])
+[[1,2],[3,4],[5,6],[7,8]] → 4  (no shared x — one arrow each)
+[[1,2],[2,3],[3,4],[4,5]] → 2  (arrow at x=2 and x=4)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · endpoints fit in a 32-bit integer ·
-touching endpoints count as overlapping (an arrow at a shared endpoint
-bursts both).
+```constraint
+1 ≤ n ≤ 10⁵ · endpoints fit in a 32-bit integer · touching endpoints count as overlapping (an arrow at a shared endpoint bursts both).
+```
 
 ## Attempt it first
 

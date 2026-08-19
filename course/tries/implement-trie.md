@@ -13,19 +13,18 @@ Implement a `Trie` class with three methods:
 - `startsWith(prefix)` — return `true` if any inserted word begins with
   `prefix`, else `false`.
 
-**Example**
+**Examples**
 
-```text
-insert("apple")
-search("apple")     → true
-search("app")       → false     ← "app" was never inserted as a word
-startsWith("app")   → true      ← but "apple" starts with "app"
-insert("app")
-search("app")       → true      ← now it has been
+```examples
+insert("apple"), search("apple") → true
+search("app") → false  ("app" was never inserted as a word)
+startsWith("app") → true  (but apple starts with "app")
+insert("app"), search("app") → true  (now it has been)
 ```
 
-**Constraints:** words and prefixes are lowercase English letters,
-1–2000 characters; up to 3·10⁴ calls total across the three methods.
+```constraint
+words and prefixes are lowercase English letters, 1–2000 characters; up to 3·10⁴ calls total across the three methods.
+```
 
 ## Attempt it first
 

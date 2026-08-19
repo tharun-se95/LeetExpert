@@ -9,13 +9,14 @@ Given an integer array `nums`, rotate it **right** by `k` steps, in place.
 
 **Examples**
 
-```text
+```examples
 nums = [1,2,3,4,5,6,7], k = 3  →  [5,6,7,1,2,3,4]
 nums = [-1,-100,3,99],  k = 2  →  [3,99,-1,-100]
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · 0 ≤ k ≤ 10⁵ (note: k can exceed n!) ·
-follow-up: O(1) auxiliary space.
+```constraint
+1 ≤ n ≤ 10⁵ · 0 ≤ k ≤ 10⁵ (note: k can exceed n!) · follow-up: O(1) auxiliary space.
+```
 
 ## Attempt it first
 

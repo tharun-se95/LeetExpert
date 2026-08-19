@@ -14,15 +14,16 @@ interval and after the last. (LeetCode 759.)
 
 **Examples**
 
-```text
-schedule = [[[1,2],[5,6]], [[1,3]], [[4,10]]]
-→ [[3,4]]
-   (busy intervals across everyone, flattened & merged: [1,3],[4,10],[5,6]→
-    merges to [1,3] and [4,10]; the only gap between merged busy blocks
-    is [3,4])
+```examples
+schedule = [[[1,2],[5,6]],[[1,3]],[[4,10]]] → [[3,4]]
+schedule = [[[1,3],[6,7]],[[2,4]],[[2,5],[9,12]]] → [[5,6],[7,9]]
 ```
 
-**Constraints:** total intervals across all employees up to `~10⁴`.
+Flatten everyone's busy intervals and merge: `[1,3]`, `[4,10]`, `[5,6]` collapse to `[1,3]` and `[4,10]`. The only gap between those merged blocks is `[3,4]`.
+
+```constraint
+total intervals across all employees up to `~10⁴`.
+```
 
 ## Attempt it first
 

@@ -10,13 +10,15 @@ exactly once, or −1 if none exists.
 
 **Examples**
 
-```text
+```examples
 "leetcode"     →  0   ('l')
 "loveleetcode" →  2   ('v')
 "aabb"         →  -1
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · lowercase English letters.
+```constraint
+1 ≤ n ≤ 10⁵ · lowercase English letters.
+```
 
 ## Attempt it first
 

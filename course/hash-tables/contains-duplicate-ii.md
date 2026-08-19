@@ -10,13 +10,15 @@ elements whose indices differ by **at most k**.
 
 **Examples**
 
-```text
+```examples
 nums = [1,2,3,1], k = 3  →  true   (indices 0 and 3, distance 3)
 nums = [1,0,1,1], k = 1  →  true   (indices 2 and 3)
 nums = [1,2,3,1,2,3], k = 2  →  false  (equal values are 3 apart)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · 0 ≤ k ≤ 10⁵.
+```constraint
+1 ≤ n ≤ 10⁵ · 0 ≤ k ≤ 10⁵.
+```
 
 ## Attempt it first
 

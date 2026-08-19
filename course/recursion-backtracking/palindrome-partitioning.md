@@ -11,12 +11,14 @@ partition is a palindrome**. Return *all* possible such partitionings.
 
 **Examples**
 
-```text
+```examples
 s = "aab"  →  [["a","a","b"], ["aa","b"]]
 s = "a"    →  [["a"]]
 ```
 
-**Constraints:** `1 ≤ s.length ≤ 16`, lowercase English letters only.
+```constraint
+`1 ≤ s.length ≤ 16`, lowercase English letters only.
+```
 
 ## Attempt it first
 

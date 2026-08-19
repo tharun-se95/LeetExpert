@@ -12,12 +12,14 @@ must preserve relative order) — or `0` if they share none.
 
 **Examples**
 
-```text
+```examples
 text1 = "abcde", text2 = "ace"  →  3    ("ace" is a subsequence of both)
 text1 = "abc",   text2 = "def"  →  0    (no common subsequence at all)
 ```
 
-**Constraints:** `1 ≤ text1.length, text2.length ≤ 1000`.
+```constraint
+`1 ≤ text1.length, text2.length ≤ 1000`.
+```
 
 ## Attempt it first
 

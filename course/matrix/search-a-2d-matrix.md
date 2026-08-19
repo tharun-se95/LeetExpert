@@ -16,15 +16,14 @@ otherwise. (LeetCode 74.)
 
 **Examples**
 
-```text
-[[ 1, 3, 5, 7],
- [10,11,16,20],   target = 3   →  true
- [23,30,34,60]]   target = 13  →  false
+```examples
+matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3 → true
+matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13 → false
 ```
 
-**Constraints:** `1 ≤ m, n ≤ 100`, values in ±10⁴. Both stated properties
-matter — read them carefully before attempting, because together they say
-something stronger than "each row is sorted."
+```constraint
+`1 ≤ m, n ≤ 100`, values in ±10⁴. Both stated properties matter — read them carefully before attempting, because together they say something stronger than "each row is sorted."
+```
 
 ## Attempt it first
 

@@ -10,24 +10,19 @@ every word from the list that can be formed by a path in the grid.
 A path steps between **horizontally or vertically adjacent** cells and
 may not reuse a cell within a single word.
 
-**Example**
+**Examples**
 
-```text
-board = [ [o, a, a, n],
-          [e, t, a, e],
-          [i, h, k, r],
-          [i, f, l, v] ]
-words = ["oath", "pea", "eat", "rain"]
-
-output = ["oath", "eat"]
+```examples
+board = [["o","a","a","n"],["e","t","a","e"],["i","h","k","r"],["i","f","l","v"]], words = ["oath","pea","eat","rain"] → ["oath","eat"]
 ```
 
 `oath` traces `o(0,0) → a(0,1) → t(1,1) → h(2,1)`; `eat` traces
 `e(1,3) → a(1,2) → t(1,1)`. `"pea"` and `"rain"` have no such path, so
 they're excluded.
 
-**Constraints:** grid up to 12×12; up to 3·10⁴ words, each up to 10
-letters, lowercase `a–z`.
+```constraint
+grid up to 12×12; up to 3·10⁴ words, each up to 10 letters, lowercase `a–z`.
+```
 
 ## Attempt it first
 

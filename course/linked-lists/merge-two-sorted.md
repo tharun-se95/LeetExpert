@@ -11,13 +11,15 @@ copies), and return its head.
 
 **Examples**
 
-```text
-1→2→4  +  1→3→4   ⇒   1→1→2→3→4→4
-null   +  null     ⇒   null
-null   +  0        ⇒   0
+```examples
+list1 = [1,2,4], list2 = [1,3,4] → [1,1,2,3,4,4]
+list1 = [], list2 = [] → []
+list1 = [], list2 = [0] → [0]
 ```
 
-**Constraints:** 0 ≤ each length ≤ 50 · both inputs sorted.
+```constraint
+0 ≤ each length ≤ 50 · both inputs sorted.
+```
 
 ## Attempt it first
 

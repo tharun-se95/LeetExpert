@@ -13,15 +13,14 @@ run a different task, or sit idle if none is available). (LeetCode 621.)
 
 **Examples**
 
-```text
-tasks = ["A","A","A","B","B","B"], n = 2  →  8
-one valid schedule: A B idle A B idle A B   (8 slots)
-
-tasks = ["A","A","A","B","B","B"], n = 0  →  6   (no cooldown needed)
+```examples
+tasks = ["A","A","A","B","B","B"], n = 2 → 8  (one valid schedule: A B idle A B idle A B)
+tasks = ["A","A","A","B","B","B"], n = 0 → 6  (no cooldown needed)
 ```
 
-**Constraints:** `1 ≤ tasks.length ≤ 10⁴`, `0 ≤ n ≤ 100`, uppercase
-letters only (at most 26 distinct task types).
+```constraint
+`1 ≤ tasks.length ≤ 10⁴`, `0 ≤ n ≤ 100`, uppercase letters only (at most 26 distinct task types).
+```
 
 ## Attempt it first
 

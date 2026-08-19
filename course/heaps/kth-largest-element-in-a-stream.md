@@ -13,18 +13,19 @@ duplicates — not the kth distinct value).
 - `add(val)` appends `val` to the stream and returns the kth largest
   element seen so far.
 
-**Example** (LeetCode 703)
+**Examples**
 
-```text
-KthLargest(3, [4, 5, 8, 2])   // k = 3
-add(3)  → 4      stream sorted desc: 8,5,4,3,2  → 3rd largest is 4
-add(5)  → 5      8,5,5,4,3,2                    → 3rd largest is 5
-add(10) → 5      10,8,5,5,4,3,2                 → 3rd largest is 5
-add(9)  → 8      10,9,8,5,5,4,3,2               → 3rd largest is 8
-add(4)  → 8      10,9,8,5,5,4,4,3,2             → 3rd largest is 8
+```examples
+KthLargest(3, [4,5,8,2]), add(3) → 4  (stream sorted desc: 8,5,4,3,2; 3rd largest is 4)
+add(5) → 5  (8,5,5,4,3,2; 3rd is 5)
+add(10) → 5  (10,8,5,5,4,3,2; 3rd is 5)
+add(9) → 8  (10,9,8,5,5,4,3,2; 3rd is 8)
+add(4) → 8  (10,9,8,5,5,4,4,3,2; 3rd is 8)
 ```
 
-**Constraints:** 1 ≤ k ≤ 10⁴, up to 10⁴ `add` calls, values in ±10⁴.
+```constraint
+1 ≤ k ≤ 10⁴, up to 10⁴ `add` calls, values in ±10⁴.
+```
 
 ## Attempt it first
 

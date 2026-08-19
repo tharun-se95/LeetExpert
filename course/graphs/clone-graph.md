@@ -13,15 +13,25 @@ list of neighbor references; the clone must be structurally identical
 
 **Examples**
 
-```text
-1 -- 2          Clone must reproduce this exact structure with
-|    |          brand-new Node objects: cloned-1 connects to
-4 -- 3          cloned-2 and cloned-4, and so on — never reusing
-                any original node.
+```examples
+adjList = [[2,4],[1,3],[2,4],[1,3]] → deep copy with the same adjacency
+adjList = [[]] → [[]]
+adjList = [] → []
 ```
 
-**Constraints:** up to 100 nodes, connected graph, no self-loops or
-repeated edges.
+The square graph this adj list describes:
+
+```text
+1 -- 2
+|    |
+4 -- 3
+```
+
+Cloned-1 must connect to cloned-2 and cloned-4, and so on — same connectivity, all new nodes.
+
+```constraint
+up to 100 nodes, connected graph, no self-loops or repeated edges.
+```
 
 ## Attempt it first
 

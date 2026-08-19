@@ -9,17 +9,16 @@ Given an integer array `nums` and an integer `k`, return the `k` most
 frequent elements. The answer may be in any order; the test guarantees it
 is unique.
 
-**Example** (LeetCode 347)
+**Examples**
 
-```text
-nums = [1,1,1,2,2,3], k = 2   →  [1, 2]
-   (1 appears ×3, 2 appears ×2, 3 appears ×1 — the two most frequent are 1 and 2)
-
-nums = [1], k = 1             →  [1]
+```examples
+nums = [1,1,1,2,2,3], k = 2 → [1, 2]  (1 appears ×3, 2 appears ×2, 3 appears ×1 — top two are 1 and 2)
+nums = [1], k = 1 → [1]
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵, k is between 1 and the number of distinct
-values, values in ±10⁴.
+```constraint
+1 ≤ n ≤ 10⁵, k is between 1 and the number of distinct values, values in ±10⁴.
+```
 
 ## Attempt it first
 

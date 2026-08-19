@@ -12,15 +12,14 @@ reach the last index, `false` otherwise.
 
 **Examples**
 
-```text
-nums = [2,3,1,1,4]   →  true
-        start at 0, nums[0]=2 lets you reach index 1; nums[1]=3 reaches index 4. Done.
-
-nums = [3,2,1,0,4]   →  false
-        every route lands on index 3 (value 0), a dead end before index 4.
+```examples
+nums = [2,3,1,1,4] → true  (jump from 0 to 1, then to 4)
+nums = [3,2,1,0,4] → false  (cannot progress past index 3)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ · 0 ≤ nums[i] ≤ 10⁵.
+```constraint
+1 ≤ n ≤ 10⁴ · 0 ≤ nums[i] ≤ 10⁵.
+```
 
 ## Attempt it first
 

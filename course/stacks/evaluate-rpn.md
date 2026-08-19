@@ -12,13 +12,15 @@ valid expression.
 
 **Examples**
 
-```text
+```examples
 ["2","1","+","3","*"]      →  9     ((2 + 1) * 3)
 ["4","13","5","/","+"]     →  6     (4 + (13 / 5))
 ["10","6","9","3","+","-11","*","/","*","17","+","5","+"]  →  22
 ```
 
-**Constraints:** 1 ≤ tokens ≤ 10⁴ · intermediate values fit in 32 bits.
+```constraint
+1 ≤ tokens ≤ 10⁴ · intermediate values fit in 32 bits.
+```
 
 ## Attempt it first
 

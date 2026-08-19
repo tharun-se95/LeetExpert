@@ -11,12 +11,14 @@ preserve their original relative order). (LeetCode 300.)
 
 **Examples**
 
-```text
+```examples
 nums = [10,9,2,5,3,7,101,18]  →  4    (2, 3, 7, 18 — or 2, 3, 7, 101)
 nums = [0,1,0,3,2,3]           →  4    (0, 1, 2, 3)
 ```
 
-**Constraints:** `1 ≤ nums.length ≤ 2500`.
+```constraint
+`1 ≤ nums.length ≤ 2500`.
+```
 
 ## Attempt it first
 

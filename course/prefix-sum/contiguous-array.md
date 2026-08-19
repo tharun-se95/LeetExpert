@@ -10,13 +10,15 @@ Given a binary array `nums` (only 0s and 1s), return the length of the
 
 **Examples**
 
-```text
+```examples
 nums = [0,1]      →  2   (the whole array)
 nums = [0,1,0]    →  2   ([0,1] or [1,0])
 nums = [0,0,1,0,1,1]  →  6   (the whole array: three 0s, three 1s)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵.
+```constraint
+1 ≤ n ≤ 10⁵.
+```
 
 ## Attempt it first
 

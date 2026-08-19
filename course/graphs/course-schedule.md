@@ -13,15 +13,14 @@ all be satisfied), or `false` otherwise. (LeetCode 207.)
 
 **Examples**
 
-```text
-numCourses = 2, prerequisites = [[1,0]]         → true
-   (take 0, then 1)
-
-numCourses = 2, prerequisites = [[1,0],[0,1]]   → false
-   (1 needs 0, but 0 needs 1 — impossible)
+```examples
+numCourses = 2, prerequisites = [[1,0]] → true  (take 0 then 1)
+numCourses = 2, prerequisites = [[1,0],[0,1]] → false  (cycle)
 ```
 
-**Constraints:** up to `2000` courses, up to `5000` prerequisite pairs.
+```constraint
+up to `2000` courses, up to `5000` prerequisite pairs.
+```
 
 ## Attempt it first
 

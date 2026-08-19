@@ -10,14 +10,15 @@ place**, in **one pass**, without the library sort.
 
 **Examples**
 
-```text
+```examples
 [2,0,2,1,1,0]  →  [0,0,1,1,2,2]
 [2,0,1]        →  [0,1,2]
 [0]            →  [0]
 ```
 
-**Constraints:** 1 ≤ n ≤ 300 · values ∈ {0,1,2} · follow-up: one pass,
-O(1) space.
+```constraint
+1 ≤ n ≤ 300 · values ∈ {0,1,2} · follow-up: one pass, O(1) space.
+```
 
 ## Attempt it first
 

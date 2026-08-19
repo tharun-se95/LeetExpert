@@ -16,17 +16,20 @@ guaranteed unique.
 
 **Examples**
 
-```text
-gas  = [1,2,3,4,5]
-cost = [3,4,5,1,2]        →  3
-       Start at 3: tank 0+4−1=3, →4: 3+5−2=6, →0: 6+1−3=4, →1: 4+2−4=2, →2: 2+3−5=0. Full loop.
-
-gas  = [2,3,4]
-cost = [3,4,3]            →  -1
-       Total gas 9 < total cost 10, so no start can finish.
+```examples
+gas = [1,2,3,4,5], cost = [3,4,5,1,2] → 3
+gas = [2,3,4], cost = [3,4,3] → -1
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · 0 ≤ gas[i], cost[i].
+Trace the first on paper — start at station 3:
+
+```text
+tank 0+4−1=3 at 3, then 3+5−2=6 at 4, 6+1−3=4 at 0, 4+2−4=2 at 1, 2+3−5=0 at 2. Full loop.
+```
+
+```constraint
+1 ≤ n ≤ 10⁵ · 0 ≤ gas[i], cost[i].
+```
 
 ## Attempt it first
 

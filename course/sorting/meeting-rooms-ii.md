@@ -11,12 +11,14 @@ same room overlap.
 
 **Examples**
 
-```text
+```examples
 [[0,30],[5,10],[15,20]]  →  2   (0-30 overlaps both others, but they don't overlap each other)
 [[7,10],[2,4]]           →  1
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴.
+```constraint
+1 ≤ n ≤ 10⁴.
+```
 
 ## Attempt it first
 

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { extractComplexityFromMarkdown } from "../src/lib/insight/extractComplexity";
 import {
   MEMORY_CELL_CAP,
+  MEMORY_CELL_LABEL_MAX,
   mapMarkersToDisplay,
   parseCaseMemory,
 } from "../src/lib/insight/parseCaseMemory";
@@ -101,6 +102,49 @@ describe("parseCaseMemory", () => {
     expect(memory?.cells.includes("…")).toBe(true);
     const mapped = mapMarkersToDisplay(memory!);
     expect(mapped.some((m) => m.label === "R")).toBe(true);
+  });
+
+  it("keeps short teaching strings intact in array cells", () => {
+    const cases: { id: string; args: unknown[]; expect: unknown; cells: string[] }[] = [
+      {
+        id: "longest-common-prefix",
+        args: [["flower", "flow", "flight"]],
+        expect: "fl",
+        cells: ["flower", "flow", "flight"],
+      },
+      {
+        id: "group-anagrams",
+        args: [["eat", "tea", "tan", "ate", "nat", "bat"]],
+        expect: null,
+        cells: ["eat", "tea", "tan", "ate", "nat", "bat"],
+      },
+      {
+        id: "longest-word-in-dictionary",
+        args: [["w", "wo", "wor", "worl", "world"]],
+        expect: "world",
+        cells: ["w", "wo", "wor", "worl", "world"],
+      },
+    ];
+    for (const c of cases) {
+      const memory = parseCaseMemory(
+        { args: c.args, expect: c.expect },
+        minimalSpec({ id: c.id }),
+      );
+      expect(memory?.kind, c.id).toBe("array");
+      expect(memory?.cells, c.id).toEqual(c.cells);
+      expect(memory?.truncated, c.id).toBe(false);
+    }
+  });
+
+  it("ellipsizes only strings that exceed the per-cell label budget", () => {
+    const long = "a".repeat(MEMORY_CELL_LABEL_MAX + 4);
+    const memory = parseCaseMemory(
+      { args: [[long, "ok"]], expect: null },
+      minimalSpec({ id: "demo" }),
+    );
+    expect(memory?.cells[0]).toBe(`${"a".repeat(MEMORY_CELL_LABEL_MAX - 1)}…`);
+    expect(memory?.cells[0]?.length).toBe(MEMORY_CELL_LABEL_MAX);
+    expect(memory?.cells[1]).toBe("ok");
   });
 
   it("labels trees instead of inventing cells", () => {

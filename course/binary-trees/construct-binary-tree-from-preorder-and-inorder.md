@@ -11,10 +11,11 @@ reconstruct and return that binary tree. (LeetCode 105.)
 
 **Examples**
 
+```examples
+preorder = [3,9,20,15,7], inorder = [9,3,15,20,7] → [3,9,20,null,null,15,7]
+```
+
 ```text
-preorder = [3,9,20,15,7]
-inorder  = [9,3,15,20,7]
-→
       3
      / \
     9  20
@@ -22,8 +23,9 @@ inorder  = [9,3,15,20,7]
       15   7
 ```
 
-**Constraints:** `1 ≤ n ≤ 3000` nodes, all values unique (this
-uniqueness is load-bearing — see below).
+```constraint
+1 ≤ n ≤ 3000 nodes · all values unique (load-bearing — see below)
+```
 
 ## Attempt it first
 

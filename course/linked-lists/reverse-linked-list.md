@@ -10,14 +10,15 @@ return the new head.
 
 **Examples**
 
-```text
-1 → 2 → 3 → 4 → 5 → null   ⇒   5 → 4 → 3 → 2 → 1 → null
-1 → null                    ⇒   1 → null
-null                        ⇒   null
+```examples
+head = [1,2,3,4,5] → [5,4,3,2,1]
+head = [1] → [1]
+head = [] → []
 ```
 
-**Constraints:** 0 ≤ length ≤ 5000 · follow-up: solve it iteratively AND
-recursively.
+```constraint
+0 ≤ length ≤ 5000 · follow-up: solve it iteratively AND recursively.
+```
 
 ## Attempt it first
 

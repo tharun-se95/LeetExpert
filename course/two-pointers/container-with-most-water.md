@@ -12,12 +12,14 @@ height)`.
 
 **Examples**
 
-```text
+```examples
 height = [1,8,6,2,5,4,8,3,7]  →  49    (lines at 1 and 8: width 7 × min(8,7))
 height = [1,1]                →  1
 ```
 
-**Constraints:** 2 ≤ n ≤ 10⁵ · heights in [0, 10⁴].
+```constraint
+2 ≤ n ≤ 10⁵ · heights in [0, 10⁴].
+```
 
 ## Attempt it first
 

@@ -12,15 +12,23 @@ Return all distinct solutions, each as a board configuration.
 
 **Examples**
 
+```examples
+n = 4 → [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+n = 1 → [["Q"]]
+```
+
+The two boards, drawn out:
+
 ```text
-n = 4  →  2 solutions:
 .Q..    ..Q.
 ...Q    Q...
 Q...    ...Q
 ..Q.    .Q..
 ```
 
-**Constraints:** `1 ≤ n ≤ 9`.
+```constraint
+`1 ≤ n ≤ 9`.
+```
 
 ## Attempt it first
 

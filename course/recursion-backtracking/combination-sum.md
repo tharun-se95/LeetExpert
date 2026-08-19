@@ -13,15 +13,15 @@ numbers the same number of times (order doesn't matter).
 
 **Examples**
 
-```text
+```examples
 candidates = [2,3,6,7], target = 7  →  [[2,2,3], [7]]
 candidates = [2,3,5],   target = 8  →  [[2,2,2,2], [2,3,3], [3,5]]
 candidates = [2],       target = 1  →  []          (can't reach 1)
 ```
 
-**Constraints:** 1 ≤ candidates.length ≤ 30 · 2 ≤ candidates[i] ≤ 40 ·
-all distinct · 1 ≤ target ≤ 40. It's guaranteed the number of unique
-combinations fits in reasonable bounds for these limits.
+```constraint
+1 ≤ candidates.length ≤ 30 · 2 ≤ candidates[i] ≤ 40 · all distinct · 1 ≤ target ≤ 40. It's guaranteed the number of unique combinations fits in reasonable bounds for these limits.
+```
 
 ## Attempt it first
 

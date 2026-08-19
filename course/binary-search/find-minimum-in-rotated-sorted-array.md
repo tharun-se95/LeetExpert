@@ -10,13 +10,15 @@ pivot. Return the **minimum element**, in O(log n).
 
 **Examples**
 
-```text
+```examples
 nums = [3,4,5,1,2]      →  1
 nums = [4,5,6,7,0,1,2]  →  0
 nums = [11,13,15,17]    →  11    (not rotated at all — pivot = 0)
 ```
 
-**Constraints:** 1 ≤ n ≤ 5000 · distinct values.
+```constraint
+1 ≤ n ≤ 5000 · distinct values.
+```
 
 ## Attempt it first
 

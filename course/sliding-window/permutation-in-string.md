@@ -11,12 +11,14 @@ anagram of `s1`.
 
 **Examples**
 
-```text
+```examples
 s1 = "ab", s2 = "eidbaooo"  →  true   ("ba" at index 3)
 s1 = "ab", s2 = "eidboaoo"  →  false
 ```
 
-**Constraints:** 1 ≤ |s1| ≤ |s2| ≤ 10⁴ · lowercase English letters.
+```constraint
+1 ≤ |s1| ≤ |s2| ≤ 10⁴ · lowercase English letters.
+```
 
 ## Attempt it first
 

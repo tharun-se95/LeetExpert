@@ -12,13 +12,14 @@ neighbor**. Return the minimum total candies needed. (LeetCode 135.)
 
 **Examples**
 
-```text
-ratings = [1,0,2]    →  5   (candies: [2,1,2])
-ratings = [1,2,2]    →  4   (candies: [1,2,1] — the two 2's are EQUAL
-                             ratings, so neither needs more than the other)
+```examples
+ratings = [1,0,2] → 5  (candies [2,1,2])
+ratings = [1,2,2] → 4  (candies [1,2,1]; equal neighbors need not differ)
 ```
 
-**Constraints:** `1 ≤ n ≤ 2·10⁴`.
+```constraint
+`1 ≤ n ≤ 2·10⁴`.
+```
 
 ## Attempt it first
 

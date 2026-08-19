@@ -10,13 +10,14 @@ keeping the relative order of the non-zero elements.
 
 **Examples**
 
-```text
+```examples
 nums = [0, 1, 0, 3, 12]  →  [1, 3, 12, 0, 0]
 nums = [0]               →  [0]
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ · O(1) auxiliary space · minimize total
-writes (follow-up).
+```constraint
+1 ≤ n ≤ 10⁴ · O(1) auxiliary space · minimize total writes (follow-up).
+```
 
 ## Attempt it first
 

@@ -13,6 +13,11 @@ invariant**, unlike a BST. (LeetCode 236.)
 
 **Examples**
 
+```examples
+root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1 → 3  (5 and 1 sit in different subtrees of 3)
+root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4 → 5  (4 is under 5, so 5 is its own ancestor)
+```
+
 ```text
       3
      / \
@@ -21,13 +26,11 @@ invariant**, unlike a BST. (LeetCode 236.)
   6  2 0   8
     / \
    7   4
-
-LCA(5, 1) = 3      (5 and 1 are in different subtrees of 3)
-LCA(5, 4) = 5      (4 is a descendant of 5, so 5 is its own ancestor here)
 ```
 
-**Constraints:** `2 ≤ n ≤ 10⁵` nodes, all values unique, `p` and `q`
-both exist in the tree and are distinct.
+```constraint
+2 ≤ n ≤ 10⁵ nodes · all values unique · p and q both exist and are distinct
+```
 
 ## Attempt it first
 

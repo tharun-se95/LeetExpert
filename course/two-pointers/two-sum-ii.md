@@ -11,14 +11,15 @@ the two numbers summing to target. Exactly one solution exists. Required:
 
 **Examples**
 
-```text
+```examples
 numbers = [2,7,11,15], target = 9   →  [1,2]
 numbers = [2,3,4],     target = 6   →  [1,3]
 numbers = [-1,0],      target = -1  →  [1,2]
 ```
 
-**Constraints:** 2 ≤ n ≤ 3·10⁴ · sorted non-decreasing · exactly one
-answer.
+```constraint
+2 ≤ n ≤ 3·10⁴ · sorted non-decreasing · exactly one answer.
+```
 
 ## Attempt it first
 

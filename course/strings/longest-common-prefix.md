@@ -10,13 +10,14 @@ them (possibly the empty string).
 
 **Examples**
 
-```text
+```examples
 ["flower","flow","flight"]  →  "fl"
 ["dog","racecar","car"]     →  ""
 ```
 
-**Constraints:** 1 ≤ count ≤ 200 · 0 ≤ each length ≤ 200 · lowercase
-letters.
+```constraint
+1 ≤ count ≤ 200 · 0 ≤ each length ≤ 200 · lowercase letters.
+```
 
 ## Attempt it first
 

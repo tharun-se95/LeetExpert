@@ -3,6 +3,8 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { propertyNames } from "../src/lib/sandbox/properties";
 import { parseSandboxSpec } from "@/components/sandbox/parseSpec";
+import { MEMORY_CELL_LABEL_MAX } from "../src/lib/insight/parseCaseMemory";
+import { parseExampleRows } from "../src/lib/content/parseExamples";
 import matter from "gray-matter";
 import { extractSandboxFence } from "../src/lib/content/extractSandboxFence";
 import { splitProblemTabs } from "../src/lib/content/splitProblemTabs";
@@ -295,6 +297,39 @@ describe("hand-authored JSON fences", () => {
             }
           });
         }
+
+        // Insight MemoryStrip cellLabel ellipsizes past MEMORY_CELL_LABEL_MAX.
+        // Teaching cases must stay under that budget so the strip does not
+        // lie about short string-array inputs (LCP flo…/fli… regression).
+        cases.forEach((raw, ci) => {
+          const c = raw as { args?: unknown[]; ops?: unknown[] };
+          const values: unknown[] = [];
+          if (Array.isArray(c.args)) values.push(...c.args);
+          if (Array.isArray(c.ops)) {
+            for (const op of c.ops) {
+              if (Array.isArray(op) && Array.isArray(op[1])) values.push(...op[1]);
+            }
+          }
+          for (const arg of values) {
+            if (!Array.isArray(arg)) continue;
+            for (const item of arg) {
+              if (typeof item === "string" && item.length > MEMORY_CELL_LABEL_MAX) {
+                broken.push(
+                  `${at} case ${ci} — string cell "${item.slice(0, 12)}…" is ${item.length} chars; Insight truncates above ${MEMORY_CELL_LABEL_MAX}`,
+                );
+              }
+              if (Array.isArray(item)) {
+                for (const cell of item) {
+                  if (typeof cell === "string" && cell.length > MEMORY_CELL_LABEL_MAX) {
+                    broken.push(
+                      `${at} case ${ci} — nested string cell "${cell.slice(0, 12)}…" is ${cell.length} chars; Insight truncates above ${MEMORY_CELL_LABEL_MAX}`,
+                    );
+                  }
+                }
+              }
+            }
+          }
+        });
       }
     }
     expect(broken).toEqual([]);
@@ -538,5 +573,105 @@ describe("sandbox coverage", () => {
       .sort();
 
     expect(missing).toEqual([]);
+  });
+});
+
+/**
+ * Problem intros must use the ExamplesBlock path — not a plain `text`
+ * code surface. A ```text fence under **Examples** is the regression that
+ * shipped find-the-index with a grey "text" label and cramped mono dump.
+ */
+describe("problem examples coverage", () => {
+  function problemLessons() {
+    return LESSONS.filter((l) => {
+      const fm = /^---\n([\s\S]*?)\n---/.exec(l.body);
+      return fm?.[1].includes("type: problem");
+    });
+  }
+
+  it("every problem lesson has an examples fence that parses into rows", () => {
+    const bad: string[] = [];
+    for (const lesson of problemLessons()) {
+      const blocks = fences(lesson.body, "examples");
+      if (blocks.length === 0) {
+        bad.push(`${lesson.rel} — missing \`\`\`examples fence`);
+        continue;
+      }
+      // The first examples fence is the problem intro; later ones (rare) must
+      // also parse if present.
+      for (const f of blocks) {
+        const rows = parseExampleRows(f.json);
+        if (!rows || rows.length === 0) {
+          bad.push(`${lesson.rel}:${f.line} — examples fence produced no rows`);
+          continue;
+        }
+        const lines = f.json
+          .split("\n")
+          .map((l) => l.trim())
+          .filter(Boolean);
+        for (const line of lines) {
+          if (!line.includes("→") && !line.includes("->")) {
+            bad.push(
+              `${lesson.rel}:${f.line} — non-arrow line inside examples ("${line.slice(0, 60)}")`,
+            );
+          }
+          const arrow = line.includes("→") ? "→" : line.includes("->") ? "->" : null;
+          if (arrow && !line.slice(0, line.indexOf(arrow)).trim()) {
+            bad.push(
+              `${lesson.rel}:${f.line} — arrow with empty input ("${line.slice(0, 60)}")`,
+            );
+          }
+        }
+        if (rows.length < lines.filter((l) => l.includes("→") || l.includes("->")).length) {
+          bad.push(
+            `${lesson.rel}:${f.line} — some arrow lines failed to parse into rows`,
+          );
+        }
+        for (const row of rows) {
+          const arrows =
+            (row.input.match(/→/g) || []).length +
+            (row.input.match(/->/g) || []).length +
+            (row.output.match(/→/g) || []).length +
+            (row.output.match(/->/g) || []).length;
+          if (arrows > 0) {
+            bad.push(
+              `${lesson.rel}:${f.line} — arrow leaked into input/output ("${row.input}" → "${row.output}")`,
+            );
+          }
+          if (row.input.includes("⇒") || row.output.includes("⇒")) {
+            bad.push(
+              `${lesson.rel}:${f.line} — use → not ⇒ as the result separator`,
+            );
+          }
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("every problem lesson uses a constraint fence (not **Constraints:** prose)", () => {
+    const bad = problemLessons()
+      .filter(
+        (l) =>
+          fences(l.body, "constraint").length === 0 ||
+          /\*\*Constraints:\*\*/.test(l.body),
+      )
+      .map((l) => l.rel)
+      .sort();
+    expect(bad).toEqual([]);
+  });
+
+  it("problem Examples sections do not fall back to a text fence", () => {
+    const bad: string[] = [];
+    for (const lesson of problemLessons()) {
+      const exIdx = lesson.body.search(/\*\*Examples\*\*|## Examples/);
+      if (exIdx < 0) continue;
+      const after = lesson.body.slice(exIdx, exIdx + 800);
+      const fence = after.match(/```(examples|text)\b/);
+      if (fence?.[1] === "text") {
+        bad.push(`${lesson.rel} — Examples still opens with \`\`\`text`);
+      }
+    }
+    expect(bad).toEqual([]);
   });
 });

@@ -13,17 +13,15 @@ same cell cannot be used more than once** within a single word.
 
 **Examples**
 
-```text
-board = [["A","B","C","E"],
-         ["S","F","C","S"],
-         ["A","D","E","E"]]
-
-word = "ABCCED"  →  true
-word = "SEE"     →  true
-word = "ABCB"    →  false   (the second B would reuse the first C's cell)
+```examples
+board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED" → true
+board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE" → true
+board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB" → false  (would reuse a cell)
 ```
 
-**Constraints:** `1 ≤ m, n ≤ 6`, `1 ≤ word.length ≤ 15`.
+```constraint
+`1 ≤ m, n ≤ 6`, `1 ≤ word.length ≤ 15`.
+```
 
 ## Attempt it first
 

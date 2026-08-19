@@ -12,13 +12,15 @@ when another begins does **not** count as a conflict.
 
 **Examples**
 
-```text
+```examples
 [[0,30],[5,10],[15,20]]  →  false   ([0,30] overlaps both others)
 [[7,10],[2,4]]           →  true    (2–4 finishes before 7–10 starts)
 [[1,5],[5,8]]            →  true    (touching endpoints are fine)
 ```
 
-**Constraints:** 0 ≤ n ≤ 10⁴.
+```constraint
+0 ≤ n ≤ 10⁴.
+```
 
 ## Attempt it first
 

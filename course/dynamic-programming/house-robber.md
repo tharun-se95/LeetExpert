@@ -12,12 +12,14 @@ alarm). (LeetCode 198.)
 
 **Examples**
 
-```text
+```examples
 nums = [1,2,3,1]    →  4   (rob house 0 and house 2: 1 + 3 = 4)
 nums = [2,7,9,3,1]  →  12  (rob houses 0, 2, 4: 2 + 9 + 1 = 12)
 ```
 
-**Constraints:** `1 ≤ nums.length ≤ 100`, values in `[0, 400]`.
+```constraint
+`1 ≤ nums.length ≤ 100`, values in `[0, 400]`.
+```
 
 ## Attempt it first
 

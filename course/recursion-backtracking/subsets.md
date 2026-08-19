@@ -11,14 +11,14 @@ duplicate subsets, and the order of subsets does not matter.
 
 **Examples**
 
-```text
+```examples
 nums = [1,2,3]  →  [[], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3]]
 nums = [0]      →  [[], [0]]
 ```
 
-**Constraints:** 1 ≤ n ≤ 10 · all elements distinct · values in ±10.
-(Note the tiny n — a strong hint the intended answer is exponential and
-that's *expected*, not a failure.)
+```constraint
+1 ≤ n ≤ 10 · all elements distinct · values in ±10. (Note the tiny n — a strong hint the intended answer is exponential and that's *expected*, not a failure.)
+```
 
 ## Attempt it first
 

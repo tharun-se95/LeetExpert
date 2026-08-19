@@ -9,17 +9,20 @@ Characters arrive one at a time from a stream. After **each** arrival,
 report the first character (in arrival order) that has appeared exactly
 once so far — or `#` if none exists.
 
-**Example**
+**Examples**
 
-```text
-stream:  a    b    a    b    c    b
-report:  a    a    b    #    c    c
+```examples
+add("a") → "a"
+add("b") → "a"
+add("a") → "b"  (a now has count 2, so first unique is b)
+add("b") → "#"  (nothing unique)
+add("c") → "c"
+add("b") → "c"
 ```
 
-(After `a b a`: `a` has count 2, so the first unique is `b`. After
-`a b a b`: nothing is unique. After `…c`: `c`.)
-
-**Constraints:** ≤ 10⁵ arrivals · lowercase letters.
+```constraint
+≤ 10⁵ arrivals · lowercase letters.
+```
 
 ## Attempt it first
 

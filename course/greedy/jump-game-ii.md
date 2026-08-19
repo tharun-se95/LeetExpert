@@ -12,15 +12,17 @@ guaranteed the last index **is** reachable, and you must return the
 
 **Examples**
 
-```text
-nums = [2,3,1,1,4]   →  2
-        0 →(jump)→ 1 →(jump)→ 4.  Two jumps. (0→2→? also works but never fewer.)
-
-nums = [2,3,0,1,4]   →  2
-        0 → 1 → 4.
+```examples
+nums = [2,3,1,1,4] → 2  (0 to 1, then to 4)
+nums = [2,3,0,1,4] → 2
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ · 0 ≤ nums[i] ≤ 1000 · last index always reachable.
+First case: jump `0 → 1 → 4` (two jumps). `0 → 2 → ?` also works but never fewer.
+Second case: jump `0 → 1 → 4`.
+
+```constraint
+1 ≤ n ≤ 10⁴ · 0 ≤ nums[i] ≤ 1000 · last index always reachable.
+```
 
 ## Attempt it first
 

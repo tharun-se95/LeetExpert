@@ -11,13 +11,14 @@ traversal never reaches null.
 
 **Examples**
 
-```text
-3 → 2 → 0 → -4 ─┐        ⇒  true   (-4 links back to 2)
-        ↑______|
-1 → 2 → null              ⇒  false
+```examples
+head = [3,2,0,-4], pos = 1 → true  (-4 links back to 2)
+head = [1,2], pos = -1 → false  (no cycle)
 ```
 
-**Constraints:** 0 ≤ length ≤ 10⁴ · follow-up: **O(1) memory**.
+```constraint
+0 ≤ length ≤ 10⁴ · follow-up: **O(1) memory**.
+```
 
 ## Attempt it first
 

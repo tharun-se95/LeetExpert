@@ -12,12 +12,14 @@ follow-up: achieve O(1) extra beyond it.)
 
 **Examples**
 
-```text
+```examples
 nums = [1,2,3,4]     →  [24,12,8,6]
 nums = [-1,1,0,-3,3] →  [0,0,9,0,0]
 ```
 
-**Constraints:** 2 ≤ n ≤ 10⁵ · products fit in 32 bits · **no division**.
+```constraint
+2 ≤ n ≤ 10⁵ · products fit in 32 bits · **no division**.
+```
 
 ## Attempt it first
 

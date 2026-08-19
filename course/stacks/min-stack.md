@@ -8,18 +8,17 @@ type: problem
 Design a stack supporting `push`, `pop`, `top`, and `getMin` — **all in
 O(1)**. `getMin` returns the minimum element currently in the stack.
 
-**Example**
+**Examples**
 
-```text
-push(-2), push(0), push(-3)
-getMin() → -3
-pop()
-top()    → 0
-getMin() → -2      ← the minimum RECOVERED after the pop
+```examples
+push(-2), push(0), push(-3), getMin() → -3
+pop(), top() → 0
+getMin() → -2  (minimum recovered after the pop)
 ```
 
-**Constraints:** ≤ 3·10⁴ operations · pop/top/getMin always called on a
-non-empty stack.
+```constraint
+≤ 3·10⁴ operations · pop/top/getMin always called on a non-empty stack.
+```
 
 ## Attempt it first
 

@@ -10,18 +10,17 @@ Given a 2D matrix, implement `NumMatrix` supporting
 that rectangle, inclusive — for **many** calls. The matrix never
 changes.
 
-**Example**
+**Examples**
 
-```text
-matrix = [[3,0,1,4,2],
-          [5,6,3,2,1],
-          [1,2,0,1,5],
-          [4,1,0,1,7],
-          [1,0,3,0,5]]
-sumRegion(2,1,4,3) → 8   (rows 2-4, cols 1-3: 2+0+1 + 1+0+1 + 0+3+0 = 8)
+```examples
+NumMatrix([[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]), sumRegion(2,1,4,3) → 8  (rows 2–4, cols 1–3: 2+0+1 + 1+0+1 + 0+3+0)
+sumRegion(1,1,2,2) → 11
+sumRegion(1,2,2,4) → 12
 ```
 
-**Constraints:** 1 ≤ rows, cols ≤ 200 · up to 10⁴ calls to `sumRegion`.
+```constraint
+1 ≤ rows, cols ≤ 200 · up to 10⁴ calls to `sumRegion`.
+```
 
 ## Attempt it first
 

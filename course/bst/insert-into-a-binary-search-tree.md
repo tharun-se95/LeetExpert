@@ -13,18 +13,22 @@ one where the new value becomes a leaf.
 
 **Examples**
 
+```examples
+root = [4,2,7,1,3], val = 5 → [4,2,7,1,3,5]  (5 lands as a leaf under 7)
+root = [], val = 8 → [8]
+```
+
 ```text
       4                       4
      / \                     / \
-    2   7     insert 5  →    2   7
+    2   7     insert 5      2   7
    / \                     / \  /
   1   3                   1  3 5
-
-  empty     insert 8   →   8
 ```
 
-**Constraints:** 0 ≤ n ≤ 10⁴ nodes · −10⁸ ≤ values ≤ 10⁸ · `val` is not
-already in the tree.
+```constraint
+0 ≤ n ≤ 10⁴ nodes · −10⁸ ≤ values ≤ 10⁸ · val is not already in the tree
+```
 
 ## Attempt it first
 

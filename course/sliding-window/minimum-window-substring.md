@@ -12,13 +12,15 @@ window exists.
 
 **Examples**
 
-```text
+```examples
 s = "ADOBECODEBANC", t = "ABC"  →  "BANC"
 s = "a", t = "aa"               →  ""     (s has only one 'a')
 s = "a", t = "a"                →  "a"
 ```
 
-**Constraints:** 1 ≤ |s|, |t| ≤ 10⁵ · letters (upper and lower case).
+```constraint
+1 ≤ |s|, |t| ≤ 10⁵ · letters (upper and lower case).
+```
 
 ## Attempt it first
 

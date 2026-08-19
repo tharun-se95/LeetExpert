@@ -14,13 +14,14 @@ number of provinces. (LeetCode 547.)
 
 **Examples**
 
-```text
-isConnected = [[1,1,0],
-               [1,1,0],
-               [0,0,1]]   →  2   (cities 0,1 form one province; city 2 its own)
+```examples
+isConnected = [[1,1,0],[1,1,0],[0,0,1]] → 2
+isConnected = [[1,0,0],[0,1,0],[0,0,1]] → 3
 ```
 
-**Constraints:** `1 ≤ n ≤ 200`.
+```constraint
+`1 ≤ n ≤ 200`.
+```
 
 ## Attempt it first
 

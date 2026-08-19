@@ -10,13 +10,15 @@ repeating characters.
 
 **Examples**
 
-```text
+```examples
 "abcabcbb"  →  3    ("abc")
 "bbbbb"     →  1    ("b")
 "pwwkew"    →  3    ("wke")
 ```
 
-**Constraints:** 0 ≤ n ≤ 5·10⁴ · letters, digits, symbols, spaces.
+```constraint
+0 ≤ n ≤ 5·10⁴ · letters, digits, symbols, spaces.
+```
 
 ## Attempt it first
 

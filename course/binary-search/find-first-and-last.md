@@ -11,13 +11,15 @@ absent — in **O(log n)**.
 
 **Examples**
 
-```text
+```examples
 nums = [5,7,7,8,8,10], target = 8  →  [3, 4]
 nums = [5,7,7,8,8,10], target = 6  →  [-1, -1]
 nums = [], target = 0              →  [-1, -1]
 ```
 
-**Constraints:** 0 ≤ n ≤ 10⁵.
+```constraint
+0 ≤ n ≤ 10⁵.
+```
 
 ## Attempt it first
 

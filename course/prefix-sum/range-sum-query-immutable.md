@@ -9,16 +9,17 @@ Given an integer array `nums`, implement `NumArray` supporting
 `sumRange(left, right)` — the sum of `nums[left..right]` inclusive — for
 **many** calls. The array never changes between calls.
 
-**Example**
+**Examples**
 
-```text
-nums = [-2, 0, 3, -5, 2, -1]
-sumRange(0, 2) → -2+0+3 = 1
-sumRange(2, 5) → 3-5+2-1 = -1
-sumRange(0, 5) → -2+0+3-5+2-1 = -3
+```examples
+NumArray([-2, 0, 3, -5, 2, -1]), sumRange(0, 2) → 1  (-2+0+3)
+sumRange(2, 5) → -1  (3-5+2-1)
+sumRange(0, 5) → -3  (-2+0+3-5+2-1)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ · up to 3·10⁴ calls to `sumRange`.
+```constraint
+1 ≤ n ≤ 10⁴ · up to 3·10⁴ calls to `sumRange`.
+```
 
 ## Attempt it first
 

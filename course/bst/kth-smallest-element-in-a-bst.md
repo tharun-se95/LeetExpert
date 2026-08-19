@@ -11,23 +11,24 @@ minimum).
 
 **Examples**
 
-```text
-      3
-     / \
-    1   4        k = 1  →  1
-     \
-      2
-
-      5
-     / \
-    3   6        k = 3  →  3
-   / \
-  2   4
- /
-1
+```examples
+root = [3,1,4,null,2], k = 1 → 1
+root = [5,3,6,2,4,null,null,1], k = 3 → 3
 ```
 
-**Constraints:** 1 ≤ k ≤ n ≤ 10⁴ · node values are distinct.
+```text
+      3                5
+     / \              / \
+    1   4            3   6
+     \              / \
+      2            2   4
+                  /
+                 1
+```
+
+```constraint
+1 ≤ k ≤ n ≤ 10⁴ · node values are distinct
+```
 
 ## Attempt it first
 

@@ -11,18 +11,23 @@ leaf.
 
 **Examples**
 
+```examples
+root = [3,9,20,null,null,15,7] → 3  (longest root-to-leaf: 3-20-15 or 3-20-7)
+root = [] → 0  (empty tree)
+root = [1,null,2] → 2  (path 1-2)
+```
+
 ```text
       3
      / \
-    9   20        →  3   (path 3 → 20 → 15, or 3 → 20 → 7)
+    9   20
        /  \
       15   7
-
-root = []          →  0   (empty tree)
-root = [1, null, 2] →  2   (path 1 → 2)
 ```
 
-**Constraints:** 0 ≤ n ≤ 10⁴ nodes · node values fit in a machine int.
+```constraint
+0 ≤ n ≤ 10⁴ nodes · node values fit in a machine int
+```
 
 ## Attempt it first
 

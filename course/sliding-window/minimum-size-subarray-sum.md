@@ -11,14 +11,15 @@ or 0 if none exists.
 
 **Examples**
 
-```text
+```examples
 target = 7, nums = [2,3,1,2,4,3]   →  2    ([4,3], sum 7)
 target = 4, nums = [1,4,4]         →  1    ([4])
 target = 11, nums = [1,1,1,1,1,1,1,1]  →  0   (max possible sum is 8)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · 1 ≤ target ≤ 10⁹ · **all values
-positive**.
+```constraint
+1 ≤ n ≤ 10⁵ · 1 ≤ target ≤ 10⁹ · **all values positive**.
+```
 
 ## Attempt it first
 

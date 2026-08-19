@@ -10,15 +10,15 @@ any order within groups).
 
 **Examples**
 
-```text
-["eat","tea","tan","ate","nat","bat"]
-  →  [["eat","tea","ate"], ["tan","nat"], ["bat"]]
-[""]   →  [[""]]
-["a"]  →  [["a"]]
+```examples
+["eat","tea","tan","ate","nat","bat"] → [["eat","tea","ate"],["tan","nat"],["bat"]]
+[""] → [[""]]
+["a"] → [["a"]]
 ```
 
-**Constraints:** 1 ≤ count ≤ 10⁴ · 0 ≤ each length ≤ 100 · lowercase
-English letters.
+```constraint
+1 ≤ count ≤ 10⁴ · 0 ≤ each length ≤ 100 · lowercase English letters.
+```
 
 ## Attempt it first
 

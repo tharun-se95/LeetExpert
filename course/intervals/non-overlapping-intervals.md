@@ -11,13 +11,15 @@ endpoint (`[1,2]` and `[2,3]`) does **not** count as overlapping.
 
 **Examples**
 
-```text
+```examples
 [[1,2],[2,3],[3,4],[1,3]]  →  1   (remove [1,3]; the other three are disjoint)
 [[1,2],[1,2],[1,2]]        →  2   (keep one copy of [1,2], remove the other two)
 [[1,2],[2,3]]              →  0   (touching endpoints don't overlap)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · endpoints fit in a 32-bit integer.
+```constraint
+1 ≤ n ≤ 10⁵ · endpoints fit in a 32-bit integer.
+```
 
 ## Attempt it first
 

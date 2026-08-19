@@ -13,14 +13,15 @@ all bananas within `h` hours.
 
 **Examples**
 
-```text
+```examples
 piles = [3,6,7,11], h = 8   →  4
 piles = [30,11,23,4,20], h = 5   →  30
 piles = [30,11,23,4,20], h = 6   →  23
 ```
 
-**Constraints:** 1 ≤ piles.length ≤ 10⁴ · 1 ≤ piles[i] ≤ 10⁹ ·
-piles.length ≤ h ≤ 10⁹.
+```constraint
+1 ≤ piles.length ≤ 10⁴ · 1 ≤ piles[i] ≤ 10⁹ · piles.length ≤ h ≤ 10⁹.
+```
 
 ## Attempt it first
 

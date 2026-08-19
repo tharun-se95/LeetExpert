@@ -11,12 +11,14 @@ step. Return the number of distinct paths. (LeetCode 62.)
 
 **Examples**
 
-```text
+```examples
 m = 3, n = 7  →  28
 m = 3, n = 2  →  3    (paths: right-right-down, right-down-right, down-right-right)
 ```
 
-**Constraints:** `1 ≤ m, n ≤ 100`.
+```constraint
+`1 ≤ m, n ≤ 100`.
+```
 
 ## Attempt it first
 

@@ -12,15 +12,21 @@ fine). Return the maximum amount robbable. (LeetCode 337.)
 
 **Examples**
 
+```examples
+root = [3,2,3,null,3,null,1] → 7  (rob root 3 + grandchildren 3 and 1; skip the children)
+```
+
 ```text
     3
    / \
-  2   3          →  7   (rob 3 + 3 + 3 [root's val + both grandchildren],
-   \   \              skip the two direct children valued 2 and 3)
+  2   3
+   \   \
     3   1
 ```
 
-**Constraints:** up to `10⁴` nodes.
+```constraint
+up to 10⁴ nodes
+```
 
 ## Attempt it first
 

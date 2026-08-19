@@ -5,11 +5,20 @@ import type { MemoryMarker, MemoryModel } from "@/lib/insight/types";
 /** Soft cap so the strip stays readable in the IDE middle band. */
 export const MEMORY_CELL_CAP = 24;
 
+/**
+ * Per-cell string budget for array/list elements. Short teaching inputs
+ * (flower, flight, racecar, …) must render in full — the old >4 trim
+ * turned LCP's first case into flo…/fli… and lied about memory.
+ * Longer values still ellipsize so a single cell cannot dominate the strip.
+ */
+export const MEMORY_CELL_LABEL_MAX = 16;
+
 function cellLabel(value: unknown): string {
   if (typeof value === "string") {
     if (value.length === 0) return "ε";
     if (value.length === 1) return value;
-    return value.length > 4 ? `${value.slice(0, 3)}…` : value;
+    if (value.length <= MEMORY_CELL_LABEL_MAX) return value;
+    return `${value.slice(0, MEMORY_CELL_LABEL_MAX - 1)}…`;
   }
   if (typeof value === "number" || typeof value === "boolean") {
     return String(value);

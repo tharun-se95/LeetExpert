@@ -12,17 +12,14 @@ necessary), and return it.
 
 **Examples**
 
-```text
-intervals = [[1,3],[6,9]],           newInterval = [2,5]
-  →  [[1,5],[6,9]]                    (new interval overlaps [1,3], merges to [1,5])
-
-intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
-  →  [[1,2],[3,10],[12,16]]           (new interval swallows [3,5],[6,7],[8,10])
+```examples
+intervals = [[1,3],[6,9]], newInterval = [2,5] → [[1,5],[6,9]]
+intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8] → [[1,2],[3,10],[12,16]]
 ```
 
-**Constraints:** 0 ≤ n ≤ 10⁴ · `intervals` is already sorted by start and
-already non-overlapping · `newInterval` may overlap zero, one, or many
-existing intervals.
+```constraint
+0 ≤ n ≤ 10⁴ · `intervals` is already sorted by start and already non-overlapping · `newInterval` may overlap zero, one, or many existing intervals.
+```
 
 ## Attempt it first
 

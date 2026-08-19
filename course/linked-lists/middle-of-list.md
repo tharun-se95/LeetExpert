@@ -10,12 +10,14 @@ there are two middles (even length), return the **second** one.
 
 **Examples**
 
-```text
-1 → 2 → 3 → 4 → 5        ⇒  node 3
-1 → 2 → 3 → 4 → 5 → 6    ⇒  node 4   (second middle)
+```examples
+head = [1,2,3,4,5] → [3,4,5]
+head = [1,2,3,4,5,6] → [4,5,6]  (second middle)
 ```
 
-**Constraints:** 1 ≤ length ≤ 100.
+```constraint
+1 ≤ length ≤ 100.
+```
 
 ## Attempt it first
 

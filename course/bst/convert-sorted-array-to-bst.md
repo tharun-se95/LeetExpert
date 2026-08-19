@@ -12,8 +12,11 @@ accepted.) (LeetCode 108.)
 
 **Examples**
 
+```examples
+nums = [-10,-3,0,5,9] → [0,-3,9,-10,null,5]  (one valid height-balanced BST; others accepted)
+```
+
 ```text
-nums = [-10,-3,0,5,9]  →  one valid answer:
         0
        / \
      -3   9
@@ -21,7 +24,9 @@ nums = [-10,-3,0,5,9]  →  one valid answer:
   -10   5
 ```
 
-**Constraints:** `1 ≤ nums.length ≤ 10⁴`, strictly increasing values.
+```constraint
+1 ≤ nums.length ≤ 10⁴ · strictly increasing values
+```
 
 ## Attempt it first
 

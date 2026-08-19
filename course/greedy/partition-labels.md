@@ -12,14 +12,14 @@ list of partition lengths. (LeetCode 763.)
 
 **Examples**
 
-```text
-s = "ababcbacadefegdehijhklij"
-→ [9, 7, 8]
-   ("ababcbaca", "defegde", "hijhklij" — each letter's every
-    occurrence is confined to exactly one of these three pieces)
+```examples
+s = "ababcbacadefegdehijhklij" → [9,7,8]  ("ababcbaca","defegde","hijhklij")
+s = "eccbbbbdec" → [10]
 ```
 
-**Constraints:** `1 ≤ s.length ≤ 500`, lowercase English letters only.
+```constraint
+`1 ≤ s.length ≤ 500`, lowercase English letters only.
+```
 
 ## Attempt it first
 

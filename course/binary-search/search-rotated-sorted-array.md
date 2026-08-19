@@ -11,14 +11,15 @@ array and a target, return its index, or −1. Required: **O(log n)**.
 
 **Examples**
 
-```text
+```examples
 nums = [4,5,6,7,0,1,2], target = 0  →  4
 nums = [4,5,6,7,0,1,2], target = 3  →  -1
 nums = [1], target = 0              →  -1
 ```
 
-**Constraints:** 1 ≤ n ≤ 5000 · distinct values · rotated at some
-unknown pivot (possibly 0, i.e. not rotated at all).
+```constraint
+1 ≤ n ≤ 5000 · distinct values · rotated at some unknown pivot (possibly 0, i.e. not rotated at all).
+```
 
 ## Attempt it first
 

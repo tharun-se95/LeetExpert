@@ -11,14 +11,16 @@ index if the target is found. If not, return the index where it
 
 **Examples**
 
-```text
+```examples
 nums = [1,3,5,6], target = 5  →  2   (found at index 2)
 nums = [1,3,5,6], target = 2  →  1   (would insert between 1 and 3)
 nums = [1,3,5,6], target = 7  →  4   (would insert at the end)
 nums = [1,3,5,6], target = 0  →  0   (would insert at the start)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ · sorted, distinct values.
+```constraint
+1 ≤ n ≤ 10⁴ · sorted, distinct values.
+```
 
 ## Attempt it first
 

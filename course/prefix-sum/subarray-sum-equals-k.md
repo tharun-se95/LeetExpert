@@ -11,13 +11,15 @@ equals `k`.
 
 **Examples**
 
-```text
+```examples
 nums = [1,1,1], k = 2   →  2    ([1,1] at 0-1, [1,1] at 1-2)
 nums = [1,2,3], k = 3   →  2    ([1,2] and [3])
 nums = [1,-1,0], k = 0  →  3    ([1,-1], [0], [1,-1,0])
 ```
 
-**Constraints:** 1 ≤ n ≤ 2·10⁴ · values in ±1000 · **can be negative**.
+```constraint
+1 ≤ n ≤ 2·10⁴ · values in ±1000 · **can be negative**.
+```
 
 ## Attempt it first
 

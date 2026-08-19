@@ -10,14 +10,15 @@ and return the head. n is guaranteed valid.
 
 **Examples**
 
-```text
-1→2→3→4→5, n = 2   ⇒   1→2→3→5     (removed 4)
-1,         n = 1   ⇒   null         (removed the only node — the head!)
-1→2,       n = 2   ⇒   2            (removed the head)
+```examples
+head = [1,2,3,4,5], n = 2 → [1,2,3,5]  (removed 4)
+head = [1], n = 1 → []  (removed the only node — the head)
+head = [1,2], n = 2 → [2]  (removed the head)
 ```
 
-**Constraints:** 1 ≤ length ≤ 30 · 1 ≤ n ≤ length · follow-up: **one
-pass**.
+```constraint
+1 ≤ length ≤ 30 · 1 ≤ n ≤ length · follow-up: **one pass**.
+```
 
 ## Attempt it first
 

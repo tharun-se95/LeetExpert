@@ -11,16 +11,16 @@ running data set — and `findMedian()` — return the median of all
 numbers added so far. Both must run efficiently, called repeatedly as
 the stream grows. (LeetCode 295.)
 
-**Example**
+**Examples**
 
-```text
-addNum(1); addNum(2)
-findMedian()  → 1.5              (average of 1, 2)
-addNum(3)
-findMedian()  → 2                (the middle of 1, 2, 3)
+```examples
+addNum(1), addNum(2), findMedian() → 1.5  (average of 1, 2)
+addNum(3), findMedian() → 2  (middle of 1, 2, 3)
 ```
 
-**Constraints:** up to `5·10⁴` calls total to `addNum`/`findMedian`.
+```constraint
+up to `5·10⁴` calls total to `addNum`/`findMedian`.
+```
 
 ## Attempt it first
 

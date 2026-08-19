@@ -11,14 +11,15 @@ output must contain none of those.
 
 **Examples**
 
-```text
+```examples
 "the sky is blue"      →  "blue is sky the"
 "  hello world  "      →  "world hello"
 "a good   example"     →  "example good a"
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ · letters, digits, spaces · at least one
-word · follow-up: O(1) auxiliary space if given a mutable char array.
+```constraint
+1 ≤ n ≤ 10⁴ · letters, digits, spaces · at least one word · follow-up: O(1) auxiliary space if given a mutable char array.
+```
 
 ## Attempt it first
 

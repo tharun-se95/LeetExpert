@@ -12,12 +12,14 @@ dictionary words. Words may be reused any number of times.
 
 **Examples**
 
-```text
+```examples
 s = "leetcode", wordDict = ["leet","code"]      →  true   ("leet" + "code")
 s = "catsandog", wordDict = ["cats","dog","sand","and","cat"]  →  false
 ```
 
-**Constraints:** `1 ≤ s.length ≤ 300`, up to `1000` dictionary words.
+```constraint
+`1 ≤ s.length ≤ 300`, up to `1000` dictionary words.
+```
 
 ## Attempt it first
 

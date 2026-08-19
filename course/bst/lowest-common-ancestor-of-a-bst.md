@@ -12,6 +12,12 @@ a descendant of itself). (LeetCode 235.)
 
 **Examples**
 
+```examples
+root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8 → 6
+root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4 → 2
+root = [6,2,8,0,4,7,9,null,null,3,5], p = 3, q = 5 → 4
+```
+
 ```text
       6
      / \
@@ -20,12 +26,11 @@ a descendant of itself). (LeetCode 235.)
   0  4 7   9
     / \
    3   5
-
-LCA(2, 8) = 6      LCA(2, 4) = 2      LCA(3, 5) = 4
 ```
 
-**Constraints:** `2 ≤ n ≤ 10⁵` nodes, all values unique, `p` and `q`
-both exist and are distinct.
+```constraint
+2 ≤ n ≤ 10⁵ nodes · all values unique · p and q both exist and are distinct
+```
 
 ## Attempt it first
 

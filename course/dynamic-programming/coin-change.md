@@ -12,13 +12,14 @@ impossible. (LeetCode 322.)
 
 **Examples**
 
-```text
+```examples
 coins = [1,2,5], amount = 11  →  3   (5 + 5 + 1)
 coins = [2],      amount = 3  →  -1  (odd amount, only even coin)
 ```
 
-**Constraints:** `1 ≤ coins.length ≤ 12`, `1 ≤ coins[i] ≤ 2³¹-1`,
-`0 ≤ amount ≤ 10⁴`.
+```constraint
+`1 ≤ coins.length ≤ 12`, `1 ≤ coins[i] ≤ 2³¹-1`, `0 ≤ amount ≤ 10⁴`.
+```
 
 ## Attempt it first
 

@@ -11,14 +11,15 @@ in any order.
 
 **Examples**
 
-```text
+```examples
 nums = [1,2,3]  →  [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
 nums = [0,1]    →  [[0,1],[1,0]]
 nums = [1]      →  [[1]]
 ```
 
-**Constraints:** 1 ≤ n ≤ 6 · all elements distinct · values in ±10.
-(Even smaller n than Subsets — because n! grows even faster than 2ⁿ.)
+```constraint
+1 ≤ n ≤ 6 · all elements distinct · values in ±10. (Even smaller n than Subsets — because n! grows even faster than 2ⁿ.)
+```
 
 ## Attempt it first
 

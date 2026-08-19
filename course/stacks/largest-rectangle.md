@@ -10,13 +10,15 @@ largest rectangle that fits entirely inside it.
 
 **Examples**
 
-```text
+```examples
 [2,1,5,6,2,3]  →  10    (height 5 × width 2, over bars 5 and 6)
 [2,4]          →  4
 [3,3,3]        →  9     (height 3 × width 3)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · heights in [0, 10⁴].
+```constraint
+1 ≤ n ≤ 10⁵ · heights in [0, 10⁴].
+```
 
 ## Attempt it first
 

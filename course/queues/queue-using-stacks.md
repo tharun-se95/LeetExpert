@@ -9,16 +9,17 @@ Implement a FIFO queue — `push`, `pop`, `peek`, `empty` — using **only
 two stacks** (only push-to-top, pop-from-top, peek, isEmpty allowed on
 them). Amortized O(1) per operation required.
 
-**Example**
+**Examples**
 
-```text
-push(1), push(2)
-peek()  → 1        ← FIFO: the FIRST pushed
-pop()   → 1
+```examples
+push(1), push(2), peek() → 1  (FIFO: the first pushed)
+pop() → 1
 empty() → false
 ```
 
-**Constraints:** ≤ 100 operations · calls are always valid.
+```constraint
+≤ 100 operations · calls are always valid.
+```
 
 ## Attempt it first
 

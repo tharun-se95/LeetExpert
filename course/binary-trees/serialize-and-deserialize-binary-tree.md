@@ -13,17 +13,23 @@ binary tree. (LeetCode 297.)
 
 **Examples**
 
+```examples
+root = [1,2,3,null,null,4,5] → [1,2,3,null,null,4,5]  (deserialize(serialize(tree)) recovers an identical tree)
+```
+
 ```text
       1
      / \
-    2   3           serialize → some string
+    2   3
        / \
-      4   5          deserialize(serialize(tree)) → an identical tree
+      4   5
 ```
 
-**Constraints:** up to `10⁴` nodes, values may be any 32-bit integer
-(including values that could otherwise be confused with a "null"
-sentinel — the encoding must not conflate them).
+The string encoding is yours to choose — only the round-trip must hold.
+
+```constraint
+up to 10⁴ nodes · values may be any 32-bit integer · encoding must not conflate real values with a null sentinel
+```
 
 ## Attempt it first
 

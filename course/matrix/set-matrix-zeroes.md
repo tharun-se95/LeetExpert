@@ -10,20 +10,14 @@ entire column** to `0`. Do it **in place**. (LeetCode 73.)
 
 **Examples**
 
-```text
-[[1,1,1],        [[1,0,1],
- [1,0,1],   →     [0,0,0],
- [1,1,1]]         [1,0,1]]
-
-[[0,1,2,0],      [[0,0,0,0],
- [3,4,5,2],  →    [0,4,5,0],
- [1,3,1,5]]       [0,3,1,0]]
+```examples
+matrix = [[1,1,1],[1,0,1],[1,1,1]] → [[1,0,1],[0,0,0],[1,0,1]]
+matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]] → [[0,0,0,0],[0,4,5,0],[0,3,1,0]]
 ```
 
-**Constraints:** `1 ≤ m, n ≤ 200`, values in ±2³¹. The follow-up that
-makes this problem interesting: a simple solution uses O(m+n) extra
-space; **can you do it with O(1) extra space?** That follow-up is the
-whole lesson.
+```constraint
+`1 ≤ m, n ≤ 200`, values in ±2³¹. The follow-up that makes this problem interesting: a simple solution uses O(m+n) extra space; **can you do it with O(1) extra space?** That follow-up is the whole lesson.
+```
 
 ## Attempt it first
 

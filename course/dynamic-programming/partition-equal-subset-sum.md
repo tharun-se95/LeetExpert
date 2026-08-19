@@ -10,12 +10,14 @@ can be partitioned into TWO subsets with EQUAL sum. (LeetCode 416.)
 
 **Examples**
 
-```text
+```examples
 nums = [1,5,11,5]  →  true    ([1,5,5] and [11], both sum to 11)
 nums = [1,2,3,5]   →  false   (total is 11, odd — can't split evenly)
 ```
 
-**Constraints:** `1 ≤ nums.length ≤ 200`, values in `[1, 100]`.
+```constraint
+`1 ≤ nums.length ≤ 200`, values in `[1, 100]`.
+```
 
 ## Attempt it first
 

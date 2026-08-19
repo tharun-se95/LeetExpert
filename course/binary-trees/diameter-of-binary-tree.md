@@ -11,17 +11,22 @@ tree. This path may or may not pass through the root.
 
 **Examples**
 
+```examples
+root = [1,2,3,4,5] → 3  (longest path 4-2-1-3 or 5-2-1-3; three edges)
+root = [1,2] → 1  (the single edge between 1 and 2)
+```
+
 ```text
       1
      / \
-    2   3          →  3   (path 4 → 2 → 1 → 3, three edges;
-   / \                   or 5 → 2 → 1 → 3)
+    2   3
+   / \
   4   5
-
-root = [1, 2]      →  1   (the single edge 1 → 2)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ nodes.
+```constraint
+1 ≤ n ≤ 10⁴ nodes
+```
 
 ## Attempt it first
 

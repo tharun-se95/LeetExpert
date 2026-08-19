@@ -10,13 +10,15 @@ contiguous subarray with the **largest sum**, and return that sum.
 
 **Examples**
 
-```text
+```examples
 nums = [-2,1,-3,4,-1,2,1,-5,4]  →  6    ([4,-1,2,1])
 nums = [1]                       →  1
 nums = [5,4,-1,7,8]              →  23   (the whole array)
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · values in ±10⁴.
+```constraint
+1 ≤ n ≤ 10⁵ · values in ±10⁴.
+```
 
 ## Attempt it first
 

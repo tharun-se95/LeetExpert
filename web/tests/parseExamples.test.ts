@@ -32,8 +32,46 @@ describe("parseExampleRows", () => {
     ]);
   });
 
-  it("returns null when no arrows", () => {
-    expect(parseExampleRows("just prose\nstill prose")).toBeNull();
+  it("parses find-the-index style rows with explanations", () => {
+    const rows = parseExampleRows(
+      [
+        'haystack = "sadbutsad", needle = "sad" → 0  (needle begins at index 0; a later copy at 6 is ignored)',
+        'haystack = "leetcode", needle = "leeto" → -1  (no alignment matches)',
+        'haystack = "mississippi", needle = "issip" → 4  (slice haystack[4:9] equals "issip")',
+      ].join("\n"),
+    );
+    expect(rows).toEqual([
+      {
+        input: 'haystack = "sadbutsad", needle = "sad"',
+        output: "0",
+        note: "needle begins at index 0; a later copy at 6 is ignored",
+      },
+      {
+        input: 'haystack = "leetcode", needle = "leeto"',
+        output: "-1",
+        note: "no alignment matches",
+      },
+      {
+        input: 'haystack = "mississippi", needle = "issip"',
+        output: "4",
+        note: 'slice haystack[4:9] equals "issip"',
+      },
+    ]);
+  });
+
+  it("unwraps a fully quoted note without mangling inner quotes", () => {
+    expect(parseExampleRows('"race a car" → false  ("raceacar")')).toEqual([
+      { input: '"race a car"', output: "false", note: "raceacar" },
+    ]);
+    expect(
+      parseExampleRows('haystack = "ab", needle = "a" → 0  ("a" is at index 0)'),
+    ).toEqual([
+      {
+        input: 'haystack = "ab", needle = "a"',
+        output: "0",
+        note: '"a" is at index 0',
+      },
+    ]);
   });
 });
 

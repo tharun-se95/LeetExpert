@@ -10,13 +10,18 @@ opener closed by the matching closer type, in the correct nesting order.
 
 **Examples**
 
-```text
-"()"      →  true          "()[]{}"  →  true
-"(]"      →  false         "([)]"    →  false
-"([{}])"  →  true          "("       →  false
+```examples
+"()" → true
+"()[]{}" → true
+"(]" → false
+"([)]" → false
+"([{}])" → true
+"(" → false
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁴ · only the six bracket characters.
+```constraint
+1 ≤ n ≤ 10⁴ · only the six bracket characters.
+```
 
 ## Attempt it first
 

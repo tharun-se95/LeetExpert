@@ -10,12 +10,14 @@ calling a built-in sort function.
 
 **Examples**
 
-```text
+```examples
 nums = [5,2,3,1]    →  [1,2,3,5]
 nums = [5,1,1,2,0,0] →  [0,0,1,1,2,5]
 ```
 
-**Constraints:** 1 ≤ n ≤ 5·10⁴ · values in ±5·10⁴.
+```constraint
+1 ≤ n ≤ 5·10⁴ · values in ±5·10⁴.
+```
 
 ## Attempt it first
 

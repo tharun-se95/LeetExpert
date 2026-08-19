@@ -10,16 +10,17 @@ contiguous window** of size k as it slides left to right.
 
 **Examples**
 
-```text
-nums = [1,3,-1,-3,5,3,6,7], k = 3
-windows: [1,3,-1] [3,-1,-3] [-1,-3,5] [-3,5,3] [5,3,6] [3,6,7]
-output:  [3, 3, 5, 5, 6, 7]
-
-nums = [1], k = 1  →  [1]
+```examples
+nums = [1,3,-1,-3,5,3,6,7], k = 3 → [3,3,5,5,6,7]
+nums = [1], k = 1 → [1]
 ```
 
-**Constraints:** 1 ≤ n ≤ 10⁵ · 1 ≤ k ≤ n · a hard problem — the
-O(n) solution is a famous interview finale.
+Windows for the first case: `[1,3,-1]` `[3,-1,-3]` `[-1,-3,5]` `[-3,5,3]`
+`[5,3,6]` `[3,6,7]`.
+
+```constraint
+1 ≤ n ≤ 10⁵ · 1 ≤ k ≤ n · a hard problem — the O(n) solution is a famous interview finale.
+```
 
 ## Attempt it first
 

@@ -12,20 +12,18 @@ Design a data structure supporting two methods:
   Here `word` may contain the wildcard character `.`, which matches **any
   single letter**.
 
-**Example**
+**Examples**
 
-```text
-addWord("bad")
-addWord("dad")
-addWord("mad")
-search("pad")   → false
-search("bad")   → true
-search(".ad")   → true      ← "." matches b, d, or m
-search("b..")   → true      ← "b" then any two letters: "bad"
+```examples
+addWord("bad"), addWord("dad"), addWord("mad"), search("pad") → false
+search("bad") → true
+search(".ad") → true  ("." matches b, d, or m)
+search("b..") → true  (b then any two letters matches "bad")
 ```
 
-**Constraints:** stored words are lowercase `a–z`, 1–25 characters;
-search patterns are `a–z` or `.`, 1–25 characters; up to 10⁴ calls.
+```constraint
+stored words are lowercase `a–z`, 1–25 characters; search patterns are `a–z` or `.`, 1–25 characters; up to 10⁴ calls.
+```
 
 ## Attempt it first
 

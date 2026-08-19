@@ -9,7 +9,7 @@ Given an elevation map `height`, compute how much rain water it traps.
 
 **Examples**
 
-```text
+```examples
 height = [0,1,0,2,1,0,1,3,2,1,2,1]  →  6
 height = [4,2,0,3,2,5]              →  9
 ```
@@ -20,7 +20,9 @@ height = [4,2,0,3,2,5]              →  9
 █ █░█░█░█░█ █        ░ = trapped water (first example)
 ```
 
-**Constraints:** 1 ≤ n ≤ 2·10⁴ · heights in [0, 10⁵].
+```constraint
+1 ≤ n ≤ 2·10⁴ · heights in [0, 10⁵].
+```
 
 ## Attempt it first
 
