@@ -36,4 +36,9 @@ export const GOLD_MODULE_SLUGS = [
   "stacks",
   "binary-search",
   "graphs",
+  "recursion-backtracking",
+  "binary-trees",
+  "heaps",
+  "intervals",
+  "dynamic-programming",
 ] as const;

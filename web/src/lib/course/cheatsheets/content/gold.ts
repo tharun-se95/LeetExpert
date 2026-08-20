@@ -624,6 +624,361 @@ export const graphsCheatsheet: ModuleCheatsheet = {
   ],
 };
 
+export const recursionBacktrackingCheatsheet: ModuleCheatsheet = {
+  moduleSlug: "recursion-backtracking",
+  tier: "gold",
+  tagline: "Choose → explore → unchoose. The call stack is your state.",
+  smells: [
+    { smell: "All subsets / permutations", pattern: "Backtracking tree" },
+    { smell: "Constraint board (N-Queens…)", pattern: "Place + prune" },
+    { smell: "Divide structure in half", pattern: "Recurse on parts" },
+    { smell: "Every valid arrangement / path", pattern: "Enumerate + record" },
+  ],
+  patterns: [
+    {
+      title: "Backtracking template",
+      smell: "Enumerate valid configurations",
+      summary:
+        "Push a choice, recurse, pop. Record when a complete valid state is reached. Prune early when constraints break.",
+      tone: "accent",
+      diagram: "recursion-tree",
+    },
+    {
+      title: "Include / exclude",
+      smell: "Subsets / combination sum",
+      summary:
+        "For subsets: branch on taking nums[i] or not, then advance i. Same tree, two edges.",
+      tone: "good",
+      diagram: "recursion-tree",
+    },
+    {
+      title: "Swap permutations",
+      smell: "All orderings of a sequence",
+      summary:
+        "For i…n, swap i with j≥i, recurse i+1, swap back. Generates each order once.",
+      tone: "mark",
+      diagram: "array-cells",
+    },
+    {
+      title: "Place + prune (constraints)",
+      smell: "N-Queens, Sudoku, safe placement",
+      summary:
+        "Check constraints before recursing, not after recording. Pruning at the placement step is what keeps board searches from degenerating into full enumeration.",
+      tone: "warn",
+      diagram: "recursion-tree",
+    },
+  ],
+  complexity: [
+    { label: "Subsets", time: "O(2ⁿ · n)", space: "O(n)", note: "Output-sensitive" },
+    { label: "Permutations", time: "O(n! · n)", space: "O(n)", note: "Depth-n stack" },
+  ],
+  traps: [
+    {
+      title: "Mutating shared arrays",
+      detail:
+        "Push a copy into the answer (or copy on record). Otherwise every result points at the same final list.",
+      tone: "bad",
+    },
+    {
+      title: "Forgetting to unchoose",
+      detail:
+        "After recurse, undo the mutation (pop, unmark, swap back). Missing undo corrupts every sibling branch.",
+      tone: "warn",
+    },
+    {
+      title: "Pruning after the record",
+      detail:
+        "If you record partial answers and only reject them later, you still walk the dead branches. Reject at the choice, not at the leaf.",
+      tone: "warn",
+    },
+  ],
+};
+
+export const binaryTreesCheatsheet: ModuleCheatsheet = {
+  moduleSlug: "binary-trees",
+  tier: "gold",
+  tagline: "Rooted structure — traverse with intent (order, level, or path).",
+  smells: [
+    { smell: "Visit every node once", pattern: "DFS pre/in/post" },
+    { smell: "Per level aggregates", pattern: "BFS queue" },
+    { smell: "Path / diameter style", pattern: "DFS return + global" },
+    { smell: "Reconstruct from traversals", pattern: "Split by inorder root" },
+  ],
+  patterns: [
+    {
+      title: "Recursive DFS",
+      smell: "Combine children with the root",
+      summary:
+        "Base null → 0/identity. Combine left and right with the root. Pick pre/in/post for when you use the root value.",
+      tone: "accent",
+      diagram: "tree-levels",
+    },
+    {
+      title: "Level-order BFS",
+      smell: "Averages, zigzags, right-side view",
+      summary:
+        "Queue nodes; drain a level size each round. Natural for averages, zigzags, and ‘right side view’.",
+      tone: "good",
+      diagram: "bfs-layers",
+    },
+    {
+      title: "Post-order aggregate",
+      smell: "Height, diameter, LCA prep",
+      summary:
+        "Need both children before deciding. Compute below, then update a global answer — don’t decide too early.",
+      tone: "mark",
+      diagram: "tree-levels",
+    },
+    {
+      title: "Reconstruct from traversals",
+      smell: "Preorder + inorder (or the like)",
+      summary:
+        "Take the root from preorder, split inorder into left/right spans, recurse on each span. The root index bookkeeping is the entire trap.",
+      tone: "warn",
+      diagram: "tree-levels",
+    },
+  ],
+  complexity: [
+    { label: "DFS / BFS visit", time: "O(n)", space: "O(h) / O(w)", note: "h height, w width" },
+    { label: "Path aggregates", time: "O(n)", space: "O(h)", note: "One pass with returns" },
+    { label: "Reconstruct", time: "O(n)", space: "O(n)", note: "With index map" },
+  ],
+  traps: [
+    {
+      title: "Null child assumptions",
+      detail:
+        "Always guard left/right. Many ‘simple’ bugs are dereferencing null on a leaf’s child.",
+      tone: "warn",
+    },
+    {
+      title: "Confusing node count with height",
+      detail:
+        "Height and depth conventions differ (edges vs nodes). Pick one definition and stick to it in base cases.",
+      tone: "bad",
+    },
+    {
+      title: "Reconstruction index drift",
+      detail:
+        "Inorder split sizes shrink each level; recompute spans from lengths, not from global positions, or you read off the wrong subtree.",
+      tone: "warn",
+    },
+  ],
+};
+
+export const heapsCheatsheet: ModuleCheatsheet = {
+  moduleSlug: "heaps",
+  tier: "gold",
+  tagline: "Priority in O(log n) — top-K and running medians live here.",
+  smells: [
+    { smell: "Repeated extract-min/max", pattern: "Binary heap" },
+    { smell: "Top K in a stream", pattern: "Size-K heap" },
+    { smell: "Merge K sorted", pattern: "Heap of heads" },
+    { smell: "Cooldown / gap scheduling", pattern: "Greedy with heap" },
+  ],
+  patterns: [
+    {
+      title: "Size-K heap",
+      smell: "Top K of a stream / array",
+      summary:
+        "For top K largest, keep a min-heap of size K. Evict the smallest when over capacity — heap root is the threshold.",
+      tone: "accent",
+      diagram: "heap-pyramid",
+    },
+    {
+      title: "Two-heap median",
+      smell: "Running median as values arrive",
+      summary:
+        "Max-heap for the lower half, min-heap for the upper. Rebalance sizes so the median sits at the boundary.",
+      tone: "good",
+      diagram: "heap-pyramid",
+    },
+    {
+      title: "K-way merge",
+      smell: "Merge K sorted lists / arrays",
+      summary:
+        "Push the next item from each list with its list id. Pop global min, push that list’s successor.",
+      tone: "mark",
+      diagram: "array-cells",
+    },
+    {
+      title: "Greedy with heap (cooldown)",
+      smell: "Task scheduler / spaced gaps",
+      summary:
+        "Always run the task with the largest remaining count; park just-run tasks in a cooldown queue until their gap clears. A plain queue drifts from optimal.",
+      tone: "warn",
+      diagram: "heap-pyramid",
+    },
+  ],
+  complexity: [
+    { label: "Push / pop", time: "O(log n)", space: "O(n)", note: "n = heap size" },
+    { label: "Top-K over stream", time: "O(n log k)", space: "O(k)", note: "Better than full sort" },
+    { label: "K-way merge", time: "O(n log k)", space: "O(k)", note: "n total items, k lists" },
+  ],
+  traps: [
+    {
+      title: "Min vs max heap mix-up",
+      detail:
+        "Top-K largest needs a min-heap of size K (evict small). Flipping the heap type silently inverts the answer.",
+      tone: "bad",
+    },
+    {
+      title: "Comparing tuples incorrectly",
+      detail:
+        "When the heap stores (value, index, …), define the full comparison. Partial compares break ties and corrupt order.",
+      tone: "warn",
+    },
+    {
+      title: "Cooldown queue vs heap state",
+      detail:
+        "A task on cooldown must re-enter the heap, not stay parked. Forgetting to re-push is how task-scheduler counts come out too small.",
+      tone: "warn",
+    },
+  ],
+};
+
+export const intervalsCheatsheet: ModuleCheatsheet = {
+  moduleSlug: "intervals",
+  tier: "gold",
+  tagline: "Sort, then sweep — merge, insert, and conflict detection.",
+  smells: [
+    { smell: "Overlap / merge ranges", pattern: "Sort by start" },
+    { smell: "Minimum rooms / cameras", pattern: "Sweep line events" },
+    { smell: "Insert into sorted intervals", pattern: "Walk + merge splice" },
+    { smell: "Fewest removals for non-overlap", pattern: "Earliest-end greedy" },
+  ],
+  patterns: [
+    {
+      title: "Sort + merge",
+      smell: "Collapse overlapping ranges",
+      summary:
+        "Sort by start. If next.start ≤ current.end, extend end; else push current and shift. Linear after sort.",
+      tone: "accent",
+      diagram: "interval-sweep",
+    },
+    {
+      title: "Sweep events",
+      smell: "Peak concurrent intervals",
+      summary:
+        "Turn intervals into +1 at start and −1 at end. Sort events; scan tracking active count.",
+      tone: "good",
+      diagram: "interval-sweep",
+    },
+    {
+      title: "Insert & coalesce",
+      smell: "Add one interval into a sorted list",
+      summary:
+        "Copy intervals before the new one, merge through overlaps, then append the rest.",
+      tone: "mark",
+      diagram: "interval-sweep",
+    },
+    {
+      title: "Earliest-end greedy",
+      smell: "Max non-overlapping / min arrows",
+      summary:
+        "For maximum non-overlapping intervals, keep the one ending soonest and drop any later interval that overlaps it. Earliest start fails on the overlap chain.",
+      tone: "warn",
+      diagram: "greedy-choice",
+    },
+  ],
+  complexity: [
+    { label: "Merge intervals", time: "O(n log n)", space: "O(n)", note: "Dominated by sort" },
+    { label: "Sweep active count", time: "O(n log n)", space: "O(n)", note: "Event sort" },
+    { label: "Earliest-end greedy", time: "O(n log n)", space: "O(n)", note: "Sort by end" },
+  ],
+  traps: [
+    {
+      title: "Half-open vs closed ends",
+      detail:
+        "Touching endpoints may or may not overlap — read the problem. Off-by-one here fails half the cases.",
+      tone: "bad",
+    },
+    {
+      title: "Event sort tie-break",
+      detail:
+        "When start and end share a time, decide whether ends process first. Wrong order invents a phantom overlap of 1.",
+      tone: "warn",
+    },
+    {
+      title: "Greedy key confusion",
+      detail:
+        "Non-overlap greed sorts by END; a sort-by-start variant ‘looks sorted’ and quietly accepts overlapping chains. State the key before you code.",
+      tone: "warn",
+    },
+  ],
+};
+
+export const dynamicProgrammingCheatsheet: ModuleCheatsheet = {
+  moduleSlug: "dynamic-programming",
+  tier: "gold",
+  tagline: "Subproblems + order — define the state before you code the loop.",
+  smells: [
+    { smell: "Optimal among overlapping subproblems", pattern: "DP table / memo" },
+    { smell: "Count ways under constraints", pattern: "Transition sum" },
+    { smell: "Knapsack / decide take or skip", pattern: "2D then compress" },
+    { smell: "Longest increasing / common subsequence", pattern: "Sequence DP" },
+    { smell: "Grid paths with obstacles", pattern: "2D fill from corners" },
+  ],
+  patterns: [
+    {
+      title: "State then transition",
+      smell: "You can name ‘best/ways ending at i’",
+      summary:
+        "Name dp[i] (or dp[i][j]) in words first. Write the recurrence and base cases. Only then pick loop order — code without a named state is guesswork.",
+      tone: "accent",
+      diagram: "dp-table",
+    },
+    {
+      title: "Memoised recursion",
+      smell: "Sparse reachable states; natural recursive structure",
+      summary:
+        "Top-down: same recurrence, cache results. Great when bottom-up would fill a huge unused table. Still state the complexity of the cache size.",
+      tone: "good",
+      diagram: "recursion-tree",
+    },
+    {
+      title: "Rolling space",
+      smell: "dp[i] only needs dp[i−1] (or two rows)",
+      summary:
+        "Keep one or two rolling rows after the recurrence is correct. Compressing first is how people invent off-by-one bugs.",
+      tone: "mark",
+      diagram: "dp-table",
+    },
+    {
+      title: "Decision at each step",
+      smell: "Take / skip, or choose among prior endings",
+      summary:
+        "Write the choices explicitly (take item j, end a subsequence at i…). Transitions that ‘feel right’ without listing choices usually miss a case.",
+      tone: "warn",
+      diagram: "dp-table",
+    },
+  ],
+  complexity: [
+    { label: "1D sequence DP", time: "O(n·T)", space: "O(n)", note: "T = work per state" },
+    { label: "Classic knapsack", time: "O(n·W)", space: "O(W)", note: "After rolling" },
+    { label: "Grid path DP", time: "O(m·n)", space: "O(n)*", note: "*rolling column/row" },
+  ],
+  traps: [
+    {
+      title: "Wrong iteration order",
+      detail:
+        "Bottom-up must evaluate dependencies before dependents. Reverse a loop and you silently read stale zeroes — tests pass on tiny cases, fail on real ones.",
+      tone: "bad",
+    },
+    {
+      title: "Off-by-one base cases",
+      detail:
+        "Empty prefix, zero capacity, and the first cell of a grid are where most DP bugs hide. Write them before the nested loops.",
+      tone: "warn",
+    },
+    {
+      title: "State that is not a decision point",
+      detail:
+        "If dp[i] cannot decide between alternatives at i, you are missing a dimension. Adding the choice to the state is cheaper than a wrong recurrence.",
+      tone: "warn",
+    },
+  ],
+};
+
 export const GOLD_SHEETS: ModuleCheatsheet[] = [
   arraysCheatsheet,
   stringsCheatsheet,
@@ -634,4 +989,9 @@ export const GOLD_SHEETS: ModuleCheatsheet[] = [
   stacksCheatsheet,
   binarySearchCheatsheet,
   graphsCheatsheet,
+  recursionBacktrackingCheatsheet,
+  binaryTreesCheatsheet,
+  heapsCheatsheet,
+  intervalsCheatsheet,
+  dynamicProgrammingCheatsheet,
 ];
