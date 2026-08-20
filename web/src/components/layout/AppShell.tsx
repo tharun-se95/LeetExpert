@@ -10,7 +10,14 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { ProgressProvider } from "@/components/providers/ProgressProvider";
 import { ScrollbarAutoHide } from "@/components/providers/ScrollbarAutoHide";
 import { VisitTracker } from "@/components/providers/VisitTracker";
-import { allLessonsNavIds, allProblemSlugs } from "@/lib/course/manifest";
+import {
+  allLessonsNavIds,
+  allProblemSlugs,
+  findProblemBySlug,
+  moduleFamily,
+} from "@/lib/course/manifest";
+import { familyCssVars } from "@/lib/visual/familyTheme";
+import type { FamilyId } from "@/lib/content/manifest";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_KEY = "dsa-sidebar-open";
@@ -27,6 +34,23 @@ function isLandingPath(pathname: string): boolean {
   return pathname === "/";
 }
 
+/**
+ * The current topic's family, derived from the route. Lifted to the shell so
+ * the whole chrome (header, sidebar, mobile sheet, search) tints with the
+ * lesson's family instead of staying steel. List/landing routes have no
+ * single topic → null → monochrome.
+ */
+function activeFamilyFor(pathname: string): FamilyId | null {
+  const course = /^\/course\/([^/]+)/.exec(pathname);
+  if (course) return moduleFamily(course[1]);
+  const problem = /^\/problems\/([^/]+)/.exec(pathname);
+  if (problem) {
+    const hit = findProblemBySlug(problem[1]);
+    if (hit) return moduleFamily(hit.module);
+  }
+  return null;
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -39,6 +63,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const ideViewport = isIdePath(pathname);
   const showCourseNav = !isLandingPath(pathname);
+  const family = activeFamilyFor(pathname);
 
   useEffect(() => {
     const mq = window.matchMedia(DESKTOP_MQ);
@@ -99,41 +124,46 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       totalProblemCount={totalProblemCount}
       lessonProgressIds={lessonProgressIds}
     >
-      <VisitTracker />
-      <ScrollbarAutoHide />
-      <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
-      {showCourseNav ? (
-        <MobileLessonsSheet
-          open={mobileNavOpen}
-          onClose={() => setMobileNavOpen(false)}
-        />
-      ) : null}
-      <div className="flex h-dvh flex-col overflow-hidden">
-        <Header
-          onOpenSearch={() => setSearchOpen(true)}
-          showLessonsMenu={showCourseNav}
-          lessonsMenuOpen={mobileNavOpen}
-          onToggleLessonsMenu={() => setMobileNavOpen((v) => !v)}
-          showProgress={showCourseNav}
-        />
-        <div className="flex min-h-0 flex-1">
-          {showCourseNav ? (
-            <Sidebar
-              open={sidebarOpen}
-              onOpen={() => setSidebarOpen(true)}
-              onClose={() => setSidebarOpen(false)}
-            />
-          ) : null}
-          <main
-            className={cn(
-              "min-w-0 flex-1",
-              ideViewport
-                ? "flex min-h-0 flex-col overflow-hidden"
-                : "overflow-y-auto",
-            )}
-          >
-            <PageEnter fill={ideViewport}>{children}</PageEnter>
-          </main>
+      <div
+        className="contents"
+        style={family ? familyCssVars(family) : undefined}
+      >
+        <VisitTracker />
+        <ScrollbarAutoHide />
+        <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
+        {showCourseNav ? (
+          <MobileLessonsSheet
+            open={mobileNavOpen}
+            onClose={() => setMobileNavOpen(false)}
+          />
+        ) : null}
+        <div className="flex h-dvh flex-col overflow-hidden">
+          <Header
+            onOpenSearch={() => setSearchOpen(true)}
+            showLessonsMenu={showCourseNav}
+            lessonsMenuOpen={mobileNavOpen}
+            onToggleLessonsMenu={() => setMobileNavOpen((v) => !v)}
+            showProgress={showCourseNav}
+          />
+          <div className="flex min-h-0 flex-1">
+            {showCourseNav ? (
+              <Sidebar
+                open={sidebarOpen}
+                onOpen={() => setSidebarOpen(true)}
+                onClose={() => setSidebarOpen(false)}
+              />
+            ) : null}
+            <main
+              className={cn(
+                "min-w-0 flex-1",
+                ideViewport
+                  ? "flex min-h-0 flex-col overflow-hidden"
+                  : "overflow-y-auto",
+              )}
+            >
+              <PageEnter fill={ideViewport}>{children}</PageEnter>
+            </main>
+          </div>
         </div>
       </div>
     </ProgressProvider>

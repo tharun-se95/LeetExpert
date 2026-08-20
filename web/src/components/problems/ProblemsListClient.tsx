@@ -10,7 +10,12 @@ import {
 } from "@phosphor-icons/react";
 import { ModuleGlyph } from "@/components/course/ModuleGlyph";
 import { useProgress } from "@/components/providers/ProgressProvider";
-import { STAGES, type ProblemGroup } from "@/lib/course/manifest";
+import {
+  STAGES,
+  moduleFamily,
+  type ProblemGroup,
+} from "@/lib/course/manifest";
+import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
 import { lessonHref, lessonId, problemHref } from "@/lib/course/nav";
 import {
   difficultyBadgeClass,
@@ -188,6 +193,8 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
 
         <div className="mt-10 space-y-8">
           {filtered.map(({ module, problems }) => {
+            const familyId = moduleFamily(module);
+            const family = familyId ? getFamilyTheme(familyId) : null;
             const solvedInModule = problems.filter((p) =>
               solved.has(lessonId(module.slug, p.slug)),
             ).length;
@@ -199,31 +206,50 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
             return (
               <section
                 key={module.slug}
-                className="overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated"
+                style={
+                  family ? familyCssVars(family.id) : undefined
+                }
+                className="overflow-hidden rounded-[length:var(--radius-lg)] border border-accent/30 bg-elevated"
               >
-                <div className="flex flex-col gap-3 border-b border-border bg-accent/[0.06] px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
-                  <div className="flex min-w-0 flex-1 items-center gap-4">
+                <div className="relative flex flex-col gap-3 overflow-hidden border-b border-border bg-accent/[0.09] px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
+                  <span
+                    aria-hidden
+                    className="absolute inset-y-0 left-0 w-[3px] bg-accent"
+                  />
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_18%,transparent),_transparent_60%)]"
+                  />
+                  <div className="relative flex min-w-0 flex-1 items-center gap-4">
                     <div className="hidden h-14 w-20 shrink-0 sm:block">
                       <ModuleGlyph slug={module.slug} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-mono text-[10px] tracking-wide text-muted uppercase">
+                      <p className="flex items-center gap-1.5 font-mono text-[10px] tracking-wide text-muted uppercase">
+                        <span
+                          className="h-1.5 w-1.5 rounded-full bg-accent"
+                          aria-hidden
+                        />
                         Stage {module.stage} · {stageTitle(module.stage)}
+                        {family ? ` · ${family.label}` : null}
                       </p>
-                      <h2 className="mt-0.5 font-display text-lg font-semibold tracking-tight">
-                        <span className="tabular-nums text-muted">
+                      <h2 className="mt-1.5 flex items-center gap-2 font-display text-lg font-semibold tracking-tight">
+                        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-[length:var(--radius-xs)] bg-pop px-1.5 font-mono text-[11px] font-bold tabular-nums text-on-pop">
                           {String(module.number).padStart(2, "0")}
-                        </span>{" "}
+                        </span>
                         {module.shortTitle}
                       </h2>
                       <p className="mt-1 text-sm text-muted">
-                        {solvedInModule} of {problems.length} solved
+                        <span className="font-medium text-foreground">
+                          {solvedInModule}
+                        </span>{" "}
+                        of {problems.length} solved
                         {hasActiveFilters
                           ? ` · showing ${problems.length} match${problems.length === 1 ? "" : "es"}`
                           : null}
                       </p>
                       <div
-                        className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-border sm:hidden"
+                        className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-accent/20 sm:hidden"
                         aria-hidden
                       >
                         <div
@@ -233,9 +259,9 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                       </div>
                     </div>
                   </div>
-                  <div className="flex shrink-0 items-center gap-3">
+                  <div className="relative flex shrink-0 items-center gap-3">
                     <div
-                      className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-border sm:block"
+                      className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-accent/20 sm:block"
                       aria-hidden
                     >
                       <div
@@ -245,7 +271,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                     </div>
                     <Link
                       href={lessonHref(module.slug, "practice")}
-                      className="inline-flex min-h-11 touch-manipulation items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-background px-3.5 text-xs font-medium text-foreground transition-[border-color,color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/40 hover:text-mark motion-reduce:transition-none"
+                      className="inline-flex min-h-11 touch-manipulation items-center gap-1.5 rounded-[length:var(--radius-md)] bg-pop px-3.5 text-xs font-semibold text-on-pop transition-[background-color,opacity] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-90 motion-reduce:transition-none"
                     >
                       <Target className="h-3.5 w-3.5" weight="bold" />
                       Playbook
@@ -265,16 +291,16 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                           className={cn(
                             "group flex min-h-11 touch-manipulation items-center gap-3 px-4 py-3.5 text-sm transition-[background-color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none sm:px-5",
                             isSolved
-                              ? "bg-good/[0.04] hover:bg-good/[0.07]"
-                              : "hover:bg-accent/[0.04]",
+                              ? "bg-good/[0.05] hover:bg-good/[0.08]"
+                              : "hover:bg-accent/[0.07]",
                           )}
                         >
                           <span
                             className={cn(
-                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-mono text-[11px] tabular-nums",
+                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold tabular-nums",
                               isSolved
-                                ? "bg-good/15 text-good"
-                                : "border border-border bg-background text-muted",
+                                ? "bg-good text-white"
+                                : "border border-accent/35 bg-accent/[0.07] text-foreground",
                             )}
                           >
                             {isSolved ? (

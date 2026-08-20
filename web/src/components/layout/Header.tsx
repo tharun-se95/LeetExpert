@@ -75,7 +75,7 @@ export function Header({
               )}
             >
               <span className="text-foreground">code</span>
-              <span className="text-accent">Macha</span>
+              <span className="text-mark">Macha</span>
             </span>
             <span
               className="hidden h-3.5 w-px shrink-0 bg-border md:block"

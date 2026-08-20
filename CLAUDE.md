@@ -67,24 +67,33 @@ The content is the product. Code exists to serve it.
 
 ## 4. Design system
 
-- **Handbook press inks** in `web/src/app/globals.css` — **Indigo Modern**
-  (Primary `#6366F1`). Fill-in map:
+- **Handbook press inks** in `web/src/app/globals.css` — **Blueprint,
+  monochrome base** (accent/pop/mark all steel: light `#1E293B`, dark
+  `#CBD5E1`). Fill-in map:
   `docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md`.
 - **All colour goes through tokens.** No hardcoded Tailwind palette values
   (`emerald-500`, `red-400`) in components — they survive a palette change
   and silently break the theme.
-- **Primary drives accent + pop** in this palette. Primary/accent is
-  `#6366F1` (light) / `#818CF8` (dark): CTA fill and display accents. It
-  clears the 3:1 large/UI floor on paper but NOT the 4.5:1 body floor
-  (~4.06:1), so **body-size accent text uses `--mark`, never `--accent`**
-  (`text-mark`); dark mark == accent, so the rule only bites in light.
+- **Primary is per-topic, not global.** The base has no colour; the route's
+  module family is lifted to the AppShell (`display: contents` wrapper), so
+  the header, sidebar, and mobile sheet tint with the topic, and each
+  curriculum card / problem group applies its own family scope. The family
+  re-maps `--accent/--pop/--highlight/--on-pop` via `familyCssVars(family)`.
+  Family colours are authored as ONE `accent` hex per family in
+  `web/src/lib/visual/familyTheme.ts`; `accentUi` (the 3:1-on-both-papers UI
+  fill, gold darkened to `#AB8921`) is derived by `uiAccent()` — recolor a
+  family by changing one hex. `accentUi` clears only the 3:1 UI floor on
+  paper, so **body-size accent text uses `--mark`, never `--accent`**
+  (`text-mark`) — `--mark` is never remapped by a family scope and stays AA
+  steel in both themes (the wordmark uses it too). Chapter headings carry a
+  short family-accent rule above `h2`; heading text stays ink.
 - **Surfaces are a paper ladder, not Linear-like shadows.** `--background` /
   `--elevated` / `--code` / `--surface` carry a perceptible brightness ladder
   in BOTH themes — elevated brightest, surface deepest, never an inversion.
   Light: white cards on a cool-gray page (measured elevated/background 1.10,
-  background/code 1.06, code/surface 1.09, elevated/surface 1.26). Dark:
-  elevated/paper 1.26, code/elevated 1.17, paper/code 1.07, surface/paper
-  1.05. Every text ink (ink, muted, and every status ink incl. info) clears
+  background/code 1.11, code/surface 1.12, elevated/surface 1.36). Dark:
+  neutral-grey surfaces (no blue cast) — elevated/paper 1.24, code/elevated
+  1.16, paper/code 1.07, surface/paper 1.05. Every text ink (ink, muted, and every status ink incl. info) clears
   AA 4.5:1 on the deepest surface it can render on — the sandbox paints
   verdict rows and insight values on `--press-paper-sunk`, so that is the
   binding floor. No drop shadows, no blur.

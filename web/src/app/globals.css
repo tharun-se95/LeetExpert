@@ -2,63 +2,66 @@
 @plugin "@tailwindcss/typography";
 
 /* ============================================================
-   Handbook press inks — Option A: Indigo Modern
+   Handbook press inks — Blueprint (steel + cyan)
 
    Two tiers. Tier 1 is raw material (the inks and the paper);
    tier 2 is what components actually consume. Dark mode redefines
    tier 1 plus the layer roles (--elevated / --code / --surface).
 
    Palette: docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md
-   Sheet: codeMacha COLOR PALETTE OPTIONS — A Indigo Modern
    Rule: components use semantic names, never `--press-*` directly.
    Depth: layered surfaces + soft rules — never drop shadows.
    ============================================================ */
 
 :root {
-  /* --- tier 1: ground (Indigo Modern light) --------------- */
+  /* --- tier 1: ground (Blueprint light) ------------------- */
   /*
     Light surfaces are a real paper ladder, not a flat white stack. Elevated
-    (cards) stays #fff; background (#f2f4f8) is the page; code (#eaeef4) the
-    editor well; sunk (#e0e5ee) the deepest recess. Measured adjacent steps:
-    elevated/background 1.10, background/code 1.06, code/sunk 1.09,
-    elevated/sunk 1.26 — visible flat steps, no shadows. Every text ink below
+    (cards) stays #fff; background (#f1f4f9) is the page; code (#e4e9f2) the
+    editor well; sunk (#d8dde8) the deepest recess. Measured adjacent steps:
+    elevated/background 1.10, background/code 1.11, code/sunk 1.12,
+    elevated/sunk 1.36 — visible flat steps, no shadows. Every text ink below
     clears AA 4.5:1 on the deepest surface; enforced by
     web/tests/design-tokens.test.ts.
   */
-  --press-paper: #f2f4f8; /* sheet Background — app chrome / page */
-  --press-paper-sunk: #e0e5ee; /* recessed panel (tests, muted chrome) */
-  --press-ink: #111827; /* 16.1:1 — sheet Text Primary */
-  --press-ink-soft: #5c6573; /* 5.35:1 on paper; 4.66:1 on sunk — AA deepest */
+  --press-paper: #f1f4f9; /* sheet Background — app chrome / page */
+  --press-paper-sunk: #d8dde8; /* recessed panel (tests, muted chrome) */
+  --press-ink: #16202e; /* 15.0:1 — sheet Text Primary */
+  --press-ink-soft: #56606e; /* 5.77:1 on paper; 4.67:1 on sunk — AA deepest */
   /* Almost-invisible rule — the tonal ladder now carries the structure */
-  --press-rule: rgba(17, 24, 39, 0.08);
+  --press-rule: rgba(22, 32, 46, 0.09);
 
   /*
-    Primary #6366F1 — Tailwind indigo-500 exactly, per owner palette brief.
-    On paper ~4.06:1 — large/UI / display accent only; do not use for
-    regular-weight body text (below AA's 4.5:1 normal-text floor — clears
-    3:1 large-text/UI comfortably). Body-size accent text must use --mark.
-    White on Primary ~4.47:1 — fine for bold/large CTA labels, same reasoning.
+    The base theme is MONOCHROME: accent, pop and mark are all steel #1E293B,
+    so no colour is asserted on pages with no topic (landing, course hub,
+    foundations). The "primary" is provided per topic: familyCssVars() re-maps
+    --accent/--pop/--on-pop/--highlight inside a lesson's scope (see the
+    [data-family] block below) to that lesson's family accent. Steel clears
+    ~13.8:1 on paper and ~15.2:1 for white-on-accent — never a contrast risk.
+    Inside a family scope accent is the (often saturated) family colour, so
+    the old rule still applies there: body-size accent text uses --mark
+    (which stays steel everywhere), never --accent.
   */
-  --press-lime: #6366f1; /* pop = Primary */
-  --press-olive: #6366f1; /* accent = Primary */
-  --press-blue: #4f46e5; /* mark / active — pressed Primary (indigo-600) */
+  --press-lime: #1e293b; /* pop = steel */
+  --press-olive: #1e293b; /* accent = steel */
+  --press-blue: #1e293b; /* mark = steel — not overridden by family scopes */
   /*
     Sheet Success/Warning/Error are bright fills (~2–3:1 as body text).
     Text inks below keep the hue, darkened for AA on the deepest surface
     (--press-paper-sunk), where the sandbox verdict rows render them.
     Sheet fills: #16C47F / #F5B301 / #EF4444.
   */
-  --press-green: #036f42; /* 4.95:1 on sunk — Success family */
-  --press-red: #b91c1c; /* 5.12:1 on sunk — Error family */
-  --press-amber: #92400e; /* 5.61:1 on sunk — Warning family */
+  --press-green: #036f42; /* 4.60:1 on sunk — Success family */
+  --press-red: #b91c1c; /* 4.77:1 on sunk — Error family */
+  --press-amber: #92400e; /* 5.27:1 on sunk — Warning family */
 
   /*
     Insight — "remember this," deliberately rare. Not Warning's amber
-    (teaching-caution) and not Primary (interaction only). Gold fill wash
+    (teaching-caution) and not accent (interaction only). Gold fill wash
     via bg-insight/N; text ink darkened for AA — pure #FACC15 is ~1.5:1 on
     paper, nowhere close.
   */
-  --press-insight: #854d0e; /* 6.22:1 on paper; 5.42:1 on sunk */
+  --press-insight: #854d0e; /* 5.06:1 on sunk */
 
   /*
     Pastel callout surfaces — a confident fill per role, not a faded wash of
@@ -66,13 +69,13 @@
     ink clears AA large-text (3:1) against its own surface; computed, see
     web/tests/design-tokens.test.ts.
   */
-  --press-info-surface: #e0f2fe; /* #0284c7 ink ≈ 3.57:1 */
-  --press-good-surface: #dcfce7; /* #047857 ink ≈ 5.00:1 */
+  --press-info-surface: #cffafe; /* #075985 ink ≈ 7.00:1 */
+  --press-good-surface: #dcfce7; /* #036f42 ink ≈ 5.63:1 */
   --press-warn-surface: #fef3c7; /* #b45309 ink ≈ 4.51:1 */
   --press-insight-surface: #fef9c3; /* #854d0e ink ≈ 6.38:1 */
 
   --press-highlight: color-mix(in oklab, var(--press-olive) 14%, transparent);
-  --press-halftone: rgba(17, 24, 39, 0.08);
+  --press-halftone: rgba(22, 32, 46, 0.09);
 
   /* --- tier 2: semantic ----------------------------------- */
   --background: var(--press-paper);
@@ -80,13 +83,13 @@
   --muted: var(--press-ink-soft);
   --border: var(--press-rule);
   --surface: var(--press-paper-sunk); /* test panel / muted — deepest */
-  --code: #eaeef4; /* editor / code chrome — recessed below the page */
+  --code: #e4e9f2; /* editor / code chrome — recessed below the page */
   --elevated: #ffffff; /* sidebar, lesson panel, cards — brightest lift */
   --accent: var(--press-olive);
-  --accent-hover: #818cf8; /* Primary Hover — lighter lift */
-  --accent-active: #4f46e5;
+  --accent-hover: #334155; /* steel lift for hover */
+  --accent-active: #0f172a;
   --pop: var(--press-lime);
-  --on-pop: #ffffff; /* ~5.03:1 on Primary */
+  --on-pop: #ffffff; /* ~15.2:1 on steel */
 
   --good: var(--press-green);
   --bad: var(--press-red);
@@ -98,7 +101,7 @@
   --warn-surface: var(--press-warn-surface);
   --insight-surface: var(--press-insight-surface);
 
-  --tone-sky: #0369a1; /* info — 4.69:1 on sunk, AA deepest */
+  --tone-sky: #075985; /* info — 5.56:1 on sunk, AA deepest */
   --tone-rose: #e11d48;
 
   --mark: var(--press-blue);
@@ -132,24 +135,24 @@
 }
 
 .dark {
-  /* Indigo Modern dark — sheet Background #12151C */
-  --press-paper: #12151c;
+  /* Neutral grey sheet — no blue cast (Blueprint's charcoal was blue-tinted). */
+  --press-paper: #121214;
   /*
     Dark is the theme where the layer ladder is real — light is capped at
     ~1.03:1 by muted-AA, dark has room. Same relative order as light, never
     an inversion: elevated (cards) brightest, code above the page, background
     the sheet, surface recessed deepest. Measured adjacent deltas:
-    surface/paper 1.05, paper/code 1.07, code/elevated 1.17, elevated/paper
-    1.26 — visible steps, flat (no shadows). Muted #a1a1aa ≥5.5:1 everywhere.
+    surface/paper 1.05, paper/code 1.07, code/elevated 1.16, elevated/paper
+    1.24 — visible steps, flat (no shadows). Muted #9ca9b8 ≥8:1 everywhere.
   */
-  --press-paper-sunk: #0c0f15; /* recessed — tests / muted, deepest */
-  --press-ink: #f9fafc; /* 18.07:1 — sheet Text Primary */
-  --press-ink-soft: #a1a1aa; /* 7.36:1 — sheet Text Muted */
-  --press-rule: rgba(249, 250, 252, 0.08); /* Linear-like soft rule */
+  --press-paper-sunk: #0c0c0d; /* recessed — tests / muted, deepest */
+  --press-ink: #e6edf4; /* 17.1:1 — sheet Text Primary */
+  --press-ink-soft: #9ca9b8; /* 8.19:1 — sheet Text Muted */
+  --press-rule: rgba(244, 244, 245, 0.09); /* soft rule */
 
-  --press-lime: #6366f1; /* sheet Primary — CTA fill */
-  --press-olive: #818cf8; /* Primary Hover — readable accent on charcoal */
-  --press-blue: #818cf8;
+  --press-lime: #cbd5e1; /* pop — light-steel chip (dark CTA fill) */
+  --press-olive: #cbd5e1; /* accent — light steel on charcoal */
+  --press-blue: #cbd5e1; /* mark == accent in dark (steel) */
   --press-green: #22d497; /* sheet Success */
   --press-red: #ef4444; /* sheet Error */
   --press-amber: #f59e0b; /* sheet Warning */
@@ -162,14 +165,14 @@
   --press-insight-surface: #3a2e05; /* #facc15 ink ≈ 8.72:1 */
 
   --press-highlight: color-mix(in oklab, var(--press-olive) 22%, transparent);
-  --press-halftone: rgba(249, 250, 252, 0.08);
-  --on-pop: #ffffff;
+  --press-halftone: rgba(244, 244, 245, 0.09);
+  --on-pop: #16202e; /* dark ink on the light-steel chip */
 
-  --surface: #0c0f15; /* tests / muted — recess, deepest tier */
-  --elevated: #232937; /* sidebar / lesson / cards — brightest lift */
-  --code: #181c25; /* editor — above the page, below elevated */
-  --accent-hover: #a5b4fc;
-  --accent-active: #6366f1;
+  --surface: #0c0c0d; /* tests / muted — recess, deepest tier */
+  --elevated: #26262a; /* sidebar / lesson / cards — brightest lift */
+  --code: #19191d; /* editor — above the page, below elevated */
+  --accent-hover: #e2e8f0;
+  --accent-active: #cbd5e1;
 
   --tone-sky: #38bdf8;
   --tone-rose: #fb7185;
@@ -399,6 +402,19 @@ body {
   color: var(--foreground);
 }
 
+/* Chapter marker: a short family-accent rule above each section heading.
+   Heading text itself stays ink — the accent bar is the only per-chapter
+   colour, and it resolves to steel outside a family scope. */
+.handbook-prose h2::before {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 3px;
+  margin-bottom: 0.6rem;
+  border-radius: var(--radius-xs);
+  background: var(--family-accent, var(--accent));
+}
+
 .handbook-prose h3 {
   margin-top: 1.75rem;
   margin-bottom: 0.5rem;
@@ -479,11 +495,13 @@ body {
 
 .handbook-prose .anchor-link:hover {
   /*
-    --accent is tuned for large/UI contexts (see the tier-1 comment above) —
-    on paper it clears only ~4.36:1, short of AA's 4.5:1 floor for this
-    normal-weight 19px prose text. --mark (pressed Primary) is the per-theme
-    ink that actually clears AA at this size: light-mode #4f46e5 ≈6.13:1,
-    dark-mode #818cf8 ≈6.33:1 — see web/tests/design-tokens.test.ts.
+    --accent is tuned for large/UI contexts — at the base it is steel (~13.8:1,
+    fine anywhere), but inside a lesson's family scope it becomes the family
+    accent, which is saturated and may sit below AA's 4.5:1 body floor for
+    this normal-weight 19px prose text. --mark stays steel everywhere
+    (familyCssVars never overrides it), so prose accent text always uses
+    --mark: light-mode #1e293b ≈11.2:1, dark-mode #cbd5e1 ≈12.8:1 on the
+    deepest surface — see web/tests/design-tokens.test.ts.
   */
   color: var(--mark);
 }
@@ -666,30 +684,39 @@ body {
  * them identical is that both read the same values. Change one, change both.
  */
 :root {
-  --tok-comment: #5c6573;
-  --tok-keyword: #4f46e5;
-  --tok-string: #047857;
-  --tok-constant: #4338ca;
-  --tok-entity: #3730a3;
-  --tok-variable: #111827;
-  --tok-name: #111827;
-  --tok-tag: #047857;
+  --tok-comment: #59636f;
+  --tok-keyword: #1d4ed8;
+  --tok-string: #065f46;
+  --tok-constant: #92400e;
+  --tok-entity: #6d28d9;
+  --tok-variable: #16202e;
+  --tok-name: #16202e;
+  --tok-tag: #065f46;
   --tok-invalid: #b91c1c;
 }
 
 .dark {
-  --tok-comment: #a1a1aa;
-  --tok-keyword: #818cf8;
-  --tok-string: #22d497;
-  --tok-constant: #a5b4fc;
-  --tok-entity: #c4b5fd;
-  --tok-variable: #f59e0b;
-  --tok-name: #f9fafc;
-  --tok-tag: #22d497;
+  --tok-comment: #9ca9b8;
+  --tok-keyword: #60a5fa;
+  --tok-string: #6ee7b7;
+  --tok-constant: #fbbf24;
+  --tok-entity: #22d3ee;
+  --tok-variable: #e6edf4;
+  --tok-name: #e6edf4;
+  --tok-tag: #6ee7b7;
   --tok-invalid: #ef4444;
 }
 
-/* Visual OS / PatternLab stage */
+/*
+  Visual OS / PatternLab stage + family scope.
+
+  `data-family` is a signal that a subtree carries a family identity.
+  familyCssVars() (src/lib/visual/familyTheme.ts) supplies the family vars
+  AND re-maps --accent / --pop / --on-pop / --highlight to that family, so a
+  lesson scope tints its whole UI chrome (CTA, tabs, progress, focus,
+  selection, editor caret) with the topic's colour while --mark stays steel.
+  The rule below only provides the wash fallback for a bare data-family attr.
+*/
 [data-family] {
   --family-accent: var(--accent);
   --family-wash: color-mix(in oklab, var(--family-accent) 12%, transparent);

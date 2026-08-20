@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, Lock } from "@phosphor-icons/react/dist/ssr";
 import { ModuleGlyph } from "@/components/course/ModuleGlyph";
-import { MODULES, STAGES, modulesByStage } from "@/lib/course/manifest";
+import {
+  MODULES,
+  STAGES,
+  moduleFamily,
+  modulesByStage,
+} from "@/lib/course/manifest";
+import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
 import { moduleHref } from "@/lib/course/nav";
 import { cn } from "@/lib/utils";
 
@@ -66,10 +72,17 @@ export default function CourseOverviewPage() {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {modulesByStage(stage.number).map((module) => {
                 const available = module.status === "available";
+                // Each card carries its own family scope so the glyph, wash
+                // band, and hover all read that module's family colour.
+                const family = moduleFamily(module);
+                const familyLabel = family
+                  ? getFamilyTheme(family).label
+                  : null;
                 return (
                   <Link
                     key={module.slug}
                     href={moduleHref(module.slug)}
+                    style={family ? familyCssVars(family) : undefined}
                     className={cn(
                       "group flex flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated transition hover:border-accent/45",
                       !available && "opacity-70",
@@ -79,6 +92,17 @@ export default function CourseOverviewPage() {
                       <div className="h-16 w-full sm:h-[4.5rem]">
                         <ModuleGlyph slug={module.slug} />
                       </div>
+                      {available && familyLabel ? (
+                        <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-elevated/95 px-2 py-0.5">
+                          <span
+                            className="h-1.5 w-1.5 rounded-full bg-accent"
+                            aria-hidden
+                          />
+                          <span className="font-mono text-[10px] tracking-wide text-muted">
+                            {familyLabel}
+                          </span>
+                        </span>
+                      ) : null}
                       {!available ? (
                         <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted">
                           <Lock weight="bold" className="h-3 w-3" />

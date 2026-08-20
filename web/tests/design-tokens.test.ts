@@ -2,6 +2,12 @@ import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { CODE_LIGHT } from "../src/lib/content/codePalette";
+import {
+  FAMILY_THEMES,
+  familyCssVars,
+  uiAccent,
+} from "../src/lib/visual/familyTheme";
+import { MODULES, moduleFamily } from "../src/lib/course/manifest";
 
 /**
  * Guard the handbook press identity against regressions that survive a
@@ -136,25 +142,28 @@ describe("design tokens", () => {
     expect(hits).toEqual([]);
   });
 
-  it("globals use Indigo Modern sheet colours", () => {
+  it("globals use Blueprint sheet colours", () => {
     const css = readFileSync(GLOBALS, "utf8");
     expect(css).not.toMatch(/--shadow-card\s*:/);
     expect(css).not.toMatch(/\.elevated-card\s*\{[^}]*box-shadow/);
 
     const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    expect(firstHexVar(root, "press-paper")).toBe("#f2f4f8");
-    expect(firstHexVar(root, "press-ink")).toBe("#111827");
-    expect(firstHexVar(root, "press-ink-soft")).toBe("#5c6573");
-    expect(firstHexVar(root, "press-paper-sunk")).toBe("#e0e5ee");
+    expect(firstHexVar(root, "press-paper")).toBe("#f1f4f9");
+    expect(firstHexVar(root, "press-ink")).toBe("#16202e");
+    expect(firstHexVar(root, "press-ink-soft")).toBe("#56606e");
+    expect(firstHexVar(root, "press-paper-sunk")).toBe("#d8dde8");
     expect(firstHexVar(root, "elevated")).toBe("#ffffff");
-    expect(firstHexVar(root, "code")).toBe("#eaeef4");
+    expect(firstHexVar(root, "code")).toBe("#e4e9f2");
     expect(root).toMatch(
-      /--press-rule:\s*rgba\(\s*17\s*,\s*24\s*,\s*39\s*,\s*0\.08\s*\)/,
+      /--press-rule:\s*rgba\(\s*22\s*,\s*32\s*,\s*46\s*,\s*0\.09\s*\)/,
     );
-    expect(firstHexVar(root, "press-olive")).toBe("#6366f1");
-    expect(firstHexVar(root, "press-lime")).toBe("#6366f1");
+    // Monochrome base: accent/pop/mark are all the same steel; the family
+    // accent is applied per-topic by familyCssVars() (see the family test).
+    expect(firstHexVar(root, "press-olive")).toBe("#1e293b");
+    expect(firstHexVar(root, "press-lime")).toBe("#1e293b");
+    expect(firstHexVar(root, "press-blue")).toBe("#1e293b");
     expect(firstHexVar(root, "on-pop")).toBe("#ffffff");
-    expect(firstHexVar(root, "accent-hover")).toBe("#818cf8");
+    expect(firstHexVar(root, "accent-hover")).toBe("#334155");
   });
 
   it("body text meets AA; Primary is sheet large/UI accent", () => {
@@ -172,9 +181,10 @@ describe("design tokens", () => {
     expect(contrastRatio(muted!, paper!)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(muted!, sunk!)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(muted!, code!)).toBeGreaterThanOrEqual(4.5);
-    // Primary #6366F1 ≈ 4.35 on paper / white-on-primary ≈ 4.47 — clears
-    // AA large-text/UI (3:1) by a wide margin; documented as large/UI/CTA
-    // only (CLAUDE.md §4), so 3:1 is the correct floor here, not 4.5.
+    // Monochrome steel accent #1E293B ≈ 13.8:1 on paper / white-on-accent
+    // ≈ 15.2:1 — comfortably past AA. Inside a family scope accent becomes the
+    // (saturated) family colour, so the 3:1 large/UI floor is the binding
+    // contract for family accents — enforced in the family-floor test below.
     expect(contrastRatio(primary!, paper!)).toBeGreaterThanOrEqual(3);
     expect(contrastRatio(onPop!, primary!)).toBeGreaterThanOrEqual(3);
   });
@@ -182,13 +192,14 @@ describe("design tokens", () => {
   it("dark mode defines layered surfaces and soft borders", () => {
     const css = readFileSync(GLOBALS, "utf8");
     const dark = css.slice(css.indexOf(".dark"));
-    expect(firstHexVar(dark, "press-paper")).toBe("#12151c");
-    expect(firstHexVar(dark, "elevated")).toBe("#232937");
-    expect(firstHexVar(dark, "code")).toBe("#181c25");
-    expect(firstHexVar(dark, "surface")).toBe("#0c0f15");
-    expect(firstHexVar(dark, "press-lime")).toBe("#6366f1");
+    expect(firstHexVar(dark, "press-paper")).toBe("#121214");
+    expect(firstHexVar(dark, "elevated")).toBe("#26262a");
+    expect(firstHexVar(dark, "code")).toBe("#19191d");
+    expect(firstHexVar(dark, "surface")).toBe("#0c0c0d");
+    expect(firstHexVar(dark, "press-lime")).toBe("#cbd5e1");
+    expect(firstHexVar(dark, "press-blue")).toBe("#cbd5e1");
     expect(dark).toMatch(
-      /--press-rule:\s*rgba\(\s*249\s*,\s*250\s*,\s*252\s*,\s*0\.08\s*\)/,
+      /--press-rule:\s*rgba\(\s*244\s*,\s*244\s*,\s*245\s*,\s*0\.09\s*\)/,
     );
   });
 
@@ -196,8 +207,8 @@ describe("design tokens", () => {
     // Both themes carry a real, flat (no-shadow) layer ladder with the same
     // relative order — elevated brightest, surface deepest, never an
     // inversion. Light: white cards pop off a cool-gray page, editor and
-    // test wells step down. Measured light 1.10 / 1.06 / 1.09 / 1.26; dark
-    // 1.26 / 1.17 / 1.07 / 1.05 (see globals.css comments).
+    // test wells step down. Measured light 1.10 / 1.11 / 1.12 / 1.36; dark
+    // 1.24 / 1.16 / 1.07 / 1.05 (see globals.css comments).
     const css = readFileSync(GLOBALS, "utf8");
     const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
     const dark = css.slice(css.indexOf(".dark"));
@@ -304,6 +315,113 @@ describe("design tokens", () => {
     expect(css).toMatch(/--color-info:\s*var\(--info\)/);
   });
 
+  it("family accents clear the UI floor on both papers and stay AA on fills", () => {
+    // The monochrome base carries no colour, so the topic's "primary" comes
+    // from the family accent. familyCssVars() remaps --accent/--pop/--highlight
+    // to the family inside a lesson scope. Every family accentUi must clear
+    // the 3:1 non-text floor against BOTH papers (light #F1F4F9, dark
+    // #10141B — asserted above), and its own onAccent must clear the text
+    // floor (3:1 white, 4.5:1 dark ink) against that fill.
+    const lightPaper = "#f1f4f9";
+    const darkPaper = "#121214";
+    for (const theme of FAMILY_THEMES) {
+      const onPaperLight = contrastRatio(theme.accentUi, lightPaper);
+      const onPaperDark = contrastRatio(theme.accentUi, darkPaper);
+      expect(
+        onPaperLight,
+        `${theme.id} accentUi ${theme.accentUi} on light paper is ${onPaperLight.toFixed(2)}:1, needs >= 3:1`,
+      ).toBeGreaterThanOrEqual(3);
+      expect(
+        onPaperDark,
+        `${theme.id} accentUi ${theme.accentUi} on dark paper is ${onPaperDark.toFixed(2)}:1, needs >= 3:1`,
+      ).toBeGreaterThanOrEqual(3);
+      const onFill = contrastRatio(theme.onAccent, theme.accentUi);
+      const floor = theme.onAccent.toLowerCase() === "#ffffff" ? 3 : 4.5;
+      expect(
+        onFill,
+        `${theme.id} ${theme.onAccent} on ${theme.accentUi} is ${onFill.toFixed(2)}:1, needs >= ${floor}:1`,
+      ).toBeGreaterThanOrEqual(floor);
+    }
+  });
+
+  it("familyCssVars remaps accent/pop/highlight to the family primary", () => {
+    // The scope wiring: a lesson/module applies familyCssVars(family) on its
+    // root, which turns the family into that page's primary while leaving
+    // --mark (the steel body ink) untouched.
+    for (const theme of FAMILY_THEMES) {
+      const vars = familyCssVars(theme.id) as Record<string, string | undefined>;
+      expect(vars["--accent"]).toBe(theme.accentUi);
+      expect(vars["--pop"]).toBe(theme.accentUi);
+      expect(vars["--on-pop"]).toBe(theme.onAccent);
+      expect(vars["--family-accent"]).toBe(theme.accent);
+      expect(vars["--mark"]).toBeUndefined();
+    }
+  });
+
+  it("family colors derive from a single authored accent", () => {
+    // "One place to update the colors": recoloring a family means editing the
+    // `accent` hex in familyTheme.ts — accentUi must be its derived variant,
+    // never a hand-maintained twin that can drift. No accentSoft leftovers.
+    for (const theme of FAMILY_THEMES) {
+      expect(theme.accentUi).toBe(uiAccent(theme.accent));
+      expect(
+        (theme as unknown as Record<string, unknown>).accentSoft,
+      ).toBeUndefined();
+    }
+  });
+
+  it("AppShell lifts the family scope over all course chrome", () => {
+    // The sidebar/header/mobile sheet live OUTSIDE the page scopes, so the
+    // shell applies familyCssVars on a display:contents wrapper — active
+    // module chips, progress bars, and hover states all tint with the topic.
+    const shell = readFileSync(
+      join(SRC, "components", "layout", "AppShell.tsx"),
+      "utf8",
+    );
+    expect(shell).toMatch(/className="contents"/);
+    expect(shell).toMatch(/familyCssVars\(family\)/);
+    expect(shell).toMatch(/findProblemBySlug/);
+    expect(shell).toMatch(/moduleFamily/);
+  });
+
+  it("module cards and problem groups scope per-module family colors", () => {
+    const coursePage = readFileSync(join(SRC, "app", "course", "page.tsx"), "utf8");
+    const problemsList = readFileSync(
+      join(SRC, "components", "problems", "ProblemsListClient.tsx"),
+      "utf8",
+    );
+    // Each curriculum-map card applies its own module's family scope so the
+    // glyph, wash band, and hover read that module's colour.
+    expect(coursePage).toMatch(/moduleFamily\(module\)/);
+    expect(coursePage).toMatch(/familyCssVars\(family\)/);
+    // Each module group on the Practice page does the same.
+    expect(problemsList).toMatch(/familyCssVars\(family\.id\)/);
+    expect(problemsList).toMatch(/getFamilyTheme\(familyId\)/);
+  });
+
+  it("chapter headings carry the family accent bar", () => {
+    // The per-chapter colour lives on a flat rule above h2 (handbook-prose).
+    // Heading text stays ink; the rule is the accent. Steel outside a scope.
+    const css = readFileSync(GLOBALS, "utf8");
+    expect(css).toMatch(/\.handbook-prose h2::before/);
+    expect(css).toMatch(
+      /background:\s*var\(--family-accent,\s*var\(--accent\)\)/,
+    );
+  });
+
+  it("every module declares a valid family or none", () => {
+    const valid = new Set(FAMILY_THEMES.map((f) => f.id));
+    for (const mod of MODULES) {
+      const family = moduleFamily(mod);
+      if (family !== null) {
+        expect(
+          valid.has(family as never),
+          `module ${mod.slug} maps to unknown family ${family}`,
+        ).toBe(true);
+      }
+    }
+  });
+
   it("Callout: constraint is Success-toned, goal/rocket/note are Information, brain is Insight", () => {
     const body = readFileSync(
       join(SRC, "components", "md", "Callout.tsx"),
@@ -395,18 +513,19 @@ describe("design tokens", () => {
   });
 
   it("prose anchor-link hover ink clears AA at normal-text size in both themes", () => {
-    // Regression: --accent is documented (tier-1 comment above --riso-lime,
-    // now --press-lime) as large/UI-only — on paper it clears only ~4.36:1,
-    // short of AA's 4.5:1 floor for handbook-prose's 19px normal-weight
-    // links. This asserts the site actually used (--mark) rather than just
-    // asserting a token pair in isolation, which is what let the violation
-    // ship silently the first time.
+    // Regression: --accent is documented (tier-1 comment above --press-lime) as
+    // large/UI-only — at the base it is steel (fine anywhere), but inside a
+    // lesson's family scope it becomes the saturated family accent, short of
+    // AA's 4.5:1 floor for handbook-prose's 19px normal-weight links. This
+    // asserts the site actually used (--mark) rather than just asserting a
+    // token pair in isolation, which is what let the violation ship silently
+    // the first time.
     const css = readFileSync(GLOBALS, "utf8");
     expect(css).toMatch(/\.anchor-link:hover\s*\{[^}]*color:\s*var\(--mark\)/);
 
     // Regular lesson-body prose links must use the same AA-safe ink — the
-    // Markdown a() override historically painted them --accent (~4.35:1 on
-    // the old paper, ~4.06:1 on the darker page), below AA for body text.
+    // Markdown a() override historically painted them --accent, below AA for
+    // body text inside a family scope.
     const markdown = readFileSync(
       join(SRC, "components", "md", "Markdown.tsx"),
       "utf8",
