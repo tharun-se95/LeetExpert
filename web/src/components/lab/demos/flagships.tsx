@@ -31,7 +31,7 @@ export const hashMapsDemo: PatternDemoModule = {
             return (
               <div key={key} className="flex flex-col items-center gap-1">
                 <div
-                  className="flex h-14 w-full items-center justify-center rounded-lg border-2 font-mono text-sm font-bold transition-all"
+                  className="flex h-14 w-full items-center justify-center rounded-[length:var(--radius-md)] border-2 font-mono text-sm font-bold transition-all"
                   style={{
                     borderColor: isHit ? accent : "var(--border)",
                     background: isHit

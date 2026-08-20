@@ -22,7 +22,7 @@ export function AnalogyCard({
       transition={{ duration: 0.2 }}
     >
       <div
-        className="flex h-[140px] w-[140px] items-center justify-center rounded-2xl border border-border bg-background/70 p-3"
+        className="flex h-[140px] w-[140px] items-center justify-center rounded-[length:var(--radius-lg)] border border-border bg-background/70 p-3"
         style={{
           outline: `1px solid color-mix(in oklab, ${accent} 15%, transparent)`,
           outlineOffset: "-1px",

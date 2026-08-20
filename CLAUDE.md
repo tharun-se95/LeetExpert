@@ -68,17 +68,26 @@ The content is the product. Code exists to serve it.
 ## 4. Design system
 
 - **Handbook press inks** in `web/src/app/globals.css` — **Indigo Modern**
-  (Primary `#5B5CEB`). Fill-in map:
+  (Primary `#6366F1`). Fill-in map:
   `docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md`.
 - **All colour goes through tokens.** No hardcoded Tailwind palette values
   (`emerald-500`, `red-400`) in components — they survive a palette change
   and silently break the theme.
-- **Primary drives accent + pop** in this palette (text accent and CTA fill
-  share `#5B5CEB`). Sheet Primary is ~4.91:1 on paper — treat as large/UI /
-  display accent; body copy stays ink/muted.
-- **Layered surfaces** (Linear-like): `--background` / `--elevated` /
-  `--code` / `--surface` carry subtle tonal steps; borders are soft
-  (`rgba(17,24,39,0.08)` light). No drop shadows.
+- **Primary drives accent + pop** in this palette. Primary/accent is
+  `#6366F1` (light) / `#818CF8` (dark): CTA fill and display accents. It
+  clears the 3:1 large/UI floor on paper but NOT the 4.5:1 body floor
+  (~4.06:1), so **body-size accent text uses `--mark`, never `--accent`**
+  (`text-mark`); dark mark == accent, so the rule only bites in light.
+- **Surfaces are a paper ladder, not Linear-like shadows.** `--background` /
+  `--elevated` / `--code` / `--surface` carry a perceptible brightness ladder
+  in BOTH themes — elevated brightest, surface deepest, never an inversion.
+  Light: white cards on a cool-gray page (measured elevated/background 1.10,
+  background/code 1.06, code/surface 1.09, elevated/surface 1.26). Dark:
+  elevated/paper 1.26, code/elevated 1.17, paper/code 1.07, surface/paper
+  1.05. Every text ink (ink, muted, and every status ink incl. info) clears
+  AA 4.5:1 on the deepest surface it can render on — the sandbox paints
+  verdict rows and insight values on `--press-paper-sunk`, so that is the
+  binding floor. No drop shadows, no blur.
 - **Contrast is measured, not eyeballed.** Body ink/muted must meet WCAG AA
   (4.5:1). Status text inks are AA-darkened from sheet Success/Warning/Error
   fills. Record ratios in comments beside tokens.

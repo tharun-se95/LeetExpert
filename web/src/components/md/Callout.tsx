@@ -113,14 +113,14 @@ export function Callout({
     <blockquote
       id={id}
       className={cn(
-        "group relative my-4 rounded-lg border px-4 py-3 not-italic",
+        "group relative my-4 rounded-[length:var(--radius-md)] border px-4 py-3 not-italic",
         TYPE_STYLES[type] ?? TYPE_STYLES.default,
       )}
     >
       <button
         type="button"
         onClick={copyText}
-        className="absolute right-2 top-2 rounded-md border border-transparent p-1.5 text-muted opacity-0 transition group-hover:opacity-100 hover:border-border hover:bg-background hover:text-foreground"
+        className="absolute right-2 top-2 rounded-[length:var(--radius-md)] border border-transparent p-1.5 text-muted opacity-0 transition group-hover:opacity-100 hover:border-border hover:bg-background hover:text-foreground"
         aria-label="Copy callout"
       >
         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}

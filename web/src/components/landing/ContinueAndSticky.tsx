@@ -53,7 +53,7 @@ export function ContinueBanner() {
         <Link
           href={href}
           className={cn(
-            "inline-flex items-center gap-2 text-sm font-semibold text-accent transition hover:text-foreground",
+            "inline-flex items-center gap-2 text-sm font-semibold text-mark transition hover:text-foreground",
           )}
         >
           Continue: {title}
@@ -116,13 +116,13 @@ export function StickyCta() {
         <div className="flex flex-1 items-center justify-end gap-2 sm:flex-initial">
           <Link
             href="/course"
-            className="rounded-lg border border-border px-3 py-2 text-sm font-medium transition hover:bg-surface"
+            className="rounded-[length:var(--radius-md)] border border-border px-3 py-2 text-sm font-medium transition hover:bg-surface"
           >
             Curriculum
           </Link>
           <Link
             href={FIRST_LESSON}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-pop px-3 py-2 text-sm font-semibold text-on-pop transition hover:opacity-90"
+            className="inline-flex items-center gap-1.5 rounded-[length:var(--radius-md)] bg-pop px-3 py-2 text-sm font-semibold text-on-pop transition hover:opacity-90"
           >
             Start free
             <ArrowRight weight="bold" className="h-3.5 w-3.5" />

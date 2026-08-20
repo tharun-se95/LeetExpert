@@ -104,7 +104,7 @@ export function CoachRail({
           type="button"
           onClick={clearThread}
           aria-label="Clear coach thread"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           <Trash size={16} weight="bold" />
         </button>
@@ -114,7 +114,7 @@ export function CoachRail({
             aria-label="Close problem coach"
             aria-expanded
             onClick={() => setRailOpen(false)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             <X size={16} weight="bold" />
           </button>

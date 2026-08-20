@@ -222,7 +222,7 @@ export function VizPlayer<S>({
               expanded ? "text-base" : "text-sm",
             )}
           >
-            <span className="mr-2 font-mono text-[11px] tabular-nums text-accent">
+            <span className="mr-2 font-mono text-[11px] tabular-nums text-mark">
               step {index + 1} / {steps.length}
             </span>
             {step.caption}
@@ -298,7 +298,7 @@ function PlayerButton({
       disabled={disabled}
       aria-label={ariaLabel}
       className={cn(
-        "flex h-8 w-8 items-center justify-center rounded-lg text-foreground transition disabled:opacity-40",
+        "flex h-8 w-8 items-center justify-center rounded-[length:var(--radius-md)] text-foreground transition disabled:opacity-40",
         primary
           ? "bg-pop text-on-pop hover:opacity-90"
           : "hover:bg-surface",

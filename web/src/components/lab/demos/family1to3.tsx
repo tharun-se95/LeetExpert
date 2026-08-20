@@ -50,7 +50,7 @@ export const arraysDemo: PatternDemoModule = {
             return (
               <div key={i} className="flex flex-col items-center gap-1">
                 <div
-                  className="flex h-11 w-11 items-center justify-center rounded-lg border font-mono text-sm font-semibold tabular-nums transition-all duration-300"
+                  className="flex h-11 w-11 items-center justify-center rounded-[length:var(--radius-md)] border font-mono text-sm font-semibold tabular-nums transition-all duration-300"
                   style={{
                     borderColor: isHi ? accent : "var(--border)",
                     background: isHi ? accent : "var(--background)",
@@ -146,7 +146,7 @@ export const hashSetsDemo: PatternDemoModule = {
                 {t}
                 {already && !isDupBeat ? (
                   <span
-                    className="absolute -bottom-1 rounded px-1 font-mono text-[9px] font-semibold text-background"
+                    className="absolute -bottom-1 rounded-[length:var(--radius-xs)] px-1 font-mono text-[9px] font-semibold text-background"
                     style={{ background: accent }}
                   >
                     seen
@@ -166,7 +166,7 @@ export const hashSetsDemo: PatternDemoModule = {
           })}
         </div>
         <div
-          className="mx-auto flex min-h-10 max-w-xs flex-wrap items-center justify-center gap-1.5 rounded-lg border px-2 py-2 font-mono text-xs"
+          className="mx-auto flex min-h-10 max-w-xs flex-wrap items-center justify-center gap-1.5 rounded-[length:var(--radius-md)] border px-2 py-2 font-mono text-xs"
           style={{
             borderColor: `color-mix(in oklab, ${accent} 40%, var(--border))`,
             background: `color-mix(in oklab, ${accent} 8%, transparent)`,
@@ -234,7 +234,7 @@ export const prefixSumDemo: PatternDemoModule = {
             return (
               <div key={i} className="relative flex w-10 flex-col items-center">
                 <div
-                  className="w-full rounded-t-md border transition-all duration-300"
+                  className="w-full rounded-t-[length:var(--radius-md)] border transition-all duration-300"
                   style={{
                     height: on ? h : 4,
                     borderColor: inBand ? accent : "var(--border)",
@@ -256,7 +256,7 @@ export const prefixSumDemo: PatternDemoModule = {
           })}
           {band ? (
             <div
-              className="pointer-events-none absolute bottom-5 rounded-md border-2"
+              className="pointer-events-none absolute bottom-5 rounded-[length:var(--radius-md)] border-2"
               style={{
                 left: "18%",
                 width: "52%",
@@ -273,7 +273,7 @@ export const prefixSumDemo: PatternDemoModule = {
             prefix.map((p, i) => (
               <span
                 key={i}
-                className="rounded px-1.5 py-0.5 tabular-nums"
+                className="rounded-[length:var(--radius-xs)] px-1.5 py-0.5 tabular-nums"
                 style={{
                   background:
                     band && i === 3
@@ -659,7 +659,7 @@ export const sortingDemo: PatternDemoModule = {
             return (
               <div key={i} className="flex w-8 flex-col items-center">
                 <div
-                  className="w-full rounded-t-md border transition-all duration-300"
+                  className="w-full rounded-t-[length:var(--radius-md)] border transition-all duration-300"
                   style={{
                     height: (v / maxV) * maxH,
                     borderColor: accent,
@@ -678,13 +678,13 @@ export const sortingDemo: PatternDemoModule = {
         {split ? (
           <div className="mt-2 flex justify-center gap-8 font-mono text-[10px]">
             <span
-              className="rounded border px-2 py-0.5"
+              className="rounded-[length:var(--radius-xs)] border px-2 py-0.5"
               style={{ borderColor: accent, color: accent }}
             >
               left half
             </span>
             <span
-              className="rounded border px-2 py-0.5"
+              className="rounded-[length:var(--radius-xs)] border px-2 py-0.5"
               style={{ borderColor: accent, color: accent }}
             >
               right half
@@ -712,7 +712,7 @@ export const sortingDemo: PatternDemoModule = {
         {[1, 2, 3, 4, 5, 7, 8, 9].map((v) => (
           <div
             key={v}
-            className="w-6 rounded-t-sm"
+            className="w-6 rounded-t-[length:var(--radius-sm)]"
             style={{
               height: v * 6,
               background: accent,
@@ -874,7 +874,7 @@ export const sweepLineDemo: PatternDemoModule = {
     return (
       <div className="relative w-full max-w-md">
         <div
-          className="absolute right-1 top-0 rounded-md border px-2 py-1 font-mono text-[11px] font-bold tabular-nums"
+          className="absolute right-1 top-0 rounded-[length:var(--radius-md)] border px-2 py-1 font-mono text-[11px] font-bold tabular-nums"
           style={{
             borderColor: peak ? accent : "var(--border)",
             color: peak ? accent : "var(--foreground)",

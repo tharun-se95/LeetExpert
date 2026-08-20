@@ -35,7 +35,7 @@ export function Header({
 
   const modeLinkClass = (active: boolean) =>
     cn(
-      "inline-flex min-h-11 items-center rounded-[4px] px-2 py-1.5 text-[13px] font-medium transition-colors md:min-h-9 md:px-2.5",
+      "inline-flex min-h-11 items-center rounded-[length:var(--radius-xs)] px-2 py-1.5 text-[13px] font-medium transition-colors md:min-h-9 md:px-2.5",
       active
         ? "bg-pop font-semibold text-on-pop"
         : "text-muted hover:bg-surface hover:text-foreground",
@@ -51,7 +51,7 @@ export function Header({
             aria-expanded={lessonsMenuOpen}
             aria-controls="mobile-lessons-sheet"
             aria-label={lessonsMenuOpen ? "Close lessons menu" : "Open lessons menu"}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-muted transition hover:border-accent/40 hover:bg-accent/5 hover:text-accent lg:hidden"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:border-accent/40 hover:bg-accent/5 hover:text-accent lg:hidden"
           >
             <List className="h-5 w-5" weight="bold" aria-hidden />
           </button>
@@ -111,7 +111,7 @@ export function Header({
           aria-label="Search lessons and problems"
           className={cn(
             "inline-flex shrink-0 items-center justify-center border border-border text-muted transition-colors hover:border-accent/50 hover:text-foreground",
-            "h-11 w-11 rounded-md",
+            "h-11 w-11 rounded-[length:var(--radius-md)]",
             "md:h-auto md:w-auto md:gap-2 md:rounded-full md:px-2.5 md:py-1 md:text-[11px]",
           )}
         >

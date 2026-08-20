@@ -29,7 +29,7 @@ export function SmellCues({ smells }: { smells: SmellCue[] }) {
             <span className="mb-0.5 block font-mono text-[10px] tracking-wide text-muted uppercase">
               Pattern
             </span>
-            <span className="font-medium text-accent">{cue.pattern}</span>
+            <span className="font-medium text-mark">{cue.pattern}</span>
           </span>
         </li>
       ))}

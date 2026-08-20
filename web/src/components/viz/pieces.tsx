@@ -77,7 +77,7 @@ export function Cell({
     <div className="flex flex-col items-center gap-1">
       <div
         className={cn(
-          "flex h-10 w-10 items-center justify-center rounded-lg border font-mono text-sm font-semibold tabular-nums transition-colors duration-300",
+          "flex h-10 w-10 items-center justify-center rounded-[length:var(--radius-md)] border font-mono text-sm font-semibold tabular-nums transition-colors duration-300",
           TONE_CLASS[tone],
         )}
       >
@@ -157,7 +157,7 @@ export function Legend({
       {items.map((item) => (
         <span key={item.label} className="flex items-center gap-1.5 text-[11px] text-muted">
           <span
-            className={cn("h-2.5 w-2.5 rounded-sm border", TONE_CLASS[item.tone])}
+            className={cn("h-2.5 w-2.5 rounded-[length:var(--radius-sm)] border", TONE_CLASS[item.tone])}
             aria-hidden
           />
           {item.label}
@@ -213,7 +213,7 @@ export function Head({
       }}
     >
       <span
-        className="rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none"
+        className="rounded-[length:var(--radius-xs)] px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none"
         style={{
           color: c,
           backgroundColor: `color-mix(in oklab, ${c} 12%, transparent)`,
@@ -233,7 +233,7 @@ export function WindowFrame({ lo, hi }: TapeRange) {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute rounded-lg border-2 border-[var(--family-accent,var(--accent))]/60 bg-[var(--family-accent,var(--accent))]/10"
+      className="pointer-events-none absolute rounded-[length:var(--radius-md)] border-2 border-[var(--family-accent,var(--accent))]/60 bg-[var(--family-accent,var(--accent))]/10"
       style={{
         left: `calc(${lo} * ${SLOT_STEP} - 0.25rem)`,
         top: "-0.25rem",
@@ -259,9 +259,9 @@ export function RangeBracket({ lo, hi }: TapeRange) {
         width: rangeWidth({ lo, hi }),
       }}
     >
-      <div className="w-2 border-t-2 border-l-2 rounded-tl" style={{ borderColor: c }} />
+      <div className="w-2 border-t-2 border-l-2 rounded-tl-[length:var(--radius-xs)]" style={{ borderColor: c }} />
       <div className="flex-1 border-t-2" style={{ borderColor: c }} />
-      <div className="w-2 border-t-2 border-r-2 rounded-tr" style={{ borderColor: c }} />
+      <div className="w-2 border-t-2 border-r-2 rounded-tr-[length:var(--radius-xs)]" style={{ borderColor: c }} />
     </div>
   );
 }
@@ -321,7 +321,7 @@ export function Tape({
           {held !== null ? (
             <div
               aria-hidden
-              className="absolute right-0 top-0 flex h-7 items-center rounded-md border border-[var(--bad)]/60 bg-[var(--bad)]/10 px-2 font-mono text-[11px] font-semibold text-foreground"
+              className="absolute right-0 top-0 flex h-7 items-center rounded-[length:var(--radius-xs)] border border-[var(--bad)]/60 bg-[var(--bad)]/10 px-2 font-mono text-[11px] font-semibold text-foreground"
             >
               held {held}
             </div>
@@ -335,7 +335,7 @@ export function Tape({
         <div className="flex gap-[0.375rem]">
           {Array.from({ length: n }, (_, i) => (
             <div key={i} className="flex w-10 flex-col items-center gap-1">
-              <div className="h-10 w-10 rounded-lg border border-border bg-background/40" />
+              <div className="h-10 w-10 rounded-[length:var(--radius-md)] border border-border bg-background/40" />
               {!hideIndices ? (
                 <span className="font-mono text-[10px] text-muted">{i}</span>
               ) : null}
@@ -356,7 +356,7 @@ export function Tape({
             >
               <div
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-lg border font-mono text-sm font-semibold tabular-nums",
+                  "flex h-10 w-10 items-center justify-center rounded-[length:var(--radius-md)] border font-mono text-sm font-semibold tabular-nums",
                   TONE_CELL[tone],
                   !reduced && "transition-colors duration-300",
                   focal === i && !reduced && "scale-[1.07] ring-2 ring-[var(--family-accent,var(--accent))] ring-offset-2 ring-offset-[var(--background)]",
@@ -411,7 +411,7 @@ const NODE_STATE: Record<NodeState, string> = {
 
 /**
  * One node in a list/tree/graph tracer — same accent language as cells.
- * Circles for trees/graphs, rounded squares for list nodes.
+ * Circles for trees/graphs, square-cornered cards for list nodes.
  */
 export function Node({
   value,
@@ -434,7 +434,7 @@ export function Node({
     <div
       className={cn(
         "flex flex-col items-center justify-center border font-mono text-[11px] font-semibold leading-none",
-        shape === "circle" ? "rounded-full" : "rounded-lg",
+        shape === "circle" ? "rounded-full" : "rounded-[length:var(--radius-md)]",
         NODE_STATE[state],
         !reduced && "transition-colors duration-300",
         className,

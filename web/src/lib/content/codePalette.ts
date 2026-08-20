@@ -20,12 +20,12 @@ export interface CodeInk {
 
 export const CODE_LIGHT: CodeInk = {
   fg: "#111827",
-  comment: "#6b7280",
-  keyword: "#5b5ceb",
+  comment: "#5c6573",
+  keyword: "#4f46e5",
   string: "#047857",
-  constant: "#4f46e5",
-  entity: "#4338ca",
-  type: "#b45309",
+  constant: "#4338ca",
+  entity: "#3730a3",
+  type: "#92400e",
   variable: "#111827",
 };
 
@@ -96,5 +96,5 @@ function buildTheme(name: string, type: "light" | "dark", ink: CodeInk): RawThem
   };
 }
 
-export const RISO_LIGHT = buildTheme("riso-light", "light", CODE_LIGHT);
-export const RISO_DARK = buildTheme("riso-dark", "dark", CODE_DARK);
+export const PRESS_LIGHT = buildTheme("press-light", "light", CODE_LIGHT);
+export const PRESS_DARK = buildTheme("press-dark", "dark", CODE_DARK);

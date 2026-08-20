@@ -139,7 +139,7 @@ function StackColumn({
   reduced: boolean;
 }) {
   return (
-    <div className="flex min-h-32 w-16 flex-col-reverse items-center justify-start gap-1 rounded-lg border border-dashed border-border p-1.5">
+    <div className="flex min-h-32 w-16 flex-col-reverse items-center justify-start gap-1 rounded-[length:var(--radius-md)] border border-dashed border-border p-1.5">
       <AnimatePresence initial={false}>
         {stackIdx.map((idx) => (
           <motion.div

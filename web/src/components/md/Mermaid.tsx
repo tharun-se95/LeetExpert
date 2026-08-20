@@ -223,12 +223,12 @@ export function Mermaid({ chart }: MermaidProps) {
 
   if (error) {
     return (
-      <div className="my-6 overflow-hidden rounded-lg border border-warn/30 bg-warn/5 p-4">
+      <div className="my-6 overflow-hidden rounded-[length:var(--radius-md)] border border-warn/30 bg-warn/5 p-4">
         <p className="text-sm font-medium text-warn">Diagram failed to render</p>
         <p className="mt-1 text-xs text-muted">{error}</p>
         <button
           type="button"
-          className="mt-3 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground transition hover:border-accent/40"
+          className="mt-3 rounded-[length:var(--radius-md)] border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground transition hover:border-accent/40"
           onClick={() => {
             setError(null);
             setRetry((n) => n + 1);
@@ -251,7 +251,7 @@ export function Mermaid({ chart }: MermaidProps) {
           onClick={() => svg && setExpanded(true)}
           disabled={!svg}
           className={cn(
-            "mermaid-diagram elevated-card w-full overflow-x-auto rounded-[var(--radius-md)] border border-border bg-surface px-5 py-6 text-left transition-[border-color] duration-[var(--dur-fast)] ease-[var(--ease)]",
+            "mermaid-diagram w-full overflow-x-auto rounded-[length:var(--radius-md)] border border-border bg-surface px-5 py-6 text-left transition-[border-color] duration-[var(--dur-fast)] ease-[var(--ease)]",
             svg && "cursor-zoom-in hover:border-accent/35",
           )}
           aria-label="Expand diagram to fullscreen"
@@ -269,7 +269,7 @@ export function Mermaid({ chart }: MermaidProps) {
         </button>
         {svg ? (
           <span
-            className="pointer-events-none absolute top-3 right-3 inline-flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] text-muted opacity-0 transition-opacity duration-[var(--dur-fast)] group-hover:opacity-100 group-focus-within:opacity-100"
+            className="pointer-events-none absolute top-3 right-3 inline-flex h-8 w-8 items-center justify-center rounded-[length:var(--radius-sm)] text-muted opacity-0 transition-opacity duration-[var(--dur-fast)] group-hover:opacity-100 group-focus-within:opacity-100"
             aria-hidden
           >
             <Maximize2 className="h-3.5 w-3.5" />
@@ -291,7 +291,7 @@ export function Mermaid({ chart }: MermaidProps) {
             aria-label="Fullscreen diagram"
           >
             <motion.div
-              className="elevated-card relative max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[var(--radius-lg)] border border-border bg-surface p-8"
+              className="relative max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[length:var(--radius-lg)] border border-border bg-surface p-8"
               initial={reduceMotion ? false : { opacity: 0, scale: 0.97, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
@@ -301,7 +301,7 @@ export function Mermaid({ chart }: MermaidProps) {
               <button
                 type="button"
                 onClick={() => setExpanded(false)}
-                className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-muted transition hover:text-foreground"
+                className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-[length:var(--radius-md)] border border-border bg-surface text-muted transition hover:text-foreground"
                 aria-label="Close fullscreen diagram"
               >
                 <X className="h-4 w-4" />

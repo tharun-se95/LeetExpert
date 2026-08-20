@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { CODE_LIGHT } from "../src/lib/content/codePalette";
 
 /**
  * Guard the handbook press identity against regressions that survive a
@@ -141,17 +142,17 @@ describe("design tokens", () => {
     expect(css).not.toMatch(/\.elevated-card\s*\{[^}]*box-shadow/);
 
     const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    expect(firstHexVar(root, "riso-paper")).toBe("#fcfcfd");
-    expect(firstHexVar(root, "riso-ink")).toBe("#111827");
-    expect(firstHexVar(root, "riso-ink-soft")).toBe("#6b7280");
-    expect(firstHexVar(root, "riso-paper-sunk")).toBe("#f7f8fa");
+    expect(firstHexVar(root, "press-paper")).toBe("#f2f4f8");
+    expect(firstHexVar(root, "press-ink")).toBe("#111827");
+    expect(firstHexVar(root, "press-ink-soft")).toBe("#5c6573");
+    expect(firstHexVar(root, "press-paper-sunk")).toBe("#e0e5ee");
     expect(firstHexVar(root, "elevated")).toBe("#ffffff");
-    expect(firstHexVar(root, "code")).toBe("#fafafb");
+    expect(firstHexVar(root, "code")).toBe("#eaeef4");
     expect(root).toMatch(
-      /--riso-rule:\s*rgba\(\s*17\s*,\s*24\s*,\s*39\s*,\s*0\.08\s*\)/,
+      /--press-rule:\s*rgba\(\s*17\s*,\s*24\s*,\s*39\s*,\s*0\.08\s*\)/,
     );
-    expect(firstHexVar(root, "riso-olive")).toBe("#6366f1");
-    expect(firstHexVar(root, "riso-lime")).toBe("#6366f1");
+    expect(firstHexVar(root, "press-olive")).toBe("#6366f1");
+    expect(firstHexVar(root, "press-lime")).toBe("#6366f1");
     expect(firstHexVar(root, "on-pop")).toBe("#ffffff");
     expect(firstHexVar(root, "accent-hover")).toBe("#818cf8");
   });
@@ -159,12 +160,12 @@ describe("design tokens", () => {
   it("body text meets AA; Primary is sheet large/UI accent", () => {
     const css = readFileSync(GLOBALS, "utf8");
     const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    const paper = firstHexVar(root, "riso-paper");
-    const ink = firstHexVar(root, "riso-ink");
-    const muted = firstHexVar(root, "riso-ink-soft");
-    const primary = firstHexVar(root, "riso-olive");
+    const paper = firstHexVar(root, "press-paper");
+    const ink = firstHexVar(root, "press-ink");
+    const muted = firstHexVar(root, "press-ink-soft");
+    const primary = firstHexVar(root, "press-olive");
     const onPop = firstHexVar(root, "on-pop");
-    const sunk = firstHexVar(root, "riso-paper-sunk");
+    const sunk = firstHexVar(root, "press-paper-sunk");
     const code = firstHexVar(root, "code");
     expect(paper && ink && muted && primary && onPop && sunk && code).toBeTruthy();
     expect(contrastRatio(ink!, paper!)).toBeGreaterThanOrEqual(4.5);
@@ -181,14 +182,105 @@ describe("design tokens", () => {
   it("dark mode defines layered surfaces and soft borders", () => {
     const css = readFileSync(GLOBALS, "utf8");
     const dark = css.slice(css.indexOf(".dark"));
-    expect(firstHexVar(dark, "riso-paper")).toBe("#0f1117");
-    expect(firstHexVar(dark, "elevated")).toBe("#1a1e28");
-    expect(firstHexVar(dark, "code")).toBe("#161b24");
-    expect(firstHexVar(dark, "surface")).toBe("#13161e");
-    expect(firstHexVar(dark, "riso-lime")).toBe("#6366f1");
+    expect(firstHexVar(dark, "press-paper")).toBe("#12151c");
+    expect(firstHexVar(dark, "elevated")).toBe("#232937");
+    expect(firstHexVar(dark, "code")).toBe("#181c25");
+    expect(firstHexVar(dark, "surface")).toBe("#0c0f15");
+    expect(firstHexVar(dark, "press-lime")).toBe("#6366f1");
     expect(dark).toMatch(
-      /--riso-rule:\s*rgba\(\s*249\s*,\s*250\s*,\s*252\s*,\s*0\.08\s*\)/,
+      /--press-rule:\s*rgba\(\s*249\s*,\s*250\s*,\s*252\s*,\s*0\.08\s*\)/,
     );
+  });
+
+  it("surface ladders are perceptible in both themes", () => {
+    // Both themes carry a real, flat (no-shadow) layer ladder with the same
+    // relative order — elevated brightest, surface deepest, never an
+    // inversion. Light: white cards pop off a cool-gray page, editor and
+    // test wells step down. Measured light 1.10 / 1.06 / 1.09 / 1.26; dark
+    // 1.26 / 1.17 / 1.07 / 1.05 (see globals.css comments).
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const dark = css.slice(css.indexOf(".dark"));
+    const lum = (hex: string) => relativeLuminance(hex);
+    const r = (a: string, b: string) => contrastRatio(a, b);
+
+    const lbg = firstHexVar(root, "press-paper")!;
+    const lelevated = firstHexVar(root, "elevated")!;
+    const lcode = firstHexVar(root, "code")!;
+    const lsurface = firstHexVar(root, "press-paper-sunk")!;
+    expect(lum(lelevated)).toBeGreaterThan(lum(lbg));
+    expect(lum(lbg)).toBeGreaterThan(lum(lcode));
+    expect(lum(lcode)).toBeGreaterThan(lum(lsurface));
+    expect(r(lelevated, lbg)).toBeGreaterThanOrEqual(1.1);
+    expect(r(lbg, lcode)).toBeGreaterThanOrEqual(1.05);
+    expect(r(lcode, lsurface)).toBeGreaterThanOrEqual(1.05);
+    expect(r(lelevated, lsurface)).toBeGreaterThanOrEqual(1.2);
+
+    const dbg = firstHexVar(dark, "press-paper")!;
+    const delevated = firstHexVar(dark, "elevated")!;
+    const dcode = firstHexVar(dark, "code")!;
+    const dsurface = firstHexVar(dark, "surface")!;
+    expect(lum(delevated)).toBeGreaterThan(lum(dcode));
+    expect(lum(dcode)).toBeGreaterThan(lum(dbg));
+    expect(lum(dbg)).toBeGreaterThan(lum(dsurface));
+    expect(r(delevated, dbg)).toBeGreaterThanOrEqual(1.2);
+    expect(r(dcode, delevated)).toBeGreaterThanOrEqual(1.1);
+    expect(r(dcode, dbg)).toBeGreaterThanOrEqual(1.04);
+    expect(r(dsurface, dbg)).toBeGreaterThanOrEqual(1.03);
+  });
+
+  it("light text inks clear AA 4.5 on the deepest surface", () => {
+    // The sandbox renders verdict rows (good/bad), insight values (info),
+    // muted labels and mark accents directly on the darkest light tier
+    // (--press-paper-sunk). Every ink that can sit there must clear AA.
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const sunk = firstHexVar(root, "press-paper-sunk")!;
+    const inks: Record<string, string> = {
+      ink: firstHexVar(root, "press-ink")!,
+      muted: firstHexVar(root, "press-ink-soft")!,
+      good: firstHexVar(root, "press-green")!,
+      bad: firstHexVar(root, "press-red")!,
+      warn: firstHexVar(root, "press-amber")!,
+      insight: firstHexVar(root, "press-insight")!,
+      info: firstHexVar(root, "tone-sky")!,
+      mark: firstHexVar(root, "press-blue")!,
+    };
+    for (const [name, ink] of Object.entries(inks)) {
+      expect(contrastRatio(ink, sunk), `${name} vs sunk`).toBeGreaterThanOrEqual(
+        4.5,
+      );
+    }
+  });
+
+  it("code colours are one source and clear AA on the code surface", () => {
+    // CLAUDE.md: "Code colour has one source." codePalette.ts feeds Shiki;
+    // the light --tok-* block in globals.css feeds CodeMirror. They must not
+    // drift, and every token must clear 4.5:1 on --code (which now steps
+    // below the page, so the old palette no longer passes — see the ladder).
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const codeSurface = firstHexVar(root, "code")!;
+    const tokStart = css.lastIndexOf(":root");
+    const tokRoot = css.slice(
+      tokStart,
+      css.indexOf(".dark", tokStart),
+    );
+    const tok = (name: string) => firstHexVar(tokRoot, name);
+
+    expect(tok("tok-comment")).toBe(CODE_LIGHT.comment);
+    expect(tok("tok-keyword")).toBe(CODE_LIGHT.keyword);
+    expect(tok("tok-string")).toBe(CODE_LIGHT.string);
+    expect(tok("tok-constant")).toBe(CODE_LIGHT.constant);
+    expect(tok("tok-entity")).toBe(CODE_LIGHT.entity);
+    expect(tok("tok-variable")).toBe(CODE_LIGHT.variable);
+    expect(tok("tok-name")).toBe(CODE_LIGHT.fg);
+
+    for (const [name, hex] of Object.entries(CODE_LIGHT)) {
+      expect(contrastRatio(hex, codeSurface), `${name} vs code`).toBeGreaterThanOrEqual(
+        4.5,
+      );
+    }
   });
 
   it("Insight and Information roles are defined and AA-compliant", () => {
@@ -196,10 +288,10 @@ describe("design tokens", () => {
     const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
     const dark = css.slice(css.indexOf(".dark"));
 
-    const lightInsight = firstHexVar(root, "riso-insight");
-    const darkInsight = firstHexVar(dark, "riso-insight");
-    const lightPaper = firstHexVar(root, "riso-paper");
-    const darkPaper = firstHexVar(dark, "riso-paper");
+    const lightInsight = firstHexVar(root, "press-insight");
+    const darkInsight = firstHexVar(dark, "press-insight");
+    const lightPaper = firstHexVar(root, "press-paper");
+    const darkPaper = firstHexVar(dark, "press-paper");
 
     expect(lightInsight).toBe("#854d0e");
     expect(darkInsight).toBe("#facc15");
@@ -239,14 +331,14 @@ describe("design tokens", () => {
 
     const pairs: [role: string, ink: string][] = [
       ["info", "tone-sky"],
-      ["good", "riso-green"],
-      ["warn", "riso-amber"],
-      ["insight", "riso-insight"],
+      ["good", "press-green"],
+      ["warn", "press-amber"],
+      ["insight", "press-insight"],
     ];
 
     for (const [role, inkVar] of pairs) {
-      const lightSurface = firstHexVar(root, `riso-${role}-surface`);
-      const darkSurface = firstHexVar(dark, `riso-${role}-surface`);
+      const lightSurface = firstHexVar(root, `press-${role}-surface`);
+      const darkSurface = firstHexVar(dark, `press-${role}-surface`);
       const lightInk = firstHexVar(root, inkVar);
       const darkInk = firstHexVar(dark, inkVar);
       expect(lightSurface, `light ${role} surface missing`).toBeTruthy();
@@ -300,5 +392,78 @@ describe("design tokens", () => {
     // The old bug: a single `text-good` applied unconditionally to output.
     expect(body).not.toMatch(/text-good"\s*>\s*\n\s*<pre/);
     expect(body).toMatch(/isBooleanOutput/);
+  });
+
+  it("prose anchor-link hover ink clears AA at normal-text size in both themes", () => {
+    // Regression: --accent is documented (tier-1 comment above --riso-lime,
+    // now --press-lime) as large/UI-only — on paper it clears only ~4.36:1,
+    // short of AA's 4.5:1 floor for handbook-prose's 19px normal-weight
+    // links. This asserts the site actually used (--mark) rather than just
+    // asserting a token pair in isolation, which is what let the violation
+    // ship silently the first time.
+    const css = readFileSync(GLOBALS, "utf8");
+    expect(css).toMatch(/\.anchor-link:hover\s*\{[^}]*color:\s*var\(--mark\)/);
+
+    // Regular lesson-body prose links must use the same AA-safe ink — the
+    // Markdown a() override historically painted them --accent (~4.35:1 on
+    // the old paper, ~4.06:1 on the darker page), below AA for body text.
+    const markdown = readFileSync(
+      join(SRC, "components", "md", "Markdown.tsx"),
+      "utf8",
+    );
+    expect(markdown).toMatch(/text-mark underline/);
+    expect(markdown).not.toMatch(/text-accent/);
+
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const dark = css.slice(css.indexOf(".dark"));
+    const lightPaper = firstHexVar(root, "press-paper");
+    const darkPaper = firstHexVar(dark, "press-paper");
+    const lightMark = firstHexVar(root, "press-blue");
+    const darkMark = firstHexVar(dark, "press-blue");
+
+    expect(contrastRatio(lightMark!, lightPaper!)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(darkMark!, darkPaper!)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("radius scale is defined identically in :root and @theme inline", () => {
+    // The scale lives in two places: the :root tier and the @theme inline
+    // block that Tailwind v4 reads. If they drift, a future component could
+    // resolve rounded-sm to a different value than --radius-sm. Enforce the
+    // 4/8/12/20/28 five-tier scale in both.
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const themeStart = css.indexOf("@theme");
+    const theme = css.slice(themeStart, css.indexOf(":root", themeStart));
+    const expectScale = (region: string) => {
+      expect(region).toMatch(/--radius-xs:\s*4px/);
+      expect(region).toMatch(/--radius-sm:\s*8px/);
+      expect(region).toMatch(/--radius-md:\s*12px/);
+      expect(region).toMatch(/--radius-lg:\s*20px/);
+      expect(region).toMatch(/--radius-xl:\s*28px/);
+    };
+    expectScale(root);
+    expectScale(theme);
+  });
+
+  it("no off-scale radius utilities in components", () => {
+    // Radius is a five-tier scale (xs/sm/md/lg/xl) spelled
+    // `rounded-[length:var(--radius-md)]` — never the bare shorthand
+    // (rounded-sm/md/lg/xl), never arbitrary pixel values
+    // (rounded-[4px]), and never a size tier with no token (2xl, 3xl).
+    // rounded-full is the one allowed non-token spelling: pills, avatars,
+    // and progress bars are meant to be fully round.
+    // Spec: docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md
+    const RADIUS_TOKEN = /\brounded[^\s"'`]*/g;
+    const RADIUS_ALLOWED =
+      /rounded(?:-(?:t|b|s|e|r|tl|tr|bl|br))?-(?:full|\[length:var\(--radius-)/;
+    const hits: string[] = [];
+    for (const f of FILES) {
+      if (f.rel === "app/globals.css") continue;
+      const bad = (f.body.match(RADIUS_TOKEN) ?? []).filter(
+        (t) => !RADIUS_ALLOWED.test(t),
+      );
+      if (bad.length) hits.push(`${f.rel}: ${[...new Set(bad)].join(", ")}`);
+    }
+    expect(hits).toEqual([]);
   });
 });

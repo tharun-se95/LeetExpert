@@ -32,7 +32,7 @@ const STEPS = [
 export function ApproachRail({ firstLessonHref }: { firstLessonHref: string }) {
   return (
     <section className="py-8 lg:py-10">
-      <p className="text-xs font-medium tracking-[0.14em] text-accent uppercase">
+      <p className="text-xs font-medium tracking-[0.14em] text-mark uppercase">
         Our approach
       </p>
       <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
@@ -66,7 +66,7 @@ export function ApproachRail({ firstLessonHref }: { firstLessonHref: string }) {
 
       <Link
         href={firstLessonHref}
-        className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent transition hover:text-foreground"
+        className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-mark transition hover:text-foreground"
       >
         See how it works
         <ArrowRight weight="bold" className="h-4 w-4" />

@@ -142,7 +142,7 @@ function NextGlyph({ i, state }: { i: number; state: ReversalState }) {
     <span
       className={cn(
         "font-mono text-[10px] transition-colors duration-300",
-        hot ? "font-semibold text-accent" : "text-muted",
+        hot ? "font-semibold text-mark" : "text-muted",
       )}
     >
       {label}

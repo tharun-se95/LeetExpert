@@ -11,7 +11,7 @@ const Viz = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-56 animate-pulse rounded-[length:var(--radius-md)] bg-code" />
+      <div className="h-56 animate-pulse rounded-[length:var(--radius-xl)] bg-code" />
     ),
   },
 );
@@ -79,7 +79,7 @@ export function LandingVizStrip() {
 
   return (
     <div
-      className="overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-elevated"
+      className="overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated"
       style={{ borderTopColor: activeTheme.accent, borderTopWidth: 2 }}
     >
       <div className="border-b border-border px-3 py-3 sm:px-4">
@@ -100,7 +100,7 @@ export function LandingVizStrip() {
                 onClick={() => setTab(t.id)}
                 style={isActive ? familyCssVars(t.family) : undefined}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                  "flex items-center gap-1.5 rounded-[length:var(--radius-md)] px-3 py-1.5 text-sm font-medium transition-colors",
                   isActive
                     ? "bg-[var(--family-accent)] text-[var(--family-on-accent)]"
                     : "text-muted hover:bg-surface hover:text-foreground",
@@ -130,7 +130,7 @@ export function LandingVizStrip() {
 /** Intuition before the landing mini-sandbox. */
 export function LandingSandboxViz() {
   return (
-    <div className="overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-elevated p-3 sm:p-4">
+    <div className="overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated p-3 sm:p-4">
       <Viz source={SANDBOX_PAIR_VIZ} embedded />
     </div>
   );

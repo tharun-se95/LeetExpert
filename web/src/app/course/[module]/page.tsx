@@ -40,7 +40,7 @@ export default async function ModulePage({ params }: PageProps) {
       <p className="mb-2 text-xs font-medium uppercase tracking-wider text-accent">
         Stage {mod.stage} — {stage?.title} · Module {mod.number}
       </p>
-      <h1 className="riso-overprint font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]">
+      <h1 className="press-overprint font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]">
         {mod.title}
       </h1>
       <p className="mt-3 max-w-2xl text-lg leading-relaxed text-muted">
@@ -48,7 +48,7 @@ export default async function ModulePage({ params }: PageProps) {
       </p>
 
       {mod.status === "coming-soon" ? (
-        <div className="mt-10 rounded-xl border border-dashed border-border bg-surface/40 p-6">
+        <div className="mt-10 rounded-[length:var(--radius-lg)] border border-dashed border-border bg-surface/40 p-6">
           <p className="text-sm font-medium">Coming soon</p>
           <p className="mt-1 text-sm text-muted">
             This module hasn&apos;t been written yet. Modules are being built
@@ -72,7 +72,7 @@ export default async function ModulePage({ params }: PageProps) {
               <li key={lesson.slug}>
                 <Link
                   href={lessonHref(mod.slug, lesson.slug)}
-                  className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm transition hover:border-foreground/25 hover:bg-surface"
+                  className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border px-4 py-3 text-sm transition hover:border-foreground/25 hover:bg-surface"
                 >
                   <span className="w-6 shrink-0 tabular-nums text-muted">
                     {i + 1}.

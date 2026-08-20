@@ -61,13 +61,13 @@ function ModuleNode({
 
   return (
     <div>
-      <div className="group flex items-center gap-1 rounded-md">
+      <div className="group flex items-center gap-1 rounded-[length:var(--radius-md)]">
         {hasLessons ? (
           <button
             type="button"
             onClick={onToggle}
             className={cn(
-              "inline-flex shrink-0 items-center justify-center rounded text-muted hover:bg-surface hover:text-foreground",
+              "inline-flex shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] text-muted hover:bg-surface hover:text-foreground",
               chevronBox,
             )}
             aria-expanded={open}
@@ -85,7 +85,7 @@ function ModuleNode({
         <Link
           href={navModule.href}
           className={cn(
-            "min-w-0 flex-1 truncate rounded-[4px] px-2 text-[13px] transition-colors",
+            "min-w-0 flex-1 truncate rounded-[length:var(--radius-xs)] px-2 text-[13px] transition-colors",
             rowPad,
             navModule.status === "coming-soon" && "text-muted/60",
             selfActive
@@ -108,7 +108,7 @@ function ModuleNode({
                 selfActive
                   ? "text-on-pop/70"
                   : doneCount === navModule.lessons.length
-                    ? "text-accent"
+                    ? "text-mark"
                     : "text-muted/60",
               )}
             >
@@ -139,7 +139,7 @@ function ModuleNode({
                 >
                   <span
                     className={cn(
-                      "h-2 w-2 rounded-[1px] transition-colors",
+                      "h-2 w-2 rounded-[length:var(--radius-xs)] transition-colors",
                       isDone
                         ? "bg-accent"
                         : "border border-border bg-transparent",
@@ -150,7 +150,7 @@ function ModuleNode({
                 <Link
                   href={lesson.href}
                   className={cn(
-                    "flex min-w-0 flex-1 items-center rounded-[4px] px-2 text-[13px] leading-snug transition-colors",
+                    "flex min-w-0 flex-1 items-center rounded-[length:var(--radius-xs)] px-2 text-[13px] leading-snug transition-colors",
                     rowPad,
                     active
                       ? "bg-pop font-semibold text-on-pop"
@@ -194,7 +194,7 @@ export function CourseNavTree({
       <Link
         href="/course"
         className={cn(
-          "mb-2.5 block rounded-[4px] px-2 text-[13px] font-medium transition-colors",
+          "mb-2.5 block rounded-[length:var(--radius-xs)] px-2 text-[13px] font-medium transition-colors",
           compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5",
           pathname === "/course"
             ? "bg-pop font-semibold text-on-pop"

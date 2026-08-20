@@ -43,7 +43,7 @@ export function PatternLab({
       />
     ) : (
       <div
-        className="flex h-[140px] w-[140px] items-center justify-center rounded-2xl border border-dashed border-border bg-background/60 text-center text-xs text-muted"
+        className="flex h-[140px] w-[140px] items-center justify-center rounded-[length:var(--radius-lg)] border border-dashed border-border bg-background/60 text-center text-xs text-muted"
         aria-hidden
       >
         Analogy

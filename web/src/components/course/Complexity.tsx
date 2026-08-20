@@ -25,16 +25,16 @@ export function Complexity({ source }: { source: string }) {
   const spec = parseSpec(source);
   if (!spec) {
     return (
-      <div className="rounded-lg border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
+      <div className="rounded-[length:var(--radius-md)] border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
         Invalid complexity block.
       </div>
     );
   }
 
   return (
-    <div className="my-6 overflow-hidden rounded-xl border border-accent/30">
+    <div className="my-6 overflow-hidden rounded-[length:var(--radius-lg)] border border-accent/30">
       <div className="border-b border-accent/20 bg-accent/5 px-4 py-2">
-        <p className="text-xs font-medium uppercase tracking-[0.14em] text-accent">
+        <p className="text-xs font-medium uppercase tracking-[0.14em] text-mark">
           Complexity
         </p>
       </div>

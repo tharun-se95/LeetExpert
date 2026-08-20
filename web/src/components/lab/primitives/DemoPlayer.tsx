@@ -146,7 +146,7 @@ export function DemoPlayer({
       ) : null}
 
       <div
-        className="lab-theater lab-motion flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/60 px-3 py-4"
+        className="lab-theater lab-motion flex flex-1 items-center justify-center overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-background/60 px-3 py-4"
         style={{ transitionDuration: `${320 / speed}ms` }}
       >
         {showStatic ? (
@@ -177,7 +177,7 @@ export function DemoPlayer({
             type="button"
             onClick={back}
             disabled={step <= 0}
-            className="h-8 rounded-lg border border-border px-3 text-xs font-medium disabled:opacity-40"
+            className="h-8 rounded-[length:var(--radius-md)] border border-border px-3 text-xs font-medium disabled:opacity-40"
           >
             Back
           </button>
@@ -188,14 +188,14 @@ export function DemoPlayer({
               forward();
             }}
             disabled={step >= last}
-            className="h-8 rounded-lg bg-pop px-3 text-xs font-medium text-on-pop disabled:opacity-40"
+            className="h-8 rounded-[length:var(--radius-md)] bg-pop px-3 text-xs font-medium text-on-pop disabled:opacity-40"
           >
             Step
           </button>
           <button
             type="button"
             onClick={reset}
-            className="h-8 rounded-lg border border-border px-3 text-xs font-medium"
+            className="h-8 rounded-[length:var(--radius-md)] border border-border px-3 text-xs font-medium"
           >
             Reset
           </button>
@@ -211,7 +211,7 @@ export function DemoPlayer({
               key={s}
               type="button"
               onClick={() => setSpeed(s)}
-              className="rounded-md border border-border px-1.5 py-0.5 font-mono"
+              className="rounded-[length:var(--radius-md)] border border-border px-1.5 py-0.5 font-mono"
               style={
                 speed === s ? { borderColor: accent, color: accent } : undefined
               }

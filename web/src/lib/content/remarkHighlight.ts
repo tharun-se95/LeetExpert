@@ -2,7 +2,7 @@ import { visit } from "unist-util-visit";
 import type { Root, Text, PhrasingContent, Parent } from "mdast";
 
 /**
- * `==like this==` becomes a <mark> — the highlighter swipe of the Riso system.
+ * `==like this==` becomes a <mark> — the highlighter swipe of the press system.
  *
  * remark-gfm covers strikethrough but not highlight, so this fills the gap
  * with the syntax people already expect from Obsidian and Notion.

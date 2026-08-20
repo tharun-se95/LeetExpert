@@ -407,7 +407,7 @@ export const divideConquerDemo: PatternDemoModule = {
           {br.map((b) => (
             <span
               key={`${b.start}-${b.end}-${b.label}`}
-              className="rounded-md border px-2 py-1 font-mono text-[10px] transition-all"
+              className="rounded-[length:var(--radius-md)] border px-2 py-1 font-mono text-[10px] transition-all"
               style={{
                 borderColor: accent,
                 background: `color-mix(in oklab, ${accent} 12%, transparent)`,
@@ -585,7 +585,7 @@ export const memoizationDemo: PatternDemoModule = {
           {cache.map((c) => (
             <div
               key={c.n}
-              className="flex h-14 w-14 rotate-[-2deg] flex-col items-center justify-center rounded-md border-2 font-mono text-xs transition-all"
+              className="flex h-14 w-14 rotate-[-2deg] flex-col items-center justify-center rounded-[length:var(--radius-md)] border-2 font-mono text-xs transition-all"
               style={{
                 borderColor: c.v != null ? accent : "var(--border)",
                 background:
@@ -652,7 +652,7 @@ export const dynamicProgrammingDemo: PatternDemoModule = {
             return (
               <div key={i} className="flex flex-col items-center gap-1">
                 <div
-                  className="flex h-12 w-10 items-center justify-center rounded-lg border-2 font-mono text-sm font-bold transition-all"
+                  className="flex h-12 w-10 items-center justify-center rounded-[length:var(--radius-md)] border-2 font-mono text-sm font-bold transition-all"
                   style={{
                     borderColor: on ? accent : "var(--border)",
                     background: on
@@ -1042,7 +1042,7 @@ export const topoSortDemo: PatternDemoModule = {
           ))}
         </div>
         <div
-          className="flex flex-wrap items-center justify-center gap-1 rounded-lg border border-dashed px-2 py-2"
+          className="flex flex-wrap items-center justify-center gap-1 rounded-[length:var(--radius-md)] border border-dashed px-2 py-2"
           style={{ borderColor: accent }}
         >
           <span className="font-mono text-[10px] text-muted">queue belt</span>
@@ -1187,7 +1187,7 @@ export const mstDemo: PatternDemoModule = {
           return (
             <div
               key={`${e.a}${e.b}${e.w}`}
-              className="flex items-center justify-between rounded-lg border px-3 py-1.5 font-mono text-xs transition-all"
+              className="flex items-center justify-between rounded-[length:var(--radius-md)] border px-3 py-1.5 font-mono text-xs transition-all"
               style={{
                 borderColor: ok || no ? accent : "var(--border)",
                 background: ok
@@ -1262,7 +1262,7 @@ export const stackDemo: PatternDemoModule = {
           {f.matched ? ` · matched ${f.matched}` : ""}
         </p>
         <div
-          className="mx-auto flex min-h-28 w-24 flex-col-reverse items-center justify-start gap-1 rounded-lg border-2 border-dashed p-2"
+          className="mx-auto flex min-h-28 w-24 flex-col-reverse items-center justify-start gap-1 rounded-[length:var(--radius-md)] border-2 border-dashed p-2"
           style={{ borderColor: accent }}
         >
           {f.stack.length === 0 ? (
@@ -1271,7 +1271,7 @@ export const stackDemo: PatternDemoModule = {
             f.stack.map((t, i) => (
               <div
                 key={`${t}-${i}-${step}`}
-                className="flex h-8 w-full items-center justify-center rounded-md border-2 font-mono text-sm font-bold transition-all"
+                className="flex h-8 w-full items-center justify-center rounded-[length:var(--radius-md)] border-2 font-mono text-sm font-bold transition-all"
                 style={{
                   borderColor: accent,
                   background: accent,
@@ -1536,7 +1536,7 @@ export const trieDemo: PatternDemoModule = {
               <div key={`${ch}-${i}`} className="flex items-center">
                 <span className="mx-0.5 text-muted">─</span>
                 <div
-                  className="relative flex h-9 w-9 items-center justify-center rounded-lg border-2 font-mono text-sm font-bold transition-all"
+                  className="relative flex h-9 w-9 items-center justify-center rounded-[length:var(--radius-md)] border-2 font-mono text-sm font-bold transition-all"
                   style={{
                     borderColor: on ? accent : "var(--border)",
                     background: on

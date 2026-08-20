@@ -30,7 +30,7 @@ export function PatternCard({ card }: { card: PatternCardData }) {
         </h3>
         <span
           className={cn(
-            "rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide",
+            "rounded-[length:var(--radius-xs)] border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide",
             TONE_CHIP[card.tone],
           )}
         >

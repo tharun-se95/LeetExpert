@@ -207,11 +207,11 @@ export function SearchDialog({
                   </span>
                 </div>
                 {hit.entry.y === "problem" ? (
-                  <span className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-[0.6rem] text-muted">
+                  <span className="shrink-0 rounded-[length:var(--radius-xs)] border border-border px-1.5 py-0.5 font-mono text-[0.6rem] text-muted">
                     problem
                   </span>
                 ) : hit.entry.y === "practice" ? (
-                  <span className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-[0.6rem] text-muted">
+                  <span className="shrink-0 rounded-[length:var(--radius-xs)] border border-border px-1.5 py-0.5 font-mono text-[0.6rem] text-muted">
                     practice
                   </span>
                 ) : null}

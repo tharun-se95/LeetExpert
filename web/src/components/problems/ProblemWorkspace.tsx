@@ -152,7 +152,7 @@ export function ProblemWorkspace({
         <header className="flex shrink-0 items-center gap-2 border-b border-border bg-elevated px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2">
           <Link
             href={backHref}
-            className="inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-md px-2 text-xs text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
+            className="inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-[length:var(--radius-md)] px-2 text-xs text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
           >
             <CaretLeft size={14} weight="bold" aria-hidden />
             <span className="max-w-[5.5rem] truncate sm:max-w-none">
@@ -169,12 +169,12 @@ export function ProblemWorkspace({
             <p className="truncate text-[0.7rem] text-muted">{eyebrow}</p>
           </div>
           {isSolved ? (
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-good/15 px-2 py-0.5 text-[0.7rem] font-medium text-good">
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-[length:var(--radius-md)] bg-good/15 px-2 py-0.5 text-[0.7rem] font-medium text-good">
               <Check size={11} strokeWidth={3} aria-hidden />
               Solved
             </span>
           ) : (
-            <span className="hidden shrink-0 rounded-md border border-border px-2 py-0.5 text-[0.7rem] text-muted sm:inline">
+            <span className="hidden shrink-0 rounded-[length:var(--radius-md)] border border-border px-2 py-0.5 text-[0.7rem] text-muted sm:inline">
               Problem
             </span>
           )}
@@ -187,7 +187,7 @@ export function ProblemWorkspace({
                 href={prev.href}
                 title={prev.title}
                 aria-label={`Previous: ${prev.title}`}
-                className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-md text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
+                className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-[length:var(--radius-md)] text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
               >
                 <ArrowLeft size={16} weight="bold" />
               </Link>
@@ -204,7 +204,7 @@ export function ProblemWorkspace({
                 href={next.href}
                 title={next.title}
                 aria-label={`Next: ${next.title}`}
-                className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-md text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
+                className="inline-flex h-11 w-11 touch-manipulation items-center justify-center rounded-[length:var(--radius-md)] text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
               >
                 <ArrowRight size={16} weight="bold" />
               </Link>

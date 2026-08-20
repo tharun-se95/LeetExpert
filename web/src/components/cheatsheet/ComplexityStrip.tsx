@@ -29,7 +29,7 @@ function TimeCell({ value }: { value: string }) {
     <span
       className={cn(
         "font-mono text-xs",
-        isTargetBigO(value) ? "text-good" : "text-accent",
+        isTargetBigO(value) ? "text-good" : "text-info",
       )}
     >
       {value}

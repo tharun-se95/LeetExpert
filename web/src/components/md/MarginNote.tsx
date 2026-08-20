@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 /**
- * The teacher's aside — the second ink of the Riso system.
+ * The teacher's aside — the second ink of the press system.
  *
  * Uses `--info` (Sky) rather than `--accent` (Primary): accent means *pay
  * attention to this, it's interactive*; info means *someone is giving you

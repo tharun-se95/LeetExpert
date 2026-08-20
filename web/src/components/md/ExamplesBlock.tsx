@@ -12,14 +12,14 @@ function OutputValue({ output }: { output: string }) {
   const bool = isBooleanOutput(output);
   if (bool === "true") {
     return (
-      <span className="inline-flex rounded-md border border-good/40 bg-good/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-good">
+      <span className="inline-flex rounded-[length:var(--radius-xs)] border border-good/40 bg-good/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-good">
         {output.trim()}
       </span>
     );
   }
   if (bool === "false") {
     return (
-      <span className="inline-flex rounded-md border border-bad/40 bg-bad/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-bad">
+      <span className="inline-flex rounded-[length:var(--radius-xs)] border border-bad/40 bg-bad/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-bad">
         {output.trim()}
       </span>
     );
@@ -46,7 +46,7 @@ export function ExamplesBlock({
   return (
     <div
       className={cn(
-        "my-5 overflow-hidden rounded-xl border border-border bg-surface/50",
+"my-3 rounded-[length:var(--radius-md)] border border-border bg-surface/40 px-2.5 py-1.5",
         className,
       )}
       role="list"

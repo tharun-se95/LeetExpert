@@ -85,7 +85,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
       />
 
       <div className="relative mx-auto max-w-5xl px-4 py-10 lg:px-8 lg:py-14">
-        <p className="text-xs font-medium tracking-[0.14em] text-accent uppercase">
+        <p className="text-xs font-medium tracking-[0.14em] text-mark uppercase">
           Drill the course
         </p>
         <h1 className="mt-3 max-w-2xl font-display text-4xl font-bold tracking-tight text-balance uppercase sm:text-5xl">
@@ -245,7 +245,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                     </div>
                     <Link
                       href={lessonHref(module.slug, "practice")}
-                      className="inline-flex min-h-11 touch-manipulation items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-background px-3.5 text-xs font-medium text-foreground transition-[border-color,color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/40 hover:text-accent motion-reduce:transition-none"
+                      className="inline-flex min-h-11 touch-manipulation items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-background px-3.5 text-xs font-medium text-foreground transition-[border-color,color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/40 hover:text-mark motion-reduce:transition-none"
                     >
                       <Target className="h-3.5 w-3.5" weight="bold" />
                       Playbook
@@ -292,7 +292,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                               "min-w-0 flex-1 font-medium",
                               isSolved
                                 ? "text-foreground"
-                                : "text-foreground group-hover:text-accent",
+                                : "text-foreground group-hover:text-mark",
                             )}
                           >
                             {p.title}
@@ -300,7 +300,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                           {difficulty ? (
                             <span
                               className={cn(
-                                "shrink-0 rounded border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
+                                "shrink-0 rounded-[length:var(--radius-xs)] border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
                                 difficultyBadgeClass(difficulty),
                               )}
                             >
@@ -338,7 +338,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="mt-4 text-sm font-medium text-accent transition hover:opacity-80"
+                className="mt-4 text-sm font-medium text-mark transition hover:opacity-80"
               >
                 Clear filters
               </button>

@@ -24,7 +24,7 @@ export function WhoNotPractical() {
   return (
     <section className="grid gap-8 border-y border-border py-8 lg:grid-cols-[1.2fr_1fr] lg:gap-12 lg:py-10">
       <div>
-        <p className="flex items-center gap-1.5 text-xs font-medium tracking-[0.14em] text-accent uppercase">
+        <p className="flex items-center gap-1.5 text-xs font-medium tracking-[0.14em] text-mark uppercase">
           <Users className="h-3.5 w-3.5" weight="regular" aria-hidden />
           Who it’s for
         </p>
@@ -58,7 +58,7 @@ export function WhoNotPractical() {
           </ul>
         </div>
         <div className="lg:pt-6">
-          <p className="flex items-center gap-1.5 text-xs font-medium tracking-[0.14em] text-accent uppercase">
+<p className="flex items-center gap-1.5 text-xs font-medium tracking-[0.14em] text-mark uppercase">
             <Wrench className="h-3.5 w-3.5" weight="regular" aria-hidden />
             Practical
           </p>

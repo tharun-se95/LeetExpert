@@ -18,7 +18,7 @@ function parseSpec(source: string): Record<string, unknown> | null {
 
 function ErrorCard({ message }: { message: string }) {
   return (
-    <div className="rounded-lg border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
+    <div className="rounded-[length:var(--radius-md)] border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
       {message}
     </div>
   );
@@ -45,7 +45,7 @@ export function Diagram({ source }: { source: string }) {
   return (
     <div
       style={family ? familyCssVars(family) : undefined}
-      className="my-6 flex justify-center rounded-xl border border-border bg-surface/40 px-4 py-6"
+      className="my-6 flex justify-center rounded-[length:var(--radius-md)] border border-border bg-surface/40 px-4 py-6"
     >
       <Component {...props} />
     </div>

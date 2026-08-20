@@ -8,7 +8,7 @@ const Sandbox = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-64 animate-pulse rounded-xl border border-border bg-code" />
+      <div className="h-64 animate-pulse rounded-[length:var(--radius-xl)] border border-border bg-code" />
     ),
   },
 );

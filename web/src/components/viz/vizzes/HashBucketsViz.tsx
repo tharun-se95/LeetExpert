@@ -169,7 +169,7 @@ function BucketColumn({ index, keys, state }: { index: number; keys: number[]; s
     <motion.div layout className="flex flex-col items-center gap-1">
       <div
         className={cn(
-          "flex min-h-9 w-9 flex-col-reverse items-center gap-1 rounded-lg border border-dashed p-1 transition-colors duration-300",
+          "flex min-h-9 w-9 flex-col-reverse items-center gap-1 rounded-[length:var(--radius-md)] border border-dashed p-1 transition-colors duration-300",
           isTarget
             ? "border-[var(--family-accent,var(--accent))] bg-[var(--family-accent,var(--accent))]/10"
             : "border-border",
@@ -184,7 +184,7 @@ function BucketColumn({ index, keys, state }: { index: number; keys: number[]; s
               layout
               transition={{ type: "spring", stiffness: 380, damping: 32 }}
               className={cn(
-                "flex h-6 w-6 shrink-0 items-center justify-center rounded-md border font-mono text-[10px] font-semibold",
+                "flex h-6 w-6 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border font-mono text-[10px] font-semibold",
                 hot
                   ? "border-[var(--family-accent,var(--accent))] bg-[var(--family-accent,var(--accent))] text-[var(--family-on-accent,var(--on-pop))]"
                   : "border-[var(--family-accent,var(--accent))]/50 bg-[var(--family-accent,var(--accent))]/12 text-foreground",

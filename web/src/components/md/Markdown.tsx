@@ -188,7 +188,7 @@ export function Markdown({
         }
       }
       return (
-        <pre className="overflow-x-auto rounded-lg border border-border bg-code px-4 py-3 font-mono text-[0.85rem] leading-relaxed">
+        <pre className="overflow-x-auto rounded-[length:var(--radius-sm)] border border-border bg-code px-4 py-3 font-mono text-[0.85rem] leading-relaxed">
           {children}
         </pre>
       );
@@ -209,10 +209,13 @@ export function Markdown({
           </a>
         );
       }
+      // Body-size prose links use --mark (pressed Primary), the AA-safe ink —
+      // --accent is large/UI-only on paper (~4.06:1). Same rule as
+      // .anchor-link:hover in globals.css; guarded in design-tokens.test.ts.
       return (
         <a
           href={href}
-          className="font-medium text-accent underline decoration-accent/30 underline-offset-2 transition hover:decoration-accent"
+          className="font-medium text-mark underline decoration-mark/30 underline-offset-2 transition hover:decoration-mark"
           {...(href?.startsWith("http")
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
@@ -223,7 +226,7 @@ export function Markdown({
     },
     table({ children }) {
       return (
-        <div className="my-6 overflow-x-auto rounded-lg border border-border">
+        <div className="my-6 overflow-x-auto rounded-[length:var(--radius-md)] border border-border">
           <table className="w-full min-w-[28rem] border-collapse text-sm">
             {children}
           </table>
@@ -247,7 +250,7 @@ export function Markdown({
         return <code className={className}>{children}</code>;
       }
       return (
-        <code className="rounded-md border border-accent/20 bg-accent/[0.07] px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">
+        <code className="rounded-[length:var(--radius-sm)] border border-accent/20 bg-accent/[0.07] px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">
           {children}
         </code>
       );

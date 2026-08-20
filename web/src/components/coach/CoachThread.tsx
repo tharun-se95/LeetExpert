@@ -56,7 +56,7 @@ export function CoachThread() {
           return (
             <p
               key={item.id}
-              className="ml-8 rounded-lg border border-border bg-elevated px-3.5 py-2 text-sm leading-relaxed text-foreground"
+              className="ml-8 rounded-[length:var(--radius-md)] border border-border bg-elevated px-3.5 py-2 text-sm leading-relaxed text-foreground"
             >
               {item.content}
             </p>

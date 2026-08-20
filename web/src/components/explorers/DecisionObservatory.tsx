@@ -180,7 +180,7 @@ export function DecisionObservatory() {
     >
       <div className="relative z-[1] mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mark">
             Observatory
           </p>
           <h2 className="mt-1 text-lg font-semibold tracking-tight">
@@ -194,7 +194,7 @@ export function DecisionObservatory() {
         <button
           type="button"
           onClick={reset}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-background/70 px-3 text-xs font-medium text-muted transition hover:text-foreground"
+          className="inline-flex h-9 items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-background/70 px-3 text-xs font-medium text-muted transition hover:text-foreground"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           Reset path
@@ -218,7 +218,7 @@ export function DecisionObservatory() {
             title={step.label}
           >
             {step.answer ? (
-              <span className="font-semibold uppercase text-accent">
+              <span className="font-semibold uppercase text-mark">
                 {step.answer}
               </span>
             ) : null}
@@ -236,7 +236,7 @@ export function DecisionObservatory() {
               animate={{ opacity: 1, y: 0 }}
               exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
               transition={{ duration: 0.28 }}
-              className="rounded-2xl border border-border bg-surface p-5"
+              className="rounded-[length:var(--radius-lg)] border border-border bg-surface p-5"
             >
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
                 Question
@@ -250,7 +250,7 @@ export function DecisionObservatory() {
                 </p>
               ) : null}
               {branch.trapNote ? (
-                <div className="mt-4 rounded-xl border border-warn/30 bg-warn/8 px-3 py-2.5 text-sm text-warn">
+                <div className="mt-4 rounded-[length:var(--radius-md)] border border-warn/30 bg-warn/8 px-3 py-2.5 text-sm text-warn">
                   <span className="font-semibold">Dual-home trap. </span>
                   {branch.trapNote}
                 </div>
@@ -260,14 +260,14 @@ export function DecisionObservatory() {
                 <button
                   type="button"
                   onClick={() => answer("yes")}
-                  className="inline-flex h-11 min-w-[7rem] items-center justify-center rounded-xl bg-foreground px-5 text-sm font-semibold text-background transition hover:opacity-90"
+                  className="inline-flex h-11 min-w-[7rem] items-center justify-center rounded-[length:var(--radius-md)] bg-foreground px-5 text-sm font-semibold text-background transition hover:opacity-90"
                 >
                   Yes
                 </button>
                 <button
                   type="button"
                   onClick={() => answer("no")}
-                  className="inline-flex h-11 min-w-[7rem] items-center justify-center rounded-xl border border-border bg-surface px-5 text-sm font-semibold transition hover:border-foreground/20"
+                  className="inline-flex h-11 min-w-[7rem] items-center justify-center rounded-[length:var(--radius-md)] border border-border bg-surface px-5 text-sm font-semibold transition hover:border-foreground/20"
                 >
                   No
                 </button>
@@ -275,7 +275,7 @@ export function DecisionObservatory() {
                   <button
                     type="button"
                     onClick={() => rewindTo(trail.length - 2)}
-                    className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm text-muted transition hover:text-foreground"
+                    className="inline-flex h-11 items-center gap-1.5 rounded-[length:var(--radius-md)] px-3 text-sm text-muted transition hover:text-foreground"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Back
@@ -290,7 +290,7 @@ export function DecisionObservatory() {
               animate={{ opacity: 1, scale: 1 }}
               exit={reduceMotion ? undefined : { opacity: 0 }}
               transition={{ duration: 0.32 }}
-              className="rounded-2xl border border-border bg-surface p-6"
+              className="rounded-[length:var(--radius-lg)] border border-border bg-surface p-6"
               style={{
                 outline: `1px solid color-mix(in oklab, ${leafAccent} 35%, transparent)`,
                 outlineOffset: "-1px",
@@ -318,7 +318,7 @@ export function DecisionObservatory() {
               <div className="mt-6 flex flex-wrap gap-2">
                 <Link
                   href={leaf.patternHref}
-                  className="inline-flex h-11 items-center rounded-xl px-5 text-sm font-semibold text-background transition hover:opacity-90"
+                  className="inline-flex h-11 items-center rounded-[length:var(--radius-md)] px-5 text-sm font-semibold text-background transition hover:opacity-90"
                   style={{ background: leafAccent }}
                 >
                   Open {leaf.patternLabel}
@@ -326,7 +326,7 @@ export function DecisionObservatory() {
                 <button
                   type="button"
                   onClick={reset}
-                  className="inline-flex h-11 items-center rounded-xl border border-border px-4 text-sm font-medium text-muted transition hover:text-foreground"
+                  className="inline-flex h-11 items-center rounded-[length:var(--radius-md)] border border-border px-4 text-sm font-medium text-muted transition hover:text-foreground"
                 >
                   Try another path
                 </button>
@@ -335,7 +335,7 @@ export function DecisionObservatory() {
           ) : null}
         </AnimatePresence>
 
-        <aside className="hidden rounded-2xl border border-border bg-background/40 p-3 lg:block">
+        <aside className="hidden rounded-[length:var(--radius-lg)] border border-border bg-background/40 p-3 lg:block">
           <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted">
             Path map
           </p>

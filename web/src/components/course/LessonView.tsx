@@ -40,10 +40,10 @@ export function LessonView({
     <div className="mx-auto flex w-full max-w-6xl gap-10 px-4 py-8 lg:px-8 lg:py-10">
       <article className="min-w-0 flex-1">
         <Breadcrumbs items={breadcrumbs} />
-        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-accent">
+        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-mark">
           {eyebrow}
         </p>
-        <h1 className="riso-overprint font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]">
+        <h1 className="press-overprint font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]">
           {lesson.title}
         </h1>
         <p className="mt-2 flex items-center gap-3 text-sm text-muted">
@@ -65,7 +65,7 @@ export function LessonView({
           {prev ? (
             <Link
               href={prev.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
+              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] border border-border px-4 py-3 text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
             >
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent transition group-hover:bg-accent/15">
                 <ArrowLeft weight="bold" className="h-4 w-4" />
@@ -83,7 +83,7 @@ export function LessonView({
           {next ? (
             <Link
               href={next.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-lg border border-border px-4 py-3 text-right text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
+              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] border border-border px-4 py-3 text-right text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
             >
               <span className="min-w-0">
                 <span className="block text-xs text-muted">

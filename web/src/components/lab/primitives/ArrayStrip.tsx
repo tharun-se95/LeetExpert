@@ -55,7 +55,7 @@ export function ArrayStrip({
           <div key={i} className="flex flex-col items-center gap-1">
             <div
               className={cn(
-                "flex items-center justify-center rounded-lg border font-mono font-semibold tabular-nums transition-colors",
+                "flex items-center justify-center rounded-[length:var(--radius-md)] border font-mono font-semibold tabular-nums transition-colors",
                 cell,
                 isDim && "opacity-35",
               )}

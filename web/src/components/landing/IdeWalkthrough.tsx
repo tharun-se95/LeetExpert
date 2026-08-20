@@ -46,7 +46,7 @@ export function IdeWalkthrough() {
   const frame = FRAMES[i];
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-background">
+    <div className="overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-background">
       <div className="flex flex-wrap gap-1 border-b border-border p-2">
         {FRAMES.map((f, idx) => (
           <button
@@ -54,7 +54,7 @@ export function IdeWalkthrough() {
             type="button"
             onClick={() => setI(idx)}
             className={cn(
-              "rounded-md px-2.5 py-1.5 font-mono text-[0.7rem] transition-colors",
+              "rounded-[length:var(--radius-md)] px-2.5 py-1.5 font-mono text-[0.7rem] transition-colors",
               idx === i
                 ? "bg-pop text-on-pop"
                 : "text-muted hover:text-foreground",
@@ -65,7 +65,7 @@ export function IdeWalkthrough() {
         ))}
       </div>
       <div className="space-y-3 p-4">
-        <div className="h-24 rounded-lg border border-dashed border-border bg-code/60" />
+        <div className="h-24 rounded-[length:var(--radius-md)] border border-dashed border-border bg-code/60" />
         <p className="text-sm leading-relaxed text-muted">{frame.caption}</p>
       </div>
     </div>

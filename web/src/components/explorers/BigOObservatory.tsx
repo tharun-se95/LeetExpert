@@ -141,7 +141,7 @@ export function BigOObservatory() {
       }
     >
       <div className="relative z-[1] mb-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mark">
           Complexity stage
         </p>
         <h2 className="mt-1 text-lg font-semibold tracking-tight">
@@ -176,7 +176,7 @@ export function BigOObservatory() {
       </div>
 
       <div className="relative z-[1] grid gap-5 lg:grid-cols-[1fr_220px]">
-        <div className="rounded-2xl border border-border bg-surface p-3">
+        <div className="rounded-[length:var(--radius-lg)] border border-border bg-surface p-3">
           <svg
             viewBox={`0 0 ${W} ${H}`}
             className="h-[240px] w-full sm:h-[300px]"
@@ -295,7 +295,7 @@ export function BigOObservatory() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <div className="rounded-2xl border border-border bg-background/50 p-3">
+          <div className="rounded-[length:var(--radius-lg)] border border-border bg-background/50 p-3">
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted">
               Curves
             </p>
@@ -309,7 +309,7 @@ export function BigOObservatory() {
                     }
                     onDoubleClick={() => setFocus(c.key)}
                     className={cn(
-                      "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition",
+                      "flex w-full items-center gap-2 rounded-[length:var(--radius-md)] px-2 py-1.5 text-left text-xs transition",
                       enabled[c.key]
                         ? "bg-surface text-foreground"
                         : "text-muted opacity-50",
@@ -336,7 +336,7 @@ export function BigOObservatory() {
           </div>
 
           <div
-            className="rounded-2xl border border-border p-3"
+            className="rounded-[length:var(--radius-lg)] border border-border p-3"
             style={{
               background: willFinish
                 ? "color-mix(in oklab, var(--good) 10%, var(--surface))"

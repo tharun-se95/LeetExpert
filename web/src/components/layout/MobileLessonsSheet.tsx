@@ -113,7 +113,7 @@ export function MobileLessonsSheet({
                 ref={closeRef}
                 type="button"
                 onClick={onClose}
-                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-muted transition hover:bg-surface hover:text-foreground"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:bg-surface hover:text-foreground"
                 aria-label="Close lessons menu"
               >
                 <X className="h-5 w-5" weight="bold" />

@@ -37,9 +37,9 @@ export function Cheatsheet({
               </p>
               <span
                 className={cn(
-                  "rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide",
+                  "rounded-[length:var(--radius-xs)] border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide",
                   sheet.tier === "gold"
-                    ? "border-accent/40 bg-accent/10 text-accent"
+                    ? "border-accent/40 bg-accent/10 text-mark"
                     : "border-border bg-surface text-muted",
                 )}
               >

@@ -4,15 +4,15 @@ import {
   type ThemedToken,
   type ThemeRegistrationRaw,
 } from "shiki";
-import { RISO_DARK, RISO_LIGHT } from "@/lib/content/codePalette";
+import { PRESS_DARK, PRESS_LIGHT } from "@/lib/content/codePalette";
 
 const LANGS = ["python", "typescript"] as const;
 export type VizLang = (typeof LANGS)[number];
 
-const LIGHT_THEME = RISO_LIGHT as unknown as ThemeRegistrationRaw;
-const DARK_THEME = RISO_DARK as unknown as ThemeRegistrationRaw;
-const LIGHT_NAME = RISO_LIGHT.name;
-const DARK_NAME = RISO_DARK.name;
+const LIGHT_THEME = PRESS_LIGHT as unknown as ThemeRegistrationRaw;
+const DARK_THEME = PRESS_DARK as unknown as ThemeRegistrationRaw;
+const LIGHT_NAME = PRESS_LIGHT.name;
+const DARK_NAME = PRESS_DARK.name;
 
 let highlighterPromise: Promise<Highlighter> | null = null;
 

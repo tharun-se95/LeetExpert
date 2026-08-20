@@ -90,7 +90,7 @@ export function PracticeProblemsList({
                       "flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold tabular-nums",
                       isSolved
                         ? "bg-good/15 text-good"
-                        : "bg-accent/10 text-accent",
+                        : "bg-accent/10 text-mark",
                     )}
                   >
                     {isSolved ? (
@@ -107,7 +107,7 @@ export function PracticeProblemsList({
                       {row.difficulty ? (
                         <span
                           className={cn(
-                            "rounded border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
+                            "rounded-[length:var(--radius-xs)] border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
                             difficulty
                               ? difficultyBadgeClass(difficulty)
                               : "border-border text-muted",

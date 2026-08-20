@@ -226,7 +226,7 @@ function RingSlots({
             <span className="mt-0.5 font-mono text-[9px] text-muted">{i}</span>
             {isHead || isTail ? (
               <span className="mt-0.5 flex gap-1 font-mono text-[9px] font-semibold leading-none">
-                {isHead ? <span className="text-accent">head</span> : null}
+                {isHead ? <span className="text-mark">head</span> : null}
                 {isTail ? <span className="text-muted">tail</span> : null}
               </span>
             ) : null}

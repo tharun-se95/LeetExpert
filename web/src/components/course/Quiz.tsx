@@ -124,7 +124,7 @@ function QuestionBlock({
         question down past the number. Keep number + question on one baseline.
       */}
       <div className="flex items-baseline gap-3">
-        <span className="w-6 shrink-0 font-mono text-[11px] font-semibold tabular-nums text-accent">
+        <span className="w-6 shrink-0 font-mono text-[11px] font-semibold tabular-nums text-mark">
           {String(index + 1).padStart(2, "0")}
         </span>
         <p className="!m-0 min-w-0 flex-1 text-[0.95rem] leading-snug font-medium text-foreground">
@@ -170,7 +170,7 @@ function QuestionBlock({
                 className={cn(
                   "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold tabular-nums transition",
                   !answered &&
-                    "border border-border bg-elevated text-muted group-hover/opt:border-accent/45 group-hover/opt:text-accent",
+                    "border border-border bg-elevated text-muted group-hover/opt:border-accent/45 group-hover/opt:text-mark",
                   answered &&
                     isAnswer &&
                     "border border-good/50 bg-good/15 text-good",
@@ -210,7 +210,7 @@ function QuestionBlock({
               : "border-accent text-foreground",
           )}
         >
-          <span className="font-semibold text-accent">
+          <span className="font-semibold text-mark">
             {correct ? "Correct. " : "Not quite. "}
           </span>
           <span className="text-muted">
@@ -227,7 +227,7 @@ export function Quiz({ source }: { source: string }) {
 
   if (!spec) {
     return (
-      <div className="rounded-lg border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
+      <div className="rounded-[length:var(--radius-md)] border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
         Invalid quiz block.
       </div>
     );
@@ -241,7 +241,7 @@ export function Quiz({ source }: { source: string }) {
             aria-hidden
             className="h-1.5 w-1.5 rounded-full bg-pop"
           />
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-accent uppercase">
+          <p className="text-[11px] font-semibold tracking-[0.16em] text-mark uppercase">
             Check yourself
           </p>
         </div>

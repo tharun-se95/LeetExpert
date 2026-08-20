@@ -15,7 +15,7 @@ export function DiagnosisCard({ diagnosis }: { diagnosis: Diagnosis }) {
   return (
     <article
       className={cn(
-        "flex gap-2.5 rounded-lg border-y border-r border-l-[3px] border-border bg-surface px-3 py-2.5",
+        "flex gap-2.5 rounded-[length:var(--radius-md)] border-y border-r border-l-[3px] border-border bg-surface px-3 py-2.5",
         passed ? "border-l-good" : "border-l-bad",
       )}
     >

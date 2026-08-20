@@ -10,42 +10,47 @@
 
    Palette: docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md
    Sheet: codeMacha COLOR PALETTE OPTIONS — A Indigo Modern
-   Rule: components use semantic names, never `--riso-*` directly.
+   Rule: components use semantic names, never `--press-*` directly.
    Depth: layered surfaces + soft rules — never drop shadows.
    ============================================================ */
 
 :root {
   /* --- tier 1: ground (Indigo Modern light) --------------- */
-  --riso-paper: #fcfcfd; /* sheet Background — app chrome / page */
   /*
-    Layered surfaces (Linear-like): structure from tonal steps, not wash or
-    shadow. Brightness high→low: elevated (#fff) > paper > code > sunk.
-    Ink 17.30:1 / muted 4.72:1 on paper; muted still ≥4.55:1 on sunk.
+    Light surfaces are a real paper ladder, not a flat white stack. Elevated
+    (cards) stays #fff; background (#f2f4f8) is the page; code (#eaeef4) the
+    editor well; sunk (#e0e5ee) the deepest recess. Measured adjacent steps:
+    elevated/background 1.10, background/code 1.06, code/sunk 1.09,
+    elevated/sunk 1.26 — visible flat steps, no shadows. Every text ink below
+    clears AA 4.5:1 on the deepest surface; enforced by
+    web/tests/design-tokens.test.ts.
   */
-  --riso-paper-sunk: #f7f8fa; /* recessed panel (tests, muted chrome) */
-  --riso-ink: #111827; /* 17.30:1 — sheet Text Primary */
-  --riso-ink-soft: #6b7280; /* 4.72:1 — sheet Text Muted */
-  /* Almost-invisible Linear-like rule — felt, not noticed */
-  --riso-rule: rgba(17, 24, 39, 0.08);
+  --press-paper: #f2f4f8; /* sheet Background — app chrome / page */
+  --press-paper-sunk: #e0e5ee; /* recessed panel (tests, muted chrome) */
+  --press-ink: #111827; /* 16.1:1 — sheet Text Primary */
+  --press-ink-soft: #5c6573; /* 5.35:1 on paper; 4.66:1 on sunk — AA deepest */
+  /* Almost-invisible rule — the tonal ladder now carries the structure */
+  --press-rule: rgba(17, 24, 39, 0.08);
 
   /*
     Primary #6366F1 — Tailwind indigo-500 exactly, per owner palette brief.
-    On paper ~4.35:1 — large/UI / display accent only; do not use for
+    On paper ~4.06:1 — large/UI / display accent only; do not use for
     regular-weight body text (below AA's 4.5:1 normal-text floor — clears
-    3:1 large-text/UI comfortably). White on Primary ~4.47:1 — fine for
-    bold/large CTA labels, same reasoning.
+    3:1 large-text/UI comfortably). Body-size accent text must use --mark.
+    White on Primary ~4.47:1 — fine for bold/large CTA labels, same reasoning.
   */
-  --riso-lime: #6366f1; /* pop = Primary */
-  --riso-olive: #6366f1; /* accent = Primary */
-  --riso-blue: #4f46e5; /* mark / active — pressed Primary (indigo-600) */
+  --press-lime: #6366f1; /* pop = Primary */
+  --press-olive: #6366f1; /* accent = Primary */
+  --press-blue: #4f46e5; /* mark / active — pressed Primary (indigo-600) */
   /*
     Sheet Success/Warning/Error are bright fills (~2–3:1 as body text).
-    Text inks below keep the hue, darkened for AA on paper.
+    Text inks below keep the hue, darkened for AA on the deepest surface
+    (--press-paper-sunk), where the sandbox verdict rows render them.
     Sheet fills: #16C47F / #F5B301 / #EF4444.
   */
-  --riso-green: #047857; /* 5.35:1 — Success family */
-  --riso-red: #dc2626; /* 4.71:1 — Error family */
-  --riso-amber: #b45309; /* 4.90:1 — Warning family */
+  --press-green: #036f42; /* 4.95:1 on sunk — Success family */
+  --press-red: #b91c1c; /* 5.12:1 on sunk — Error family */
+  --press-amber: #92400e; /* 5.61:1 on sunk — Warning family */
 
   /*
     Insight — "remember this," deliberately rare. Not Warning's amber
@@ -53,7 +58,7 @@
     via bg-insight/N; text ink darkened for AA — pure #FACC15 is ~1.5:1 on
     paper, nowhere close.
   */
-  --riso-insight: #854d0e; /* 6.68:1 on paper */
+  --press-insight: #854d0e; /* 6.22:1 on paper; 5.42:1 on sunk */
 
   /*
     Pastel callout surfaces — a confident fill per role, not a faded wash of
@@ -61,49 +66,60 @@
     ink clears AA large-text (3:1) against its own surface; computed, see
     web/tests/design-tokens.test.ts.
   */
-  --riso-info-surface: #e0f2fe; /* #0284c7 ink ≈ 3.57:1 */
-  --riso-good-surface: #dcfce7; /* #047857 ink ≈ 5.00:1 */
-  --riso-warn-surface: #fef3c7; /* #b45309 ink ≈ 4.51:1 */
-  --riso-insight-surface: #fef9c3; /* #854d0e ink ≈ 6.38:1 */
+  --press-info-surface: #e0f2fe; /* #0284c7 ink ≈ 3.57:1 */
+  --press-good-surface: #dcfce7; /* #047857 ink ≈ 5.00:1 */
+  --press-warn-surface: #fef3c7; /* #b45309 ink ≈ 4.51:1 */
+  --press-insight-surface: #fef9c3; /* #854d0e ink ≈ 6.38:1 */
 
-  --riso-highlight: color-mix(in oklab, var(--riso-olive) 14%, transparent);
-  --riso-halftone: rgba(17, 24, 39, 0.08);
+  --press-highlight: color-mix(in oklab, var(--press-olive) 14%, transparent);
+  --press-halftone: rgba(17, 24, 39, 0.08);
 
   /* --- tier 2: semantic ----------------------------------- */
-  --background: var(--riso-paper);
-  --foreground: var(--riso-ink);
-  --muted: var(--riso-ink-soft);
-  --border: var(--riso-rule);
-  --surface: var(--riso-paper-sunk); /* test panel / muted */
-  --code: #fafafb; /* editor / code chrome */
-  --elevated: #ffffff; /* sidebar, lesson panel, cards */
-  --accent: var(--riso-olive);
+  --background: var(--press-paper);
+  --foreground: var(--press-ink);
+  --muted: var(--press-ink-soft);
+  --border: var(--press-rule);
+  --surface: var(--press-paper-sunk); /* test panel / muted — deepest */
+  --code: #eaeef4; /* editor / code chrome — recessed below the page */
+  --elevated: #ffffff; /* sidebar, lesson panel, cards — brightest lift */
+  --accent: var(--press-olive);
   --accent-hover: #818cf8; /* Primary Hover — lighter lift */
   --accent-active: #4f46e5;
-  --pop: var(--riso-lime);
+  --pop: var(--press-lime);
   --on-pop: #ffffff; /* ~5.03:1 on Primary */
 
-  --good: var(--riso-green);
-  --bad: var(--riso-red);
-  --warn: var(--riso-amber);
-  --insight: var(--riso-insight);
+  --good: var(--press-green);
+  --bad: var(--press-red);
+  --warn: var(--press-amber);
+  --insight: var(--press-insight);
   --info: var(--tone-sky);
-  --info-surface: var(--riso-info-surface);
-  --good-surface: var(--riso-good-surface);
-  --warn-surface: var(--riso-warn-surface);
-  --insight-surface: var(--riso-insight-surface);
+  --info-surface: var(--press-info-surface);
+  --good-surface: var(--press-good-surface);
+  --warn-surface: var(--press-warn-surface);
+  --insight-surface: var(--press-insight-surface);
 
-  --tone-sky: #0284c7; /* info — AA on paper */
+  --tone-sky: #0369a1; /* info — 4.69:1 on sunk, AA deepest */
   --tone-rose: #e11d48;
 
-  --mark: var(--riso-blue);
-  --highlight: var(--riso-highlight);
-  --halftone: var(--riso-halftone);
+  --mark: var(--press-blue);
+  --highlight: var(--press-highlight);
+  --halftone: var(--press-halftone);
 
-  /* --- radius (8 / 12 / 20) -------------------------------- */
+  /* --- radius (4 / 8 / 12 / 20 / 28) ------------------------
+     xs — inline tags, chips, nav highlights, status dots
+     sm — inline code / kbd, micro UI
+     md — controls (buttons, inputs), rows, cells, callouts
+     lg — large containers: dialogs, section cards, panels
+     xl — display frames: landing mocks, lab theater stage
+     Components call these as rounded-[length:var(--radius-md)] — one of
+     xs / sm / md / lg / xl — never the bare rounded-sm/md/lg/xl shorthand; see
+     web/tests/design-tokens.test.ts.
+  ------------------------------------------------------------- */
+  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
+  --radius-xl: 28px;
 
   /* --- motion (150–250ms) --------------------------------- */
   --dur-fast: 150ms;
@@ -116,39 +132,42 @@
 }
 
 .dark {
-  /* Indigo Modern dark — sheet Background #0F1117 */
-  --riso-paper: #0f1117;
+  /* Indigo Modern dark — sheet Background #12151C */
+  --press-paper: #12151c;
   /*
-    Dark layers mirror light roles (not inverted greys): elevated is the
-    brightest lift (sidebar/cards), code sits between, surface/tests recess
-    toward the sheet. Deltas stay subtle — structure felt, not outlined.
+    Dark is the theme where the layer ladder is real — light is capped at
+    ~1.03:1 by muted-AA, dark has room. Same relative order as light, never
+    an inversion: elevated (cards) brightest, code above the page, background
+    the sheet, surface recessed deepest. Measured adjacent deltas:
+    surface/paper 1.05, paper/code 1.07, code/elevated 1.17, elevated/paper
+    1.26 — visible steps, flat (no shadows). Muted #a1a1aa ≥5.5:1 everywhere.
   */
-  --riso-paper-sunk: #13161e; /* recessed — tests / muted */
-  --riso-ink: #f9fafc; /* 18.07:1 — sheet Text Primary */
-  --riso-ink-soft: #a1a1aa; /* 7.36:1 — sheet Text Muted */
-  --riso-rule: rgba(249, 250, 252, 0.08); /* Linear-like soft rule */
+  --press-paper-sunk: #0c0f15; /* recessed — tests / muted, deepest */
+  --press-ink: #f9fafc; /* 18.07:1 — sheet Text Primary */
+  --press-ink-soft: #a1a1aa; /* 7.36:1 — sheet Text Muted */
+  --press-rule: rgba(249, 250, 252, 0.08); /* Linear-like soft rule */
 
-  --riso-lime: #6366f1; /* sheet Primary — CTA fill */
-  --riso-olive: #818cf8; /* Primary Hover — readable accent on charcoal */
-  --riso-blue: #818cf8;
-  --riso-green: #22d497; /* sheet Success */
-  --riso-red: #ef4444; /* sheet Error */
-  --riso-amber: #f59e0b; /* sheet Warning */
-  --riso-insight: #facc15; /* 12.3:1 on dark paper — bright gold as text */
+  --press-lime: #6366f1; /* sheet Primary — CTA fill */
+  --press-olive: #818cf8; /* Primary Hover — readable accent on charcoal */
+  --press-blue: #818cf8;
+  --press-green: #22d497; /* sheet Success */
+  --press-red: #ef4444; /* sheet Error */
+  --press-amber: #f59e0b; /* sheet Warning */
+  --press-insight: #facc15; /* 12.3:1 on dark paper — bright gold as text */
 
   /* Dark callout surfaces — saturated dark tints, not pastel. */
-  --riso-info-surface: #0c2a3d; /* #38bdf8 ink ≈ 6.93:1 */
-  --riso-good-surface: #0b2e22; /* #22d497 ink ≈ 7.66:1 */
-  --riso-warn-surface: #3a2408; /* #f59e0b ink ≈ 6.81:1 */
-  --riso-insight-surface: #3a2e05; /* #facc15 ink ≈ 8.72:1 */
+  --press-info-surface: #0c2a3d; /* #38bdf8 ink ≈ 6.93:1 */
+  --press-good-surface: #0b2e22; /* #22d497 ink ≈ 7.66:1 */
+  --press-warn-surface: #3a2408; /* #f59e0b ink ≈ 6.81:1 */
+  --press-insight-surface: #3a2e05; /* #facc15 ink ≈ 8.72:1 */
 
-  --riso-highlight: color-mix(in oklab, var(--riso-olive) 22%, transparent);
-  --riso-halftone: rgba(249, 250, 252, 0.08);
+  --press-highlight: color-mix(in oklab, var(--press-olive) 22%, transparent);
+  --press-halftone: rgba(249, 250, 252, 0.08);
   --on-pop: #ffffff;
 
-  --surface: #13161e; /* tests / muted — recess */
-  --elevated: #1a1e28; /* sidebar / lesson / cards — lift */
-  --code: #161b24; /* editor — between elevated and surface */
+  --surface: #0c0f15; /* tests / muted — recess, deepest tier */
+  --elevated: #232937; /* sidebar / lesson / cards — brightest lift */
+  --code: #181c25; /* editor — above the page, below elevated */
   --accent-hover: #a5b4fc;
   --accent-active: #6366f1;
 
@@ -182,9 +201,11 @@
   --color-pop: var(--pop);
   --color-on-pop: var(--on-pop);
 
+  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
+  --radius-xl: 28px;
 
   --font-display: var(--font-display);
   --font-sans: var(--font-sans-face);
@@ -227,7 +248,8 @@ html {
 */
 @media (max-width: 1600px), (max-height: 900px) {
   html {
-    font-size: 93.75%; /* 15px against a 16px default */
+    /* 15px against a 16px browser default — derived, not a bare percentage */
+    font-size: calc(15 / 16 * 100%);
   }
 
   :root {
@@ -238,7 +260,8 @@ html {
 
 @media (max-width: 1400px), (max-height: 760px) {
   html {
-    font-size: 81.25%; /* 13px against a 16px default */
+    /* 13px against a 16px browser default — derived, not a bare percentage */
+    font-size: calc(13 / 16 * 100%);
   }
 
   :root {
@@ -316,16 +339,16 @@ body {
 }
 
 /*
-  Riso is a flat, printed idiom: depth comes from ink and rules, never
+  The press is a flat, printed idiom: depth comes from ink and rules, never
   from blur. Shadows are deliberately absent from the token set — if a
   surface needs to lift, give it a border or an offset block.
 */
 
 /* A printed dot screen for raised panels. Applied per surface, not page-wide. */
-.riso-halftone {
+.press-halftone {
   position: relative;
 }
-.riso-halftone::before {
+.press-halftone::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -334,15 +357,8 @@ body {
   background-size: 7px 7px;
   opacity: 0.5;
 }
-.riso-halftone > * {
+.press-halftone > * {
   position: relative;
-}
-
-/*
-  Legacy class name kept so call sites stay stable. Soft lift was retired
-  with Brand DS — depth is border + sunk paper only.
-*/
-.elevated-card {
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -462,7 +478,14 @@ body {
 }
 
 .handbook-prose .anchor-link:hover {
-  color: var(--accent);
+  /*
+    --accent is tuned for large/UI contexts (see the tier-1 comment above) —
+    on paper it clears only ~4.36:1, short of AA's 4.5:1 floor for this
+    normal-weight 19px prose text. --mark (pressed Primary) is the per-theme
+    ink that actually clears AA at this size: light-mode #4f46e5 ≈6.13:1,
+    dark-mode #818cf8 ≈6.33:1 — see web/tests/design-tokens.test.ts.
+  */
+  color: var(--mark);
 }
 
 .handbook-prose .mermaid-diagram svg {
@@ -535,7 +558,7 @@ body {
 }
 
 .code-tab {
-  border-radius: 0.375rem;
+  border-radius: var(--radius-sm);
   padding: 0.25rem 0.625rem;
   font-size: 0.75rem;
   font-weight: 500;
@@ -643,15 +666,15 @@ body {
  * them identical is that both read the same values. Change one, change both.
  */
 :root {
-  --tok-comment: #6b7280;
-  --tok-keyword: #5b5ceb;
+  --tok-comment: #5c6573;
+  --tok-keyword: #4f46e5;
   --tok-string: #047857;
-  --tok-constant: #4f46e5;
-  --tok-entity: #4338ca;
-  --tok-variable: #b45309;
+  --tok-constant: #4338ca;
+  --tok-entity: #3730a3;
+  --tok-variable: #111827;
   --tok-name: #111827;
   --tok-tag: #047857;
-  --tok-invalid: #dc2626;
+  --tok-invalid: #b91c1c;
 }
 
 .dark {
@@ -675,7 +698,7 @@ body {
 .lab-stage {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   border: 1px solid var(--border);
   padding: 20px;
   background:
@@ -837,7 +860,7 @@ body {
   printed the way a real one is: the colour is the block, the letters are
   the ink knocked into it.
 */
-.riso-stamp {
+.press-stamp {
   display: inline-flex;
   align-items: center;
   transform: rotate(-11deg);
@@ -855,7 +878,7 @@ body {
 }
 
 /*
-  Print rules for the Riso elements.
+  Print rules for the press elements.
 
   The block above predates the design system; these cover what it doesn't
   know about. The governing constraint is that most people print in
@@ -869,7 +892,7 @@ body {
 */
 @media print {
   /* the dot screen is texture, and texture does not survive a laser printer */
-  .riso-halftone::before {
+  .press-halftone::before {
     display: none !important;
   }
 
@@ -886,7 +909,7 @@ body {
     color: #333 !important;
   }
 
-  .riso-stamp {
+  .press-stamp {
     border-color: #000 !important;
     color: #000 !important;
   }
@@ -899,12 +922,12 @@ body {
   drop shadow. Kept to 1px and a diluted mark so titles stay sharp; a 3px
   solid offset read as double vision on multi-line display type.
 */
-.riso-overprint {
+.press-overprint {
   text-shadow: 1px 1px 0 color-mix(in oklab, var(--mark) 40%, transparent);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .riso-overprint {
+  .press-overprint {
     transition: text-shadow var(--dur) var(--ease);
   }
 }

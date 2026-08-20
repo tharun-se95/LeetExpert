@@ -216,7 +216,7 @@ function StateGlyph({ phase }: { phase: number }) {
           <div
             key={i}
             className={cn(
-              "flex h-14 w-14 items-center justify-center rounded-lg border font-display text-xl font-bold transition-colors duration-300",
+              "flex h-14 w-14 items-center justify-center rounded-[length:var(--radius-md)] border font-display text-xl font-bold transition-colors duration-300",
               !filled && "border-border bg-surface/60",
             )}
             style={filled ? { backgroundColor: theme.accent } : undefined}
@@ -296,7 +296,7 @@ function PriorityGlyph({ phase }: { phase: number }) {
           <span
             key={h}
             aria-hidden
-            className="w-4 rounded-t-md transition-all duration-300"
+            className="w-4 rounded-t-[length:var(--radius-md)] transition-all duration-300"
             style={{
               height: shown ? h : 0,
               backgroundColor: shown ? accent : accent,

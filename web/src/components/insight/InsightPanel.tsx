@@ -90,7 +90,7 @@ export function InsightPanel({
           onClick={toggle}
           aria-expanded={!collapsed}
           aria-controls={panelId}
-          className="inline-flex min-h-8 touch-manipulation items-center gap-1 rounded px-1 text-[0.65rem] font-semibold tracking-wide text-muted uppercase transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="inline-flex min-h-8 touch-manipulation items-center gap-1 rounded-[length:var(--radius-xs)] px-1 text-[0.65rem] font-semibold tracking-wide text-muted uppercase transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           {collapsed ? (
             <CaretDown size={11} weight="bold" aria-hidden />
@@ -102,7 +102,7 @@ export function InsightPanel({
 
         {insight.complexity ? (
           <div className="flex items-center gap-1.5 font-mono text-[0.68rem]">
-            <span className="text-accent">{insight.complexity.time}</span>
+            <span className="text-info">{insight.complexity.time}</span>
             <span className="text-border">·</span>
             <span className="text-info">{insight.complexity.space}</span>
             <span className="hidden text-muted sm:inline">
@@ -170,7 +170,7 @@ function LearnerInsight({
           </h3>
           <p className="mt-1 text-sm text-foreground">
             Aim for{" "}
-            <span className="font-mono text-accent">
+            <span className="font-mono text-info">
               {insight.complexity.time}
             </span>{" "}
             time and{" "}
@@ -317,7 +317,7 @@ function InsightBody({
               <li
                 key={item.label}
                 className={cn(
-                  "rounded border px-1.5 py-0.5 text-[0.65rem] leading-snug",
+                  "rounded-[length:var(--radius-xs)] border px-1.5 py-0.5 text-[0.65rem] leading-snug",
                   item.tone ? TONE_CHIP[item.tone] : TONE_CHIP.muted,
                 )}
               >

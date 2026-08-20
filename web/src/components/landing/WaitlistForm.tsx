@@ -36,12 +36,12 @@ export function WaitlistForm() {
   };
 
   if (!ready) {
-    return <div className="h-11 animate-pulse rounded-lg bg-surface" />;
+    return <div className="h-11 animate-pulse rounded-[length:var(--radius-md)] bg-surface" />;
   }
 
   if (saved) {
     return (
-      <p className="rounded-lg border border-good/40 bg-good/10 px-4 py-3 text-sm text-foreground">
+      <p className="rounded-[length:var(--radius-md)] border border-good/40 bg-good/10 px-4 py-3 text-sm text-foreground">
         You’re on the list for the paid launch notice (
         <span className="font-mono text-xs text-muted">{saved}</span>).
       </p>
@@ -64,11 +64,11 @@ export function WaitlistForm() {
         placeholder="you@email.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="min-w-0 flex-1 rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus-visible:border-accent"
+        className="min-w-0 flex-1 rounded-[length:var(--radius-md)] border border-border bg-background px-3 py-2.5 text-sm outline-none focus-visible:border-accent"
       />
       <button
         type="submit"
-        className="shrink-0 rounded-lg bg-pop px-4 py-2.5 text-sm font-semibold text-on-pop transition hover:opacity-90"
+        className="shrink-0 rounded-[length:var(--radius-md)] bg-pop px-4 py-2.5 text-sm font-semibold text-on-pop transition hover:opacity-90"
       >
         Notify me
       </button>

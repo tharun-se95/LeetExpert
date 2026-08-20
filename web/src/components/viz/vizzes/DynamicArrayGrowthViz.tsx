@@ -164,7 +164,7 @@ function SlotRow({
             <div
               key={i}
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-md border font-mono text-xs font-semibold tabular-nums transition-colors duration-300",
+                "flex h-8 w-8 items-center justify-center rounded-[length:var(--radius-md)] border font-mono text-xs font-semibold tabular-nums transition-colors duration-300",
                 c === null
                   ? "border-dashed border-border text-muted"
                   : hot

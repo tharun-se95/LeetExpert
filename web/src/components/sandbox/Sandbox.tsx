@@ -59,7 +59,7 @@ function draftKey(id: string, lang: SandboxLang): string {
 
 function ErrorCard({ message }: { message: string }) {
   return (
-    <div className="my-6 rounded-lg border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
+    <div className="my-6 rounded-[length:var(--radius-md)] border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
       {message}
     </div>
   );
@@ -229,7 +229,7 @@ function SandboxBody({
             onClick={coach.openCoach}
             aria-label="Toggle problem coach"
             aria-expanded={coach.railOpen}
-            className="inline-flex h-11 items-center gap-1.5 rounded-lg px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
+            className="inline-flex h-11 items-center gap-1.5 rounded-[length:var(--radius-md)] px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
           >
             <ChatCircle size={12} weight="bold" aria-hidden />
             Coach
@@ -242,7 +242,7 @@ function SandboxBody({
           type="button"
           onClick={restoreStarter}
           title="Restore the starter code"
-          className="inline-flex h-11 items-center gap-1.5 rounded-lg px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
+          className="inline-flex h-11 items-center gap-1.5 rounded-[length:var(--radius-md)] px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
         >
           <RotateCcw size={12} aria-hidden />
           Reset
@@ -251,7 +251,7 @@ function SandboxBody({
           type="button"
           onClick={() => run(lang, drafts[lang])}
           disabled={busy}
-          className="inline-flex h-11 items-center gap-1.5 whitespace-nowrap rounded-lg bg-pop px-3 text-[0.72rem] font-semibold text-on-pop transition-opacity hover:opacity-90 disabled:opacity-55"
+          className="inline-flex h-11 items-center gap-1.5 whitespace-nowrap rounded-[length:var(--radius-md)] bg-pop px-3 text-[0.72rem] font-semibold text-on-pop transition-opacity hover:opacity-90 disabled:opacity-55"
         >
           <Play size={12} aria-hidden />
           {state.status === "booting"
@@ -309,7 +309,7 @@ function SandboxBody({
   return (
     <div
       className={cn(
-        "print:hidden my-7 overflow-hidden rounded-xl border bg-surface/30 transition-colors",
+        "print:hidden my-7 overflow-hidden rounded-[length:var(--radius-lg)] border bg-surface/30 transition-colors",
         allPassed ? "border-good/40" : "border-border",
       )}
     >
@@ -667,7 +667,7 @@ function ResultsRail({
               {id === "tests" ? (
                 <span
                   className={cn(
-                    "rounded px-1.5 font-mono text-[0.65rem] font-semibold",
+                    "rounded-[length:var(--radius-xs)] px-1.5 font-mono text-[0.65rem] font-semibold",
                     selected
                       ? "bg-on-pop/15 text-on-pop"
                       : ran && allPassed
@@ -683,7 +683,7 @@ function ResultsRail({
               {id === "console" && logCount > 0 ? (
                 <span
                   className={cn(
-                    "rounded px-1.5 font-mono text-[0.65rem] font-semibold",
+                    "rounded-[length:var(--radius-xs)] px-1.5 font-mono text-[0.65rem] font-semibold",
                     selected ? "bg-on-pop/15 text-on-pop" : "text-muted",
                   )}
                 >
@@ -740,7 +740,7 @@ function CoachFailBanner() {
       <button
         type="button"
         onClick={coach.openCoach}
-        className="min-h-11 shrink-0 rounded-md px-2 text-xs font-medium text-accent hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        className="min-h-11 shrink-0 rounded-[length:var(--radius-md)] px-2 text-xs font-medium text-mark hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         Open coach
       </button>
@@ -795,7 +795,7 @@ function IdeTestcases({
               aria-selected={active === i}
               onClick={() => onActiveChange(i)}
               className={cn(
-                "rounded-md px-2.5 py-1 font-mono text-[0.7rem] transition-colors",
+                "rounded-[length:var(--radius-md)] px-2.5 py-1 font-mono text-[0.7rem] transition-colors",
                 active === i
                   ? "bg-pop text-on-pop"
                   : "text-muted hover:text-foreground",
@@ -859,7 +859,7 @@ function IdeTestcases({
         )}
 
         {result?.logs.length ? (
-          <pre className="mt-3 overflow-x-auto rounded-md bg-code px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-muted">
+          <pre className="mt-3 overflow-x-auto rounded-[length:var(--radius-sm)] bg-code px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-muted">
             {result.logs.join("\n")}
           </pre>
         ) : null}
@@ -928,11 +928,11 @@ function CardResults({
           // Halftone stays on raised panels only — a printed receipt, not a
           // page-wide texture. That containment is what made the quieted
           // version readable.
-          "riso-halftone flex flex-wrap items-center gap-x-3 gap-y-2 px-3.5 py-2.5",
+          "press-halftone flex flex-wrap items-center gap-x-3 gap-y-2 px-3.5 py-2.5",
           allPassed ? "bg-good/8" : "bg-surface/50",
         )}
       >
-        {allPassed ? <span className="riso-stamp mr-1">Solved</span> : null}
+        {allPassed ? <span className="press-stamp mr-1">Solved</span> : null}
         <span
           className={cn(
             "font-mono text-[0.75rem] font-semibold",
@@ -1014,7 +1014,7 @@ function CardResults({
                 )}
 
                 {result.logs.length > 0 ? (
-                  <pre className="mt-1.5 overflow-x-auto rounded-md bg-code px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-muted">
+                  <pre className="mt-1.5 overflow-x-auto rounded-[length:var(--radius-sm)] bg-code px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-muted">
                     {result.logs.join("\n")}
                   </pre>
                 ) : null}

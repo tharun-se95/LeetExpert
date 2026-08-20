@@ -17,7 +17,7 @@ function safeHref(href: string | undefined): string | null {
  */
 export function CoachMarkdown({ source }: { source: string }) {
   return (
-    <div className="text-sm leading-relaxed text-foreground [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:mb-2 [&_ol]:mb-2 [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-1 [&_code]:rounded-sm [&_code]:bg-code [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[0.85em] [&_strong]:font-semibold [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-3 [&_blockquote]:text-muted">
+    <div className="text-sm leading-relaxed text-foreground [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:mb-2 [&_ol]:mb-2 [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-1 [&_code]:rounded-[length:var(--radius-sm)] [&_code]:bg-code [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[0.85em] [&_strong]:font-semibold [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-3 [&_blockquote]:text-muted">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -36,7 +36,7 @@ export function CoachMarkdown({ source }: { source: string }) {
               <a
                 href={safe}
                 rel="noreferrer"
-                className="text-accent underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="text-mark underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 {children}
               </a>

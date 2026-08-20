@@ -45,7 +45,7 @@ export function Roadmap({
 
 export function RoadmapError() {
   return (
-    <div className="rounded-lg border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
+    <div className="rounded-[length:var(--radius-md)] border border-bad/40 bg-bad/5 p-3 text-sm text-muted">
       Invalid roadmap block — expected ### Stage N headings.
     </div>
   );

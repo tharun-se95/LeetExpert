@@ -34,7 +34,7 @@ export function Sidebar({ open, onOpen, onClose }: SidebarProps) {
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border text-muted transition hover:bg-surface hover:text-foreground"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:bg-surface hover:text-foreground"
               aria-label="Close lessons drawer"
             >
               <CaretLeft className="h-4 w-4" weight="bold" />
@@ -47,7 +47,7 @@ export function Sidebar({ open, onOpen, onClose }: SidebarProps) {
           <button
             type="button"
             onClick={onOpen}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
             aria-label="Open lessons drawer"
           >
             <CaretRight className="h-4 w-4" weight="bold" />

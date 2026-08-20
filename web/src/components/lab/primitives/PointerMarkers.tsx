@@ -55,7 +55,7 @@ export function PointerMarkers({
                     <path d="M6 0 L12 10 H0 Z" fill={color} />
                   </svg>
                   <span
-                    className="rounded px-1 font-mono text-[10px] font-semibold"
+                    className="rounded-[length:var(--radius-xs)] px-1 font-mono text-[10px] font-semibold"
                     style={{ color }}
                   >
                     {p.label}

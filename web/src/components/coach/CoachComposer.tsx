@@ -51,7 +51,7 @@ export function CoachComposer() {
       <label className="sr-only" htmlFor="coach-input">
         Ask the coach
       </label>
-      <div className="flex items-end gap-1.5 rounded-lg border border-border bg-code px-2 py-1.5">
+      <div className="flex items-end gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-code px-2 py-1.5">
         <textarea
           id="coach-input"
           value={value}
@@ -91,7 +91,7 @@ export function CoachComposer() {
           <button
             type="button"
             onClick={() => void retry()}
-            className="shrink-0 rounded-md border border-border px-2 py-1 text-xs text-foreground hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="shrink-0 rounded-[length:var(--radius-md)] border border-border px-2 py-1 text-xs text-foreground hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             Retry
           </button>
