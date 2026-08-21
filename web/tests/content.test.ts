@@ -7,6 +7,7 @@ import { MEMORY_CELL_LABEL_MAX } from "../src/lib/insight/parseCaseMemory";
 import { parseExampleRows } from "../src/lib/content/parseExamples";
 import matter from "gray-matter";
 import { extractSandboxFence } from "../src/lib/content/extractSandboxFence";
+import { extractPracticeProblemsFence } from "../src/lib/content/parsePracticeProblems";
 import { splitProblemTabs } from "../src/lib/content/splitProblemTabs";
 import { extractHints } from "../src/lib/coach/extractHints";
 import { MODULES } from "../src/lib/course/manifest";
@@ -491,7 +492,7 @@ describe("Practice chapters", () => {
   it("every practice.md on disk has type: practice frontmatter", () => {
     const bad: string[] = [];
     for (const lesson of LESSONS) {
-      if (!lesson.rel.endsWith("/practice.md")) continue;
+      if (!lesson.rel.replace(/\\/g, "/").endsWith("/practice.md")) continue;
       const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
       if (!fm?.[1].includes("type: practice")) {
         bad.push(lesson.rel);
@@ -504,8 +505,8 @@ describe("Practice chapters", () => {
     const bad: string[] = [];
     const fence = /^(`{3,8})practice-problems\s*\n([\s\S]*?)^\1\s*$/gm;
     for (const lesson of LESSONS) {
-      if (!lesson.rel.endsWith("/practice.md")) continue;
-      const moduleSlug = lesson.rel.split("/")[0];
+      if (!lesson.rel.replace(/\\/g, "/").endsWith("/practice.md")) continue;
+      const moduleSlug = lesson.rel.replace(/\\/g, "/").split("/")[0];
       const mod = MODULES.find((m) => m.slug === moduleSlug);
       if (!mod) {
         bad.push(`${lesson.rel}: unknown module`);
@@ -522,6 +523,18 @@ describe("Practice chapters", () => {
             bad.push(`${lesson.rel}: unknown slug "${slug}"`);
           }
         }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("every practice.md carries a practice-problems fence", () => {
+    const bad: string[] = [];
+    for (const lesson of LESSONS) {
+      if (!lesson.rel.replace(/\\/g, "/").endsWith("/practice.md")) continue;
+      const { authored } = extractPracticeProblemsFence(lesson.body);
+      if (!authored) {
+        bad.push(`${lesson.rel}: missing practice-problems fence`);
       }
     }
     expect(bad).toEqual([]);
