@@ -179,6 +179,16 @@ of knowing hash tables.
       ],
       "answer": 0,
       "explanation": "Hash structures need key EQUALITY to match your intent. JS object identity is reference identity, so by-value grouping requires a by-value key — the canonical-string trick. (Python solves it with tuples, which hash by content.)"
+    },
+    {
+      "question": "For the Group pattern, what is the actual design decision that determines whether the grouping is correct?",
+      "options": [
+        "Choosing a canonical key such that \"same key\" means exactly \"belongs together\" — get this wrong and unrelated items share a group, or related items scatter across groups",
+        "Choosing a table size large enough that the load factor never crosses 0.75, since a resize mid-grouping would scramble which items are already grouped together",
+        "Choosing a hash function fast enough to process every item in O(1) total time, since the grouping's correctness depends entirely on the hashing step finishing quickly"
+      ],
+      "answer": 0,
+      "explanation": "Group's mechanics (map[key].append(value)) are trivial; the actual work is picking a key function where key equality captures exactly the intended notion of \"belongs together\" — e.g. sorted letters for anagrams, not the raw string itself."
     }
   ]
 }

@@ -181,6 +181,16 @@ chaining version next lesson; the complexity story is the same for both.
       ],
       "answer": 0,
       "explanation": "Probe sequences are paths; an entry's reachability depends on every slot along its path staying non-empty-looking. Tombstones preserve paths while freeing slots for reuse."
+    },
+    {
+      "question": "What is clustering in open addressing, and why does it make searches slower as the table fills up?",
+      "options": [
+        "Long, uninterrupted runs of occupied slots form; a new key landing inside one has to probe past the whole run before finding a free slot, so search length grows with run length",
+        "Keys that hash to nearby slots are physically moved next to each other in memory to improve cache locality, which is a deliberate optimization rather than a cost",
+        "A specialized hash function detects structurally similar keys (like anagrams) and deliberately routes them to adjacent slots so they can be searched together in one cache line"
+      ],
+      "answer": 0,
+      "explanation": "Every insert into an occupied run extends it by one, and every future collision that lands anywhere inside that run has to probe past the whole thing. This is exactly why open-addressed tables resize earlier (α ≈ 0.5–0.7) than chained ones — clustering makes the cost curve much steeper as the table fills."
     }
   ]
 }
