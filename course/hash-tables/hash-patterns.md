@@ -3,12 +3,14 @@ title: The Four Hash Patterns
 type: concept
 ---
 
-## One structure, four verbs
+## One cabinet, four daily chores
 
-Nearly every hash-table problem uses the map/set in one of four ways.
-Naming them turns "somehow use a dict" into a decision you can make in
-ten seconds — and the five problems ahead are one or two of these verbs
-each.
+The mailroom clerk's cabinet isn't just for filing and finding packages —
+the same setup solves a handful of everyday chores that show up
+constantly in problems. Nearly every hash-table problem is really just
+the clerk running one of four routines. Naming them turns "somehow use a
+dict" into a decision you can make in ten seconds — and the five problems
+ahead are one or two of these verbs each.
 
 ```diagram
 {
@@ -17,6 +19,13 @@ each.
 ```
 
 ## 1. Seen — membership
+
+Chore one: the guest list. You want to know if you've already seen a
+particular visitor today. Instead of walking around asking everyone, the
+clerk writes a visitor's name on a tag the moment they arrive and files
+it in the cabinet. Next time that name comes up, the clerk runs the
+word-trick, checks that slot, and instantly knows whether they've been
+here before — no asking around required.
 
 The set as a memory: *have I encountered this before?*
 
@@ -48,6 +57,11 @@ instead *records* its past. O(n²) re-scanning becomes O(n) remembering.
 
 ## 2. Count — frequency
 
+Chore two: the ballot tally. You want to count how many votes each
+candidate received. The clerk files a single card for each candidate in
+their designated slot; every time a new vote comes in, they jump
+straight to that slot and add a tick mark.
+
 The map as a tally: key → how many times. Module 5's 26-slot count array,
 generalized to any hashable key with no alphabet contract:
 
@@ -71,12 +85,23 @@ for (const w of words) {
 
 ## 3. Index — value → location
 
+Chore three: the coat check. Normally a coat-check ticket tells you where
+your coat is by its number. But imagine the reverse problem: someone
+loses their ticket and asks "where's my yellow coat?" Instead of walking
+past hundreds of hanging coats, the clerk keeps a card filed under
+"Yellow Coat" that lists the exact hanger number it's on.
+
 The map as a reverse array: value → where it lives. An array answers
 index → value in O(1); the index map answers the opposite direction in
 O(1), at O(n) build cost. Two Sum runs on this verb, with a twist you'll
 find yourself.
 
 ## 4. Group — key → bucket of members
+
+Chore four: the sorting office. You have a pile of packages and want to
+group them by destination city. The clerk runs the word-trick on the
+city name ("Boston") to find a slot, and throws every package bound for
+Boston onto that slot's hook.
 
 The map as a sorting office: compute a **canonical key** for each item;
 items sharing a key land in the same list.
@@ -117,12 +142,20 @@ The entire art is choosing the key so that *"same key" means exactly
 | "find the pair/partner", "at index" | Index | map → position |
 | "group", "bucket", "same X together" | Group | map → list |
 
-Two cautions. First, keys must be **hashable/immutable** — in Python,
-`list` can't key a dict but `tuple` can; in JS, object keys in a `Map`
-compare by *reference*, so use string keys for by-value grouping (build a
-canonical string). Second, the hash map's O(1) is *average, unordered* —
-if you need sorted keys or range queries, you want a tree (Module 18),
-and knowing the difference is part of knowing hash tables.
+Two cautions. First, the clerk can only run the word-trick on a label
+that doesn't change — file a package under "Blue Box" and then repaint
+it "Red Box" while it sits in the cabinet, and the clerk has no way to
+know to look for it under "Red." That's why keys must be
+**hashable/immutable** — in Python, `list` can't key a dict but `tuple`
+can; in JS, object keys in a `Map` compare by *reference*, so use string
+keys for by-value grouping (build a canonical string). Second, the
+mailroom cabinet is unbeatable for "find this one package fast," but
+useless for "give me every package in alphabetical order" — for that
+you'd need a completely different kind of organizer, one that keeps
+items on a branching, ordered shelf instead of unordered slots. The hash
+map's O(1) is *average, unordered* — if you need sorted keys or range
+queries, you want a tree (Module 18), and knowing the difference is part
+of knowing hash tables.
 
 ```quiz
 {

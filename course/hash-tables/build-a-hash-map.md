@@ -5,6 +5,11 @@ type: concept
 
 ## The contract
 
+The last two lessons described the mailroom clerk from the outside — the
+word-trick, the hanging hooks, moving day. Now we build the clerk's whole
+system ourselves, by hand, and give it four jobs: file a package, find a
+package, throw one away, and always know how many are currently sitting
+in the cabinet.
 
 ```diagram
 {
@@ -19,8 +24,10 @@ type: concept
 ```
 
 We build a string-keyed map with the full core API — `get`, `set`,
-`delete`, `size` — using **separate chaining**, the polynomial hash from
-lesson 1, and **doubling at α = 1**. Everything in the previous two
+`delete`, `size` — using **separate chaining** (the hanging-hook
+blueprint), the polynomial hash from lesson 1 (the clerk's word-trick),
+and **doubling at α = 1** (moving day, triggered the moment the cabinet
+hits one package per slot on average). Everything in the previous two
 lessons becomes a line of code you can point at.
 
 ````tabs
@@ -159,24 +166,40 @@ class HashMap<V> {
 
 ## Read the code against the theory
 
-- **Every operation begins `hash → mod → bucket`** — the "compute the
-  address" idea, verbatim.
-- **`set` scans before appending** — a map holds one value per key;
-  the scan is bounded by chain length, i.e. by α.
-- **`delete` uses swap-remove** — chains are unordered, so we may move
-  the last entry into the hole: O(1) instead of the shifting cost an
-  ordered array would pay (Module 4's lesson, exploited).
-- **Resize doubles and re-files** — `% self._num_buckets` with the new m
-  sends entries to new homes; the amortized-doubling theorem prices it.
-- **What's NOT here:** per-entry order. Iteration would walk buckets in
-  hash order. Real Python/JS dicts add an insertion-order layer on top.
+- **Every operation begins `hash → mod → bucket`** — the clerk's
+  three-step dance: look at the name, run the word-trick, go straight to
+  that slot. This is the "compute the address" idea, verbatim.
+- **`set` checks the hook before appending** — the clerk never blindly
+  throws a package onto a hook. They first flip through that one hook's
+  existing packages to see if this person already has one filed (then
+  they swap the message for the new one); only if there's no match do
+  they hang a new package at the end. A map holds one value per key, and
+  that check is bounded by chain length, i.e. by α.
+- **`delete` uses swap-remove** — when the clerk needs to remove a
+  package from a hook, they don't slide every other package down to
+  close the gap. They grab the very last package on that hook, use it to
+  fill the hole left by the one being removed, and pop the emptied
+  hanger off the end. Since the order on a hook never mattered, this
+  works: O(1) instead of the shifting cost an ordered array would pay
+  (Module 4's lesson, exploited).
+- **Resize doubles and re-files** — moving day: `% self._num_buckets`
+  with the new m sends every package to a new home; the amortized-
+  doubling theorem prices it.
+- **What's NOT here:** per-entry order. Walking the cabinet's slots left
+  to right reads packages in whatever order the word-trick happened to
+  assign them — nothing to do with delivery time. Real Python/JS dicts
+  add an insertion-order layer on top of this.
 
 Try it mentally: insert 9 string keys. The 9th crosses α = 1 with 8
 buckets, triggering a resize to 16 — one O(9) rehash, then calm until 17.
 
-## Sets: the same machine, minus values
+## Sets: the same cabinet, minus the messages
 
-A **hash set** stores only keys — membership without payload. Every
+Sometimes you don't care what's inside an envelope — you just want to
+know who has come through the mailroom. For that, the clerk uses the
+exact same cabinet, the exact same word-trick, the exact same hooks —
+they just hang simple name tags instead of full packages. That's a
+**hash set**: it stores only keys, membership without payload. Every
 pattern below that says "map" with a dummy value really wants a set;
 Python `set` / JS `Set` are this exact structure with entries of just
 `key`. (Our pair-sum `seen` from the first Big O lesson was one.)
