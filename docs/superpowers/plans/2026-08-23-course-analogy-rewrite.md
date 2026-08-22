@@ -259,6 +259,34 @@ For every `diagram`/`viz` fence in the file just rewritten:
 See `docs/superpowers/specs/2026-08-23-analogy-style-guide.md`'s
 "diagram/viz reconciliation rule" for the full rationale.
 
+- [ ] **Step 6.7: Generate a Mind Map as a coverage check (recommended)**
+
+In the Studio panel, click Mind Map, scope it to "every technical concept
+across [module]'s lessons," and expand every branch. Compare against
+what Step 6 actually wrote into the lessons — any leaf concept in the
+map that isn't reflected anywhere in the rewritten prose is a gap to go
+back and fix before Step 7. On the hash-tables pilot this confirmed full
+coverage (no gaps found), but it's cheap enough (~30 seconds) to run
+every module rather than skip it and hope.
+
+- [ ] **Step 6.8: Generate a Quiz as a content-QA check (not optional —
+      this caught real bugs on the pilot)**
+
+In the Studio panel, click Quiz, set it to ~10 questions, and scope the
+topic to "every technical claim across [module]'s lessons — I want to
+check whether my own hand-written quiz questions are missing any
+important testable claim." Step through all generated questions:
+- If a generated question closely duplicates an existing quiz question
+  in the lesson, that's confirmation — no action needed.
+- If a generated question tests a claim from the lesson's own prose that
+  none of the existing quiz blocks cover, that's a real gap: add a new
+  question to that lesson's `quiz` block, written in the same
+  house style (plausible-but-wrong distractors, an `explanation` that
+  states the underlying reason). On the hash-tables pilot, 8 of 10
+  generated questions duplicated existing coverage, but 2 surfaced real
+  gaps (open-addressing clustering; canonical-key choice for the Group
+  pattern) that got added as new questions.
+
 - [ ] **Step 7: Run the test suite and build**
 
 ```bash
@@ -335,10 +363,32 @@ git commit -m "chore: remove course analogy rewrite scaffolding (migration compl
   loop across 24 modules. Optional: manually generate one for the first
   2–3 modules only, as a listening gut-check on pacing, if the written
   analogies still feel off after Task 3 Step 6.
-- **Mind Map / Study Guide / Reports / Flashcards (Studio panel)** —
-  evaluated, not used. They summarize existing material rather than
-  generate the plain-language analogy explanations this task needs;
-  no clear fit for this specific rewrite.
+- **Mind Map** — actually tried on the pilot, and it's now part of the
+  procedure (optional but recommended, new Step 6.7 below): generate one
+  scoped to "every technical concept across this module's lessons" and
+  expand each branch. It's a cheap coverage check — on hash-tables it
+  confirmed every concept in the four source lessons had a matching
+  analogy beat, catching zero gaps but validating that none were missed.
+  Worth the ~30 seconds it takes per module.
+- **Quiz** — actually tried, and genuinely useful, not just for analogy
+  drafting but for a real content-QA pass: generate ~10 questions scoped
+  to "every technical claim across this module," and diff them against
+  the lesson's existing hand-written quiz blocks. On hash-tables, 8 of 10
+  generated questions duplicated existing coverage (a good sign — it
+  confirmed the existing quizzes were already solid), but 2 surfaced real
+  gaps (open-addressing clustering, and canonical-key choice for the
+  Group pattern) that got added as new quiz questions. This is now
+  Step 6.8 below — not optional, since it caught real defects on the
+  first module tried.
+- **Slide Deck / Video Overview / Flashcards / Infographic / Data Table**
+  — considered, not used. These target presentation or spaced-repetition
+  formats; none produces plain-language prose or surfaces a content gap
+  the way Mind Map and Quiz do. No clear fit for a text-lesson rewrite.
+- **Reports** — not tried. Likely a way to get a saved, named Studio
+  artifact instead of scrolling chat history for the analogy draft
+  (Task 3 Step 4–5), which could be a nicer alternative to copy-pasting
+  from chat — worth a quick try on the next module if the chat-scrolling
+  approach gets tedious across 23 more modules, but not required.
 - **Native file upload ("Upload files")** — not used. The Browser pane
   tool cannot drive native OS file-picker dialogs, so "Copied text" is
   the only scriptable ingestion path available in this environment.
