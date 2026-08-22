@@ -79,7 +79,7 @@ describe("lessons", () => {
 
   it("every lesson has title and type frontmatter", () => {
     const bad = LESSONS.filter((l) => {
-      const fm = /^---\n([\s\S]*?)\n---/.exec(l.body);
+      const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(l.body);
       return !fm || !/\ntitle:|^title:/m.test(fm[1]) || !/\ntype:|^type:/m.test(fm[1]);
     }).map((l) => l.rel);
     expect(bad).toEqual([]);
@@ -372,7 +372,7 @@ describe("the sandbox fence is safe to extract", () => {
   it("every problem lesson has exactly one sandbox fence", () => {
     const bad: string[] = [];
     for (const lesson of LESSONS) {
-      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+      const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(lesson.body);
       if (!fm?.[1].includes("type: problem")) continue;
       const count = fences(lesson.body, "sandbox").length;
       if (count !== 1) bad.push(`${lesson.rel} — found ${count}`);
@@ -404,7 +404,7 @@ describe("the sandbox fence is safe to extract", () => {
       const heading = /^#{2,3}\s+(.+)$/gm;
       const bad: string[] = [];
       for (const lesson of LESSONS) {
-        const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+        const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(lesson.body);
         if (!fm?.[1].includes("type: problem")) continue;
 
         const { content } = matter(lesson.body);
@@ -493,7 +493,7 @@ describe("Practice chapters", () => {
     const bad: string[] = [];
     for (const lesson of LESSONS) {
       if (!lesson.rel.replace(/\\/g, "/").endsWith("/practice.md")) continue;
-      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+      const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(lesson.body);
       if (!fm?.[1].includes("type: practice")) {
         bad.push(lesson.rel);
       }
@@ -546,7 +546,7 @@ describe("problem slugs are globally unique", () => {
     const seenAt = new Map<string, string>();
     const bad: string[] = [];
     for (const lesson of LESSONS) {
-      const fm = /^---\n([\s\S]*?)\n---/.exec(lesson.body);
+      const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(lesson.body);
       if (!fm?.[1].includes("type: problem")) continue;
       const slug = lesson.rel.replace(/\.md$/, "").split("/").pop()!;
       const existing = seenAt.get(slug);
@@ -579,7 +579,7 @@ describe("problem slugs are globally unique", () => {
 describe("sandbox coverage", () => {
   it("every problem lesson has a sandbox", () => {
     const missing = LESSONS.filter((l) => {
-      const fm = /^---\n([\s\S]*?)\n---/.exec(l.body);
+      const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(l.body);
       return fm?.[1].includes("type: problem") && !l.body.includes("```sandbox");
     })
       .map((l) => l.rel.replace(/\.md$/, ""))
@@ -597,7 +597,7 @@ describe("sandbox coverage", () => {
 describe("problem examples coverage", () => {
   function problemLessons() {
     return LESSONS.filter((l) => {
-      const fm = /^---\n([\s\S]*?)\n---/.exec(l.body);
+      const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(l.body);
       return fm?.[1].includes("type: problem");
     });
   }

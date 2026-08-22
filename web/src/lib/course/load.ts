@@ -27,7 +27,8 @@ export function extractToc(markdown: string): TocItem[] {
   let inFence = false;
   let fenceLang = "";
 
-  for (const line of markdown.split("\n")) {
+  for (const rawLine of markdown.split("\n")) {
+    const line = rawLine.replace(/\r$/, "");
     const fenceOpen = /^`{3,}(\w*)/.exec(line.trim());
     if (fenceOpen) {
       if (!inFence) {

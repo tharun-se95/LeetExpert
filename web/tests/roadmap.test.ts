@@ -73,8 +73,8 @@ describe("course-roadmap content", () => {
       "../../course/getting-started/course-roadmap.md",
     );
     const raw = fs.readFileSync(file, "utf8");
-    const body = raw.replace(/^---[\s\S]*?---\n/, "");
-    const fences = [...body.matchAll(/^```roadmap\n([\s\S]*?)^```/gm)];
+    const body = raw.replace(/^---\r?\n[\s\S]*?---\r?\n/, "");
+    const fences = [...body.matchAll(/^```roadmap\r?\n([\s\S]*?)^```/gm)];
     expect(fences).toHaveLength(1);
     const stages = parseRoadmapStages(fences[0][1]);
     expect(stages).toHaveLength(5);

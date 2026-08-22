@@ -684,13 +684,13 @@ body {
  * them identical is that both read the same values. Change one, change both.
  */
 :root {
-  --tok-comment: #59636f;
-  --tok-keyword: #1d4ed8;
-  --tok-string: #065f46;
-  --tok-constant: #92400e;
-  --tok-entity: #6d28d9;
-  --tok-variable: #16202e;
-  --tok-name: #16202e;
+  --tok-comment: #5c6573;
+  --tok-keyword: #4f46e5;
+  --tok-string: #047857;
+  --tok-constant: #4338ca;
+  --tok-entity: #3730a3;
+  --tok-variable: #111827;
+  --tok-name: #111827;
   --tok-tag: #065f46;
   --tok-invalid: #b91c1c;
 }
