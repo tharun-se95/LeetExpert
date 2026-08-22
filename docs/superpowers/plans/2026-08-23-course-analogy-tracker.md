@@ -4,7 +4,7 @@ Delete this file (and `docs/superpowers/plans/analogies/`) once every box
 below is checked. One NotebookLM notebook per module; see Task 3 of
 `2026-08-23-course-analogy-rewrite.md` for the per-module procedure.
 
-- [ ] hash-tables — hashing-fundamentals.md, collision-resolution.md, build-a-hash-map.md, hash-patterns.md (pilot analogies drafted in chat, not yet rewritten into files)
+- [x] hash-tables — hashing-fundamentals.md, collision-resolution.md, build-a-hash-map.md, hash-patterns.md (done — mailroom-clerk analogy, tests + build verified)
 - [ ] getting-started — course-introduction.md, course-roadmap.md, how-lessons-work.md
 - [ ] big-o — analyzing-code.md, common-complexity-classes.md, big-o-notation.md, best-worst-average-amortized.md, complexity-drills.md, why-efficiency-matters.md, space-complexity.md
 - [ ] arrays — contiguous-memory.md, in-place-techniques.md, dynamic-arrays.md
