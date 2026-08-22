@@ -33,10 +33,10 @@ mailroom clerk to manage a cabinet of numbered slots. The clerk has one
 job and one rule: they never keep a master list, and they never search.
 Instead, when you hand them a package labeled "dog," they glance at the
 name, run a quick, fixed mental trick on the letters, and immediately
-call out a slot number — say, Slot 4. You walk straight there and drop it
+call out a slot number — say, Slot 6. You walk straight there and drop it
 off. Later, when you come back asking for "dog," the clerk runs the exact
 same trick on the exact same word, gets the exact same number, and points
-you straight at Slot 4 again. No searching, ever, in either direction.
+you straight at Slot 6 again. No searching, ever, in either direction.
 
 That mental trick is a **hash function**: a rule h that maps any key to a
 number. Take that number mod the size of the cabinet, and you have a
@@ -67,8 +67,8 @@ trick can go wrong:
 For the clerk's trick to actually work, it has to satisfy three rules —
 and each one maps to a way a careless trick would break the mailroom:
 
-- **Deterministic.** Run the trick on "dog" today, get Slot 4. Run it on
-  "dog" tomorrow, you must get Slot 4 again — otherwise you file a
+- **Deterministic.** Run the trick on "dog" today, get Slot 6. Run it on
+  "dog" tomorrow, you must get Slot 6 again — otherwise you file a
   package in one slot and go searching in another. This is exactly why
   keys must be **immutable** (the promise strings made in Module 5): if a
   package's label could change while it sat in the cabinet, the clerk's

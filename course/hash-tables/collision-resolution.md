@@ -7,12 +7,16 @@ type: concept
 
 Remember the mailroom clerk from the last lesson, and remember that
 double-bookings are guaranteed — sooner or later two packages get called
-out to the same slot. Here's the clerk's first fix: when Alice's package
-and Bob's package both land in Slot 4, the clerk doesn't panic and
-doesn't turn anyone away. They install a small metal hook inside Slot 4.
-Alice's package goes on the hook. When Bob's package arrives for the same
-slot, the clerk simply hangs it right behind Alice's — a growing chain
-of packages, all sharing one slot, one hook.
+out to the same slot. Watch it happen: a package labeled "dog" comes in
+and the clerk's trick sends it to Slot 2. Later, a package labeled "god"
+— same three letters, different order — comes in, and by pure chance the
+trick sends it to Slot 2 as well. Here's the clerk's first fix: they
+don't panic and don't turn either package away. They install a small
+metal hook inside Slot 2. "Dog" goes on the hook first. "God" arrives
+next for the same slot, so the clerk simply hangs it right behind "dog"
+— a growing chain of packages, all sharing one slot, one hook. Meanwhile
+"cat" and "emu," which landed in their own slots with no company, just
+sit there each on their own single-package hook.
 
 In the language of hash tables: each bucket holds a **list** of the
 entries that hashed there. Insert appends to the bucket's list (after
