@@ -13,7 +13,8 @@
 - Never paste NotebookLM's raw output into `course/*.md` — it is drafting material only, rewritten in the course's own voice (memory: `feedback_lesson_prose_style` — expand in plain language, never compress into terse metaphors).
 - Every lesson must still satisfy CLAUDE.md §3: "Explanations derive their conclusions. No asserted result without the reasoning that produces it." The analogy is the *entry point*, not a replacement for the existing derivation — the derivation stays, reframed as "why this is actually true" after the analogy lands.
 - Only upload/paste content that is either (a) this repo's own lesson text, or (b) NotebookLM's own generated output. Never paste in third-party textbook or blog text as a source — CLAUDE.md is a commercial product and reproducing paraphrased copyrighted explanations is a legal risk we don't need to take when the existing lessons are already original.
-- Quiz distractors, `complexity` blocks, `diagram`/`viz` JSON blocks, and frontmatter (`title`, `type`) must be preserved verbatim unless the rewritten prose actually changes what a distractor is testing.
+- Quiz distractors, `complexity` blocks, and frontmatter (`title`, `type`) must be preserved verbatim unless the rewritten prose actually changes what a distractor is testing.
+- `diagram`/`viz` JSON blocks may be edited when the story needs specific numbers the existing props don't provide, but every such block must be reconciled against the final prose before a module is marked done (see Task 3, Step 6.5) — text and picture must never disagree on the same page. This was caught as a real bug on the pilot module, not a hypothetical risk.
 - After every module's lessons are rewritten: `npm test` and `npm run build` inside `web/` must pass before moving to the next module.
 - Scaffolding introduced by this plan (the progress tracker, the `analogies/` scratch directory) is temporary: delete `docs/superpowers/plans/analogies/` and the tracker's checklist once all 24 modules are checked off (end condition, per CLAUDE.md §1).
 
@@ -234,6 +235,29 @@ file side by side. Rewrite the lesson so that:
   surrounding prose, in which case only the prose lead-in of that
   question is adjusted — never the `answer` index or the underlying claim.
 - Frontmatter is untouched.
+
+- [ ] **Step 6.5: Reconcile every diagram/viz block against the new prose**
+
+Diagram/viz components are shared React components driven by literal
+JSON props embedded in the fence — NotebookLM never sees these props, so
+its drafted analogy can silently contradict what a diagram actually
+renders. This happened on the pilot: rewritten prose said "Alice and Bob
+collide at Slot 4," but the `bucket-layout` diagram right below it
+rendered "dog" and "god" colliding at Slot 2.
+
+For every `diagram`/`viz` fence in the file just rewritten:
+1. Read its JSON props (e.g. `grep -A20 '```diagram' <file>`).
+2. If it encodes hash-mod arithmetic (a `hashValue` + `capacity`), compute
+   the actual rendered slot (`hashValue % capacity`) — don't guess.
+3. If the story's names/numbers don't match what the props render, fix
+   the *story* to use the diagram's existing example data. Only edit the
+   JSON props themselves (never the shared component file) if the story
+   genuinely needs different concrete numbers than what's already there.
+4. Re-render the page (Step 8 below) and visually confirm text and
+   picture agree before moving on.
+
+See `docs/superpowers/specs/2026-08-23-analogy-style-guide.md`'s
+"diagram/viz reconciliation rule" for the full rationale.
 
 - [ ] **Step 7: Run the test suite and build**
 
