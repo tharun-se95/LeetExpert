@@ -3,11 +3,22 @@ title: Collisions, Load Factor & Resizing
 type: concept
 ---
 
-## Strategy 1: separate chaining
+## Blueprint 1: the hanging hook
 
-Each bucket holds a **list** of the entries that hashed there. Insert
-appends to the bucket's list (after checking for the key); lookup scans
-only that one list.
+Remember the mailroom clerk from the last lesson, and remember that
+double-bookings are guaranteed — sooner or later two packages get called
+out to the same slot. Here's the clerk's first fix: when Alice's package
+and Bob's package both land in Slot 4, the clerk doesn't panic and
+doesn't turn anyone away. They install a small metal hook inside Slot 4.
+Alice's package goes on the hook. When Bob's package arrives for the same
+slot, the clerk simply hangs it right behind Alice's — a growing chain
+of packages, all sharing one slot, one hook.
+
+In the language of hash tables: each bucket holds a **list** of the
+entries that hashed there. Insert appends to the bucket's list (after
+checking for the key); lookup scans only that one list — the clerk
+doesn't check every hook in the cabinet, just the one hook the trick
+pointed them to.
 
 ```diagram
 {
@@ -21,41 +32,61 @@ only that one list.
 }
 ```
 
-The cost of any operation is the length of one chain. So the whole
-performance question becomes: *how long are chains?*
+The cost of any operation is the length of one hook's chain. So the whole
+performance question becomes: *how many packages, on average, end up
+sharing a hook?*
 
-## The load factor argument — why O(1) average is honest
+## Why "O(1) on average" is an honest claim, not a slogan
 
-Define the **load factor** α = n / m (entries per bucket). Under uniform
-hashing, each of the n keys lands in a given bucket with probability 1/m,
-so the **expected** chain length is exactly α. Keep α bounded by a
-constant (say ≤ 1) and the expected work per operation is O(1 + α) =
-**O(1)** — a real theorem, not a slogan, and now you know its two
-premises:
+Here's the intuition first: if you have 10 slots and 10 packages spread
+out reasonably evenly, the average hook only has about 1 package hanging
+on it. The clerk almost never has to flip through more than one or two
+items to find what they're looking for. That ratio — packages per slot —
+is the whole story.
+
+Formally, define the **load factor** α = n / m (entries per bucket).
+Under uniform hashing, each of the n keys lands in a given bucket with
+probability 1/m, so the **expected** chain length is exactly α. Keep α
+bounded by a constant (say ≤ 1) — keep the mailroom from getting too
+crowded — and the expected work per operation is O(1 + α) = **O(1)**. Two
+premises make this true, and you now know both:
 
 1. **uniformity** — the hash spreads keys evenly (last lesson's job);
 2. **bounded load factor** — the table resizes before α grows (this
    lesson's job).
 
-The worst case never disappears: an adversary (or a terrible hash) can
-put all n keys in one chain → O(n) per operation. When you quote "hash
-lookup is O(1)," you are quoting the average case under these premises —
-the Big O module's case-discipline, applied.
+But imagine a prankster who brings in 100 packages, every single one
+addressed with a name that the clerk's trick maps to Slot 4. The instant
+lookup collapses — the clerk has to flip through all 100 packages on that
+one hook, one at a time, exactly like the lost-and-found closet from the
+first lesson. An adversary (or a genuinely bad hash function) can always
+force this: put all n keys in one chain → O(n) per operation. When you
+quote "hash lookup is O(1)," you are quoting the average case under the
+two premises above, not a guarantee that survives a hostile or unlucky
+set of keys — the Big O module's case-discipline, applied.
 
-## Resizing: the dynamic array trick, again
+## Moving day: the dynamic array trick, again
 
-To hold α down as entries accumulate: when α crosses a threshold
-(commonly 0.75–1), allocate a table with **2× the buckets** and re-insert
-every entry — each key's slot is `hash mod m`, and m changed, so
-*everything may move* (a full O(n) **rehash**). Sound familiar? It's the
-dynamic array's growth policy with a rename, and the same amortized
-argument applies verbatim: doubling means rehashes cost 1 + 2 + 4 + ⋯ +
-n/2 < n total, so insert stays **O(1) amortized** on top of O(1) average.
+To keep the mailroom from turning back into a giant unsorted pile, the
+clerk has a standing rule: the moment the cabinet gets too crowded (α
+crosses a threshold, commonly 0.75–1), shut down for the day, wheel in a
+brand-new cabinet with **twice as many slots**, and re-run the word-trick
+on every single package to re-file it into the roomier cabinet. Because
+the number of slots changed, a package's slot is `hash mod m`, and m just
+changed — so *almost every package moves to a new hook* (a full O(n)
+**rehash**).
 
-One practical corollary: iteration order can change after any insert that
-triggers a rehash — one reason you never rely on bucket order. (Python
-dicts and JS Maps *do* guarantee insertion order — a deliberate extra
-mechanism layered on top, not a property of hashing.)
+Sound familiar? It's the dynamic array's growth policy with a rename, and
+the same amortized argument applies verbatim: doubling means the rare
+"moving day" costs 1 + 2 + 4 + ⋯ + n/2 < n total spread across n regular
+deliveries, so insert stays **O(1) amortized** on top of O(1) average.
+
+One practical corollary: if you walk down the cabinet's slots after a
+moving day, you'll see packages in a completely different order than
+before — iteration order can change after any insert that triggers a
+rehash. That's one reason you never rely on bucket order. (Python dicts
+and JS Maps *do* guarantee insertion order — a deliberate extra mechanism
+layered on top, not a property of hashing.)
 
 Watch a chain form, the load factor cross 0.75, and every surviving key
 get re-filed under the doubled modulus — including one that collides
@@ -66,19 +97,38 @@ not individually:
 { "id": "hash-buckets", "keys": [10, 3, 18, 7, 25, 11], "capacity": 4 }
 ```
 
-## Strategy 2: open addressing, briefly
+## Blueprint 2: the spilling row
 
-Store entries directly in the bucket array; on collision, **probe** for
-the next free slot by a fixed rule (linear probing: try i+1, i+2, …).
-Denser and more cache-friendly than chaining (no per-entry lists — the
-Arrays module's locality argument), but two costs appear:
+There's a second way the clerk could have handled that first
+double-booking, one that never uses a hook at all. In this blueprint, the
+clerk refuses to let two packages share a slot, period — every slot holds
+exactly one package. When Bob's package is called to Slot 4 but Alice is
+already sitting there, the clerk doesn't hang it behind hers. Instead
+they say: "walk down the row and take the very next empty slot you
+find." Bob's package spills into Slot 5.
 
-- **clustering** — runs of occupied slots grow and snowball, so
-  performance degrades sharply as α → 1 (open-addressed tables resize
-  earlier, α ≈ 0.5–0.7);
-- **deletion is subtle** — emptying a slot could break the probe chain
-  that passes *through* it, so deletions leave **tombstone** markers that
-  say "keep probing past me."
+In hash-table terms: entries are stored directly in the bucket array, and
+on collision you **probe** for the next free slot by a fixed rule (linear
+probing: try i+1, i+2, …). This is denser and more cache-friendly than
+chaining — no per-entry lists, so it leans on the Arrays module's
+locality argument — but two costs appear:
+
+- **Clustering.** As the row fills up, you get long, uninterrupted blocks
+  of occupied slots. A new package that lands in the middle of one of
+  these blocks has to walk all the way to the far end before it finds
+  space, so runs of occupied slots snowball and performance degrades
+  sharply as α → 1 (open-addressed tables resize earlier, α ≈ 0.5–0.7, to
+  stay ahead of this).
+- **Deletion gets subtle.** Say Alice leaves Slot 4 empty again. Now
+  picture the clerk searching for Bob, who's sitting in Slot 5 because
+  Slot 4 was taken when he arrived. The clerk checks Slot 4 first, finds
+  it empty, and — reasonably — assumes nobody ever passed through here,
+  so Bob must not exist. The search stops early, and Bob becomes
+  unfindable even though his package is sitting right there in Slot 5.
+  Emptying a slot can break the probe path that runs *through* it. The
+  fix is a **tombstone**: instead of leaving Slot 4 looking brand new,
+  the clerk leaves a marker — an orange traffic cone — that says "nothing
+  here right now, but keep probing, someone used to park here."
 
 Python's dict and most modern runtimes use open addressing; textbook
 implementations mostly chain because the code is simpler. We build the

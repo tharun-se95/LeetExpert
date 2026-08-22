@@ -5,22 +5,42 @@ type: concept
 
 ## The problem hashing solves
 
-Everything in Stage 1 so far shares a weakness: answering **"have I seen
-this value?"** costs a scan. Arrays locate by *position* in O(1), but by
-*value* only in O(n). The pair-sum problem from the very first Big O
-lesson went from O(n²) to O(n) on the strength of one line — `if x in
-seen` — and this module finally pays for that line.
+Picture a neighborhood lost-and-found closet — thousands of unlabeled
+items thrown into one big pile. Someone walks in and asks, "have you seen
+my red umbrella?" There's only one way to answer: pick up every item and
+look at it, one at a time, until you either find the umbrella or run out
+of pile. The bigger the closet gets, the longer every single question
+takes to answer.
+
+That closet is exactly what Stage 1 has been building so far. Answering
+**"have I seen this value?"** costs a scan every time. Arrays locate by
+*position* in O(1), but by *value* only in O(n) — you have to check items
+one by one, same as the closet. The pair-sum problem from the very first
+Big O lesson went from O(n²) to O(n) on the strength of one line — `if x
+in seen` — and this module finally explains why that line works.
 
 The wish: a structure where insert, lookup, and delete **by value** are
-all O(1). The obstacle: values come from enormous universes (all strings,
-all 64-bit ints), while memory is finite. You can't have a slot for every
-possible value.
+all O(1) — you ask "have you seen X?" and get an answer without checking
+a single other item. The obstacle: values come from enormous universes
+(all strings, all 64-bit ints), while memory is finite. You can't build a
+closet with a labeled shelf reserved for every possible umbrella that
+might ever exist.
 
-## The idea: compute the address
+## The idea: hire a clerk who never has to search
 
-Arrays already do O(1) location when you *know the index*. So —
-manufacture the index. A **hash function** h maps any key to a number;
-take it mod the table size and you have a slot:
+Here's the fix: instead of one giant unsorted pile, imagine hiring a
+mailroom clerk to manage a cabinet of numbered slots. The clerk has one
+job and one rule: they never keep a master list, and they never search.
+Instead, when you hand them a package labeled "dog," they glance at the
+name, run a quick, fixed mental trick on the letters, and immediately
+call out a slot number — say, Slot 4. You walk straight there and drop it
+off. Later, when you come back asking for "dog," the clerk runs the exact
+same trick on the exact same word, gets the exact same number, and points
+you straight at Slot 4 again. No searching, ever, in either direction.
+
+That mental trick is a **hash function**: a rule h that maps any key to a
+number. Take that number mod the size of the cabinet, and you have a
+slot:
 
 > slot = h(key) mod m    (m = number of buckets)
 
@@ -34,28 +54,41 @@ take it mod the table size and you have a slot:
 ```
 
 Every operation starts the same way: hash the key, jump to the slot. No
-scan; the key itself tells you where to look. That's the entire mechanism
-— the rest of the module is about the two places it leaks:
+scan; the key itself tells you where to look — that's the entire
+mechanism. The rest of the module is about the two places a real clerk's
+trick can go wrong:
 
-1. what makes h(key) *good* (this lesson), and
-2. what to do when two keys land in the same slot (next lesson).
+1. what makes the trick *good* (this lesson), and
+2. what to do when two different keys get called out to the same slot
+   (next lesson).
 
 ## What makes a hash function good
 
-A hash function for a table must be:
+For the clerk's trick to actually work, it has to satisfy three rules —
+and each one maps to a way a careless trick would break the mailroom:
 
-- **Deterministic.** Same key ⇒ same hash, always — otherwise you file a
-  key in one slot and search another. This is why keys must be
-  **immutable** (the promise strings made in Module 5): a key that
-  changes after filing has silently changed its slot.
-- **Fast.** O(size of key), not O(anything else) — it runs on every
-  operation.
-- **Uniform.** Keys should spread evenly across slots. A hash that maps
-  everything to slot 0 turns the table into one long scan.
+- **Deterministic.** Run the trick on "dog" today, get Slot 4. Run it on
+  "dog" tomorrow, you must get Slot 4 again — otherwise you file a
+  package in one slot and go searching in another. This is exactly why
+  keys must be **immutable** (the promise strings made in Module 5): if a
+  package's label could change while it sat in the cabinet, the clerk's
+  trick would point to the wrong slot the next time, and the package
+  would effectively vanish.
+- **Fast.** The trick has to be a glance, not a 20-minute crossword
+  puzzle — O(size of key), not O(anything else) — because it runs on
+  every single operation, all day, every day.
+- **Uniform.** The trick needs to spread packages evenly across all the
+  slots. A lazy trick that sends everything to Slot 0 turns the whole
+  cabinet into one overstuffed pile — you're back to the closet you were
+  trying to escape.
 
-For strings, the standard construction is the **polynomial hash** — treat
-characters as digits of a number in some base p, reduced modulo a large
-value as you go (Module 3's identities make the running reduction legal):
+Here's a subtlety that trips up a naive trick: if the clerk's rule were
+simply "count the letters," then "abc," "cab," and "bca" — three letters
+each — would all pile into the same slot, even though they're different
+words. Real hash functions avoid this with the **polynomial hash**: treat
+each character as a digit of a number in some base p, weighting each
+position differently, reduced modulo a large value as you go (Module 3's
+identities make the running reduction legal):
 
 > h("abc") = (a·p² + b·p + c) mod M
 
@@ -80,25 +113,33 @@ function polyHash(s: string, p = 31, M = 1_000_000_007): number {
 ```
 ````
 
-Why base-31-style mixing beats, say, summing character codes: summing is
-order-blind — "abc", "cab", "bca" all collide by construction. The
-polynomial weights each position differently, so anagrams (usually) part
-ways. Uniformity is exactly this: no *structural* family of keys should
-pile into one slot.
+Why base-31-style mixing beats simply summing character codes: summing is
+order-blind — "abc", "cab", "bca" all collide by construction, exactly
+like the naive letter-counting trick above. The polynomial weights each
+position differently, so anagrams (usually) part ways. Uniformity is
+exactly this: no *structural* family of keys should pile into one slot.
 
-## Collisions are mathematically unavoidable
+## Double-bookings are a guarantee, not a bug
 
-However good h is, the universe of keys dwarfs m slots, so **some keys
-must share** (pigeonhole principle). Even probabilistically, sharing
-happens far sooner than intuition says — with uniform hashing into m
-slots, expect a collision once you've inserted about **√m keys** (the
-birthday paradox: 23 people suffice for a shared birthday among 365
-days). A million-slot table sees its first collision around a thousand
-inserts, not half a million.
+Here's the part that surprises people: even with the most brilliant
+clerk running the most perfectly uniform trick, you only have a fixed
+number of slots and an enormous universe of possible names. Sooner or
+later, two different people's names are going to land in the same slot —
+and it happens far sooner than intuition suggests. Picture a mailroom
+with 365 slots, one for every day of the year, and a trick that sends
+each person to the slot matching their birthday. You might assume you
+wouldn't see two people share a slot until the room is half full. In
+reality, once just 23 people have come through, there's already better
+than a coin-flip chance that two of them share a birthday slot — the
+classic birthday paradox. A million-slot table sees its first
+double-booking around a thousand inserts, not half a million.
 
-So collisions aren't a defect to eliminate; they're a certainty to
-**manage**. The next lesson covers the two management strategies and the
-quantity that governs how bad things get — the load factor.
+So a collision isn't the clerk making a mistake, and it isn't a flaw in
+the trick — it's simple arithmetic about slots and people. Collisions
+aren't a defect to eliminate; they're a certainty to **manage**. The next
+lesson covers the two ways the clerk can handle a double-booking, and the
+one number that governs how bad things get if too many packages pile
+into the same cabinet — the load factor.
 
 ```quiz
 {
