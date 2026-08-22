@@ -1,3 +1,5 @@
+import type { FamilyId } from "@/lib/content/manifest";
+
 export type LessonType = "concept" | "problem" | "practice";
 
 export interface LessonMeta {
@@ -765,4 +767,35 @@ export function allLessonsNavIds(): string[] {
       .filter(isLessonsNavLesson)
       .map((l) => `${m.slug}/${l.slug}`),
   );
+}
+
+const FAMILY_BY_MODULE: Record<string, FamilyId> = {
+  arrays: "linear-traversal",
+  strings: "linear-traversal",
+  "hash-tables": "linear-traversal",
+  "prefix-sum": "linear-traversal",
+  "linked-lists": "pointer-movement",
+  stacks: "priority-structures",
+  queues: "priority-structures",
+  "two-pointers": "pointer-movement",
+  "sliding-window": "pointer-movement",
+  "binary-search": "ordering-search",
+  sorting: "ordering-search",
+  matrix: "ordering-search",
+  intervals: "ordering-search",
+  "recursion-backtracking": "recursive-exploration",
+  "binary-trees": "recursive-exploration",
+  bst: "recursive-exploration",
+  heaps: "priority-structures",
+  tries: "priority-structures",
+  graphs: "relationships",
+  greedy: "state-transition",
+  "dynamic-programming": "state-transition",
+};
+
+export function moduleFamily(
+  mod: ModuleMeta | string,
+): FamilyId | null {
+  const slug = typeof mod === "string" ? mod : mod.slug;
+  return FAMILY_BY_MODULE[slug] ?? null;
 }
