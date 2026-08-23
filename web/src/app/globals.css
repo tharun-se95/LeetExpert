@@ -392,8 +392,27 @@ body {
 }
 
 .handbook-prose h2 {
-  margin-top: 2.25rem;
-  margin-bottom: 0.75rem;
+  margin-top: 2.5rem;
+  margin-bottom: 0.85rem;
+  padding: 0 1rem 0.3rem 0;
+  border-radius: var(--radius-md);
+  /*
+    A soft family-tinted wash bleeding from the left, fading out by two
+    thirds across — the "pop" comes from this colour field, not from
+    colouring the heading text itself (body/display-size accent text must
+    stay AA-safe --mark, never --accent; a background wash has no such
+    contrast obligation on the ink sitting on top of it at this opacity).
+    Sized/positioned to hug the text's own line box only — the chapter-
+    marker bar above (::before) sits outside it, not inside the same tint.
+  */
+  background-image: linear-gradient(
+    to right,
+    var(--family-wash, color-mix(in oklab, var(--accent) 12%, transparent)),
+    transparent 65%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 2em;
+  background-position: left bottom;
   /*
     Section headings take the display face but stay sentence case.
     Uppercase is reserved for the lesson title and small labels —
@@ -407,14 +426,15 @@ body {
 }
 
 /* Chapter marker: a short family-accent rule above each section heading.
-   Heading text itself stays ink — the accent bar is the only per-chapter
-   colour, and it resolves to steel outside a family scope. */
+   Heading text itself stays ink — the accent bar and the wash above are
+   the only per-chapter colour, and both resolve to steel outside a family
+   scope. */
 .handbook-prose h2::before {
   content: "";
   display: block;
-  width: 2.5rem;
-  height: 3px;
-  margin-bottom: 0.6rem;
+  width: 3rem;
+  height: 5px;
+  margin-bottom: 0.65rem;
   border-radius: var(--radius-xs);
   background: var(--family-accent, var(--accent));
 }

@@ -38,7 +38,7 @@ export function ConceptMapNode({ data }: NodeProps & { data: ConceptMapNodeData 
         }
         style={{ width }}
       >
-        <span className="min-w-0 flex-1 truncate">{label}</span>
+        <span className="line-clamp-2 min-w-0 flex-1 break-words">{label}</span>
         {hasChildren && !isExpanded ? (
           <span
             className={
@@ -57,7 +57,7 @@ export function ConceptMapNode({ data }: NodeProps & { data: ConceptMapNodeData 
           onClick={onToggle}
           aria-expanded={isExpanded}
           aria-label={`${isExpanded ? "Collapse" : "Expand"} ${label}`}
-          className="nodrag nopan flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-accent/40 bg-elevated text-accent transition hover:scale-110 hover:bg-accent/10 motion-reduce:transition-none"
+          className="nodrag nopan pointer-events-auto flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-accent/40 bg-elevated text-accent transition hover:scale-110 hover:bg-accent/10 motion-reduce:transition-none"
           style={{ height: circleSize, width: circleSize }}
         >
           <CaretRight

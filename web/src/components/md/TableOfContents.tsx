@@ -8,6 +8,10 @@ interface TableOfContentsProps {
   items: TocItem[];
 }
 
+/** Fades the scroll rail's own top/bottom edges to transparent, instead of clipping hard. */
+const EDGE_FADE_MASK =
+  "linear-gradient(to bottom, transparent, black 12px, black calc(100% - 12px), transparent)";
+
 export function TableOfContents({ items }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>("");
 
@@ -38,7 +42,8 @@ export function TableOfContents({ items }: TableOfContentsProps) {
   return (
     <nav
       aria-label="On this page"
-      className="print:hidden sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto"
+      className="print:hidden sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-[length:var(--radius-md)] bg-surface/50 p-3"
+      style={{ maskImage: EDGE_FADE_MASK, WebkitMaskImage: EDGE_FADE_MASK }}
     >
       <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted">
         On this page
@@ -49,10 +54,10 @@ export function TableOfContents({ items }: TableOfContentsProps) {
             <a
               href={`#${item.id}`}
               className={cn(
-                "block border-l-2 -ml-px py-0.5 transition-colors hover:text-foreground",
+                "block origin-left border-l-2 -ml-px py-0.5 transition-[color,transform] duration-300 ease-[var(--ease)] hover:text-foreground motion-reduce:transition-none",
                 item.level === 3 ? "pl-5" : "pl-3",
                 activeId === item.id
-                  ? "border-accent text-foreground"
+                  ? "scale-[1.04] border-accent font-medium text-foreground"
                   : "border-transparent text-muted",
               )}
               onClick={(e) => {

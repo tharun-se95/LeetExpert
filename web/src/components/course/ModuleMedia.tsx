@@ -10,8 +10,9 @@ interface ModuleMediaProps {
 /**
  * The module's concept map from the analogy rewrite's NotebookLM pass —
  * orientation before diving into individual lessons. Per-lesson videos live
- * on the lesson pages themselves (see ChapterMedia); this section is the
- * concept map's own full-width home, sized to be read comfortably.
+ * behind a "Watch this lesson" link in each lesson's header (see
+ * WatchLessonLink); this section is the concept map's own full-width home,
+ * sized to be read comfortably.
  */
 export function ModuleMedia({ conceptMap, moduleTitle }: ModuleMediaProps) {
   if (!conceptMap) return null;

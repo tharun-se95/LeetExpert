@@ -3,7 +3,7 @@ import type {
   PatternCard as PatternCardData,
 } from "@/lib/course/cheatsheets/types";
 import { CheatsheetDiagram } from "@/components/cheatsheet/diagrams";
-import { TONE_CHIP, TONE_RULE, TONE_TEXT } from "@/components/cheatsheet/tone";
+import { TONE_CHIP, TONE_HOVER_BG, TONE_TEXT } from "@/components/cheatsheet/tone";
 import { cn } from "@/lib/utils";
 
 const TONE_LABEL: Record<CueTone, string> = {
@@ -20,8 +20,8 @@ export function PatternCard({ card }: { card: PatternCardData }) {
   return (
     <article
       className={cn(
-        "flex flex-col gap-3 rounded-[length:var(--radius-md)] border border-border border-l-4 p-3.5 transition-[border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-border hover:bg-surface/40 motion-reduce:transition-none sm:p-4",
-        TONE_RULE[card.tone],
+        "flex flex-col gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated p-3.5 transition-[transform,border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-accent/30 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-4",
+        TONE_HOVER_BG[card.tone],
       )}
     >
       <div className="flex flex-wrap items-center gap-2">

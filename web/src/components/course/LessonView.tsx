@@ -22,10 +22,10 @@ interface LessonViewProps {
   next: NeighborLink | null;
   /** Interactive explorer rendered above the markdown */
   stage?: ReactNode;
-  /** Video companion, rendered above the markdown after `stage`. */
-  media?: ReactNode;
   /** Minimal inline audio control, merged into the header's meta row. */
   headerAudio?: ReactNode;
+  /** "Watch this lesson" link, merged into the header's meta row next to the audio control — opens the video in a dialog rather than showing it inline. */
+  headerVideo?: ReactNode;
   /** Infographic, rendered inside the article after the markdown body — part of the reading flow, not a side card. */
   infographic?: ReactNode;
   /** Injected after markdown (e.g. Practice problem list). */
@@ -40,8 +40,8 @@ export function LessonView({
   prev,
   next,
   stage,
-  media,
   headerAudio,
+  headerVideo,
   infographic,
   afterMarkdown,
 }: LessonViewProps) {
@@ -63,9 +63,16 @@ export function LessonView({
           {headerAudio ? (
             <span className="print:hidden">{headerAudio}</span>
           ) : null}
+          {headerAudio && headerVideo ? (
+            <span aria-hidden className="text-border print:hidden">
+              |
+            </span>
+          ) : null}
+          {headerVideo ? (
+            <span className="print:hidden">{headerVideo}</span>
+          ) : null}
         </p>
         {stage ? <div className="mt-6 print:hidden">{stage}</div> : null}
-        {media}
         <div className="mt-8">
           <Markdown
             source={lesson.markdown}
@@ -79,7 +86,7 @@ export function LessonView({
           {prev ? (
             <Link
               href={prev.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] border border-border px-4 py-3 text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
+              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated px-4 py-3 text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
             >
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent transition group-hover:bg-accent/15">
                 <ArrowLeft weight="bold" className="h-4 w-4" />
@@ -97,7 +104,7 @@ export function LessonView({
           {next ? (
             <Link
               href={next.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] border border-border px-4 py-3 text-right text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
+              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated px-4 py-3 text-right text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
             >
               <span className="min-w-0">
                 <span className="block text-xs text-muted">

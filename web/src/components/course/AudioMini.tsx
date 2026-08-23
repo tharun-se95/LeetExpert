@@ -18,9 +18,12 @@ function formatTime(seconds: number): string {
 }
 
 /**
- * An inline, borderless audio control sized to sit in the lesson header's
- * meta row (next to the type badge and reading time) instead of its own
- * card — "listen to this lesson" as a lightweight affordance, not a widget.
+ * An inline audio control sized to sit in the lesson header's meta row
+ * (next to the type badge and reading time) instead of its own card — but
+ * deliberately given its own accent-tinted pill, not folded into the plain
+ * meta text, since "listen to this lesson" is a selling point worth
+ * noticing, not a footnote. Text stays `text-mark` (AA-safe body ink) per
+ * the design system; only the icon fill and pill chrome carry `--accent`.
  */
 export function AudioMini({ src, ariaLabel }: AudioMiniProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -44,7 +47,7 @@ export function AudioMini({ src, ariaLabel }: AudioMiniProps) {
   const progress = duration ? currentTime / duration : 0;
 
   return (
-    <span className="inline-flex items-center gap-2">
+    <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/[0.08] py-1 pr-3 pl-1 transition hover:border-accent/50 hover:bg-accent/[0.14]">
       <audio
         ref={audioRef}
         src={src}
@@ -60,12 +63,18 @@ export function AudioMini({ src, ariaLabel }: AudioMiniProps) {
         type="button"
         onClick={toggle}
         aria-label={playing ? "Pause lesson audio" : "Listen to this lesson"}
-        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-accent/40 text-accent transition hover:bg-accent/10"
+        className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-on-pop transition hover:scale-105 motion-reduce:hover:scale-100"
       >
         {playing ? (
-          <Pause weight="fill" className="h-3 w-3" />
+          <span
+            aria-hidden
+            className="absolute inset-0 animate-ping rounded-full bg-accent/50 motion-reduce:hidden"
+          />
+        ) : null}
+        {playing ? (
+          <Pause weight="fill" className="h-3.5 w-3.5" />
         ) : (
-          <Play weight="fill" className="ml-0.5 h-3 w-3" />
+          <Play weight="fill" className="ml-0.5 h-3.5 w-3.5" />
         )}
       </button>
       <input
@@ -78,7 +87,7 @@ export function AudioMini({ src, ariaLabel }: AudioMiniProps) {
         aria-label="Seek audio"
         className="h-1 w-24 cursor-pointer accent-accent sm:w-32"
       />
-      <span className="font-mono text-xs tabular-nums text-muted">
+      <span className="font-mono text-xs font-medium tabular-nums text-mark">
         {formatTime(currentTime)} / {formatTime(duration)}
       </span>
     </span>

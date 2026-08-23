@@ -3,8 +3,8 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { Cheatsheet } from "@/components/cheatsheet/Cheatsheet";
 import { AudioMini } from "@/components/course/AudioMini";
 import { ChapterInfographic } from "@/components/course/ChapterInfographic";
-import { ChapterMedia } from "@/components/course/ChapterMedia";
 import { LessonView } from "@/components/course/LessonView";
+import { WatchLessonLink } from "@/components/course/WatchLessonLink";
 import { LESSON_EMBEDS } from "@/components/course/embeds";
 import { Quiz } from "@/components/course/Quiz";
 import { PracticeProblemsList } from "@/components/md/PracticeProblemsList";
@@ -136,11 +136,13 @@ export default async function LessonPage({ params }: PageProps) {
           />
         ) : undefined
       }
-      media={
-        <ChapterMedia
-          videoSrc={chapterMedia.videoSrc}
-          lessonTitle={meta.lesson.title}
-        />
+      headerVideo={
+        chapterMedia.videoSrc ? (
+          <WatchLessonLink
+            videoSrc={chapterMedia.videoSrc}
+            lessonTitle={meta.lesson.title}
+          />
+        ) : undefined
       }
       infographic={
         chapterMedia.infographicSrc ? (

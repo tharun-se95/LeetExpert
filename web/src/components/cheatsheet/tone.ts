@@ -1,14 +1,14 @@
 import type { CueTone } from "@/lib/course/cheatsheets/types";
 
-/** Border + wash classes for tone-coded surfaces (token colours only). */
-export const TONE_RULE: Record<CueTone, string> = {
-  accent: "border-l-accent bg-accent/5",
-  good: "border-l-good bg-good/5",
-  warn: "border-l-warn bg-warn/5",
-  bad: "border-l-bad bg-bad/5",
-  muted: "border-l-border bg-surface",
-  mark: "border-l-mark bg-mark/5",
-  insight: "border-l-insight bg-insight/5",
+/** Tone-tinted background wash, applied only on hover so cards read as ink-on-paper at rest. */
+export const TONE_HOVER_BG: Record<CueTone, string> = {
+  accent: "hover:bg-accent/5",
+  good: "hover:bg-good/5",
+  warn: "hover:bg-warn/5",
+  bad: "hover:bg-bad/5",
+  muted: "hover:bg-surface",
+  mark: "hover:bg-mark/5",
+  insight: "hover:bg-insight/5",
 };
 
 export const TONE_TEXT: Record<CueTone, string> = {

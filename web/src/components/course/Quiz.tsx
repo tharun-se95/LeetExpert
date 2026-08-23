@@ -114,20 +114,17 @@ function QuestionBlock({
 
   return (
     <div
-      className={cn(
-        "px-4 py-5 sm:px-5",
-        index < total - 1 && "border-b border-border",
-      )}
+      className={cn("py-5", index < total - 1 && "border-b border-border")}
     >
       {/*
         handbook-prose styles `p { margin: 0.85rem 0 }`, which would push the
         question down past the number. Keep number + question on one baseline.
       */}
       <div className="flex items-baseline gap-3">
-        <span className="w-6 shrink-0 font-mono text-[11px] font-semibold tabular-nums text-mark">
+        <span className="inline-flex h-6 w-6 shrink-0 translate-y-px items-center justify-center rounded-full bg-accent/12 font-mono text-[11px] font-bold tabular-nums text-mark">
           {String(index + 1).padStart(2, "0")}
         </span>
-        <p className="!m-0 min-w-0 flex-1 text-[0.95rem] leading-snug font-medium text-foreground">
+        <p className="!m-0 min-w-0 flex-1 text-base leading-snug font-semibold text-foreground">
           <InlineText text={question.question} />
         </p>
       </div>
@@ -140,7 +137,6 @@ function QuestionBlock({
         {question.options.map((option, i) => {
           const isAnswer = i === question.answer;
           const isSelected = i === selected;
-          const letter = String.fromCharCode(65 + i);
 
           return (
             <button
@@ -152,7 +148,7 @@ function QuestionBlock({
               className={cn(
                 "group/opt flex w-full items-center gap-3 rounded-[length:var(--radius-md)] border px-3 py-2.5 text-left text-sm leading-relaxed transition",
                 !answered &&
-                  "border-border bg-background hover:border-accent/40 hover:bg-accent/[0.06]",
+                  "border-border bg-elevated hover:border-accent/40 hover:bg-accent/[0.06]",
                 answered &&
                   isAnswer &&
                   "border-good/50 bg-good/10 text-foreground",
@@ -163,35 +159,31 @@ function QuestionBlock({
                 answered &&
                   !isSelected &&
                   !isAnswer &&
-                  "border-border/60 bg-background/50 text-muted",
+                  "border-border/60 bg-elevated/50 text-muted",
               )}
             >
               <span
                 className={cn(
-                  "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold tabular-nums transition",
+                  "inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition",
                   !answered &&
-                    "border border-border bg-elevated text-muted group-hover/opt:border-accent/45 group-hover/opt:text-mark",
-                  answered &&
-                    isAnswer &&
-                    "border border-good/50 bg-good/15 text-good",
+                    "border-border group-hover/opt:border-accent/50",
+                  answered && isAnswer && "border-good bg-good text-on-pop",
                   answered &&
                     isSelected &&
                     !isAnswer &&
-                    "border border-bad/50 bg-bad/15 text-bad",
+                    "border-bad bg-bad text-on-pop",
                   answered &&
                     !isSelected &&
                     !isAnswer &&
-                    "border border-border bg-transparent text-muted",
+                    "border-border/40",
                 )}
                 aria-hidden
               >
                 {answered && isAnswer ? (
-                  <Check weight="bold" className="h-3.5 w-3.5" />
+                  <Check weight="bold" className="h-2.5 w-2.5" />
                 ) : answered && isSelected && !isAnswer ? (
-                  <X weight="bold" className="h-3.5 w-3.5" />
-                ) : (
-                  letter
-                )}
+                  <X weight="bold" className="h-2.5 w-2.5" />
+                ) : null}
               </span>
               <span className="min-w-0 flex-1">
                 <InlineText text={option} />
@@ -234,18 +226,19 @@ export function Quiz({ source }: { source: string }) {
   }
 
   return (
-    <section className="my-8 overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated">
-      <header className="flex items-center justify-between gap-3 border-b border-border bg-accent/[0.07] px-4 py-3 sm:px-5">
-        <div className="flex items-center gap-2.5">
+    <section className="my-8">
+      <header className="mb-2 flex items-end justify-between gap-3">
+        <div>
+          {/* Same family-accent rule + display heading as the article's own h2s (globals.css .handbook-prose h2). */}
           <span
             aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-pop"
+            className="mb-2 block h-[3px] w-10 rounded-[length:var(--radius-xs)] bg-[var(--family-accent,var(--accent))]"
           />
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-mark uppercase">
+          <p className="font-display text-[1.44em] font-semibold tracking-[-0.015em] text-foreground">
             Check yourself
           </p>
         </div>
-        <p className="font-mono text-[10px] tabular-nums text-muted">
+        <p className="mb-1 shrink-0 font-mono text-[10px] tabular-nums text-muted">
           {spec.questions.length}{" "}
           {spec.questions.length === 1 ? "question" : "questions"}
         </p>
