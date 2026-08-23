@@ -63,7 +63,7 @@ export default async function ModulePage({ params }: PageProps) {
         className="pointer-events-none absolute inset-x-0 top-0 h-[24rem] bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_12%,transparent),_transparent_60%)]"
       />
       <div
-        className="relative mx-auto w-full max-w-4xl px-4 py-8 lg:px-8 lg:py-12"
+        className="relative mx-auto w-full max-w-6xl px-4 py-8 lg:px-8 lg:py-12"
         style={family ? familyCssVars(family) : undefined}
       >
         <Breadcrumbs

@@ -40,7 +40,7 @@ export function LessonView({
   afterMarkdown,
 }: LessonViewProps) {
   return (
-    <div className="mx-auto flex w-full max-w-6xl gap-10 px-4 py-8 lg:px-8 lg:py-10">
+    <div className="mx-auto flex w-full max-w-[90rem] gap-10 px-4 py-8 lg:px-8 lg:py-10">
       <article className="min-w-0 flex-1">
         <Breadcrumbs items={breadcrumbs} />
         <p className="mb-2 text-xs font-medium uppercase tracking-wider text-mark">
