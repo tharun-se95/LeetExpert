@@ -116,6 +116,84 @@ module — same "no shortcuts" discipline as the rest of this project.
 
 ---
 
+## 2.5 Curriculum-designer lesson-list review (run FIRST, before Task 3)
+
+Added 2026-08-24, after running this against hash-tables retroactively and
+getting a real, actionable finding (see §1 note below) — for every module
+from here on, **run this before starting the Task 3 prose rewrite**, not
+after. Deciding the right lesson list first means the analogy rewrite
+happens once, on the right set of lessons, instead of getting redone after
+a structural review finds the list itself was wrong.
+
+**What it checks, and why it's a separate step from §2:** §2's checklist
+audits *internal consistency* of the lessons that already exist (do the
+diagrams match the prose, does the concept map match the lessons). This
+step instead asks whether the *list of lessons itself* is the right one —
+count, scope per lesson, order, and completeness — independent of how
+practice problems are organized. That's a curriculum-design question, not
+a correctness check, and it needs to be asked explicitly or it never gets
+asked at all.
+
+**Procedure:**
+
+1. In the module's NotebookLM notebook (created/reused per Task 3 Step 1),
+   make sure the sources reflect the module's *existing* lesson list (for
+   a not-yet-rewritten module, this is simply its current `course/<module>/
+   *.md` concept-lesson files — the curriculum question doesn't depend on
+   the analogy pass having happened yet).
+2. Ask this exact question as its own, standalone chat turn — not combined
+   with any other question in the same message, so the model doesn't blend
+   this with an unrelated concept-vs-practice framing (a real failure mode
+   hit on the first attempt: asking two structural questions in one prompt
+   made the response answer only the first one):
+
+   ```
+   New, separate question — evaluate purely as a curriculum designer,
+   independent of how practice/problem lessons are organized. This module
+   currently has [N] concept lessons: (1) [Lesson 1 title], (2) [Lesson 2
+   title], ... ([N]) [Lesson N title].
+
+   Is [N] the right NUMBER of concept lessons to teach [MODULE TOPIC]
+   properly, or should there be more or fewer? For each existing lesson,
+   tell me: is its topic scope correct as a single lesson, too broad
+   (should split into multiple lessons), or too narrow (should merge with
+   a neighbor)? Is the ORDER of topics correct, or should any lesson move
+   earlier/later? Is there any topic, sub-topic, or concept a properly
+   designed module should teach as its own lesson (or fold into an
+   existing one) that is currently missing entirely? Give a recommended
+   lesson list — names, count, and order — with a one-line justification
+   for each entry.
+   ```
+
+3. Treat the response as a **recommendation to review with the user, not
+   an instruction to execute automatically.** A restructure (splitting or
+   merging lesson files, renumbering, touching `manifest.ts`, the concept
+   map, and every affected quiz) is a bigger change than a prose rewrite
+   and can break existing links/progress state — get an explicit go-ahead
+   before implementing it, same as any other architecturally significant
+   change.
+4. If the recommendation is accepted: implement the revised lesson list
+   *before* running Task 3's prose rewrite on it, so the analogy pass
+   happens once, on the final lesson boundaries — not once on the old
+   list and then again after a restructure.
+5. If the recommendation is declined or the existing list is confirmed
+   sound: proceed straight to Task 3 on the existing list.
+
+**hash-tables retroactive finding (2026-08-24):** run against the pilot's
+already-shipped 4-lesson list as a validation of the step itself. Verdict:
+4 is too few — recommended 6, splitting the overloaded `collision-
+resolution.md` (currently chaining + resizing + open addressing +
+tombstones all in one lesson) into two lessons with the coding lab
+sandwiched between them, expanding "The Four Hash Patterns" to formally
+cover Hash Sets, and adding a new lesson on key immutability and the
+non-cryptographic-vs-cryptographic-hashing distinction (a real,
+commonly-confused gap the existing 4 lessons never address). **Not yet
+implemented** — pending the user's decision on whether to restructure the
+already-shipped pilot module or treat this as input for module 2 onward
+only.
+
+---
+
 ## 3. Asset pipeline (per lesson / per module)
 
 Established during the hash-tables pilot; codified here so it's repeatable
@@ -269,18 +347,22 @@ found to have. Update the hash-tables row once Task A closes it out.
 
 For each of the 23 unchecked rows in the tracker, in tracker order:
 
-1. Run the analogy-rewrite plan's Task 3 Steps 1–8 (prose rewrite,
+1. Run §2.5's curriculum-designer lesson-list review **first**, against
+   the module's current lesson list. Get the user's go-ahead on the
+   recommendation (accept, partially accept, or keep the existing list)
+   before continuing.
+2. Run the analogy-rewrite plan's Task 3 Steps 1–8 (prose rewrite,
    including the diagram/viz reconciliation and Mind-Map/Quiz coverage
-   checks it already specifies).
-2. Run §2's structural review checklist against the result.
-3. Generate all 4 asset types per §3.3, using §3.4's dynamic prompts filled
+   checks it already specifies) against the lesson list §2.5 settled on.
+3. Run §2's structural review checklist against the result.
+4. Generate all 4 asset types per §3.3, using §3.4's dynamic prompts filled
    in from that module's own analogy/mechanism.
-4. Transcribe the concept map per §3.5, register it.
-5. Confirm the UI wiring checklist (§3.6) — should be automatic, but
+5. Transcribe the concept map per §3.5, register it.
+6. Confirm the UI wiring checklist (§3.6) — should be automatic, but
    verify in the browser once per module rather than assuming.
-6. `npm test && npm run build`; fix before moving on.
-7. Mark all 5 columns of that module's tracker row.
-8. Commit.
+7. `npm test && npm run build`; fix before moving on.
+8. Mark all 5 columns of that module's tracker row.
+9. Commit.
 
 ### End condition (per CLAUDE.md §1 — scaffolding must have a stated end)
 
@@ -309,16 +391,21 @@ tracker file, per the analogy-rewrite plan's existing "Final step."
 ## Self-Review
 
 **Spec coverage:** in-depth review findings for the pilot module (§1,
-explicitly requested) — done via manual audit since live NotebookLM access
-wasn't available this pass, with that limitation stated rather than
-glossed over. Per-module structural checklist (§2) — generalizes what was
-actually done in §1 into a repeatable gate. Asset pipeline (§3) — codifies
-file layout, compression settings, and NotebookLM scoping already proven
-on the pilot, plus the dynamic (per-module) prompt templates explicitly
-asked for. Rollout plan (§4) — sequences the gap-closure, tracker
-extension, and 23-module rollout with an explicit end condition per
-CLAUDE.md §1. Open items (§5) — states the actual blocker (auth) and
-realistic pacing rather than implying this all happens in one turn.
+explicitly requested) — updated with the live NotebookLM Mind-Map/Quiz
+pass and the retroactive curriculum-designer finding. Per-module
+structural checklist (§2) — generalizes what was actually done in §1 into
+a repeatable internal-consistency gate. Curriculum-designer lesson-list
+review (§2.5) — a distinct, earlier step asking whether the lesson list
+itself is right, added after running it live against hash-tables and
+getting a real restructuring recommendation; sequenced first in Task C so
+future modules get the right lesson list before the prose pass, not after.
+Asset pipeline (§3) — codifies file layout, compression settings, and
+NotebookLM scoping already proven on the pilot, plus the dynamic
+(per-module) prompt templates explicitly asked for. Rollout plan (§4) —
+sequences curriculum review, gap-closure, tracker extension, and the
+23-module rollout with an explicit end condition per CLAUDE.md §1. Open
+items (§5) — states pacing realistically rather than implying this all
+happens in one turn.
 
 **Placeholder scan:** no TBD steps; prompt templates are given verbatim
 with named substitution fields; file paths and naming conventions are
