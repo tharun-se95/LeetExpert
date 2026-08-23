@@ -45,7 +45,7 @@ export function Diagram({ source }: { source: string }) {
   return (
     <div
       style={family ? familyCssVars(family) : undefined}
-      className="my-6 flex justify-center rounded-[length:var(--radius-md)] border border-border bg-surface/40 px-4 py-6"
+      className="my-6 flex justify-center rounded-[length:var(--radius-md)] border border-border bg-surface/40 px-4 py-5"
     >
       <Component {...props} />
     </div>

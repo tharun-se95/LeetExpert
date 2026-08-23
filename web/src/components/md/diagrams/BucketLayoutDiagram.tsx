@@ -2,9 +2,10 @@
 
 /**
  * A hash table's bucket array — index column down the left, chained
- * entries running right from any non-empty bucket. Replaces
- * collision-resolution's mermaid subgraph with the same visual language
- * as the rest of the diagram system.
+ * entries running right from any non-empty bucket. Empty slots render as
+ * thin rows (they carry no extra information beyond "empty"), so a mostly-
+ * empty table stays compact instead of stretching to one full-height row
+ * per capacity slot.
  */
 
 export interface BucketRow {
@@ -23,12 +24,13 @@ const DEFAULT_BUCKETS: BucketRow[] = [
   { index: 4, entries: ["emu"] },
 ];
 
-const ROW_H = 34;
-const ROW_GAP = 6;
-const IDX_W = 34;
-const ENTRY_W = 84;
-const ENTRY_GAP = 18;
-const PAD = 12;
+const ROW_H = 28;
+const EMPTY_ROW_H = 18;
+const ROW_GAP = 4;
+const IDX_W = 28;
+const ENTRY_W = 68;
+const ENTRY_GAP = 14;
+const PAD = 10;
 
 export function BucketLayoutDiagram({
   capacity = 8,
@@ -39,33 +41,41 @@ export function BucketLayoutDiagram({
   const maxEntries = Math.max(1, ...rows.map((r) => r.length));
   const width =
     PAD * 2 + IDX_W + (maxEntries > 0 ? maxEntries * (ENTRY_W + ENTRY_GAP) : 0);
-  const height = PAD * 2 + capacity * (ROW_H + ROW_GAP) - ROW_GAP;
+
+  let cursorY = PAD;
+  const rowYs = rows.map((entries) => {
+    const y = cursorY;
+    const h = entries.length > 0 ? ROW_H : EMPTY_ROW_H;
+    cursorY += h + ROW_GAP;
+    return { y, h };
+  });
+  const height = cursorY - ROW_GAP + PAD;
 
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className="mx-auto h-auto w-full max-w-[520px]"
+      className="mx-auto h-auto w-full max-w-[380px]"
       role="img"
       aria-label={`A hash table with ${capacity} buckets; ${buckets.filter((b) => b.entries.length > 0).length} contain chained entries`}
     >
       {rows.map((entries, i) => {
-        const y = PAD + i * (ROW_H + ROW_GAP);
+        const { y, h } = rowYs[i]!;
         return (
           <g key={i}>
             <rect
               x={PAD}
               y={y}
               width={IDX_W}
-              height={ROW_H}
-              rx={4}
+              height={h}
+              rx={3}
               fill="var(--surface)"
               stroke="var(--border)"
-              strokeWidth={1.25}
+              strokeWidth={1}
             />
             <text
               x={PAD + IDX_W / 2}
-              y={y + ROW_H / 2 + 4}
-              fontSize={12}
+              y={y + h / 2 + (entries.length > 0 ? 4 : 3.5)}
+              fontSize={entries.length > 0 ? 11 : 9}
               fontWeight={600}
               fill="var(--muted)"
               textAnchor="middle"
@@ -81,28 +91,28 @@ export function BucketLayoutDiagram({
                 <g key={j}>
                   <line
                     x1={prevRight}
-                    y1={y + ROW_H / 2}
+                    y1={y + h / 2}
                     x2={ex}
-                    y2={y + ROW_H / 2}
+                    y2={y + h / 2}
                     stroke="var(--family-accent, var(--accent))"
-                    strokeWidth={1.5}
+                    strokeWidth={1.25}
                     markerEnd="url(#bucket-arrow)"
                   />
                   <rect
                     x={ex}
                     y={y}
                     width={ENTRY_W}
-                    height={ROW_H}
-                    rx={4}
+                    height={h}
+                    rx={3}
                     fill="var(--family-accent, var(--accent))"
                     fillOpacity={0.1}
                     stroke="var(--family-accent, var(--accent))"
-                    strokeWidth={1.25}
+                    strokeWidth={1}
                   />
                   <text
                     x={ex + ENTRY_W / 2}
-                    y={y + ROW_H / 2 + 4}
-                    fontSize={11}
+                    y={y + h / 2 + 3.5}
+                    fontSize={9.5}
                     fill="var(--foreground)"
                     textAnchor="middle"
                     fontFamily="var(--font-mono), monospace"
@@ -122,8 +132,8 @@ export function BucketLayoutDiagram({
           viewBox="0 0 8 8"
           refX="7"
           refY="4"
-          markerWidth="6"
-          markerHeight="6"
+          markerWidth="5"
+          markerHeight="5"
           orient="auto-start-reverse"
         >
           <path d="M0,0 L8,4 L0,8 Z" fill="var(--family-accent, var(--accent))" />
