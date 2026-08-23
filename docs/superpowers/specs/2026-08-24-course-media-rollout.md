@@ -18,30 +18,58 @@ per-module asset pipeline, and dynamic (per-module) prompt templates. Treat
 
 ## 1. Hash Tables in-depth review — findings
 
-Performed 2026-08-24: read all 4 concept lessons (`hashing-fundamentals.md`,
-`collision-resolution.md`, `build-a-hash-map.md`, `hash-patterns.md`) plus
-`practice.md` in full, cross-checked every `diagram`/`viz` fence's JSON props
-against the surrounding prose's claims, cross-checked the concept map
+Performed 2026-08-24 in two passes.
+
+**Pass 1 (manual, offline):** read all 4 concept lessons
+(`hashing-fundamentals.md`, `collision-resolution.md`, `build-a-hash-map.md`,
+`hash-patterns.md`), all 5 problem lessons (`two-sum.md`,
+`contains-duplicate-ii.md`, `first-unique-character.md`, `group-anagrams.md`,
+`longest-consecutive-sequence.md`), and `practice.md` in full — the module's
+complete lesson list, not just the concept lessons. Cross-checked every
+`diagram`/`viz`/`sandbox`/`examples` block's actual values against the
+surrounding prose's claims, cross-checked the concept map
 (`web/src/lib/course/conceptMaps/hashTables.ts`) against final lesson content
-leaf-by-leaf, and cross-checked `practice.md`'s five problems against the
-"four verbs" table in `hash-patterns.md`.
+leaf-by-leaf, cross-checked `practice.md`'s five problems against the "four
+verbs" table in `hash-patterns.md`, and confirmed the module's manifest entry
+(`web/src/lib/course/manifest.ts`) sequences concept → problem
+(easy → medium) → practice correctly, with problem-lesson cross-references
+to other modules (e.g. Group Anagrams referencing Strings' Valid Anagram)
+pointing at lessons that actually exist and are sequenced earlier.
 
-**Result: content is consistent and complete.**
-- `hash-pipeline` diagram (`hashValue: 4182, capacity: 8`) → 4182 mod 8 = 6;
-  prose says Slot 6. Correct.
-- `bucket-layout` diagrams in both `collision-resolution.md` (dog/god at
-  Slot 2) and `build-a-hash-map.md` (alice/bob/bea/cara) match their prose
-  exactly.
-- Concept map's 5 branches / 27 leaves each map to an actual claim in the
-  4 lessons — no orphaned leaf, no uncovered lesson claim.
-- All 5 practice problems map onto the four verbs (Seen/Count/Index/Group)
-  the module teaches; no verb is left unpracticed, no problem is orphaned
-  from a verb.
-- Quiz distractors across all 4 lessons (13 questions total) are specific
-  and plausible, each with a reasoning `explanation` — no asserted answer
-  without a derivation, per CLAUDE.md §3.
+**Result: content is consistent and complete.** No defect found in any of
+the 10 lessons — diagrams, worked examples, sandbox test cases, and
+complexity claims all check out arithmetically; every problem lesson names
+the correct usage verb and cross-references real, correctly-sequenced
+lessons elsewhere in the course.
 
-**One structural gap found: video coverage is incomplete.** Only
+**Pass 2 (live NotebookLM, with the user signed in):** the pilot's
+hash-tables notebook still had its original pre-rewrite draft sources
+loaded, not the final shipped prose — refreshed it by adding the 4 final
+lesson bodies as new sources (labeled `SOURCE (FINAL, shipped 2026-08-24)`)
+and deselecting the stale drafts, then re-ran both Task 3 Step 6.7 (Mind
+Map) and 6.8 (Quiz) against the final content only.
+- **Mind Map:** every one of its ~25 leaves across 6 branches (Core
+  Mechanism, Collision Resolution, Dynamic Resizing, Complexity Analysis,
+  Practical Patterns, Implementation Constraints) traced to an existing
+  claim in the lessons or concept map — with one exception: a **Space:
+  O(n)** leaf under Complexity Analysis that isn't stated anywhere in the
+  shipped `complexity` fence (only time complexities were listed). **Fixed**
+  — added a `space` row to `collision-resolution.md`'s complexity table.
+- **Quiz (10 questions):** 8 of 10 duplicated an existing hand-written quiz
+  question almost exactly (the expected, reassuring outcome). 2 surfaced
+  real gaps and were **fixed**:
+  - Iteration cost (O(n + m)) is taught in the complexity table but was
+    never quizzed — added to `collision-resolution.md`.
+  - The Index verb is named for Two Sum in `hash-patterns.md`'s prose, but
+    no quiz question ever asked a learner to identify it — added to
+    `hash-patterns.md`.
+
+All fixes verified: `npm test` (551 tests), `npm run build`, and both new
+questions/the new complexity row confirmed rendering correctly in the
+browser. See `git log` for the two commits (structural fixes had none
+needed; quiz/complexity fixes are one commit).
+
+**One structural gap remains open: video coverage is incomplete.** Only
 `collision-resolution.md` has a video (`video-collision-resolution.mp4`);
 `hashing-fundamentals.md`, `build-a-hash-map.md`, and `hash-patterns.md` have
 none. Audio and infographic are present for all 4. This isn't a prose defect
@@ -49,14 +77,6 @@ none. Audio and infographic are present for all 4. This isn't a prose defect
 `videoSrc`) — but it means 3 of 4 lessons are missing one of the module's
 four asset types. **Action:** generate the missing 3 videos before treating
 hash-tables as the fully-realized reference module (see §4, Task A).
-
-**NotebookLM re-verification not run this pass.** The live Mind-Map/Quiz
-coverage checks (Task 3 Steps 6.7–6.8 of the analogy-rewrite plan) require an
-authenticated `notebooklm.google.com` session; this session's browser
-context isn't signed in. The manual audit above substitutes for it and found
-no gaps, but if a fresh NotebookLM pass is wanted before moving on, it needs
-the user to sign in first (same as the original pilot — see that plan's
-Task 3 Step 1).
 
 ---
 
@@ -272,10 +292,11 @@ tracker file, per the analogy-rewrite plan's existing "Final step."
 
 ## 5. Open items needing the user before Task A/C can run live
 
-- **NotebookLM auth.** This session's browser isn't signed in to
-  `notebooklm.google.com`. Generating any new asset (Task A's 3 missing
-  hash-tables videos, or any of the 23 remaining modules) needs the user to
-  sign in first, same as the original pilot.
+- **NotebookLM auth.** Resolved 2026-08-24 — the user signed in for the
+  live review pass in §1, and the pilot notebook's sources are now current
+  (final content, not pre-rewrite drafts). Task A (3 missing hash-tables
+  videos) and Task C (23-module rollout) can proceed live from here without
+  a fresh sign-in, for as long as the session's auth stays valid.
 - **Pacing.** Each Video/Audio Overview generation takes several minutes of
   wall-clock NotebookLM processing time per lesson; the full 23-module
   rollout is roughly 71 remaining concept lessons × 3 generated-and-timed
