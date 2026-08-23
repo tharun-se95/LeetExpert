@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Cheatsheet } from "@/components/cheatsheet/Cheatsheet";
+import { AudioMini } from "@/components/course/AudioMini";
 import { ChapterInfographic } from "@/components/course/ChapterInfographic";
 import { ChapterMedia } from "@/components/course/ChapterMedia";
 import { LessonView } from "@/components/course/LessonView";
 import { LESSON_EMBEDS } from "@/components/course/embeds";
+import { Quiz } from "@/components/course/Quiz";
 import { PracticeProblemsList } from "@/components/md/PracticeProblemsList";
 import {
   allLessonParams,
@@ -15,6 +17,7 @@ import {
 import { getCheatsheet } from "@/lib/course/cheatsheets/registry";
 import { getChapterMedia } from "@/lib/course/media";
 import { getLesson, getModule } from "@/lib/course/manifest";
+import { extractQuizFence } from "@/lib/content/extractQuizFence";
 import {
   extractPracticeProblemsFence,
   mergePracticeProblems,
@@ -114,20 +117,28 @@ export default async function LessonPage({ params }: PageProps) {
   }
 
   const chapterMedia = getChapterMedia(moduleSlug, lessonSlug);
+  const { body, quizSource } = extractQuizFence(lesson.markdown);
 
   return (
     <LessonView
-      lesson={lesson}
+      lesson={{ ...lesson, markdown: body }}
       eyebrow={`Module ${mod.number} · ${mod.title}`}
       typeLabel="Concept"
       breadcrumbs={breadcrumbs}
       prev={prevLink}
       next={nextLink}
       stage={Embed ? <Embed /> : undefined}
+      headerAudio={
+        chapterMedia.audioSrc ? (
+          <AudioMini
+            src={chapterMedia.audioSrc}
+            ariaLabel={`Audio walkthrough of ${meta.lesson.title}`}
+          />
+        ) : undefined
+      }
       media={
         <ChapterMedia
           videoSrc={chapterMedia.videoSrc}
-          audioSrc={chapterMedia.audioSrc}
           lessonTitle={meta.lesson.title}
         />
       }
@@ -139,6 +150,7 @@ export default async function LessonPage({ params }: PageProps) {
           />
         ) : undefined
       }
+      afterMarkdown={quizSource ? <Quiz source={quizSource} /> : undefined}
     />
   );
 }

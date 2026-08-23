@@ -22,8 +22,10 @@ interface LessonViewProps {
   next: NeighborLink | null;
   /** Interactive explorer rendered above the markdown */
   stage?: ReactNode;
-  /** Video/audio companions, rendered above the markdown after `stage`. */
+  /** Video companion, rendered above the markdown after `stage`. */
   media?: ReactNode;
+  /** Minimal inline audio control, merged into the header's meta row. */
+  headerAudio?: ReactNode;
   /** Infographic, rendered inside the article after the markdown body — part of the reading flow, not a side card. */
   infographic?: ReactNode;
   /** Injected after markdown (e.g. Practice problem list). */
@@ -39,6 +41,7 @@ export function LessonView({
   next,
   stage,
   media,
+  headerAudio,
   infographic,
   afterMarkdown,
 }: LessonViewProps) {
@@ -52,11 +55,14 @@ export function LessonView({
         <h1 className="press-overprint font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]">
           {lesson.title}
         </h1>
-        <p className="mt-2 flex items-center gap-3 text-sm text-muted">
+        <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted">
           <span className="rounded-full border border-border px-2 py-0.5 text-xs">
             {typeLabel}
           </span>
           ~{lesson.readingMinutes} min
+          {headerAudio ? (
+            <span className="print:hidden">{headerAudio}</span>
+          ) : null}
         </p>
         {stage ? <div className="mt-6 print:hidden">{stage}</div> : null}
         {media}

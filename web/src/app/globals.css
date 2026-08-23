@@ -380,8 +380,12 @@ body {
     19px, matching what sites built for sustained technical reading
     actually use (Red Blob Games 20px, Ciechanowski 19.2px). The old
     16.2px was app-sized, not reading-sized.
+
+    No max-width here by design — the article column (LessonView) is the
+    one place that constrains width, so prose fills it fully on wide
+    screens rather than sitting in a fixed-ch column with dead space
+    beside it.
   */
-  max-width: 68ch;
   font-size: var(--prose-size);
   line-height: 1.62;
   color: color-mix(in oklab, var(--foreground) 94%, transparent);
