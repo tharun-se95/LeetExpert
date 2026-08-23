@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Cheatsheet } from "@/components/cheatsheet/Cheatsheet";
+import { ChapterInfographic } from "@/components/course/ChapterInfographic";
 import { ChapterMedia } from "@/components/course/ChapterMedia";
 import { LessonView } from "@/components/course/LessonView";
 import { LESSON_EMBEDS } from "@/components/course/embeds";
@@ -127,10 +128,16 @@ export default async function LessonPage({ params }: PageProps) {
         <ChapterMedia
           videoSrc={chapterMedia.videoSrc}
           audioSrc={chapterMedia.audioSrc}
-          infographicSrc={chapterMedia.infographicSrc}
-          infographicAlt={`At-a-glance infographic for ${meta.lesson.title}`}
           lessonTitle={meta.lesson.title}
         />
+      }
+      infographic={
+        chapterMedia.infographicSrc ? (
+          <ChapterInfographic
+            src={chapterMedia.infographicSrc}
+            alt={`At-a-glance infographic for ${meta.lesson.title}`}
+          />
+        ) : undefined
       }
     />
   );

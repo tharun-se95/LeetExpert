@@ -22,8 +22,10 @@ interface LessonViewProps {
   next: NeighborLink | null;
   /** Interactive explorer rendered above the markdown */
   stage?: ReactNode;
-  /** Audio/infographic companions, rendered above the markdown after `stage`. */
+  /** Video/audio companions, rendered above the markdown after `stage`. */
   media?: ReactNode;
+  /** Infographic, rendered inside the article after the markdown body — part of the reading flow, not a side card. */
+  infographic?: ReactNode;
   /** Injected after markdown (e.g. Practice problem list). */
   afterMarkdown?: ReactNode;
 }
@@ -37,6 +39,7 @@ export function LessonView({
   next,
   stage,
   media,
+  infographic,
   afterMarkdown,
 }: LessonViewProps) {
   return (
@@ -64,6 +67,7 @@ export function LessonView({
             highlightedTabs={lesson.highlightedTabs}
           />
         </div>
+        {infographic ? <div className="mt-10 print:hidden">{infographic}</div> : null}
         {afterMarkdown ? <div className="mt-2">{afterMarkdown}</div> : null}
         <nav className="mt-12 flex items-stretch justify-between gap-4 border-t border-border pt-6">
           {prev ? (
