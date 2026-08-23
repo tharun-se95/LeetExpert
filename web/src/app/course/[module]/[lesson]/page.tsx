@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Cheatsheet } from "@/components/cheatsheet/Cheatsheet";
+import { ChapterMedia } from "@/components/course/ChapterMedia";
 import { LessonView } from "@/components/course/LessonView";
 import { LESSON_EMBEDS } from "@/components/course/embeds";
 import { PracticeProblemsList } from "@/components/md/PracticeProblemsList";
@@ -11,6 +12,7 @@ import {
   loadLesson,
 } from "@/lib/course/load";
 import { getCheatsheet } from "@/lib/course/cheatsheets/registry";
+import { getChapterMedia } from "@/lib/course/media";
 import { getLesson, getModule } from "@/lib/course/manifest";
 import {
   extractPracticeProblemsFence,
@@ -110,6 +112,8 @@ export default async function LessonPage({ params }: PageProps) {
     );
   }
 
+  const chapterMedia = getChapterMedia(moduleSlug, lessonSlug);
+
   return (
     <LessonView
       lesson={lesson}
@@ -119,6 +123,14 @@ export default async function LessonPage({ params }: PageProps) {
       prev={prevLink}
       next={nextLink}
       stage={Embed ? <Embed /> : undefined}
+      media={
+        <ChapterMedia
+          audioSrc={chapterMedia.audioSrc}
+          infographicSrc={chapterMedia.infographicSrc}
+          infographicAlt={`At-a-glance infographic for ${meta.lesson.title}`}
+          lessonTitle={meta.lesson.title}
+        />
+      }
     />
   );
 }

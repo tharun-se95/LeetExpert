@@ -22,6 +22,8 @@ interface LessonViewProps {
   next: NeighborLink | null;
   /** Interactive explorer rendered above the markdown */
   stage?: ReactNode;
+  /** Audio/infographic companions, rendered above the markdown after `stage`. */
+  media?: ReactNode;
   /** Injected after markdown (e.g. Practice problem list). */
   afterMarkdown?: ReactNode;
 }
@@ -34,6 +36,7 @@ export function LessonView({
   prev,
   next,
   stage,
+  media,
   afterMarkdown,
 }: LessonViewProps) {
   return (
@@ -53,6 +56,7 @@ export function LessonView({
           ~{lesson.readingMinutes} min
         </p>
         {stage ? <div className="mt-6 print:hidden">{stage}</div> : null}
+        {media}
         <div className="mt-8">
           <Markdown
             source={lesson.markdown}

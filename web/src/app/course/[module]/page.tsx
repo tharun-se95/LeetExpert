@@ -10,6 +10,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ModuleGlyph } from "@/components/course/ModuleGlyph";
+import { ModuleMedia } from "@/components/course/ModuleMedia";
 import { ModulePracticeProgress } from "@/components/course/ModulePracticeProgress";
 import {
   getModule,
@@ -18,6 +19,7 @@ import {
   moduleFamily,
 } from "@/lib/course/manifest";
 import { CHEATSHEETS } from "@/lib/course/cheatsheets/registry";
+import { getModuleMedia } from "@/lib/course/media";
 import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
 import { allModuleSlugs } from "@/lib/course/load";
 import { lessonHref } from "@/lib/course/nav";
@@ -52,6 +54,7 @@ export default async function ModulePage({ params }: PageProps) {
   const family = moduleFamily(mod);
   const familyLabel = family ? getFamilyTheme(family).label : null;
   const sheet = CHEATSHEETS[mod.slug];
+  const media = getModuleMedia(mod.slug);
 
   return (
     <div className="relative overflow-hidden">
@@ -143,6 +146,12 @@ export default async function ModulePage({ params }: PageProps) {
             </dd>
           </div>
         </dl>
+
+        <ModuleMedia
+          videoSrc={media.videoSrc}
+          mindMapSrc={media.mindMapSrc}
+          moduleTitle={mod.title}
+        />
 
         {mod.status === "coming-soon" ? (
           <div className="mt-8 rounded-[length:var(--radius-lg)] border border-dashed border-border bg-surface/40 p-6">
