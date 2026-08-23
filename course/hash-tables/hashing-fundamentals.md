@@ -137,9 +137,10 @@ double-booking around a thousand inserts, not half a million.
 So a collision isn't the clerk making a mistake, and it isn't a flaw in
 the trick — it's simple arithmetic about slots and people. Collisions
 aren't a defect to eliminate; they're a certainty to **manage**. The next
-lesson covers the two ways the clerk can handle a double-booking, and the
-one number that governs how bad things get if too many packages pile
-into the same cabinet — the load factor.
+lesson covers the clerk's first fix for a double-booking, and the one
+number that governs how bad things get if too many packages pile into
+the same cabinet — the load factor. A second, hookless fix follows a few
+lessons later.
 
 ```quiz
 {

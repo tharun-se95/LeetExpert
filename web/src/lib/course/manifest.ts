@@ -182,13 +182,15 @@ export const MODULES: ModuleMeta[] = [
     title: "Hash Tables",
     shortTitle: "Hash Tables",
     description:
-      "Hash functions, collisions, load factor, resizing — then the problems they unlock.",
+      "Hash functions, collisions, keys, and the four usage patterns — then the problems they unlock.",
     stage: 1,
     status: "available",
     lessons: [
       concept("hashing-fundamentals", "Hashing Fundamentals"),
-      concept("collision-resolution", "Collisions, Load Factor & Resizing"),
+      concept("collision-chaining", "Collision Resolution: Separate Chaining"),
       concept("build-a-hash-map", "Build a Hash Map From Scratch"),
+      concept("collision-open-addressing", "Collision Resolution: Open Addressing"),
+      concept("keys-immutability-hashing", "Keys, Immutability & Cryptographic Hashing"),
       concept("hash-patterns", "The Four Hash Patterns"),
       problem("two-sum", "Two Sum"),
       problem("contains-duplicate-ii", "Contains Duplicate II"),

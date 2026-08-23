@@ -18,6 +18,19 @@ ahead are one or two of these verbs each.
 }
 ```
 
+## Maps vs. Sets: the same cabinet, minus the messages
+
+Sometimes you don't care what's inside an envelope — you just want to
+know who has come through the mailroom. For that, the clerk uses the
+exact same cabinet, the exact same word-trick, the exact same hooks —
+they just hang simple name tags instead of full packages. That's a
+**hash set**: it stores only keys, membership without payload, built
+from the identical chaining-or-probing machinery the last two lessons
+covered. Any chore below that says "map" but only ever stores a
+placeholder value really wants a set instead; Python `set` / JS `Set`
+are that exact structure with entries of just `key`. The first chore is
+the purest example.
+
 ## 1. Seen — membership
 
 Chore one: the guest list. You want to know if you've already seen a
@@ -142,20 +155,18 @@ The entire art is choosing the key so that *"same key" means exactly
 | "find the pair/partner", "at index" | Index | map → position |
 | "group", "bucket", "same X together" | Group | map → list |
 
-Two cautions. First, the clerk can only run the word-trick on a label
-that doesn't change — file a package under "Blue Box" and then repaint
-it "Red Box" while it sits in the cabinet, and the clerk has no way to
-know to look for it under "Red." That's why keys must be
-**hashable/immutable** — in Python, `list` can't key a dict but `tuple`
-can; in JS, object keys in a `Map` compare by *reference*, so use string
-keys for by-value grouping (build a canonical string). Second, the
-mailroom cabinet is unbeatable for "find this one package fast," but
-useless for "give me every package in alphabetical order" — for that
-you'd need a completely different kind of organizer, one that keeps
-items on a branching, ordered shelf instead of unordered slots. The hash
-map's O(1) is *average, unordered* — if you need sorted keys or range
-queries, you want a tree (Module 18), and knowing the difference is part
-of knowing hash tables.
+Two cautions. First, keys must be **hashable/immutable** — the previous
+lesson covered why (a changed key computes a different slot and becomes
+unreachable) and the specific JS object-reference trap that bites the
+Group pattern hardest: `Map` compares object keys by *reference*, so
+grouping by structural equality needs a canonical string key, not the
+raw object. Second, the mailroom cabinet is unbeatable for "find this one
+package fast," but useless for "give me every package in alphabetical
+order" — for that you'd need a completely different kind of organizer,
+one that keeps items on a branching, ordered shelf instead of unordered
+slots. The hash map's O(1) is *average, unordered* — if you need sorted
+keys or range queries, you want a tree (Module 18), and knowing the
+difference is part of knowing hash tables.
 
 ```quiz
 {
@@ -199,6 +210,16 @@ of knowing hash tables.
       ],
       "answer": 0,
       "explanation": "The answer IS a location (an index), not a yes/no or a tally — that's the tell for Index. A set (Seen) could confirm a partner value exists but has thrown away exactly the index the problem asks for."
+    },
+    {
+      "question": "A problem only ever needs \"have I seen this key before?\" — never a value attached to it. Why reach for a set instead of a map with a dummy value?",
+      "options": [
+        "A set is the exact same underlying chaining-or-probing structure minus the unused value slot — it says what you mean and carries no payload nobody reads",
+        "A set has fundamentally different, faster O(1) guarantees than a map, since it doesn't need to store or compare values on lookup, only keys",
+        "It's purely a language restriction — Python's set and JS's Set exist because some hashable types (like tuples) aren't allowed as map values, only as keys"
+      ],
+      "answer": 0,
+      "explanation": "Sets and maps share one mechanism; a set is a map with the value slot dropped. The choice is about intent and memory, not speed — both give the same O(1)-average membership check, but a map with a throwaway value (e.g. `seen[x] = True`) stores a value nobody will ever read."
     }
   ]
 }

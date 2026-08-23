@@ -1,9 +1,9 @@
 ---
-title: Collisions, Load Factor & Resizing
+title: "Collision Resolution: Separate Chaining"
 type: concept
 ---
 
-## Blueprint 1: the hanging hook
+## Blueprint: the hanging hook
 
 Remember the mailroom clerk from the last lesson, and remember that
 double-bookings are guaranteed — sooner or later two packages get called
@@ -101,51 +101,19 @@ not individually:
 { "id": "hash-buckets", "keys": [10, 3, 18, 7, 25, 11], "capacity": 4 }
 ```
 
-## Blueprint 2: the spilling row
-
-There's a second way the clerk could have handled that first
-double-booking, one that never uses a hook at all. In this blueprint, the
-clerk refuses to let two packages share a slot, period — every slot holds
-exactly one package. When Bob's package is called to Slot 4 but Alice is
-already sitting there, the clerk doesn't hang it behind hers. Instead
-they say: "walk down the row and take the very next empty slot you
-find." Bob's package spills into Slot 5.
-
-In hash-table terms: entries are stored directly in the bucket array, and
-on collision you **probe** for the next free slot by a fixed rule (linear
-probing: try i+1, i+2, …). This is denser and more cache-friendly than
-chaining — no per-entry lists, so it leans on the Arrays module's
-locality argument — but two costs appear:
-
-- **Clustering.** As the row fills up, you get long, uninterrupted blocks
-  of occupied slots. A new package that lands in the middle of one of
-  these blocks has to walk all the way to the far end before it finds
-  space, so runs of occupied slots snowball and performance degrades
-  sharply as α → 1 (open-addressed tables resize earlier, α ≈ 0.5–0.7, to
-  stay ahead of this).
-- **Deletion gets subtle.** Say Alice leaves Slot 4 empty again. Now
-  picture the clerk searching for Bob, who's sitting in Slot 5 because
-  Slot 4 was taken when he arrived. The clerk checks Slot 4 first, finds
-  it empty, and — reasonably — assumes nobody ever passed through here,
-  so Bob must not exist. The search stops early, and Bob becomes
-  unfindable even though his package is sitting right there in Slot 5.
-  Emptying a slot can break the probe path that runs *through* it. The
-  fix is a **tombstone**: instead of leaving Slot 4 looking brand new,
-  the clerk leaves a marker — an orange traffic cone — that says "nothing
-  here right now, but keep probing, someone used to park here."
-
-Python's dict and most modern runtimes use open addressing; textbook
-implementations mostly chain because the code is simpler. We build the
-chaining version next lesson; the complexity story is the same for both.
+Chaining is one way to survive a double-booking — never turn a package
+away, just grow the hook. The next lesson builds the clerk's system in
+code; the one after that covers a completely different way to handle a
+collision, one that never uses a hook at all.
 
 ```complexity
 {
   "operations": [
-    { "name": "insert / lookup / delete", "time": "O(1) average", "why": "expected chain (or probe) length is the load factor α, held constant by resizing — premises: uniform hash + bounded α" },
+    { "name": "insert / lookup / delete", "time": "O(1) average", "why": "expected chain length is the load factor α, held constant by resizing — premises: uniform hash + bounded α" },
     { "name": "same, worst case", "time": "O(n)", "why": "all keys in one chain — bad hash, adversarial keys, or plain bad luck" },
     { "name": "insert incl. rehash", "time": "O(1) amortized", "why": "doubling: total rehash work over n inserts is < n (the dynamic-array theorem, reused)" },
     { "name": "iterate all entries", "time": "O(n + m)", "why": "must walk every bucket, occupied or not" },
-    { "name": "space", "time": "O(n + m)", "why": "n entries stored, plus m bucket slots allocated whether occupied or not — same n and m the time bounds above are quoted in terms of" }
+    { "name": "space", "time": "O(n + m)", "why": "n entries stored across the chains, plus m bucket slots allocated whether occupied or not" }
   ]
 }
 ```
@@ -172,26 +140,6 @@ chaining version next lesson; the complexity story is the same for both.
       ],
       "answer": 0,
       "explanation": "The address was never stored WITH the entry — it's recomputed from the key each time. New m, new addresses. This is also why rehashing costs a full O(n)."
-    },
-    {
-      "question": "In open addressing, why can't delete simply mark a slot empty?",
-      "options": [
-        "A later key may have probed PAST this slot at insert time; a hole would stop lookups early and make that key unfindable — hence tombstones ('keep probing')",
-        "Because the slot is shared by a chain — open addressing still keeps a linked list of colliding entries at each index behind the scenes, so clearing the slot would only remove the chain's head",
-        "It can — that's how it works; open addressing tables are designed so that lookups always restart from a fresh probe sequence, unaffected by holes left behind by earlier deletions"
-      ],
-      "answer": 0,
-      "explanation": "Probe sequences are paths; an entry's reachability depends on every slot along its path staying non-empty-looking. Tombstones preserve paths while freeing slots for reuse."
-    },
-    {
-      "question": "What is clustering in open addressing, and why does it make searches slower as the table fills up?",
-      "options": [
-        "Long, uninterrupted runs of occupied slots form; a new key landing inside one has to probe past the whole run before finding a free slot, so search length grows with run length",
-        "Keys that hash to nearby slots are physically moved next to each other in memory to improve cache locality, which is a deliberate optimization rather than a cost",
-        "A specialized hash function detects structurally similar keys (like anagrams) and deliberately routes them to adjacent slots so they can be searched together in one cache line"
-      ],
-      "answer": 0,
-      "explanation": "Every insert into an occupied run extends it by one, and every future collision that lands anywhere inside that run has to probe past the whole thing. This is exactly why open-addressed tables resize earlier (α ≈ 0.5–0.7) than chained ones — clustering makes the cost curve much steeper as the table fills."
     },
     {
       "question": "Iterating every entry in a hash table costs O(n + m), not O(n). Where does the extra +m come from?",

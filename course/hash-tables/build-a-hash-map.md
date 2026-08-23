@@ -193,16 +193,15 @@ class HashMap<V> {
 Try it mentally: insert 9 string keys. The 9th crosses α = 1 with 8
 buckets, triggering a resize to 16 — one O(9) rehash, then calm until 17.
 
-## Sets: the same cabinet, minus the messages
+## One more shape: the hash set
 
 Sometimes you don't care what's inside an envelope — you just want to
-know who has come through the mailroom. For that, the clerk uses the
-exact same cabinet, the exact same word-trick, the exact same hooks —
-they just hang simple name tags instead of full packages. That's a
-**hash set**: it stores only keys, membership without payload. Every
-pattern below that says "map" with a dummy value really wants a set;
-Python `set` / JS `Set` are this exact structure with entries of just
-`key`. (Our pair-sum `seen` from the first Big O lesson was one.)
+know who has come through the mailroom. The clerk can hang simple name
+tags instead of full packages on the exact same cabinet: that's a **hash
+set**, membership without payload, built from the identical machinery
+above. A later lesson (The Four Hash Patterns) gives it the full
+treatment — for now, just know it's this map with the value column
+dropped, not a different structure.
 
 ```quiz
 {
