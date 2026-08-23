@@ -144,7 +144,8 @@ chaining version next lesson; the complexity story is the same for both.
     { "name": "insert / lookup / delete", "time": "O(1) average", "why": "expected chain (or probe) length is the load factor α, held constant by resizing — premises: uniform hash + bounded α" },
     { "name": "same, worst case", "time": "O(n)", "why": "all keys in one chain — bad hash, adversarial keys, or plain bad luck" },
     { "name": "insert incl. rehash", "time": "O(1) amortized", "why": "doubling: total rehash work over n inserts is < n (the dynamic-array theorem, reused)" },
-    { "name": "iterate all entries", "time": "O(n + m)", "why": "must walk every bucket, occupied or not" }
+    { "name": "iterate all entries", "time": "O(n + m)", "why": "must walk every bucket, occupied or not" },
+    { "name": "space", "time": "O(n + m)", "why": "n entries stored, plus m bucket slots allocated whether occupied or not — same n and m the time bounds above are quoted in terms of" }
   ]
 }
 ```
@@ -191,6 +192,16 @@ chaining version next lesson; the complexity story is the same for both.
       ],
       "answer": 0,
       "explanation": "Every insert into an occupied run extends it by one, and every future collision that lands anywhere inside that run has to probe past the whole thing. This is exactly why open-addressed tables resize earlier (α ≈ 0.5–0.7) than chained ones — clustering makes the cost curve much steeper as the table fills."
+    },
+    {
+      "question": "Iterating every entry in a hash table costs O(n + m), not O(n). Where does the extra +m come from?",
+      "options": [
+        "The iteration has to walk all m bucket slots to find the occupied ones — an empty bucket still costs a look, so the total is n entries plus m slots checked",
+        "It doesn't come from anything real — O(n + m) and O(n) are the same complexity class whenever m is a constant, so the +m is just a stylistic way of writing the bound",
+        "The +m accounts for re-hashing every entry once during the walk, as a safety check that no key's slot has drifted out of sync with its stored value"
+      ],
+      "answer": 0,
+      "explanation": "Bucket count m isn't a function of n — a table can be mostly empty (large m, small n) right after a resize. Walking 'every bucket, occupied or not' really does cost m steps beyond the n entries themselves, so both terms are load-bearing, not decoration."
     }
   ]
 }

@@ -189,6 +189,16 @@ of knowing hash tables.
       ],
       "answer": 0,
       "explanation": "Group's mechanics (map[key].append(value)) are trivial; the actual work is picking a key function where key equality captures exactly the intended notion of \"belongs together\" — e.g. sorted letters for anagrams, not the raw string itself."
+    },
+    {
+      "question": "\"Given nums and target, return the indices of the two numbers that sum to target\" (Two Sum) — which verb, and what does the map hold?",
+      "options": [
+        "Index — value → earliest index seen so far; for each number, look up its complement's index before inserting its own",
+        "Seen — a set of numbers already visited; once both numbers in the pair have been seen, report the current position",
+        "Count — a tally of how many times each number appears; the pair exists once both numbers' counts reach at least one"
+      ],
+      "answer": 0,
+      "explanation": "The answer IS a location (an index), not a yes/no or a tally — that's the tell for Index. A set (Seen) could confirm a partner value exists but has thrown away exactly the index the problem asks for."
     }
   ]
 }
