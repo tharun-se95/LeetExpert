@@ -1,44 +1,42 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
-import { CaretRight } from "@phosphor-icons/react/dist/ssr";
+import { useCallback, useMemo, useState } from "react";
+import {
+  Background,
+  BackgroundVariant,
+  Controls,
+  ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
+  type Edge,
+  type Node,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { ConceptMapNode, type ConceptMapNodeData } from "@/components/course/ConceptMapNode";
 import type { MindMapNode } from "@/lib/course/conceptMaps/types";
 
 interface ConceptMindMapProps {
   root: MindMapNode;
-  /** Announced by the SVG connector layer's title. */
+  /** Announced to screen readers; the canvas itself is a visual/pointer surface. */
   label: string;
   /** "lg" for a dedicated, full-width home (module page); "md" elsewhere. */
   size?: "md" | "lg";
 }
 
 const SIZES = {
-  md: { colWidth: 248, nodeWidth: 210, rowHeight: 52, circleR: 11, text: "text-xs" },
-  lg: { colWidth: 300, nodeWidth: 250, rowHeight: 60, circleR: 13, text: "text-sm" },
+  md: { colWidth: 252, nodeWidth: 200, rowHeight: 54, circleR: 11, text: "text-xs" as const, viewport: 380 },
+  lg: { colWidth: 300, nodeWidth: 240, rowHeight: 62, circleR: 13, text: "text-sm" as const, viewport: 540 },
 } as const;
 
-interface PlacedNode {
-  node: MindMapNode;
-  x: number;
-  y: number;
-  depth: number;
-  hasChildren: boolean;
-  isExpanded: boolean;
-}
-
-interface Edge {
-  fromX: number;
-  fromY: number;
-  toX: number;
-  toY: number;
-}
+const nodeTypes = { concept: ConceptMapNode };
 
 function layoutTree(
   root: MindMapNode,
   expanded: Set<string>,
   dims: (typeof SIZES)[keyof typeof SIZES],
-) {
-  const placed: PlacedNode[] = [];
+  onToggle: (id: string) => void,
+): { nodes: Node<ConceptMapNodeData>[]; edges: Edge[] } {
+  const nodes: Node<ConceptMapNodeData>[] = [];
   const edges: Edge[] = [];
   let row = 0;
 
@@ -47,130 +45,116 @@ function layoutTree(
     const isExpanded = hasChildren && expanded.has(node.id);
     const x = depth * dims.colWidth;
 
+    let y: number;
     if (!isExpanded) {
-      const y = row * dims.rowHeight + dims.rowHeight / 2;
+      y = row * dims.rowHeight;
       row += 1;
-      placed.push({ node, x, y, depth, hasChildren, isExpanded });
-      return y;
+    } else {
+      const childYs = node.children!.map((child) => visit(child, depth + 1));
+      y = (childYs[0]! + childYs[childYs.length - 1]!) / 2;
+      for (const child of node.children!) {
+        edges.push({
+          id: `${node.id}->${child.id}`,
+          source: node.id,
+          target: child.id,
+          type: "default",
+          animated: false,
+          style: { stroke: "var(--accent)", strokeOpacity: 0.4, strokeWidth: 1.5 },
+        });
+      }
     }
 
-    const childYs = node.children!.map((child) => visit(child, depth + 1));
-    const y = (childYs[0]! + childYs[childYs.length - 1]!) / 2;
-    placed.push({ node, x, y, depth, hasChildren, isExpanded });
-    const fromX = x + dims.nodeWidth + dims.circleR * 2;
-    for (const toY of childYs) {
-      edges.push({
-        fromX,
-        fromY: y,
-        toX: depth * dims.colWidth + dims.colWidth,
-        toY,
-      });
-    }
+    nodes.push({
+      id: node.id,
+      type: "concept",
+      position: { x, y },
+      draggable: false,
+      connectable: false,
+      selectable: false,
+      data: {
+        label: node.label,
+        isRoot: depth === 0,
+        isLeaf: !hasChildren,
+        isExpanded,
+        childCount: node.children?.length ?? 0,
+        width: dims.nodeWidth,
+        textSize: dims.text,
+        circleSize: dims.circleR * 2,
+        onToggle: () => onToggle(node.id),
+      },
+    });
+
     return y;
   }
 
   visit(root, 0);
-  const maxDepth = Math.max(...placed.map((p) => p.depth));
-  const width = maxDepth * dims.colWidth + dims.nodeWidth + dims.circleR * 2 + 8;
-  const height = Math.max(row * dims.rowHeight, dims.rowHeight);
-  return { placed, edges, width, height };
+  return { nodes, edges };
+}
+
+function ConceptMindMapInner({ root, label, size = "md" }: ConceptMindMapProps) {
+  const dims = SIZES[size];
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set([root.id]));
+  const { fitView } = useReactFlow();
+
+  const toggle = useCallback(
+    (id: string) => {
+      setExpanded((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return next;
+      });
+      window.setTimeout(() => fitView({ duration: 300, padding: 0.2 }), 20);
+    },
+    [fitView],
+  );
+
+  const { nodes, edges } = useMemo(
+    () => layoutTree(root, expanded, dims, toggle),
+    [root, expanded, dims, toggle],
+  );
+
+  return (
+    <div
+      className="overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-background/40"
+      style={{ height: dims.viewport }}
+      role="img"
+      aria-label={`${label} concept map`}
+    >
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        fitView
+        fitViewOptions={{ padding: 0.2 }}
+        minZoom={0.4}
+        maxZoom={2.2}
+        nodesDraggable={false}
+        nodesConnectable={false}
+        elementsSelectable={false}
+        proOptions={{ hideAttribution: true }}
+      >
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1} className="opacity-40" />
+        <Controls
+          showInteractive={false}
+          className="!rounded-[length:var(--radius-md)] !border !border-border !bg-elevated !shadow-none"
+        />
+      </ReactFlow>
+    </div>
+  );
 }
 
 /**
- * A horizontal, click-to-expand concept map — the same interaction shape
- * as NotebookLM's Mind Map, rebuilt as a real (theme-aware, keyboard-
- * accessible) component instead of a raster export. Root's first level
- * starts open; everything deeper starts collapsed.
+ * A pannable, zoomable concept map on a React Flow canvas — the same
+ * click-to-expand interaction shape as NotebookLM's Mind Map. Root's first
+ * level starts open; everything deeper starts collapsed. Node position
+ * changes (from expanding/collapsing a branch) and pan/zoom both animate
+ * smoothly via React Flow's built-in transitions.
  */
-export function ConceptMindMap({ root, label, size = "md" }: ConceptMindMapProps) {
-  const dims = SIZES[size];
-  const [expanded, setExpanded] = useState<Set<string>>(() => new Set([root.id]));
-  const titleId = useId();
-
-  const { placed, edges, width, height } = useMemo(
-    () => layoutTree(root, expanded, dims),
-    [root, expanded, dims],
-  );
-
-  function toggle(id: string) {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
+export function ConceptMindMap(props: ConceptMindMapProps) {
   return (
-    <div className="overflow-x-auto overflow-y-hidden">
-      <div
-        role="img"
-        aria-labelledby={titleId}
-        className="relative motion-reduce:[&_*]:transition-none"
-        style={{ width, height, minWidth: "100%" }}
-      >
-        <span id={titleId} className="sr-only">
-          {label} concept map
-        </span>
-        <svg
-          className="pointer-events-none absolute inset-0"
-          width={width}
-          height={height}
-          aria-hidden
-        >
-          {edges.map((e, i) => {
-            const midX = (e.fromX + e.toX) / 2;
-            return (
-              <path
-                key={i}
-                d={`M ${e.fromX} ${e.fromY} C ${midX} ${e.fromY}, ${midX} ${e.toY}, ${e.toX} ${e.toY}`}
-                fill="none"
-                stroke="var(--accent)"
-                strokeOpacity={0.35}
-                strokeWidth={1.5}
-              />
-            );
-          })}
-        </svg>
-        {placed.map(({ node, x, y, depth, hasChildren, isExpanded }) => {
-          const isRoot = depth === 0;
-          return (
-            <div
-              key={node.id}
-              className="absolute flex -translate-y-1/2 items-center gap-1.5"
-              style={{ left: x, top: y, width: dims.nodeWidth + dims.circleR * 2 }}
-            >
-              <div
-                className={
-                  isRoot
-                    ? `flex min-h-9 w-full items-center rounded-[length:var(--radius-md)] bg-accent px-3 py-1.5 font-semibold text-on-pop ${dims.text}`
-                    : `flex min-h-9 w-full items-center rounded-[length:var(--radius-md)] border border-border bg-elevated px-3 py-1.5 leading-snug text-foreground ${dims.text}`
-                }
-                style={{ width: dims.nodeWidth }}
-              >
-                {node.label}
-              </div>
-              {hasChildren ? (
-                <button
-                  type="button"
-                  onClick={() => toggle(node.id)}
-                  aria-expanded={isExpanded}
-                  aria-label={`${isExpanded ? "Collapse" : "Expand"} ${node.label}`}
-                  className="flex shrink-0 items-center justify-center rounded-full border border-accent/40 bg-elevated text-accent transition hover:bg-accent/10 motion-reduce:transition-none"
-                  style={{ height: dims.circleR * 2, width: dims.circleR * 2 }}
-                >
-                  <CaretRight
-                    weight="bold"
-                    className={`h-3 w-3 transition-transform motion-reduce:transition-none ${
-                      isExpanded ? "rotate-90" : ""
-                    }`}
-                  />
-                </button>
-              ) : null}
-            </div>
-          );
-        })}
-      </div>
-    </div>
+    <ReactFlowProvider>
+      <ConceptMindMapInner {...props} />
+    </ReactFlowProvider>
   );
 }
