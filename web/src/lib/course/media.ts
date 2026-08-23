@@ -8,17 +8,10 @@ function publicPathIfExists(...segments: string[]): string | undefined {
   return `/media/${segments.join("/")}`;
 }
 
-/** Module-level video overview + concept map, generated per module. */
-export function getModuleMedia(moduleSlug: string) {
-  return {
-    videoSrc: publicPathIfExists(moduleSlug, "video.mp4"),
-    mindMapSrc: publicPathIfExists(moduleSlug, "mindmap.webp"),
-  };
-}
-
-/** Chapter-level audio walkthrough + infographic, generated per concept lesson. */
+/** Chapter-level video, audio walkthrough, and infographic — generated per concept lesson. */
 export function getChapterMedia(moduleSlug: string, lessonSlug: string) {
   return {
+    videoSrc: publicPathIfExists(moduleSlug, `video-${lessonSlug}.mp4`),
     audioSrc: publicPathIfExists(moduleSlug, `audio-${lessonSlug}.m4a`),
     infographicSrc: publicPathIfExists(
       moduleSlug,

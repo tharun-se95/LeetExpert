@@ -125,6 +125,7 @@ export default async function LessonPage({ params }: PageProps) {
       stage={Embed ? <Embed /> : undefined}
       media={
         <ChapterMedia
+          videoSrc={chapterMedia.videoSrc}
           audioSrc={chapterMedia.audioSrc}
           infographicSrc={chapterMedia.infographicSrc}
           infographicAlt={`At-a-glance infographic for ${meta.lesson.title}`}
