@@ -14,10 +14,21 @@ know sizes up front. The dynamic array's answer:
 3. when an append finds length == capacity, allocate a **bigger** block,
    copy everything over, and retire the old one.
 
-The whole design question is step 3: *how much bigger?* You proved the
-answer in the Big O module: grow **multiplicatively** (double), and the
-occasional O(n) copy averages out to O(1) amortized per append; grow
-additively and appends degrade to O(n) amortized. Now we build it.
+The whole design question is step 3: *how much bigger?* Two policies, two
+outcomes — worth re-deriving here since the implementation below hinges on
+picking the right one:
+
+- **Multiplicative (double capacity).** Copies happen at sizes
+  1, 2, 4, 8, …, n — a geometric series summing to under 2n total copies
+  across n appends. Spread over n appends, that's O(1) amortized each (you
+  proved this fully in the Big O module).
+- **Additive (`capacity += c`).** Copies happen every c appends, at sizes
+  c, 2c, 3c, …, n — an arithmetic series summing to Θ(n²/c). Spread over n
+  appends, that's Θ(n/c) amortized each: still growing with n, not
+  constant. A fixed increment never escapes O(n) amortized, no matter how
+  large you pick c.
+
+Now we build the multiplicative version.
 
 ## The implementation
 

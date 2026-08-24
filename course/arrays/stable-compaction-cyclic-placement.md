@@ -93,9 +93,15 @@ and where the next one starts.
 
 That is the trap, drawn. With n = 6 and k = 2 the arrows do *not* form one
 big loop — they form two disjoint cycles. Following displacements from
-index 0 returns you to 0 having moved only half the array. So the
-algorithm has to notice the cycle closed, jump to an index it hasn't
-touched, and go again.
+index 0 returns you to 0 having moved only half the array.
+
+In general, shifting n elements by k splits them into exactly gcd(n, k)
+disjoint cycles, each of length n / gcd(n, k) — here gcd(6, 2) = 2, so two
+cycles of length 3. Change the shift and the shape changes with it:
+n = 5, k = 2 gives gcd(5, 2) = 1, a single cycle that touches all 5
+elements before closing. So the algorithm can't assume one pass through
+the array finishes the job — it has to notice when a cycle closes, jump to
+an index it hasn't touched, and go again.
 
 Rotate Array offers it as the expert variant, and "index as destination"
 comes back in cycle sort and several hard problems.

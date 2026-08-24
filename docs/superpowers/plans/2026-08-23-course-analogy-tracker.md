@@ -125,6 +125,17 @@ content-quality review (gaps, awkward transitions, where a concrete
 worked example beats an assertion) instead of a forced-analogy draft.
 See `feedback_analogy_selectivity` memory for the full correction.
 
+**arrays: retroactively re-reviewed (2026-08-25).** Per the correction
+above, ran the same content-quality NotebookLM pass used for strings
+against the already-shipped arrays lessons. It flagged 4 real derivation
+gaps (front-insertion triangular-sum closed form, a concrete cache-line
+ratio, a self-contained multiplicative-vs-additive growth derivation, and
+a general gcd(n,k)-cycles rule for cyclic placement) — all added, hand-
+verified. It also flagged 2 gaps that independent verification showed
+were already fully covered in the shipped text (lesson 3's tuple-swap
+explanation, lesson 4's write≤read safety proof) — left unchanged. See
+`docs/superpowers/plans/analogies/arrays.md` for the full breakdown.
+
 **strings: Phase 1 complete (2026-08-26).** Curriculum-designer review
 recommended splitting "The String Toolkit" (mixed low-level char
 arithmetic, high-level API costs, and two-pointer idioms in one lesson)

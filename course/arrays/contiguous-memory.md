@@ -46,17 +46,21 @@ Every array cost is a consequence of "contiguous, equal-sized, packed":
 
 The shifting cost is the one people forget. `list.insert(0, x)` /
 `arr.unshift(x)` reads as one line but moves the entire array. A loop doing
-n front-insertions is the triangular sum again: 1 + 2 + ⋯ + n = O(n²) —
-one of the most common accidental quadratics in real code.
+n front-insertions costs 1 + 2 + ⋯ + n shifts — the triangular sum,
+n(n+1)/2 — which is Θ(n²): one of the most common accidental quadratics in
+real code.
 
 ## Cache locality: the hidden second superpower
 
 Modern CPUs don't fetch one value from RAM at a time — they pull a **cache
-line** (typically 64 bytes) into fast cache. When you scan an array in
-order, each fetch brings the next several elements along for free; the CPU
-even detects the pattern and prefetches ahead. Scanning a linked structure
-scattered across memory defeats both effects — every hop is a potential
-cache miss costing ~100× a cache hit.
+line** (typically 64 bytes) into fast cache. Concretely: a 64-byte line
+holds sixteen 4-byte integers, so reading `arr[0]` pulls `arr[0..15]` in
+together — the next fifteen reads (15/16, ~94%) hit cache for free before
+the CPU fetches again. Scan in order and every fetch brings the next
+several elements along for free this way; the CPU even detects the pattern
+and prefetches ahead. Scanning a linked structure scattered across memory
+defeats both effects — every hop is a potential cache miss costing ~100× a
+cache hit.
 
 This doesn't change any Big O class — a scan is O(n) either way — but it's
 a constant factor of 10–100× in real time, and it's why "array + index
