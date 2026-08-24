@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { FilmSlate, X } from "@phosphor-icons/react/dist/ssr";
 import { VideoPlayer } from "@/components/course/VideoPlayer";
 
@@ -38,34 +39,37 @@ export function WatchLessonLink({ videoSrc, lessonTitle }: WatchLessonLinkProps)
         Watch this lesson
       </button>
 
-      {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/25 p-4 backdrop-blur-[2px]"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) setOpen(false);
-          }}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Video: ${lessonTitle}`}
-            className="relative w-full max-w-3xl"
-          >
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Close video"
-              className="absolute -top-11 right-0 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-elevated text-foreground transition hover:bg-surface"
+      {open
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/25 p-4 backdrop-blur-[2px]"
+              onMouseDown={(e) => {
+                if (e.target === e.currentTarget) setOpen(false);
+              }}
             >
-              <X weight="bold" className="h-4 w-4" />
-            </button>
-            <VideoPlayer
-              src={videoSrc}
-              ariaLabel={`Video walkthrough of ${lessonTitle}`}
-            />
-          </div>
-        </div>
-      ) : null}
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-label={`Video: ${lessonTitle}`}
+                className="relative w-full max-w-3xl"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close video"
+                  className="absolute -top-11 right-0 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-elevated text-foreground transition hover:bg-surface"
+                >
+                  <X weight="bold" className="h-4 w-4" />
+                </button>
+                <VideoPlayer
+                  src={videoSrc}
+                  ariaLabel={`Video walkthrough of ${lessonTitle}`}
+                />
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }
