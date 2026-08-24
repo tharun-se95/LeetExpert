@@ -78,6 +78,74 @@ none. Audio and infographic are present for all 4. This isn't a prose defect
 four asset types. **Action:** generate the missing 3 videos before treating
 hash-tables as the fully-realized reference module (see §4, Task A).
 
+**Superseded by §1.5 below** — the module was restructured to 6 lessons
+the same day, which changes which lessons need which assets.
+
+---
+
+## 1.5 Restructure execution + media session (2026-08-24, later the same day)
+
+Executed the §2.5 curriculum-designer recommendation from earlier in the
+day: split `collision-resolution.md` into `collision-chaining.md` and
+`collision-open-addressing.md`, added a new `keys-immutability-hashing.md`
+lesson, expanded `hash-patterns.md` with a formal Maps-vs-Sets section, and
+updated `manifest.ts`, the two lesson-count tests, and the concept map.
+`npm test` (551), `npm run build` (214→~ lessons), and all 6 lessons
+spot-checked rendering correctly. Full detail in the git log (3 commits:
+content restructure, concept-map update, and this doc).
+
+**Media generation session (same NotebookLM notebook, sources refreshed to
+the split lesson content):**
+
+| Lesson | Audio | Infographic | Video |
+| --- | :-: | :-: | :-: |
+| 1. Hashing Fundamentals | had it already | had it already | attempted — likely blocked by daily cap, unconfirmed |
+| 2. Collision: Chaining | reused old combined-lesson asset (renamed) | reused old combined-lesson asset (renamed) | reused old combined-lesson asset (renamed) |
+| 3. Build a Hash Map | had it already | had it already | attempted — blocked by daily cap |
+| 4. Collision: Open Addressing | **generated** ("Linear probing and the tombstone fix") | **generated** ("Open Addressing Hash Table Guide") | **generated** ("The Contiguous Hash: Density, Degradation...") |
+| 5. Keys, Immutability & Crypto | **generated** ("Why Mutating Hash Keys Destroys Data") | **generated** ("Keys and Hashing Infographic") | **generated** ("Anatomy of a Lost Package: Three Ways Hashing Fails") |
+| 6. Four Hash Patterns | stale — predates the Sets section, not regenerated this pass | stale — same reason | never had one (pre-existing gap) |
+
+Also regenerated the Mind Map for the full 6-lesson structure ("Hashing
+Mindmap", 7 sources) and transcribed it into
+`web/src/lib/course/conceptMaps/hashTables.ts` (verified the Fundamentals
+branch node-by-node against the live mind map; the rest transcribed from
+the lesson content directly, same method as the original concept map).
+
+**Two hard blockers hit, both worth knowing for every future module pass:**
+
+1. **NotebookLM's Cinematic Video Overview has a daily generation cap on
+   this account.** 2 videos generated successfully this session (lessons 4
+   and 5); a 3rd attempt (lesson 1) showed no confirmable result and a 4th
+   (lesson 3) was explicitly refused with "You have reached your daily
+   Cinematics limit, come back later." **Budget roughly 2 Cinematic videos
+   per notebook per day** when planning a module's media session — spread
+   video generation for a 6+ lesson module across multiple days, or across
+   multiple days per module during the 23-module rollout.
+2. **This session's browser sandbox cannot retrieve the generated binary
+   files.** NotebookLM's "Download" action triggers a client-side blob
+   download (confirmed via DOM inspection — no plain `<audio>`/`<video>`
+   src, no downloadable network request; Google's batchexecute RPC
+   protocol serves the bytes directly into a blob URL the browser
+   click-downloads), and this session's sandboxed automation environment
+   does not surface that download anywhere on the local filesystem
+   (checked `~/Downloads`, the platform's real download dir, and
+   `~/.claude/downloads`, the tool's documented download landing spot —
+   both stayed empty after multiple confirmed download-button clicks).
+   **All 5 assets generated this session (audio ×2, infographic ×2, video
+   ×2 — see table above) exist and are playable inside the NotebookLM
+   notebook itself, but are NOT yet in `web/public/media/hash-tables/`.**
+   Getting them from NotebookLM into the repo needs either: the user
+   downloading them manually (they have an unsandboxed browser) and
+   handing the files over, or a different automation surface than this
+   session's Browser pane that can complete a real file download. Until
+   one of those happens, lessons 4 and 5 have no shipped media despite
+   the source material existing and being generated.
+
+**Revised action for Task A:** don't just generate the missing videos —
+first solve the download-retrieval blocker (item 2 above), since it now
+blocks *all* newly generated assets from this session, not just video.
+
 ---
 
 ## 2. Per-module structural review checklist
@@ -327,13 +395,33 @@ already shipped:
 
 ### Task A: Close the hash-tables gap (do first — it's the reference module)
 
-- [ ] Generate Video Overviews for `hashing-fundamentals`,
-      `build-a-hash-map`, `hash-patterns` (the pilot's hash-tables notebook
-      already has all sources loaded — reuse it, don't recreate).
-- [ ] Compress and land at `web/public/media/hash-tables/video-<slug>.mp4`
-      for each.
-- [ ] Confirm `WatchLessonLink` appears in all 4 lessons' headers.
+Superseded by the §1.5 restructure and media session — updated to the
+current, real state:
+
+- [ ] **Solve the download-retrieval blocker first** (§1.5, item 2). Until
+      this works, nothing generated in NotebookLM can reach
+      `web/public/media/`. Likely needs the user to download manually from
+      the notebook UI (they have a real, unsandboxed browser) and hand the
+      files over, or a different tool/session with real download access.
+- [ ] Once downloads work: retrieve and compress (§3.2) the 6 assets
+      already generated and sitting in the notebook: `collision-open-
+      addressing`'s audio/infographic/video ("Linear probing and the
+      tombstone fix" / "Open Addressing Hash Table Guide" / "The
+      Contiguous Hash: Density, Degradation..."), and
+      `keys-immutability-hashing`'s audio/infographic/video ("Why Mutating
+      Hash Keys Destroys Data" / "Keys and Hashing Infographic" /
+      "Anatomy of a Lost Package: Three Ways Hashing Fails"). Land them at
+      `web/public/media/hash-tables/<type>-<slug>.<ext>`.
+- [ ] Generate (mind the ~2/day Cinematic video cap from §1.5) the still-
+      missing Video Overviews for `hashing-fundamentals`, `build-a-hash-
+      map`, and `hash-patterns`.
+- [ ] Regenerate `hash-patterns`' audio + infographic — the shipped ones
+      predate the Maps-vs-Sets expansion and are now stale.
+- [ ] Confirm `WatchLessonLink` appears in all 6 lessons' headers that
+      have a video.
 - [ ] `npm test && npm run build`, spot-check in browser, commit.
+- [ ] Update the tracker's hash-tables row once all 6 lessons have all
+      3 media types.
 
 ### Task B: Extend the tracker to track asset completeness, not just prose
 

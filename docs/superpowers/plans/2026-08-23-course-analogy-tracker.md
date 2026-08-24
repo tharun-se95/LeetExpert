@@ -15,7 +15,7 @@ concept map is transcribed and registered
 
 | Module | Lessons | Prose | Audio | Video | Infographic | Mind Map |
 | --- | --- | :-: | :-: | :-: | :-: | :-: |
-| hash-tables | hashing-fundamentals, collision-resolution, build-a-hash-map, hash-patterns | x | x | 1/4 | x | x |
+| hash-tables | hashing-fundamentals, collision-chaining, build-a-hash-map, collision-open-addressing, keys-immutability-hashing, hash-patterns | x | 4/6 shipped, 2/6 generated-not-shipped | 1/6 shipped, 2/6 generated-not-shipped | 4/6 shipped, 2/6 generated-not-shipped | x (updated for 6 lessons) |
 | getting-started | course-introduction, course-roadmap, how-lessons-work | | | | | |
 | big-o | analyzing-code, common-complexity-classes, big-o-notation, best-worst-average-amortized, complexity-drills, why-efficiency-matters, space-complexity | | | | | |
 | arrays | contiguous-memory, in-place-techniques, dynamic-arrays | | | | | |
@@ -40,8 +40,13 @@ concept map is transcribed and registered
 | dynamic-programming | 1d-dp-patterns, 2d-dp-patterns, from-recursion-to-memoization, tabulation-and-space-optimization, knapsack-style-dp | | | | | |
 | math-for-dsa | counting-and-combinatorics, logarithms-and-exponents, divisibility-primes-gcd, modular-arithmetic, math-drills | | | | | |
 
-**hash-tables note:** prose/audio/infographic/mind-map complete and
-content-reviewed (2026-08-24 — see the media-rollout spec §1 for the review
-findings). Video is 1/4 (`collision-resolution` only) — generating the
-other 3 is Task A of the media-rollout spec, and should close before this
-row counts as fully done.
+**hash-tables note:** restructured to 6 lessons 2026-08-24 per the
+curriculum-designer review (media-rollout spec §2.5/§1.5) and content-
+reviewed (spec §1). A media-generation session the same day produced full
+audio/infographic/video for `collision-open-addressing` and
+`keys-immutability-hashing`, but **those 6 files are stuck inside the
+NotebookLM notebook** — this session's browser sandbox couldn't complete
+the download to disk (spec §1.5, blocker 2). `hash-patterns`' audio/
+infographic are stale (predate its Sets-section expansion). Task A of the
+media-rollout spec has the full punch list; solving the download blocker
+is the prerequisite for the rest of it.
