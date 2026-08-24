@@ -1,3 +1,4 @@
+import { bigOConceptMap } from "./bigO";
 import { gettingStartedConceptMap } from "./gettingStarted";
 import { hashTablesConceptMap } from "./hashTables";
 import type { MindMapNode } from "./types";
@@ -5,6 +6,7 @@ import type { MindMapNode } from "./types";
 /** Concept map trees, keyed by module slug. Not every module has one yet. */
 export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   "getting-started": gettingStartedConceptMap,
+  "big-o": bigOConceptMap,
   "hash-tables": hashTablesConceptMap,
 };
 

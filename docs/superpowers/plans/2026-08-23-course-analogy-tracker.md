@@ -25,8 +25,8 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | Module | Lessons | Prose | Audio | Video | Infographic | Mind Map |
 | --- | --- | :-: | :-: | :-: | :-: | :-: |
 | hash-tables | hashing-fundamentals, collision-chaining, build-a-hash-map, collision-open-addressing, keys-immutability-hashing, hash-patterns | x | x | x | x | x |
-| getting-started | course-introduction, how-lessons-work, writing-and-running-code, course-roadmap | x | | | | x |
-| big-o | analyzing-code, common-complexity-classes, big-o-notation, best-worst-average-amortized, complexity-drills, why-efficiency-matters, space-complexity | | | | | |
+| getting-started | course-introduction, how-lessons-work, writing-and-running-code, course-roadmap | | | | | x |
+| big-o | why-efficiency-matters, big-o-notation, common-complexity-classes, input-dependency-best-worst-average, analyzing-loops-api-complexity, analyzing-recursion-tree-method, amortized-analysis-dynamic-arrays, space-complexity, complexity-drills | x | | | | x |
 | arrays | contiguous-memory, in-place-techniques, dynamic-arrays | | | | | |
 | two-pointers | converging-pointers, partition-pointers | | | | | |
 | sliding-window | dynamic-windows, fixed-size-windows | | | | | |

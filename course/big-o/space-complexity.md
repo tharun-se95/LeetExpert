@@ -3,18 +3,26 @@ title: Space Complexity
 type: concept
 ---
 
-## Counting memory instead of time
+## The counter space on your desk
 
-Space complexity applies the same O machinery to memory. One distinction
+Back at your sorting desk, there's another cost besides how long a task
+takes: how much physical counter space it eats up while you work. Space
+complexity applies the same O machinery to memory, and one distinction
 does most of the work:
 
-- **Total space** — everything, including the input itself.
-- **Auxiliary space** — only the *extra* memory the algorithm allocates.
+- **Total space** — everything on the desk, including the original bin of
+  mail itself.
+- **Auxiliary space** — only the *extra* counter space you personally
+  clear for scratch work.
 
-An algorithm that reads an n-element array and keeps one running maximum
-uses O(n) total space but **O(1) auxiliary** — and auxiliary is what people
-mean by default, since the input's size isn't the algorithm's doing.
-"In-place" means O(1) (or sometimes O(log n)) auxiliary space.
+If you read through a stack of n letters and just keep one running "best
+so far" letter off to the side, you're using the whole desk (O(n) total,
+since the bin of letters is sitting there) but only a single extra spot
+for your "best so far" letter (**O(1) auxiliary**) — and auxiliary is
+what people mean by default, since the size of the incoming bin isn't
+something you chose. "In-place" means O(1) (or sometimes O(log n))
+auxiliary space, exactly like clearing almost no extra counter space at
+all.
 
 ````tabs
 ```python
@@ -53,9 +61,14 @@ function sortedCopy(nums: number[]): number[] {
 
 ## The memory you don't see: the call stack
 
-Every active function call occupies a **stack frame** (parameters, locals,
-return address). Recursion therefore costs memory proportional to its
-**depth** — even if no frame allocates anything:
+Recall the office hierarchy from the recursion lesson — every manager who
+delegates a task has to keep a sticky note on their own desk reminding
+them what they're still waiting on, until their subordinate reports back.
+Every active function call occupies a **stack frame** (parameters,
+locals, return address) the exact same way — a pile of sticky notes,
+one per manager still waiting in the delegation chain. Recursion
+therefore costs memory proportional to its **depth** — even if no frame
+allocates anything:
 
 ````tabs
 ```python
@@ -103,9 +116,9 @@ Same time complexity, different space — and the recursive one actually
 crashes: Python's default recursion limit (~1000) and JS engines' stack
 sizes both make `sum_to(100_000)` a stack-overflow error, not a slow call.
 Depth matters differently per shape: binary search recursion is log n deep
-→ O(log n) space; DFS on a path-shaped graph can be n deep → O(n). When we
-analyze recursive algorithms from here on, stack depth is always part of
-the space answer.
+→ O(log n) space (a single-chain delegation, one sticky note at a time);
+DFS on a path-shaped graph can be n deep → O(n). When we analyze recursive
+algorithms from here on, stack depth is always part of the space answer.
 
 ```complexity
 {
@@ -121,11 +134,12 @@ the space answer.
 ## The time–space trade
 
 A huge fraction of algorithm design is *buying time with memory*. You've
-already seen it: lesson 1's pair-sum went from O(n²) time / O(1) space to
-O(n) time / **O(n) space** — the `seen` set is the purchase. Prefix sums,
-memoization, and hash indexes are all the same transaction. The reverse
-trade exists too (recomputing instead of storing, when memory is the scarce
-resource).
+already seen it: lesson 1's gift-card board strategy went from O(n²) time
+/ O(1) space (the walk-around, empty-handed) to O(n) time / **O(n) space**
+(the chalkboard is the purchase — you spent counter space to save
+walking time). Prefix sums, memoization, and hash indexes are all the
+same transaction. The reverse trade exists too (recomputing instead of
+storing, when memory is the scarce resource).
 
 Neither direction is "better." The skill is noticing that the trade is
 available and pricing both sides — which is why every problem lesson in

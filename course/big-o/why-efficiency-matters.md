@@ -3,16 +3,42 @@ title: Why Efficiency Matters
 type: concept
 ---
 
-## Two correct programs, one useless
+## The gift-card matching game
 
-Here is a task: given a list of numbers and a target, decide whether any two
-of them sum to the target.
+Picture a community center hosting a mixer. Every guest walks in holding a
+custom card with a dollar amount printed on it — could be anything, $5,
+$40, $73. The organizer's game: find any two guests whose cards add up to
+exactly $100, so they can be paired off for a prize.
 
-Both of these solve it correctly:
+You're handed the job of finding that pair, and there are two ways to play it.
+
+**The walk-around strategy.** Take the first guest by the hand, walk them
+around the room, and compare their card against every other guest's,
+one by one. No match? Take the second guest and walk *them* around to
+compare against everyone remaining. Repeat for every guest in the room.
+
+**The board strategy.** Set up a large chalkboard at the entrance. As each
+guest walks in, look at their card amount — say, $40 — calculate the
+matching partner value needed to reach $100 (which is $60), and check the
+board to see if "$60" is already written there. If it isn't, you write
+their "$40" on the board and let them join the party.
+
+With 1,000 guests, both strategies feel instant. But scale the guest list
+to 100,000, and the walk-around strategy becomes an absolute
+nightmare — taking about 50 seconds — whereas the board strategy finishes
+in a single millisecond. Scale to 10 million guests, and the walk-around
+strategy takes entire days of non-stop walking, while the board strategy
+finishes in 0.1 seconds because you only look at each guest once and do a
+quick glance at the board. **The walk-around strategy didn't just get a
+little slower; it fell off a cliff.**
+
+Here's why that's actually true, in code. Both strategies below solve the
+identical task — given a list of numbers and a target, decide whether any
+two of them sum to the target — and both are correct:
 
 ````tabs
 ```python
-# Version A — check every pair
+# Version A — check every pair (the walk-around strategy)
 def has_pair_a(nums: list[int], target: int) -> bool:
     n = len(nums)
     for i in range(n):
@@ -22,7 +48,7 @@ def has_pair_a(nums: list[int], target: int) -> bool:
     return False
 
 
-# Version B — remember what we've seen
+# Version B — remember what we've seen (the board strategy)
 def has_pair_b(nums: list[int], target: int) -> bool:
     seen = set()
     for x in nums:
@@ -33,7 +59,7 @@ def has_pair_b(nums: list[int], target: int) -> bool:
 ```
 
 ```typescript
-// Version A — check every pair
+// Version A — check every pair (the walk-around strategy)
 function hasPairA(nums: number[], target: number): boolean {
   const n = nums.length;
   for (let i = 0; i < n; i++) {
@@ -44,7 +70,7 @@ function hasPairA(nums: number[], target: number): boolean {
   return false;
 }
 
-// Version B — remember what we've seen
+// Version B — remember what we've seen (the board strategy)
 function hasPairB(nums: number[], target: number): boolean {
   const seen = new Set<number>();
   for (const x of nums) {
@@ -56,10 +82,11 @@ function hasPairB(nums: number[], target: number): boolean {
 ```
 ````
 
-For 1,000 numbers, both feel instant. Scale the input and watch what
-happens. Version A does roughly n²/2 pair-checks; Version B does n set
-operations. Assuming a machine that does about 10⁸ simple operations per
-second:
+Version A does roughly n²/2 pair-checks — every guest checked against
+every other guest, exactly like the walk-around. Version B does n set
+operations — one glance at the board per guest. Assuming a machine that
+does about 10⁸ simple operations per second, the gap between the two
+matches the party exactly:
 
 | n | Version A (~n²/2 ops) | Version B (~n ops) |
 | --- | --- | --- |
@@ -67,10 +94,8 @@ second:
 | 100,000 | ~50 s | ~1 ms |
 | 10,000,000 | ~6 days | ~0.1 s |
 
-Version A didn't get a little worse — it fell off a cliff. At ten million
-elements, one program finishes before you release the Enter key and the
-other finishes next week. **Nothing about correctness distinguishes them.
-Only their growth behavior does.**
+**Nothing about correctness distinguishes them. Only their growth
+behavior does.**
 
 ```diagram
 {
@@ -83,11 +108,16 @@ Only their growth behavior does.**
 
 ## Growth beats hardware
 
-The instinctive fix — "run it on a faster machine" — doesn't work, and it's
-worth seeing exactly why. Suppose you buy a machine that is 100× faster.
-For Version B, you can now handle 100× more data in the same time. For
-Version A, doubling your input quadruples the work, so a 100× faster
-machine only buys you **10× more data** (because √100 = 10).
+Now imagine you could solve the walk-around strategy's scaling problem by
+hiring a super-speedy assistant who walks 100 times faster than you.
+Surely that fixes it? For the board strategy, a 100x faster assistant only
+needs to handle the *same* number of glances-at-the-board more quickly, so
+they can process 100x more guests in the same amount of time. But for the
+walk-around strategy, your 100x faster assistant can only handle **10x
+more guests** in the same amount of time — because doubling the guest
+list quadruples the number of handshakes needed, so the shape of the
+growth curve is a property of your *strategy*, and no amount of speedy
+helpers can budge it.
 
 The worse the growth, the less hardware helps:
 
@@ -101,6 +131,14 @@ growth curve is a property of your *algorithm*, and no amount of hardware
 budges it.
 
 ## Why we count "operations," not seconds
+
+If you tried to measure how fast your party game is running using a
+stopwatch, the time will change depending on if the host is tired, if the
+room is dimly lit, or what language the guests speak. To get a true
+measurement of the strategy itself, you must instead count basic physical
+actions — such as comparing two cards, or writing a number on the
+board — this count of actions is a permanent property of your strategy,
+completely independent of the environment.
 
 Measuring wall-clock time is fragile: it depends on the machine, the
 language, the compiler, what else is running. So instead we count **basic

@@ -1,64 +1,34 @@
 ---
-title: Best, Worst, Average & Amortized
+title: Amortized Analysis & Dynamic Arrays
 type: concept
 ---
 
-## One algorithm, several cost functions
+## The expanding shelf row
 
-"What does this algorithm cost?" is underspecified — cost varies with the
-*input*, not just its size. Ask the more precise question instead: cost
-over *which* inputs?
+Back at your sorting desk, you're managing a row of storage shelves for
+incoming packages. Normally, you have a designated row of shelves for
+incoming packages, and when a new package arrives, placing it in the next
+empty shelf slot is incredibly easy — just slide it in. But what happens
+when the row of shelves is completely full? You have to move your entire
+setup to a new, larger location. This is a massive, exhausting move: you
+must pick up every single package on the shelf and carry them, one by
+one, to the new rack.
 
-- **Worst case** — the maximum cost over all inputs of size n. The
-  guarantee; the default meaning of a bare complexity claim.
-- **Best case** — the minimum. Rarely useful alone, but it tells you what
-  the algorithm can exploit (sortedness, early exits).
-- **Average case** — the expected cost over some *distribution* of inputs.
-  Only meaningful once you say what distribution — that's the fine print.
+To make sure you don't spend all your time moving, you establish a rule:
+whenever your current shelf fills up, you build a new one that is exactly
+**twice** the size of the old one. The moves get larger and further
+apart, but they also become rarer, since it takes longer and longer
+periods of quick, single-slide-ins between moves.
 
-**Linear search** makes all three concrete. Searching for a target in an
-n-element list, one index at a time:
+This is a different question than the case-analysis lessons asked. The
+case-analysis lessons asked "what's a typical input?" — best, worst,
+average, all about a *single call* on inputs that differ. Amortized
+analysis asks something else entirely: **in any sequence of m
+operations on the same structure — including an adversarial one — what's
+the total cost, divided by m?** No probability anywhere; it's a worst-case
+statement, just about a *sequence* instead of a single call.
 
-- Target at index 0 → found on the first check → best case **Θ(1)**.
-- Target missing entirely → every index gets checked → worst case
-  **Θ(n)**.
-- Target equally likely at any position → on average you check about
-  halfway through: (0 + 1 + ⋯ + (n−1)) / n ≈ (n−1)/2 ≈ n/2 probes →
-  **Θ(n)**.
-
-Same code, three honest answers, depending only on what you assume about
-the input.
-
-## Two famous case-splits
-
-Two algorithms you already know quietly rely on this distinction — most
-people quote their average case as if it were a guarantee.
-
-**Quicksort** is Θ(n log n) on average but **Θ(n²) in the worst case**.
-With a naive pivot rule (always pick the last element), an *already-sorted*
-input produces splits of size 0 and n−1 every time — the recursion tree
-degenerates from a balanced tree into a straight path n levels deep, with
-O(n) partition work at each level: n × n = n². Randomizing the pivot
-doesn't make bad splits impossible — it makes them *unlikely* for any
-fixed input, because now the average is taken over the algorithm's own
-coin flips, not over "typical" inputs. That's a much stronger guarantee: it
-holds no matter what the input is. (The Sorting module builds this
-properly.)
-
-**Hash table lookup** is O(1) *average*, O(n) worst — if every key
-happens to land in the same bucket, lookup degenerates into a scan of
-that one bucket. Whether that's realistic is a real argument about hash
-functions and load factor, and the Hash Tables module makes it in full.
-For now: when you say "hash lookup is O(1)," know precisely which case
-you're quoting.
-
-## Amortized: charging peaks to quiet neighbors
-
-Amortized analysis answers a different question again. Not "what's a
-typical input?" (that's average case) but: **in any sequence of m
-operations — including an adversarial one — what's the total cost, divided
-by m?** No probability anywhere; it's a worst-case statement, just about a
-*sequence* instead of a single call.
+## Charging peaks to quiet neighbors
 
 The canonical example: appending to a **dynamic array** (Python `list`,
 JS array). Normally an append just writes to the next free slot: O(1).
@@ -74,12 +44,12 @@ starting from capacity 1:
 
 Most appends cost 1. The expensive ones (resizes) get *rarer* exactly as
 fast as they get *bigger* — they happen once the array reaches size 1, 2,
-4, 8, … doubling each time. Summing every cost through append 9 gives 24,
-for an average under 3 per append — even counting every spike. In general,
-for n appends
-the resize costs are 1 + 2 + 4 + ⋯ + n/2 ≈ n, plus n ordinary O(1) writes:
-about 2n total work for n appends → **O(1) amortized per append**. Watch
-the schedule play out — the work counter is the whole argument:
+4, 8, … doubling each time, exactly like your shelf-doubling rule. Summing
+every cost through append 9 gives 24, for an average under 3 per append —
+even counting every spike. In general, for n appends the resize costs are
+1 + 2 + 4 + ⋯ + n/2 ≈ n, plus n ordinary O(1) writes: about 2n total work
+for n appends → **O(1) amortized per append**. Watch the schedule play
+out — the work counter is the whole argument:
 
 ```viz
 { "id": "dynamic-array-growth", "values": [3, 7, 1, 9, 4] }
@@ -89,26 +59,32 @@ That direct sum works because we could see the whole resize schedule laid
 out in advance. Here's a technique that proves the same bound without
 needing to precompute anything — the **accounting method**, and it's the
 standard tool for amortized proofs you'll meet again later in the course.
-Pretend every append is charged **3 units**, not 1: one unit pays for the
-write happening right now, and two units go into a bank tied to that
-element. Consider the moment the array fills up and the next append
-triggers a resize, which must copy every one of its **n** current
-elements. The array was last resized when it held **n/2** elements (that
-resize doubled its capacity to n), so exactly the newest **n/2** of the
-current elements were appended *since* that last resize — and each of
-those is still carrying its 2 banked units, for exactly **n** units
-sitting in the bank. That's exactly enough to pay for copying all **n**
-elements at 1 unit each: the older surviving n/2 elements already spent
-their own banked units paying for the *previous* resize, so it's the
-newer half's bank, not their own, that covers this one. No operation
-ever needs to draw on an empty bank, so a flat charge of 3 units
-genuinely covers everything, spikes included. That's the proof
-— and it exposes *why* the growth factor has to be multiplicative. Grow by
-a fixed +10 slots instead of doubling, and a resize (cost ~n) comes due
-every 10 appends regardless of how large the array already is: total work
-~n²/20 for n appends, i.e. **O(n) amortized** — quadratic, not constant.
-Doubling isn't a stylistic convention; it's the one thing that makes the
-banking argument close.
+Imagine that every time you place a new package, you charge yourself **3
+tokens**, not 1: one token pays for the placement happening right now, and
+two tokens go into a bank tied to that package. Consider the moment the
+shelf fills up and the next package triggers a move, which must carry
+every one of its **n** current packages. The shelf was last expanded when
+it held **n/2** packages (that move doubled its capacity to n), so exactly
+the newest **n/2** of the current packages were placed *since* that last
+move — and each of those is still carrying its 2 banked tokens, for
+exactly **n** tokens sitting in the bank. That's exactly enough to pay for
+carrying all **n** packages at 1 token each: the older surviving n/2
+packages already spent their own banked tokens paying for the *previous*
+move, so it's the newer half's bank, not their own, that covers this one.
+No move ever needs to draw on an empty bank, so a flat charge of 3 tokens
+genuinely covers everything, spikes included. That's the proof — and it
+exposes *why* the growth factor has to be multiplicative.
+
+**The failure of fixed growth.** Now, imagine if you tried to save shelf
+space by only adding 10 shelves at a time instead of doubling. This means
+a grueling move of *all* the packages to a brand-new rack has to happen
+every single time you exceed your current 10 new packages. The effort of
+those moves becomes constant, and your banking system completely broke.
+Grow by a fixed +10 slots instead of doubling, and a resize (cost ~n)
+comes due every 10 appends regardless of how large the array already is:
+total work ~n²/20 for n appends, i.e. **O(n) amortized** — quadratic, not
+constant. Doubling isn't a stylistic convention; it's the one thing that
+makes the banking argument close.
 
 ## Using the right lens
 

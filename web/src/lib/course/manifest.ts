@@ -108,10 +108,18 @@ export const MODULES: ModuleMeta[] = [
       concept("why-efficiency-matters", "Why Efficiency Matters"),
       concept("big-o-notation", "Big O Notation, Precisely"),
       concept("common-complexity-classes", "The Common Complexity Classes"),
-      concept("analyzing-code", "Analyzing Loops & Recursion"),
       concept(
-        "best-worst-average-amortized",
-        "Best, Worst, Average & Amortized",
+        "input-dependency-best-worst-average",
+        "Input Dependency: Best, Worst, & Average",
+      ),
+      concept("analyzing-loops-api-complexity", "Analyzing Loops & API Complexity"),
+      concept(
+        "analyzing-recursion-tree-method",
+        "Analyzing Recursion: The Tree Method",
+      ),
+      concept(
+        "amortized-analysis-dynamic-arrays",
+        "Amortized Analysis & Dynamic Arrays",
       ),
       concept("space-complexity", "Space Complexity"),
       concept("complexity-drills", "Complexity Drills"),

@@ -3,6 +3,16 @@ title: The Common Complexity Classes
 type: concept
 ---
 
+## Spreading the word
+
+Imagine you need to spread an urgent message to everyone in a town. The
+effort and time it takes will scale based on the town's population — and
+depending on which strategy you use to spread the word, that scaling
+looks wildly different. Nearly every algorithm you'll meet in this course
+falls into one of seven such strategies. Use the curves below to see how
+brutally they separate as the town grows — then meet each one with the
+*reason* it shows up.
+
 ```diagram
 {
   "id": "complexity-curve",
@@ -11,10 +21,6 @@ type: concept
 ```
 
 ## The ladder
-
-Nearly every algorithm you'll meet lives in one of seven classes. Use the
-curves above to see how brutally they separate as n grows — then meet each
-class with the *reason* it shows up.
 
 | Class | Name | Shows up when… |
 | --- | --- | --- |
@@ -28,6 +34,11 @@ class with the *reason* it shows up.
 
 ## O(1) — constant
 
+**The megaphone.** If you can stand on a balcony in the town square and
+shout the message once, your effort is completely flat — whether the town
+has 10 people or 10 billion, you shout once and you're done. The work
+doesn't change based on town size.
+
 The work is the same whether n is ten or ten billion: array indexing,
 pushing onto a stack, a hash insert (on average — the Hash Tables module
 earns that claim properly).
@@ -37,8 +48,13 @@ O(1). It means *flat* — the curve doesn't rise.
 
 ## O(log n) — why "halving" means log
 
-Binary search checks the middle of a sorted array and discards half. How
-many halvings until one element remains? That's asking: how many times can
+**The phone tree.** You call two friends, each of whom calls two more
+friends, and so on. If the town's population doubles, it only adds one
+single round of calls to your total effort. Binary search checks the
+middle of a sorted array and discards half — same shape, one shout
+reaches half the remaining candidates each round.
+
+How many halvings until one element remains? That's asking: how many times can
 you divide n by 2? By definition, that number is **log₂ n** — the logarithm
 isn't a convention here, it's literally the answer to the question.
 
@@ -49,13 +65,20 @@ log₂ n = log₁₀ n / log₁₀ 2, a constant factor, which O absorbs.)
 
 ## O(n) — linear
 
-One bounded pass: summing an array, finding a max, the `seen`-set scan from
-lesson 1. This is the floor for any problem where you *must* look at every
-element — you can't correctly find the max of n numbers while skipping some.
+**Door-to-door delivery.** You must walk door-to-door and hand a physical
+letter to every resident individually — your effort scales perfectly
+one-to-one with the population. One bounded pass: summing an array,
+finding a max, the `seen`-set scan from lesson 1. This is the floor for
+any problem where you *must* look at every element — you can't correctly
+find the max of n numbers while skipping some.
 
 ## O(n log n) — the sorting class
 
-Two common origins:
+**The neighborhood lists.** If you split the town into neighborhoods, have
+each neighborhood sort its resident list, and then merge the lists
+together, each resident ends up doing a tiny bit of sorting work — it's
+slightly more than the door-to-door effort, but still highly manageable.
+Two common origins for this shape:
 
 - **log-work per element** — inserting n items into a heap, each insert
   O(log n);
@@ -68,13 +91,27 @@ linear: log₂ n is ~30 for a billion elements.
 
 ## O(n²) — quadratic
 
-The every-pair signature: nested loops over the same input, bubble sort,
-`has_pair_a` from lesson 1. Roughly n²/2 pair-checks — and O drops the ½.
+**The handshake greeting.** If every resident in the town has to meet
+every other resident in person to shake hands, the number of handshakes
+explodes — for a small village it's fine, but for a large city it
+paralyzes the entire community. The every-pair signature: nested loops
+over the same input, bubble sort, `has_pair_a` from lesson 1. Roughly
+n²/2 pair-checks — and O drops the ½.
+
 Quadratic is fine below n ≈ 10⁴ and a cliff past n ≈ 10⁵. A huge amount of
 this course — hash tables, two pointers, sliding window, sorting-then-scanning —
 is machinery for turning O(n²) into O(n) or O(n log n).
 
 ## O(2ⁿ) and O(n!) — combinatorial explosion
+
+**The committee selection.** If you want to form a town committee and must
+evaluate every single possible combination of residents to find the
+absolute best group, the number of groups you have to check doubles with
+every new person who moves to town. **The route planner.** If you're a
+delivery driver who must visit every house in town and you decide to map
+out every single possible ordering of visits to find the absolute
+shortest route, the number of routes explodes so catastrophically that
+adding just a few houses makes the calculation impossible.
 
 2ⁿ: each of n elements independently in or out — all subsets. n!: all
 orderings — permutations, brute-force traveling salesman. These aren't
@@ -85,6 +122,12 @@ is shrinking the space (pruning) or never re-solving the same piece of it
 (memoization).
 
 ## Reading constraints like a table of contents
+
+**The town clock.** The town clock ticks 100 million times every second,
+and you have a strict limit of a few seconds before the town meeting
+starts. By checking the town's roster size against the clock's speed, you
+can instantly see which communication strategies are fast enough to beat
+the clock — and which ones aren't even worth attempting.
 
 Problem constraints tell you which class can pass. With a ~10⁸ ops/sec
 budget and a few seconds of allowance:

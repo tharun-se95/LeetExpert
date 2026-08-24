@@ -5,12 +5,17 @@ type: concept
 
 ## How to drill
 
+Back on the warehouse floor one last time — six scenarios, six snippets.
 For each snippet: commit to a time *and* auxiliary-space answer **before**
 answering the quiz, then open the worked reasoning. If you miss one, don't
 just accept the answer — find which rule you misapplied (iteration count?
 body price? stack depth?).
 
 ## Drill 1
+
+**The scenario:** two separate passes over the same cart — first tallying
+every package's weight, then subtracting half of each one, one task after
+another.
 
 ````tabs
 ```python
@@ -47,6 +52,10 @@ function drill1(nums: number[]): number {
 ```
 
 ## Drill 2
+
+**The scenario:** the handshake greeting, warehouse edition — every
+package checked against every package that comes after it, hunting for a
+pair that cancels out to zero.
 
 ````tabs
 ```python
@@ -87,6 +96,10 @@ function drill2(nums: number[]): number[] {
 
 ## Drill 3
 
+**The scenario:** the phone-tree round shrinks by half each time, but each
+round still requires a full sweep of all n packages before moving to the
+next round.
+
 ````tabs
 ```python
 def drill3(n: int) -> int:
@@ -124,6 +137,10 @@ function drill3(n: number): number {
 ```
 
 ## Drill 4
+
+**The scenario:** the deceptive single task — for every package, a
+"quick check" that secretly re-scans a whole slice of the remaining pile
+before moving on, exactly the hidden-scroll trap from the loops lesson.
 
 ````tabs
 ```python
@@ -164,6 +181,9 @@ function drill4(nums: number[], target: number): boolean {
 
 ## Drill 5
 
+**The scenario:** the branching-and-halving delegation — a task handed to
+two assistants, each getting exactly half the load, over and over.
+
 ````tabs
 ```python
 def drill5(n: int) -> int:
@@ -194,6 +214,10 @@ function drill5(n: number): number {
 ```
 
 ## Drill 6
+
+**The scenario:** the grid layout — packages arranged in a full n×n
+storage grid, and the job is to scan every slot in every row to find the
+single heaviest one.
 
 ````tabs
 ```python

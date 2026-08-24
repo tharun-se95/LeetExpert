@@ -3,16 +3,46 @@ title: Big O Notation, Precisely
 type: concept
 ---
 
-## The definition
+## The budget ceiling
 
-Big O is a statement about functions, made precise:
+Imagine you're the volunteer in charge of planning the cookie budget for a
+summer camp. Your job: guarantee the kitchen never runs short, no matter
+how many campers show up. The actual number of cookies required follows a
+messy formula — you need a baseline of 50 cookies for the staff, plus 10
+cookies per cabin for the leaders, plus 3 cookies for every possible pair
+of cabins in the inter-cabin friendship games.
+
+When the camp is tiny — only 1 or 2 cabins — the staff's baseline hunger
+(the 50 cookies) and the leader portion (10 cookies per cabin) make up
+almost the entire cookie count. But as the camp scales up to dozens of
+cabins, the friendship-game cookies (which grow with the *square* of the
+number of cabins) completely drown out the staff overhead and leader
+portions — the baseline becomes a tiny, insignificant drop in the bucket.
+
+The camp director doesn't want you to track this messy formula every
+single year. Instead, they ask you to guarantee a "cookie ceiling" — a
+simple rule to ensure the kitchen never bakes too few cookies. You propose
+a simple formula: take the square of the number of cabins, and multiply it
+by a buffer factor of 4.
+
+If the camp is very small (under 14 cabins), this simple formula actually
+*overestimates* the cookies needed, because the staff's 50-cookie overhead
+dominates at that scale. But once you cross the threshold of 14 cabins,
+your simple formula becomes an absolute, unbreakable ceiling that's
+guaranteed to stay above the actual demand, no matter how large the camp
+gets.
+
+Here's why that's actually true, in the notation itself. Big O is a
+statement about functions, made precise:
 
 > **f(n) = O(g(n))** means there exist a constant **c > 0** and a threshold
 > **n₀** such that for all **n ≥ n₀**:  f(n) ≤ c · g(n).
 
 In words: *past some point, f is bounded above by a constant multiple of g.*
 It's an **upper bound on growth** — it says "f grows no faster than g," and
-nothing more.
+nothing more. That's exactly the ceiling you just built: the messy cookie
+formula is f(n), your simple squared formula is g(n), the camp-size
+threshold (14 cabins) is n₀, and the generous buffer (×4) is c.
 
 Let's use the definition once, honestly. Claim: `3n² + 10n + 50 = O(n²)`.
 Pick c = 4 and n₀ = 14. For n ≥ 14: 10n + 50 ≤ 10n + 4n ≤ n² (since
@@ -34,6 +64,12 @@ What matters is what the definition *licenses* you to do.
 
 ## What the definition licenses
 
+Because we only care about guaranteeing the ceiling at large scales, we
+can throw away the small staff overhead and leader portions from our
+planning formulas. We can also drop the precise multiplier of 3 and just
+use our rounded bounding multiplier of 4 because we want to categorize the
+general type of curve we are dealing with.
+
 **Dropping constant factors.** `5n = O(n)` — take c = 5. The definition
 absorbs any multiplier into c. This is a feature: the "5" depends on
 language and hardware; the "n" doesn't.
@@ -51,17 +87,23 @@ same class (3ⁿ/2ⁿ = 1.5ⁿ, which is unbounded).
 
 ## O, Ω, Θ — and the worst-case conflation
 
-Big O has two siblings:
+Beyond the ceiling, you can also define a "floor" — a guarantee of the
+*minimum* number of cookies you'll absolutely need to bake — and a
+"perfect fit" formula where your ceiling and floor formulas scale at
+exactly the same rate. Big O has two siblings:
 
 - **Ω (Omega)** — the same definition with ≥: a **lower** bound. "f grows
   at least this fast."
 - **Θ (Theta)** — both at once: f is sandwiched between two constant
   multiples of g. This is what "exactly this growth rate" means.
 
-Now the subtlety that trips almost everyone. **"Big O" and "worst case" are
-independent ideas.** O/Ω/Θ describe *functions*; best/worst/average case
-choose *which function of the algorithm you're describing*. You can
-correctly say:
+Now the subtlety that trips almost everyone. Crucially, establishing this
+ceiling is just a mathematical description of your camp's rule sheet
+across *all* situations; it is not about choosing whether it is a rainy
+day or a sunny day at camp — the curve itself is independent of the input
+scenario. **"Big O" and "worst case" are independent ideas.** O/Ω/Θ
+describe *functions*; best/worst/average case choose *which function of
+the algorithm you're describing*. You can correctly say:
 
 - insertion sort's **worst case** is Θ(n²) — a reversed array truly costs
   quadratic;
@@ -73,13 +115,15 @@ correctly say:
 In casual usage — this course included — "the algorithm is O(g)" means "its
 worst-case running time is O(g), and that bound is tight." When the case
 distinction matters (hash tables, quicksort), we'll say so explicitly.
-Lesson 5 is entirely about those distinctions.
+Lesson 4 is entirely about those distinctions.
 
 ## Why an upper bound is the default
 
 Why does everyone lead with O rather than Θ? Because an upper bound is a
 **guarantee**: "this will take *at most* this long" is the promise callers
-need. Lower bounds matter too — proving *no* comparison sort can beat
+need — the camp director doesn't want to hear about your perfect-fit
+formula, they want to hear the ceiling that guarantees nobody goes hungry.
+Lower bounds matter too — proving *no* comparison sort can beat
 n log n is an Ω statement, and we'll prove it in the Sorting module — but
 day to day, you're budgeting against the ceiling.
 
