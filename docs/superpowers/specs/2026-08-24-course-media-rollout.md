@@ -99,12 +99,23 @@ the split lesson content):**
 
 | Lesson | Audio | Infographic | Video |
 | --- | :-: | :-: | :-: |
-| 1. Hashing Fundamentals | had it already | had it already | attempted — likely blocked by daily cap, unconfirmed |
+| 1. Hashing Fundamentals | had it already | had it already | **generated** ("Hashing Fundamentals", Explainer) |
 | 2. Collision: Chaining | reused old combined-lesson asset (renamed) | reused old combined-lesson asset (renamed) | reused old combined-lesson asset (renamed) |
-| 3. Build a Hash Map | had it already | had it already | attempted — blocked by daily cap |
-| 4. Collision: Open Addressing | **generated** ("Linear probing and the tombstone fix") | **generated** ("Open Addressing Hash Table Guide") | **generated** ("The Contiguous Hash: Density, Degradation...") |
-| 5. Keys, Immutability & Crypto | **generated** ("Why Mutating Hash Keys Destroys Data") | **generated** ("Keys and Hashing Infographic") | **generated** ("Anatomy of a Lost Package: Three Ways Hashing Fails") |
-| 6. Four Hash Patterns | stale — predates the Sets section, not regenerated this pass | stale — same reason | never had one (pre-existing gap) |
+| 3. Build a Hash Map | had it already | had it already | **generated** ("Build a Hash Map From Scratch", Explainer) |
+| 4. Collision: Open Addressing | **generated** ("Linear probing and the tombstone fix") | **generated** ("Open Addressing Hash Table Guide") | **generated** ("The Contiguous Hash: Density, Degradation...", Cinematic) |
+| 5. Keys, Immutability & Crypto | **generated** ("Why Mutating Hash Keys Destroys Data") | **generated** ("Keys and Hashing Infographic") | **generated** ("Anatomy of a Lost Package: Three Ways Hashing Fails", Cinematic) |
+| 6. Four Hash Patterns | **regenerated** ("Four Architectural Patterns for Hash...") — old one predated the Sets section | **regenerated** ("Hash Patterns and Usage Verbs") — same reason | **generated** ("The Four Hash Patterns", Explainer) |
+
+**Every lesson in the module now has a complete audio+infographic+video set
+generated inside the notebook** (lesson 2 via the renamed pre-restructure
+asset, lessons 1/3/4/5/6 fresh this session). The Cinematic-format daily
+cap (§1.5) turned out to be per-*format*, not per-notebook: after 2
+Cinematic videos succeeded and a 3rd was refused, switching the remaining
+3 videos to the **Explainer** format (a distinct, differently-styled
+overview — structured/comprehensive rather than cinematic/narrative) let
+all 3 generate without hitting any further limit. **For future modules:
+default to Explainer format for Video Overview generation** — it wasn't
+capped this session, where Cinematic was after 2.
 
 Also regenerated the Mind Map for the full 6-lesson structure ("Hashing
 Mindmap", 7 sources) and transcribed it into
@@ -395,33 +406,35 @@ already shipped:
 
 ### Task A: Close the hash-tables gap (do first — it's the reference module)
 
-Superseded by the §1.5 restructure and media session — updated to the
-current, real state:
+Superseded twice now (§1.5's restructure/media session, then a follow-up
+session that closed every remaining generation gap using the Explainer
+video-format workaround). **Generation is fully done — retrieval is the
+only remaining step:**
 
-- [ ] **Solve the download-retrieval blocker first** (§1.5, item 2). Until
-      this works, nothing generated in NotebookLM can reach
-      `web/public/media/`. Likely needs the user to download manually from
-      the notebook UI (they have a real, unsandboxed browser) and hand the
-      files over, or a different tool/session with real download access.
-- [ ] Once downloads work: retrieve and compress (§3.2) the 6 assets
-      already generated and sitting in the notebook: `collision-open-
-      addressing`'s audio/infographic/video ("Linear probing and the
-      tombstone fix" / "Open Addressing Hash Table Guide" / "The
-      Contiguous Hash: Density, Degradation..."), and
-      `keys-immutability-hashing`'s audio/infographic/video ("Why Mutating
-      Hash Keys Destroys Data" / "Keys and Hashing Infographic" /
-      "Anatomy of a Lost Package: Three Ways Hashing Fails"). Land them at
-      `web/public/media/hash-tables/<type>-<slug>.<ext>`.
-- [ ] Generate (mind the ~2/day Cinematic video cap from §1.5) the still-
-      missing Video Overviews for `hashing-fundamentals`, `build-a-hash-
-      map`, and `hash-patterns`.
-- [ ] Regenerate `hash-patterns`' audio + infographic — the shipped ones
-      predate the Maps-vs-Sets expansion and are now stale.
-- [ ] Confirm `WatchLessonLink` appears in all 6 lessons' headers that
-      have a video.
+- [ ] **Solve the download-retrieval blocker** (§1.5, item 2) — this is
+      now the ONLY blocker left for hash-tables. Likely needs the user to
+      download manually from the notebook UI (they have a real,
+      unsandboxed browser) and hand the files over, or a different tool/
+      session with real download access.
+- [ ] Once downloads work, retrieve and compress (§3.2) all 11 generated
+      assets and land them at `web/public/media/hash-tables/<type>-
+      <slug>.<ext>`:
+      - `hashing-fundamentals`: video ("Hashing Fundamentals")
+      - `build-a-hash-map`: video ("Build a Hash Map From Scratch")
+      - `collision-open-addressing`: audio + infographic + video ("Linear
+        probing and the tombstone fix" / "Open Addressing Hash Table
+        Guide" / "The Contiguous Hash: Density, Degradation...")
+      - `keys-immutability-hashing`: audio + infographic + video ("Why
+        Mutating Hash Keys Destroys Data" / "Keys and Hashing
+        Infographic" / "Anatomy of a Lost Package: Three Ways Hashing
+        Fails")
+      - `hash-patterns`: audio + infographic + video, all regenerated
+        ("Four Architectural Patterns for Hash..." / "Hash Patterns and
+        Usage Verbs" / "The Four Hash Patterns") — replace the stale
+        shipped audio/infographic that predate the Sets section
+- [ ] Confirm `WatchLessonLink` appears in all 6 lessons' headers.
 - [ ] `npm test && npm run build`, spot-check in browser, commit.
-- [ ] Update the tracker's hash-tables row once all 6 lessons have all
-      3 media types.
+- [ ] Update the tracker's hash-tables row to all-x once landed.
 
 ### Task B: Extend the tracker to track asset completeness, not just prose
 

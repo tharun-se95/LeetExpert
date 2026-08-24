@@ -15,7 +15,7 @@ concept map is transcribed and registered
 
 | Module | Lessons | Prose | Audio | Video | Infographic | Mind Map |
 | --- | --- | :-: | :-: | :-: | :-: | :-: |
-| hash-tables | hashing-fundamentals, collision-chaining, build-a-hash-map, collision-open-addressing, keys-immutability-hashing, hash-patterns | x | 4/6 shipped, 2/6 generated-not-shipped | 1/6 shipped, 2/6 generated-not-shipped | 4/6 shipped, 2/6 generated-not-shipped | x (updated for 6 lessons) |
+| hash-tables | hashing-fundamentals, collision-chaining, build-a-hash-map, collision-open-addressing, keys-immutability-hashing, hash-patterns | x | 6/6 generated, 4/6 shipped | 6/6 generated, 1/6 shipped | 6/6 generated, 4/6 shipped | x (updated for 6 lessons) |
 | getting-started | course-introduction, course-roadmap, how-lessons-work | | | | | |
 | big-o | analyzing-code, common-complexity-classes, big-o-notation, best-worst-average-amortized, complexity-drills, why-efficiency-matters, space-complexity | | | | | |
 | arrays | contiguous-memory, in-place-techniques, dynamic-arrays | | | | | |
@@ -42,11 +42,11 @@ concept map is transcribed and registered
 
 **hash-tables note:** restructured to 6 lessons 2026-08-24 per the
 curriculum-designer review (media-rollout spec §2.5/§1.5) and content-
-reviewed (spec §1). A media-generation session the same day produced full
-audio/infographic/video for `collision-open-addressing` and
-`keys-immutability-hashing`, but **those 6 files are stuck inside the
-NotebookLM notebook** — this session's browser sandbox couldn't complete
-the download to disk (spec §1.5, blocker 2). `hash-patterns`' audio/
-infographic are stale (predate its Sets-section expansion). Task A of the
-media-rollout spec has the full punch list; solving the download blocker
+reviewed (spec §1). Two media-generation sessions the same day produced a
+full audio+infographic+video set generated for EVERY lesson (working
+around a per-format daily video cap by switching from Cinematic to
+Explainer format — see spec §1.5), but **11 of those files are stuck
+inside the NotebookLM notebook** — this session's browser sandbox
+couldn't complete the download to disk (spec §1.5, blocker 2). Task A of
+the media-rollout spec has the full punch list; solving the download blocker
 is the prerequisite for the rest of it.
