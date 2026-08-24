@@ -3,18 +3,21 @@ title: Divisibility, Primes & GCD
 type: concept
 ---
 
-Three ideas show up constantly in DSA problems: checking whether a number
-is prime, finding every prime up to some limit, and finding the greatest
-common divisor. Each one rests on a single insight. Get the insight and
-the algorithm writes itself.
+The Archive's shipping room runs on three constant questions: can this
+delivery of books be packed into equal cartons, which delivery sizes are
+"unpackable" no matter how you slice them, and how do you find the
+biggest carton size two different deliveries can share. Each rests on a
+single insight. Get the insight and the algorithm writes itself.
 
 ## 1. Divisibility & prime checking — O(√n)
 
 ### The core insight
 
-**Divisors come in pairs.** If d divides n, then n/d divides n too.
+**Carton sizes come in pairs.** If you can pack n books into cartons of
+size d, then you can also pack them into n/d cartons holding d books
+each — divisors pair up.
 
-Take n = 36. Every divisor sits in exactly one pair:
+Take n = 36 books. Every carton-size pairing sits in exactly one pair:
 
 | pair | small | large |
 | --- | --- | --- |
@@ -26,15 +29,16 @@ Take n = 36. Every divisor sits in exactly one pair:
 
 Now look at the small column. It never exceeds 6, and √36 = 6.
 
-That is not a coincidence about 36. In every pair, at least one member is
-≤ √n — because if both members were larger than √n, their product would
-be larger than n. But their product *is* n. So one of them has to be
-small.
+That is not a coincidence about 36 books. In every pair, at least one
+member is ≤ √n — because if both members were larger than √n, their
+product would be larger than n. But their product *is* n. So one of them
+has to be small.
 
 ### Why it matters
 
-To check whether n is prime, you do not need to test every divisor up to
-n − 1. You only need to test up to √n.
+To check whether n books can *only* be packed one-at-a-time (n is prime),
+you do not need to test every carton size up to n − 1. You only need to
+test up to √n.
 
 If n is composite, it has a divisor pair, and the small member of that
 pair is ≤ √n. Your loop will find it. So if the loop finishes without
@@ -78,10 +82,11 @@ perfect squares.
 ```
 
 **One caveat worth carrying with you.** That √n is the square root of the
-*value* n, not of the input size. A 300-digit number has n ≈ 10³⁰⁰, so
-√n ≈ 10¹⁵⁰ iterations — completely impossible. Measured against the
-number of digits you typed, this algorithm is exponential. That is
-exactly why RSA can rest on factoring being hard.
+*value* n, not of the input size. A shipment described by a 300-digit
+number has n ≈ 10³⁰⁰, so √n ≈ 10¹⁵⁰ carton sizes to check — completely
+impossible. Measured against the number of digits on the shipping label,
+this algorithm is exponential. That is exactly why RSA can rest on
+factoring being hard.
 
 In practice: fine up to n ≈ 10¹², useless beyond that.
 
@@ -89,12 +94,14 @@ In practice: fine up to n ≈ 10¹², useless beyond that.
 
 ### The core insight
 
-Suppose you need primality for many numbers, not one. Running the O(√n)
-test k times costs O(k√n). For k = n = 10⁶ that is around 10⁹
-operations — too slow.
+Suppose the Archivist needs to know, for every shipment size from 2 up to
+some limit, whether it's packable or not — not just one shipment, but
+many. Running the O(√n) test k times costs O(k√n). For k = n = 10⁶ that
+is around 10⁹ operations — too slow.
 
-So stop asking one number at a time. **Compute every answer up front, in
-one pass.**
+So stop asking one shipment at a time. **Walk down the entire shipping
+manifest once, marking every packable size as you go — a single pass
+covers every question in advance.**
 
 The method is to mark composites rather than find primes:
 
@@ -170,13 +177,17 @@ individual numbers.
 
 ### The core insight
 
-gcd(a, b) is the largest integer that divides both. Euclid's algorithm
-computes it from one identity:
+Two archivists show up with two different deliveries — a books and b
+books — and need the biggest carton size that packs *both* deliveries
+evenly with nothing left over. gcd(a, b) is the largest integer that
+divides both. Euclid's algorithm computes it from one identity:
 
 > **gcd(a, b) = gcd(b, a mod b)**
 
-Replace the pair with a smaller pair. Repeat until the second number is
-0. The first number is then the answer.
+Place the smaller delivery, b, against the larger, a, and see how many
+full copies of b fit inside a — then throw away those matched copies and
+keep only the leftover. Repeat with the leftover in place of a. Repeat
+until the second number is 0. The first number is then the answer.
 
 ### Why it works
 
@@ -255,7 +266,9 @@ stalls.
 
 ### Why it matters: lcm and the overflow trap
 
-The least common multiple comes straight from the gcd:
+The least common multiple — the smallest carton size that both
+deliveries can *also* be packed into cleanly — comes straight from the
+gcd:
 
 > **lcm(a, b) = a · b / gcd(a, b)**
 
@@ -263,7 +276,10 @@ But write it as `a / gcd(a, b) * b`, dividing **before** you multiply.
 
 The division is exact — gcd(a, b) divides a by definition, so nothing is
 truncated. Both orderings give the same answer mathematically. What
-differs is the largest value that ever exists in a register:
+differs is the largest value that ever exists in a register — the
+Archivist's own rule for the overflow trap: divide the first shipment
+down to its smallest safe unit before combining it with the second, never
+multiply the two full deliveries together first and hope the result fits.
 
 - Divide first, and the intermediate never exceeds the final lcm.
 - Multiply first, and you materialize a · b, which overflows a 64-bit

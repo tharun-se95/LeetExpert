@@ -3,32 +3,41 @@ title: Counting & Combinatorics
 type: concept
 ---
 
-## Why counting is a DSA skill
+## The custom gift basket
 
-Combinatorics answers "how big is the answer space?" — and that number *is*
-the complexity of any algorithm that enumerates the space. When the
+The Archive's gift shop lets visitors build a custom basket: pick one
+wrapping style, one ribbon color, one small token to tuck inside. This
+question — "how many different baskets are even possible?" — turns out
+to answer something much bigger than gift shop inventory. Combinatorics
+answers "how big is the answer space?" — and that number *is* the
+complexity of any algorithm that enumerates the space. When the
 Backtracking module generates all subsets, its 2ⁿ cost isn't an analysis
 result so much as a counting fact. Learn to count the space first; the
 complexity of brute force follows for free.
 
 ## The product rule
 
-Independent choices multiply: 3 shirts × 4 pants = 12 outfits. Every other
-formula in this lesson is the product rule applied with care.
+Independent choices multiply: 2 wrapping styles × 4 ribbon colors × 3
+tokens = 24 possible baskets. Every other formula in this lesson is the
+product rule applied with care.
 
 **Sequences with repetition:** k independent slots, m options each →
 mᵏ. (4-digit PINs: 10⁴.)
 
-**Subsets: 2ⁿ.** Each of n elements makes an independent in/out choice —
-n twos multiply. This is why "try every subset" is O(2ⁿ) *before you write
-a line of code*, and why bitmasks (n-bit numbers = subsets of n things)
-range over exactly 2ⁿ values.
+**Subsets: 2ⁿ.** Instead of a fixed basket, imagine the Archivist laying
+out every item in the gift shop and deciding, one at a time, "in the
+basket" or "out of the basket." Each of n items makes an independent
+in/out choice — n twos multiply. This is why "try every subset" is O(2ⁿ)
+*before you write a line of code*, and why bitmasks (n-bit numbers =
+subsets of n things) range over exactly 2ⁿ values.
 
 ## Permutations: order matters
 
-Arrangements of n distinct items: first slot has n choices, next n−1, … →
-**n!** Arrangements of just k of the n items: n · (n−1) ⋯ (n−k+1) =
-**n!/(n−k)!** (denoted P(n, k)).
+Now the shop wants to build a limited-edition **display** of k books out
+of n rare ones, and the *order* on the shelf matters (first book gets the
+best lighting). Arrangements of n distinct items: first slot has n
+choices, next n−1, … → **n!** Arrangements of just k of the n items:
+n · (n−1) ⋯ (n−k+1) = **n!/(n−k)!** (denoted P(n, k)).
 
 Factorials explode faster than exponentials: 10! ≈ 3.6 million (fine),
 13! ≈ 6 × 10⁹ (seconds), 20! ≈ 2.4 × 10¹⁸ (never). A permutation
@@ -37,9 +46,10 @@ instantly.
 
 ## Combinations: order doesn't matter
 
-Choosing k of n *without* caring about order: take P(n, k) ordered
-selections, notice each unordered choice was counted k! times (once per
-internal ordering), divide it out:
+Now the Archivist just needs to pick k of n books to pack into a shipping
+crate — order inside the crate doesn't matter, only which books made the
+cut. Take P(n, k) ordered selections, notice each unordered choice was
+counted k! times (once per internal ordering), divide it out:
 
 > **C(n, k) = n! / (k!(n−k)!)**
 
@@ -47,8 +57,10 @@ The "divide out the overcount" move is the second great counting technique,
 and it's also how you'll de-duplicate in backtracking problems.
 
 Computing C(n, k) in code: never via factorials (overflow/precision — 21!
-already exceeds 2⁶³ and JS loses exactness far earlier). Multiply and
-divide incrementally:
+already exceeds 2⁶³ and JS loses exactness far earlier). This is the same
+overflow trap as lcm — the Archivist keeps her running ledger in small,
+exact numbers instead of ever writing down a factorial-sized figure.
+Multiply and divide incrementally:
 
 ````tabs
 ```python
@@ -94,10 +106,12 @@ time, never touching a numerator or denominator anywhere near
 factorial-sized.
 
 C(n, k) also satisfies **Pascal's identity**: C(n, k) = C(n−1, k−1) +
-C(n−1, k) — "either element n is chosen (pick k−1 from the rest) or it
-isn't (pick k from the rest)." That case-split on the last element is
-*exactly* the decomposition dynamic programming will run on; you're meeting
-DP's core move a stage early.
+C(n−1, k). Picture one specific rare book among the n — either it goes
+into the crate (now you're choosing k−1 more from the remaining n−1), or
+it stays on the shelf (now you're choosing all k from the remaining
+n−1). That case-split on the last element is *exactly* the decomposition
+dynamic programming will run on; you're meeting DP's core move a stage
+early.
 
 ## Reading answer-space sizes off a problem
 

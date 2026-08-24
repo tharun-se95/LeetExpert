@@ -3,12 +3,22 @@ title: Modular Arithmetic
 type: concept
 ---
 
-## Remainders as a number system
+## The rotating book carousel
 
-`a mod m` is the remainder when a is divided by m. The productive mental
-model is a **clock with m positions**: counting past m−1 wraps to 0. Every
-integer lands on exactly one clock position, so "mod m" collapses the
-infinite number line onto m values:
+The Archive keeps a small rotating carousel by the front desk — a circular
+tray with exactly 5 numbered slots, 0 through 4, used to stage the day's
+most-requested books. Spin it far enough in either direction and it just
+keeps looping back through the same five slots forever. Hand the
+Archivist a delivery numbered "8" and she doesn't need a new slot 8 — she
+spins the carousel 8 positions and it lands on slot 3, same as spinning
+it only 3. Hand her a return numbered "−7" (a book that was due 7 slots
+*before* the carousel started) and it *also* lands on slot 3. Different
+numbers, same physical slot.
+
+That's `a mod m` — the remainder when a is divided by m. The productive
+mental model is a **clock with m positions**: counting past m−1 wraps to
+0. Every integer lands on exactly one clock position, so "mod m" collapses
+the infinite number line onto m values:
 
 ```diagram
 { "id": "mod-clock", "m": 5, "values": [8, -7] }
@@ -16,7 +26,10 @@ infinite number line onto m values:
 
 Both 8 and −7 land on the same position (3) on this 5-clock — different
 numbers, same remainder. That's the whole idea in one picture. And,
-crucially, arithmetic *survives the collapse*:
+crucially, arithmetic *survives the collapse*: the Archivist can track
+where a huge sequence of deliveries will land by writing down just the
+slot number after each one, never the running total. She never needs the
+actual delivery count — just its carousel position.
 
 > (a + b) mod m = ((a mod m) + (b mod m)) mod m
 > (a · b) mod m = ((a mod m) · (b mod m)) mod m
@@ -28,9 +41,14 @@ step of a long sum or product and the final answer is unchanged. That's what
 makes "return the answer modulo 10⁹+7" problems tractable — you never hold
 the astronomically large true value, just its clock position.
 
-## The negative-number trap (Python ≠ JavaScript)
+## The backward-spin trap (Python ≠ JavaScript)
 
-The two course languages *disagree* about `%` on negatives:
+Spin the carousel backward from slot 0 and logic says you should land on
+the last slot, 4 — walk back one from the start and you wrap around to
+the end, same as a clock. But hand this exact spin to your JavaScript
+assistant and it reports the delivery landed on slot **−2** — a physically
+nonexistent position on a 5-slot carousel. The two course languages
+*disagree* about `%` on negatives:
 
 ````tabs
 ```python
@@ -44,10 +62,12 @@ console.log(7 % -5); // 2
 ```
 ````
 
-Both are self-consistent conventions, but for clock arithmetic you almost
-always want the mathematician's answer in [0, m): −7 on a 5-clock is
+Both are self-consistent conventions, but for carousel arithmetic you
+almost always want the mathematician's answer in [0, m): −7 lands on
 position **3** (walk back 7 from 0: 4, 3, 2, 1, 0, 4, 3). Python's `%`
-already gives that. In JavaScript, use the standard fix:
+already gives that. In JavaScript, use the standard fix — spin forward by
+the full carousel size first, so you never hand back a slot number that
+doesn't physically exist:
 
 ````tabs
 ```python
@@ -69,7 +89,8 @@ negative.**
 
 ## Wrap-around indexing
 
-The clock model is exactly what circular structures need:
+The carousel model is exactly what circular structures need — an item
+that "falls off" one end simply reappears at the other:
 
 ````tabs
 ```python
@@ -94,7 +115,8 @@ The Queues module builds a ring-buffer deque on precisely this trick, and
 
 ## Hashing previews
 
-Two facts you'll use in the Hash Tables module:
+Two facts you'll use in the Hash Tables module — where every incoming key
+needs its own carousel slot to land in:
 
 - Reducing a huge key to a bucket is `key mod table_size` — the identities
   above are why you can compute a "rolling" hash of a string incrementally,

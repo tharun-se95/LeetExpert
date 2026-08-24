@@ -3,24 +3,34 @@ title: Logarithms & Exponents
 type: concept
 ---
 
-## The one definition to internalize
+## The filing cabinet search
+
+Picture the Grand Library Archive's oldest cabinet: a branching filing
+system where every drawer splits into two smaller drawers, which each
+split into two smaller ones, and so on. The Master Archivist hands you a
+single index card to find among a billion filed cards, and instead of
+opening drawers one at a time, you play a halving game: open the middle
+drawer, see which half the card must be in, and discard the other half
+entirely. Repeat. Every round the pile you're searching cuts in half, and
+you're counting *rounds*, not cards.
+
+That round count is the entire concept this lesson formalizes:
 
 > **log_b(x) is the answer to: "b to what power gives x?"**
 
-That's the entire concept. log₂(8) = 3 because 2³ = 8. Logarithm and
-exponentiation are inverse questions: exponentiation says "multiply b by
-itself k times — what do you get?"; logarithm says "you got x — how many
-times was b multiplied?"
+log₂(8) = 3 because 2³ = 8. Logarithm and exponentiation are inverse
+questions: exponentiation says "multiply b by itself k times — what do you
+get?"; logarithm says "you got x — how many times was b multiplied?"
 
-In DSA the base is almost always 2, and the question takes an equivalent
-form you've already met:
+In DSA the base is almost always 2, and the question is exactly the
+halving game you just played:
 
 > **log₂(n) = how many times can you halve n before reaching 1?**
 
 Those are the same question — halving k times leaves n/2^k, which hits 1
 exactly when 2^k = n, i.e. k = log₂ n. This is why the logarithm is not a
-"formula" in binary search's analysis; it's the literal count of the loop's
-iterations.
+"formula" in binary search's analysis; it's the literal count of the
+drawer-halvings.
 
 ```diagram
 { "id": "log-halving", "n": 8 }
@@ -30,7 +40,10 @@ Three halvings, three bars, done — that row count IS log₂ 8.
 
 ## Feel for the numbers
 
-Fluency here means knowing magnitudes without a calculator:
+Fluency here means knowing magnitudes without a calculator — the
+Archivist's own trick: a cabinet holding a thousand cards needs about ten
+halving rounds to find one; a cabinet a thousand times bigger only needs
+about ten *more* rounds, not a thousand more.
 
 | n | log₂ n (≈) |
 | --- | --- |
@@ -47,24 +60,31 @@ inputs, 40 steps.
 ## The rules, and why they're true
 
 Each rule is just the definition restated. In every case, think "count the
-multiplications."
+splits."
 
-**Product rule: log(xy) = log(x) + log(y).**
+**Product rule: log(xy) = log(x) + log(y).** If two cabinets need to be
+searched together — one halving-split x ways deep, the other y ways
+deep — the combined search depth is just the two split-counts added.
 x contributes log x factors of the base, y contributes log y more;
 multiplying x·y stacks the factor counts.
 
 **Power rule: log(xᵏ) = k · log(x).**
 The product rule applied k times.
 
-**Change of base: log_b(x) = log_c(x) / log_c(b).**
-The practical consequence: any two log bases differ by a *constant factor*
+**Change of base: log_b(x) = log_c(x) / log_c(b).** Whether the Archivist
+splits each drawer two ways or three ways, the two search-depth counts
+differ only by a fixed ratio — never by a different growth shape. The
+practical consequence: any two log bases differ by a *constant factor*
 (1/log_c b), which is why Big O never specifies a base — O(log₂ n) and
 O(log₁₀ n) are the same class.
 
-One more identity that shows up in analysis: **2^(log₂ n) = n** — applying
-a function and its inverse returns you home (this is exactly what made
-Big O's Drill 5 work: a recursion tree that doubles in width at every one
-of its log₂ n levels ends with 2^(log₂ n) = n leaves).
+One more identity that shows up in analysis: **2^(log₂ n) = n** — the
+Archive's own self-indexing property, where a branching cabinet that
+doubles in width at every one of its log₂ n levels ends up holding
+exactly n cards, applying a function and its inverse returns you home
+(this is exactly what made Big O's Drill 5 work: a recursion tree that
+doubles in width at every one of its log₂ n levels ends with
+2^(log₂ n) = n leaves).
 
 A less obvious cousin, worth seeing derived rather than just stated:
 **a^(log_b n) = n^(log_b a)**. Take log_b of both sides and check they

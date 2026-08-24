@@ -47,7 +47,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | matrix | grid-coordinates, traversal-orders, in-place-transformations | | | | | |
 | greedy | greedy-choice-and-proving-correctness | | | | | |
 | dynamic-programming | 1d-dp-patterns, 2d-dp-patterns, from-recursion-to-memoization, tabulation-and-space-optimization, knapsack-style-dp | | | | | |
-| math-for-dsa | counting-and-combinatorics, logarithms-and-exponents, divisibility-primes-gcd, modular-arithmetic, math-drills | | | | | |
+| math-for-dsa | logarithms-and-exponents, summations-and-series, modular-arithmetic, divisibility-primes-gcd, counting-and-combinatorics, math-drills | x | | | | x |
 
 **hash-tables: fully done (2026-08-24).** Restructured to 6 lessons per
 the curriculum-designer review (media-rollout spec §2.5/§1.5), content-
@@ -74,3 +74,17 @@ vs. amortized/sequence-analysis). Full analogy pass via NotebookLM:
 gift-card matching game, summer-camp cookie-budget ceiling, town
 message-spreading, and a mailroom/delivery-clerk throughline sustained
 across lessons 4-8. Concept map hand-authored. Media deferred to Phase 2.
+
+**math-for-dsa: Phase 1 complete (2026-08-25).** Curriculum-designer
+review recommended adding a Summations & Series lesson (a real gap — big-o
+leans on triangular/geometric sums informally with no formal treatment)
+and reordering Divisibility before Modular Arithmetic. Accepted the new
+lesson (5→6), rejected the reorder after verifying Divisibility's Euclid
+section uses the `%` operator that Modular Arithmetic explains first —
+the reorder would have introduced a forward reference. Also rejected an
+unjustified "& Probability" scope addition to Counting & Combinatorics.
+Full analogy pass via NotebookLM (requested as a Studio document instead
+of a chat reply, per user tip — far more stable to read than scrolling
+the chat panel): "The Grand Library Archive" / "the Master Archivist"
+throughline sustained across all 6 lessons. Concept map hand-authored.
+Media deferred to Phase 2.

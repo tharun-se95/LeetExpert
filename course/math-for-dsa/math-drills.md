@@ -3,16 +3,18 @@ title: Math Drills
 type: concept
 ---
 
-## How to drill
+## The Archivist's fire drill
 
-Same protocol as the Big O drills: commit to an answer before touching the
-quiz, and when you miss, find the *rule* you misapplied, not just the right
-letter.
+The Master Archivist runs one final exercise before you're trusted alone
+in the stacks: a rapid-fire round of real scenarios, no time to reach for
+a calculator or re-derive a formula from scratch. Same protocol as the Big
+O drills: commit to an answer before touching the quiz, and when you miss,
+find the *rule* you misapplied, not just the right letter.
 
 ## Drill 1 — logs in disguise
 
-A balanced binary search tree holds 10⁹ items. About how many node visits
-does one lookup cost?
+The Archivist asks: "We have a balanced branching cabinet holding 10⁹
+index cards. How many drawer-checks does one lookup cost?"
 
 ```quiz
 {
@@ -28,6 +30,9 @@ does one lookup cost?
 ```
 
 ## Drill 2 — the JS modulo trap
+
+The carousel spins backward, and one assistant reports a slot number that
+doesn't physically exist.
 
 ````tabs
 ```python
@@ -57,7 +62,8 @@ function prevIndex(i: number, n: number): number {
 
 ## Drill 3 — huge products
 
-You must compute the product of 10⁵ numbers, each up to 10⁹, modulo 10⁹+7.
+The Archivist's overflowing ledger: 10⁵ numbers, each up to 10⁹, must be
+multiplied together and reported modulo 10⁹+7.
 
 ```quiz
 {
@@ -74,8 +80,8 @@ You must compute the product of 10⁵ numbers, each up to 10⁹, modulo 10⁹+7.
 
 ## Drill 4 — counting the search space
 
-A problem: "given n ≤ 12 tasks, find the ordering that minimizes total
-penalty."
+The shipping crate can hold n ≤ 12 books, and the Archivist wants the
+exact shelf order that minimizes handling penalty.
 
 ```quiz
 {
@@ -92,6 +98,9 @@ penalty."
 
 ## Drill 5 — Euclid, by hand
 
+Two archivists need the biggest shared carton size for deliveries of 252
+and 105 books, by hand, no calculator.
+
 ```quiz
 {
   "question": "Drill 5 — gcd(252, 105) = ?",
@@ -107,7 +116,8 @@ penalty."
 
 ## Drill 6 — sieve or test?
 
-You get q = 10⁵ queries, each asking whether some n ≤ 10⁷ is prime.
+The front desk fields q = 10⁵ requests in a row, each asking whether some
+shipment size n ≤ 10⁷ is packable one-at-a-time (prime).
 
 ```quiz
 {

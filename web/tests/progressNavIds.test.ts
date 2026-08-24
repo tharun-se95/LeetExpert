@@ -13,7 +13,7 @@ describe("countLessonsProgress", () => {
     expect(countLessonsProgress(visited, ids)).toBe(2);
   });
 
-  it("denominator set is 101 after the big-o curriculum expansion", () => {
-    expect(allLessonsNavIds()).toHaveLength(101);
+  it("denominator set is 102 after the math-for-dsa curriculum expansion", () => {
+    expect(allLessonsNavIds()).toHaveLength(102);
   });
 });

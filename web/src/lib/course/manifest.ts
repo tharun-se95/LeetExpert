@@ -136,6 +136,7 @@ export const MODULES: ModuleMeta[] = [
     status: "available",
     lessons: [
       concept("logarithms-and-exponents", "Logarithms & Exponents"),
+      concept("summations-and-series", "Summations & Series"),
       concept("modular-arithmetic", "Modular Arithmetic"),
       concept("divisibility-primes-gcd", "Divisibility, Primes & GCD"),
       concept("counting-and-combinatorics", "Counting & Combinatorics"),
