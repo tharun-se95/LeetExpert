@@ -15,7 +15,7 @@ concept map is transcribed and registered
 
 | Module | Lessons | Prose | Audio | Video | Infographic | Mind Map |
 | --- | --- | :-: | :-: | :-: | :-: | :-: |
-| hash-tables | hashing-fundamentals, collision-chaining, build-a-hash-map, collision-open-addressing, keys-immutability-hashing, hash-patterns | x | 6/6 generated, 4/6 shipped | 6/6 generated, 1/6 shipped | 6/6 generated, 4/6 shipped | x (updated for 6 lessons) |
+| hash-tables | hashing-fundamentals, collision-chaining, build-a-hash-map, collision-open-addressing, keys-immutability-hashing, hash-patterns | x | x | x | x | x |
 | getting-started | course-introduction, course-roadmap, how-lessons-work | | | | | |
 | big-o | analyzing-code, common-complexity-classes, big-o-notation, best-worst-average-amortized, complexity-drills, why-efficiency-matters, space-complexity | | | | | |
 | arrays | contiguous-memory, in-place-techniques, dynamic-arrays | | | | | |
@@ -40,13 +40,12 @@ concept map is transcribed and registered
 | dynamic-programming | 1d-dp-patterns, 2d-dp-patterns, from-recursion-to-memoization, tabulation-and-space-optimization, knapsack-style-dp | | | | | |
 | math-for-dsa | counting-and-combinatorics, logarithms-and-exponents, divisibility-primes-gcd, modular-arithmetic, math-drills | | | | | |
 
-**hash-tables note:** restructured to 6 lessons 2026-08-24 per the
-curriculum-designer review (media-rollout spec §2.5/§1.5) and content-
-reviewed (spec §1). Two media-generation sessions the same day produced a
-full audio+infographic+video set generated for EVERY lesson (working
-around a per-format daily video cap by switching from Cinematic to
-Explainer format — see spec §1.5), but **11 of those files are stuck
-inside the NotebookLM notebook** — this session's browser sandbox
-couldn't complete the download to disk (spec §1.5, blocker 2). Task A of
-the media-rollout spec has the full punch list; solving the download blocker
-is the prerequisite for the rest of it.
+**hash-tables: fully done (2026-08-24).** Restructured to 6 lessons per
+the curriculum-designer review (media-rollout spec §2.5/§1.5), content-
+reviewed (spec §1), and every lesson now ships a complete audio +
+infographic + video set (spec §1.5 — the per-format daily video cap was
+worked around by switching Cinematic → Explainer; the download-retrieval
+blocker was resolved by the user downloading manually from the notebook
+and handing the files off for compression). This is the reference module
+for the remaining 23 — see the media-rollout spec end to end for the
+repeatable procedure.

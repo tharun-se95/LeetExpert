@@ -404,37 +404,32 @@ already shipped:
 
 ## 4. Rollout plan
 
-### Task A: Close the hash-tables gap (do first — it's the reference module)
+### Task A: Close the hash-tables gap — DONE (2026-08-24)
 
-Superseded twice now (§1.5's restructure/media session, then a follow-up
-session that closed every remaining generation gap using the Explainer
-video-format workaround). **Generation is fully done — retrieval is the
-only remaining step:**
+Closed in three passes: §1.5's restructure/media session, a follow-up
+that closed the remaining generation gap with the Explainer video-format
+workaround, and a final pass where the user downloaded all 11 generated
+files manually from the notebook UI (this session's browser sandbox
+never did solve the download-retrieval blocker itself — manual handoff
+was the actual resolution) and handed them off for compression and
+landing.
 
-- [ ] **Solve the download-retrieval blocker** (§1.5, item 2) — this is
-      now the ONLY blocker left for hash-tables. Likely needs the user to
-      download manually from the notebook UI (they have a real,
-      unsandboxed browser) and hand the files over, or a different tool/
-      session with real download access.
-- [ ] Once downloads work, retrieve and compress (§3.2) all 11 generated
-      assets and land them at `web/public/media/hash-tables/<type>-
-      <slug>.<ext>`:
-      - `hashing-fundamentals`: video ("Hashing Fundamentals")
-      - `build-a-hash-map`: video ("Build a Hash Map From Scratch")
-      - `collision-open-addressing`: audio + infographic + video ("Linear
-        probing and the tombstone fix" / "Open Addressing Hash Table
-        Guide" / "The Contiguous Hash: Density, Degradation...")
-      - `keys-immutability-hashing`: audio + infographic + video ("Why
-        Mutating Hash Keys Destroys Data" / "Keys and Hashing
-        Infographic" / "Anatomy of a Lost Package: Three Ways Hashing
-        Fails")
-      - `hash-patterns`: audio + infographic + video, all regenerated
-        ("Four Architectural Patterns for Hash..." / "Hash Patterns and
-        Usage Verbs" / "The Four Hash Patterns") — replace the stale
-        shipped audio/infographic that predate the Sets section
-- [ ] Confirm `WatchLessonLink` appears in all 6 lessons' headers.
-- [ ] `npm test && npm run build`, spot-check in browser, commit.
-- [ ] Update the tracker's hash-tables row to all-x once landed.
+- [x] Retrieved and compressed (§3.2) all 11 assets, landed at
+      `web/public/media/hash-tables/<type>-<slug>.<ext>`: video for
+      `hashing-fundamentals` and `build-a-hash-map`; audio + infographic +
+      video for `collision-open-addressing` and `keys-immutability-
+      hashing`; audio + infographic + video for `hash-patterns`
+      (replacing the stale pre-Sets-expansion audio/infographic).
+- [x] `WatchLessonLink` confirmed rendering (and playing) on all 6
+      lessons; `AudioMini` confirmed playing the new/refreshed audio;
+      both new infographics confirmed rendering in the article body.
+- [x] `npm test` (551), `npm run build`, browser spot-checks — all clean.
+- [x] Tracker's hash-tables row updated to all-x.
+
+**Lesson for the remaining 23-module rollout:** the download-retrieval
+blocker never got a real fix — it was worked around by the user
+downloading manually. Budget that manual step into every future module's
+media session rather than assuming it'll resolve itself.
 
 ### Task B: Extend the tracker to track asset completeness, not just prose
 
