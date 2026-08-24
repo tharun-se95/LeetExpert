@@ -181,7 +181,14 @@ export const MODULES: ModuleMeta[] = [
     status: "available",
     lessons: [
       concept("strings-in-memory", "Strings in Memory & Immutability"),
-      concept("string-toolkit", "The String Toolkit"),
+      concept(
+        "character-arithmetic-count-arrays",
+        "Character Arithmetic & Count Arrays",
+      ),
+      concept(
+        "string-apis-scan-costs-idioms",
+        "String APIs, Scan Costs & Idioms",
+      ),
       problem("valid-palindrome", "Valid Palindrome"),
       problem("valid-anagram", "Valid Anagram"),
       problem("longest-common-prefix", "Longest Common Prefix"),

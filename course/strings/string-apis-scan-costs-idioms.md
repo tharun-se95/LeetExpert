@@ -1,74 +1,7 @@
 ---
-title: The String Toolkit
+title: String APIs, Scan Costs & Idioms
 type: concept
 ---
-
-## Characters as numbers
-
-Every string algorithm eventually touches character codes — a computer
-stores letters as numbers, and these functions move between the two. The
-bridge functions:
-
-````tabs
-```python
-ord("a")             # 97 — character to code point
-chr(98)               # "b" — code point to character
-ord("c") - ord("a")   # 2 — letter's alphabet position
-```
-
-```typescript
-"a".charCodeAt(0); // 97 — character to code unit
-String.fromCharCode(98); // "b"
-"c".charCodeAt(0) - "a".charCodeAt(0); // 2 — alphabet position
-```
-````
-
-Because `a`–`z` sit on one unbroken run of consecutive codes, subtracting
-`ord("a")` from any lowercase letter's code gives that letter's position in
-the alphabet, starting at 0 — that's what makes `ord(ch) - ord("a")` a safe
-array index.
-
-The payoff is the **count array**: when constraints promise "lowercase
-English letters," 26 integer slots replace a whole hash map — smaller,
-faster, and O(1)-iterable, since 26 never grows with the input:
-
-````tabs
-```python
-def letter_counts(s: str) -> list[int]:
-    counts = [0] * 26
-    for ch in s:
-        counts[ord(ch) - ord("a")] += 1
-    return counts
-```
-
-```typescript
-function letterCounts(s: string): number[] {
-  const counts = new Array(26).fill(0);
-  const a = "a".charCodeAt(0);
-  for (const ch of s) {
-    counts[ch.charCodeAt(0) - a]++;
-  }
-  return counts;
-}
-```
-````
-
-```viz
-{
-  "id": "frequency-count",
-  "s": "letters",
-  "speed": 500
-}
-```
-
-A count array is a **frequency fingerprint**: if two strings produce
-identical counts, they contain exactly the same letters the same number of
-times each — which is exactly what it means for one to be a rearrangement
-of the other, and rearranging can't change those counts either way. So
-matching fingerprints isn't just a good sign, it's a complete test. The
-Valid Anagram problem is this observation and nothing more; the Hash Tables
-module generalizes it to unrestricted alphabets, where a fixed 26-slot
-array stops being practical.
 
 ## Split / process / join
 
@@ -106,6 +39,20 @@ O(n) space floor without dropping to a mutable array first.
   O(1)). Call it once per iteration of an n-length loop and the total
   becomes **O(n²·m)** — the "price the body honestly" rule, and strings are
   where it bites hardest.
+
+  Trace the naive search for `"ab"` in `"aabab"` to see where the cost
+  comes from — at each starting position, compare character by character
+  until a mismatch or a full match:
+
+  | Start `i` | Comparisons | Result |
+  | --- | --- | --- |
+  | 0 | `text[0]='a'` vs `'a'` → match; `text[1]='a'` vs `'b'` → mismatch (2 compares) | fail, advance |
+  | 1 | `text[1]='a'` vs `'a'` → match; `text[2]='b'` vs `'b'` → match (2 compares) | **match found** |
+
+  Four character comparisons before the naive scan finds the match — and
+  in the worst case (no match anywhere, or many near-misses) that count
+  grows to roughly `n·m`, one full pattern-length comparison attempted at
+  every starting position.
 - **`s.startswith(p)`** — O(|p|): it only compares up to the prefix's
   length and stops at the first mismatch. Cheap; the Longest Common Prefix
   problem leans on it.
@@ -136,16 +83,6 @@ module did its job.
 ```quiz
 {
   "questions": [
-    {
-      "question": "When is a 26-slot count array the right replacement for a hash map of character counts?",
-      "options": [
-        "When the constraints guarantee a small fixed alphabet (e.g. lowercase English letters) — the guarantee is what makes index = ord(ch) − ord('a') safe and complete",
-        "Always — it's strictly better; a fixed 26-slot array beats a hash map on every input regardless of the actual character set, since arrays are inherently faster than maps",
-        "Only for strings shorter than 26 characters — once the input has more characters than there are slots, some letters would need to share a slot and the counts would collide"
-      ],
-      "answer": 0,
-      "explanation": "The count array trades generality for constant size and direct indexing — it only works because the alphabet is guaranteed small, which is what makes matching counts a complete test for anagrams. Unicode input would need 100k+ slots — that's when the hash map (Hash Tables module) earns its place. Constraints are the contract."
-    },
     {
       "question": "A loop over n words calls `text.includes(word)` on each (text has length n). Total cost?",
       "options": [

@@ -125,11 +125,11 @@ describe("allLessonsNavIds", () => {
 });
 
 describe("practice chapters in MODULES (after authoring)", () => {
-  it("counts 21 practice lessons and 103 Lessons-nav ids", () => {
+  it("counts 21 practice lessons and 104 Lessons-nav ids", () => {
     const practices = MODULES.flatMap((m) =>
       m.lessons.filter((l) => l.type === "practice"),
     );
     expect(practices).toHaveLength(21);
-    expect(allLessonsNavIds()).toHaveLength(103);
+    expect(allLessonsNavIds()).toHaveLength(104);
   });
 });

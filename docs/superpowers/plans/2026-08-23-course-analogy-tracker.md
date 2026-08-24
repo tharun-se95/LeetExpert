@@ -30,7 +30,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | arrays | contiguous-memory, dynamic-arrays, in-place-foundations, stable-compaction-cyclic-placement | x | | | | x |
 | two-pointers | converging-pointers, partition-pointers | | | | | |
 | sliding-window | dynamic-windows, fixed-size-windows | | | | | |
-| strings | string-toolkit, strings-in-memory | | | | | |
+| strings | strings-in-memory, character-arithmetic-count-arrays, string-apis-scan-costs-idioms | x | | | | x |
 | linked-lists | build-a-linked-list, nodes-and-pointers, pointer-surgery | | | | | |
 | stacks | lifo-and-the-call-stack, matching-and-nesting, monotonic-stack | | | | | |
 | queues | deques-and-monotonic, fifo-basics, ring-buffer | | | | | |
@@ -115,3 +115,31 @@ module's lessons were left as their existing concrete/diagram-grounded
 prose — no forced analogy narrative — since the content is already
 spatial and visual (memory-cell diagrams, pointer-region diagrams).
 Concept map hand-authored. Media deferred to Phase 2.
+
+**Policy correction (2026-08-26):** arrays shipped with zero NotebookLM
+involvement — the user corrected this: "let's not completely abandon the
+rewrite... you should still use the notebook to do a proper rewrite."
+Tighter standard means tighter on *narrative*, not skipping the tool.
+From strings onward: still run NotebookLM every module, but ask for a
+content-quality review (gaps, awkward transitions, where a concrete
+worked example beats an assertion) instead of a forced-analogy draft.
+See `feedback_analogy_selectivity` memory for the full correction.
+
+**strings: Phase 1 complete (2026-08-26).** Curriculum-designer review
+recommended splitting "The String Toolkit" (mixed low-level char
+arithmetic, high-level API costs, and two-pointer idioms in one lesson)
+into two lessons — accepted. Rejected its second recommendation to fold
+a "Sliding Window on Strings" preview into the API-costs lesson: verified
+Sliding Window is its own dedicated module (11), taught much later than
+Strings (5) — teaching it here would preempt that module. Ran a
+NotebookLM content-quality review pass (not a narrative-analogy pass) per
+the corrected policy — it surfaced genuine gaps: assertions ("O(n²)",
+"O(1) beats hash map") that had no shown derivation. Added three
+independently-verified concrete traces: a step-by-step join_bad/join_good
+copy-count table (4 words → 10 vs. 4 copies, generalized to L·n(n+1)/2),
+a count-array build trace for "cab", and a naive-substring-search trace
+for "ab" in "aabab" (4 comparisons to match). Caught and fixed a
+diagram/prose mismatch this pass introduced (the existing string-builder-
+cost diagram defaulted to count=6 while the new table used 4 words —
+changed the diagram's count to 4 so both show the same "10 copies").
+Concept map hand-authored; media deferred to Phase 2.

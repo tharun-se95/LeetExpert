@@ -6,7 +6,7 @@ import { Node, StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { stringProp, speedProp } from "@/components/viz/props";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
-/** Single-string mode: matches string-toolkit's `letter_counts` exactly. */
+/** Single-string mode: matches character-arithmetic-count-arrays' `letter_counts` exactly. */
 const CODE_SINGLE: VizCode = {
   python: `def letter_counts(s: str) -> list[int]:
     counts = [0] * 26

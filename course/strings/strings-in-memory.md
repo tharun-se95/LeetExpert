@@ -57,15 +57,32 @@ function joinGood(words: string[]): string {
 ```diagram
 {
   "id": "string-builder-cost",
-  "count": 6
+  "count": 4
 }
 ```
 
-`join_bad` re-copies the accumulated prefix on every step: 1 + 2 + ⋯ + n
-character copies — the triangular sum, **O(n²)**. `join_good` is the
-dynamic array from Module 4 wearing a disguise: append pieces (O(1)
-amortized), pay the copy once. This "builder" pattern is the string
-module's single most important habit.
+Trace it on four single-character words — `["a", "b", "c", "d"]` — and
+count every character copy `join_bad` performs:
+
+| Step | Operation | Copies this step | Running total |
+| --- | --- | --- | --- |
+| 1 | `result = "" + "a"` | 1 (write `"a"`) | 1 |
+| 2 | `result = "a" + "b"` | 2 (`"a"` then `"b"`) | 3 |
+| 3 | `result = "ab" + "c"` | 3 (`"ab"` then `"c"`) | 6 |
+| 4 | `result = "abc" + "d"` | 4 (`"abc"` then `"d"`) | 10 |
+
+Ten copies to join four one-character words. `join_good` never copies a
+character while appending — `parts.append(w)` stores a reference to `w`,
+not its characters, at O(1) amortized each. The only character-copying
+happens once, at the very end: `"".join(parts)` allocates a string of the
+full length (4) and copies each word's characters into it exactly once —
+4 copies total, against `join_bad`'s 10, and the gap only widens as n
+grows. For n words of length L, `join_bad` re-copies the accumulated
+prefix on every step: L + 2L + ⋯ + nL = L · n(n+1)/2 character copies —
+the triangular sum again, **O(n² · L)**. `join_good` is the dynamic array
+from Module 4 wearing a disguise: append references (O(1) amortized), pay
+the character-copy cost exactly once, **O(n · L)**. This "builder"
+pattern is the string module's single most important habit.
 
 *Honesty note:* CPython and V8 both special-case `+=` on strings when the
 reference is private, often making it effectively linear in practice. Rely
@@ -117,9 +134,12 @@ function reverseString(s: string): string {
 ```
 ````
 
-Two O(n) conversions bracketing an O(n) algorithm is still O(n) — sequence
-adds. (When a problem hands you `chars: list[str]` / `string[]` directly,
-skip the conversions and you have true O(1) auxiliary space.)
+Three sequential phases, each O(n): convert to array, mutate in place,
+convert back. O(n) + O(n) + O(n) = O(n) — sequence adds, it doesn't
+multiply, so bracketing an O(n) algorithm with two O(n) conversions is
+still O(n) overall. (When a problem hands you `chars: list[str]` /
+`string[]` directly, skip the conversions and you have true O(1)
+auxiliary space.)
 
 ## The encoding footnote that occasionally bites
 
