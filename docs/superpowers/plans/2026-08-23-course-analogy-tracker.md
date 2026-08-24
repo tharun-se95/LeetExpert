@@ -25,7 +25,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | Module | Lessons | Prose | Audio | Video | Infographic | Mind Map |
 | --- | --- | :-: | :-: | :-: | :-: | :-: |
 | hash-tables | hashing-fundamentals, collision-chaining, build-a-hash-map, collision-open-addressing, keys-immutability-hashing, hash-patterns | x | x | x | x | x |
-| getting-started | course-introduction, how-lessons-work, writing-and-running-code, course-roadmap | | | | | x |
+| getting-started | course-introduction, how-lessons-work, writing-and-running-code, course-roadmap | x | | | | x |
 | big-o | why-efficiency-matters, big-o-notation, common-complexity-classes, input-dependency-best-worst-average, analyzing-loops-api-complexity, analyzing-recursion-tree-method, amortized-analysis-dynamic-arrays, space-complexity, complexity-drills | x | | | | x |
 | arrays | contiguous-memory, in-place-techniques, dynamic-arrays | | | | | |
 | two-pointers | converging-pointers, partition-pointers | | | | | |
@@ -58,3 +58,19 @@ blocker was resolved by the user downloading manually from the notebook
 and handing the files off for compression). This is the reference module
 for the remaining 23 — see the media-rollout spec end to end for the
 repeatable procedure.
+
+**getting-started: Phase 1 complete (2026-08-25).** Curriculum-designer
+review added a 4th lesson (Writing & Running Code — corrected from
+NotebookLM's local-environment-setup guess to the actual in-browser
+sandbox mechanics, verified against the real component code). Analogy
+pass hand-authored (no live NotebookLM session — meta/onboarding content,
+not a CS mechanism): "learning to cook, not memorizing recipes,"
+sustained across all 4 lessons. Concept map hand-authored. Media
+deferred to Phase 2.
+
+**big-o: Phase 1 complete (2026-08-25).** Curriculum-designer review
+split 7 lessons into 9 (iterative vs. recursive analysis; case-analysis
+vs. amortized/sequence-analysis). Full analogy pass via NotebookLM:
+gift-card matching game, summer-camp cookie-budget ceiling, town
+message-spreading, and a mailroom/delivery-clerk throughline sustained
+across lessons 4-8. Concept map hand-authored. Media deferred to Phase 2.

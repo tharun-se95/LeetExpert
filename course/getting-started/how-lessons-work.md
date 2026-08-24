@@ -3,10 +3,18 @@ title: How Lessons & Problems Work
 type: concept
 ---
 
-## Two kinds of lessons
+## The demonstration and the cook-off
 
-**Concept lessons** teach a structure or technique itself. They follow a
-fixed arc:
+Every good cooking class has two different kinds of sessions. In a
+**demonstration**, the chef shows you a technique — explains why it
+works, walks through it step by step, lets you watch closely. In a
+**cook-off**, you're handed raw ingredients and a dish to make, with
+minimal hand-holding — you attempt it yourself, ask for a hint only when
+you're truly stuck, and compare your result to the chef's version
+afterward.
+
+**Concept lessons** are the demonstrations. They teach a structure or
+technique itself, and follow a fixed arc:
 
 1. *Motivation* — what problem exists that this thing solves; what breaks
    without it.
@@ -17,17 +25,18 @@ fixed arc:
 5. *Trade-offs* — when to reach for it, when its alternatives win.
 6. *Quiz* — a short check that it stuck.
 
-**Problem lessons** apply what you've learned, one problem each, solve-first:
-statement and constraints → your attempt → progressive hints → the brute
-force and its cost → the key insight → the optimal solution → variants.
+**Problem lessons** are the cook-offs. They apply what you've learned,
+one problem each, solve-first: statement and constraints → your attempt →
+progressive hints → the brute force and its cost → the key insight → the
+optimal solution → variants.
 
 ## The interactive blocks
 
 Lessons use a few interactive blocks. Here's each one, live.
 
-**Code tabs** — implementations always come in both languages. Pick your
-primary language, but skim the other; seeing the same idea twice separates
-the idea from the syntax.
+**Code tabs** — implementations always come in both languages, the same
+dish cooked two different ways. Pick your primary language, but skim the
+other; seeing the same idea twice separates the idea from the syntax.
 
 ````tabs
 ```python
@@ -52,7 +61,8 @@ function containsDuplicate(nums: number[]): boolean {
 ```
 ````
 
-**Complexity boxes** — standardized cost summaries, always with the why:
+**Complexity boxes** — the dish's nutrition label, standardized cost
+summaries, always with the why:
 
 ```complexity
 {
@@ -62,7 +72,8 @@ function containsDuplicate(nums: number[]): boolean {
 }
 ```
 
-**Reveals** — used for hints and solutions in problem lessons. Genuinely try
+**Reveals** — the tasting notes you only read after you've actually
+cooked, used for hints and solutions in problem lessons. Genuinely try
 first; then open them in order.
 
 ````reveal Try it — what does this hide?
@@ -70,8 +81,8 @@ Exactly this. In problem lessons, hints escalate one reveal at a time, so
 you can take the smallest push you need and go back to attempting.
 ````
 
-**Quizzes** — instant feedback, with an explanation either way. Your answers
-are saved locally in your browser, nowhere else.
+**Quizzes** — the taste test, instant feedback with an explanation either
+way. Your answers are saved locally in your browser, nowhere else.
 
 ```quiz
 {

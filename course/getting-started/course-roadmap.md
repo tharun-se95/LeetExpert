@@ -3,61 +3,68 @@ title: The Roadmap
 type: concept
 ---
 
-## Five stages, in dependency order
+## The five-course training menu
 
-The 24 modules are grouped into five stages. The order isn't arbitrary —
-each stage leans on the ones before it, and most confusion in DSA comes from
-meeting ideas before their prerequisites.
+A serious culinary training program doesn't teach dishes in a random
+order. It teaches knife skills before sauces, sauces before composed
+plates, because each course leans on what the last one built into your
+hands. The 24 modules in this course are grouped into five stages the
+same way. The order isn't arbitrary — each stage leans on the ones before
+it, and most confusion in DSA comes from meeting ideas before their
+prerequisites.
 
 ```roadmap
 ### Stage 0 — Foundations
 
 *How to Learn This Course · Big O & Complexity Analysis · Math for DSA*
 
-Big O is the vocabulary the entire course is written in, so it comes first
-and gets a full module — not a cheat sheet. The math module covers the small
-set of tools (logarithms, modular arithmetic, counting) that later modules
-quietly depend on.
+Knife skills and pantry basics. Big O is the vocabulary the entire course
+is written in, so it comes first and gets a full module — not a cheat
+sheet. The math module covers the small set of tools (logarithms, modular
+arithmetic, counting) that later modules quietly depend on.
 
 ### Stage 1 — Linear structures
 
 *Arrays · Strings · Hash Tables · Linked Lists · Stacks · Queues*
 
-The core containers. Everything here is about **memory**: contiguous versus
-linked layout, what a pointer really is, why resizing a dynamic array is
-still cheap on average, how hashing turns "search everything" into "go
-directly there." These six structures are the raw material for every later
-stage.
+The raw ingredients every later dish is built from. Everything here is about
+**memory**: contiguous versus linked layout, what a pointer really is, why
+resizing a dynamic array is still cheap on average, how hashing turns
+"search everything" into "go directly there." These six structures are
+the raw material for every later stage.
 
 ### Stage 2 — Techniques on linear data
 
 *Two Pointers · Sliding Window · Prefix Sum · Binary Search · Sorting ·
 Matrix Traversal*
 
-Not new structures — new **algorithms over the structures you just
-learned**. Each one converts a brute-force quadratic scan into linear or
-logarithmic work, and each comes with the argument for why the shortcut is
-safe (why can binary search discard half the array? why can the window
-never miss the answer?).
+Not new ingredients — new **techniques applied to the ingredients you
+just prepped**. Each one converts a brute-force quadratic scan into
+linear or logarithmic work, and each comes with the argument for why the
+shortcut is safe (why can binary search discard half the array? why can
+the window never miss the answer?).
 
 ### Stage 3 — Recursive & hierarchical
 
 *Recursion & Backtracking · Binary Trees · BST & Ordered Structures ·
 Heaps · Tries*
 
-Recursion is taught as a tool in its own right — the call-stack model, then
-divide & conquer, then systematic search over choice trees. The tree-shaped
-structures follow, each defined by one invariant: the BST's ordering, the
-heap's parent-beats-child, the trie's shared prefixes.
+Composed dishes — built from smaller cooked components stacked on each
+other. Recursion is taught as a tool in its own right — the call-stack
+model, then divide & conquer, then systematic search over choice trees.
+The tree-shaped structures follow, each defined by one invariant: the
+BST's ordering, the heap's parent-beats-child, the trie's shared prefixes.
 
 ### Stage 4 — Global reasoning
 
 *Intervals · Greedy · Graphs · Dynamic Programming*
 
-Problems where the answer depends on the whole input at once. Greedy is
-taught with exchange arguments — proving the greedy choice is safe, since
-"it felt locally best" is how greedy solutions go wrong. Graphs and DP are
-the two biggest modules in the course, each internally staged.
+The full tasting menu, where every skill from the earlier courses has to
+work together at once. Problems where the answer depends on the whole
+input at once. Greedy is taught with exchange arguments — proving the
+greedy choice is safe, since "it felt locally best" is how greedy
+solutions go wrong. Graphs and DP are the two biggest modules in the
+course, each internally staged.
 ```
 
 ## How to move through it
