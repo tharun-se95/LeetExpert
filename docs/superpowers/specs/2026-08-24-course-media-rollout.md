@@ -494,6 +494,42 @@ For each of the 23 unchecked rows in the tracker, in tracker order:
 2026-08-24 as needed before Phase 2 generates any Explainer video at
 scale. Not yet scoped — revisit once Phase 1 is closer to done.
 
+**Module 2 log — getting-started (2026-08-24), Phase 1 complete:** ran
+§2.5 against the module's original 3-lesson list (Course Introduction, How
+Lessons & Problems Work, The Roadmap) using pasted-text sources (file
+upload doesn't work in this browser sandbox — same blob/native-dialog
+class of limitation as the download blocker; "Paste copied text" is the
+reliable path for onboarding modules with no pre-existing NotebookLM
+notebook). Finding: recommended a 4th lesson ("Setting Up Your Workspace")
+on the premise that students need a local Python/TypeScript environment.
+**That premise is false** — verified against the actual codebase
+(`web/src/components/sandbox/{CodeEditor,Sandbox}.tsx`): every problem
+runs in an in-browser sandbox (Python via a cached in-browser runtime,
+TypeScript natively), no local setup exists or is needed. Accepted the
+underlying gap (nothing in the module explained the sandbox itself) but
+rewrote the recommendation to match reality: added
+`writing-and-running-code.md` covering the actual workspace mechanics
+(language toggle with per-language saved drafts, Run, the Tests/Console/
+Insight result tabs, the Coach panel, Reset) — grounded in the real
+component behavior, not NotebookLM's guess. Placed 3rd (after "How Lessons
+& Problems Work", before "The Roadmap"). The reorder half of the original
+recommendation turned out to be moot — `manifest.ts` already had The
+Roadmap last; the question given to NotebookLM stated the sources in
+`ls`-alphabetical order, not the manifest's actual order, so it was
+reordering against a wrong premise fed to it by the prompt, not a real
+defect. **Lesson for future modules:** always cross-check the actual
+current order (manifest.ts) before phrasing the curriculum-designer
+question, not directory-listing order.
+
+Concept map hand-authored (no live NotebookLM Mind-Map pass this time —
+Phase 1 mind maps are authored directly from final lesson content per
+Task C step 4, the same method used for hash-tables' non-Fundamentals
+branches), registered in `conceptMaps/registry.ts`. `npm test` (551),
+`npx tsc --noEmit`, `eslint`, `npm run build` (215 lessons) all clean;
+browser-verified both the new lesson and the concept map render correctly.
+Tracker row: Prose + Mind Map checked, Audio/Video/Infographic
+intentionally blank (Phase 2).
+
 ### End condition (per CLAUDE.md §1 — scaffolding must have a stated end)
 
 Once every row in the extended tracker (Task B) is fully checked (all 5

@@ -91,3 +91,6 @@ are saved locally in your browser, nowhere else.
 Opening a lesson marks it visited; the sidebar and header track how much of
 the course you've covered. Progress lives entirely in your browser's local
 storage — there are no accounts and nothing leaves your machine.
+
+Next: how the code editor itself works — running your solution, reading
+test results, and what to do when you're stuck.

@@ -85,12 +85,13 @@ export const MODULES: ModuleMeta[] = [
     title: "How to Learn This Course",
     shortTitle: "Getting Started",
     description:
-      "What this course is, how lessons and problems work, and how to pace yourself.",
+      "What this course is, how lessons and the in-browser sandbox work, and how to pace yourself.",
     stage: 0,
     status: "available",
     lessons: [
       concept("course-introduction", "Course Introduction"),
       concept("how-lessons-work", "How Lessons & Problems Work"),
+      concept("writing-and-running-code", "Writing & Running Code"),
       concept("course-roadmap", "The Roadmap"),
     ],
   },
