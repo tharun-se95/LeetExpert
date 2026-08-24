@@ -439,7 +439,24 @@ checklist (prose / audio / video / infographic / mind map) so a module
 can't be marked done with silent asset gaps the way hash-tables just was
 found to have. Update the hash-tables row once Task A closes it out.
 
-### Task C: Run the combined procedure against each remaining module
+### Task C: Two-phase rollout — structure/prose/mind-map first, media later
+
+**Changed 2026-08-24 (user decision, after the hash-tables pilot):** media
+generation (audio/video/infographic) is split off the per-module loop into
+its own later pass across all 24 modules, run only after every module's
+curriculum and lesson content is finished. Reasons: (1) NotebookLM's
+Cinematic cap (2/day on this account — confirmed against the documented
+per-tier limit) makes interleaving media into 23 sequential module passes
+a pacing bottleneck; deciding cinematic-vs-explainer per module is a
+separate editorial call better made once, late, with the full course in
+view rather than piecemeal per module. (2) Explainer-format output quality
+needs a refinement pass of its own (open, not yet scoped) — no value in
+generating 71 Explainer videos before that refinement lands, since they'd
+need regenerating anyway. (3) Content quality (curriculum + prose) is the
+product; shipping the full curriculum first is higher-value than partial
+modules with polished media.
+
+**Phase 1 — structure, prose, mind map (run now, all 24 modules):**
 
 For each of the 23 unchecked rows in the tracker, in tracker order:
 
@@ -451,14 +468,31 @@ For each of the 23 unchecked rows in the tracker, in tracker order:
    including the diagram/viz reconciliation and Mind-Map/Quiz coverage
    checks it already specifies) against the lesson list §2.5 settled on.
 3. Run §2's structural review checklist against the result.
-4. Generate all 4 asset types per §3.3, using §3.4's dynamic prompts filled
-   in from that module's own analogy/mechanism.
-5. Transcribe the concept map per §3.5, register it.
-6. Confirm the UI wiring checklist (§3.6) — should be automatic, but
-   verify in the browser once per module rather than assuming.
-7. `npm test && npm run build`; fix before moving on.
-8. Mark all 5 columns of that module's tracker row.
-9. Commit.
+4. Transcribe the concept map per §3.5, register it (mind map ships now —
+   it's authored data, not a generated media asset, and costs nothing to
+   ship alongside prose).
+5. `npm test && npm run build`; fix before moving on.
+6. Mark the tracker row's **Prose** and **Mind Map** columns only — leave
+   Audio/Video/Infographic blank, they belong to Phase 2.
+7. Commit.
+
+**Phase 2 — media generation (run once Phase 1 clears all 24 rows):**
+
+1. For every module, decide per-lesson which get **Cinematic** video vs
+   **Explainer**, against the 2/day Cinematic budget — a deliberate
+   editorial call across the finished curriculum (which lessons are the
+   selling-point/hook lessons vs supporting ones), not a per-module
+   default. Record the decision in this file before generating.
+2. Before generating any Explainer video, land the Explainer quality
+   refinement (tracked as an open item below — not yet scoped).
+3. Generate all 4 asset types per §3.3, using §3.4's dynamic prompts.
+4. Confirm the UI wiring checklist (§3.6) in the browser per module.
+5. Mark the remaining 3 tracker columns (Audio/Video/Infographic).
+6. Commit.
+
+**Open item — Explainer quality refinement:** flagged by the user
+2026-08-24 as needed before Phase 2 generates any Explainer video at
+scale. Not yet scoped — revisit once Phase 1 is closer to done.
 
 ### End condition (per CLAUDE.md §1 — scaffolding must have a stated end)
 

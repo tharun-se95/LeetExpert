@@ -13,6 +13,15 @@ that asset landed at `web/public/media/<module>/`. Mind Map = the module's
 concept map is transcribed and registered
 (`web/src/lib/course/conceptMaps/registry.ts`).
 
+**Phasing (decided 2026-08-24, media-rollout spec §4 Task C):** Prose and
+Mind Map are filled in per module now (Phase 1 — curriculum + content
+first, in tracker order). Audio/Video/Infographic are deliberately left
+blank until Phase 2, a separate pass across all 24 modules once Phase 1 is
+done — cinematic-vs-explainer is an editorial call made once across the
+finished course, not per module, and NotebookLM's 2/day Cinematic cap
+makes interleaving media into each module pass a bottleneck. Do not treat
+a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
+
 | Module | Lessons | Prose | Audio | Video | Infographic | Mind Map |
 | --- | --- | :-: | :-: | :-: | :-: | :-: |
 | hash-tables | hashing-fundamentals, collision-chaining, build-a-hash-map, collision-open-addressing, keys-immutability-hashing, hash-patterns | x | x | x | x | x |
