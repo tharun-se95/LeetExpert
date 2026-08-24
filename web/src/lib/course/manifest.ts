@@ -157,7 +157,11 @@ export const MODULES: ModuleMeta[] = [
     lessons: [
       concept("contiguous-memory", "Arrays in Memory"),
       concept("dynamic-arrays", "Dynamic Arrays, Built From Scratch"),
-      concept("in-place-techniques", "In-Place Techniques"),
+      concept("in-place-foundations", "In-Place Foundations & Symmetric Pointers"),
+      concept(
+        "stable-compaction-cyclic-placement",
+        "Stable Compaction & Cyclic Placement",
+      ),
       problem("remove-duplicates-sorted", "Remove Duplicates from Sorted Array"),
       problem("move-zeroes", "Move Zeroes"),
       problem("best-time-to-buy-sell-stock", "Best Time to Buy & Sell Stock"),

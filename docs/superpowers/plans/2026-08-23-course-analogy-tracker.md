@@ -27,7 +27,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | hash-tables | hashing-fundamentals, collision-chaining, build-a-hash-map, collision-open-addressing, keys-immutability-hashing, hash-patterns | x | x | x | x | x |
 | getting-started | course-introduction, how-lessons-work, writing-and-running-code, course-roadmap | x | | | | x |
 | big-o | why-efficiency-matters, big-o-notation, common-complexity-classes, input-dependency-best-worst-average, analyzing-loops-api-complexity, analyzing-recursion-tree-method, amortized-analysis-dynamic-arrays, space-complexity, complexity-drills | x | | | | x |
-| arrays | contiguous-memory, in-place-techniques, dynamic-arrays | | | | | |
+| arrays | contiguous-memory, dynamic-arrays, in-place-foundations, stable-compaction-cyclic-placement | x | | | | x |
 | two-pointers | converging-pointers, partition-pointers | | | | | |
 | sliding-window | dynamic-windows, fixed-size-windows | | | | | |
 | strings | string-toolkit, strings-in-memory | | | | | |
@@ -88,3 +88,30 @@ of a chat reply, per user tip — far more stable to read than scrolling
 the chat panel): "The Grand Library Archive" / "the Master Archivist"
 throughline sustained across all 6 lessons. Concept map hand-authored.
 Media deferred to Phase 2.
+
+**Policy change (2026-08-26):** after math-for-dsa, the user asked for an
+unbiased review of whether the sustained-analogy treatment was genuinely
+helpful or overdone. Verdict: valuable for spatial/structural/process
+lessons (data structure internals, collision handling, memory/pointer
+mechanics), decorative for proof-heavy formal-math lessons (Big O's
+precise definition, Euclid's proof, binomial derivations) — those had to
+stretch the throughline to stay consistent rather than because the
+analogy was the best tool for that content, and every lesson got
+measurably longer for it. Saved as `feedback_analogy_selectivity` memory.
+**Applies going forward, not retroactively** — hash-tables/getting-
+started/big-o/math-for-dsa stand as shipped. From arrays onward: full
+analogy only where genuinely spatial/structural; formal/proof-heavy
+lessons get a tight concrete example instead of a forced narrative.
+
+**arrays: Phase 1 complete (2026-08-26).** Curriculum-designer review
+recommended splitting "In-Place Techniques" (4 techniques, each with a
+full loop-invariant proof, in one lesson) into a symmetric-pointer
+foundation and an asymmetric-technique follow-up — accepted. Rejected a
+second recommendation to fold row/column-major memory flattening into
+"Arrays in Memory": verified that topic already belongs to the later
+Matrix module (`course/matrix/grid-coordinates.md`), would have been
+premature and duplicative here. Per the policy change above, this
+module's lessons were left as their existing concrete/diagram-grounded
+prose — no forced analogy narrative — since the content is already
+spatial and visual (memory-cell diagrams, pointer-region diagrams).
+Concept map hand-authored. Media deferred to Phase 2.

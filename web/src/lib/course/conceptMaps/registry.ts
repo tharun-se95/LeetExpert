@@ -1,3 +1,4 @@
+import { arraysConceptMap } from "./arrays";
 import { bigOConceptMap } from "./bigO";
 import { gettingStartedConceptMap } from "./gettingStarted";
 import { hashTablesConceptMap } from "./hashTables";
@@ -9,6 +10,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   "getting-started": gettingStartedConceptMap,
   "big-o": bigOConceptMap,
   "math-for-dsa": mathForDsaConceptMap,
+  arrays: arraysConceptMap,
   "hash-tables": hashTablesConceptMap,
 };
 

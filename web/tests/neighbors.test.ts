@@ -3,7 +3,10 @@ import { getLessonNeighbors } from "../src/lib/course/load";
 
 describe("getLessonNeighbors Lessons order", () => {
   it("skips individual problems between concepts and Practice", () => {
-    const fromInPlace = getLessonNeighbors("arrays", "in-place-techniques");
+    const fromInPlace = getLessonNeighbors(
+      "arrays",
+      "stable-compaction-cyclic-placement",
+    );
     expect(fromInPlace.next).toEqual({
       module: "arrays",
       lesson: "practice",
@@ -13,8 +16,8 @@ describe("getLessonNeighbors Lessons order", () => {
     const fromPractice = getLessonNeighbors("arrays", "practice");
     expect(fromPractice.prev).toEqual({
       module: "arrays",
-      lesson: "in-place-techniques",
-      title: "In-Place Techniques",
+      lesson: "stable-compaction-cyclic-placement",
+      title: "Stable Compaction & Cyclic Placement",
     });
     expect(fromPractice.next?.module).toBe("strings");
     expect(fromPractice.next?.lesson).not.toBe("valid-palindrome");
