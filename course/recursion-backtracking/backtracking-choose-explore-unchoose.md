@@ -5,19 +5,33 @@ type: concept
 
 ## When the answer is a sequence of choices
 
-Some problems ask you to *build* something out of a series of decisions:
-which elements go in a subset, what order to arrange items, where to
-place queens on a board. The set of all possible ways to make those
-decisions forms a **state-space tree** — the root is "nothing decided
-yet," each edge is one choice, and each leaf is one complete
-configuration. Solving the problem means walking that tree and either
-collecting every valid leaf (all subsets) or finding one that satisfies
-a constraint (a valid queen placement). **Backtracking** is the
-disciplined way to walk it: a depth-first traversal of the choice tree
-that shares one mutable "current state" across the whole walk, and
-carefully **undoes** each choice as it retreats. This lesson builds the
-template, proves why the undo step is mandatory, and shows how *pruning*
-turns an intractable tree into a merely-large one.
+Imagine trying on outfits from a shared clothing rack, one item at a
+time, to see which combinations look good together. You pull on a
+jacket, then hold up a pair of trousers against it. If that pairing
+doesn't work, you don't start over from nothing — you just take the
+trousers off and try a different pair, still wearing the same jacket.
+Only when you've tried every pair of trousers with that jacket do you
+finally take the jacket off too, and reach for a different one. At
+every step you're either putting something on (committing to a choice),
+pausing to check how the current combination looks (exploring further
+from here), or taking something back off before moving on to the next
+option (undoing a choice so it doesn't linger into the next attempt).
+
+Some problems ask you to *build* something out of a series of decisions
+exactly like this: which elements go in a subset, what order to arrange
+items, where to place queens on a board. The set of all possible ways
+to make those decisions forms a **state-space tree** — the root is
+"nothing decided yet," each edge is one choice, and each leaf is one
+complete configuration. Solving the problem means walking that tree and
+either collecting every valid leaf (all subsets) or finding one that
+satisfies a constraint (a valid queen placement). **Backtracking** is
+the disciplined way to walk it: a depth-first traversal of the choice
+tree that shares one mutable "current state" across the whole walk — the
+outfit you're currently wearing — and carefully **undoes** each choice
+as it retreats, exactly like taking the trousers back off before
+reaching for the next pair. This lesson builds the template, proves why
+the undo step is mandatory, and shows how *pruning* turns an
+intractable tree into a merely-large one.
 
 ```diagram
 {
@@ -138,6 +152,19 @@ churn, which is why the mutate-and-undo pattern is the standard. Know
 both exist; the choose/explore/unchoose form is what you'll write by
 default and what every solution in this module uses.
 
+One more thing worth naming before you meet the problems: `path` is
+only the simplest shared tracker, not the only kind. Whatever mutable
+state records the current partial solution needs the same choose/
+unchoose discipline, whether it's a list you append to and pop, a
+boolean array marking elements "in use" that you flip on and back off,
+or several sets tracking different constraints at once — same rack, more
+than one hook. Permutations tracks a `used` array instead of relying on
+a start index, and unmarks an element on the way back up exactly where
+`path` would get popped; N-Queens tracks three separate sets (columns,
+and both diagonals) and removes an entry from each of them on the way
+back up. The mechanism is identical — mutate on choose, restore on
+unchoose — just applied to a different piece of shared state.
+
 ## Pruning: cutting branches before they bloom
 
 The state-space tree is enormous, but you rarely have to visit all of
@@ -185,9 +212,22 @@ So a subsets solution is O(n · 2ⁿ): 2ⁿ subsets, each costing O(n) to
 copy out. A permutations solution is O(n · n!): n! permutations, each
 O(n) to copy. Getting the total right means multiplying "how many nodes"
 by "cost per node" — the same two-factor discipline you'll apply to
-every problem in this module. When we get to the individual problems,
-this is the reasoning you'll reproduce each time, not a table you'll
-memorize.
+every problem in this module.
+
+That multiplication only tells the whole story once you check it
+against the OTHER nodes in the tree — the internal ones, where you
+`choose`/`unchoose` but don't record anything. For subsets, the tree has
+O(2ⁿ) nodes total (internal and leaf combined, since it's a binary
+tree of depth n), and each internal node costs O(1) — so all the
+internal work together is only O(2ⁿ), strictly smaller than the leaves'
+O(n · 2ⁿ). The leaf work dominates, so it alone sets the total. The same
+check applies to permutations: O(n!) internal nodes at O(1) each is
+O(n!), dominated by the leaves' O(n · n!). This is why the two-factor
+answer is safe to state directly — the internal-node cost never wins
+that comparison in this module's problems — but the check itself, not
+just the multiplication, is what makes the answer a derivation instead
+of a guess. When we get to the individual problems, this is the
+reasoning you'll reproduce each time, not a table you'll memorize.
 
 ```complexity
 {

@@ -36,7 +36,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | queues | deques-and-monotonic, fifo-basics, ring-buffer | x | | | | x |
 | binary-search | binary-search-on-the-answer, boundary-search, the-invariant-template | x | | | | x |
 | sorting | baseline-sorts, linear-time-sorts, merge-sort-lower-bound, quicksort-partitioning | x | | | | x |
-| recursion-backtracking | backtracking-choose-explore-unchoose, recursion-vs-iteration, the-call-stack-and-base-cases | | | | | |
+| recursion-backtracking | backtracking-choose-explore-unchoose, recursion-vs-iteration, the-call-stack-and-base-cases | x | | | | x |
 | binary-trees | bfs-level-order, dfs-traversals, top-down-vs-bottom-up-recursion, tree-terminology-and-representation | | | | | |
 | bst | balance-and-why-it-matters, bst-invariant-and-operations | | | | | |
 | heaps | heap-property-and-array-representation, heapify-sift-up-and-sift-down | | | | | |
@@ -303,3 +303,28 @@ analogies added (bookshelf, playing cards, paper stacks, height queue,
 pigeonholes/index cards). See
 `docs/superpowers/plans/analogies/sorting.md`. Concept map
 hand-authored; media deferred to Phase 2.
+
+**recursion-backtracking: Phase 1 complete (2026-08-25).** Curriculum-
+designer review confirmed 3 lessons is right and no new concept lesson
+is needed (all 6 problem lessons already self-teach their device), but
+caught two real bugs: Lesson 1 opened claiming "everything so far has
+been flat," contradicting the immediately preceding Sorting module's
+recursive merge sort and quicksort — fixed by acknowledging that
+module's recursion while correctly framing this lesson as the first
+place the call-stack machinery itself gets explained; and Lesson 2's
+"unchoose" was demonstrated only via `path.pop()`, while Permutations
+and N-Queens apply the same discipline to a used-array and to sets —
+fixed with a generalizing paragraph. Rejected merging Lesson 3 into
+Lesson 1 (its TCO section is deliberately corrective, not filler; its
+one-paragraph tree-height forward-reference is the course's normal
+pattern, not "premature cognitive load") and two "triplicate/repetitive"
+tightening claims (each flagged passage served a distinct purpose).
+Content-quality review added, independently verified in Python: a
+concrete `factorial(1)` stack-frame trace, a Θ(φⁿ) precision aside on
+naive Fibonacci plus a verified `fib(5)` call-count trace (15 calls
+total), and a domination derivation showing leaf cost dominates
+internal-node cost for the subsets/permutations complexity claims.
+Three analogies added (cafeteria trays, dressing-room rack, desk-drawer
+vs. floor space). See
+`docs/superpowers/plans/analogies/recursion-backtracking.md`. Concept
+map hand-authored; media deferred to Phase 2.

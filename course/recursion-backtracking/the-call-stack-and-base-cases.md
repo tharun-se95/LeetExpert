@@ -5,19 +5,33 @@ type: concept
 
 ## Stage 3 begins: problems that recurse into themselves
 
-Everything so far has been flat — a loop marches an index across an
-array, a pointer converges, a window slides. Stage 3 is about data and
-problems that are **defined in terms of smaller copies of themselves**:
-a tree is a node plus two smaller trees; "all subsets of n items" is
-"all subsets of n−1 items, twice." Recursion is the tool that matches
-that shape — a function that calls itself on a smaller input. But
-recursion is not magic syntax; it runs on a concrete piece of machinery,
-**the call stack**, and if you don't know exactly what that machine does
-on each call, you cannot reason about when it terminates, how much
-memory it costs, or why it crashes. This lesson makes the machine
-concrete first, then gives you the two tools — a **base case** and an
-**induction argument** — that let you prove a recursive function is
-correct instead of hoping it is.
+Most of the course so far has been flat — a loop marches an index
+across an array, a pointer converges, a window slides. The Sorting
+module's merge sort and quicksort were the first exception: both called
+themselves recursively, and you used their recursion trees to derive
+their complexity. But that module treated recursion as a tool applied
+to sorting; it never explained the machine underneath the tool. Stage 3
+is about data and problems that are **defined in terms of smaller
+copies of themselves** — a tree is a node plus two smaller trees; "all
+subsets of n items" is "all subsets of n−1 items, twice" — and this
+lesson makes that underlying machine concrete for the first time:
+**the call stack**. Recursion is not magic syntax; every recursive call
+you've already written ran on it. If you don't know exactly what that
+machine does on each call, you cannot reason about when it terminates,
+how much memory it costs, or why it crashes. This lesson makes the
+machine concrete first, then gives you the two tools — a **base case**
+and an **induction argument** — that let you prove a recursive function
+is correct instead of hoping it is.
+
+Picture it like a stack of trays at a cafeteria counter. Every time a
+new task needs to happen before the current one can finish, you set the
+current tray down and start a fresh one on top of it — the tray
+underneath is still there, still holding everything you were in the
+middle of, just paused. You can only ever work on the top tray, and a
+tray only comes off the stack once whatever was on it is completely
+done. A recursive call is exactly this: pause what you're doing, start
+a smaller version of the same task on a fresh tray, and only pick your
+own tray back up once the one above it is cleared.
 
 ## What a function call actually does in memory
 
@@ -32,6 +46,13 @@ small block of memory holding three things:
 2. **The return address** — where in the *calling* function to resume
    once this call finishes. This is how the program knows to come back.
 3. **A slot for the return value** to be handed back to the caller.
+
+Concretely, when `factorial(3)` calls `factorial(1)`, the frame that
+gets pushed for that call holds: argument `n = 1`; a return address
+pointing at the `return n * factorial(n - 1)` line inside
+`factorial(2)`'s own frame (so execution knows exactly where to resume
+once `factorial(1)` is done); and, once the base case fires, a return
+value of `1` waiting to be handed back to that resume point.
 
 When a function returns, its frame is **popped** — the memory is
 reclaimed, and control jumps to the saved return address. The stack is a
@@ -191,11 +212,19 @@ This is *correct* by the same induction argument (base cases right; the
 step adds two correct smaller answers). But it is disastrously slow. The
 call tree branches two ways at every level, so its size roughly
 **doubles each level down** — computing `fib(n)` makes on the order of
-2ⁿ calls, an **exponential** number. The reason is pure redundancy:
-`fib(5)` calls `fib(4)` and `fib(3)`; `fib(4)` *also* calls `fib(3)`;
-that entire `fib(3)` subtree is recomputed from scratch every time it
-appears. The same subproblems are re-solved an exponential number of
-times.
+2ⁿ calls, an **exponential** number. (More precisely, the count grows
+as Θ(φⁿ) where φ ≈ 1.618 is the golden ratio — strictly slower-growing
+than 2ⁿ, since not every branch survives to full depth, but still
+exponential; "O(2ⁿ)" is the loose, easy-to-state upper bound this course
+uses, and it's the one you should reach for in an interview.) The reason
+is pure redundancy: `fib(5)` calls `fib(4)` and `fib(3)`; `fib(4)`
+*also* calls `fib(3)`; that entire `fib(3)` subtree is recomputed from
+scratch every time it appears. Counting calls directly on `fib(5)`
+makes this concrete: `fib(3)` runs twice, `fib(2)` runs three times,
+`fib(1)` runs five times, `fib(0)` runs three times — 15 calls total to
+compute one value that a single pass of the iterative version would
+reach in 5 steps. The same subproblems are re-solved an exponential
+number of times.
 
 ```diagram
 {

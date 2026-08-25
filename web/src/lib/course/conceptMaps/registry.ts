@@ -6,6 +6,7 @@ import { linkedListsConceptMap } from "./linkedLists";
 import { mathForDsaConceptMap } from "./mathForDsa";
 import { binarySearchConceptMap } from "./binarySearch";
 import { queuesConceptMap } from "./queues";
+import { recursionBacktrackingConceptMap } from "./recursionBacktracking";
 import { slidingWindowConceptMap } from "./slidingWindow";
 import { sortingConceptMap } from "./sorting";
 import { stacksConceptMap } from "./stacks";
@@ -28,6 +29,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   "sliding-window": slidingWindowConceptMap,
   "binary-search": binarySearchConceptMap,
   sorting: sortingConceptMap,
+  "recursion-backtracking": recursionBacktrackingConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {

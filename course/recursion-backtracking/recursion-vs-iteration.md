@@ -114,10 +114,18 @@ correct, uses modest total memory, and still crashes.
 
 The fix when depth is the problem is to stop using the *call* stack and
 use an **explicit stack** — a `list`/array you push and pop yourself —
-running the traversal in a plain loop. This converts O(depth) *call-stack*
-space (capped, crash-prone) into O(depth) *heap* space (bounded only by
-real memory, no artificial limit), and it's the standard move for
-iterative tree traversals (Module 17) and any deep divide-and-conquer:
+running the traversal in a plain loop. Think of the call stack as one
+small, fixed desk drawer that only ever holds a capped number of
+folders — perfectly fine for a shallow pile, but it jams shut the
+moment you try to force in the thousand-and-first folder, no matter how
+much floor space the rest of the room has. An explicit stack is the
+same pile of folders moved onto the floor instead: you're doing the
+identical push-one-on, pop-one-off bookkeeping yourself, but now
+you're limited only by how much floor the room actually has, not by
+the size of one drawer. This converts O(depth) *call-stack* space
+(capped, crash-prone) into O(depth) *heap* space (bounded only by real
+memory, no artificial limit), and it's the standard move for iterative
+tree traversals (Module 17) and any deep divide-and-conquer:
 
 ````tabs
 ```python
