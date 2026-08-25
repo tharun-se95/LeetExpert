@@ -7,9 +7,12 @@ type: concept
 
 A **deque** (double-ended queue, "deck") lifts the last restriction:
 push and pop at *either* end, all O(1). Python's `collections.deque` is
-the real thing (a segmented ring underneath); in JS you approximate
-with the head-index wrapper from lesson 1 extended to both ends, or a
-doubly linked list (Module 7's `prev` pointers finally earning rent).
+the real thing — internally a chain of fixed-size ring-buffer blocks
+(not one giant array), so growth at either end just links on a new
+block instead of touching the rest of the structure; in JS you
+approximate with the head-index wrapper from lesson 1 extended to both
+ends, or a doubly linked list (Module 7's `prev` pointers finally
+earning rent).
 
 ```diagram
 {
@@ -90,8 +93,11 @@ deque is the repair, and it powers "max/min of a sliding window" in
 O(n) total.
 
 Setup: a window slides rightward over an array; you must report the
-window's **maximum** at each position. Keep a deque of **indices** whose
-values are **decreasing** front-to-back. Both ends have jobs:
+window's **maximum** at each position. Keep a deque of **indices** —
+not values — whose corresponding values are **decreasing**
+front-to-back. Indices matter because expiry is a position check ("has
+the front fallen outside the window?"); a bare value can't answer that.
+Both ends have jobs:
 
 - **Back — usefulness filter** (the monotonic stack's move): when x
   arrives, every index at the back with value ≤ x can never be a future
@@ -107,14 +113,29 @@ The invariant that makes it work:
 > this or a future window. The front is therefore always the current
 > window's maximum.
 
+Trace it on `nums = [1, 3, -1, -3, 5]`, window size 3, keeping indices
+in the deque throughout to see why that distinction matters:
+
 ```text
-window size 3 over [1, 3, -1, -3, 5]:
-  1 arrives:  deque [1]
-  3 arrives:  1 ≤ 3 — pop it (dominated); deque [3]        max 3? (window not full)
- -1 arrives:  deque [3, -1]                                 max 3
- -3 arrives:  deque [3, -1, -3]                             max 3
-  5 arrives:  3, -1, -3 all ≤ 5 — pop all; deque [5]        max 5
+i=0 (val 1):  deque [0]                                    window not full
+i=1 (val 3):  nums[0]=1 ≤ 3 — pop idx 0 (dominated); push 1
+              deque [1]                                    window not full
+i=2 (val -1): nums[1]=3 ≤ -1? no — push 2
+              deque [1, 2]  (values 3, -1)     window full — max nums[1]=3
+i=3 (val -3): front idx 1 still inside window [1,3] — no expiry
+              nums[2]=-1 ≤ -3? no — push 3
+              deque [1, 2, 3]  (values 3, -1, -3)            max nums[1]=3
+i=4 (val 5):  window is now [2,4] — front idx 1 < 2: EXPIRED, pop front
+              deque [2, 3] — new front idx 2 is inside [2,4], done expiring
+              nums[3]=-3 ≤ 5 — pop idx 3; nums[2]=-1 ≤ 5 — pop idx 2
+              deque [] — push 4
+              deque [4]  (value 5)                           max nums[4]=5
 ```
+
+The expiry pop at i=4 — discarding index 1 because the window outgrew
+it, *before* any dominance check even runs — is the step a values-only
+trace can't show: nothing about the number 3 says it's about to expire,
+only its *position* does. That's why the deque stores indices.
 
 Cost: each index is pushed once, popped at most once (from ONE of the
 two ends) — the push-once/pop-once budget for the third time, now split

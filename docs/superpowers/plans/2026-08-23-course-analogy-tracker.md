@@ -33,7 +33,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | strings | strings-in-memory, character-arithmetic-count-arrays, string-apis-scan-costs-idioms | x | | | | x |
 | linked-lists | build-a-linked-list, nodes-and-pointers, pointer-surgery | x | | | | x |
 | stacks | lifo-and-the-call-stack, matching-and-nesting, monotonic-stack | x | | | | x |
-| queues | deques-and-monotonic, fifo-basics, ring-buffer | | | | | |
+| queues | deques-and-monotonic, fifo-basics, ring-buffer | x | | | | x |
 | binary-search | binary-search-on-the-answer, boundary-search, the-invariant-template | | | | | |
 | sorting | baseline-sorts, linear-time-sorts, merge-sort-lower-bound, quicksort-partitioning | | | | | |
 | recursion-backtracking | backtracking-choose-explore-unchoose, recursion-vs-iteration, the-call-stack-and-base-cases | | | | | |
@@ -204,3 +204,24 @@ strengthened monotonic-stack invariant argument, and 3 accepted analogies
 (paperwork desk, cafeteria trays, concert sightlines) alongside 2
 rejected ones. See `docs/superpowers/plans/analogies/stacks.md`. Concept
 map hand-authored; media deferred to Phase 2.
+
+**queues: Phase 1 complete (2026-08-25).** Curriculum-designer review
+(now explicitly told to check whether problem lessons self-teach before
+recommending new ones — a fix learned from stacks) correctly found no
+genuine concept-lesson gaps. It recommended relocating the Monotonic
+Deque + Sliding Window Maximum to "Module 10 (Two Pointers & Sliding
+Window)" — rejected after checking the manifest: Two Pointers (10) and
+Sliding Window (11) are separate modules, and Sliding Window's actual
+scope (window-boundary invariants) doesn't fit the deque technique; the
+lesson already frames it as this module's deliberate capstone. Content-
+quality review caught a real correctness/completeness gap, independently
+verified by hand-running the algorithm: the monotonic-deque worked
+example traced *values* instead of *indices*, which meant it never
+actually demonstrated the front-expiry mechanic firing, even though it
+genuinely fires in that exact example at i=4. Replaced with a hand-
+verified index-based trace. Also added derivations for the linked-list
+tail-pointer asymmetry, the SimpleQueue compaction's amortized cost (using
+the real trigger condition from the code), and why `head == tail`
+aliases both empty and full in a ring buffer. See
+`docs/superpowers/plans/analogies/queues.md`. Concept map hand-authored;
+media deferred to Phase 2.

@@ -78,11 +78,36 @@ class SimpleQueue<T> {
 
 The `SimpleQueue` trick — advance a `head` index instead of shifting —
 is worth reading twice: it converts dequeue to O(1) by **redefining
-where the front is** rather than moving data, with occasional amortized
-compaction to reclaim memory. Two other O(1) designs you already own:
+where the front is** rather than moving data. Concretely: start with
+`items = ['A', 'B', 'C']`, `head = 0`. `dequeue()` reads `items[0]`
+(`'A'`), clears that slot, and sets `head = 1` — the array itself never
+moves, only the boundary that marks where the logical queue begins.
+`enqueue('D')` just appends: `items = [_, 'B', 'C', 'D']`, `head`
+unchanged. The logical queue (`items[head..]`) reads `['B', 'C', 'D']` —
+correct — while the physical array underneath was never shifted. Compare
+that to the shifting version: the same `dequeue()` would rewrite
+`['B', 'C', _]`, copying every remaining element one slot left. It's the
+difference between making every passenger on a bus physically shuffle
+forward one seat when the front seat empties, versus just relabeling
+which row now counts as "row one."
+
+The tradeoff is `head` growing forever without bound, wasting the slots
+behind it — which is what the occasional compaction reclaims. The
+compaction condition (`head` past 1000 and past half the array's length)
+means: by the time it fires, at least 1000 dequeues have happened since
+the last reset (`head` only grows via dequeue), and the copy touches at
+most half the array. Spreading a ≤n/2 copy over ≥1000 prior dequeues
+gives O(1) amortized per operation — the same shape of argument as the
+dynamic array's doubling, just triggered by a position threshold instead
+of a capacity one. Two other O(1) designs you already own:
 
 - **Linked list with a tail pointer** (Module 7): enqueue = push_back,
-  dequeue = remove head — both O(1), no compaction needed.
+  dequeue = remove head — both O(1), no compaction needed. Note the
+  asymmetry is forced: reverse the roles (enqueue at head, dequeue at
+  tail) and dequeue would need to retarget `tail` to the *previous*
+  node — but a singly linked node has no `prev`, so finding it means
+  walking from the head, an O(n) search. The tail pointer only pays off
+  when it's paired with head-side removal.
 - **Ring buffer** (next lesson): array + modular indices — the tightest
   version, and the one worth building from scratch.
 

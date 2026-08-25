@@ -19,6 +19,19 @@ enqueue(E):      [ _, B, C, D, E ]      tail wraps: (4+1) % 5 = 0
 enqueue(F):      [ F, B, C, D, E ]      the "ring" in action
 ```
 
+Think of it like the clock on your wall: when the hand moves past 12,
+it doesn't crash into a wall waiting for a 13th hour — it just wraps
+around to 1. A ring buffer's index does the same thing every time it
+passes the last slot.
+
+Trace the formula the code actually uses — `tail = (head + size) %
+capacity` — against this exact example. Before `enqueue(E)`: `head = 1`,
+`size = 3` (B, C, D occupy indices 1, 2, 3). `tail = (1 + 3) % 5 = 4` —
+matches the empty slot the diagram points at. After writing `E` there,
+`size` becomes 4, so the *next* tail is `(1 + 4) % 5 = 5 % 5 = 0` — the
+wrap the diagram calls out, derived from the same formula rather than
+tracked separately.
+
 Fixed capacity is a *feature* in the ring's home turf — network
 buffers, keyboard input, audio streams, log rings — where bounded
 memory and zero allocation are requirements, not limitations.
@@ -26,12 +39,22 @@ memory and zero allocation are requirements, not limitations.
 ## The one design decision: full vs empty
 
 With head and tail both moving, `head == tail` is ambiguous: an empty
-ring and a completely full ring look identical. Every implementation
-must break the tie. The two standard answers:
+ring and a completely full ring look identical. Derive why: both start
+at `head = tail = 0`. Enqueue `capacity` (call it `C`) elements without
+ever dequeuing, and `tail` advances once per insertion — after `C`
+insertions the new tail index is `C mod C = 0`. So the `C`-element
+(full) state and the `0`-element (empty) state both land on
+`head == tail == 0` — two different amounts of data, one identical pair
+of coordinates. Every implementation must break the tie. The two
+standard answers:
 
 1. **Keep a size counter** (we do this — simplest and clearest);
-2. Sacrifice one slot: "full" means tail is one-behind head — capacity
-   costs one wasted cell, but no counter.
+2. Sacrifice one slot: define "full" as `(tail + 1) % capacity == head`
+   — the ring stops accepting one slot before tail would ever catch
+   head, so a full ring always has `head != tail` (they're exactly 1
+   apart), while empty stays `head == tail`. The states are
+   distinguishable again — at the cost of one cell that can never hold
+   data.
 
 ## The implementation
 
