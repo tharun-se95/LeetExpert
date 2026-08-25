@@ -8,7 +8,10 @@ type: concept
 Merge sort splits the array in half, recursively sorts each half, then
 merges the two sorted halves — using exactly the merge step you already
 built in Module 7's Merge Two Sorted Lists, applied to arrays instead
-of linked lists:
+of linked lists. It's the same move as combining two sorted stacks of
+paper on a desk: compare the top sheet of each stack, take the smaller
+one, place it face-down on a new pile, and repeat — never needing to
+look further into either stack than the sheet currently on top:
 
 ```diagram
 {
@@ -38,7 +41,7 @@ def merge(left: list[int], right: list[int]) -> list[int]:
             result.append(right[j])
             j += 1
     result.extend(left[i:])               # attach whichever side has leftovers
-    result.extend(right[j:])
+    result.extend(right[j:])               # correct because both sides were pre-sorted
     return result
 ```
 
@@ -84,7 +87,18 @@ from work already done.
 holds elements that were originally earlier in the array, equal
 elements never swap relative order — merge sort is stable, unlike
 selection sort (which can shuffle equal elements arbitrarily during its
-swaps) and unlike quicksort (next lesson).
+swaps) and unlike quicksort (next lesson). Trace it on two duplicate
+values arriving from opposite sides — `left = [2ₐ, 4]`,
+`right = [2ᵦ, 3]` (subscripts just for tracking, not part of the data):
+`left[0]=2ₐ <= right[0]=2ᵦ` is true, so `2ₐ` is taken first; `left[1]=4`
+compared against `right[0]=2ᵦ` next, `2ᵦ` is smaller and taken; then `3`,
+then `4`. Result: `[2ₐ, 2ᵦ, 3, 4]` — `2ₐ` (originally on the left, i.e.
+earlier in the array) stayed ahead of `2ᵦ`, exactly as stability
+promises. Why the leftover-copying at the end doesn't break this: once
+one side runs out, every remaining element on the other side is
+provably ≥ everything already placed (both sides were sorted going in),
+so copying them in their existing order is not just convenient, it's
+the only correct choice.
 
 ```complexity
 {

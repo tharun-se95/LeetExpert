@@ -5,7 +5,7 @@ type: concept
 
 ## Breaking the rules on purpose
 
-The previous lesson proved that no algorithm sorting by **comparisons**
+The Merge Sort lesson proved that no algorithm sorting by **comparisons**
 can beat Ω(n log n) in the worst case. That proof's power came entirely
 from its assumption — "the only thing the algorithm can do is ask
 `is A < B?`." Drop that assumption, and the proof simply doesn't apply.
@@ -58,6 +58,12 @@ tally every value's frequency, then read the tallies out in order. No
 comparison ever happens — the ORDER comes from iterating the counts
 array 0, 1, 2, …, k, which is only possible because the values are
 small integers you can use as array indices.
+
+Think of it like sorting mail into a wall of labeled pigeonholes, one
+hole per possible value: drop each letter straight into its hole (no
+comparing letters to each other), then walk the wall left to right and
+empty each hole in turn. The order was never "figured out" — it's just
+where the wall already put things.
 
 ```complexity
 {
@@ -139,7 +145,29 @@ slot instead of just emitting counts in order) — and it must be
 overall order if ties from the previous digit stay in their
 relative order. Walking the array in reverse while placing (rather than
 forward) is what makes this particular implementation stable — trace
-two equal last-digits through it once to see why order survives.
+two equal last-digits through it once to see why order survives:
+`arr = [13, 23, 7]`, digit = ones place (`exp = 1`). Digits are `3, 3,
+7`; prefix-summed counts give slot 1 for the last "3" placed and slot 0
+for the one placed before it. Iterating in reverse means `7` (index 2)
+is placed first at its slot, then `23` (index 1) claims the LAST
+available "3" slot, then `13` (index 0) claims the slot before it —
+landing `13` ahead of `23` in the result, preserving their original
+relative order even though both have the same ones digit. Iterating
+forward would have handed the later slot to whichever "3" was seen
+first — the wrong element for a stable sort.
+
+Full trace, both passes, on `arr = [29, 13, 22, 19, 5]`: ones-digit
+pass (digits `9, 3, 2, 9, 5`) produces `[22, 13, 5, 29, 19]` — the
+two 9s (`29`, `19`) keep their original relative order. Tens-digit
+pass on that result (digits `2, 1, 0, 2, 1`) produces
+`[5, 13, 19, 22, 29]` — fully sorted, in two linear passes over five
+elements, no comparisons made.
+
+Think of it like sorting index cards into bins by their last digit
+first, then re-sorting the (already ones-sorted) stack into bins by
+their tens digit, always keeping each bin's incoming order intact as
+you place cards into it — by the time the most significant digit's
+pass finishes, every earlier digit's ordering is still baked in.
 
 ```complexity
 {

@@ -60,6 +60,22 @@ its left is smaller, everything to its right is larger. That's enough
 to sort recursively: partition, then recursively sort the two sides
 independently, never touching the pivot again.
 
+Trace it on `arr = [8, 3, 7, 1, 5]`, pivot `arr[4] = 5`, `boundary = 0`:
+`i=0` (`8`): `8 < 5`? No — no swap, `boundary` stays 0. `i=1` (`3`):
+`3 < 5`? Yes — swap `arr[0]` and `arr[1]`: `[3, 8, 7, 1, 5]`,
+`boundary → 1`. `i=2` (`7`): no swap. `i=3` (`1`): `1 < 5`? Yes — swap
+`arr[1]` and `arr[3]`: `[3, 1, 7, 8, 5]`, `boundary → 2`. Loop ends;
+final swap `arr[2]` and `arr[4]`: `[3, 1, 5, 8, 7]`. The pivot `5` sits
+at index 2 — everything left (`3, 1`) is smaller, everything right
+(`8, 7`) is larger, exactly as promised, in one linear pass.
+
+Think of it like a queue of people of different heights, with one
+person picked as the reference height: walk the line once, pulling
+anyone shorter than the reference to the front of a growing "shorter"
+group as you pass them — by the time you reach the end, the reference
+person can step directly into the one gap that's neither too far
+forward nor too far back.
+
 ## Quicksort itself
 
 ````tabs

@@ -35,7 +35,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | stacks | lifo-and-the-call-stack, matching-and-nesting, monotonic-stack | x | | | | x |
 | queues | deques-and-monotonic, fifo-basics, ring-buffer | x | | | | x |
 | binary-search | binary-search-on-the-answer, boundary-search, the-invariant-template | x | | | | x |
-| sorting | baseline-sorts, linear-time-sorts, merge-sort-lower-bound, quicksort-partitioning | | | | | |
+| sorting | baseline-sorts, linear-time-sorts, merge-sort-lower-bound, quicksort-partitioning | x | | | | x |
 | recursion-backtracking | backtracking-choose-explore-unchoose, recursion-vs-iteration, the-call-stack-and-base-cases | | | | | |
 | binary-trees | bfs-level-order, dfs-traversals, top-down-vs-bottom-up-recursion, tree-terminology-and-representation | | | | | |
 | bst | balance-and-why-it-matters, bst-invariant-and-operations | | | | | |
@@ -280,4 +280,26 @@ proof framework, a last-occurrence derivation, an out-of-bounds trace,
 a from-scratch derivation of the O(f(n)·log R) total cost, and a fully
 hand-verified Koko Eating Bananas trace. See
 `docs/superpowers/plans/analogies/binary-search.md`. Concept map
+hand-authored; media deferred to Phase 2.
+
+**sorting: Phase 1 complete (2026-08-25).** Curriculum-designer review
+caught one real bug: Lesson 4 (Linear-Time Sorts) opened with "the
+previous lesson proved" the n log n lower bound, but under the current
+order the previous lesson is Quicksort, not Merge Sort (where the proof
+actually lives) — fixed as a minimal wording correction (name the Merge
+Sort lesson explicitly) rather than NotebookLM's proposed restructure,
+since the current lesson order is pedagogically correct as-is. Lesson
+count, ordering, and scope boundaries with Binary Search and Intervals
+all confirmed correct. Content-quality review added, all independently
+hand-verified in Python: a derivation of selection sort's "exactly n
+swaps" claim and an inversions-count derivation (`O(n+I)`) backing
+insertion sort's best/worst-case gap, both with verified traces; an
+inline correctness comment plus a verified tagged-duplicate stability
+trace for merge sort; a verified Lomuto partition trace
+(`[8,3,7,1,5]` → `[3,1,5,8,7]`) for quicksort; and verified
+reverse-iteration-stability and full 2-digit radix-sort traces
+(`[29,13,22,19,5]` → `[5,13,19,22,29]`) for linear-time sorts. Five
+analogies added (bookshelf, playing cards, paper stacks, height queue,
+pigeonholes/index cards). See
+`docs/superpowers/plans/analogies/sorting.md`. Concept map
 hand-authored; media deferred to Phase 2.

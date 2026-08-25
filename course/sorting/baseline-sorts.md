@@ -52,9 +52,18 @@ Cost: pass i scans n − i elements, so total comparisons are
 (n−1)+(n−2)+⋯+1 — the triangular sum from the Big O module,
 **O(n²)** regardless of input order (even an already-sorted array gets
 scanned fully every pass). The one genuine advantage: **exactly n
-swaps, total** — useful when writes are far more expensive than
-comparisons (e.g. flash memory, or sorting large records by a small
-key).
+swaps, total** — the outer loop runs n times and each pass performs
+precisely one swap (`arr[i]` with `arr[min_idx]`), so write count is
+pinned at n regardless of how scrambled the input is. Contrast that
+with insertion sort's worst case below, where a single pass can trigger
+many shifts — selection sort's fixed write count is why it wins when
+writes are far more expensive than comparisons (e.g. flash memory, or
+sorting large records by a small key).
+
+Think of it like scanning a disorganized bookshelf for the single
+shortest book, pulling it out, and placing it at the far left — one
+placement per full scan, no matter how disordered the rest of the
+shelf is.
 
 ## Insertion sort: grow a sorted prefix
 
@@ -103,16 +112,36 @@ function insertionSort(arr: number[]): void {
 ````
 
 Worst case (reverse-sorted input): each insertion shifts all the way
-back — the same triangular sum, **O(n²)**. But watch the **best case**:
-on an already-sorted array, the inner while loop's condition fails
-immediately every time — **O(n)**, one comparison per element. This
-gap between best and worst case (Big O's case-discipline lesson, now
-with a concrete example) is the whole reason insertion sort survives in
-practice: real-world "sort this" calls are disproportionately "sort
-this, which is already almost sorted" (a new log entry appended to a
-sorted log, one out-of-place card in a hand). Insertion sort's cost is
-proportional to how far each element is from its final position, not
-to n outright — nearly-sorted input costs close to O(n), not O(n²).
+back — the same triangular sum, **O(n²)**. Trace it on `[5, 4, 3, 2, 1]`:
+inserting `4` shifts once (`[4,5,3,2,1]`), inserting `3` shifts twice
+(`[3,4,5,2,1]`), inserting `2` shifts three times, inserting `1` shifts
+four times — `1+2+3+4 = 10` shifts total, the triangular sum for n = 5.
+But watch the **best case**: on an already-sorted array, the inner while
+loop's condition fails immediately every time — **O(n)**, one
+comparison per element. This gap between best and worst case (Big O's
+case-discipline lesson, now with a concrete example) is the whole
+reason insertion sort survives in practice: real-world "sort this"
+calls are disproportionately "sort this, which is already almost
+sorted" (a new log entry appended to a sorted log, one out-of-place
+card in a hand).
+
+Make that "almost sorted" precise: define an **inversion** as a pair of
+indices `(i, j)` with `i < j` but `arr[i] > arr[j]` — one pair that's
+out of order relative to each other. Every shift in insertion sort's
+inner loop resolves exactly one inversion (it moves one out-of-order
+pair into order and touches nothing else). So the total work is
+`O(n + I)`, where `I` is the array's inversion count — n for the outer
+pass, plus one unit of work per inversion actually present. A
+reverse-sorted array has the maximum possible `I = n(n-1)/2` (every
+pair is inverted), recovering the O(n²) worst case; a nearly-sorted
+array has `I` close to 0, recovering the near-O(n) best case. Insertion
+sort's cost is proportional to how far each element is from its final
+position, not to n outright.
+
+Think of it like sorting a hand of playing cards as you're dealt them:
+you hold a sorted fan in one hand, and each new card slides in only as
+far as it needs to — a card that's already roughly in place barely
+moves, one wildly out of order slides past several others.
 
 ## Where the baseline sorts actually win
 
