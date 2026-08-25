@@ -38,7 +38,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | sorting | baseline-sorts, linear-time-sorts, merge-sort-lower-bound, quicksort-partitioning | x | | | | x |
 | recursion-backtracking | backtracking-choose-explore-unchoose, recursion-vs-iteration, the-call-stack-and-base-cases | x | | | | x |
 | binary-trees | bfs-level-order, dfs-traversals, top-down-vs-bottom-up-recursion, tree-terminology-and-representation | x | | | | x |
-| bst | balance-and-why-it-matters, bst-invariant-and-operations | | | | | |
+| bst | balance-and-why-it-matters, bst-invariant-and-operations | x | | | | x |
 | heaps | heap-property-and-array-representation, heapify-sift-up-and-sift-down | | | | | |
 | tries | trie-structure-and-prefix-search | | | | | |
 | graphs | dfs-and-bfs-on-graphs, graph-representation, minimum-spanning-trees, shortest-paths, topological-sort, union-find | | | | | |
@@ -352,3 +352,25 @@ the "last level holds ~n/2 of the nodes" claim. Four analogies added
 (bush vs. vine, theme-park queue batches, family-tree rumor relay). See
 `docs/superpowers/plans/analogies/binary-trees.md`. Concept map
 hand-authored; media deferred to Phase 2.
+
+**bst: Phase 1 complete (2026-08-25).** Curriculum-designer review
+confirmed 2 lessons is right and all 6 problem lessons self-teach.
+Caught two real bugs: Lowest Common Ancestor of a BST — a pure
+read-only search-descent problem — was sequenced last, after the much
+harder Delete and Convert Sorted Array problems; moved to right after
+Kth Smallest and before Insert in the manifest (verified no stale
+cross-references broke). And Balance & Why It Matters said "two
+problems ahead lean on this lesson" but named only one — fixed by
+correctly describing one problem plus the lesson's broader role.
+Rejected recommending a new rotation-implementation problem lesson (out
+of scope for a content pass, and the module's own text already frames
+rotation as conceptual, not an implementation skill) and a prose/table
+tightening claim (deliberate reinforcement, not duplication).
+Content-quality review added, independently verified: a concrete
+two-children deletion trace, a full geometric-series derivation of the
+h≥log₂(n+1)−1 height floor, concrete numbers on the rotation diagram
+with a verified before/after inorder check, and a note on the AVL
+constant's Fibonacci-tree origin. Two analogies added (forest-trail
+signposts for search descent, hanging mobile for rotation). See
+`docs/superpowers/plans/analogies/bst.md`. Concept map hand-authored;
+media deferred to Phase 2.

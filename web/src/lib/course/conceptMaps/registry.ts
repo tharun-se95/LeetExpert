@@ -1,6 +1,7 @@
 import { arraysConceptMap } from "./arrays";
 import { bigOConceptMap } from "./bigO";
 import { binaryTreesConceptMap } from "./binaryTrees";
+import { bstConceptMap } from "./bst";
 import { gettingStartedConceptMap } from "./gettingStarted";
 import { hashTablesConceptMap } from "./hashTables";
 import { linkedListsConceptMap } from "./linkedLists";
@@ -32,6 +33,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   sorting: sortingConceptMap,
   "recursion-backtracking": recursionBacktrackingConceptMap,
   "binary-trees": binaryTreesConceptMap,
+  bst: bstConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {

@@ -11,11 +11,11 @@ This lesson is about what happens when it doesn't, what "balanced"
 precisely means, and the mechanism real libraries use to *guarantee*
 it.
 
-Start with the failure, concretely. Insert 1, 2, 3, 4, 5 into an empty
-BST, in that order, using the insert from the last lesson. Every value
-is larger than everything already in the tree, so every insert turns
-right — and the "tree" collapses into a chain. Contrast that with a
-bushy tree of the same keys:
+Start with the failure, concretely — the same 1, 2, 3, 4, 5 chain the
+last lesson closed on. Every insert turned right because every value
+was larger than everything already there, so the "tree" collapsed into
+a straight line instead of branching. Contrast that with a bushy tree
+of the same keys:
 
 ```diagram
 {
@@ -43,13 +43,19 @@ for `n` nodes. That bound is the whole point, because it's what turns
 the honest O(h) cost of every operation into O(log n).
 
 Why is O(log n) the *best* you can hope for, and why is it achievable?
-A binary tree of height `h` has at most `2^(h+1) − 1` nodes (level 0
-holds 1 node, level 1 holds ≤ 2, level `k` holds ≤ `2^k`; sum the
-geometric series). Turn that around: to hold `n` nodes you need at
-least `h ≥ log₂(n+1) − 1` levels — so **no** binary tree can be
-shorter than about `log₂ n`. A perfectly full tree hits that floor
-exactly. "Balanced" means staying within a constant factor of that
-unavoidable floor, forever, no matter the insertion order. The
+A binary tree of height `h` has at most `2^(h+1) − 1` nodes: level 0
+holds at most 1 node, level 1 holds at most 2, and in general level
+`k` holds at most `2^k`, since each level's nodes are children of the
+level above and every node has at most 2 children. A tree of height
+`h` has levels `0` through `h`, so its node count is at most
+`2⁰ + 2¹ + ⋯ + 2ʰ`. That's a geometric series, and it telescopes:
+each term is one short of double the next, so the whole sum is one
+short of double the last term — `2⁰ + 2¹ + ⋯ + 2ʰ = 2ʰ⁺¹ − 1`. Turn
+that around: if `n ≤ 2ʰ⁺¹ − 1`, then `2ʰ⁺¹ ≥ n + 1`, so
+`h + 1 ≥ log₂(n + 1)`, giving `h ≥ log₂(n + 1) − 1` — so **no** binary
+tree can be shorter than about `log₂ n`. A perfectly full tree hits
+that floor exactly. "Balanced" means staying within a constant factor
+of that unavoidable floor, forever, no matter the insertion order. The
 degenerate chain above is the opposite extreme: it puts one node per
 level, spending `n` levels on `n` nodes.
 
@@ -60,6 +66,18 @@ so **without breaking the BST invariant**, or search stops working.
 That mechanism is rotation.
 
 ## Rotation: the one primitive
+
+Picture a hanging decorative mobile, the kind with crossbars and
+strings that balances objects on either side. When one side gets too
+heavy and the whole thing tilts, you don't take anything off — you
+just slide the pivot point, letting the heavy side's nearest piece
+rise up to become the new attachment point while everything below it
+resettles underneath. Nothing is added or removed, no piece changes
+its position relative to its neighbors on the same string — only
+*which crossbar holds which piece up* changes, and that's enough to
+level the whole structure out. A rotation on a tree is the same move:
+a local reshuffling of who-holds-up-whom that changes height without
+touching what's actually there.
 
 A rotation is a local, O(1) restructuring that changes a subtree's
 *height* while preserving its inorder order — and therefore the BST
@@ -80,21 +98,30 @@ right child, and `B` — which was `Q`'s right subtree — is handed to
 links change (`P.left`, `Q.right`, and the parent's pointer to the
 subtree root).
 
-Why does this preserve the invariant? The cleanest way to see it is
-through **inorder order**, which the last lesson proved is the sorted
-sequence of values. Read off the inorder sequence of the *before*
-tree: `A, Q, B, P, C` (left subtree of Q, then Q, then B, then P, then
-C). Now read off the *after* tree: `A, Q, B, P, C` — identical.
-Rotation does not change which values come before which in the inorder
-walk; it only changes the *shape* (who is whose parent). Since the
-invariant is equivalent to "inorder is sorted" (a BST is exactly a
-tree whose inorder walk is sorted), and rotation leaves the inorder
-walk untouched, a rotation of a valid BST is always a valid BST. What
-it *does* change is height: in the picture, if the left side was too
-tall, promoting `Q` and demoting `P` shortens the left path and
-lengthens the right — trading height from the heavy side to the light
-side. A **left rotation** is the exact mirror image, promoting the
-right child.
+Make it concrete: let `P = 5`, `Q = 3`, `C = 8`, `A = 1`, `B = 4` (so
+the before-tree is `5` with left child `3` — itself holding `1` and
+`4` — and right child `8`). Right-rotating around `5` promotes `3` to
+the top: the after-tree is `3` with left child `1` and right child
+`5`, and `5` now holds `4` (formerly `Q`'s right child `B`) as its
+left child and `8` as its right child. Read the inorder sequence of
+both: before, `1, 3, 4, 5, 8`; after, `1, 3, 4, 5, 8` — identical,
+confirmed by walking both trees. Only the shape changed.
+
+Why does this preserve the invariant in general? The cleanest way to
+see it is through **inorder order**, which the last lesson proved is
+the sorted sequence of values. Read off the inorder sequence of the
+*before* tree: `A, Q, B, P, C` (left subtree of Q, then Q, then B,
+then P, then C). Now read off the *after* tree: `A, Q, B, P, C` —
+identical. Rotation does not change which values come before which in
+the inorder walk; it only changes the *shape* (who is whose parent).
+Since the invariant is equivalent to "inorder is sorted" (a BST is
+exactly a tree whose inorder walk is sorted), and rotation leaves the
+inorder walk untouched, a rotation of a valid BST is always a valid
+BST. What it *does* change is height: in the picture, if the left side
+was too tall, promoting `Q` and demoting `P` shortens the left path
+and lengthens the right — trading height from the heavy side to the
+light side, exactly like sliding the mobile's pivot. A **left
+rotation** is the exact mirror image, promoting the right child.
 
 That is the entire mechanical toolkit. Every self-balancing BST is
 "plain BST insert/delete, followed by a sequence of rotations that
@@ -111,8 +138,10 @@ day are built from them.
 the left and right subtrees differ by at most 1. This is stored as a
 small per-node "balance factor" and checked on the way back up after
 every insert and delete; whenever a node goes out of range, one or two
-rotations fix it. The payoff is a very tight height bound (about
-`1.44 log₂ n` worst case), so lookups are as fast as a BST can offer.
+rotations fix it. The payoff is a very tight height bound (about `1.44 log₂ n` worst
+case — that constant comes from the *skinniest possible* AVL tree at
+each height, a family that turns out to grow exactly like the
+Fibonacci sequence), so lookups are as fast as a BST can offer.
 The cost: because the balance condition is strict, insertions and
 deletions rotate *often* — more restructuring work per update.
 
@@ -149,13 +178,14 @@ not a difference in what they promise asymptotically.
 
 The lower bound `h ≥ log₂ n` says a balanced BST is asymptotically
 optimal for a comparison-based ordered structure — you cannot search
-faster than O(log n) this way. Two problems ahead lean directly on
+faster than O(log n) this way. One problem ahead leans directly on
 this lesson: **Convert Sorted Array to BST** builds a guaranteed-
 balanced tree in one shot by always choosing the middle element as the
 root (contrast it with the degenerate chain above — same values,
-opposite outcome, entirely because of construction order), and the
-whole reason the balanced height matters is that it's what keeps the
-O(h) operations from the last lesson honest.
+opposite outcome, entirely because of construction order). More
+broadly, this lesson is the reason every O(h) operation from the
+previous lesson is worth trusting at all: without a balance guarantee,
+"O(h)" is honest but silent about whether `h` is `log n` or `n`.
 
 ```quiz
 {

@@ -504,6 +504,10 @@ export const MODULES: ModuleMeta[] = [
       problem("validate-binary-search-tree", "Validate Binary Search Tree"),
       problem("kth-smallest-element-in-a-bst", "Kth Smallest Element in a BST"),
       problem(
+        "lowest-common-ancestor-of-a-bst",
+        "Lowest Common Ancestor of a BST",
+      ),
+      problem(
         "insert-into-a-binary-search-tree",
         "Insert into a Binary Search Tree",
       ),
@@ -511,10 +515,6 @@ export const MODULES: ModuleMeta[] = [
       problem(
         "convert-sorted-array-to-bst",
         "Convert Sorted Array to Binary Search Tree",
-      ),
-      problem(
-        "lowest-common-ancestor-of-a-bst",
-        "Lowest Common Ancestor of a BST",
       ),
       practiceLesson(),
     ],

@@ -46,16 +46,20 @@ Here is a tree that satisfies the weak (children-only) reading but is
 ```
 
 Every parent-child pair looks fine locally: 3 < 5, 8 > 5, 1 < 3, 6 > 3.
-But 6 sits in the left subtree of 5, and 6 > 5 — so a search for 6
-starting at the root would go *left* (since 6... wait, 6 > 5, so search
-goes right) and never find it. The invariant exists precisely so that
-"go left when smaller, go right when larger" is always correct. If a
-value can be on the wrong side of some *ancestor* (not just its
-parent), the search breaks. So the invariant must be stated over
-subtrees, and it must hold at **every** node simultaneously. We will
-make the "checking this correctly" problem its own lesson (Validate
-BST) — for now, just hold onto the fact that local checks are
-insufficient.
+But 6 sits in the *left* subtree of 5, and 6 > 5 — a violation of the
+full invariant, even though every individual parent-child comparison
+passed. Watch what that does to search: looking for 6, you start at
+the root, compare 6 against 5, see 6 > 5, and go *right* toward 8 —
+because that's what "greater goes right" means. You never even look at
+3's subtree, where 6 is actually sitting. The search reports "not
+found" on a value that's really in the tree. The invariant exists
+precisely so that "go left when smaller, go right when larger" is
+always correct. If a value can be on the wrong side of some *ancestor*
+(not just its parent), the search breaks. So the invariant must be
+stated over subtrees, and it must hold at **every** node
+simultaneously. We will make the "checking this correctly" problem its
+own lesson (Validate BST) — for now, just hold onto the fact that
+local checks are insufficient.
 
 We'll use this node definition throughout:
 
@@ -86,11 +90,21 @@ class TreeNode {
 
 ## Search: the invariant as a decision procedure
 
-The invariant means that at any node, the value you want is on exactly
-one side, and you can tell which without looking at that side at all.
-If the target is less than the current node, it cannot be in the right
-subtree (everything there is larger), so you go left — and vice versa.
-Each comparison discards an entire subtree:
+Picture walking a forest trail that forks over and over, where every
+fork has a signpost naming exactly one boundary value — "everything
+down the left path is smaller than this, everything down the right is
+larger." You're looking for a specific number carved on a tree deep in
+the forest. At each signpost you don't have to check both paths or
+backtrack — you just compare your number to the post and walk the one
+path that could possibly contain it, trusting that the other path
+holds nothing you need. Whole sections of forest get ruled out with a
+single glance at a signpost, never visited at all.
+
+That's exactly what the invariant buys you: at any node, the value you
+want is on exactly one side, and you can tell which without looking at
+that side at all. If the target is less than the current node, it
+cannot be in the right subtree (everything there is larger), so you go
+left — and vice versa. Each comparison discards an entire subtree:
 
 ````tabs
 ```python
@@ -242,9 +256,24 @@ function deleteNode(root: TreeNode | null, val: number): TreeNode | null {
 ```
 ````
 
+Trace the two-children case on a concrete tree: root `5`, left subtree
+`3` (children `1` and `4`), right subtree `8` (children `7` and `9`).
+Deleting `5`: it has two children, so find its inorder successor —
+the smallest value in its right subtree. Starting at `8` and walking
+left, `7` has no left child, so `7` is the successor. Copy `7`'s value
+into the node currently holding `5` (the root's value becomes `7`),
+then delete `7` from the right subtree. `7` is a leaf there, so that
+deletion is case 1 — just remove it. Final tree: root `7`, left
+subtree unchanged (`3` with children `1`, `4`), right subtree `8` with
+only child `9`. Inorder still reads `1, 3, 4, 7, 8, 9` — sorted, one
+value shorter, exactly as deleting `5` from a sorted sequence should
+look.
+
 Delete does at most one descent to find the node (O(h)) plus, in the
 two-children case, one more descent to find and remove the successor
-(another O(h)) — two passes down the tree, still **O(h)** overall.
+(another O(h)) — two passes down the tree, still **O(h)** overall (the
+two O(h) passes add to O(2h), and constant factors are exactly what
+Big O discards — O(2h) and O(h) are the same class).
 
 ## Inorder traversal yields sorted order — and here's why
 
