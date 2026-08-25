@@ -26,16 +26,27 @@ data. That single fact is the source of everything lists are good at.
 ## What the layout buys — and what it costs
 
 **Buys: O(1) structural edits at a known spot.** Splicing a node in or
-out is two pointer assignments — no shifting, ever. Compare the array's
-O(n − i) insert: the entire cost difference is contiguity's gap-closing
-requirement, which lists simply don't have.
+out is two pointer assignments — no shifting, ever. Concretely: to insert
+node B between A and C (turning `A → C` into `A → B → C`), that's
+`B.next = A.next` (B now points to whatever A pointed to — C) then
+`A.next = B` (A now points to B). Neither A nor C moved in memory; only
+two pointer fields changed. Compare the array's O(n − i) insert: same
+"add one thing in the middle" request, but there every slot after the
+insertion point copies to a new address — the entire cost difference is
+contiguity's gap-closing requirement, which lists simply don't have.
 
 **Costs: O(n) access to anything by position or value.** There is no
 address arithmetic — `the 500th node` can only be reached by walking 500
 `next` pointers. Binary search? Impossible at useful cost, even sorted:
-no O(1) jumps to the middle. And the Arrays module's cache-locality bonus
-inverts into a penalty: nodes are scattered, so every hop risks a cache
-miss.
+no O(1) jumps to the middle. Derive the cost directly: finding the
+midpoint of a search range of length L still takes L/2 pointer-walks (no
+address arithmetic to jump there), and binary search halves the range
+each round — so the walking work across all rounds sums to
+L/2 + L/4 + L/8 + ⋯ ≈ L, one linear scan's worth of work, just spread
+across log L rounds instead of one pass. The O(log n) round *count*
+survives; the O(1)-per-round *cost* that makes it fast on arrays does
+not. And the Arrays module's cache-locality bonus inverts into a penalty:
+nodes are scattered, so every hop risks a cache miss.
 
 ```complexity
 {

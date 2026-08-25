@@ -51,6 +51,16 @@ deleting what's ahead, never what it's on. When a loop deletes, this
 stance also fixes the "don't advance after a splice" subtlety: splicing
 brings a new prev.next to inspect, so only the else-branch advances.
 
+The same dummy trick works in reverse: instead of anchoring an existing
+head, it anchors a **new** list you're building node by node. Keep a
+`tail` pointer starting at the dummy; each time you attach a node, do
+`tail.next = node` then `tail = node`. Return `dummy.next` at the end —
+the dummy was never part of the real list, just scaffolding that gave the
+very first attached node a `.next` to be written into. Merging two sorted
+lists is exactly this: walk both inputs, repeatedly attach the smaller
+head onto the dummy-anchored tail, and never allocate a new node — only
+rewire existing ones.
+
 ## 2. In-place reversal: the three-pointer walk
 
 Reversing means flipping every `next` — but flipping `curr.next`
@@ -88,11 +98,35 @@ Two walkers, different speeds. `slow` steps once, `fast` steps twice:
   2× the ground);
 - if the list has a **cycle**, fast can never exhaust it — it laps slow,
   and they *must* meet (the cycle problem proves why);
-- a variant — two *same-speed* walkers with a fixed **gap** — finds the
-  n-th node from the end in one pass.
+- a variant — two *same-speed* walkers with a fixed **gap** of n — finds
+  the n-th node from the end in one pass: advance a lead pointer n nodes
+  ahead first, then move both pointers together, one step at a time. The
+  lead pointer needs exactly n more steps to fall off the end (`None`);
+  the trailing pointer, moving in lockstep, covers that same n steps from
+  wherever it started — landing precisely on the n-th node from the end
+  when the lead pointer runs out.
 
 The runner converts "I'd need the length first" problems (two passes)
 into one-pass solutions carrying relative position as state.
+
+**The bug this pattern invites:** `fast` reads two nodes ahead per step —
+`fast.next.next` — so the loop guard has to check *both* hops are safe
+before taking them: `while fast and fast.next`. Checking only `fast` and
+skipping the second half of the guard is worse than a guaranteed crash —
+it's a *coin flip* that depends on list length. `fast` visits nodes
+1, 3, 5, … (1-indexed): on an **odd**-length list it eventually lands
+exactly on the last node, the guard passes (`fast` isn't `None`), and the
+body's `fast.next.next` tries to dereference `.next` on `None` — crash. On
+an **even**-length list `fast` instead lands on the *second-to-last* node;
+`fast.next.next` resolves cleanly to `None`, and the next guard check
+exits the loop with no error. Test only against even-length inputs — an
+easy accident — and this bug ships invisibly, the same way `delete_all`'s
+advance-after-splice bug passes single-deletion tests and only breaks on
+consecutive targets. The order in the correct guard matters too: `fast and
+fast.next` short-circuits safely (`fast.next` is only evaluated once
+`fast` is confirmed not `None`), but `fast.next and fast` evaluates
+`fast.next` first and crashes on the exact same `None` it was trying to
+guard against.
 
 ## 4. Splice by rewiring, not by moving
 

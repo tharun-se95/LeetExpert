@@ -159,7 +159,13 @@ them — this is the discipline the quiz probes:
 2. **tail is the last node** (null iff empty) — the price of O(1)
    push_back is remembering to update tail in *every* method that can
    touch the end (see delete's `curr is tail` branch — the classic
-   forgotten case).
+   forgotten case). Skip that branch and the bug doesn't crash anything:
+   `tail` is left pointing at the node that was just spliced out — a node
+   no longer reachable from `head`. The *next* `push_back` reads that
+   stale `tail`, links the new node onto it (`tail.next = node`), and the
+   new node is now unreachable too — hanging off a ghost, silently
+   dropped from the list. The invariant breaks quietly at delete and the
+   damage only surfaces later, at the next push_back.
 3. **size is the node count.**
 
 Notice the *shape* of `delete`: a `(prev, curr)` pair walking in
@@ -167,6 +173,21 @@ lockstep, because splicing `curr` out requires writing to
 `prev.next` — a singly linked list can never edit what it's standing on,
 only what's *ahead* of a node it holds. That asymmetry drives every
 pattern in the next lesson.
+
+Trace `delete(3)` on the list `[7, 3, 12]` (`head = 7`, `tail = 12`,
+`size = 3`) to see the splice concretely:
+
+- **Setup.** `prev = None`, `curr = head` (node `7`).
+- **Step 1.** `curr.value` (`7`) ≠ `3` — no match. Advance:
+  `prev = curr` (node `7`), `curr = curr.next` (node `3`).
+- **Step 2 (match).** `curr.value` (`3`) == `3`. `prev` is not `None`, so
+  splice: `prev.next = curr.next` — node `7`'s `next` now points straight
+  to node `12`, skipping node `3` entirely. `curr` (node `3`) is not
+  `tail`, so `tail` is untouched. `size` becomes `2`.
+- **Result.** `head` (`7`) → `12` → `None`. Node `3` still technically
+  exists in memory with its own `next` pointing at `12`, but nothing
+  reachable from `head` points *at* node `3` anymore — it's garbage,
+  reclaimed the next time the language's memory manager runs.
 
 ## The special cases are the lesson
 

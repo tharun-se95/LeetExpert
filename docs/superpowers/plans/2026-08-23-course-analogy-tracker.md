@@ -31,7 +31,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | two-pointers | converging-pointers, partition-pointers | | | | | |
 | sliding-window | dynamic-windows, fixed-size-windows | | | | | |
 | strings | strings-in-memory, character-arithmetic-count-arrays, string-apis-scan-costs-idioms | x | | | | x |
-| linked-lists | build-a-linked-list, nodes-and-pointers, pointer-surgery | | | | | |
+| linked-lists | build-a-linked-list, nodes-and-pointers, pointer-surgery | x | | | | x |
 | stacks | lifo-and-the-call-stack, matching-and-nesting, monotonic-stack | | | | | |
 | queues | deques-and-monotonic, fifo-basics, ring-buffer | | | | | |
 | binary-search | binary-search-on-the-answer, boundary-search, the-invariant-template | | | | | |
@@ -153,4 +153,36 @@ for "ab" in "aabab" (4 comparisons to match). Caught and fixed a
 diagram/prose mismatch this pass introduced (the existing string-builder-
 cost diagram defaulted to count=6 while the new table used 4 words —
 changed the diagram's count to 4 so both show the same "10 copies").
+Concept map hand-authored; media deferred to Phase 2.
+
+**linked-lists: Phase 1 complete (2026-08-25).** Curriculum-designer
+review confirmed 3 lessons is the right count and the existing ordering
+(Nodes & Pointers -> Build From Scratch -> Pointer Surgery) is correct —
+no structural change. It correctly flagged doubly linked / circular lists
+as premature here (already appropriately deferred as a one-paragraph
+forward-reference to the Hash Tables module's LRU cache). It surfaced two
+genuine scope gaps, both added to Pointer Surgery Patterns: null-pointer
+safety for the fast/slow guard (`while fast and fast.next` — checking
+only `fast` is a parity-dependent bug that crashes only on odd-length
+lists, verified by hand-tracing lengths 1-8), and the dummy node's second
+use as a construction anchor for building a new list (not just deleting
+from an existing one) — directly needed for the upcoming Merge Two Sorted
+Lists problem. Its fourth recommendation — stripping the `LinkedList`
+wrapper class (tail pointer, size counter) from "Build a Linked List From
+Scratch" as premature OOP overhead, since none of the 5 problem lessons
+use it — was rejected: the Arrays module builds a full `DynamicArray`
+class from scratch for the same pedagogical reason (teaching invariant
+discipline) even though its own problems only use native arrays; this is
+an established course pattern, not an oversight. Content-quality review
+(same pass as strings/arrays) added a self-verified geometric-series
+derivation for why binary search on a linked list is O(n) not O(log n), a
+concrete two-pointer splice trace, a promoted-to-prose derivation of the
+tail-pointer bug's silent failure mode (previously only in a quiz
+explanation), a worked `delete(3)` trace, and a derivation for the
+fixed-gap n-th-from-end pattern. One self-introduced error caught during
+independent verification: an early draft of the null-safety note claimed
+the unsafe guard crashes on even-length lists — a Python hand-trace of
+lengths 1-8 showed the opposite (crashes on odd-length, silently survives
+even-length), so the note was rewritten around the verified, more
+pedagogically useful "silent parity-dependent bug" framing instead.
 Concept map hand-authored; media deferred to Phase 2.
