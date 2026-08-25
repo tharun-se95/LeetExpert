@@ -63,6 +63,12 @@ which regime you're in.
 
 ## Adjacency list: store each vertex's neighbors
 
+Picture a club roster where, instead of one giant table of every possible
+pair of members, each person just keeps a small index card listing the
+names of their own friends. Looking up "who are Sam's friends" means
+reading Sam's card directly — nothing else in the room needs to be
+touched.
+
 The **adjacency list** stores, for each vertex, a list of the vertices it
 has an edge to. Concretely: an array (or hash map) indexed by vertex,
 whose entry is the list of that vertex's neighbors. For a weighted graph,
@@ -126,12 +132,17 @@ function buildWeightedList(
 ```
 ````
 
-**Space.** The list stores each edge exactly as many times as it appears:
-once per direction. An undirected edge appears in two lists, a directed
-edge in one — either way that's O(E) list entries in total, plus one slot
-per vertex for the outer array, so **O(V + E)**. Nothing is stored for
-pairs of vertices that have no edge, which is the crucial property: a
-sparse graph costs proportionally little.
+**Space.** Count it directly: the outer array has exactly one slot per
+vertex — V slots. Each edge contributes one list entry per direction it's
+stored in: a directed edge `(u, v)` appears once (in `adj[u]`), an
+undirected edge appears twice (in both `adj[u]` and `adj[v]`) — either
+way, the total entries across all lists combined is proportional to E
+(exactly E for directed, 2E for undirected, and 2E is still O(E), since
+constants drop out). Adding the outer array's V slots to the ≤ 2E list
+entries gives **O(V + E)** total. Nothing is stored for pairs of
+vertices that have no edge, which is the crucial property: a sparse
+graph costs proportionally little — one index card per person, sized to
+their actual friend count, not to the size of the whole club.
 
 ## Adjacency matrix: a full V×V grid
 

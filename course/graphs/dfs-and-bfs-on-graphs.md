@@ -14,6 +14,13 @@ reach a neighbor that can reach *back* to you — directly, or around a long
 loop. Run tree DFS unmodified on a graph with a cycle and it recurses
 forever, revisiting the same vertices endlessly.
 
+Picture exploring a dark network of tunnels with a piece of chalk. Every
+time you step into a new junction, you mark it with a chalk X before
+going any further. Whenever a tunnel leads to a junction that's already
+marked, you don't walk down it — you already know what's there, and
+following it again would just send you back into tunnels you've already
+mapped, possibly forever if the tunnels loop back on themselves.
+
 So the single new ingredient this lesson adds is a **visited set**: a
 record of which vertices the traversal has already entered, checked before
 entering any vertex so that no vertex is processed twice. On a tree the
@@ -114,6 +121,20 @@ queue from Module 9). The critical detail on graphs: mark a vertex visited
 to mark, the same vertex can be enqueued many times by different neighbors
 before it's ever processed, which reinflates the work and can blow up the
 queue.
+
+Watch it happen on a small diamond: `0 → 1`, `0 → 2`, `1 → 3`, `2 → 3`.
+Mark-at-dequeue (the wrong version): dequeue `0`, mark it visited, enqueue
+`1` and `2` — queue is `[1, 2]`. Dequeue `1`; not yet marked, so mark it
+and enqueue its neighbor `3` — queue is `[2, 3]`. Dequeue `2`; also not
+yet marked, so mark it and enqueue `3` *again* — queue is `[3, 3]`, with
+two separate entries for the same vertex. `3` gets dequeued and processed
+twice before the duplicate is ever caught. Mark-at-enqueue (the correct
+version): enqueue and mark `0`. Dequeue `0`, see `1` and `2` are
+unmarked, mark *and* enqueue both — queue is `[1, 2]`. Dequeue `1`, see
+`3` is unmarked, mark and enqueue it — queue is `[2, 3]`. Dequeue `2`,
+check `3` — already marked (from `1`'s turn) — skip it, nothing enqueued.
+`3` enters the queue exactly once, no matter how many different vertices
+point to it.
 
 ````tabs
 ```python
@@ -371,6 +392,17 @@ function hasCycleDirected(adj: number[][]): boolean {
 }
 ```
 ````
+
+Trace the colors through the earlier A→B, A→C, B→C example (A=0, B=1,
+C=2). `visit(0)`: color[0] → GRAY. Loop reaches neighbor 1 (white), so
+`visit(1)` runs: color[1] → GRAY. `visit(1)`'s loop reaches neighbor 2
+(white), so `visit(2)` runs: color[2] → GRAY, has no neighbors, finishes
+immediately: color[2] → BLACK. Back in `visit(1)`, its loop is done, so
+it finishes: color[1] → BLACK. Back in `visit(0)`, its loop continues to
+neighbor 2 — color[2] is BLACK, not gray, so this is a cross edge, not a
+cycle, and the loop just moves on. `visit(0)` finishes: color[0] →
+BLACK. No cycle reported, correctly — the second visit to `2` found it
+already *finished*, not still active on the stack.
 
 The gray set is exactly "vertices on the current recursion stack." That is
 the piece the undirected check lacks: undirected cycle detection only needs

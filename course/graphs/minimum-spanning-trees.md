@@ -237,11 +237,22 @@ is provably part of some MST.
 
 ## Kruskal vs. Prim: which wins when
 
-Both run close to `O(E log E)` (Kruskal's, dominated by sorting all
-edges, and `log E = O(log V²) = O(2 log V)`, so this is often written
-`O(E log V)`) or `O(E log V)` (Prim's with a binary heap, same
-reasoning as Dijkstra). The practical difference is in how each accesses
-the graph:
+Both run close to `O(E log E)`, and it's worth seeing where each factor
+comes from rather than taking it on faith. **Kruskal's** is dominated by
+the upfront sort: comparison sorting E edges costs `O(E log E)`, and the
+Union-Find operations that follow (E of them, one `find`/`union` pair
+per edge, each amortized O(α(V)) from the previous lesson) add only a
+lower-order term. Since a simple graph has at most `V²` edges,
+`E ≤ V²`, so `log E ≤ log(V²) = 2 log V` — the `2` is a constant factor
+Big O discards, which is why this is often written `O(E log V)`
+instead. **Prim's** total is the same shape for a different reason: with
+a binary heap, each of the V vertices is extracted at most once
+(`O(log V)` per extraction) and each of the E edges triggers at most one
+heap push (`O(log V)` per push) — summing `V` extractions and `E`
+pushes, both costing `O(log V)` each, gives `O((V + E) log V)`, which
+for a connected graph (`E ≥ V − 1`) simplifies to `O(E log V)` — the
+same reasoning as Dijkstra in the previous lesson. The practical
+difference is in how each accesses the graph:
 
 - **Kruskal's** processes edges GLOBALLY and needs them sorted upfront —
   natural when the graph is given as an edge list, and efficient on

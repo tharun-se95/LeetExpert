@@ -41,7 +41,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | bst | balance-and-why-it-matters, bst-invariant-and-operations | x | | | | x |
 | heaps | heap-property-and-array-representation, heapify-sift-up-and-sift-down | x | | | | x |
 | tries | trie-structure-and-prefix-search | x | | | | x |
-| graphs | dfs-and-bfs-on-graphs, graph-representation, minimum-spanning-trees, shortest-paths, topological-sort, union-find | | | | | |
+| graphs | dfs-and-bfs-on-graphs, graph-representation, minimum-spanning-trees, shortest-paths, topological-sort, union-find | x | | | | x |
 | intervals | sorting-intervals-and-the-sweep | | | | | |
 | prefix-sum | prefix-sum-2d, prefix-sum-basics, prefix-sum-hash-map | | | | | |
 | matrix | grid-coordinates, traversal-orders, in-place-transformations | | | | | |
@@ -413,4 +413,27 @@ claim (25/26 ≈ 96% wasted on a 26-letter alphabet), and a light
 illustrative example for the memory-crossover claim. One sustained
 hiking-trail analogy added across the whole lesson. See
 `docs/superpowers/plans/analogies/tries.md`. Concept map hand-authored;
+media deferred to Phase 2.
+
+**graphs: Phase 1 complete (2026-08-25).** Curriculum-designer review
+confirmed 6 lessons, the current order, and all 7 problem lessons
+self-teach. Explicitly verified two potential gaps are non-gaps:
+Bellman-Ford's non-implementation is intentional (no problem lesson has
+negative edge weights), and cycle detection needs no dedicated lesson
+(covered across DFS/BFS, Union-Find, and Topological Sort). Rejected
+recommending a new unweighted-BFS-shortest-path problem lesson (e.g.
+Rotting Oranges) as out of scope for a content pass — flagged for a
+future problem-lessons pass. Content-quality review added, every trace
+independently verified in Python: adjacency-list O(V+E) derivation,
+mark-at-enqueue-vs-dequeue BFS trace, three-color cycle-detection trace
+on the lesson's own diamond example, Dijkstra stale-entry trace (on a
+deliberately different graph to avoid colliding with the lesson's
+existing negative-weight example), Bellman-Ford O(V·E) derivation,
+Union-Find's log₂ inversion step, and a Kruskal/Prim complexity
+derivation. Also fixed a real inconsistency: the Shortest Paths lesson's
+prose said Dijkstra is O(E log V) while its own complexity table said
+O((V+E) log V) — corrected the prose to match. Three sustained analogies
+added (index cards for adjacency lists, dark tunnels with chalk for the
+visited set, playground hand-holding chains for Union-Find). See
+`docs/superpowers/plans/analogies/graphs.md`. Concept map hand-authored;
 media deferred to Phase 2.

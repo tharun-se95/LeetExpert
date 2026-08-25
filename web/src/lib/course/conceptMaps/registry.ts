@@ -3,6 +3,7 @@ import { bigOConceptMap } from "./bigO";
 import { binaryTreesConceptMap } from "./binaryTrees";
 import { bstConceptMap } from "./bst";
 import { gettingStartedConceptMap } from "./gettingStarted";
+import { graphsConceptMap } from "./graphs";
 import { hashTablesConceptMap } from "./hashTables";
 import { heapsConceptMap } from "./heaps";
 import { linkedListsConceptMap } from "./linkedLists";
@@ -38,6 +39,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   bst: bstConceptMap,
   heaps: heapsConceptMap,
   tries: triesConceptMap,
+  graphs: graphsConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {

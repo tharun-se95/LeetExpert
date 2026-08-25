@@ -167,6 +167,19 @@ a larger `d` is a leftover from an earlier, since-improved-upon
 relaxation and must be skipped, or the algorithm could re-relax edges
 using a worse distance than what's already been established.
 
+Trace it on a different small graph — source `S`, with `S → X` (weight
+10), `S → Y` (weight 3), `Y → X` (weight 2) — to keep this separate from
+the A/B/C example just ahead. Pop `(0, S)`, finalize `S`, relax both its
+edges: push `(10, X)` and `(3, Y)`. Pop `(3, Y)` — matches `dist[Y] = 3`,
+so finalize `Y`, and relax `Y → X`: `dist[Y] + 2 = 5 < dist[X] = 10`, so
+update `dist[X] = 5` and push `(5, X)`. The heap now holds *two* entries
+for `X`: the stale `(10, X)` from `S`'s relaxation and the fresh
+`(5, X)` from `Y`'s. Pop `(5, X)` next (it's smaller) — matches the
+current `dist[X] = 5`, so finalize `X` at its true shortest distance.
+Eventually `(10, X)` is popped too, but by then `10 > dist[X] = 5`, so
+the check fires and it's skipped — without it, this stale entry would
+re-finalize `X` at the wrong, larger distance.
+
 ## Why Dijkstra fails with negative edge weights
 
 The greedy step "pop the smallest known distance and finalize it
@@ -198,13 +211,15 @@ Instead of greedily finalizing vertices in distance order, it relaxes
 **every edge, V − 1 times** (a straightforward loop, no priority queue),
 which is enough because any shortest path has at most `V - 1` edges,
 and each full pass is guaranteed to correctly extend the confirmed
-shortest paths by at least one more edge. This costs `O(V · E)` —
-markedly worse than Dijkstra's `O(E log V)` — which is precisely the
-price paid for tolerating negative edges: no greedy shortcut is safe, so
-every edge must be reconsidered repeatedly rather than each vertex being
-settled once. Bellman-Ford is not implemented in full here; know its
-existence, its cost, and the reason it's needed when Dijkstra's
-non-negative assumption doesn't hold.
+shortest paths by at least one more edge. The cost follows directly from
+that shape: an outer loop of `V - 1` passes, each doing an inner loop
+over all `E` edges — `(V - 1) × E` relaxations total, which is
+**O(V · E)** — markedly worse than Dijkstra's `O((V + E) log V)`, which
+is precisely the price paid for tolerating negative edges: no greedy
+shortcut is safe, so every edge must be reconsidered repeatedly rather
+than each vertex being settled once. Bellman-Ford is not implemented in
+full here; know its existence, its cost, and the reason it's needed when
+Dijkstra's non-negative assumption doesn't hold.
 
 ```complexity
 {

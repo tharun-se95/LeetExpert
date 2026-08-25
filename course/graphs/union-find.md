@@ -18,6 +18,14 @@ together.
 
 ## The basic idea: a forest of parent pointers
 
+Picture groups of children on a playground, each group playing a game
+where everyone holds hands in a chain leading back to whoever is
+currently "it" — the group's leader. To find out who's leading your
+group, you don't need a roster; you just follow the hand-holding chain
+until you reach someone holding nobody's hand but their own. Two
+children are in the same game exactly when following their chains leads
+to the same leader.
+
 Represent each group as a tree, where every element points to a
 `parent`, and a group's identity is the **root** of its tree (a root is
 its own parent). Initially, every element is its own group — every
@@ -159,9 +167,10 @@ class UnionFind {
 With union by size/rank alone (no path compression yet), tree height is
 bounded by `O(log n)` — a standard result: a tree of height `h` built
 this way must have at least `2^h` elements (each merge that increases
-height requires combining two equally-tall trees, doubling the count),
-so height can be at most `log₂ n`. This alone already brings `find` down
-to O(log n).
+height requires combining two equally-tall trees, doubling the count).
+Turn that around: with `n` elements total, `2^h ≤ n`, so taking log₂ of
+both sides gives `h ≤ log₂ n` — height can be at most `log₂ n`. This
+alone already brings `find` down to O(log n).
 
 ## Optimization 2: path compression — flatten on the way up
 
