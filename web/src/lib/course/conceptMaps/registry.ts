@@ -10,6 +10,7 @@ import { intervalsConceptMap } from "./intervals";
 import { linkedListsConceptMap } from "./linkedLists";
 import { mathForDsaConceptMap } from "./mathForDsa";
 import { binarySearchConceptMap } from "./binarySearch";
+import { prefixSumConceptMap } from "./prefixSum";
 import { queuesConceptMap } from "./queues";
 import { recursionBacktrackingConceptMap } from "./recursionBacktracking";
 import { slidingWindowConceptMap } from "./slidingWindow";
@@ -34,6 +35,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   "two-pointers": twoPointersConceptMap,
   "sliding-window": slidingWindowConceptMap,
   "binary-search": binarySearchConceptMap,
+  "prefix-sum": prefixSumConceptMap,
   sorting: sortingConceptMap,
   "recursion-backtracking": recursionBacktrackingConceptMap,
   "binary-trees": binaryTreesConceptMap,

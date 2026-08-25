@@ -17,6 +17,15 @@ queries.
 
 ## Precompute once, answer instantly
 
+Think of a car's odometer: it never tells you "how far did the last
+trip take," only "total distance since the car was new." To find any
+trip's distance, you subtract the odometer reading at its start from
+the reading at its end — the car never re-drives the trip to measure
+it. A prefix-sum array is exactly that odometer, kept for a fixed list
+of numbers instead of a fixed road: one running total, recorded at
+every position, so that the "distance" between any two positions is a
+single subtraction away.
+
 The trick: build one auxiliary array — the **prefix sum** — where
 `prefix[i]` holds the sum of everything from the start up through index
 i−1 (equivalently, `prefix[i] = nums[0] + nums[1] + ... + nums[i-1]`,

@@ -43,7 +43,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | tries | trie-structure-and-prefix-search | x | | | | x |
 | graphs | dfs-and-bfs-on-graphs, graph-representation, minimum-spanning-trees, shortest-paths, topological-sort, union-find | x | | | | x |
 | intervals | sorting-intervals-and-the-sweep | x | | | | x |
-| prefix-sum | prefix-sum-2d, prefix-sum-basics, prefix-sum-hash-map | | | | | |
+| prefix-sum | prefix-sum-2d, prefix-sum-basics, prefix-sum-hash-map | x | | | | x |
 | matrix | grid-coordinates, traversal-orders, in-place-transformations | | | | | |
 | greedy | greedy-choice-and-proving-correctness | | | | | |
 | dynamic-programming | 1d-dp-patterns, 2d-dp-patterns, from-recursion-to-memoization, tabulation-and-space-optimization, knapsack-style-dp | | | | | |
@@ -463,4 +463,25 @@ claim (table and prose serve different reading modes), a "walk
 left-to-right" phrasing claim (consistent with Module 14's own usage),
 and a derivation-gap claim on a trivial De Morgan's-law inequality flip.
 See `docs/superpowers/plans/analogies/intervals.md`. Concept map
+hand-authored; media deferred to Phase 2.
+
+**prefix-sum: Phase 1 complete (2026-08-25).** Curriculum-designer
+review confirmed 3 concept lessons + 5 problem lessons is right, the
+current order (basics → hash-map → 2D, then problems applying each in
+matching order) is correct, and all 5 problem lessons self-teach —
+including Contiguous Array's explicit callback to Subarray Sum Equals K
+confirming its position right after it. No new lesson or reorder
+needed. Content-quality review applied selectively rather than a full
+per-lesson analogy pass, since this module is arithmetic/derivation-
+heavy rather than spatial/structural: added a light odometer analogy to
+Prefix Sums (one paragraph, not sustained further) and a rug/rectangle-
+patches analogy to 2D Prefix Sums (earns its place — inclusion-exclusion
+on a grid is itself spatial; verified the build-and-query arithmetic
+independently in Python against the lesson's own 3×3 example). Added no
+analogy to Prefix Sum + Hash Map, since it directly continues Hash
+Tables' Seen/Index pattern and a second analogy would blur rather than
+clarify. Independently re-verified every numeric trace already in the
+five problem lessons (Subarray Sum Equals K, Contiguous Array, Kadane's,
+both Range Sum Query variants) — all correct as shipped, no bugs found.
+See `docs/superpowers/plans/analogies/prefix-sum.md`. Concept map
 hand-authored; media deferred to Phase 2.

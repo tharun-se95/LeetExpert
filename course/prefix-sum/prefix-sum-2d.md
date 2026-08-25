@@ -11,6 +11,18 @@ after preprocessing. The 1D idea generalizes — but the subtraction
 needs care, because a 2D rectangle isn't a simple prefix-minus-prefix
 the way a 1D range was.
 
+Picture a large rectangular rug marked off in a grid of unit squares,
+and imagine you could weigh any rectangular patch of it instantly if
+you already knew the weight of every patch anchored at the rug's
+corner. To find the weight of a patch that starts partway in — not
+anchored at the corner — you'd naturally try: take the big
+corner-anchored patch that reaches the patch's far edge, then trim off
+the strip above it and the strip to its left. But those two strips
+overlap in one small square, up in the corner — trim both and you've
+cut that shared square out twice. You have to weigh it back in once to
+get the patch you actually wanted. That's the whole 2D story in one
+picture; the rest of this lesson is just writing it as arithmetic.
+
 ## Building the 2D prefix sum
 
 Define `prefix[i][j]` as the sum of every cell in the rectangle from
