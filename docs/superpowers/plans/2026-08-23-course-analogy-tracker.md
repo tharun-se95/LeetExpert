@@ -28,7 +28,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | getting-started | course-introduction, how-lessons-work, writing-and-running-code, course-roadmap | x | | | | x |
 | big-o | why-efficiency-matters, big-o-notation, common-complexity-classes, input-dependency-best-worst-average, analyzing-loops-api-complexity, analyzing-recursion-tree-method, amortized-analysis-dynamic-arrays, space-complexity, complexity-drills | x | | | | x |
 | arrays | contiguous-memory, dynamic-arrays, in-place-foundations, stable-compaction-cyclic-placement | x | | | | x |
-| two-pointers | converging-pointers, partition-pointers | | | | | |
+| two-pointers | converging-pointers, partition-pointers | x | | | | x |
 | sliding-window | dynamic-windows, fixed-size-windows | | | | | |
 | strings | strings-in-memory, character-arithmetic-count-arrays, string-apis-scan-costs-idioms | x | | | | x |
 | linked-lists | build-a-linked-list, nodes-and-pointers, pointer-surgery | x | | | | x |
@@ -225,3 +225,22 @@ the real trigger condition from the code), and why `head == tail`
 aliases both empty and full in a ring buffer. See
 `docs/superpowers/plans/analogies/queues.md`. Concept map hand-authored;
 media deferred to Phase 2.
+
+**two-pointers: Phase 1 complete (2026-08-25).** Curriculum-designer
+review recommended splitting Partition Pointers, reversing the lesson
+order, adding a bottleneck-dominance section to Converging Pointers, and
+removing the 2-way partition function — all rejected: the lesson is one
+coherent 2-zone-to-3-zone narrative, the current order deliberately opens
+Stage 2 with its elimination theme, `container-with-most-water.md`
+already self-teaches the bottleneck argument (with a two-way callback the
+concept lesson deliberately sets up), and the 2-way partition is
+structural scaffolding for the lesson's own 3-zone generalization, not
+just a Sorting-module preview. Content-quality review completed the
+Converging Pointers worked example (previously stopped after step 1) and
+added a derivation for the n-1 move bound; for Partition Pointers, added
+two hand-verified traces (`[4a,4b,2]` for instability, `[2,0,1]` for the
+Dutch-flag asymmetry — the same adversarial example the quiz already
+referenced but the prose never actually traced) and a laundry-sorting
+analogy for the three-zone setup. See
+`docs/superpowers/plans/analogies/two-pointers.md`. Concept map
+hand-authored; media deferred to Phase 2.

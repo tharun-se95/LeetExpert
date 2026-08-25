@@ -81,11 +81,24 @@ copy-style write pointer WAS stable. Swap buys "keep everything, O(1)
 space" at the price of order within zones — a trade you should be able
 to name before Module 14 charges you for it.
 
+Trace it on `[4a, 4b, 2]` (two equal 4s, tagged only so you can track
+them) with `pred = x < 3`: `i=0`, `4a` fails the predicate, no swap,
+`boundary` stays 0. `i=1`, `4b` fails too, `boundary` stays 0. `i=2`,
+`2` passes — swap `nums[boundary]` and `nums[2]`, i.e. `nums[0]` and
+`nums[2]`: the array becomes `[2, 4b, 4a]`, `boundary` becomes 1. The
+two 4s survive, but in the *opposite* relative order they started in —
+that swap is the instability, caught in the act.
+
 ## Three zones: the Dutch national flag
 
 Two zones need one boundary; **three zones need two** — and the middle
-zone's unread region gets squeezed from both sides. The setup (made
-famous by Dijkstra): sort an array of 0s, 1s, 2s in one pass.
+zone's unread region gets squeezed from both sides. It's like sorting a
+basket of laundry into darks, lights, and grays in one sweep: darks pile
+up on the left, lights pile up on the right, and you only ever look at
+the next unsorted item — grays never get their own pile because
+"unsorted" and "gray" are the same region until the sweep finishes.
+The setup (made famous by Dijkstra): sort an array of 0s, 1s, 2s in one
+pass.
 
 ```text
 [ 0s | 1s | unread | 2s ]
@@ -108,8 +121,26 @@ not a convention — it falls out of the regions: a swap with `low`
 brings you an element from the *examined* middle zone (always a 1, safe
 to step past); a swap with `high` brings you an unexamined stranger.
 When the invariant is drawn, the asymmetry is forced; when it isn't,
-the asymmetry is a coin flip that breaks half the time. You'll build
-the full algorithm in the Sort Colors problem.
+the asymmetry is a coin flip that breaks half the time.
+
+Trace it on `[2, 0, 1]` — the adversarial case where getting the
+asymmetry wrong actually breaks — with `low = mid = 0`, `high = 2`:
+
+- **Step 1.** `nums[mid] = 2`. Swap with `high`: `nums[0]` and `nums[2]`
+  trade places, array becomes `[1, 0, 2]`, `high` becomes 1. `mid` does
+  **not** advance — index 0 now holds an unexamined value.
+- **Step 2.** `nums[mid] = 1` (the value just swapped in). It's already
+  correct for the middle zone — `mid += 1` only, no swap needed.
+- **Step 3.** `mid = 1`, `nums[mid] = 0`. Swap with `low`: `nums[0]` and
+  `nums[1]` trade places, array becomes `[0, 1, 2]`. Both `low` and
+  `mid` advance to 1 and 2.
+- `mid` now exceeds `high` — loop ends. `[0, 1, 2]`, correctly sorted in
+  one pass, three swaps total.
+
+Notice step 1 is exactly why the asymmetry matters: if `mid` had
+advanced there too, index 0's swapped-in value (`1`) would never get
+inspected, and the array would end up misclassified. You'll build the
+full algorithm in the Sort Colors problem.
 
 ## Choosing between the two shapes
 

@@ -17,7 +17,11 @@ technique collapses it to O(n) — when a certain precondition holds.
 Two indexes start at opposite ends and walk toward each other. Each step
 examines the pair (left, right) and moves exactly one pointer inward.
 They meet after at most n − 1 total moves — that's the O(n) bound,
-unconditionally. You saw the *mechanical* version in Module 4 (reverse:
+unconditionally. Derive it directly: the gap `right − left` starts at
+`n − 1` and every step shrinks it by exactly 1 (one pointer moves one
+slot), so the loop can run at most `n − 1` times before `left ≥ right`
+forces it to stop — no case analysis needed, just watching one number
+count down. You saw the *mechanical* version in Module 4 (reverse:
 swap and move both) and Module 5 (palindrome: compare and move both).
 What's new in this module is the **decision** version: at each step,
 *choose* which pointer to move — and that choice is where all the
@@ -42,6 +46,13 @@ pairs involving index R** in one step, provably losing nothing.
 Symmetrically, when the sum is too small, L's *largest* possible partner
 (the current R, since everything bigger was already eliminated) still
 undershoots — L is dead, `left += 1`.
+
+Finish this trace to see the elimination actually converge on the
+answer: **Step 2** — `R` moved to 15 (`sum = 2 + 15 = 17 < 22`, now too
+small — `L` is dead by the same argument, `left += 1`). **Step 3** —
+`L` moved to 7: `sum = 7 + 15 = 22`, a match, returning indices
+`(1, 3)`. Two eliminations, three comparisons total, against
+`C(5,2) = 10` pairs a brute force would have checked.
 
 Count what happened: each step retires one index and all its unexplored
 pairs. n steps retire all n²/2 pairs. That's the whole speedup — **batch
