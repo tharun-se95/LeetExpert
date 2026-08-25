@@ -34,7 +34,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | linked-lists | build-a-linked-list, nodes-and-pointers, pointer-surgery | x | | | | x |
 | stacks | lifo-and-the-call-stack, matching-and-nesting, monotonic-stack | x | | | | x |
 | queues | deques-and-monotonic, fifo-basics, ring-buffer | x | | | | x |
-| binary-search | binary-search-on-the-answer, boundary-search, the-invariant-template | | | | | |
+| binary-search | binary-search-on-the-answer, boundary-search, the-invariant-template | x | | | | x |
 | sorting | baseline-sorts, linear-time-sorts, merge-sort-lower-bound, quicksort-partitioning | | | | | |
 | recursion-backtracking | backtracking-choose-explore-unchoose, recursion-vs-iteration, the-call-stack-and-base-cases | | | | | |
 | binary-trees | bfs-level-order, dfs-traversals, top-down-vs-bottom-up-recursion, tree-terminology-and-representation | | | | | |
@@ -262,3 +262,22 @@ templates the lesson already presents. Also added a division-by-zero
 trap note for running-product windows and two analogies (cropping tool,
 inchworm). See `docs/superpowers/plans/analogies/sliding-window.md`.
 Concept map hand-authored; media deferred to Phase 2.
+
+**binary-search: Phase 1 complete (2026-08-25).** Curriculum-designer
+review was fully well-calibrated — confirmed 3 lessons, the current
+ordering, no scope gaps (explicitly mapping all 5 problem lessons,
+including both rotated-sorted-array problems, to Lesson 1's invariant
+skill without needing a new lesson), and no overlap with Sorting. No
+structural changes. Content-quality review caught a real clarity bug:
+Lesson 3's problem-bounding example conflated "minimum days to ship"
+with capacity bounds ("heaviest package" to "sum of everything"),
+mixing two different variables from the underlying problem — fixed by
+correctly framing it as capacity bounds for a days-constrained problem.
+Also added a concrete overflow-integer example, a hand-traced infinite
+loop demonstrating why lo=mid+1 (not lo=mid) is mandatory, the explicit
+3-step invariant proof for boundary search tied to the course's own
+proof framework, a last-occurrence derivation, an out-of-bounds trace,
+a from-scratch derivation of the O(f(n)·log R) total cost, and a fully
+hand-verified Koko Eating Bananas trace. See
+`docs/superpowers/plans/analogies/binary-search.md`. Concept map
+hand-authored; media deferred to Phase 2.

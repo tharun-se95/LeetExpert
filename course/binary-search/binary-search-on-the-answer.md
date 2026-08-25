@@ -95,22 +95,42 @@ smallest and largest values the answer could *possibly* be — before
 searching. This usually comes straight from the problem's own
 constraints: "eating speed" can't be below 1 or above the largest pile
 (eating faster than the biggest pile finishes it in one hour, so
-nothing is gained past that); "minimum days to ship all packages"
-ranges from "the single heaviest package" (any less and it can't be
-shipped at all) to "the sum of everything" (one shipment). Reading
-constraints for these bounds is the same skill the Big O module built —
-knowing where an answer space starts and ends before you search it.
+nothing is gained past that); "minimum ship **capacity** that gets
+every package out within the allotted days" ranges from "the single
+heaviest package" (any less and that one package physically can't be
+loaded) to "the sum of every package's weight" (a capacity that large
+ships everything in one shipment, trivially satisfying any day limit).
+Reading constraints for these bounds is the same skill the Big O module
+built — knowing where an answer space starts and ends before you search
+it.
 
 ## Total cost
 
 If the feasibility check costs O(f(n)) and the answer range spans R
 possible values, binary search on the answer costs **O(f(n) · log R)**
 — the halving argument, with the feasibility check standing in for the
-O(1) comparison of ordinary binary search. This is frequently the
-difference between an infeasible brute force (try every candidate
-answer, check each in O(f(n)): O(R · f(n))) and a fast one — R can be
-up to 10⁹, and log₂(10⁹) ≈ 30, so the search itself is nearly free next
-to the feasibility checks.
+O(1) comparison of ordinary binary search. The multiplication is
+literal: the loop still runs exactly `log₂ R` times (same range-halving
+count as every template in this module), and each of those iterations
+now pays a full feasibility check instead of a single array comparison
+— `log R` iterations × `O(f(n))` per iteration = `O(f(n) · log R)`.
+This is frequently the difference between an infeasible brute force
+(try every candidate answer, check each in O(f(n)): O(R · f(n))) and a
+fast one — R can be up to 10⁹, and log₂(10⁹) ≈ 30, so the search itself
+is nearly free next to the feasibility checks.
+
+Trace the recognition pattern on Koko's actual numbers:
+`piles = [3, 6, 7, 11]`, `hours = 8`. Feasibility at speed `k`:
+`sum(ceil(pile / k) for pile in piles) <= hours`. Bounds:
+`lo = 1`, `hi = 12` (one past the largest pile, 11 — the half-open
+convention again). **Iteration 1:** `mid = 6`. Hours needed:
+`1+1+2+2 = 6 <= 8` — feasible, `hi = 6`. **Iteration 2:** `mid = 3`.
+Hours needed: `1+2+3+4 = 10 > 8` — infeasible, `lo = 4`. **Iteration
+3:** `mid = 5`. Hours needed: `1+2+2+3 = 8 <= 8` — feasible, `hi = 5`.
+**Iteration 4:** `mid = 4`. Hours needed: `1+2+2+3 = 8 <= 8` — feasible,
+`hi = 4`. Now `lo == hi == 4`: loop ends, answer is speed `4` — four
+comparisons against a feasibility space of 11 candidates, and the gap
+widens fast as pile sizes grow.
 
 ```quiz
 {

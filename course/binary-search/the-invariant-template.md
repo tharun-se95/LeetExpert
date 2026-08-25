@@ -26,9 +26,12 @@ Searching a sorted array for `target`, maintain two pointers `lo` and
 
 This should look familiar — it's the exact shape of the elimination
 invariant from Two Pointers, specialized to a single search target
-instead of a pair. Each iteration examines the midpoint and, based on
-one comparison, **proves an entire half is impossible** and shrinks the
-range:
+instead of a pair. Think of it like searching for a word in a physical
+dictionary: you don't scan page by page — you crack it open near the
+middle, check which half the word falls in, and physically ignore the
+other half, repeating on the surviving half until one page is left.
+Each iteration examines the midpoint and, based on one comparison,
+**proves an entire half is impossible** and shrinks the range:
 
 ```diagram
 {
@@ -81,8 +84,8 @@ Why `arr[mid] < target` eliminates the **entire left half through
 mid**, not just `mid` itself: sortedness guarantees everything at
 indices ≤ mid is ≤ `arr[mid]` < target, so none of them can equal
 target either. One comparison, half the remaining range eliminated —
-this is Two Pointers' batch-elimination argument again, just cutting a
-single range in half instead of shrinking from two ends.
+the same batch-elimination shape, just cutting a single range in half
+instead of shrinking from two ends.
 
 ## The five decisions that cause every bug
 
@@ -94,16 +97,28 @@ candidate.
 
 **2. `mid = lo + (hi - lo) // 2`, not `(lo + hi) // 2`.** In languages
 with fixed-width integers, `lo + hi` can overflow before the division
-happens, if both are large. `lo + (hi - lo) // 2` computes the same
-midpoint without the intermediate overflow. JavaScript's numbers don't
-overflow the same way at typical array sizes, but the habit transfers
-directly to languages that do (Java, C++) — worth building now.
+happens, if both are large. Concretely: in a 32-bit signed integer (max
+≈2.1 billion), `lo = 1.4 billion, hi = 1.5 billion` gives
+`lo + hi ≈ 2.9 billion` — past the limit, wrapping to a negative number
+before the `/2` ever runs. `lo + (hi - lo) // 2` never sums the two
+large numbers directly: `hi - lo` is the (small) distance between them,
+half of that is added back to `lo`, and the running total never exceeds
+`hi`. JavaScript's numbers don't overflow the same way at typical array
+sizes, but the habit transfers directly to languages that do (Java,
+C++) — worth building now.
 
 **3. `mid + 1` / `mid - 1`, never `mid`.** Once `arr[mid]` has been
 ruled out (it's not the target and we know which side it's on), it
 must be **excluded** from the new range — including it again would
 either loop forever (if `mid` never changes) or silently re-examine an
-already-eliminated element.
+already-eliminated element. Watch it fail on `arr = [1, 3]`,
+`target = 3`, with the buggy update `lo = mid` (instead of
+`lo = mid + 1`): `lo=0, hi=1` → `mid = 0`, `arr[0]=1 < 3`, buggy update
+sets `lo = mid = 0` — unchanged. Next iteration: same `lo=0, hi=1`,
+same `mid = 0`, same update, same result. `lo` never moves again;
+integer division's truncation keeps pulling `mid` back down to `0`
+forever. The `+1` isn't a style preference — it's what actually
+guarantees the range shrinks.
 
 **4. What the invariant claims when the loop ends.** `lo > hi` means
 the range has been proven empty — every index was checked or

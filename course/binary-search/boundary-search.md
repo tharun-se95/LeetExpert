@@ -25,7 +25,10 @@ binary-search for **where it flips**. For "first occurrence of target":
 On a sorted array, this is false for every index before target's first
 occurrence, then true from there onward — exactly the false...false,
 true...true shape. The first `true` index IS the first occurrence (or
-the correct insertion point, if target isn't present at all).
+the correct insertion point, if target isn't present at all). It's the
+same shape as a beach: walk from the water's edge inland and there's
+one exact line where wet sand becomes dry — you're not looking for a
+grain of sand, you're looking for the boundary itself.
 
 ```diagram
 {
@@ -106,13 +109,47 @@ invariant, not a variation to patch onto the first template. Mixing the
 two conventions — half-open bounds with inclusive-style elimination, or
 vice versa — is where boundary-search bugs live.
 
+Trace a target *larger than every element* to see why `hi = len(arr)`
+earns its keep: `arr = [1, 2, 3, 4]`, `target = 5`. `lo = 0, hi = 4`.
+`mid = 2`: `arr[2] = 3 >= 5` is false, `lo = 3`. `mid = 3`:
+`arr[3] = 4 >= 5` is still false, `lo = 4`. Now `lo == hi == 4`, the
+loop ends, and `4` — one past the last valid index — is returned as the
+correct insertion point. An inclusive `hi = len(arr) - 1` convention has
+no way to express "the answer is past the end" without a separate
+special case; the half-open range represents it for free, as an
+ordinary value `lo` can reach.
+
+Run the same three-step check from the previous lesson against this
+template's own invariant — **`[0, lo)` is entirely false; `[hi, n)` is
+entirely true; `[lo, hi)` is unexplored**:
+
+- **Initialization.** Before the first iteration, `lo = 0` and
+  `hi = len(arr)`, so both the false-region and true-region are empty.
+  An empty region is trivially correct — nothing has been claimed yet.
+- **Maintenance.** When `arr[mid] >= target` (predicate true), setting
+  `hi = mid` is safe because `mid` itself is true — everything at or
+  right of the new `hi` (which starts at `mid`) stays true. When
+  `arr[mid] < target` (predicate false), setting `lo = mid + 1` is safe
+  because `mid` itself is false — everything strictly left of the new
+  `lo` (which is `mid + 1`) stays false, and `mid` is validly absorbed
+  into the false region.
+- **Termination.** The loop exits when `lo == hi` — the unexplored
+  region `[lo, hi)` has shrunk to empty, meaning every index is now
+  classified. `lo` sits exactly at the false→true flip: the answer.
+
 ## Getting the last occurrence
 
 Flip the predicate to find where "false" begins, then step back one:
 search for the first index where `arr[i] > target` (not `>=`), and
-subtract 1. Or, symmetrically, run the same halving with roles reversed
-— both work; picking ONE convention and deriving every variant from it
-consistently is more valuable than knowing many templates by rote.
+subtract 1. Why that lands exactly on the last occurrence: duplicates
+of `target` form one contiguous block in a sorted array, and
+`arr[i] > target` is false for the entire block and true for every
+index strictly after it — so this search finds the first index *past*
+the block, and stepping back one lands on the block's final element.
+(A separate valid convention exists — walk the same halving with the
+comparison and update roles mirrored — but picking ONE convention and
+deriving every variant from it consistently, as this lesson does, is
+more valuable than knowing several templates by rote.)
 
 ```complexity
 {

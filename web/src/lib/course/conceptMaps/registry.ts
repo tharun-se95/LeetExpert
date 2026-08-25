@@ -4,6 +4,7 @@ import { gettingStartedConceptMap } from "./gettingStarted";
 import { hashTablesConceptMap } from "./hashTables";
 import { linkedListsConceptMap } from "./linkedLists";
 import { mathForDsaConceptMap } from "./mathForDsa";
+import { binarySearchConceptMap } from "./binarySearch";
 import { queuesConceptMap } from "./queues";
 import { slidingWindowConceptMap } from "./slidingWindow";
 import { stacksConceptMap } from "./stacks";
@@ -24,6 +25,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   queues: queuesConceptMap,
   "two-pointers": twoPointersConceptMap,
   "sliding-window": slidingWindowConceptMap,
+  "binary-search": binarySearchConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {
