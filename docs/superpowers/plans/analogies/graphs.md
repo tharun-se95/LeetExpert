@@ -73,3 +73,35 @@ non-implementation is a real gap.
   deliberate connective framing, not blind duplication.
 
 Concept map hand-authored; media deferred to Phase 2.
+
+## Addendum (2026-08-26): final course-wide analogy sweep
+
+The original content-quality pass added sustained analogies to 3 of this
+module's 6 lessons (index cards for adjacency lists, dark tunnels for the
+visited set, playground hand-holding chains for Union-Find) and left
+Topological Sort, Shortest Paths, and Minimum Spanning Trees without one.
+A later full-course review revisited that gap: these three are exactly
+as spatial/structural as the three that already got one — road networks,
+task-dependency scheduling, and town-planning are about as natural and
+un-forced as analogies come — so the earlier omission wasn't a
+deliberate selectivity call, just an incomplete pass. Added:
+
+- **Shortest Paths:** a GPS/road-trip analogy (unweighted BFS = "count
+  the turns" when every street is one block; Dijkstra = "always drive
+  next to whichever unvisited town is currently closest by miles
+  driven"; negative weights = "a rebate road discovered only after a
+  town's distance was already locked in, with no mechanism to revisit
+  it").
+- **Topological Sort:** a getting-dressed analogy (socks before shoes;
+  Kahn's in-degree-zero frontier = "whatever needs nothing else first";
+  a cycle = "belt before pants before shirt before belt," impossible to
+  start).
+- **Minimum Spanning Trees:** extended the module's existing
+  "wire every house" framing into a full town-planner-connecting-
+  villages analogy, carried through the cut property (splitting villages
+  into two regions), Kruskal's (a master list of every possible road,
+  cheapest first), and Prim's (growing one village's road network
+  outward).
+
+No math or derivation content changed in any of the three lessons —
+every complexity claim, proof, and worked trace is untouched.

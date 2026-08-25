@@ -546,3 +546,52 @@ now had a curriculum-designer review and a content-quality review, per
 the standing instruction to work through the full module list
 autonomously. Phase 2 (audio, video, infographic) remains open for all
 modules except hash-tables.
+
+**Final course-wide analogy sweep (2026-08-26).** Requested by the user
+as a dedicated final pass, separate from Phase 1: grepped all 83 concept
+lessons across every module for real-world-analogy language, hand-
+verified every zero-hit result against false positives (several modules
+use an analogy introduced in an earlier sibling lesson and only
+reference it lightly — hash-tables' "mailroom clerk" and math-for-dsa's
+"Archive/Archivist" both checked out fine despite a raw zero count), and
+compiled a genuine-gap list ranked by value. Reported to the user before
+editing; user approved both the high-value and moderate lists.
+Implemented:
+
+- **Arrays** (`contiguous-memory.md`, `dynamic-arrays.md`,
+  `stable-compaction-cyclic-placement.md`): added a sustained
+  train-of-coupled-cars analogy across all three lessons — this reverses
+  an earlier explicit "no forced analogy" policy call for this module
+  (see `docs/superpowers/plans/analogies/arrays.md` addendum for the
+  reasoning).
+- **Linked Lists** (`nodes-and-pointers.md`, `build-a-linked-list.md`):
+  added a scavenger-hunt analogy — also reverses an earlier explicit
+  rejection of the same idea (see the linked-lists.md addendum).
+  `pointer-surgery.md` untouched (already has a runners-on-a-track
+  analogy for fast/slow pointers).
+- **Graphs** (`shortest-paths.md`, `topological-sort.md`,
+  `minimum-spanning-trees.md`): added GPS/road-trip, getting-dressed,
+  and town-planner analogies respectively — these three were the only
+  lessons in an otherwise-analogized module left without one; not a
+  reversal, just closing an incomplete pass (see graphs.md addendum).
+- **Two Pointers** (`converging-pointers.md`): added a sorted-shelf/
+  two-shoppers analogy — reverses an earlier explicit rejection (see the
+  two-pointers.md addendum). `partition-pointers.md` untouched (already
+  has a laundry-sorting analogy).
+- **Strings** (`strings-in-memory.md`): reused the Arrays module's train
+  analogy, extended naturally by "every car is welded shut" for
+  immutability. The other two lessons untouched (algorithmic/API-cost
+  content, no spatial hook).
+
+Investigated but left unchanged after finding they already have adequate
+grounding on closer reading (initial grep flagged them as gaps, but they
+were false positives): `queues/fifo-basics.md` (bus-seat-shuffle
+analogy for the head-index trick) and `sliding-window/fixed-size-
+windows.md` (crop-box-dragged-across-an-image analogy for the slide
+update) — both already carry a one-line physical analogy that a
+narrower grep pattern missed.
+
+No math, derivation, complexity claim, or worked trace was altered
+anywhere in this pass — every edit is prose-only, additive, and placed
+alongside existing correct content. Concept maps unchanged (all already
+registered from Phase 1).

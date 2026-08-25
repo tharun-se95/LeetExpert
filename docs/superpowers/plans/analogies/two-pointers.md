@@ -76,3 +76,22 @@ prompt style.
   supersedes the need.
 
 Concept map hand-authored; media deferred to Phase 2.
+
+## Addendum (2026-08-26): final course-wide analogy sweep — reverses the earlier rejection
+
+A later full-course review flagged Converging Pointers as one of a
+handful of genuinely spatial/structural lessons with zero real-world
+analogy language, directly revisiting the "rejected a suggested
+analogy... would be decorative" call above. On reflection: the numeric
+trace and interactive viz make the elimination argument *provably*
+correct, but proof and intuition are different things, and this lesson
+opens Stage 2 for every student in the course — a concrete picture
+before the formal argument is worth having here specifically, unlike
+Partition Pointers where a spatial analogy (laundry sorting) was already
+judged to earn its place in the same review.
+
+Added a sorted-shelf-of-price-tags analogy (two shoppers with a fixed
+budget, scanning from opposite ends) at two points: introducing the
+elimination argument, and callback into both the "right is dead" and
+"left is dead" elimination steps. Partition Pointers was not touched —
+its laundry-sorting analogy from the original pass already covers it.

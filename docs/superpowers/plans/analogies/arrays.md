@@ -63,3 +63,35 @@ existing content is already concrete/diagram-grounded (memory-cell
 diagrams, pointer-region diagrams, the invariant-proof framework), and per
 the policy correction this module gets tight derivations, not a sustained
 scene.
+
+## Addendum (2026-08-26): final course-wide analogy sweep
+
+A later full-course review (grepping all 83 concept lessons for
+real-world-analogy language, then hand-verifying the zero-hits) found
+Arrays was one of a handful of genuinely spatial/structural modules that
+still had NO physical analogy anywhere — the tight-derivation approach
+above, while correct, left the module's very first lesson (and the
+course's first data-structure module overall) reading as pure address
+arithmetic with nothing to anchor it intuitively. Given this module is
+about as physical a topic as exists (a block of equal-size slots), the
+earlier "no forced analogy" call was revisited and a sustained **train of
+coupled cars** analogy was added across all three lessons:
+
+- **Arrays in Memory:** the train intro (car number × car length =
+  position), front-insertion-as-uncoupling-and-shifting, and cache
+  locality as "walking one platform vs. checking cargo scattered across
+  rail yards city-wide."
+- **Dynamic Arrays:** capacity growth as "build an entirely new, longer
+  train and move every car over," with the multiplicative-vs-additive
+  comparison reframed as "rebuilds become rare" vs. "rebuilding every c
+  cars forever."
+- **Stable Compaction & Cyclic Placement:** the read/write pointer as an
+  inspector re-coupling kept cars into a shorter train immediately behind
+  the last inspected one (the `write ≤ read` safety argument stated
+  again in train terms); cyclic placement gets its own separate
+  parcel-passing analogy rather than stretching the train onto a
+  genuinely different (circular-permutation) shape.
+
+This is a judgment call revision, not a correction of an error — the
+lesson content itself needed no fixes, only a concrete anchor added on
+top of already-correct derivations.

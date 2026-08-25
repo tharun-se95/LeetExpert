@@ -11,6 +11,17 @@ abandons that: each element is a free-standing **node** — a value plus a
 happens to be free. The structure *is* the pointers; the only thing you
 hold is a reference to the first node (the **head**).
 
+Picture a scavenger hunt instead of a numbered row of boxes: clue 1 is
+in your hand, and it tells you where clue 2 is hidden; clue 2, once
+found, tells you where clue 3 is; and so on. There's no way to jump
+straight to clue 7 — you have to physically find clues 1 through 6
+first, in that order, because the only thing that tells you where the
+next clue lives is the clue you're currently holding. But slipping a
+brand-new clue into the middle of the hunt is trivial: rewrite one
+clue's "go to" instructions to point at the new one, and have the new
+one point at whatever the old clue used to point at. Nothing else in
+the hunt moves, and nothing else even notices.
+
 ```diagram
 {
   "id": "linked-list",
@@ -30,23 +41,27 @@ out is two pointer assignments — no shifting, ever. Concretely: to insert
 node B between A and C (turning `A → C` into `A → B → C`), that's
 `B.next = A.next` (B now points to whatever A pointed to — C) then
 `A.next = B` (A now points to B). Neither A nor C moved in memory; only
-two pointer fields changed. Compare the array's O(n − i) insert: same
-"add one thing in the middle" request, but there every slot after the
-insertion point copies to a new address — the entire cost difference is
+two pointer fields changed — exactly the "rewrite one clue's
+instructions" move. Compare the array's O(n − i) insert: same "add one
+thing in the middle" request, but there every slot after the insertion
+point copies to a new address — the entire cost difference is
 contiguity's gap-closing requirement, which lists simply don't have.
 
 **Costs: O(n) access to anything by position or value.** There is no
 address arithmetic — `the 500th node` can only be reached by walking 500
-`next` pointers. Binary search? Impossible at useful cost, even sorted:
-no O(1) jumps to the middle. Derive the cost directly: finding the
-midpoint of a search range of length L still takes L/2 pointer-walks (no
-address arithmetic to jump there), and binary search halves the range
-each round — so the walking work across all rounds sums to
-L/2 + L/4 + L/8 + ⋯ ≈ L, one linear scan's worth of work, just spread
+`next` pointers, exactly as the hunt requires finding clues 1 through 499
+before clue 500 can even be located. Binary search? Impossible at useful
+cost, even sorted: no O(1) jumps to the middle. Derive the cost directly:
+finding the midpoint of a search range of length L still takes L/2
+pointer-walks (no address arithmetic to jump there), and binary search
+halves the range each round — so the walking work across all rounds sums
+to L/2 + L/4 + L/8 + ⋯ ≈ L, one linear scan's worth of work, just spread
 across log L rounds instead of one pass. The O(log n) round *count*
 survives; the O(1)-per-round *cost* that makes it fast on arrays does
 not. And the Arrays module's cache-locality bonus inverts into a penalty:
-nodes are scattered, so every hop risks a cache miss.
+nodes are scattered, so every hop risks a cache miss — the clues could be
+hidden in any room of the building, not lying neatly in the next box
+along the shelf.
 
 ```complexity
 {

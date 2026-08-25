@@ -18,6 +18,17 @@ a path with fewer, bigger ones. This lesson covers both: why BFS solves
 the unweighted case, and Dijkstra's algorithm for the non-negative-
 weighted case.
 
+Picture a road network of towns connected by streets, and a GPS trying
+to find the shortest route between two of them. If every street were
+exactly one block long, "fewest turns" and "shortest distance" would be
+the same question — count the turns, you've counted the blocks. That's
+the unweighted case, and it's why plain BFS (which only ever counts
+edges) gets it right. But real streets aren't uniform: a highway segment
+might cover ten blocks' worth of distance in one "turn," while a side
+street covers one. The instant that's true, the route with fewer turns
+can easily be the LONGER one in actual miles — and a GPS that only
+counted turns would send you the wrong way.
+
 ```diagram
 {
   "id": "graph-layers",
@@ -58,7 +69,10 @@ matters — see below). The idea generalizes BFS's "process in increasing
 order of distance" strategy, but since edges no longer all cost the
 same, a priority queue (not a plain FIFO queue) is needed to always
 process the CURRENTLY closest unfinalized vertex next, whatever its
-edge-count distance happens to be.
+edge-count distance happens to be — back to the road trip: instead of
+visiting towns in "number of turns away" order, you always drive next
+to whichever not-yet-visited town is currently closest by total miles
+driven so far, wherever on the map that happens to be.
 
 Maintain a `dist[]` array (best known distance to each vertex, starting
 at infinity except the source at 0) and a min-heap of `(distance,
@@ -189,7 +203,13 @@ edge weights are non-negative (adding a non-negative weight to an
 already-larger path can never make it smaller than the just-finalized
 one). A negative edge breaks this: a longer path that later takes a
 sharply negative edge can end up shorter than a path that looked optimal
-when it was finalized.
+when it was finalized. Imagine one road segment that isn't a toll road
+at all but a rebate — driving it actually PAYS you, subtracting from
+your trip's total cost. Dijkstra locks in a town's final distance and
+never revisits it, the moment it's popped as the current cheapest — so
+if the rebate road is discovered only after a town has already been
+locked in, there's no mechanism left to go back and say "actually, the
+longer-looking route through the rebate road was cheaper after all."
 
 Concretely: vertices A, B, C with edges A→B (weight 5), A→C (weight 2),
 C→B (weight -10). Dijkstra processes A (distance 0), then greedily

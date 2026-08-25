@@ -14,10 +14,21 @@ in three steps — applied to a less obvious shape.
 The workhorse. **Task:** keep some elements, drop the rest, preserve
 relative order, O(1) space.
 
+Back to the train one more time: an inspector walks car by car from the
+engine, checking each one's cargo. Cars carrying valid cargo get
+re-coupled immediately behind the last car that passed inspection — no
+gap, no reshuffling of cars already re-coupled — while cars carrying
+nothing worth keeping are simply skipped and left behind on the original
+track. By the time the inspector reaches the caboose, every kept car is
+coupled into one short, gap-free train at the front, in the same
+relative order it started in.
+
 Two indexes walk the *same* array:
 
-- **read** scans every element, left to right.
-- **write** marks the boundary of the finished prefix.
+- **read** scans every element, left to right — the inspector walking
+  car by car.
+- **write** marks the boundary of the finished prefix — the coupling
+  point where the next kept car will join the shortened train.
 
 > **Invariant: `nums[0 .. write)` holds exactly the keepers seen so far,
 > in their original relative order.**
@@ -52,9 +63,11 @@ The three steps:
 - **Initialization.** `write = 0`, so `nums[0 .. 0)` is the empty range.
   Zero keepers seen, zero keepers stored. True.
 - **Maintenance.** `read` advances every iteration; `write` advances only
-  when a keeper is placed. So `write ≤ read` always holds. That is the
-  safety argument: the slot you overwrite has already been read on this
-  or an earlier iteration, so you can never destroy data you still need.
+  when a keeper is placed. So `write ≤ read` always holds — the inspector
+  never re-couples a car further forward than one already inspected. That
+  is the safety argument: the slot you overwrite has already been read on
+  this or an earlier iteration, so you can never destroy data you still
+  need.
   A keeper appends to the prefix and grows it by one; a non-keeper leaves
   the prefix alone. Either way the invariant survives.
 - **Termination.** `read` has passed every element, so "keepers seen so
@@ -84,16 +97,23 @@ element's destination can be anywhere.
 
 You can chase each displacement cycle instead — hold a value, drop it at
 its destination, pick up whatever was there, continue — for O(n) time and
-O(1) space. It's subtle, because you have to detect when a cycle closes
-and where the next one starts.
+O(1) space. Picture a group of people each holding one parcel, where
+every parcel has a specific new owner: you take your neighbor's parcel to
+give to its rightful owner, but that owner is already holding a parcel of
+their own, which you now must carry onward to ITS rightful owner, and so
+on — you keep passing parcels along a chain of owners until, eventually,
+someone hands you the parcel that was meant for you all along, closing
+the loop. It's subtle, because you have to detect when a cycle closes and
+where the next one starts.
 
 ```diagram
 { "id": "cyclic-placement", "n": 6, "k": 2 }
 ```
 
 That is the trap, drawn. With n = 6 and k = 2 the arrows do *not* form one
-big loop — they form two disjoint cycles. Following displacements from
-index 0 returns you to 0 having moved only half the array.
+big loop — they form two disjoint cycles, like two separate parcel-passing
+groups who never hand anything to each other. Following displacements
+from index 0 returns you to 0 having moved only half the array.
 
 In general, shifting n elements by k splits them into exactly gcd(n, k)
 disjoint cycles, each of length n / gcd(n, k) — here gcd(6, 2) = 2, so two

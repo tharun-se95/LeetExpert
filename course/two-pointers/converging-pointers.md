@@ -29,9 +29,12 @@ intellectual content lives.
 
 ## The elimination argument
 
-Why can moving one pointer be safe? Consider the sorted-array pair-sum
-problem (Two Sum II): find two values summing to `target` in a sorted
-array. Look at the pair at the ends:
+Why can moving one pointer be safe? Picture a shelf of price tags sorted
+low to high, and two shoppers with a fixed budget hunting for two items
+that add up to it exactly — one shopper starts at the cheapest item, the
+other at the priciest, and they work toward each other. Consider the
+sorted-array pair-sum problem (Two Sum II): find two values summing to
+`target` in a sorted array. Look at the pair at the ends:
 
 ```text
 sorted:  [2, 7, 11, 15, 21]      target = 22
@@ -42,10 +45,14 @@ The sum is too big. Now the key claim: **21 can never be in any answer
 pair** — its smallest possible partner is 2 (the array's minimum), and
 even that overshoots. Every pair containing R is ≥ the pair we just
 tested. So `right -= 1` doesn't just move on; it **eliminates all n−1
-pairs involving index R** in one step, provably losing nothing.
+pairs involving index R** in one step, provably losing nothing — the
+shopper at the pricey end can walk away from that item entirely, because
+even pairing it with the single cheapest item on the whole shelf already
+blows the budget, so no other pairing could possibly work either.
 Symmetrically, when the sum is too small, L's *largest* possible partner
 (the current R, since everything bigger was already eliminated) still
-undershoots — L is dead, `left += 1`.
+undershoots — L is dead, `left += 1`, and the cheap-end shopper moves on
+for the same reason in reverse.
 
 Finish this trace to see the elimination actually converge on the
 answer: **Step 2** — `R` moved to 15 (`sum = 2 + 15 = 17 < 22`, now too

@@ -5,14 +5,20 @@ type: concept
 
 ## The problem a dynamic array solves
 
-A raw array's size is fixed at allocation — the memory after it may belong
+Back to the train: it was built with a fixed number of cars, and the
+track position right behind the caboose already belongs to something
+else — another train's siding, a switch, whatever. There's no room to
+just weld one more car onto the end forever. A raw array's size is fixed
+at allocation for the identical reason — the memory after it may belong
 to something else, so it cannot simply grow in place. But programs rarely
 know sizes up front. The dynamic array's answer:
 
 1. keep a plain array (the **backing store**) with some **capacity**,
 2. track how many slots are actually used (the **length**),
 3. when an append finds length == capacity, allocate a **bigger** block,
-   copy everything over, and retire the old one.
+   copy everything over, and retire the old one — build an entirely new,
+   longer train on a fresh stretch of track, and move every existing car
+   over to it, one by one, before retiring the old, too-short train.
 
 The whole design question is step 3: *how much bigger?* Two policies, two
 outcomes — worth re-deriving here since the implementation below hinges on
@@ -21,12 +27,16 @@ picking the right one:
 - **Multiplicative (double capacity).** Copies happen at sizes
   1, 2, 4, 8, …, n — a geometric series summing to under 2n total copies
   across n appends. Spread over n appends, that's O(1) amortized each (you
-  proved this fully in the Big O module).
+  proved this fully in the Big O module). Each new train is roughly twice
+  as long as the last, so rebuilds become rare fast — most cars, once
+  moved, sit through many future appends before ever needing to move
+  again.
 - **Additive (`capacity += c`).** Copies happen every c appends, at sizes
   c, 2c, 3c, …, n — an arithmetic series summing to Θ(n²/c). Spread over n
   appends, that's Θ(n/c) amortized each: still growing with n, not
   constant. A fixed increment never escapes O(n) amortized, no matter how
-  large you pick c.
+  large you pick c — you'd be building a new train every c cars forever,
+  re-moving the same early cars again and again as the train grows.
 
 Now we build the multiplicative version.
 

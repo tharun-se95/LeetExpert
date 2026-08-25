@@ -8,7 +8,10 @@ type: concept
 Some tasks must happen before others. To take a course you must first take
 its prerequisites; to build a source file you must first build the modules
 it imports; to run a cell in a spreadsheet you must first compute the cells
-it references. Model each task as a vertex and each "A must come before B"
+it references. Even getting dressed has this shape: socks go on before
+shoes, a shirt before a jacket, and no rule stops you from putting your
+belt on before your shirt — those two just don't constrain each other at
+all. Model each task as a vertex and each "A must come before B"
 constraint as a directed edge A→B. A **topological sort** (or topological
 ordering) is a linear ordering of all the vertices such that for every edge
 A→B, A appears before B. Produce such an ordering and you have a valid
@@ -37,7 +40,10 @@ valid order must put A before B (edge A→B), B before C (edge B→C), and C
 before A (edge C→A) — so A must come before C which must come before A,
 a contradiction. No ordering can satisfy all three. The obstruction is
 exactly the **cycle** A→B→C→A: a cycle is a set of tasks each waiting on
-the next, forming a loop with no possible starting point.
+the next, forming a loop with no possible starting point — a rule that
+said "belt before pants, pants before shirt, shirt before belt" would
+leave you unable to put on ANY of the three first, no matter where you
+started.
 
 So a topological sort is well-defined **if and only if the graph is a
 DAG** — a **directed acyclic graph**. "Directed" because the constraints
@@ -50,7 +56,8 @@ explicit.
 ## Kahn's algorithm — BFS by in-degree
 
 A vertex with **in-degree zero** — no incoming edges — depends on nothing,
-so it is safe to place first. Kahn's algorithm builds the order by
+so it is safe to place first: your socks, your underwear, anything with
+no prerequisite of its own. Kahn's algorithm builds the order by
 repeatedly doing exactly that:
 
 1. Compute each vertex's in-degree (number of incoming edges).
@@ -59,7 +66,8 @@ repeatedly doing exactly that:
 3. Repeatedly remove a vertex from the queue, append it to the output, and
    "delete" it by decrementing the in-degree of each vertex it points to.
    Any neighbor whose in-degree hits zero has now had all its dependencies
-   placed, so enqueue it.
+   placed, so enqueue it — putting your socks on is exactly what clears
+   shoes' one dependency and makes shoes available to put on next.
 4. When the queue empties, if every vertex made it into the output, that's
    a valid topological order. If some vertices never reached in-degree zero,
    they are caught in a cycle — no valid order exists.

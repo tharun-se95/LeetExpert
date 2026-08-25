@@ -48,3 +48,23 @@ total," which is wrong: `parts.append(w)` stores a reference, not a
 character copy; only the final `"".join(parts)` copies characters (4
 total, not 8). Caught by re-deriving by hand rather than trusting the
 tool's arithmetic — the corrected number (4) is what shipped.
+
+## Addendum (2026-08-26): final course-wide analogy sweep
+
+A later full-course review flagged Strings in Memory & Immutability as
+one of the modules with zero real-world analogy language. Unlike the
+Arrays and Linked Lists reversals in this same sweep, this wasn't a
+prior explicit rejection — the module simply used its content-quality
+pass (above) for derivation gaps rather than considering an analogy at
+all. Since this lesson's entire opening claim ("a string is an array
+with a lock on it") is a direct callback to the Arrays module, reused
+that module's train-of-coupled-cars analogy rather than introducing a
+new one: a string is the identical train, one character per car, except
+every car is welded shut — you can look inside (`s[i]`), never swap
+cargo. This maps immutability onto the analogy almost for free, and ties
+the two modules together for a student reading them back to back. Added
+at the lesson's opening and as a callback in the concatenation-in-a-loop
+trap (`join_bad` "welds a brand-new train from scratch on every word").
+Character Arithmetic & Count Arrays and String APIs, Scan Costs & Idioms
+were not touched — both are algorithmic/API-cost lessons without the
+same spatial hook.

@@ -171,8 +171,11 @@ them — this is the discipline the quiz probes:
 Notice the *shape* of `delete`: a `(prev, curr)` pair walking in
 lockstep, because splicing `curr` out requires writing to
 `prev.next` — a singly linked list can never edit what it's standing on,
-only what's *ahead* of a node it holds. That asymmetry drives every
-pattern in the next lesson.
+only what's *ahead* of a node it holds. In the previous lesson's
+scavenger-hunt terms: removing clue `curr` from the hunt means rewriting
+the PREVIOUS clue's instructions to point past it — you can't rewrite a
+clue's own instructions from the clue itself, only from whichever clue
+sent you there. That asymmetry drives every pattern in the next lesson.
 
 Trace `delete(3)` on the list `[7, 3, 12]` (`head = 7`, `tail = 12`,
 `size = 3`) to see the splice concretely:
@@ -186,8 +189,10 @@ Trace `delete(3)` on the list `[7, 3, 12]` (`head = 7`, `tail = 12`,
   `tail`, so `tail` is untouched. `size` becomes `2`.
 - **Result.** `head` (`7`) → `12` → `None`. Node `3` still technically
   exists in memory with its own `next` pointing at `12`, but nothing
-  reachable from `head` points *at* node `3` anymore — it's garbage,
-  reclaimed the next time the language's memory manager runs.
+  reachable from `head` points *at* node `3` anymore — like a clue still
+  physically pinned to a wall somewhere, but no earlier clue in the hunt
+  sends anyone to it. It's garbage, reclaimed the next time the
+  language's memory manager runs.
 
 ## The special cases are the lesson
 

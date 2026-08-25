@@ -5,12 +5,17 @@ type: concept
 
 ## A string is an array with a lock on it
 
+Recall the train of coupled cars from the Arrays module — a string is
+that exact same train, one character per car, except now every car is
+welded shut. You can walk up to car `i` and look inside (`s[i]` is a
+perfectly ordinary O(1) read), but you can never swap out what's in it.
 Under the hood, a string is an array of character units — contiguous,
 O(1)-indexable, scannable with everything you learned in the Arrays
 module. One property changes the game: in both course languages, strings
 are **immutable**. You can read `s[i]`; you cannot assign to it. Every
 "modification" — `replace`, `upper`, concatenation — allocates a **new
-string** and copies.
+string** and copies: not a weld cut open, but an entirely new train
+built car-by-car to match what you asked for.
 
 Why language designers lock strings: safe sharing (many variables can
 point at one string with no defensive copies), hashability (a dict/Map key
@@ -71,7 +76,9 @@ count every character copy `join_bad` performs:
 | 3 | `result = "ab" + "c"` | 3 (`"ab"` then `"c"`) | 6 |
 | 4 | `result = "abc" + "d"` | 4 (`"abc"` then `"d"`) | 10 |
 
-Ten copies to join four one-character words. `join_good` never copies a
+Ten copies to join four one-character words — `join_bad` welds together
+a brand-new, slightly-longer train from scratch on every single word,
+re-building every car it already had. `join_good` never copies a
 character while appending — `parts.append(w)` stores a reference to `w`,
 not its characters, at O(1) amortized each. The only character-copying
 happens once, at the very end: `"".join(parts)` allocates a string of the

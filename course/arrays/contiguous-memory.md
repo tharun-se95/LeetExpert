@@ -5,11 +5,18 @@ type: concept
 
 ## What an array actually is
 
-An array is **one contiguous block of memory** holding equal-sized slots.
-That single sentence explains everything arrays are good and bad at.
+Picture a train of identical, permanently coupled cars sitting on a
+straight length of track, numbered 0, 1, 2, … from the engine back. Every
+car is the same length, so if you know the engine's position and a car's
+number, you know exactly how far down the track that car sits — no
+walking the platform counting cars, just multiply the car number by the
+car length. That single picture is almost the whole lesson: an array is
+**one contiguous block of memory** holding equal-sized slots, and that
+single sentence explains everything arrays are good and bad at.
 
 Because the block is contiguous and slots are equal-sized, the address of
-slot i is pure arithmetic:
+slot i is pure arithmetic — exactly the "car number × car length" math
+above:
 
 > address(i) = base_address + i × slot_size
 
@@ -45,10 +52,13 @@ Every array cost is a consequence of "contiguous, equal-sized, packed":
 ```
 
 The shifting cost is the one people forget. `list.insert(0, x)` /
-`arr.unshift(x)` reads as one line but moves the entire array. A loop doing
-n front-insertions costs 1 + 2 + ⋯ + n shifts — the triangular sum,
-n(n+1)/2 — which is Θ(n²): one of the most common accidental quadratics in
-real code.
+`arr.unshift(x)` reads as one line but moves the entire array — on the
+train, coupling a new car in right behind the engine means uncoupling
+every single car behind that point and rolling each one back one
+position to make room, because the cars are physically joined and
+nothing can occupy two positions at once. A loop doing n front-insertions
+costs 1 + 2 + ⋯ + n shifts — the triangular sum, n(n+1)/2 — which is
+Θ(n²): one of the most common accidental quadratics in real code.
 
 ## Cache locality: the hidden second superpower
 
@@ -65,8 +75,12 @@ cache hit.
 This doesn't change any Big O class — a scan is O(n) either way — but it's
 a constant factor of 10–100× in real time, and it's why "array + index
 arithmetic" beats fancier structures in practice far more often than
-asymptotics alone predict. When two designs tie on paper, bet on the
-contiguous one.
+asymptotics alone predict. It's the difference between a security guard
+walking the length of one train, glancing into each coupled car in turn
+as they pass, versus checking cargo scattered across cars parked in
+different rail yards all over the city — same number of cars checked
+either way, wildly different amounts of walking. When two designs tie on
+paper, bet on the contiguous one.
 
 ## What Python lists and JS arrays really are
 

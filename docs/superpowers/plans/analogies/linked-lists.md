@@ -94,3 +94,31 @@ even-length inputs, the same class of bug as the lesson's own
 `delete_all` advance-after-splice trap. See
 `docs/superpowers/plans/2026-08-23-course-analogy-tracker.md` for the
 summary entry.
+
+## Addendum (2026-08-26): final course-wide analogy sweep — reverses the earlier rejection
+
+A later full-course review flagged Nodes & Pointers and Build a Linked
+List From Scratch as two of only a handful of genuinely spatial/
+structural lessons in the entire course with literally zero real-world
+analogy language. This directly revisits the "Rejected — scavenger hunt
+analogy" call made above: at the time, the judgment was that the
+existing derivation-heavy prose already conveyed the pointer-chasing
+idea concretely enough that an analogy would be decorative. On
+reflection, "concrete" (a correct formula or a correct trace) is not the
+same property as "intuitive to visualize," and this module — the
+course's first data structure with no address arithmetic at all — is a
+strong candidate for a physical anchor precisely because that's the
+first time a student meets "you can only get to item 7 by physically
+walking through items 1–6."
+
+Added a sustained scavenger-hunt analogy (each clue tells you where the
+next one is hidden; you can't skip ahead; splicing a new clue in is a
+one-line rewrite that nothing else notices) across three touchpoints in
+Nodes & Pointers (the pointer-chasing intro, the O(1)-splice-vs-O(n)-
+access cost section, and the cache-locality inversion) and two in Build
+a Linked List From Scratch (the `(prev, curr)` asymmetry explanation,
+and the `delete(3)` trace's garbage-collection moment). Pointer Surgery
+Patterns was left untouched — its existing runners-on-a-track analogy
+for fast/slow pointers already covers that lesson, and forcing the
+scavenger-hunt framing on top would be exactly the decorative layering
+the original review correctly avoided.

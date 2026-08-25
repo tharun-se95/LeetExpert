@@ -14,9 +14,16 @@ whose edges sum to the smallest total weight. This is well-defined only
 for graphs that are **connected** (otherwise no single tree can reach
 every vertex) and **undirected** (an MST's edges don't have a
 direction — "connect A and B as cheaply as possible" is symmetric).
-Practically, this is the "wire every house to the electrical grid for
-the least total cable" question, or "connect every server with the
-least total network cost."
+
+Picture a town planner connecting a set of villages with roads, where
+each possible road between two villages has its own construction cost,
+and the planner's job is to make sure every village can reach every
+other village — by SOME path, not necessarily a direct road — while
+spending as little as possible on construction in total. There's no
+reason to ever build a road that closes a loop back to a village already
+reachable another way; every dollar spent on a redundant road is a
+dollar that connected nothing new. That's an MST: the cheapest possible
+road network that still leaves every village reachable from every other.
 
 ```diagram
 {
@@ -41,11 +48,17 @@ graph shapes.
 ## The cut property: why greedy works here at all
 
 A **cut** is any partition of the vertices into two non-empty groups. A
-**crossing edge** is an edge with one endpoint in each group. The **cut
-property** states: for any cut of the graph, the minimum-weight crossing
-edge is part of SOME minimum spanning tree (assuming all edge weights
-are distinct, for simplicity of statement — ties can be broken
-consistently without changing the argument).
+**crossing edge** is an edge with one endpoint in each group — split the
+villages into any two regions you like, and a crossing road is any road
+that would connect a village in one region to a village in the other.
+The **cut property** states: for any cut of the graph, the minimum-weight
+crossing edge is part of SOME minimum spanning tree (assuming all edge
+weights are distinct, for simplicity of statement — ties can be broken
+consistently without changing the argument). In town-planning terms: no
+matter how you split the villages into two regions, the cheapest road
+that COULD bridge those two regions belongs in some optimal network —
+there's never a reason to pay more than necessary to connect two
+regions that need connecting at all.
 
 Why: suppose, for contradiction, that the minimum-weight crossing edge
 `e` were NOT in some particular MST `T`. Since `T` connects every
@@ -70,7 +83,12 @@ Kruskal's algorithm processes ALL edges globally, sorted by weight from
 smallest to largest, greedily adding each edge to the growing MST
 **unless it would create a cycle** (which would mean both its endpoints
 are already connected within the MST-so-far — adding it wouldn't
-connect anything new, only waste weight on a redundant edge).
+connect anything new, only waste weight on a redundant edge). This is a
+planner working from a master list of every possible road in the
+region, cheapest first, building each one unless its two villages are
+already reachable from each other by roads already built — building
+that road would only create a second, wasted route between two villages
+that don't need one.
 
 The "would this edge create a cycle" check is exactly what Union-Find
 (previous lesson) answers efficiently: two endpoints are already
@@ -136,7 +154,12 @@ Prim's algorithm builds the MST differently: start from any single
 vertex, and repeatedly add the minimum-weight edge that connects the
 GROWING TREE to any vertex not yet in it — always extending the same
 single connected tree, rather than Kruskal's approach of considering
-edges globally regardless of which component they're in.
+edges globally regardless of which component they're in. In
+town-planning terms: instead of working from a master list of every
+possible road in the region, the planner starts at one village and
+keeps building whichever cheapest road reaches a brand-new village next,
+growing one connected network outward from that starting point rather
+than shopping the whole region's road list at once.
 
 This is structurally the same shape as **Dijkstra's algorithm**
 (previous lesson): a priority queue of "frontier" edges, repeatedly
