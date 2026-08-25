@@ -45,7 +45,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | intervals | sorting-intervals-and-the-sweep | x | | | | x |
 | prefix-sum | prefix-sum-2d, prefix-sum-basics, prefix-sum-hash-map | x | | | | x |
 | matrix | grid-coordinates, traversal-orders, in-place-transformations | x | | | | x |
-| greedy | greedy-choice-and-proving-correctness | | | | | |
+| greedy | greedy-choice-and-proving-correctness | x | | | | x |
 | dynamic-programming | 1d-dp-patterns, 2d-dp-patterns, from-recursion-to-memoization, tabulation-and-space-optimization, knapsack-style-dp | | | | | |
 | math-for-dsa | logarithms-and-exponents, summations-and-series, modular-arithmetic, divisibility-primes-gcd, counting-and-combinatorics, math-drills | x | | | | x |
 
@@ -502,4 +502,22 @@ rotation proof. Independently re-verified the rotation proof's
 coordinate claim and the row-major offset formula against the
 lessons' own worked examples — both correct, no bugs found. See
 `docs/superpowers/plans/analogies/matrix.md`. Concept map
+hand-authored; media deferred to Phase 2.
+
+**greedy: Phase 1 complete (2026-08-25).** Curriculum-designer review
+confirmed 1 concept lesson + 5 problem lessons is right, all 5
+self-teach, and the current order (boolean reachability → level-counted
+reachability → two-insight circular search → running-boundary
+partitioning → bidirectional two-pass capstone) is sound — every
+problem's cross-references to other lessons were checked against the
+actual target content and are accurate. No reorder or new lesson
+needed. Content-quality review added no analogy anywhere in this
+module, by design: this is the course's most proof-heavy module
+(exchange arguments, induction), and the selectivity principle calls
+for minimizing analogy exactly where formal rigor is the point being
+taught. Independently re-verified Gas Station's example trace, Candy's
+hardest example (`[1,2,87,87,87,2,1]` → 13, both directional passes
+hand-computed), and the coin-change counterexample's arithmetic — all
+correct, no bugs found. See
+`docs/superpowers/plans/analogies/greedy.md`. Concept map
 hand-authored; media deferred to Phase 2.
