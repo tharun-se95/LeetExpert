@@ -58,6 +58,15 @@ you where one level ends and the next begins. Most level-order problems
 need that boundary. The clean trick: **at the top of each level, snapshot
 the current queue size.**
 
+Picture a theme-park staff member letting people onto a ride in batches.
+Before waving anyone through, they count exactly how many people are
+currently standing in the roped-off queue — say, 14 — and let through
+precisely that many, no more. Anyone who joins the line *while* those 14
+are boarding doesn't get counted in this batch; they're next batch's
+problem. That upfront headcount is the whole trick: it draws a hard line
+between "this batch" and "whoever shows up after," even though new people
+keep joining the same physical line the whole time.
+
 The key observation: at the instant you're about to start a new level, the
 queue contains **exactly** the nodes of that level and nothing else — every
 previous level has been fully dequeued, and no node from the *next* level
@@ -117,6 +126,20 @@ enqueues the next level's nodes into the same queue as it runs, so
 count at "this level only." That single snapshot is the standard idiom for
 every level-boundary problem in this module.
 
+Trace it on the tree diagrammed above (root 1, children 2 and 3, 2's
+children 4 and 5, 3's child 6). Queue starts `[1]`; snapshot
+`level_size = 1`. The inner loop runs once: dequeue `1`, enqueue its
+children — queue is now `[2, 3]`. One level recorded: `[1]`. Next
+iteration: snapshot `level_size = 2` (the queue's *current* length,
+re-read fresh). The inner loop runs twice: dequeue `2`, enqueue `4` and
+`5` (queue: `[3, 4, 5]`); dequeue `3`, enqueue `6` (queue: `[4, 5, 6]`).
+Level recorded: `[2, 3]` — note the loop stopped at exactly 2 dequeues,
+never touching the `4`, `5`, `6` it just enqueued, because `level_size`
+had already been frozen at 2 before any of them existed. Final
+iteration: snapshot `level_size = 3`, dequeue all of `4, 5, 6`, enqueue
+nothing (all leaves). Level recorded: `[4, 5, 6]`. Queue now empty, loop
+ends. Three levels, exactly as the tree's three rows demand.
+
 (Python note: use `collections.deque`, whose `popleft` is O(1). A plain
 list's `pop(0)` is O(n) because it shifts every remaining element — using
 it would silently turn the whole traversal into O(n²). TypeScript's
@@ -143,8 +166,14 @@ different "frontier" of the tree:
 Now the consequences, which are opposite for the two tree shapes:
 
 - **A balanced tree** is *wide at the bottom*: the last level holds up to
-  n/2 of the n nodes. So BFS peaks at **O(n)** space, while DFS uses only
-  **O(log n)** (the height). Here **DFS is far cheaper.**
+  n/2 of the n nodes. (This falls out of the same doubling the
+  Terminology lesson used for height: a full tree of height h has
+  n = 2⁰ + 2¹ + ⋯ + 2ʰ = 2ʰ⁺¹ − 1 nodes total, and its last level alone
+  holds 2ʰ of them — roughly half of n, since 2ʰ⁺¹ is barely more than
+  twice 2ʰ. Every level above the last combined holds only as many
+  nodes as the last level holds by itself.) So BFS peaks at **O(n)**
+  space, while DFS uses only **O(log n)** (the height). Here **DFS is
+  far cheaper.**
 - **A degenerate tree** (a single chain, effectively a linked list) has
   width 1 at every level but height n. So BFS holds only **O(1)** at a time,
   while DFS's stack grows to **O(n)** (and risks a recursion-limit crash).

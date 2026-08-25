@@ -15,6 +15,17 @@ blanks." Get it fuzzy and you'll write subtly wrong recursions that pass
 small tests and fail on real trees (the diameter problem, two lessons on,
 is a famous casualty).
 
+Picture two different ways a family tree's news could travel. In one,
+a grandparent hears a rumor and phones it down to their children, who
+each add a detail and phone it further down to the grandchildren — by
+the time it reaches the youngest generation, everyone downstream has
+heard a version built up from everything said above them. In the
+other, it's the grandchildren who each notice something first, tell
+their parents, and the parents combine what both their children
+noticed before passing *that* combined report up to the grandparent —
+the grandparent only learns the full picture once everyone below has
+reported in. Same family tree, opposite direction of travel.
+
 The two shapes differ in **which way information flows** along the tree:
 
 - **Top-down**: information flows **down**. A node receives context from

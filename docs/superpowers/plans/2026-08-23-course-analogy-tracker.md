@@ -37,7 +37,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | binary-search | binary-search-on-the-answer, boundary-search, the-invariant-template | x | | | | x |
 | sorting | baseline-sorts, linear-time-sorts, merge-sort-lower-bound, quicksort-partitioning | x | | | | x |
 | recursion-backtracking | backtracking-choose-explore-unchoose, recursion-vs-iteration, the-call-stack-and-base-cases | x | | | | x |
-| binary-trees | bfs-level-order, dfs-traversals, top-down-vs-bottom-up-recursion, tree-terminology-and-representation | | | | | |
+| binary-trees | bfs-level-order, dfs-traversals, top-down-vs-bottom-up-recursion, tree-terminology-and-representation | x | | | | x |
 | bst | balance-and-why-it-matters, bst-invariant-and-operations | | | | | |
 | heaps | heap-property-and-array-representation, heapify-sift-up-and-sift-down | | | | | |
 | tries | trie-structure-and-prefix-search | | | | | |
@@ -328,3 +328,27 @@ Three analogies added (cafeteria trays, dressing-room rack, desk-drawer
 vs. floor space). See
 `docs/superpowers/plans/analogies/recursion-backtracking.md`. Concept
 map hand-authored; media deferred to Phase 2.
+
+**binary-trees: Phase 1 complete (2026-08-25).** Curriculum-designer
+review confirmed 4 lessons and the current order are right, and that the
+two problem lessons with no "insight" section (Level Order Traversal,
+Right Side View) are fully covered by the BFS lesson's size-snapshot
+technique. Caught a real bug: the Terminology lesson said "the next
+lesson has two different recursion shapes," but that's Lesson 4
+(Top-Down vs. Bottom-Up), not Lesson 2 (DFS Traversals) — fixed by
+naming the lesson explicitly. Rejected recommending a new "Invert a
+Binary Tree" problem lesson (out of scope for a content-quality pass —
+needs its own full sandbox, not a prose edit), an iterative-preorder/
+postorder "coverage gap" claim (the lesson teaches the explicit-stack
+mechanism once on the order that actually needs it), and two "redundant
+across lessons" tightening claims on the O(h)/O(n) restatements (each
+appearance adds traversal-specific or comparative context, the course's
+established deliberate-reinforcement pattern). Content-quality review
+added, independently verified in Python: a from-scratch derivation of
+the balanced-tree height claim (n=2⁰+⋯+2ʰ, h≈log₂n), a verified
+iterative-inorder stack trace on a 3-node tree, a verified BFS
+size-snapshot trace on the lesson's own 6-node tree, and a derivation of
+the "last level holds ~n/2 of the nodes" claim. Four analogies added
+(bush vs. vine, theme-park queue batches, family-tree rumor relay). See
+`docs/superpowers/plans/analogies/binary-trees.md`. Concept map
+hand-authored; media deferred to Phase 2.

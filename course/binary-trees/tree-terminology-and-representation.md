@@ -97,8 +97,9 @@ versions cause real off-by-one bugs, so pin them down:
 
 Depth counts *down from the root to you*; height counts *down from you to
 the deepest leaf*. They are measured from opposite ends, which is exactly
-why the next lesson has two different recursion shapes — one that carries
-depth downward and one that returns height upward.
+why a later lesson (Top-Down vs. Bottom-Up Tree Recursion) has two
+different recursion shapes — one that carries depth downward and one
+that returns height upward.
 
 > A pitfall worth naming now: some sources define depth/height in terms of
 > *nodes on the path* rather than *edges*, so a single-node tree has height
@@ -204,9 +205,29 @@ That O(h) stack cost is the hinge of the entire module: a **balanced**
 tree of n nodes has height ~log₂n, so recursion uses O(log n) stack, but a
 **degenerate** tree (every node has only a left child — effectively a
 linked list) has height n − 1, so recursion uses O(n) stack. Same node
-count, same O(n) time, wildly different space and stack-overflow risk. The
-next lesson makes this concrete; Module 18 (balanced BSTs) exists mostly to
-guarantee the good case.
+count, same O(n) time, wildly different space and stack-overflow risk.
+
+The log₂n figure isn't asserted — it falls straight out of counting.
+A balanced tree fills each level before starting the next, and level i
+holds at most 2ⁱ nodes (1 at the root, 2 at level 1, 4 at level 2, and
+so on — each level's nodes are the children of the level above, and
+every node has 2 children). Summing a full tree of height h:
+n = 2⁰ + 2¹ + ⋯ + 2ʰ = 2ʰ⁺¹ − 1. Solving for h gives
+h = log₂(n + 1) − 1 — height grows only as the *logarithm* of the node
+count, because each additional level *doubles* how many more nodes it
+can hold. A degenerate tree gets no such multiplier — one child per
+node means each level adds exactly 1 node, so reaching n nodes takes
+n − 1 levels, not log₂n.
+
+Picture the difference as two ways to grow a plant. A balanced tree
+is a bush: every branch splits into two more every time it grows, so
+a bush with a mere 10 layers of branching already has over a thousand
+twig-tips. A degenerate tree is a vine trained up a single pole: it
+gains exactly one node's worth of height per node, no splitting, so a
+thousand-node vine really is a thousand rungs tall. Same total amount
+of "plant," wildly different heights — which is exactly the O(log n)
+vs O(n) stack gap. The next lesson makes this concrete; Module 18
+(balanced BSTs) exists mostly to guarantee the good case.
 
 ```quiz
 {

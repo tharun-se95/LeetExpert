@@ -201,6 +201,20 @@ subtree" rule), and setting `curr = curr.right` is the deferred "then go
 right." The explicit stack holds exactly the nodes the call stack would
 have held as frames: the current root-to-node spine, at most O(h) of them.
 
+Trace it on the 3-node tree with root `2`, left child `1`, right child
+`3`: `curr = 2` is not null, so push it (`stack = [2]`) and descend left;
+`curr = 1` is not null, push it (`stack = [2, 1]`) and descend left again;
+`curr` is now null, so the inner loop stops. Pop `1` (`stack = [2]`),
+visit it — output `[1]` — and set `curr = 1.right = null`. The inner loop
+does nothing this time (`curr` is already null), so pop `2`
+(`stack = []`), visit it — output `[1, 2]` — and set `curr = 2.right = 3`.
+The inner loop pushes `3` (`stack = [3]`) and descends left into null.
+Pop `3` (`stack = []`), visit it — output `[1, 2, 3]` — and
+`curr = 3.right = null`. Both `curr` and the stack are now empty, so the
+outer loop ends. Final output `[1, 2, 3]`, sorted order for what happens
+to be a valid BST — exactly the property the previous section proved in
+general.
+
 Same output as the recursive version, same O(n) time, same O(h) space —
 but now the space is a heap-allocated list you control, not the call stack,
 so a height-n tree can't blow the recursion limit. That is the entire
