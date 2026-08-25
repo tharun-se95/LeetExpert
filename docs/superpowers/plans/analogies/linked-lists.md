@@ -64,9 +64,24 @@ analogy). Findings and dispositions:
   failure mode from quiz-explanation-only into main prose (a student who
   gets the quiz wrong should still have been taught the mechanism, not
   just told it after guessing), and added a worked `delete(3)` trace on
-  `[7, 3, 12]`.
+  `[7, 3, 12]`. Rejected the review's suggested chain-link analogy for
+  the predecessor-holding requirement ("to splice a link in a physical
+  chain, you must hold the link before it, not the link itself") — the
+  section already states the mechanical constraint precisely in plain
+  language ("a singly linked list can never edit what it's standing on,
+  only what's ahead of a node it holds"), and the new `delete(3)` trace
+  now makes it concrete; the chain-link framing would have restated the
+  same idea without adding clarity.
 - **Pointer Surgery Patterns:** added the fixed-gap n-th-from-end
-  derivation and the null-safety section described above.
+  derivation and the null-safety section described above. Accepted the
+  review's suggested cycle-detection analogy (two runners on a circular
+  track vs. a straight dead-ending path) and added it — unlike the other
+  two proposals, this one earns its place: the lesson's cycle-detection
+  claim ("fast can never exhaust it — it laps slow, and they must meet")
+  was a bare one-line assertion deferring its proof to a later problem
+  lesson, with nothing concrete backing the *why* in the meantime, and
+  Floyd's-cycle-style lapping is about as literally, physically spatial
+  as a CS concept gets.
 
 **Self-caught error:** my first draft of the null-safety section claimed
 the unsafe guard (`while fast:` without `fast.next`) crashes on

@@ -97,7 +97,14 @@ Two walkers, different speeds. `slow` steps once, `fast` steps twice:
 - when fast exhausts the list, **slow stands at the middle** (fast covered
   2× the ground);
 - if the list has a **cycle**, fast can never exhaust it — it laps slow,
-  and they *must* meet (the cycle problem proves why);
+  and they *must* meet (the cycle problem proves why). Picture two
+  runners on a circular track, one moving twice as fast as the other: no
+  matter the head start, the faster runner eventually laps the slower one
+  and the two end up standing in the same spot. On a straight, dead-ending
+  path there's no lap to close — the faster runner just reaches the end
+  and stops. A cyclic list behaves exactly like the track, which is why
+  fast and slow are guaranteed to meet, and an acyclic list behaves like
+  the straight path, which is why they never will;
 - a variant — two *same-speed* walkers with a fixed **gap** of n — finds
   the n-th node from the end in one pass: advance a lead pointer n nodes
   ahead first, then move both pointers together, one step at a time. The
