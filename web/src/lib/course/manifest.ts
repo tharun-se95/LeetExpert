@@ -542,12 +542,12 @@ export const MODULES: ModuleMeta[] = [
         "Kth Largest Element in a Stream",
       ),
       problem("top-k-frequent-elements", "Top K Frequent Elements"),
+      problem("k-closest-points-to-origin", "K Closest Points to Origin"),
       problem("merge-k-sorted-lists", "Merge k Sorted Lists"),
       problem(
         "find-median-from-data-stream",
         "Find Median from Data Stream",
       ),
-      problem("k-closest-points-to-origin", "K Closest Points to Origin"),
       problem("task-scheduler", "Task Scheduler"),
       practiceLesson(),
     ],

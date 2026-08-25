@@ -39,7 +39,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | recursion-backtracking | backtracking-choose-explore-unchoose, recursion-vs-iteration, the-call-stack-and-base-cases | x | | | | x |
 | binary-trees | bfs-level-order, dfs-traversals, top-down-vs-bottom-up-recursion, tree-terminology-and-representation | x | | | | x |
 | bst | balance-and-why-it-matters, bst-invariant-and-operations | x | | | | x |
-| heaps | heap-property-and-array-representation, heapify-sift-up-and-sift-down | | | | | |
+| heaps | heap-property-and-array-representation, heapify-sift-up-and-sift-down | x | | | | x |
 | tries | trie-structure-and-prefix-search | | | | | |
 | graphs | dfs-and-bfs-on-graphs, graph-representation, minimum-spanning-trees, shortest-paths, topological-sort, union-find | | | | | |
 | intervals | sorting-intervals-and-the-sweep | | | | | |
@@ -373,4 +373,24 @@ with a verified before/after inorder check, and a note on the AVL
 constant's Fibonacci-tree origin. Two analogies added (forest-trail
 signposts for search descent, hanging mobile for rotation). See
 `docs/superpowers/plans/analogies/bst.md`. Concept map hand-authored;
+media deferred to Phase 2.
+
+**heaps: Phase 1 complete (2026-08-25).** Curriculum-designer review
+confirmed 2 lessons is right and all 6 problem lessons self-teach their
+pattern. Applied a sound ordering improvement: moved K Closest Points to
+Origin from 5th to 3rd in the problem sequence (right after Top K
+Frequent) to group the three size-k-heap problems together before the
+k-way-merge and two-heaps patterns. Rejected two "scope gap" claims
+(tuple-comparison pitfalls) that the affected problem lessons already
+explicitly self-teach, and a heapreplace/heappushpop optimization
+suggestion (problem-level style detail, not a concept-lesson gap — and
+only true for one of the two problems it was claimed to affect).
+Content-quality review added, independently verified in Python: a
+from-scratch derivation of the `(n−2)//2` heapify starting index, a
+justification for the height-`h` node-count bound in the O(n) proof,
+and a fully hand-verified build-heap trace (which caught and fixed a
+wrong swap-count in an earlier draft before it shipped). Two sustained
+analogies added (theater seating for the heap property and array
+packing, weighted boxes on a shelf for sift-up/sift-down). See
+`docs/superpowers/plans/analogies/heaps.md`. Concept map hand-authored;
 media deferred to Phase 2.

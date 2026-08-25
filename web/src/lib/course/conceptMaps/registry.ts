@@ -4,6 +4,7 @@ import { binaryTreesConceptMap } from "./binaryTrees";
 import { bstConceptMap } from "./bst";
 import { gettingStartedConceptMap } from "./gettingStarted";
 import { hashTablesConceptMap } from "./hashTables";
+import { heapsConceptMap } from "./heaps";
 import { linkedListsConceptMap } from "./linkedLists";
 import { mathForDsaConceptMap } from "./mathForDsa";
 import { binarySearchConceptMap } from "./binarySearch";
@@ -34,6 +35,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   "recursion-backtracking": recursionBacktrackingConceptMap,
   "binary-trees": binaryTreesConceptMap,
   bst: bstConceptMap,
+  heaps: heapsConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {

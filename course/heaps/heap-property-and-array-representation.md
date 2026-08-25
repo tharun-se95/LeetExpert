@@ -23,6 +23,16 @@ access pattern.
 
 ## The heap property
 
+Picture a theater seating a crowd for a photo, arranged in rows behind
+the stage, shortest people up front. The only rule the ushers enforce
+is this: whoever sits in the very front row must be shorter than
+everyone else, and every person seated in a later row must be shorter
+than *both* of the two people directly in front of them who share
+their seat-column. Nobody checks whether the person two seats to your
+left is taller or shorter than you — that comparison is never made.
+The only rule anyone ever enforces is straight ahead: you versus the
+two people right in front of you.
+
 A **min-heap** is a binary tree obeying one invariant:
 
 > **Every node's value is ≤ both of its children's values.**
@@ -78,8 +88,15 @@ complete binary tree needs no pointers at all.**
 
 "Complete" has a precise meaning: every level is entirely full except
 possibly the last, and the last level is filled strictly left-to-right
-with no gaps. Picture the nodes numbered in reading order — top to bottom,
-left to right within each level:
+with no gaps. Back to the theater: imagine the ushers also insist that
+every row is completely full before anyone starts filling the next
+row, and within the row currently being filled, seats go left to
+right with nobody skipped. That single seating rule is what "complete"
+means, and it's about to earn its keep — because a fully-packed,
+gap-free theater means you can find any person's seat number from
+their row and position alone, with no usher, no map, no pointer from
+seat to seat. Picture the nodes numbered in reading order — top to
+bottom, left to right within each level:
 
 ```diagram
 {

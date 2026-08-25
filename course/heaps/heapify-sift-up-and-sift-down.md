@@ -20,6 +20,17 @@ Throughout, remember the array indexing from last lesson: for node `i`,
 
 ## Sift-up: repair an element that's too small for where it sits
 
+Picture a vertical stack of boxes on a shelf bracket system, stacked
+by weight, lightest boxes allowed only above heavier ones directly
+underneath — but nobody checks two boxes on the same shelf against
+each other, only a box against what's directly below it. Now a new,
+very light box gets set down at the very bottom of the stack, resting
+under a much heavier box. That's unstable — a light box shouldn't be
+under a heavy one — so it pushes upward, swapping places with the
+heavier box above it, and keeps rising one slot at a time until it
+finally rests under a box no heavier than itself, or reaches the very
+top.
+
 **Insertion** works like this: append the new value to the end of the
 array. That keeps the tree complete (the new node fills the next
 left-to-right slot), but the value may be smaller than its parent,
@@ -50,6 +61,16 @@ leaf). So each swap fixes the violation locally without creating a new
 one below. The value climbs until it finds a parent no larger than itself.
 
 ## Sift-down: repair an element that's too large for where it sits
+
+Same shelf bracket, mirrored. Suppose you remove the lightest box from
+the very top of the stack, and to fill the gap you grab whatever box
+happens to be sitting at the very bottom and drop it on top instead.
+It's almost certainly too heavy to belong there — so it sinks,
+swapping places with whichever of the two boxes directly beneath it is
+lighter (never the heavier one — putting a heavy box under an already-
+heavy one would just move the problem sideways instead of solving it),
+and keeps sinking one slot at a time until it settles under boxes no
+lighter than itself, or hits the bottom shelf.
 
 **Extract-min** is the mirror image. The minimum is at the root, index 0.
 We want to remove it while keeping the tree complete. The trick: swap the
@@ -291,7 +312,15 @@ are already valid heaps and only its own value might be misplaced.
 Processing bottom-up guarantees that precondition: when we reach node `i`,
 every node below it has already been sifted, so its children are valid
 heap roots. Leaves need no work (no children to violate against), which is
-why we start at the last non-leaf, `(n−2)//2`.
+why we start at the last non-leaf.
+
+That starting index, `(n−2)//2`, isn't a number to memorize — it falls
+straight out of last lesson's `parent(i) = (i−1)//2` formula. The last
+element in the array sits at index `n−1`, so its parent — the last
+node that could possibly have any children — is at
+`parent(n−1) = ((n−1)−1)//2 = (n−2)//2`. Every index after that is
+necessarily a leaf (it comes after the last node with children), so
+sifting starts exactly there.
 
 **The complexity claim.** The naive "`n` pushes × O(log n)" bound is
 O(n log n), and it is a genuine *over*-estimate here. It assumes every
@@ -306,6 +335,14 @@ them*, so leaves have height 0). In a complete tree of `n` nodes:
 - height 1: about `n/4` nodes
 - height 2: about `n/8` nodes
 - ... in general, at most `⌈n / 2^(h+1)⌉` nodes of height `h`
+
+Where that bound comes from: a node of height `h` or more must be the
+root of a subtree with at least `h+1` levels, which (last lesson's
+counting) holds at least `2^(h+1) − 1` nodes — so at most
+`n / 2^(h+1)` of the tree's `n` nodes can afford to sit that deep from
+their own farthest leaf. Height 0 (every leaf) is the extreme case of
+this: a subtree of height ≥ 0 needs only 1 node, so up to `n/2^1 = n/2`
+nodes qualify — matching the bullet above.
 
 A node of height `h` sifts down at most `h` steps. So total work is
 bounded by summing (number of nodes at height `h`) × (steps `h`) over all
@@ -331,12 +368,24 @@ work per level *halves* as you go up while the distance only *increases*
 by one, so the total is a converging geometric-ish sum, not a growing one.
 That's the whole reason it telescopes to O(n) instead of O(n log n).
 
-Contrast the two clearly: **`n` sequential pushes is O(n log n)** because
-sift-*up* on a freshly appended leaf can climb the full height, and
-half the elements are leaves paying up to `log n` each. **`heapify` is
-O(n)** because sift-*down* on those same bottom-heavy nodes barely moves.
-Same array, same heap, different construction cost — one of the few places
-where the "obvious" bound is loose and the real answer is better.
+Trace it on `arr = [5, 3, 8, 4, 1, 9, 2]` (`n = 7`, so
+`start = (7−2)//2 = 2`). `sift_down(2)`: node `8` (index 2) has children
+`9` (index 5) and `2` (index 6); `2` is smaller, and `2 < 8`, so swap
+— array becomes `[5, 3, 2, 4, 1, 9, 8]`, and index 6 is a leaf, so this
+sift is done after one swap. `sift_down(1)`: node `3` (index 1) has
+children `4` (index 3) and `1` (index 4); `1` is smaller and `1 < 3`,
+so swap — `[5, 1, 2, 4, 3, 9, 8]`; index 4 is also a leaf, done.
+`sift_down(0)`: node `5` has children `1` (index 1) and `2` (index 2);
+`1` is smaller and `1 < 5`, so swap — `[1, 5, 2, 4, 3, 9, 8]` — but
+`5` (now at index 1) still has children `4` (index 3) and `3` (index
+4); `3` is smaller and `3 < 5`, so it keeps sinking — one more swap
+gives `[1, 3, 2, 4, 5, 9, 8]`. Every node's value is now ≤ both its
+children — a valid heap, built in four total swaps over seven
+elements, no O(n log n) pass required.
+
+Same array, same heap, different construction cost — one of the few
+places where the "obvious" bound is loose and the real answer is
+better.
 
 ```complexity
 {
