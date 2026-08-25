@@ -15,22 +15,33 @@ expands the window one step at a time; whenever the window becomes
 **invalid** by some problem-specific rule, `left` advances to shrink it
 back to valid. Both pointers only ever move forward — each takes at
 most n steps total, so the whole scan is **O(n)**, not O(n²), even
-though it looks like a loop inside a loop.
+though it looks like a loop inside a loop. Think of an inchworm: the
+front end stretches forward to scout new ground, and once it's
+overreached, the rear end pulls forward to catch up — neither end ever
+backs up, the body just stretches and contracts as it goes.
 
 ```text
 target sum ≥ 7, nums = [2, 3, 1, 2, 4, 3]
 
-right=0: [2]            sum=2  invalid, keep expanding
-right=1: [2,3]           sum=5  invalid
-right=2: [2,3,1]         sum=6  invalid
-right=3: [2,3,1,2]       sum=8  valid! shrink:
-  left→1: [3,1,2]        sum=6  invalid again — stop shrinking, record length 4→ but
-                                  we already had length 4 at left=0; try smaller windows as right grows
-right=4: [3,1,2,4]       sum=10 valid! shrink:
-  left→2: [1,2,4]        sum=7  valid! shrink:
-    left→3: [2,4]        sum=6  invalid — stop; best length so far = 3
+right=0: [2]            sum=2   invalid, keep expanding
+right=1: [2,3]          sum=5   invalid
+right=2: [2,3,1]        sum=6   invalid
+right=3: [2,3,1,2]      sum=8   valid! record length 4 (best=4). shrink:
+  left→1: [3,1,2]       sum=6   invalid again — stop shrinking
+right=4: [3,1,2,4]      sum=10  valid! record length 4 (best stays 4). shrink:
+  left→2: [1,2,4]       sum=7   still valid! record length 3 (best=3). shrink:
+    left→3: [2,4]       sum=6   invalid — stop shrinking
+right=5: [2,4,3]        sum=9   valid! record length 3 (best stays 3). shrink:
+  left→4: [4,3]         sum=7   still valid! record length 2 (best=2). shrink:
+    left→5: [3]         sum=3   invalid — stop shrinking
+
+end of array: best = 2, achieved by [4, 3]
 ```
 
+Notice the answer doesn't reveal itself until the very last window — an
+earlier-looking "best so far" (3, from `[1,2,4]`) is not the final
+answer, which is exactly why the loop can't stop early just because it
+found *a* valid window; it has to keep sliding `right` to the end.
 (Minimum Size Subarray Sum works this exact trace in full, with the
 running best tracked precisely.)
 
@@ -41,24 +52,43 @@ running best tracked precisely.)
 ## Why "expand right, shrink left" is safe — the monotonicity requirement
 
 This only works because of a property worth naming explicitly:
-**growing the window can only make it MORE valid (or keep it valid),
-and shrinking can only make it LESS valid (or keep it valid)** — for
-whatever "valid" means in the problem. Formally: validity is monotonic
-in window size, for a fixed left or a fixed right endpoint.
+**validity is monotonic in window size** — growing the window moves
+validity consistently in one direction, and shrinking moves it
+consistently in the opposite direction, for whatever "valid" means in
+the problem. *Which* direction depends on which kind of condition
+you're checking — and the two templates below are each built for one:
 
-For "sum ≥ target" with non-negative numbers, this is obviously true:
-adding an element can't decrease the sum, so growing never hurts
-validity, and removing an element can't increase it, so shrinking never
-helps. **This is why the technique needs non-negative numbers here** —
-with negative values, a longer window could have a *smaller* sum, and
-the whole one-directional shrink logic collapses (you'd have no
-guarantee that shrinking makes things worse, so you couldn't safely
-stop). Whenever you reach for a dynamic window, ask explicitly: *"if
-this window is invalid, is EVERY larger window (with this same left)
-also invalid? Is every smaller window (with this same right) also
-valid, once I've shrunk enough?"* If you can't answer yes, the
-technique doesn't apply as-is — same discipline as the elimination
-proof from Two Pointers.
+- **Lower-bound conditions** ("sum ≥ target," the `shortest_valid`
+  template's world): growing can only help validity or leave it
+  unchanged; shrinking can only hurt it or leave it unchanged. You grow
+  until valid, then shrink to find the tightest fit.
+- **Upper-bound conditions** ("at most k distinct characters," the
+  `longest_valid` template's world): the direction *flips*. Growing can
+  only hurt validity or leave it unchanged; shrinking can only help it
+  or leave it unchanged. You grow until you break the limit, then
+  shrink just enough to restore it.
+
+For "sum ≥ target" with non-negative numbers, the lower-bound case is
+mechanical: adding an element can't decrease the sum, so growing never
+hurts validity, and removing an element can't increase it, so shrinking
+never helps. **This is why the technique needs non-negative numbers
+here** — with negative values, a longer window could have a *smaller*
+sum, and the whole one-directional shrink logic collapses (you'd have
+no guarantee that shrinking makes things worse, so you couldn't safely
+stop). For "at most k distinct," the upper-bound case is just as
+mechanical in the other direction: adding a character can only add to
+(or leave unchanged) the distinct count, so growing never repairs a
+window that's already broken the limit; removing a character can only
+shrink (or leave unchanged) the count, so shrinking never breaks a
+window that was already valid.
+
+Whenever you reach for a dynamic window, name which case you're in
+first, then ask: for a lower-bound condition, *"is every smaller window
+(same right endpoint) still invalid, and every larger one still
+valid?"*; for an upper-bound condition, ask the same question with
+valid and invalid swapped. If you can't answer yes, the technique
+doesn't apply as-is — same discipline as the elimination proof from Two
+Pointers.
 
 ## The template
 

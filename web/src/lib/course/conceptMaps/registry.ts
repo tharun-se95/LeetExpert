@@ -5,6 +5,7 @@ import { hashTablesConceptMap } from "./hashTables";
 import { linkedListsConceptMap } from "./linkedLists";
 import { mathForDsaConceptMap } from "./mathForDsa";
 import { queuesConceptMap } from "./queues";
+import { slidingWindowConceptMap } from "./slidingWindow";
 import { stacksConceptMap } from "./stacks";
 import { stringsConceptMap } from "./strings";
 import { twoPointersConceptMap } from "./twoPointers";
@@ -22,6 +23,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   stacks: stacksConceptMap,
   queues: queuesConceptMap,
   "two-pointers": twoPointersConceptMap,
+  "sliding-window": slidingWindowConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {

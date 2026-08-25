@@ -28,7 +28,10 @@ from scratch throws that shared work away.
 
 A window moving one step right doesn't change much: it drops its
 leftmost element and picks up one new element on the right. So don't
-recompute the sum — **update** it:
+recompute the sum — **update** it. It's the same move as dragging a
+crop box across an image one pixel at a time: you don't re-crop from
+scratch on every nudge, you discard the thin strip that fell off the
+left edge and paint in the thin strip that entered on the right.
 
 > new_sum = old_sum − (element leaving) + (element entering)
 
@@ -110,7 +113,12 @@ one, add one" update:
   leaving character's count, increment the entering one — O(1) if you
   track "how many distinct counts are currently correct" alongside the
   map, as the Permutation in String problem will show.
-- **XOR / product** (with care for zero): symmetric to sum.
+- **XOR / product** (with care for zero): symmetric to sum, with one
+  trap sum doesn't have — sum's inverse operation is subtraction, always
+  safe, but product's inverse is division, and dividing by a leaving
+  element of 0 is undefined. A running product needs a special case (or
+  a count of how many zeros are currently in the window) that a running
+  sum never does.
 
 ```quiz
 {

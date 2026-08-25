@@ -29,7 +29,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | big-o | why-efficiency-matters, big-o-notation, common-complexity-classes, input-dependency-best-worst-average, analyzing-loops-api-complexity, analyzing-recursion-tree-method, amortized-analysis-dynamic-arrays, space-complexity, complexity-drills | x | | | | x |
 | arrays | contiguous-memory, dynamic-arrays, in-place-foundations, stable-compaction-cyclic-placement | x | | | | x |
 | two-pointers | converging-pointers, partition-pointers | x | | | | x |
-| sliding-window | dynamic-windows, fixed-size-windows | | | | | |
+| sliding-window | dynamic-windows, fixed-size-windows | x | | | | x |
 | strings | strings-in-memory, character-arithmetic-count-arrays, string-apis-scan-costs-idioms | x | | | | x |
 | linked-lists | build-a-linked-list, nodes-and-pointers, pointer-surgery | x | | | | x |
 | stacks | lifo-and-the-call-stack, matching-and-nesting, monotonic-stack | x | | | | x |
@@ -244,3 +244,21 @@ referenced but the prose never actually traced) and a laundry-sorting
 analogy for the three-zone setup. See
 `docs/superpowers/plans/analogies/two-pointers.md`. Concept map
 hand-authored; media deferred to Phase 2.
+
+**sliding-window: Phase 1 complete (2026-08-25).** Curriculum-designer
+review (well-calibrated this time — no over-recommended lessons)
+confirmed 2 lessons and the current ordering, and suggested only two
+small light-touch additions (folded into existing prose rather than new
+subsections). Content-quality review caught two real bugs, both
+independently verified: Dynamic Windows' worked trace stopped one step
+early and reported a "best so far" (3) that was not the actual answer —
+running the algorithm on the full array shows the true minimum is 2,
+found at the very last window; and the lesson's monotonicity claim
+("growing always helps validity, shrinking always hurts it") was stated
+as universal but is backwards for the module's own upper-bound
+templates (hand-verified via "at most 2 distinct" on `a -> ab -> abc ->
+bc`) — rewritten to state both directions explicitly, tied to the two
+templates the lesson already presents. Also added a division-by-zero
+trap note for running-product windows and two analogies (cropping tool,
+inchworm). See `docs/superpowers/plans/analogies/sliding-window.md`.
+Concept map hand-authored; media deferred to Phase 2.
