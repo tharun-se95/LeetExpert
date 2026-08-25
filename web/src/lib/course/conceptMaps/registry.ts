@@ -6,6 +6,7 @@ import { gettingStartedConceptMap } from "./gettingStarted";
 import { graphsConceptMap } from "./graphs";
 import { hashTablesConceptMap } from "./hashTables";
 import { heapsConceptMap } from "./heaps";
+import { intervalsConceptMap } from "./intervals";
 import { linkedListsConceptMap } from "./linkedLists";
 import { mathForDsaConceptMap } from "./mathForDsa";
 import { binarySearchConceptMap } from "./binarySearch";
@@ -40,6 +41,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   heaps: heapsConceptMap,
   tries: triesConceptMap,
   graphs: graphsConceptMap,
+  intervals: intervalsConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {

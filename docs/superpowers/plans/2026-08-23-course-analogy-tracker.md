@@ -42,7 +42,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | heaps | heap-property-and-array-representation, heapify-sift-up-and-sift-down | x | | | | x |
 | tries | trie-structure-and-prefix-search | x | | | | x |
 | graphs | dfs-and-bfs-on-graphs, graph-representation, minimum-spanning-trees, shortest-paths, topological-sort, union-find | x | | | | x |
-| intervals | sorting-intervals-and-the-sweep | | | | | |
+| intervals | sorting-intervals-and-the-sweep | x | | | | x |
 | prefix-sum | prefix-sum-2d, prefix-sum-basics, prefix-sum-hash-map | | | | | |
 | matrix | grid-coordinates, traversal-orders, in-place-transformations | | | | | |
 | greedy | greedy-choice-and-proving-correctness | | | | | |
@@ -437,3 +437,30 @@ added (index cards for adjacency lists, dark tunnels with chalk for the
 visited set, playground hand-holding chains for Union-Find). See
 `docs/superpowers/plans/analogies/graphs.md`. Concept map hand-authored;
 media deferred to Phase 2.
+
+**intervals: Phase 1 complete (2026-08-25).** Curriculum-designer review
+confirmed 1 concept lesson + 5 problem lessons is right, and all 5
+problem lessons self-teach. Accepted a reordering (Meeting Rooms moved
+to lead the problem set, ahead of Insert Interval / Non-overlapping
+Intervals / Burst Balloons) on its own simpler-first merit, but rejected
+the reviewer's stated justification for it — the review claimed this
+fixed "a major regression" because the simpler variant followed Meeting
+Rooms II (Module 14); checked `course/intervals/meeting-rooms.md`
+directly and found it already contains an explicit "Meeting Rooms vs.
+Meeting Rooms II — why the harder one needs more" section, proving the
+course deliberately revisits the simpler problem to teach
+machinery-matching, not redundant repetition. Also rejected a new
+"Point Event sweep" lesson suggestion as genuine duplication of Meeting
+Rooms II. Content-quality review added a sustained shared-movie-
+screening-room analogy across three points in the concept lesson
+(touching-endpoint ambiguity, and the end-sort-greedy choice), plus a
+hand-verified adjacent-neighbour trace (`[1,3]`, `[5,8]`, `[10,12]`,
+confirmed in Python) showing why sorting collapses all-pairs checking to
+one backward step. Added a k-way-merge/heap callback note to Employee
+Free Time (genuinely the same trade-off as Merge k Sorted Lists, Module
+19). Rejected three claims: a "double-complexity restatement" tightening
+claim (table and prose serve different reading modes), a "walk
+left-to-right" phrasing claim (consistent with Module 14's own usage),
+and a derivation-gap claim on a trivial De Morgan's-law inequality flip.
+See `docs/superpowers/plans/analogies/intervals.md`. Concept map
+hand-authored; media deferred to Phase 2.

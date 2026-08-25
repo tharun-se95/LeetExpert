@@ -192,6 +192,20 @@ ever relaxed.
   "why": "Flattening is O(n) where n is the total interval count across all employees. Sorting is O(n log n) and dominates. Merging and gap-finding are each a single O(n) linear pass. Space is O(n) for the flattened/merged lists."
 }
 ```
+
+Worth naming the alternative, even though it's not needed here: each
+employee's own schedule arrives *already sorted*, so flattening and
+re-sorting everything from scratch is throwing that structure away.
+This is exactly the k-way merge shape from Merge k Sorted Lists (Module
+19) — a min-heap holding one "current" interval per employee, always
+popping the globally-earliest one and pushing that employee's next
+interval, gives the same fully-merged order in `O(n log k)` instead of
+`O(n log n)`, where `k` is the number of employees. It's a genuine
+improvement when `k` is small relative to `n` (few employees, each with
+long schedules) and not worth the added machinery otherwise — the
+flatten-and-sort version here is simpler to write and reason about, and
+the two are the same trade-off Merge k Sorted Lists already walked
+through.
 `````
 
 ## Variants

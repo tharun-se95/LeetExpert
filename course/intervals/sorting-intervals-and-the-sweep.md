@@ -25,6 +25,16 @@ sweep itself (walk the sorted sequence maintaining running state).
 
 ## The overlap condition, derived
 
+Picture a single shared screening room that only ever shows one movie at
+a time, and a stack of requested showtimes to schedule into it. Two
+showtimes "clash" if the room would need to play both at once — and the
+one genuinely ambiguous case is a showtime that ends at the exact
+minute the next one starts: does the room need a gap to reset, or can
+the next audience walk in the instant the last one walks out? Different
+rooms (different problems) answer that differently, and nothing about
+the shape of the showtimes themselves tells you which — it's a rule you
+set.
+
 Take two intervals `a = [a.start, a.end]` and `b = [b.start, b.end]`.
 We want a single boolean that is true exactly when they share at least
 one point. It is easier to characterise when they **don't** overlap,
@@ -94,7 +104,17 @@ Why? After sorting by start, starts only increase as you move right. So
 when you're standing at interval *i* and it doesn't reach back far enough
 to touch what came before, every interval after *i* starts at least as
 late as *i* does — it reaches back even *less*. The past is settled; you
-never have to look backward more than one step. That is exactly the
+never have to look backward more than one step.
+
+Concretely, on showtimes sorted by start — `[1,3]`, `[5,8]`, `[10,12]` —
+check `[5,8]` against the running state left by `[1,3]` (which ends at
+3): `5 > 3`, no overlap, the room is free again before this one begins.
+Now look at `[10,12]`: could it possibly reach back and overlap `[1,3]`,
+which the sweep has already moved past? It starts at 10, and every
+interval sorted after `[5,8]` starts at 5 or later — `[10,12]` can only
+start *later* than `[5,8]` did, never earlier, so if `[5,8]` (start 5)
+already couldn't reach back to `[1,3]` (end 3), `[10,12]` (start 10)
+certainly can't either. That is exactly the
 argument Merge Intervals rested on, and it generalises: **sorting turns a
 question about all pairs into a question about adjacent elements**, and
 adjacent-element questions are answerable in one linear pass. Sorting
@@ -115,7 +135,11 @@ swapping them silently breaks algorithms. The rule of thumb:
   interval that frees up earliest." This is the shape behind
   Non-overlapping Intervals and Burst Balloons later in this module, and
   it is genuinely a greedy strategy (Module 22 will prove why the
-  earliest-ending choice is safe).
+  earliest-ending choice is safe). Back to the screening room: if you
+  want to squeeze in as many separate showings as possible over one day,
+  you always book the one that lets the room out earliest next — a
+  showing that ends sooner frees the room for more showings after it,
+  no matter how long or short it was to begin with.
 
 A concrete contrast. Consider `[[1,100], [2,3], [4,5]]`.
 
