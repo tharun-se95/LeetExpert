@@ -34,6 +34,17 @@ too is an in-place operation only when square.
 
 ## Transpose: reflect across the main diagonal
 
+Picture a square patterned tile, held flat on a table, that you need to
+turn 90° clockwise without ever picking it all the way up — you can
+only slide small pieces of it around on the table's surface. One way to
+do it in two moves: first flip the tile over along its diagonal crease
+(top-left corner to bottom-right corner stays put, everything else
+swaps to its mirror position across that line), then flip each row of
+the now-diagonal-flipped pattern left-to-right. Do both, and the tile
+ends up rotated — without ever lifting it off the table into a second
+tile-sized space. That two-move trick is exactly what this lesson
+proves.
+
 The transpose swaps rows with columns: cell `(i, j)` and cell `(j, i)`
 trade places. Equivalently, it reflects the grid across its **main
 diagonal** (the cells where `i == j`, which stay put). To do it in place,

@@ -17,6 +17,16 @@ rather than asserting it.
 
 ## Row-major layout: how the rows are laid end to end
 
+Picture a single, continuous bookshelf that a librarian fills one shelf
+at a time: every book from shelf 0 goes on first, left to right, then
+every book from shelf 1 continues immediately after — there's no gap,
+no separate shelf-1 shelf sitting somewhere else in the room. If you
+know a shelf holds exactly `C` books, and you want the 3rd book on
+shelf 2, you don't search — you count off "2 full shelves, `C` books
+each, then 3 more steps," and you're standing at the exact book. That
+count is the whole addressing scheme; the rest of this section just
+writes it as arithmetic.
+
 A grid with `R` rows and `C` columns is stored as one contiguous block
 of `R × C` cells, **row by row**: all of row 0's cells first, then all
 of row 1's, and so on. This is called **row-major order** (C, Python
@@ -53,9 +63,12 @@ Two consequences fall out immediately, and both matter later:
   lesson 3 traces back to this.
 - **Walking a full row is cheap; walking a full column is scattered.**
   Consecutive cells in a row (`j`, `j+1`, …) are adjacent in memory;
-  consecutive cells in a column (`i`, `i+1`, …) are `C` cells apart. This
-  is why row-major traversal is the natural default (lesson 2) — it reads
-  memory in the order it's physically laid out.
+  consecutive cells in a column (`i`, `i+1`, …) are `C` cells apart —
+  reading down a column means walking to book 3 on shelf 0, then to book
+  3 on shelf 1, then shelf 2, each stop a full shelf-width away from the
+  last. This is why row-major traversal is the natural default (lesson
+  2) — it reads memory in the order it's physically laid out, one shelf
+  straight through.
 
 ## Bounds checking: the frame around every grid algorithm
 

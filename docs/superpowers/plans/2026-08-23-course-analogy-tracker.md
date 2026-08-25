@@ -44,7 +44,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | graphs | dfs-and-bfs-on-graphs, graph-representation, minimum-spanning-trees, shortest-paths, topological-sort, union-find | x | | | | x |
 | intervals | sorting-intervals-and-the-sweep | x | | | | x |
 | prefix-sum | prefix-sum-2d, prefix-sum-basics, prefix-sum-hash-map | x | | | | x |
-| matrix | grid-coordinates, traversal-orders, in-place-transformations | | | | | |
+| matrix | grid-coordinates, traversal-orders, in-place-transformations | x | | | | x |
 | greedy | greedy-choice-and-proving-correctness | | | | | |
 | dynamic-programming | 1d-dp-patterns, 2d-dp-patterns, from-recursion-to-memoization, tabulation-and-space-optimization, knapsack-style-dp | | | | | |
 | math-for-dsa | logarithms-and-exponents, summations-and-series, modular-arithmetic, divisibility-primes-gcd, counting-and-combinatorics, math-drills | x | | | | x |
@@ -484,4 +484,22 @@ clarify. Independently re-verified every numeric trace already in the
 five problem lessons (Subarray Sum Equals K, Contiguous Array, Kadane's,
 both Range Sum Query variants) — all correct as shipped, no bugs found.
 See `docs/superpowers/plans/analogies/prefix-sum.md`. Concept map
+hand-authored; media deferred to Phase 2.
+
+**matrix: Phase 1 complete (2026-08-25).** Curriculum-designer review
+confirmed 3 concept lessons + 6 problem lessons is right, all 6
+problem lessons self-teach, and each explicitly names the concept
+lesson it applies — confirming the current problem order (concept-
+reinforcing problems first, then increasingly composite applications)
+is intentional. No reorder or new lesson needed. Unlike Prefix Sum,
+this module's subject matter is genuinely spatial, so it got the full
+sustained-analogy treatment: a continuous bookshelf for row-major
+addressing (with a callback explaining why column traversal is
+scattered), peeling a picture frame's tile rings for spiral traversal
+(with a callback into the guard-bug explanation), and a flat square
+tile turned by two table-bound moves for the transpose+reverse
+rotation proof. Independently re-verified the rotation proof's
+coordinate claim and the row-major offset formula against the
+lessons' own worked examples — both correct, no bugs found. See
+`docs/superpowers/plans/analogies/matrix.md`. Concept map
 hand-authored; media deferred to Phase 2.

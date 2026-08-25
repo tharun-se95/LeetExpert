@@ -164,6 +164,15 @@ exactly once, plus a linear number of rejected pairs.
 
 ## Spiral traversal: the boundary-shrinking technique
 
+Picture peeling a square picture frame apart one ring at a time: first
+you lift off the outermost ring of tiles — across the top, down the
+right side, along the bottom, up the left side — and once that ring is
+gone, what's left is a smaller, complete rectangle of tiles, with its
+own outermost ring ready to be peeled the same way. Nothing about the
+inner rectangle knows or cares that an outer ring used to surround it;
+the peel just repeats on whatever's left until nothing remains. That's
+spiral traversal: walk the outer ring, shrink to what's left, repeat.
+
 Spiral order walks the outer ring of the grid clockwise — top row left→
 right, right column top→bottom, bottom row right→left, left column
 bottom→top — then does the same for the next ring in, and so on until
@@ -239,13 +248,15 @@ Two things make this correct rather than *almost* correct:
   rectangle to the next.
 - **The two inner guards (`if top <= bottom`, `if left <= right`) are not
   decoration.** After shrinking `top` and `right`, the remaining strip can
-  be a single row or single column. Without the bottom-row guard, a
-  single remaining row would get walked left→right by the top-row pass and
-  *again* right→left by the bottom-row pass — every cell duplicated. The
-  guard asks "is there still a distinct bottom row / left column?" before
-  walking it. This is the classic spiral bug, and it only shows up on
-  non-square or odd-dimension grids, which is exactly why it's easy to
-  miss in casual testing.
+  be a single row or single column — the "ring" left to peel has
+  collapsed to a single line of tiles with no inside left at all. Without
+  the bottom-row guard, that single remaining row would get walked
+  left→right by the top-row pass and *again* right→left by the
+  bottom-row pass — every cell duplicated, as if you peeled the same last
+  strip of tiles twice. The guard asks "is there still a distinct bottom
+  row / left column?" before walking it. This is the classic spiral bug,
+  and it only shows up on non-square or odd-dimension grids, which is
+  exactly why it's easy to miss in casual testing.
 
 Every cell is appended exactly once and the four boundaries collectively
 sweep the whole grid, so spiral traversal is **O(R·C)** time and — beyond
