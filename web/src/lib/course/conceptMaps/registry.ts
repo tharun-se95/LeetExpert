@@ -12,6 +12,7 @@ import { linkedListsConceptMap } from "./linkedLists";
 import { mathForDsaConceptMap } from "./mathForDsa";
 import { matrixConceptMap } from "./matrix";
 import { binarySearchConceptMap } from "./binarySearch";
+import { dynamicProgrammingConceptMap } from "./dynamicProgramming";
 import { prefixSumConceptMap } from "./prefixSum";
 import { queuesConceptMap } from "./queues";
 import { recursionBacktrackingConceptMap } from "./recursionBacktracking";
@@ -48,6 +49,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   graphs: graphsConceptMap,
   intervals: intervalsConceptMap,
   greedy: greedyConceptMap,
+  "dynamic-programming": dynamicProgrammingConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {

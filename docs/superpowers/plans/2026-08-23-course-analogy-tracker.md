@@ -46,7 +46,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | prefix-sum | prefix-sum-2d, prefix-sum-basics, prefix-sum-hash-map | x | | | | x |
 | matrix | grid-coordinates, traversal-orders, in-place-transformations | x | | | | x |
 | greedy | greedy-choice-and-proving-correctness | x | | | | x |
-| dynamic-programming | 1d-dp-patterns, 2d-dp-patterns, from-recursion-to-memoization, tabulation-and-space-optimization, knapsack-style-dp | | | | | |
+| dynamic-programming | 1d-dp-patterns, 2d-dp-patterns, from-recursion-to-memoization, tabulation-and-space-optimization, knapsack-style-dp | x | | | | x |
 | math-for-dsa | logarithms-and-exponents, summations-and-series, modular-arithmetic, divisibility-primes-gcd, counting-and-combinatorics, math-drills | x | | | | x |
 
 **hash-tables: fully done (2026-08-24).** Restructured to 6 lessons per
@@ -521,3 +521,28 @@ hand-computed), and the coin-change counterexample's arithmetic — all
 correct, no bugs found. See
 `docs/superpowers/plans/analogies/greedy.md`. Concept map
 hand-authored; media deferred to Phase 2.
+
+**dynamic-programming: Phase 1 complete (2026-08-25).** Curriculum-
+designer review confirmed 5 concept lessons + 10 problem lessons is
+right and all 10 self-teach. The problem order is a difficulty
+progression rather than a strict replay of concept-lesson order (Coin
+Change's unbounded knapsack appears well before Partition Equal Subset
+Sum's 0/1 knapsack) — checked every problem's cross-references and
+confirmed this is intentional, not an oversight, so no reorder was
+made. No new lesson needed; House Robber III's tree-DP capstone
+correctly frames itself as a fusion of Module 17 and this module's
+rob-or-skip choice rather than a gap. Like Greedy, this module is
+proof/derivation-heavy, so content-quality review added no analogy
+anywhere, by design. Independently hand-traced House Robber III's own
+worked example node by node to confirm the pair-return recurrence
+(root gives rob_this=7, skip_this=6, matching the stated answer), and
+checked Edit Distance's base cases and the knapsack row-index
+distinction directly — all correct, no bugs found. See
+`docs/superpowers/plans/analogies/dynamic-programming.md`. Concept map
+hand-authored; media deferred to Phase 2.
+
+**All Phase 1 modules complete.** Every module in the curriculum has
+now had a curriculum-designer review and a content-quality review, per
+the standing instruction to work through the full module list
+autonomously. Phase 2 (audio, video, infographic) remains open for all
+modules except hash-tables.
