@@ -40,7 +40,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | binary-trees | bfs-level-order, dfs-traversals, top-down-vs-bottom-up-recursion, tree-terminology-and-representation | x | | | | x |
 | bst | balance-and-why-it-matters, bst-invariant-and-operations | x | | | | x |
 | heaps | heap-property-and-array-representation, heapify-sift-up-and-sift-down | x | | | | x |
-| tries | trie-structure-and-prefix-search | | | | | |
+| tries | trie-structure-and-prefix-search | x | | | | x |
 | graphs | dfs-and-bfs-on-graphs, graph-representation, minimum-spanning-trees, shortest-paths, topological-sort, union-find | | | | | |
 | intervals | sorting-intervals-and-the-sweep | | | | | |
 | prefix-sum | prefix-sum-2d, prefix-sum-basics, prefix-sum-hash-map | | | | | |
@@ -393,4 +393,24 @@ wrong swap-count in an earlier draft before it shipped). Two sustained
 analogies added (theater seating for the heap property and array
 packing, weighted boxes on a shelf for sift-up/sift-down). See
 `docs/superpowers/plans/analogies/heaps.md`. Concept map hand-authored;
+media deferred to Phase 2.
+
+**tries: Phase 1 complete (2026-08-25).** Curriculum-designer review
+confirmed 1 lesson is right and all 4 problem lessons self-teach their
+extension of the base trie. Applied a sound ordering improvement:
+swapped Word Search II and Longest Word in Dictionary so the pure-trie
+traversal problem precedes the higher-complexity grid+trie capstone.
+Rejected two "add a new problem lesson" scope-gap suggestions (trie
+deletion, router-style longest-prefix-match) as out of scope for a
+content pass. Content-quality review caught and fixed a real bug: the
+lesson claimed a hash set's prefix-query cost is O(n·L) (L = word
+length), but checking a prefix only costs up to the prefix's own length
+— verified in Python, corrected to O(n·P) in all four places the claim
+appeared (prose, payoff paragraph, complexity table, quiz option). Added
+independently-verified concrete traces for the is_end_of_word flag and
+the early-abort search case, concrete numbers for the array-overhead
+claim (25/26 ≈ 96% wasted on a 26-letter alphabet), and a light
+illustrative example for the memory-crossover claim. One sustained
+hiking-trail analogy added across the whole lesson. See
+`docs/superpowers/plans/analogies/tries.md`. Concept map hand-authored;
 media deferred to Phase 2.

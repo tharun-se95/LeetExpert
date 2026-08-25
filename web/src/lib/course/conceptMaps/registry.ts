@@ -14,6 +14,7 @@ import { slidingWindowConceptMap } from "./slidingWindow";
 import { sortingConceptMap } from "./sorting";
 import { stacksConceptMap } from "./stacks";
 import { stringsConceptMap } from "./strings";
+import { triesConceptMap } from "./tries";
 import { twoPointersConceptMap } from "./twoPointers";
 import type { MindMapNode } from "./types";
 
@@ -36,6 +37,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   "binary-trees": binaryTreesConceptMap,
   bst: bstConceptMap,
   heaps: heapsConceptMap,
+  tries: triesConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {
