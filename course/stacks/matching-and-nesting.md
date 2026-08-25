@@ -34,6 +34,19 @@ what makes implementations correct rather than lucky:
 2. **Closer with nothing open** — pop on empty (`())`... the last `)`).
 3. **Leftover obligations** — scan ends, stack non-empty (`((`).
 
+Trace failure mode 1 on `([)]`: read `(`, push — stack `['(']`. Read `[`,
+push — stack `['(', '[']`. Read `)` — pop the top, `[`, and compare: `[`
+is not the partner of `)` (that's `]`) — mismatch, halt, reject. The
+counts of `(`/`)` and `[`/`]` are each balanced in this string; only the
+*order* is wrong, which is exactly the property a stack — and only a
+stack — checks. (For a **single** bracket type, order and count collapse
+into the same fact: a running counter that increments on open,
+decrements on close, and must never go negative — the "closer with
+nothing open" check — suffices, because there's only one kind of
+obligation to track. Multiple types need the stack because "was the most
+recent obligation THIS type" is an ordering question a bare count can't
+answer.)
+
 The Valid Parentheses problem asks you to turn exactly this into code;
 its quiz will ask which failure mode each broken input triggers.
 
@@ -61,7 +74,9 @@ your hand reach for a stack before your brain finishes the sentence.
 
 Remove adjacent duplicate pairs repeatedly: `"abbaca"` → remove `bb` →
 `"aaca"` → remove `aa` → `"ca"`. The naive re-scan-after-each-removal is
-O(n²); the stack sees it in one pass:
+O(n²): each removal rewrites the string (splice out two characters, copy
+the rest) at O(n), and up to O(n) removals can cascade — O(n) removals ×
+O(n) per rewrite = O(n²). The stack sees it in one pass:
 
 ````tabs
 ```python
@@ -95,6 +110,24 @@ exposes `aa`): the stack top after a pop is exactly the character that
 became adjacent — the cascade is *automatic*, no re-scan. The stack's
 survivors are always "the processed prefix after all cancellations," an
 invariant that makes the O(n) bound and the correctness one argument.
+
+Trace it character by character on `"abbaca"` to see the cascade happen
+without ever looking backward:
+
+| Read | Top before | Action | Stack after |
+| --- | --- | --- | --- |
+| `a` | (empty) | no match — push | `[a]` |
+| `b` | `a` | no match — push | `[a, b]` |
+| `b` | `b` | match — pop | `[a]` |
+| `a` | `a` | match — pop | `[]` |
+| `c` | (empty) | no match — push | `[c]` |
+| `a` | `c` | no match — push | `[c, a]` |
+
+Popping the second `b` exposes `a` as the new top — precisely the
+character that must compare against the incoming `a` next. Result:
+`"ca"`. Think of it like a stack of cafeteria trays: pulling the top tray
+off doesn't just remove one tray, it instantly puts whatever was
+underneath into "top" position — no separate step required to notice it.
 
 ```complexity
 {

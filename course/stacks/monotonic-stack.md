@@ -22,6 +22,15 @@ unknown**. Maintain one invariant:
 
 > The stack's values are **strictly decreasing** from bottom to top.
 
+Why that invariant survives every step: when element x arrives, anything
+on top with value < x is popped and answered right there — so whatever
+is left on the stack after processing x is, by construction, either
+larger than x or was never compared to it. Nothing smaller can be sitting
+above something larger, because the moment a smaller element would end
+up above a larger one, the smaller one gets evaluated against every new
+arrival and popped the instant something bigger shows up. The invariant
+isn't assumed — it's enforced fresh by every single push.
+
 When element x arrives, every index on top with value < x has just found
 its answer — x is the first bigger thing to its right (nothing between
 them was bigger, or it would have popped them earlier). Pop them,
@@ -34,6 +43,14 @@ stack:   [2, 1]   ← 5 arrives   pop 1 (answer: 5), pop 2 (answer: 5)
          [5]      ← push 5      5 waits; 3 arrives, 3 < 5: just push
          [5, 3]   ← end         5 and 3 never found answers: none exist
 ```
+
+Think of a monotonic decreasing stack as a row of people's sightlines at
+a concert: once someone taller stands in front of you, everyone shorter
+than that person — anywhere between you and them — is now permanently
+blocked from view and irrelevant to what you can see next. Only
+progressively taller people ahead of you ever matter again; that's
+exactly why shorter survivors get popped the moment something bigger
+arrives, and why what remains on the stack is always decreasing.
 
 ````tabs
 ```python
@@ -85,8 +102,12 @@ the sum, not the step. O(n) total, honestly.
 
 ## Choosing your flavor
 
-Four questions, four settings of two knobs — the scan direction stays
-left-to-right; what changes is the pop comparison and what you record:
+Four questions, four settings of two knobs. This course fixes the scan
+direction at left-to-right for all four and varies only the other two
+knobs — it's a simplifying convention, not a mathematical requirement;
+you could equally scan right-to-left and swap which "previous/next"
+questions read at push versus pop. Holding one knob still keeps the
+mental model consistent across all four variants, which is the point:
 
 | Question | Stack kept… | Pop when incoming is… |
 | --- | --- | --- |

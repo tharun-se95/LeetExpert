@@ -52,8 +52,11 @@ the lesson is what the discipline is **for**.
 The restriction seems like pure loss until you notice what it models:
 **interrupted work**. When task A pauses to do task B, and B pauses for
 C — completions must come back C, B, A. Most-recently-interrupted
-resumes first. Any process with that shape *is* a stack, whether you
-allocate one or not:
+resumes first. Think of a stack of physical paperwork on a desk: pull a
+new document on top of the one you're working on, and you can't touch
+the original again until the new one is cleared off — the desk enforces
+LIFO whether you intend it to or not. Any process with that shape *is* a
+stack, whether you allocate one or not:
 
 - a function calls a function calls a function — returns unwind in
   reverse;
@@ -124,9 +127,31 @@ function countDownIter(n: number): void {
 
 The trade: recursion gets you the compiler's bookkeeping for free but
 inherits the runtime's depth limit; an explicit stack costs a few lines
-and moves the memory to the heap where it can grow. In Stage 3, DFS
-will be presented both ways — and they are *the same algorithm*,
-differing only in who owns the stack.
+and moves the memory to the heap where it can grow. The depth limit is a
+direct consequence of where each one lives: the call stack is a small,
+fixed-size memory region the OS reserves per thread at startup — run out
+and you crash (`RecursionError` / "Maximum call stack size exceeded"), no
+matter how much RAM is free. The heap has no such reservation; it's a
+dynamic pool bounded only by whatever memory the system actually has.
+Trace `count_down(3)` both ways to see the same four frames living in two
+different places:
+
+- **Implicit (recursive):** call `count_down_rec(3)` — frame `n=3` pushed.
+  It calls `count_down_rec(2)` — frame `n=2` pushed on top. That calls
+  `count_down_rec(1)` — frame `n=1` pushed. That calls
+  `count_down_rec(0)`, the base case — frame `n=0` pushed, then
+  immediately returns and pops. The other three frames unwind in reverse:
+  `n=1` pops, `n=2` pops, `n=3` pops. Four pushes, four pops, entirely
+  managed by the runtime.
+- **Explicit (iterative):** `work = [3]`. Pop `3` (`work = []`); since
+  `3 > 0`, push `2` (`work = [2]`). Pop `2` (`work = []`); push `1`
+  (`work = [1]`). Pop `1` (`work = []`); push `0` (`work = [0]`). Pop `0`
+  (`work = []`); `0 > 0` is false, nothing pushes. Loop ends on the empty
+  list. Same four pushes, four pops — just on a list you control instead
+  of frames the runtime controls.
+
+In Stage 3, DFS will be presented both ways — and they are *the same
+algorithm*, differing only in who owns the stack.
 
 ```complexity
 {

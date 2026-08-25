@@ -32,7 +32,7 @@ a row with only Prose/Mind Map checked as incomplete for Phase 1 purposes.
 | sliding-window | dynamic-windows, fixed-size-windows | | | | | |
 | strings | strings-in-memory, character-arithmetic-count-arrays, string-apis-scan-costs-idioms | x | | | | x |
 | linked-lists | build-a-linked-list, nodes-and-pointers, pointer-surgery | x | | | | x |
-| stacks | lifo-and-the-call-stack, matching-and-nesting, monotonic-stack | | | | | |
+| stacks | lifo-and-the-call-stack, matching-and-nesting, monotonic-stack | x | | | | x |
 | queues | deques-and-monotonic, fifo-basics, ring-buffer | | | | | |
 | binary-search | binary-search-on-the-answer, boundary-search, the-invariant-template | | | | | |
 | sorting | baseline-sorts, linear-time-sorts, merge-sort-lower-bound, quicksort-partitioning | | | | | |
@@ -186,3 +186,21 @@ lengths 1-8 showed the opposite (crashes on odd-length, silently survives
 even-length), so the note was rewritten around the verified, more
 pedagogically useful "silent parity-dependent bug" framing instead.
 Concept map hand-authored; media deferred to Phase 2.
+
+**stacks: Phase 1 complete (2026-08-25).** Curriculum-designer review
+recommended expanding 3 lessons to 5 (adding "Expression Evaluation &
+Postfix Notation" and "State-Tracking & Auxiliary Stacks") — rejected
+after verifying the problem lessons it cited (Evaluate Reverse Polish
+Notation, Min Stack) already contain a full derivation section teaching
+exactly that content, matching the established problem-lessons-self-teach
+pattern. Also rejected its claim that the recursion-to-iteration example
+in Lesson 1 is premature — `big-o` (module 2) precedes `stacks` (module
+8) by six modules and already teaches recursion-tree analysis;
+`recursion-backtracking` is module 16. Content-quality review added a
+call-stack-vs-heap depth-limit derivation, a hand-verified `count_down(3)`
+trace, an O(n²) derivation for naive bracket-cascade removal, a `([)]`
+mismatch trace, a full character-by-character `"abbaca"` cascade table, a
+strengthened monotonic-stack invariant argument, and 3 accepted analogies
+(paperwork desk, cafeteria trays, concert sightlines) alongside 2
+rejected ones. See `docs/superpowers/plans/analogies/stacks.md`. Concept
+map hand-authored; media deferred to Phase 2.

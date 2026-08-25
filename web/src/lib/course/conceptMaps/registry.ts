@@ -4,6 +4,7 @@ import { gettingStartedConceptMap } from "./gettingStarted";
 import { hashTablesConceptMap } from "./hashTables";
 import { linkedListsConceptMap } from "./linkedLists";
 import { mathForDsaConceptMap } from "./mathForDsa";
+import { stacksConceptMap } from "./stacks";
 import { stringsConceptMap } from "./strings";
 import type { MindMapNode } from "./types";
 
@@ -16,6 +17,7 @@ export const CONCEPT_MAPS: Record<string, MindMapNode> = {
   strings: stringsConceptMap,
   "hash-tables": hashTablesConceptMap,
   "linked-lists": linkedListsConceptMap,
+  stacks: stacksConceptMap,
 };
 
 export function getConceptMap(moduleSlug: string): MindMapNode | undefined {
