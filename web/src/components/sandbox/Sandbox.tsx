@@ -886,12 +886,26 @@ function IdeConsole({ results }: { results: CaseResult[] | null }) {
   const withLogs = (results ?? []).filter((r) => r.logs.length > 0);
 
   if (withLogs.length === 0) {
+    const neverRan = results === null;
     return (
-      <div className="flex min-h-0 flex-1 items-center justify-center px-6 text-center">
-        <p className="text-[0.75rem] text-muted">
-          {results === null
-            ? "Run your code to see print()/console.log() output here."
-            : "No output. Add a print() or console.log() to see it here."}
+      // The min-height belongs to the empty state, not the shared results
+      // wrapper: that wrapper is deliberately content-sized so a two-line
+      // test result no longer gets stretched into a cavernous panel. Only
+      // this branch has nothing to size itself by, so only it asks for room.
+      <div className="flex min-h-[9rem] flex-1 flex-col items-center justify-center gap-2 px-6 py-8 text-center">
+        <span
+          aria-hidden
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-surface text-muted"
+        >
+          <TerminalSquare size={16} />
+        </span>
+        <p className="text-[0.8rem] font-medium text-foreground">
+          {neverRan ? "No output yet" : "Nothing printed"}
+        </p>
+        <p className="max-w-[24rem] text-[0.75rem] leading-relaxed text-muted">
+          {neverRan
+            ? "Run your code — anything you print() or console.log() lands here, grouped by case."
+            : "Your code ran without printing anything. Add a print() or console.log() to trace what it is doing."}
         </p>
       </div>
     );
