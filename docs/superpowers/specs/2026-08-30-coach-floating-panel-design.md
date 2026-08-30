@@ -137,11 +137,13 @@ Concrete changes within the existing system:
 
 - Header: larger mark icon, tighter title/subtitle spacing — more confident
   now that it isn't fighting a narrow rail width.
-- Message thread: bubble and avatar sizing nudged up slightly for the wider
-  panel; otherwise the same visual language (user bubbles on `bg-surface`,
-  assistant replies as undecorated prose with the mark avatar, diagnosis
-  cards as a left-rule note) carries over unchanged — it was already right,
-  just cramped.
+- Message thread: unchanged. The visual language (user bubbles on
+  `bg-surface`, assistant replies as undecorated prose with the mark avatar,
+  diagnosis cards as a left-rule note) is already right, and the floating
+  panel at 26rem is only marginally wider than the rail it replaces (the
+  rail took 38% of the IDE column, ≈24rem at a 1440px viewport), so there is
+  no "now it has room" justification for resizing anything here. Changing it
+  would be churn.
 - Composer: input pill goes fully rounded (`rounded-full`) to match the
   panel's own softer corner radius, rather than the rail's `radius-md`
   rectangle.
