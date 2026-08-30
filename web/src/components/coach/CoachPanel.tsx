@@ -99,9 +99,9 @@ export function CoachPanel({
             */}
             <span
               aria-hidden
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop text-on-pop"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop text-on-pop"
             >
-              <ChatCircle size={17} weight="fill" />
+              <ChatCircle size={19} weight="fill" />
             </span>
             <span className="min-w-0 flex-1">
               <h2 className="font-display text-[1.3rem] font-bold leading-none tracking-tight text-foreground">

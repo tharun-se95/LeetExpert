@@ -52,7 +52,9 @@ export function CoachComposer() {
       <label className="sr-only" htmlFor="coach-input">
         Ask the coach
       </label>
-      <div className="flex items-end gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-code px-2 py-1.5">
+      {/* Fully rounded to echo the floating panel's own softer corners — a
+          sharp 12px rectangle inside a 20px-radius card reads as unfinished. */}
+      <div className="flex items-end gap-1.5 rounded-full border border-border bg-code px-2 py-1.5">
         <textarea
           id="coach-input"
           value={value}
