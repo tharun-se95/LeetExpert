@@ -9,11 +9,11 @@ import { CoachComposer } from "./CoachComposer";
 
 const PRIVACY_KEY = "dsa:coach:privacy-seen";
 
-export function CoachRail({
-  variant = "rail",
+export function CoachPanel({
+  variant = "floating",
   active = true,
 }: {
-  variant?: "rail" | "page";
+  variant?: "floating" | "page";
   /** False while the mobile tab is hidden so we do not steal Code focus. */
   active?: boolean;
 }) {
@@ -30,7 +30,7 @@ export function CoachRail({
     }
   }, []);
 
-  // Rail (desktop) variant: no focus call here at all. It would fire on
+  // Floating (desktop) variant: no focus call here at all. It would fire on
   // EVERY open, including reportRun's automatic first-failure one, which is
   // exactly the focus-steal this was rewritten to stop — the provider's own
   // effect (keyed on an explicit-open counter) owns that decision instead;
@@ -39,7 +39,7 @@ export function CoachRail({
   // Page (mobile) variant: unaffected. Becoming active there already IS an
   // explicit tab switch, so it keeps focusing unconditionally, same as before.
   useEffect(() => {
-    if (variant !== "rail") return;
+    if (variant !== "floating") return;
     registerComposerEl(composerRef.current);
     return () => registerComposerEl(null);
   }, [variant, registerComposerEl]);
@@ -53,7 +53,7 @@ export function CoachRail({
   }, [active, clearUnread, variant]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (e.key === "Escape" && variant === "rail") {
+    if (e.key === "Escape" && variant === "floating") {
       e.stopPropagation();
       closeCoach();
     }
@@ -71,24 +71,25 @@ export function CoachRail({
   return (
     <section
       aria-label="Problem coach"
+      // Non-modal on purpose: no aria-modal and no focus trap, because the
+      // whole point of floating over the workspace is that the editor stays
+      // usable while the coach is open. The mobile variant takes no role —
+      // ProblemWorkspace already supplies role="tabpanel" on its wrapper.
+      role={variant === "floating" ? "dialog" : undefined}
       onKeyDown={onKeyDown}
-      className={cn(
-        "flex h-full min-h-0 flex-col bg-elevated",
-        // Only the rail variant borders visible workspace to its left; the
-        // page (mobile) variant fills its own full-screen tab with nothing
-        // beside it to cast a shadow onto.
-        variant === "rail" ? "border-l border-border shadow-edge-left" : "",
-      )}
+      // No border, radius, or shadow here: CoachOverlay owns the floating
+      // surface's own chrome, and the page (mobile) variant fills its tab.
+      className="flex h-full min-h-0 flex-col bg-elevated"
     >
       <header
         className={cn(
           "flex shrink-0 items-start gap-2.5 border-b border-border px-3",
-          // Only the rail carries the masthead; the mobile branch is a lone
+          // Only the floating panel carries the masthead; the mobile branch is a lone
           // clear button and does not need the height that title earns.
-          variant === "rail" ? "py-2.5" : "py-1.5",
+          variant === "floating" ? "py-2.5" : "py-1.5",
         )}
       >
-        {variant === "rail" ? (
+        {variant === "floating" ? (
           <>
             {/*
               A solid mark rather than an accent-tinted glyph: the same
@@ -129,7 +130,7 @@ export function CoachRail({
         >
           <Trash size={16} weight="bold" />
         </button>
-        {variant === "rail" ? (
+        {variant === "floating" ? (
           <button
             type="button"
             aria-label="Close problem coach"

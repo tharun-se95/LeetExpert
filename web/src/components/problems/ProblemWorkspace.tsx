@@ -25,7 +25,7 @@ import type { SandboxExtraction } from "@/lib/content/extractSandboxFence";
 import type { TabBlock } from "@/lib/content/highlightBlocks";
 import { extractComplexityFromMarkdown } from "@/lib/insight/extractComplexity";
 import { CoachProvider, useCoach } from "@/components/coach/CoachProvider";
-import { CoachRail } from "@/components/coach/CoachRail";
+import { CoachPanel } from "@/components/coach/CoachPanel";
 import { IdeWithCoach } from "@/components/coach/IdeWithCoach";
 
 interface NeighborLink {
@@ -359,7 +359,7 @@ function MobileWorkspace({
           showCoach ? "h-full min-h-0 flex-1" : "hidden",
         )}
       >
-        <CoachRail variant="page" active={showCoach} />
+        <CoachPanel variant="page" active={showCoach} />
       </div>
     </div>
   );

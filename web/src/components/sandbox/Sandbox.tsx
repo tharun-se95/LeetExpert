@@ -16,7 +16,6 @@ import {
   ArrowCounterClockwise as RotateCcw,
   Terminal as TerminalSquare,
   X,
-  ChatCircle,
   CaretUp,
   CaretDown,
 } from "@phosphor-icons/react";
@@ -223,21 +222,6 @@ function SandboxBody({
       </div>
 
       <div className="ml-auto flex shrink-0 items-center gap-1">
-        {variant === "ide" && coach ? (
-          <button
-            type="button"
-            onClick={coach.toggleCoach}
-            aria-label="Toggle problem coach"
-            aria-expanded={coach.open}
-            className="inline-flex h-11 items-center gap-1.5 rounded-[length:var(--radius-md)] px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
-          >
-            <ChatCircle size={12} weight="bold" aria-hidden />
-            Coach
-            {coach.unread ? (
-              <span className="h-1.5 w-1.5 rounded-full bg-pop" aria-hidden />
-            ) : null}
-          </button>
-        ) : null}
         <button
           type="button"
           onClick={restoreStarter}
@@ -749,8 +733,8 @@ function CoachFailBanner() {
     <div
       className={cn(
         "flex items-center justify-between gap-2 border-b border-border bg-info-surface px-3 py-2",
-        // Redundant once the coach rail is already open right next to this
-        // panel — the diagnosis is already on screen. Only at lg: though:
+        // Redundant once the coach panel is already floating over this
+        // workspace — the diagnosis is already on screen. Only at lg: though:
         // `open` is a desktop-panel concept and can be stale from a past
         // session, but on mobile the coach lives behind its own tab, so this
         // banner is still the only thing telling a mobile learner it exists.
