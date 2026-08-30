@@ -595,3 +595,85 @@ No math, derivation, complexity claim, or worked trace was altered
 anywhere in this pass — every edit is prose-only, additive, and placed
 alongside existing correct content. Concept maps unchanged (all already
 registered from Phase 1).
+
+## Phase 2 media generation — in progress (started 2026-08-26)
+
+User decision (2026-08-26): fix the Infographic pipeline before generating
+at scale (see below), then generate Infographic → Video (Cinematic only,
+Explainer excluded per user instruction) → Audio for every module,
+working until each day's quota is exhausted, fully autonomously.
+
+**Infographic style fix.** The 6 original hash-tables infographics (shipped
+in Task A) turned out wildly inconsistent — 6 different palettes/
+illustration styles, none matching the site's flat "Blueprint" design
+system, and none theme-aware (a light-background infographic renders as a
+jarring bright rectangle in dark mode — confirmed live in the browser).
+Root cause: the old prompt template (§3.4) said "in the visual style
+already established (see prior modules' infographics to match)" — a
+vague, visual-reference instruction NotebookLM couldn't actually hold
+consistent. Replaced with a mechanical spec locked to codebase tokens:
+background `#F1F4F9`, ink `#1E293B`, ONE accent per module (its
+`familyTheme.ts` family hex), flat 2D vector line art, explicit "NO drop
+shadows / NO 3D / NO gradients / NO glow / NO photorealism," and "use
+only this lesson's own established analogy, do not invent a new scene."
+Full updated template lives in
+`docs/superpowers/specs/2026-08-24-course-media-rollout.md` §3.4.
+Regenerated all 6 hash-tables infographics with the new prompt — visibly
+consistent (flat silhouette figures, single accent color, no shadows/
+gradients) — verified side-by-side against the originals before rolling
+out further.
+
+**Discovered: three separate daily quotas, not one.** NotebookLM caps
+Infographic generation, Cinematic Video generation, and Audio Overview
+generation independently per account (not per-notebook — confirmed by
+testing a fresh notebook after Infographic capped and getting the same
+"reached your daily limit" on the next attempt). Within Video/Audio,
+there's also a per-notebook **concurrency** cap of 2 simultaneous
+in-flight generations — a 3rd request in the same notebook silently
+no-ops until a slot frees up (not a dialog error, just nothing happens;
+learned to always verify the Studio panel's item count after a submit
+rather than trust the click succeeded).
+
+**Session 1 (2026-08-26) results before all three quotas exhausted:**
+
+| Asset | Modules touched | Count |
+| --- | --- | --- |
+| Infographic | hash-tables (6/6), graphs (6/6), intervals (1/1), tries (1/1), heaps (2/2), bst (2/2), binary-trees (4/4), recursion-backtracking (3/3), sorting (4/4), binary-search (2/3 — `binary-search-on-the-answer` missing, capped mid-request) | 31 |
+| Cinematic Video | graphs only: `graph-representation`, `dfs-and-bfs-on-graphs` (2/6) — account-wide cap hit on the 3rd request, before it could reach any other module | 2 |
+| Audio Overview | graphs (6/6), intervals (1/1), tries (1/1), heaps (2/2), bst (2/2), binary-trees (4/4), recursion-backtracking (3/3), sorting (4/4), binary-search (1/3 — `boundary-search` and `binary-search-on-the-answer` missing, capped mid-module) | 24 |
+
+**Not yet started (Phase 2):** sliding-window, two-pointers, queues,
+stacks, linked-lists, arrays, strings, math-for-dsa, big-o,
+getting-started (all have notebooks already, per Phase 1) — plus greedy,
+dynamic-programming, prefix-sum, matrix, which have **no notebook yet**
+and need one created (paste-sources, same as the Phase 1 onboarding
+flow) before any asset generation can start there.
+
+**Retrieval still blocked exactly as documented in Task A**: every asset
+generated above exists only inside its NotebookLM notebook. Getting them
+into `web/public/media/<module>/` requires the user to download each one
+manually (the notebook UI's download button, or opening the file's
+direct `https://lh3.googleusercontent.com/notebooklm/...` URL in their
+own authenticated browser — tested faster than the download-button
+click-through) and hand the files off. None of that happened this
+session (user signed off before any download pass), so **zero of this
+session's 57 new assets are landed in the repo yet** — this is purely
+generation, not shipped media.
+
+**Next session: resume in this order** — (1) once Infographic quota
+resets, finish `binary-search-on-the-answer`'s infographic and move to
+sliding-window through getting-started, in tracker order; (2) once Video
+quota resets, resume at graphs lesson 3 (`topological-sort`) and
+continue through the same module order — 2 Cinematic videos/day
+account-wide means this is the slow one, budget ~12 days minimum to
+cover all ~65 non-hash-tables concept lessons at 2/day, worth asking the
+user whether that pace is acceptable or whether Explainer should be
+reconsidered; (3) once Audio quota resets, finish `boundary-search` and
+`binary-search-on-the-answer`, then continue past binary-search. Create
+notebooks for greedy/dynamic-programming/prefix-sum/matrix whenever
+convenient (no quota dependency for notebook creation + source upload,
+only for generation). Retrieval (download + compress + land in
+`web/public/media/`) needs a dedicated user-present session for each
+batch of completed assets — recommend batching it per-module or
+per-week rather than per-asset to keep it from being 300+ individual
+downloads.
