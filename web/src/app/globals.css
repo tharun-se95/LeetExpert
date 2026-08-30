@@ -330,6 +330,18 @@ body {
 }
 
 /*
+  Opt-out for a control that delegates its focus ring to a wrapper — the
+  coach composer's textarea, whose pill carries the ring instead. The rule
+  above is a 2px-radius rectangle, which inside a fully round container
+  paints a square in a circle. This lives here rather than as a Tailwind
+  utility because utilities sit in @layer utilities, and unlayered rules
+  like the one above beat layered ones whatever their specificity.
+*/
+:focus-visible[data-focus-ring="none"] {
+  outline: none;
+}
+
+/*
   App-wide scrollbars: thin, accent-ink thumb, transparent track.
   Thumb stays invisible until the pane is hovered or recently scrolled
   (`data-scrolling` from ScrollbarAutoHide). Pure CSS cannot idle-hide

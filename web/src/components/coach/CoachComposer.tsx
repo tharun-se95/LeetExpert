@@ -54,7 +54,14 @@ export function CoachComposer() {
       </label>
       {/* A full pill echoes the floating panel's own softer corners — a sharp
           12px rectangle inside a 20px-radius card reads as unfinished. */}
-      <div className="flex items-end gap-1.5 rounded-full border border-border bg-code px-2 py-1.5">
+      {/*
+        The focus ring lives on the pill, not the textarea. globals.css gives
+        every :focus-visible a 2px-radius outline, which inside a fully round
+        container paints a squared-off rectangle in a circle — so the textarea
+        suppresses its own and the pill lights up instead, matching the shape
+        the learner actually reads as "the input".
+      */}
+      <div className="flex items-end gap-1.5 rounded-full border border-border bg-code p-1.5 transition-shadow has-[textarea:focus]:ring-2 has-[textarea:focus]:ring-accent motion-reduce:transition-none">
         <textarea
           id="coach-input"
           value={value}
@@ -64,14 +71,15 @@ export function CoachComposer() {
           rows={1}
           maxLength={2000}
           placeholder={locked ? "Chat unavailable" : "Ask a question — I will not write the code."}
-          className="min-h-9 flex-1 resize-none bg-transparent px-1 py-1.5 text-sm text-foreground placeholder:text-muted disabled:opacity-60"
+          data-focus-ring="none"
+          className="min-h-9 flex-1 resize-none bg-transparent px-2.5 py-1.5 text-sm text-foreground placeholder:text-muted disabled:opacity-60"
         />
         {pending ? (
           <button
             type="button"
             onClick={stop}
             aria-label="Stop"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border text-foreground hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none"
           >
             <Stop size={15} weight="fill" aria-hidden />
           </button>
@@ -80,7 +88,10 @@ export function CoachComposer() {
             type="submit"
             disabled={locked || !value.trim()}
             aria-label="Ask the coach"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pop text-on-pop transition-opacity disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            // Empty state is a quiet surface chip, not the accent at low
+            // opacity: fading --pop muddies it into an indeterminate grey that
+            // reads as a rendering fault rather than a deliberate off state.
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pop text-on-pop transition-colors disabled:bg-surface disabled:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none"
           >
             <ArrowUp size={16} weight="bold" aria-hidden />
           </button>
