@@ -48,15 +48,13 @@ interface CoachContextValue {
   remaining: number | null;
   resetAt: string | null;
   mobileCoachTick: number;
-  /** Flips the rail — for controls that report their own aria-expanded. */
+  /** Flips the panel — for controls that report their own aria-expanded. */
   toggleCoach: () => void;
-  /** Open-only, for controls whose label promises to open it. */
-  openCoach: () => void;
   /**
-   * CoachRail (desktop variant only) calls this with its composer wrapper
+   * CoachPanel (floating variant only) calls this with its composer wrapper
    * element so this provider can focus the textarea inside it — see the
    * effect on `focusRequest` below for why the focus call lives up here
-   * rather than in CoachRail itself.
+   * rather than in CoachPanel itself.
    */
   registerComposerEl: (el: HTMLElement | null) => void;
   /**
@@ -71,7 +69,7 @@ const CoachContext = createContext<CoachContextValue | null>(null);
 
 const RAIL_KEY = "dsa:coach:rail-open";
 
-/** Below lg the coach is a sheet, not a rail, so the open path differs. */
+/** Below lg the coach is a tab, not a floating panel, so the open path differs. */
 function isDesktopViewport(): boolean {
   return (
     typeof window !== "undefined" &&
@@ -151,15 +149,14 @@ export function CoachProvider({
   const [closeRequest, setCloseRequest] = useState(0);
 
   // Focus the composer only for an EXPLICIT open (focusRequest bumped by
-  // toggleCoach/openCoach below), never for reportRun's automatic
-  // first-failure open. This has to live here rather than in CoachRail's own
-  // mount effect: CoachRail remounts every time the rail opens regardless of
-  // why, so by the time it mounts the distinction is already gone. This
-  // provider never unmounts across that toggle, so the dependency array on
-  // focusRequest is the only place the distinction survives. `isFirstRun`
-  // guards the initial mount — otherwise a rail left open from a previous
-  // session (persisted in localStorage) would steal focus the instant the
-  // page loads.
+  // toggleCoach below), never for reportRun's automatic first-failure open.
+  // This has to live here rather than in CoachPanel's own mount effect:
+  // CoachPanel remounts every time the panel opens regardless of why, so by
+  // the time it mounts the distinction is already gone. This provider never
+  // unmounts across that toggle, so the dependency array on focusRequest is
+  // the only place the distinction survives. `isFirstRun` guards the initial
+  // mount — otherwise a panel left open from a previous session (persisted in
+  // localStorage) would steal focus the instant the page loads.
   const isFirstFocusEffect = useRef(true);
   useEffect(() => {
     if (isFirstFocusEffect.current) {
@@ -256,18 +253,6 @@ export function CoachProvider({
     setUnread(false);
     setMobileCoachTick((n) => n + 1);
   }, [open, setOpen]);
-
-  // Separate from toggleCoach on purpose: a control labelled "Open coach" that
-  // closes an already-open coach is the label lying about what the click does.
-  const openCoach = useCallback(() => {
-    if (isDesktopViewport()) {
-      setOpen(true);
-      setFocusRequest((n) => n + 1);
-      return;
-    }
-    setUnread(false);
-    setMobileCoachTick((n) => n + 1);
-  }, [setOpen]);
 
   const reportRun = useCallback(
     (input: {
@@ -475,7 +460,6 @@ export function CoachProvider({
       resetAt,
       mobileCoachTick,
       toggleCoach,
-      openCoach,
       registerComposerEl,
       registerLauncherEl,
     }),
@@ -503,7 +487,6 @@ export function CoachProvider({
       resetAt,
       mobileCoachTick,
       toggleCoach,
-      openCoach,
       registerComposerEl,
       registerLauncherEl,
     ],

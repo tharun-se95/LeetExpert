@@ -480,7 +480,6 @@ function IdeWorkspace({
     // border is what separates it, not a colour step.
     <div className="flex h-full min-h-0 flex-col bg-elevated">
       {statusBanner}
-      <CoachFailBanner />
       <div
         role="tabpanel"
         id={`${resultsPanelId}-insight`}
@@ -716,40 +715,6 @@ function ResultsRail({
         ) : (
           <CaretUp size={14} weight="bold" aria-hidden />
         )}
-      </button>
-    </div>
-  );
-}
-
-function CoachFailBanner() {
-  const coach = useCoachOptional();
-  if (!coach?.diagnosis || coach.diagnosis.status === "all-passed") return null;
-  const caseLabel =
-    coach.diagnosis.caseName ??
-    (coach.diagnosis.firstFailIndex !== null
-      ? `Case ${coach.diagnosis.firstFailIndex + 1}`
-      : "A case");
-  return (
-    <div
-      className={cn(
-        "flex items-center justify-between gap-2 border-b border-border bg-info-surface px-3 py-2",
-        // Redundant once the coach panel is already floating over this
-        // workspace — the diagnosis is already on screen. Only at lg: though:
-        // `open` is a desktop-panel concept and can be stale from a past
-        // session, but on mobile the coach lives behind its own tab, so this
-        // banner is still the only thing telling a mobile learner it exists.
-        coach.open && "lg:hidden",
-      )}
-    >
-      <p className="min-w-0 text-xs text-info">
-        {caseLabel} failed — Coach has a diagnosis.
-      </p>
-      <button
-        type="button"
-        onClick={coach.openCoach}
-        className="min-h-11 shrink-0 rounded-[length:var(--radius-md)] px-2 text-xs font-medium text-mark hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-      >
-        Open coach
       </button>
     </div>
   );
