@@ -5,6 +5,45 @@ import type { CoachMessage } from "./types";
 
 export type CoachBackend = "ollama" | "anthropic" | "openai";
 
+/**
+ * Carries the upstream HTTP status so the route can tell a refused credential
+ * apart from a blip. Without the status the two are indistinguishable by the
+ * time the error reaches the caller, and the learner gets told to retry
+ * something that cannot succeed.
+ */
+export class CoachModelError extends Error {
+  constructor(
+    message: string,
+    readonly status: number | null,
+  ) {
+    super(message);
+    this.name = "CoachModelError";
+  }
+}
+
+function modelErrorStatus(err: unknown): number | null {
+  if (err instanceof CoachModelError) return err.status;
+  // The AI SDK throws its own error types for the Anthropic/OpenAI backends
+  // and reports the status on statusCode, so duck-type rather than assume
+  // every failure arrives as a CoachModelError.
+  if (err && typeof err === "object") {
+    const raw = err as { statusCode?: unknown; status?: unknown };
+    if (typeof raw.statusCode === "number") return raw.statusCode;
+    if (typeof raw.status === "number") return raw.status;
+  }
+  return null;
+}
+
+/**
+ * 401/403 mean this deployment's credentials were refused — a standing
+ * condition only an operator can clear, never something a learner fixes by
+ * asking again.
+ */
+export function isCredentialFailure(err: unknown): boolean {
+  const status = modelErrorStatus(err);
+  return status === 401 || status === 403;
+}
+
 export function resolveCoachBackend(
   env: NodeJS.ProcessEnv = process.env,
 ): CoachBackend | null {
@@ -105,7 +144,8 @@ async function completeOllama(
   messages: CoachMessage[],
   env: NodeJS.ProcessEnv,
 ): Promise<string> {
-  const res = await fetch(`${ollamaHost(env)}/api/chat`, {
+  const host = ollamaHost(env);
+  const res = await fetch(`${host}/api/chat`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -122,7 +162,13 @@ async function completeOllama(
   });
   if (!res.ok) {
     const detail = await res.text();
-    throw new Error(`Ollama ${res.status}: ${detail.slice(0, 200)}`);
+    // The host is the diagnosis, not decoration: an identical 401 means "bad
+    // cloud key" from ollama.com and "Cloudflare Access rejected us" from a
+    // tunnel. Naming it here is the only place that distinction is still known.
+    throw new CoachModelError(
+      `Ollama ${res.status} from ${host}: ${detail.slice(0, 200)}`,
+      res.status,
+    );
   }
   const data = (await res.json()) as { message?: { content?: string } };
   return data.message?.content ?? "";

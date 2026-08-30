@@ -107,7 +107,12 @@ describe("design tokens", () => {
     expect(hits).toEqual([]);
   });
 
-  it("no Tailwind shadow utilities (depth comes from ink and rules)", () => {
+  it("no Tailwind default shadow scale or arbitrary shadow values (shadow is a token, not a one-off)", () => {
+    // Elevation shadow is real now (globals.css: --shadow-elevation,
+    // --shadow-edge-*), but it goes through the shared .shadow-elevation /
+    // .shadow-edge-* classes only — never Tailwind's built-in shadow-sm/md/
+    // lg/xl/2xl/inner scale and never an arbitrary shadow-[...] value,
+    // both of which would bypass the ink-tinted, per-theme tokens.
     const hits: string[] = [];
     for (const f of FILES) {
       if (f.rel === "app/globals.css") continue;
@@ -117,13 +122,37 @@ describe("design tokens", () => {
     expect(hits).toEqual([]);
   });
 
-  it("no box-shadow / boxShadow lift outside globals.css", () => {
+  it("no raw box-shadow / boxShadow authored outside globals.css", () => {
+    // Components consume elevation shadow via className="shadow-elevation"
+    // (or shadow-edge-*), never by writing box-shadow themselves — same
+    // discipline as radius and colour: one definition, applied by class.
     const hits = FILES.filter(
       (f) =>
         f.rel !== "app/globals.css" &&
         (/box-shadow\s*:/.test(f.body) || /\bboxShadow\s*:/.test(f.body)),
     ).map((f) => f.rel);
     expect(hits).toEqual([]);
+  });
+
+  it("elevation shadow tokens exist in both themes and lighten from light to dark", () => {
+    // Dark mode drops the ink tint for near-black (a LIGHT ink at low alpha
+    // would lighten a dark surface instead of shadowing it) and raises
+    // opacity (the same alpha that reads on light paper all but
+    // disappears against an already-dark surface) — assert both actually
+    // changed, not just that the variable is redefined to the same value.
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const dark = css.slice(css.indexOf(".dark"));
+    for (const name of ["shadow-elevation", "shadow-edge-bottom", "shadow-edge-right", "shadow-edge-left"]) {
+      expect(root, `--${name} missing in :root`).toMatch(new RegExp(`--${name}:`));
+      expect(dark, `--${name} missing in .dark`).toMatch(new RegExp(`--${name}:`));
+    }
+    expect(root).toMatch(/--shadow-tint:\s*22 32 46/); // --press-ink, light
+    expect(dark).toMatch(/--shadow-tint:\s*0 0 0/); // near-black, dark
+    expect(css).toMatch(/\.shadow-elevation\s*\{\s*box-shadow:\s*var\(--shadow-elevation\)/);
+    expect(css).toMatch(/\.shadow-edge-bottom\s*\{\s*box-shadow:\s*var\(--shadow-edge-bottom\)/);
+    expect(css).toMatch(/\.shadow-edge-right\s*\{\s*box-shadow:\s*var\(--shadow-edge-right\)/);
+    expect(css).toMatch(/\.shadow-edge-left\s*\{\s*box-shadow:\s*var\(--shadow-edge-left\)/);
   });
 
   it("raw hex outside allowlisted sources is banned in TS/TSX", () => {
@@ -315,32 +344,111 @@ describe("design tokens", () => {
     expect(css).toMatch(/--color-info:\s*var\(--info\)/);
   });
 
-  it("family accents clear the UI floor on both papers and stay AA on fills", () => {
-    // The monochrome base carries no colour, so the topic's "primary" comes
-    // from the family accent. familyCssVars() remaps --accent/--pop/--highlight
-    // to the family inside a lesson scope. Every family accentUi must clear
-    // the 3:1 non-text floor against BOTH papers (light #F1F4F9, dark
-    // #10141B — asserted above), and its own onAccent must clear the text
-    // floor (3:1 white, 4.5:1 dark ink) against that fill.
-    const lightPaper = "#f1f4f9";
-    const darkPaper = "#121214";
+  it("family accentUi clears the UI floor on every surface it can render on, in both themes", () => {
+    // uiAccent() used to check only one surface per theme (the page
+    // background/paper). But --pop/--accent render on --elevated, --code,
+    // and --surface too — and in dark mode --elevated is the BRIGHTEST
+    // surface (opposite of light mode), so it is the true worst case, not
+    // the paper. Checking only paper let linear-traversal and
+    // recursive-exploration ship at 2.7-2.9:1 against --elevated, well under
+    // the 3:1 floor, on the two families covering most of the course.
+    const lightSurfaces = {
+      background: "#f1f4f9",
+      elevated: "#ffffff",
+      code: "#e4e9f2",
+      surface: "#d8dde8",
+    };
+    const darkSurfaces = {
+      background: "#121214",
+      elevated: "#26262a",
+      code: "#19191d",
+      surface: "#0c0c0d",
+    };
     for (const theme of FAMILY_THEMES) {
-      const onPaperLight = contrastRatio(theme.accentUi, lightPaper);
-      const onPaperDark = contrastRatio(theme.accentUi, darkPaper);
-      expect(
-        onPaperLight,
-        `${theme.id} accentUi ${theme.accentUi} on light paper is ${onPaperLight.toFixed(2)}:1, needs >= 3:1`,
-      ).toBeGreaterThanOrEqual(3);
-      expect(
-        onPaperDark,
-        `${theme.id} accentUi ${theme.accentUi} on dark paper is ${onPaperDark.toFixed(2)}:1, needs >= 3:1`,
-      ).toBeGreaterThanOrEqual(3);
-      const onFill = contrastRatio(theme.onAccent, theme.accentUi);
-      const floor = theme.onAccent.toLowerCase() === "#ffffff" ? 3 : 4.5;
+      for (const [name, hex] of Object.entries(lightSurfaces)) {
+        const ratio = contrastRatio(theme.accentUi, hex);
+        expect(
+          ratio,
+          `${theme.id} accentUi ${theme.accentUi} on light ${name} (${hex}) is ${ratio.toFixed(2)}:1, needs >= 3:1`,
+        ).toBeGreaterThanOrEqual(3);
+      }
+      for (const [name, hex] of Object.entries(darkSurfaces)) {
+        const ratio = contrastRatio(theme.accentUi, hex);
+        expect(
+          ratio,
+          `${theme.id} accentUi ${theme.accentUi} on dark ${name} (${hex}) is ${ratio.toFixed(2)}:1, needs >= 3:1`,
+        ).toBeGreaterThanOrEqual(3);
+      }
+      // onAccentUi pairs with accentUi specifically (--pop/--on-pop, e.g. the
+      // coach masthead mark) — a DIFFERENT fill from onAccent's pairing with
+      // the raw --family-accent (viz cells), and the two can require
+      // different ink: darkening accentUi enough to clear the light floor
+      // above pushed state-transition/relationships past the point where
+      // their dark onAccent ink stays AA-legible on it, even though that
+      // same dark ink is comfortably legible on the (brighter) raw accent.
+      const onFill = contrastRatio(theme.onAccentUi, theme.accentUi);
+      const floor = theme.onAccentUi.toLowerCase() === "#ffffff" ? 3 : 4.5;
       expect(
         onFill,
-        `${theme.id} ${theme.onAccent} on ${theme.accentUi} is ${onFill.toFixed(2)}:1, needs >= ${floor}:1`,
+        `${theme.id} onAccentUi ${theme.onAccentUi} on accentUi ${theme.accentUi} is ${onFill.toFixed(2)}:1, needs >= ${floor}:1`,
       ).toBeGreaterThanOrEqual(floor);
+    }
+  });
+
+  it("status inks (good/bad/warn/info/muted) clear AA text contrast on every surface, both themes", () => {
+    // These render as readable status text (\"1 of 5 tests passed\", sidebar
+    // labels), not decorative chrome, so the floor is the 4.5:1 text
+    // minimum — checked against every surface they can actually paint on,
+    // not just the one the original token comment happened to measure.
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const dark = css.slice(css.indexOf(".dark"));
+
+    const lightSurfaces = [
+      firstHexVar(root, "press-paper")!,
+      firstHexVar(root, "elevated")!,
+      firstHexVar(root, "code")!,
+      firstHexVar(root, "press-paper-sunk")!,
+    ];
+    const darkSurfaces = [
+      firstHexVar(dark, "press-paper")!,
+      firstHexVar(dark, "elevated")!,
+      firstHexVar(dark, "code")!,
+      firstHexVar(dark, "surface")!,
+    ];
+
+    const lightInks: Record<string, string> = {
+      muted: firstHexVar(root, "press-ink-soft")!,
+      good: firstHexVar(root, "press-green")!,
+      bad: firstHexVar(root, "press-red")!,
+      warn: firstHexVar(root, "press-amber")!,
+      info: firstHexVar(root, "tone-sky")!,
+    };
+    const darkInks: Record<string, string> = {
+      muted: firstHexVar(dark, "press-ink-soft")!,
+      good: firstHexVar(dark, "press-green")!,
+      bad: firstHexVar(dark, "press-red")!,
+      warn: firstHexVar(dark, "press-amber")!,
+      info: firstHexVar(dark, "tone-sky")!,
+    };
+
+    for (const [name, ink] of Object.entries(lightInks)) {
+      for (const surface of lightSurfaces) {
+        const ratio = contrastRatio(ink, surface);
+        expect(
+          ratio,
+          `light ${name} ${ink} on ${surface} is ${ratio.toFixed(2)}:1, needs >= 4.5:1`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+    for (const [name, ink] of Object.entries(darkInks)) {
+      for (const surface of darkSurfaces) {
+        const ratio = contrastRatio(ink, surface);
+        expect(
+          ratio,
+          `dark ${name} ${ink} on ${surface} is ${ratio.toFixed(2)}:1, needs >= 4.5:1`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
     }
   });
 
@@ -352,7 +460,7 @@ describe("design tokens", () => {
       const vars = familyCssVars(theme.id) as Record<string, string | undefined>;
       expect(vars["--accent"]).toBe(theme.accentUi);
       expect(vars["--pop"]).toBe(theme.accentUi);
-      expect(vars["--on-pop"]).toBe(theme.onAccent);
+      expect(vars["--on-pop"]).toBe(theme.onAccentUi);
       expect(vars["--family-accent"]).toBe(theme.accent);
       expect(vars["--mark"]).toBeUndefined();
     }
@@ -423,23 +531,28 @@ describe("design tokens", () => {
   });
 
   it("Callout: constraint is Success-toned, goal/rocket/note are Information, brain is Insight", () => {
+    // Rule + label, not a filled box (revised 2026-08 — was a solid
+    // pastel/dark bg-*-surface fill on all 191 lessons' Goal/Constraint/Tip
+    // callouts, which was the loudest thing on every page it appeared on).
+    // The type still carries a colour, just as a left rule + small status
+    // label sitting on the page's own background, matching the coach
+    // diagnosis card's treatment — no fill, no bold non-uppercase heading.
     const body = readFileSync(
       join(SRC, "components", "md", "Callout.tsx"),
       "utf8",
     );
-    expect(body).toMatch(/constraint:\s*"border-good\/30 bg-good-surface/);
-    expect(body).toMatch(/goal:\s*"border-info\/30 bg-info-surface/);
-    expect(body).toMatch(/rocket:\s*"border-info\/30 bg-info-surface/);
-    expect(body).toMatch(/note:\s*"border-info\/30 bg-info-surface/);
-    expect(body).toMatch(/brain:\s*"border-insight\/30 bg-insight-surface/);
-    expect(body).not.toMatch(/border-l-mark/);
-    expect(body).not.toMatch(/border-l-\d/); // full even border, not a left flag bar
+    expect(body).toMatch(/constraint:\s*"border-l-good/);
+    expect(body).toMatch(/goal:\s*"border-l-info/);
+    expect(body).toMatch(/rocket:\s*"border-l-info/);
+    expect(body).toMatch(/note:\s*"border-l-info/);
+    expect(body).toMatch(/brain:\s*"border-l-insight/);
     // tip = "Interview Tip" territory — Amber (teaching-caution), not Indigo.
-    expect(body).toMatch(/tip:\s*"border-warn\/30 bg-warn-surface/);
+    expect(body).toMatch(/tip:\s*"border-l-warn/);
     expect(body).not.toMatch(/tip:\s*"border-l-accent/);
-    // Reference-matching label: bold, foreground, not muted uppercase mono.
-    expect(body).toMatch(/font-bold/);
-    expect(body).not.toMatch(/uppercase/);
+    // No solid surface fill left anywhere on the blockquote itself.
+    expect(body).not.toMatch(/bg-\w+-surface/);
+    // Label is the small muted uppercase treatment, not the old bold heading.
+    expect(body).toMatch(/text-\[0\.7rem\][^"]*uppercase/);
   });
 
   it("Callout pastel surface tokens exist and are AA-compliant against their role ink", () => {

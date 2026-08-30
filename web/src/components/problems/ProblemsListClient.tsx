@@ -209,7 +209,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
                 style={
                   family ? familyCssVars(family.id) : undefined
                 }
-                className="overflow-hidden rounded-[length:var(--radius-lg)] border border-accent/30 bg-elevated"
+                className="overflow-hidden rounded-[length:var(--radius-lg)] border border-accent/30 bg-elevated shadow-elevation"
               >
                 <div className="relative flex flex-col gap-3 overflow-hidden border-b border-border bg-accent/[0.09] px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
                   <span
@@ -388,7 +388,7 @@ function StatCard({
   tone?: "good";
 }) {
   return (
-    <div className="rounded-[length:var(--radius-lg)] border border-border bg-elevated px-2.5 py-3 sm:px-4 sm:py-3.5">
+    <div className="rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation px-2.5 py-3 sm:px-4 sm:py-3.5">
       <p className="text-[10px] font-medium tracking-[0.12em] text-muted uppercase sm:text-[11px]">
         {label}
       </p>

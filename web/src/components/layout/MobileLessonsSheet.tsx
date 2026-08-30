@@ -96,7 +96,12 @@ export function MobileLessonsSheet({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="absolute inset-0 flex flex-col border-r border-border bg-elevated before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-accent"
+            // No border-r/shadow here: the panel is deliberately full-screen
+            // on mobile (see the component doc comment), so its right edge
+            // sits exactly on the viewport edge — a border or shadow there
+            // renders off-screen and is permanently invisible. Confirmed:
+            // panel.getBoundingClientRect().right === window.innerWidth.
+            className="absolute inset-0 flex flex-col bg-elevated before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-accent"
             initial={reduceMotion ? false : { x: "-100%" }}
             animate={{ x: 0 }}
             exit={reduceMotion ? undefined : { x: "-100%" }}

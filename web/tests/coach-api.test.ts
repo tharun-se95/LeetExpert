@@ -9,6 +9,8 @@ import {
   resolveCoachBackend,
   defaultCoachModel,
   completeCoach,
+  isCredentialFailure,
+  CoachModelError,
   ollamaAccessHeaders,
   ollamaAuthHeaders,
   ollamaHost,
@@ -129,6 +131,7 @@ describe("handleCoachChat", () => {
     // A remote/home backend (Ollama over a tunnel) is far more likely to be
     // unreachable than a cloud API. Without this, the throw reaches the
     // client as a JSON-parse error instead of a message a learner can read.
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
     const result = await handleCoachChat(
       baseBody(),
       deps({
@@ -138,6 +141,63 @@ describe("handleCoachChat", () => {
       }),
     );
     expect(result).toMatchObject({ status: 503, code: "coach_unavailable" });
+    spy.mockRestore();
+  });
+
+  it("logs the underlying cause when it converts a model failure into a 503", async () => {
+    // The learner-facing 503 is deliberately generic, so the server log is the
+    // ONLY record of why the model call failed. Without it, a bad API key, a
+    // dead tunnel, and a malformed response are indistinguishable in prod —
+    // the exact opacity that made a 401 take four rounds of hand-instrumenting
+    // this catch block to identify.
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await handleCoachChat(
+      baseBody(),
+      deps({
+        complete: async () => {
+          throw new Error("Ollama 401 from https://ollama.com: Unauthorized");
+        },
+      }),
+    );
+    expect(spy).toHaveBeenCalledTimes(1);
+    const logged = spy.mock.calls[0].map(String).join(" ");
+    expect(logged).toContain("401");
+    expect(logged).toContain("https://ollama.com");
+    spy.mockRestore();
+  });
+
+  it("reports rejected credentials as misconfigured, not as a retryable blip", async () => {
+    // "Try again in a moment" is a lie for a 401: the key is wrong until a
+    // human changes it, so every retry burns a quota turn and fails again.
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const result = await handleCoachChat(
+      baseBody(),
+      deps({
+        complete: async () => {
+          throw new CoachModelError("Ollama 401 from https://ollama.com", 401);
+        },
+      }),
+    );
+    expect(result).toMatchObject({ status: 503, code: "coach_misconfigured" });
+    if (result.status === 200) return;
+    expect(result.message).not.toMatch(/try again/i);
+    spy.mockRestore();
+  });
+
+  it("still reports an unreachable backend as retryable", async () => {
+    // The counterpart: a dead tunnel really can come back, so this one keeps
+    // the retry affordance that the credential case must not offer.
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const result = await handleCoachChat(
+      baseBody(),
+      deps({
+        complete: async () => {
+          throw new Error("fetch failed");
+        },
+      }),
+    );
+    expect(result).toMatchObject({ status: 503, code: "coach_unavailable" });
+    spy.mockRestore();
   });
 });
 
@@ -251,6 +311,47 @@ describe("coach provider", () => {
     expect(calls[0].url).toBe("https://ollama.com/api/chat");
     const headers = calls[0].init.headers as Record<string, string>;
     expect(headers.Authorization).toBe("Bearer key123");
+  });
+
+  it("classifies credential rejections apart from transient failures", () => {
+    expect(isCredentialFailure(new CoachModelError("nope", 401))).toBe(true);
+    expect(isCredentialFailure(new CoachModelError("nope", 403))).toBe(true);
+    expect(isCredentialFailure(new CoachModelError("busy", 503))).toBe(false);
+    expect(isCredentialFailure(new Error("fetch failed"))).toBe(false);
+    // The AI SDK (Anthropic/OpenAI backends) reports its own status field
+    // rather than throwing ours, so the classifier has to read that shape too.
+    expect(isCredentialFailure({ statusCode: 401 })).toBe(true);
+    expect(isCredentialFailure({ statusCode: 500 })).toBe(false);
+  });
+
+  it("throws a status-carrying error so callers can classify the failure", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response('{"error":"Unauthorized"}', { status: 401 })),
+    );
+    await expect(
+      completeCoach("system", [{ role: "user", content: "hi" }], {
+        NODE_ENV: "test",
+        OLLAMA_API_KEY: "key123",
+      }),
+    ).rejects.toMatchObject({ status: 401 });
+  });
+
+  it("names the rejecting host in the thrown error", async () => {
+    // Which host rejected is the whole diagnosis: the same 401 means "bad
+    // cloud key" against ollama.com and "Access misconfigured" against a
+    // tunnel. The status alone cannot tell those apart.
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response('{"error":"Unauthorized"}', { status: 401 })),
+    );
+
+    await expect(
+      completeCoach("system", [{ role: "user", content: "hi" }], {
+        NODE_ENV: "test",
+        OLLAMA_API_KEY: "key123",
+      }),
+    ).rejects.toThrow(/https:\/\/ollama\.com.*401|401.*https:\/\/ollama\.com/);
   });
 
   it("sends Access headers and a bounded timeout on the Ollama request", async () => {

@@ -31,16 +31,22 @@ interface CalloutProps {
   label?: string;
 }
 
-const TYPE_STYLES: Record<CalloutType, string> = {
-  tip: "border-warn/30 bg-warn-surface",
-  note: "border-info/30 bg-info-surface",
-  goal: "border-info/30 bg-info-surface",
-  constraint: "border-good/30 bg-good-surface",
-  warn: "border-warn/30 bg-warn-surface",
-  rocket: "border-info/30 bg-info-surface",
-  build: "border-good/30 bg-good-surface",
-  brain: "border-insight/30 bg-insight-surface",
-  default: "border-border bg-surface",
+// A rule + label, not a filled box: the callout sits on the page's own
+// background, distinguished by a coloured left rule and a small status
+// label — the same treatment the coach's diagnosis card uses. A solid
+// pastel/dark fill on every Goal/Constraint/Tip in 191 lessons was the
+// loudest thing on the page; the colour still tells you the type, it just
+// no longer competes with the prose it's introducing.
+const TYPE_RULE: Record<CalloutType, string> = {
+  tip: "border-l-warn",
+  note: "border-l-info",
+  goal: "border-l-info",
+  constraint: "border-l-good",
+  warn: "border-l-warn",
+  rocket: "border-l-info",
+  build: "border-l-good",
+  brain: "border-l-insight",
+  default: "border-l-border",
 };
 
 const TYPE_LABELS: Partial<Record<CalloutType, string>> = {
@@ -66,7 +72,7 @@ const TYPE_ICON_CLASS: Partial<Record<CalloutType, string>> = {
 };
 
 function TypeIcon({ type }: { type: CalloutType }) {
-  const className = cn("h-4 w-4 shrink-0", TYPE_ICON_CLASS[type]);
+  const className = cn("h-3.5 w-3.5 shrink-0", TYPE_ICON_CLASS[type]);
   switch (type) {
     case "tip":
       return <Lightbulb className={className} aria-hidden />;
@@ -113,21 +119,21 @@ export function Callout({
     <blockquote
       id={id}
       className={cn(
-        "group relative my-4 rounded-[length:var(--radius-md)] border px-4 py-3 not-italic",
-        TYPE_STYLES[type] ?? TYPE_STYLES.default,
+        "group relative my-4 border-l-2 py-0.5 pr-8 pl-4 not-italic",
+        TYPE_RULE[type] ?? TYPE_RULE.default,
       )}
     >
       <button
         type="button"
         onClick={copyText}
-        className="absolute right-2 top-2 rounded-[length:var(--radius-md)] border border-transparent p-1.5 text-muted opacity-0 transition group-hover:opacity-100 hover:border-border hover:bg-background hover:text-foreground"
+        className="absolute top-1 right-0 rounded-[length:var(--radius-md)] border border-transparent p-1.5 text-muted opacity-0 transition group-hover:opacity-100 hover:border-border hover:bg-surface hover:text-foreground"
         aria-label="Copy callout"
       >
         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       </button>
-      <div className="pr-8 text-[0.95rem] leading-relaxed text-foreground/90 [&_p]:my-0">
+      <div className="text-[0.95rem] leading-relaxed text-foreground/90 [&_p]:my-0">
         {resolvedLabel ? (
-          <p className="mb-1.5 !mt-0 flex items-center gap-2 text-[0.95rem] font-bold text-foreground">
+          <p className="mb-1 !mt-0 flex items-center gap-1.5 text-[0.7rem] font-medium tracking-wide text-muted uppercase">
             <TypeIcon type={type} />
             {resolvedLabel}
           </p>

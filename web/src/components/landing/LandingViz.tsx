@@ -79,7 +79,7 @@ export function LandingVizStrip() {
 
   return (
     <div
-      className="overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated"
+      className="overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated shadow-elevation"
       style={{ borderTopColor: activeTheme.accent, borderTopWidth: 2 }}
     >
       <div className="border-b border-border px-3 py-3 sm:px-4">
@@ -130,7 +130,7 @@ export function LandingVizStrip() {
 /** Intuition before the landing mini-sandbox. */
 export function LandingSandboxViz() {
   return (
-    <div className="overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated p-3 sm:p-4">
+    <div className="overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated shadow-elevation p-3 sm:p-4">
       <Viz source={SANDBOX_PAIR_VIZ} embedded />
     </div>
   );

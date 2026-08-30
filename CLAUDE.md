@@ -87,16 +87,22 @@ The content is the product. Code exists to serve it.
   (`text-mark`) — `--mark` is never remapped by a family scope and stays AA
   steel in both themes (the wordmark uses it too). Chapter headings carry a
   short family-accent rule above `h2`; heading text stays ink.
-- **Surfaces are a paper ladder, not Linear-like shadows.** `--background` /
-  `--elevated` / `--code` / `--surface` carry a perceptible brightness ladder
-  in BOTH themes — elevated brightest, surface deepest, never an inversion.
-  Light: white cards on a cool-gray page (measured elevated/background 1.10,
-  background/code 1.11, code/surface 1.12, elevated/surface 1.36). Dark:
-  neutral-grey surfaces (no blue cast) — elevated/paper 1.24, code/elevated
-  1.16, paper/code 1.07, surface/paper 1.05. Every text ink (ink, muted, and every status ink incl. info) clears
+- **Surfaces combine a paper ladder with soft elevation shadow.**
+  `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
+  brightness ladder in BOTH themes — elevated brightest, surface deepest,
+  never an inversion. Light: white cards on a cool-gray page (measured
+  elevated/background 1.10, background/code 1.11, code/surface 1.12,
+  elevated/surface 1.36). Dark: neutral-grey surfaces (no blue cast) —
+  elevated/paper 1.24, code/elevated 1.16, paper/code 1.07, surface/paper
+  1.05. Every text ink (ink, muted, and every status ink incl. info) clears
   AA 4.5:1 on the deepest surface it can render on — the sandbox paints
   verdict rows and insight values on `--press-paper-sunk`, so that is the
-  binding floor. No drop shadows, no blur.
+  binding floor. A genuinely elevated surface (cards, the coach rail, the
+  lessons drawer, the sticky header) ALSO carries a soft ambient shadow on
+  top of its brightness step — see the elevation-shadow rule below.
+  Recessed surfaces (`--surface`, `--code`) carry no shadow: they sit below
+  the page, and a sunk panel casting a shadow reads as floating, which
+  fights the brightness step instead of reinforcing it.
 - **Contrast is measured, not eyeballed.** Body ink/muted must meet WCAG AA
   (4.5:1). Status text inks are AA-darkened from sheet Success/Warning/Error
   fills. Record ratios in comments beside tokens.
@@ -104,8 +110,23 @@ The content is the product. Code exists to serve it.
   same palette definition. Two engines drifting apart is a visible defect.
 - Both themes are first-class. Dark is a designed translation, never an
   inversion.
-- Depth is flat (print language): ink, rules, and halftone — never blur or
-  drop shadows.
+- **Elevation shadow is soft, diffuse, and ink-tinted — never generic black,
+  never a hard offset.** A genuinely lifted surface gets `.shadow-elevation`
+  (bordered cards in normal flow — module cards, pattern cards, quiz
+  options, prev/next links) or a directional `.shadow-edge-bottom` /
+  `.shadow-edge-right` / `.shadow-edge-left` (a panel that only separates
+  from content on one side — the sticky header, the docked lessons drawer,
+  the coach rail, the mobile lessons sheet). Tokens live in `globals.css`
+  (`--shadow-elevation`, `--shadow-edge-*`): light mode tints the shadow
+  with `--press-ink` at low alpha so it reads as ink, not generic UI chrome;
+  dark mode uses near-black, since a *light* ink at low alpha would lighten
+  rather than shadow a dark surface. Low opacity, generous blur, minimal or
+  no offset — the shadow should read as "lifted," not as a decorative
+  graphic. Never an arbitrary `shadow-[...]` value or a raw `box-shadow` in
+  a component — like radius, shadow is a token, applied via the shared
+  class, not authored per-component. A full-bleed panel with no adjacent
+  visible page (a mobile tab's own content pane) gets no shadow: there is
+  nothing beside it to cast one onto.
 
 ## 5. Code standards
 

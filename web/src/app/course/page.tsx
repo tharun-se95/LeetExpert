@@ -84,7 +84,7 @@ export default function CourseOverviewPage() {
                     href={moduleHref(module.slug)}
                     style={family ? familyCssVars(family) : undefined}
                     className={cn(
-                      "group flex flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated transition hover:border-accent/45",
+                      "group flex flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition hover:border-accent/45",
                       !available && "opacity-70",
                     )}
                   >

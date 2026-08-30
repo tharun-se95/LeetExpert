@@ -10,7 +10,9 @@
 
    Palette: docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md
    Rule: components use semantic names, never `--press-*` directly.
-   Depth: layered surfaces + soft rules — never drop shadows.
+   Depth: layered surfaces (the paper ladder) plus a soft, ink-tinted
+   elevation shadow on genuinely lifted surfaces — see --shadow-elevation
+   and --shadow-edge-* below. Never a raw box-shadow in a component.
    ============================================================ */
 
 :root {
@@ -20,9 +22,8 @@
     (cards) stays #fff; background (#f1f4f9) is the page; code (#e4e9f2) the
     editor well; sunk (#d8dde8) the deepest recess. Measured adjacent steps:
     elevated/background 1.10, background/code 1.11, code/sunk 1.12,
-    elevated/sunk 1.36 — visible flat steps, no shadows. Every text ink below
-    clears AA 4.5:1 on the deepest surface; enforced by
-    web/tests/design-tokens.test.ts.
+    elevated/sunk 1.36 — visible steps. Every text ink below clears AA
+    4.5:1 on the deepest surface; enforced by web/tests/design-tokens.test.ts.
   */
   --press-paper: #f1f4f9; /* sheet Background — app chrome / page */
   --press-paper-sunk: #d8dde8; /* recessed panel (tests, muted chrome) */
@@ -124,6 +125,25 @@
   --radius-lg: 20px;
   --radius-xl: 28px;
 
+  /* --- elevation shadow -------------------------------------
+     Soft, diffuse, ink-tinted — never generic black, never a hard
+     offset. Tinted with --press-ink (22 32 46) at low alpha so a lifted
+     surface reads as ink casting a shadow, not a generic UI drop shadow.
+     .shadow-elevation is the all-around form for a bordered card sitting
+     in normal page flow; .shadow-edge-* is the directional form for a
+     panel that only separates from content on one side (a sticky header,
+     a docked drawer). Both consumed via the classes below — never inline,
+     never an arbitrary shadow-[...] value in a component. Applied only to
+     genuinely elevated surfaces; --surface/--code (recessed) get none.
+  ------------------------------------------------------------- */
+  --shadow-tint: 22 32 46; /* --press-ink as an r g b triplet */
+  --shadow-elevation:
+    0 1px 2px rgb(var(--shadow-tint) / 0.04),
+    0 8px 20px -4px rgb(var(--shadow-tint) / 0.1);
+  --shadow-edge-bottom: 0 4px 16px rgb(var(--shadow-tint) / 0.08);
+  --shadow-edge-right: 4px 0 16px rgb(var(--shadow-tint) / 0.08);
+  --shadow-edge-left: -4px 0 16px rgb(var(--shadow-tint) / 0.08);
+
   /* --- motion (150–250ms) --------------------------------- */
   --dur-fast: 150ms;
   --dur: 250ms;
@@ -143,7 +163,7 @@
     an inversion: elevated (cards) brightest, code above the page, background
     the sheet, surface recessed deepest. Measured adjacent deltas:
     surface/paper 1.05, paper/code 1.07, code/elevated 1.16, elevated/paper
-    1.24 — visible steps, flat (no shadows). Muted #9ca9b8 ≥8:1 everywhere.
+    1.24 — visible steps. Muted #9ca9b8 ≥8:1 everywhere.
   */
   --press-paper-sunk: #0c0c0d; /* recessed — tests / muted, deepest */
   --press-ink: #e6edf4; /* 17.1:1 — sheet Text Primary */
@@ -154,7 +174,7 @@
   --press-olive: #cbd5e1; /* accent — light steel on charcoal */
   --press-blue: #cbd5e1; /* mark == accent in dark (steel) */
   --press-green: #22d497; /* sheet Success */
-  --press-red: #ef4444; /* sheet Error */
+  --press-red: #f15858; /* sheet Error — 4.51:1 on --elevated, the binding floor (brightest dark surface, not the paper) */
   --press-amber: #f59e0b; /* sheet Warning */
   --press-insight: #facc15; /* 12.3:1 on dark paper — bright gold as text */
 
@@ -171,6 +191,21 @@
   --surface: #0c0c0d; /* tests / muted — recess, deepest tier */
   --elevated: #26262a; /* sidebar / lesson / cards — brightest lift */
   --code: #19191d; /* editor — above the page, below elevated */
+
+  /* A light ink at low alpha LIGHTENS a dark surface instead of shadowing
+     it, so dark mode drops the ink tint and uses near-black instead —
+     everything else about the shadow (blur, offset, opacity curve) is
+     unchanged, only the colour flips. Opacity is raised too: the same
+     alpha that reads clearly against light paper all but disappears
+     against an already-dark surface. */
+  --shadow-tint: 0 0 0;
+  --shadow-elevation:
+    0 1px 2px rgb(var(--shadow-tint) / 0.3),
+    0 8px 24px -4px rgb(var(--shadow-tint) / 0.45);
+  --shadow-edge-bottom: 0 4px 20px rgb(var(--shadow-tint) / 0.35);
+  --shadow-edge-right: 4px 0 20px rgb(var(--shadow-tint) / 0.35);
+  --shadow-edge-left: -4px 0 20px rgb(var(--shadow-tint) / 0.35);
+
   --accent-hover: #e2e8f0;
   --accent-active: #cbd5e1;
 
@@ -964,6 +999,32 @@ body {
     border-color: #000 !important;
     color: #000 !important;
   }
+}
+
+/*
+  Elevation shadow — tokens defined in the root and dark-theme blocks above.
+
+  .shadow-elevation is the all-around form for a bordered card sitting in
+  normal page flow (module cards, pattern cards, quiz options, prev/next
+  links) — it floats, surrounded by page on every side, so the shadow
+  wraps it. .shadow-edge-* is the directional form for a panel that IS the
+  layout and only separates from content on one side — a sticky header
+  only needs a shadow below it, a left-docked drawer only needs one on its
+  right edge, a right-docked rail only needs one on its left. Casting a
+  shadow on an edge flush with the viewport (nothing there to receive it)
+  is why the all-around form is wrong for these.
+*/
+.shadow-elevation {
+  box-shadow: var(--shadow-elevation);
+}
+.shadow-edge-bottom {
+  box-shadow: var(--shadow-edge-bottom);
+}
+.shadow-edge-right {
+  box-shadow: var(--shadow-edge-right);
+}
+.shadow-edge-left {
+  box-shadow: var(--shadow-edge-left);
 }
 
 /*

@@ -42,7 +42,7 @@ export function Header({
     );
 
   return (
-    <header className="print:hidden sticky top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-elevated px-3 sm:gap-3 sm:px-4">
+    <header className="print:hidden shadow-edge-bottom sticky top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-elevated px-3 sm:gap-3 sm:px-4">
       <div className="flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
         {showLessonsMenu && onToggleLessonsMenu ? (
           <button

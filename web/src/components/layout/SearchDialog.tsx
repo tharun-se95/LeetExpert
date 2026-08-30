@@ -151,7 +151,10 @@ export function SearchDialog({
         aria-modal="true"
         aria-label="Search lessons and problems"
         onKeyDown={onKeyDown}
-        className="w-full max-w-xl overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-background"
+        // bg-elevated, not bg-background: this floats over a dimmed,
+        // blurred backdrop — the page's own base surface is the wrong tier
+        // for something meant to read as lifted above the page.
+        className="w-full max-w-xl overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation"
       >
         <div className="flex min-h-12 items-center gap-3 border-b border-border px-4 focus-within:bg-accent/[0.04]">
           <MagnifyingGlass

@@ -5,11 +5,17 @@ import { CoachMarkdown } from "./CoachMarkdown";
 import { useCoach } from "./CoachProvider";
 import { DiagnosisCard } from "./DiagnosisCard";
 
+/**
+ * Deliberately the masthead mark at small size — same shape, same fill — so
+ * every reply is visibly from the thing named at the top of the panel. A
+ * washed accent chip read as generic decoration and, on --elevated, sat under
+ * the 3:1 floor besides.
+ */
 function CoachAvatar() {
   return (
     <span
       aria-hidden
-      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent"
+      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop text-on-pop"
     >
       <ChatCircle size={13} weight="fill" />
     </span>
@@ -39,11 +45,13 @@ export function CoachThread() {
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3 py-3">
       {isEmpty ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <ChatCircle size={20} weight="fill" aria-hidden />
+          <span className="flex h-12 w-12 items-center justify-center rounded-[length:var(--radius-md)] bg-pop text-on-pop">
+            <ChatCircle size={24} weight="fill" aria-hidden />
           </span>
-          <p className="text-sm font-medium text-foreground">Ask about this problem</p>
-          <p className="text-xs text-muted">
+          <p className="font-display text-base font-bold tracking-tight text-foreground">
+            Ask about this problem
+          </p>
+          <p className="text-xs leading-relaxed text-muted">
             I’ll nudge you toward the idea, not hand you the code.
           </p>
         </div>
@@ -56,7 +64,11 @@ export function CoachThread() {
           return (
             <p
               key={item.id}
-              className="ml-8 rounded-[length:var(--radius-md)] border border-border bg-elevated px-3.5 py-2 text-sm leading-relaxed text-foreground"
+              // bg-surface, not bg-elevated: the rail itself is elevated, so
+              // the old fill was the same ink as its own ground and the bubble
+              // survived on its border alone. A real step down the ladder is
+              // what makes the learner's turn readable as a separate object.
+              className="ml-8 rounded-[length:var(--radius-md)] border border-border bg-surface px-3.5 py-2 text-sm leading-relaxed text-foreground"
             >
               {item.content}
             </p>

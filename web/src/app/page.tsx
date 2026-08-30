@@ -246,7 +246,7 @@ export default function HomePage() {
                   <li key={step.href}>
                     <Link
                       href={step.href}
-                      className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated px-3 py-2.5 transition hover:border-accent/40"
+                      className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated shadow-elevation px-3 py-2.5 transition hover:border-accent/40"
                     >
                       <span className="flex h-7 w-7 items-center justify-center rounded-[length:var(--radius-sm)] bg-pop font-mono text-[0.65rem] font-bold text-on-pop">
                         {i + 1}

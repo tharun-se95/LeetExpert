@@ -365,9 +365,56 @@ survey of the whole module."
 Infographic scope prompt (run once per lesson, select only that lesson's
 source before generating):
 "Generate an infographic summarizing [LESSON TITLE] at a glance: the core
-mechanism, one worked example, and the complexity result, in the visual
-style already established (see prior modules' infographics for the visual
-language to match)."
+mechanism, one worked example, and the complexity result. Follow this
+exact visual specification — do not deviate from it:
+
+PALETTE (use ONLY these three colors, nothing else, no exceptions):
+- Background: solid off-white/cool-gray, hex #F1F4F9.
+- All line art, borders, and body text: dark steel ink, hex #1E293B.
+- ONE accent color, used only for emphasis and the single most important
+  visual element per panel: hex [FAMILY ACCENT HEX].
+- No other colors. No gradients. No color blends anywhere in the image.
+
+STYLE (mandatory, non-negotiable constraints):
+- Flat 2D vector illustration only, uniform stroke weight throughout
+  (~2px at this resolution).
+- NO drop shadows. NO 3D bevels, extrusion, or isometric depth. NO
+  gradients or soft shading. NO glow or lighting effects. NO
+  photorealistic rendering.
+- Every shape must read as flat ink on paper — a technical blueprint or
+  textbook schematic, not a marketing illustration.
+
+CHARACTER / MOTIF:
+- Use only this lesson's own established analogy: [ANALOGY NAME —
+  one-line description of the scene/character it uses]. Do not invent a
+  new character, scene, or metaphor.
+- Any character must be a simple flat silhouette or line figure, not a
+  detailed cartoon.
+
+LAYOUT:
+- Bold sans-serif title, top-left.
+- Content organized into a clean grid of rectangular panels, each with a
+  thin #1E293B border, filled with the #F1F4F9 background (or left
+  unfilled).
+- Body text in a plain sans-serif; code or numeric values in monospace.
+- No decorative borders, no ornamental flourishes, no drop-shadowed
+  cards, no rounded 3D buttons.
+
+This is one lesson inside a 24-module course where every infographic
+must look like it was drawn by the same hand, in the same style, for
+the same publication. Prioritize exact consistency with a technical
+textbook's schematic diagrams over 'engaging' illustration."
+
+Fill `[FAMILY ACCENT HEX]` from the module's family in
+`web/src/lib/visual/familyTheme.ts` (e.g. hash-tables/arrays/strings/
+prefix-sum = linear-traversal = `#0A7A6A`; linked-lists/two-pointers/
+sliding-window = pointer-movement = `#C45C26`; binary-search/sorting/
+intervals = ordering-search = `#2F6FED`; recursion-backtracking/binary-
+trees/bst = recursive-exploration = `#6B4CE6`; greedy/dynamic-
+programming = state-transition = `#C9A227`; graphs = relationships =
+`#1F9D8A`; stacks/queues/heaps/tries = priority-structures = `#E11D48`).
+Fill `[ANALOGY NAME]` from that module's `docs/superpowers/plans/
+analogies/<module>.md` file — every module now has one documented.
 ```
 
 Fill `[MODULE TITLE]` / `[LESSON TITLE]` / `[ANALOGY NAME]` /

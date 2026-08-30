@@ -7,7 +7,7 @@ import type {
   CoachQuotaResult,
 } from "./types";
 import type { CoachQuota } from "./quota";
-import { resolveCoachBackend } from "./provider";
+import { isCredentialFailure, resolveCoachBackend } from "./provider";
 
 export const MAX_MESSAGE_CHARS = 2000;
 export const MAX_CODE_CHARS = 8000;
@@ -126,11 +126,27 @@ export async function handleCoachChat(
   let raw: string;
   try {
     raw = await deps.complete(packed.system, packed.messages);
-  } catch {
+  } catch (err) {
     // A remote backend (Ollama over a tunnel, a cloud API blip) can fail the
     // network call itself. Without this, the throw reaches the client as an
     // unhandled 500 with no JSON body, which shows up as a raw parse error
     // instead of a message a learner can read.
+    //
+    // The learner-facing message below is deliberately generic, which makes
+    // this log the only surviving record of the real cause. Swallowing it
+    // silently makes a bad API key, a dead tunnel, and a malformed response
+    // indistinguishable in production.
+    console.error("[coach] model call failed:", err);
+    if (isCredentialFailure(err)) {
+      // Distinct code so the client can drop the Retry affordance: offering it
+      // here would invite the learner to spend quota turns on a request that
+      // cannot succeed until someone rotates the key.
+      return {
+        status: 503,
+        code: "coach_misconfigured",
+        message: "Coach's credentials were rejected. This one is on us — retrying won't help.",
+      };
+    }
     return {
       status: 503,
       code: "coach_unavailable",

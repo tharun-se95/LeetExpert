@@ -1,31 +1,32 @@
-import { CheckCircle, XCircle } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import type { Diagnosis } from "@/lib/coach/types";
 
 export function DiagnosisCard({ diagnosis }: { diagnosis: Diagnosis }) {
   const passed = diagnosis.status === "all-passed";
-  const tone = passed ? "text-good" : "text-bad";
   const label = passed
     ? "All cases passed"
     : diagnosis.status === "errored"
       ? "Runner error"
       : "Case failed";
-  const Icon = passed ? CheckCircle : XCircle;
 
   return (
     <article
       className={cn(
-        "flex gap-2.5 rounded-[length:var(--radius-md)] border-y border-r border-l-[3px] border-border bg-surface px-3 py-2.5",
+        // A run result is context for the conversation, not an alert competing
+        // with it. The coach's own replies are undecorated prose, so a boxed,
+        // filled-icon, coloured-caps treatment made the machine note louder
+        // than the teaching — one rule carries the tone instead. The label
+        // still names the status in words, so nothing here rides on colour.
+        "border-l-2 py-0.5 pl-3",
         passed ? "border-l-good" : "border-l-bad",
       )}
     >
-      <Icon size={16} weight="fill" className={cn("mt-0.5 shrink-0", tone)} aria-hidden />
-      <div className="min-w-0">
-        <p className={cn("text-[0.7rem] font-semibold uppercase tracking-wide", tone)}>
-          {label}
-        </p>
-        <p className="mt-1 text-sm leading-relaxed text-foreground">{diagnosis.prose}</p>
-      </div>
+      <p className="text-[0.7rem] font-medium uppercase tracking-wide text-muted">
+        {label}
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-foreground">
+        {diagnosis.prose}
+      </p>
     </article>
   );
 }

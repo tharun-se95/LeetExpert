@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
+import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
 import { MobileLessonsSheet } from "@/components/layout/MobileLessonsSheet";
 import { SearchDialog } from "@/components/layout/SearchDialog";
 import { PageEnter } from "@/components/layout/PageEnter";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { SidebarProvider } from "@/components/layout/SidebarContext";
 import { ProgressProvider } from "@/components/providers/ProgressProvider";
 import { ScrollbarAutoHide } from "@/components/providers/ScrollbarAutoHide";
 import { VisitTracker } from "@/components/providers/VisitTracker";
@@ -64,6 +66,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const ideViewport = isIdePath(pathname);
   const showCourseNav = !isLandingPath(pathname);
   const family = activeFamilyFor(pathname);
+  const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
   useEffect(() => {
     const mq = window.matchMedia(DESKTOP_MQ);
@@ -130,41 +133,48 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       >
         <VisitTracker />
         <ScrollbarAutoHide />
-        <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
-        {showCourseNav ? (
-          <MobileLessonsSheet
-            open={mobileNavOpen}
-            onClose={() => setMobileNavOpen(false)}
-          />
-        ) : null}
-        <div className="flex h-dvh flex-col overflow-hidden">
-          <Header
-            onOpenSearch={() => setSearchOpen(true)}
-            showLessonsMenu={showCourseNav}
-            lessonsMenuOpen={mobileNavOpen}
-            onToggleLessonsMenu={() => setMobileNavOpen((v) => !v)}
-            showProgress={showCourseNav}
-          />
-          <div className="flex min-h-0 flex-1">
-            {showCourseNav ? (
-              <Sidebar
-                open={sidebarOpen}
-                onOpen={() => setSidebarOpen(true)}
-                onClose={() => setSidebarOpen(false)}
-              />
-            ) : null}
-            <main
-              className={cn(
-                "min-w-0 flex-1",
-                ideViewport
-                  ? "flex min-h-0 flex-col overflow-hidden"
-                  : "overflow-y-auto",
-              )}
-            >
-              <PageEnter fill={ideViewport}>{children}</PageEnter>
-            </main>
+        <SidebarProvider open={sidebarOpen} toggle={toggleSidebar}>
+          <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
+          {showCourseNav ? (
+            <MobileLessonsSheet
+              open={mobileNavOpen}
+              onClose={() => setMobileNavOpen(false)}
+            />
+          ) : null}
+          {/*
+            The drawer opener lives here (lesson pages) or inline next to the
+            problem title (ProblemWorkspace's own header) — never in the app
+            Header, which now carries only search, progress and theme.
+          */}
+          {showCourseNav && !ideViewport ? <FloatingLessonsButton /> : null}
+          <div className="flex h-dvh flex-col overflow-hidden">
+            <Header
+              onOpenSearch={() => setSearchOpen(true)}
+              showLessonsMenu={showCourseNav}
+              lessonsMenuOpen={mobileNavOpen}
+              onToggleLessonsMenu={() => setMobileNavOpen((v) => !v)}
+              showProgress={showCourseNav}
+            />
+            <div className="flex min-h-0 flex-1">
+              {showCourseNav ? (
+                <Sidebar
+                  open={sidebarOpen}
+                  onClose={() => setSidebarOpen(false)}
+                />
+              ) : null}
+              <main
+                className={cn(
+                  "min-w-0 flex-1",
+                  ideViewport
+                    ? "flex min-h-0 flex-col overflow-hidden"
+                    : "overflow-y-auto",
+                )}
+              >
+                <PageEnter fill={ideViewport}>{children}</PageEnter>
+              </main>
+            </div>
           </div>
-        </div>
+        </SidebarProvider>
       </div>
     </ProgressProvider>
   );

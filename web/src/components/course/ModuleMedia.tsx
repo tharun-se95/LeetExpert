@@ -19,7 +19,7 @@ export function ModuleMedia({ conceptMap, moduleTitle }: ModuleMediaProps) {
 
   return (
     <div className="mt-8 print:hidden">
-      <div className="rounded-[length:var(--radius-lg)] border border-border bg-elevated p-5">
+      <div className="rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation p-5">
         <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
           <TreeStructure weight="bold" className="h-4 w-4 text-accent" />
           Concept map

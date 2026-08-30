@@ -226,7 +226,7 @@ function SandboxBody({
         {variant === "ide" && coach ? (
           <button
             type="button"
-            onClick={coach.openCoach}
+            onClick={coach.toggleCoach}
             aria-label="Toggle problem coach"
             aria-expanded={coach.railOpen}
             className="inline-flex h-11 items-center gap-1.5 rounded-[length:var(--radius-md)] px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
@@ -309,7 +309,7 @@ function SandboxBody({
   return (
     <div
       className={cn(
-        "print:hidden my-7 overflow-hidden rounded-[length:var(--radius-lg)] border bg-surface/30 transition-colors",
+        "print:hidden my-7 overflow-hidden rounded-[length:var(--radius-lg)] border bg-surface/30 shadow-elevation transition-colors",
         allPassed ? "border-good/40" : "border-border",
       )}
     >
@@ -490,7 +490,11 @@ function IdeWorkspace({
   );
 
   const resultsBody = (
-    <div className="flex h-full min-h-0 flex-col bg-surface">
+    // bg-elevated, not bg-surface: the result card inside is already
+    // bg-elevated, so the recessed panel behind it read as two unrelated
+    // greys stacked with a visible seam. Same tone now — the card's own
+    // border is what separates it, not a colour step.
+    <div className="flex h-full min-h-0 flex-col bg-elevated">
       {statusBanner}
       <CoachFailBanner />
       <div
@@ -552,7 +556,13 @@ function IdeWorkspace({
           hidden={!resultsOpen}
           className={cn(
             "min-h-0 shrink-0 overflow-hidden border-t border-border",
-            resultsOpen ? "flex h-[min(38vh,22rem)] flex-col" : "hidden",
+            // max-h, not h: a two-line "Case failed" result was being force-
+            // stretched to fill a fixed 38vh/22rem panel regardless of how
+            // little content it held, which is the cavernous-empty-space
+            // look this replaces. Content now sizes itself and only reaches
+            // (then scrolls at) the old cap once it's actually that tall —
+            // Console output or a long Insight writeup, not a short result.
+            resultsOpen ? "flex max-h-[min(38vh,22rem)] flex-col" : "hidden",
           )}
         >
           {resultsBody}
@@ -657,10 +667,16 @@ function ResultsRail({
               }
               onClick={() => onSelectTab(id)}
               className={cn(
-                "inline-flex min-h-11 items-center gap-1.5 px-3.5 text-[0.75rem] font-medium transition-colors motion-reduce:transition-none",
+                // Underline indicator on the TOP edge, not the bottom: this
+                // bar sits below the content it controls (editor, then
+                // results, then this tab strip), so the indicator points up
+                // toward what it owns instead of down into nothing — the
+                // mirror image of TabList's bottom rule, for the same reason.
+                "relative inline-flex min-h-11 items-center gap-1.5 px-3.5 text-[0.75rem] font-medium transition-colors motion-reduce:transition-none",
+                "after:absolute after:inset-x-2 after:-top-px after:h-[2px] after:rounded-full after:transition-colors after:duration-[var(--dur-fast)] after:content-['']",
                 selected
-                  ? "bg-pop text-on-pop"
-                  : "text-muted hover:bg-surface hover:text-foreground",
+                  ? "text-foreground after:bg-pop"
+                  : "text-muted after:bg-transparent hover:text-foreground hover:after:bg-border",
               )}
             >
               {label}
@@ -668,25 +684,22 @@ function ResultsRail({
                 <span
                   className={cn(
                     "rounded-[length:var(--radius-xs)] px-1.5 font-mono text-[0.65rem] font-semibold",
-                    selected
-                      ? "bg-on-pop/15 text-on-pop"
-                      : ran && allPassed
-                        ? "text-good"
-                        : ran
-                          ? "text-bad"
-                          : "text-muted",
+                    // Real pass/fail colour regardless of selection now —
+                    // there's no more filled tab background to contrast
+                    // against, so the count reads its own status colour on
+                    // the shared bg-elevated surface in both states.
+                    ran && allPassed
+                      ? "text-good"
+                      : ran
+                        ? "text-bad"
+                        : "text-muted",
                   )}
                 >
                   {ran ? `${passed}/${total}` : total}
                 </span>
               ) : null}
               {id === "console" && logCount > 0 ? (
-                <span
-                  className={cn(
-                    "rounded-[length:var(--radius-xs)] px-1.5 font-mono text-[0.65rem] font-semibold",
-                    selected ? "bg-on-pop/15 text-on-pop" : "text-muted",
-                  )}
-                >
+                <span className="rounded-[length:var(--radius-xs)] px-1.5 font-mono text-[0.65rem] font-semibold text-muted">
                   {logCount}
                 </span>
               ) : null}
@@ -733,7 +746,17 @@ function CoachFailBanner() {
       ? `Case ${coach.diagnosis.firstFailIndex + 1}`
       : "A case");
   return (
-    <div className="flex items-center justify-between gap-2 border-b border-border bg-info-surface px-3 py-2">
+    <div
+      className={cn(
+        "flex items-center justify-between gap-2 border-b border-border bg-info-surface px-3 py-2",
+        // Redundant once the coach rail is already open right next to this
+        // panel — the diagnosis is already on screen. Only at lg: though:
+        // `railOpen` is a desktop-rail concept and can be stale from a past
+        // session, but on mobile the coach lives behind its own tab, so this
+        // banner is still the only thing telling a mobile learner it exists.
+        coach.railOpen && "lg:hidden",
+      )}
+    >
       <p className="min-w-0 text-xs text-info">
         {caseLabel} failed — Coach has a diagnosis.
       </p>
@@ -795,15 +818,19 @@ function IdeTestcases({
               aria-selected={active === i}
               onClick={() => onActiveChange(i)}
               className={cn(
-                "rounded-[length:var(--radius-md)] px-2.5 py-1 font-mono text-[0.7rem] transition-colors",
-                active === i
-                  ? "bg-pop text-on-pop"
-                  : "text-muted hover:text-foreground",
+                // Fill reflects pass/fail — always, selected or not. It used
+                // to be bg-pop (the family accent) whenever selected, which
+                // for a green/teal family made a FAILING selected case look
+                // identical to a passing one; ring, not fill, now marks
+                // "this is the one you're viewing", so status stays legible
+                // regardless of which case is open.
+                "rounded-[length:var(--radius-md)] px-2.5 py-1 font-mono text-[0.7rem] font-medium transition-colors",
                 r
                   ? r.passed
-                    ? "ring-1 ring-good/40"
-                    : "ring-1 ring-bad/40"
-                  : "",
+                    ? "bg-good/15 text-good"
+                    : "bg-bad/15 text-bad"
+                  : "text-muted hover:bg-surface hover:text-foreground",
+                active === i ? "ring-2 ring-inset ring-pop" : "",
               )}
             >
               <span className="inline-flex items-center gap-1.5">
@@ -833,36 +860,68 @@ function IdeTestcases({
 
       <div role="tabpanel" className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
         {!testCase ? null : (
-          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 font-mono text-[0.75rem]">
-            <dt className="text-muted">Input</dt>
-            <dd className="overflow-x-auto whitespace-pre text-foreground">
-              {caseInputLabel(testCase)}
-            </dd>
-            <dt className="text-muted">Expected</dt>
-            <dd className="overflow-x-auto whitespace-pre text-good">
-              {result?.expected ?? caseExpectedLabel(spec, testCase)}
-            </dd>
+          // No card/border here on purpose: this panel and the card used to
+          // be different surfaces (bg-surface vs bg-elevated), so the box
+          // was what showed the result sitting on top of the panel. They're
+          // the same surface now — a border enclosing content that's
+          // identical to its background draws a box around nothing.
+          <div>
             {result ? (
-              <>
-                <dt className="text-muted">Output</dt>
-                <dd
-                  className={cn(
-                    "overflow-x-auto whitespace-pre",
-                    result.passed ? "text-good" : "text-bad",
-                  )}
-                >
-                  {result.error ?? result.got ?? "—"}
-                </dd>
-              </>
+              <p
+                className={cn(
+                  "mb-3 flex items-center gap-1.5 text-[0.7rem] font-semibold tracking-wide uppercase",
+                  result.passed ? "text-good" : "text-bad",
+                )}
+              >
+                {result.passed ? (
+                  <Check size={12} weight="bold" aria-hidden />
+                ) : (
+                  <X size={12} weight="bold" aria-hidden />
+                )}
+                {result.passed ? "Passed" : "Failed"}
+              </p>
             ) : null}
-          </dl>
-        )}
+            <div className="flex flex-col gap-3 font-mono text-[0.75rem]">
+              <div>
+                <p className="mb-1 text-[0.65rem] font-medium tracking-wide text-muted uppercase">
+                  Input
+                </p>
+                <p className="overflow-x-auto whitespace-pre text-foreground">
+                  {caseInputLabel(testCase)}
+                </p>
+              </div>
+              <div>
+                <p className="mb-1 text-[0.65rem] font-medium tracking-wide text-muted uppercase">
+                  Expected
+                </p>
+                <p className="overflow-x-auto whitespace-pre text-good">
+                  {result?.expected ?? caseExpectedLabel(spec, testCase)}
+                </p>
+              </div>
+              {result ? (
+                <div>
+                  <p className="mb-1 text-[0.65rem] font-medium tracking-wide text-muted uppercase">
+                    Your output
+                  </p>
+                  <p
+                    className={cn(
+                      "overflow-x-auto whitespace-pre",
+                      result.passed ? "text-good" : "text-bad",
+                    )}
+                  >
+                    {result.error ?? result.got ?? "—"}
+                  </p>
+                </div>
+              ) : null}
+            </div>
 
-        {result?.logs.length ? (
-          <pre className="mt-3 overflow-x-auto rounded-[length:var(--radius-sm)] bg-code px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-muted">
-            {result.logs.join("\n")}
-          </pre>
-        ) : null}
+            {result?.logs.length ? (
+              <pre className="mt-3 overflow-x-auto rounded-[length:var(--radius-sm)] bg-code px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-muted">
+                {result.logs.join("\n")}
+              </pre>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

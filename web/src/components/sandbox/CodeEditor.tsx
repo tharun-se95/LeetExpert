@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { EditorView } from "@codemirror/view";
 import { indentUnit } from "@codemirror/language";
@@ -36,6 +36,8 @@ export function CodeEditor({
   height?: string;
   minHeight?: string;
 }) {
+  const hintId = useId();
+
   const extensions = useMemo(
     () => [
       lang === "python" ? python() : javascript(),
@@ -45,37 +47,58 @@ export function CodeEditor({
       indentUnit.of(lang === "python" ? "    " : "  "),
       ...sandboxEditorTheme,
       EditorView.lineWrapping,
-      EditorView.contentAttributes.of({ "aria-label": ariaLabel }),
+      EditorView.contentAttributes.of({
+        "aria-label": ariaLabel,
+        "aria-describedby": hintId,
+      }),
     ],
-    [lang, ariaLabel],
+    [lang, ariaLabel, hintId],
   );
 
   return (
-    <CodeMirror
-      value={value}
-      onChange={onChange}
-      extensions={extensions}
-      {...(height ? { height } : { minHeight })}
-      // Without this, @uiw injects its own default LIGHT theme — an opaque
-      // white background that survives into dark mode and washes the tokens
-      // out. Our chrome comes from editorTheme.ts instead.
-      theme="none"
-      basicSetup={{
-        lineNumbers: true,
-        foldGutter: false,
-        // Ours replaces it — see editorTheme.ts. Leaving this on would layer
-        // CodeMirror's light-background default underneath and wash out dark
-        // mode.
-        syntaxHighlighting: false,
-        // The page owns Ctrl/Cmd+F; a second search box inside the editor
-        // would shadow it while focused.
-        searchKeymap: false,
-        autocompletion: false,
-        highlightActiveLine: true,
-        bracketMatching: true,
-        closeBrackets: true,
-        indentOnInput: true,
-      }}
-    />
+    // Tab is genuinely captured here for indentation (@uiw's indentWithTab,
+    // left on) — correct for a Python-heavy course, but WCAG 2.1.2 then
+    // requires the exit method be ADVISED, not just present. CodeMirror
+    // already lets a real Escape keypress arm a short window in which Tab
+    // moves focus out instead of indenting (core behaviour, unconditional) —
+    // the gap was never a trap, only that nothing here ever said so.
+    <div className="group relative h-full">
+      <CodeMirror
+        value={value}
+        onChange={onChange}
+        extensions={extensions}
+        {...(height ? { height } : { minHeight })}
+        // Without this, @uiw injects its own default LIGHT theme — an opaque
+        // white background that survives into dark mode and washes the
+        // tokens out. Our chrome comes from editorTheme.ts instead.
+        theme="none"
+        basicSetup={{
+          lineNumbers: true,
+          foldGutter: false,
+          // Ours replaces it — see editorTheme.ts. Leaving this on would
+          // layer CodeMirror's light-background default underneath and wash
+          // out dark mode.
+          syntaxHighlighting: false,
+          // The page owns Ctrl/Cmd+F; a second search box inside the editor
+          // would shadow it while focused.
+          searchKeymap: false,
+          autocompletion: false,
+          highlightActiveLine: true,
+          bracketMatching: true,
+          closeBrackets: true,
+          indentOnInput: true,
+        }}
+      />
+      <p id={hintId} className="sr-only">
+        Tab indents. To move keyboard focus out of this editor, press Escape,
+        then Tab.
+      </p>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-1.5 right-2 rounded-[length:var(--radius-xs)] bg-elevated shadow-elevation px-1.5 py-0.5 text-[0.62rem] text-muted opacity-0 transition-opacity group-focus-within:opacity-100 motion-reduce:transition-none"
+      >
+        Esc then Tab to leave
+      </div>
+    </div>
   );
 }

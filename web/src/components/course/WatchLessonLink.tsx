@@ -57,7 +57,7 @@ export function WatchLessonLink({ videoSrc, lessonTitle }: WatchLessonLinkProps)
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label="Close video"
-                  className="absolute -top-11 right-0 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-elevated text-foreground transition hover:bg-surface"
+                  className="absolute -top-11 right-0 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-elevated shadow-elevation text-foreground transition hover:bg-surface"
                 >
                   <X weight="bold" className="h-4 w-4" />
                 </button>

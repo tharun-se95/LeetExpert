@@ -11,11 +11,12 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, CaretLeft } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowRight, Check, CaretLeft, List } from "@phosphor-icons/react";
 import { Markdown } from "@/components/md/Markdown";
 import { Sandbox } from "@/components/sandbox/Sandbox";
 import { PanelSplit } from "@/components/problems/PanelSplit";
 import { useProgress } from "@/components/providers/ProgressProvider";
+import { useSidebar } from "@/components/layout/SidebarContext";
 import { splitProblemTabs } from "@/lib/content/splitProblemTabs";
 import { lessonId } from "@/lib/course/nav";
 import { cn } from "@/lib/utils";
@@ -87,6 +88,7 @@ export function ProblemWorkspace({
   const [tab, setTab] = useState<WorkspaceTab>("description");
   const [wide, setWide] = useState(false);
   const tabsId = useId();
+  const { open: sidebarOpen, toggle: toggleSidebar } = useSidebar();
 
   useEffect(() => {
     const mq = window.matchMedia(IDE_WIDE_MQ);
@@ -162,6 +164,28 @@ export function ProblemWorkspace({
           <span className="hidden text-border sm:inline" aria-hidden>
             /
           </span>
+          {/*
+            The lessons-drawer opener, inline next to the title it sits
+            beside — desktop only (lg:); mobile keeps the app Header's own
+            hamburger for the lessons sheet, so this isn't a second control
+            for the same job at that width.
+          */}
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            aria-expanded={sidebarOpen}
+            aria-controls="lessons-sidebar"
+            aria-label={sidebarOpen ? "Close lessons drawer" : "Open lessons drawer"}
+            className={cn(
+              "hidden h-9 w-9 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] transition-colors lg:inline-flex",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+              sidebarOpen
+                ? "bg-surface text-foreground"
+                : "text-muted hover:bg-surface hover:text-foreground",
+            )}
+          >
+            <List className="h-4 w-4" weight="bold" aria-hidden />
+          </button>
           <div className="min-w-0 flex-1">
             <h1 className="truncate font-display text-sm font-bold tracking-tight uppercase sm:text-base">
               {lesson.title}
@@ -491,10 +515,15 @@ function TabList({
             tabIndex={selected ? 0 : -1}
             onClick={() => onChange(t.id)}
             className={cn(
-              "h-full min-w-11 touch-manipulation px-3.5 text-[0.75rem] font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
+              // Underline indicator, not a filled pill: a bottom bar sitting
+              // exactly on the tablist's own border-b (after:-bottom-px)
+              // reads as "this tab owns the rule beneath it" — the modern
+              // convention (GitHub, Linear) — rather than a colour block.
+              "relative h-full min-w-11 touch-manipulation px-3.5 text-[0.75rem] font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
+              "after:absolute after:inset-x-2 after:-bottom-px after:h-[2px] after:rounded-full after:transition-colors after:duration-[var(--dur-fast)] after:content-['']",
               selected
-                ? "bg-pop text-on-pop"
-                : "text-muted hover:text-foreground",
+                ? "text-foreground after:bg-pop"
+                : "text-muted after:bg-transparent hover:text-foreground hover:after:bg-border",
             )}
           >
             <span className="inline-flex items-center gap-1.5">

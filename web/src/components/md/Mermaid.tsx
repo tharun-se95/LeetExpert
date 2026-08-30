@@ -291,7 +291,10 @@ export function Mermaid({ chart }: MermaidProps) {
             aria-label="Fullscreen diagram"
           >
             <motion.div
-              className="relative max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[length:var(--radius-lg)] border border-border bg-surface p-8"
+              // bg-elevated, not bg-surface: this floats over a dark scrim —
+              // surface is the recessed tier and reads as sunk, the opposite
+              // of what a fullscreen lightbox over the page should look like.
+              className="relative max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation p-8"
               initial={reduceMotion ? false : { opacity: 0, scale: 0.97, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
@@ -301,7 +304,7 @@ export function Mermaid({ chart }: MermaidProps) {
               <button
                 type="button"
                 onClick={() => setExpanded(false)}
-                className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-[length:var(--radius-md)] border border-border bg-surface text-muted transition hover:text-foreground"
+                className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-[length:var(--radius-md)] border border-border bg-elevated text-muted transition hover:text-foreground"
                 aria-label="Close fullscreen diagram"
               >
                 <X className="h-4 w-4" />

@@ -5,7 +5,8 @@ import { ArrowUp, Stop } from "@phosphor-icons/react";
 import { useCoach } from "./CoachProvider";
 
 export function CoachComposer() {
-  const { send, pending, error, configured, remaining, resetAt, retry, stop } = useCoach();
+  const { send, pending, error, retryable, configured, remaining, resetAt, retry, stop } =
+    useCoach();
   const [value, setValue] = useState("");
 
   const locked = configured === false || remaining === 0;
@@ -87,7 +88,7 @@ export function CoachComposer() {
         <p className="min-w-0 text-xs text-muted" role={error ? "alert" : undefined}>
           {helper}
         </p>
-        {error ? (
+        {error && retryable ? (
           <button
             type="button"
             onClick={() => void retry()}

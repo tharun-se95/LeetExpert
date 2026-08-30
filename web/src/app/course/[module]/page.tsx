@@ -99,7 +99,7 @@ export default async function ModulePage({ params }: PageProps) {
         </div>
 
         {/* Stat strip */}
-        <dl className="mt-8 grid grid-cols-2 gap-y-6 rounded-[length:var(--radius-lg)] border border-border bg-elevated px-5 py-4 sm:grid-cols-4 sm:divide-x sm:divide-border">
+        <dl className="mt-8 grid grid-cols-2 gap-y-6 rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation px-5 py-4 sm:grid-cols-4 sm:divide-x sm:divide-border">
           <div className="sm:pr-4">
             <dt className="text-xs uppercase tracking-wide text-muted">
               Concept lessons
@@ -168,7 +168,7 @@ export default async function ModulePage({ params }: PageProps) {
                 <Link
                   key={lesson.slug}
                   href={lessonHref(mod.slug, lesson.slug)}
-                  className="group flex items-start gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated px-4 py-3.5 transition hover:border-accent/45 hover:bg-accent/[0.04]"
+                  className="group flex items-start gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated shadow-elevation px-4 py-3.5 transition hover:border-accent/45 hover:bg-accent/[0.04]"
                 >
                   <span className="mt-0.5 w-6 shrink-0 tabular-nums text-muted">
                     {i + 1}.

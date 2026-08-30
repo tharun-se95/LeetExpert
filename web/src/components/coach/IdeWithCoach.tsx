@@ -3,23 +3,16 @@
 import type { ReactNode } from "react";
 import { PanelSplit } from "@/components/problems/PanelSplit";
 import { useCoach } from "./CoachProvider";
-import { CoachHandle, CoachRail } from "./CoachRail";
+import { CoachRail } from "./CoachRail";
 
 export function IdeWithCoach({ sandbox }: { sandbox: ReactNode }) {
   const { railOpen } = useCoach();
-  const ide = (
-    <div className="h-full min-h-0 min-w-0 overflow-hidden">{sandbox}</div>
-  );
 
-  if (!railOpen) {
-    return (
-      <div className="flex h-full min-h-0 min-w-0">
-        <div className="min-h-0 min-w-0 flex-1">{ide}</div>
-        <CoachHandle />
-      </div>
-    );
-  }
-
+  // Always PanelSplit, never a bare div in the closed branch: switching which
+  // element wraps `sandbox` at this position makes React treat it as a new
+  // tree and remount everything inside it — which was silently wiping the
+  // learner's just-run test results on the very first coach auto-open. See
+  // PanelSplit's secondaryCollapsed for the mechanism that avoids it.
   return (
     <PanelSplit
       orientation="horizontal"
@@ -27,8 +20,11 @@ export function IdeWithCoach({ sandbox }: { sandbox: ReactNode }) {
       minPrimary={0.55}
       maxPrimary={0.82}
       resizeLabel="Resize editor and coach"
-      primary={ide}
-      secondary={<CoachRail />}
+      secondaryCollapsed={!railOpen}
+      primary={
+        <div className="h-full min-h-0 min-w-0 overflow-hidden">{sandbox}</div>
+      }
+      secondary={railOpen ? <CoachRail /> : null}
     />
   );
 }

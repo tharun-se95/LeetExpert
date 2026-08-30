@@ -9,32 +9,6 @@ import { CoachComposer } from "./CoachComposer";
 
 const PRIVACY_KEY = "dsa:coach:privacy-seen";
 
-export function CoachHandle() {
-  const { setRailOpen, unread } = useCoach();
-  return (
-    <button
-      type="button"
-      aria-label="Open problem coach"
-      aria-expanded={false}
-      onClick={() => setRailOpen(true)}
-      className="flex w-10 shrink-0 flex-col items-center justify-center gap-2 border-l border-border bg-elevated text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none"
-    >
-      <span className="relative">
-        <ChatCircle size={18} weight="bold" aria-hidden />
-        {unread ? (
-          <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-pop" />
-        ) : null}
-      </span>
-      <span
-        className="text-[0.65rem] font-medium uppercase tracking-wide"
-        style={{ writingMode: "vertical-rl" }}
-      >
-        Coach
-      </span>
-    </button>
-  );
-}
-
 export function CoachRail({
   variant = "rail",
   active = true,
@@ -43,7 +17,8 @@ export function CoachRail({
   /** False while the mobile tab is hidden so we do not steal Code focus. */
   active?: boolean;
 }) {
-  const { setRailOpen, clearThread, clearUnread } = useCoach();
+  const { setRailOpen, clearThread, clearUnread, registerComposerEl } =
+    useCoach();
   const composerRef = useRef<HTMLDivElement>(null);
   const [privacySeen, setPrivacySeen] = useState(true);
 
@@ -55,12 +30,27 @@ export function CoachRail({
     }
   }, []);
 
+  // Rail (desktop) variant: no focus call here at all. It would fire on
+  // EVERY open, including reportRun's automatic first-failure one, which is
+  // exactly the focus-steal this was rewritten to stop — the provider's own
+  // effect (keyed on an explicit-open counter) owns that decision instead;
+  // registering this element is what lets it find the textarea to focus.
+  //
+  // Page (mobile) variant: unaffected. Becoming active there already IS an
+  // explicit tab switch, so it keeps focusing unconditionally, same as before.
+  useEffect(() => {
+    if (variant !== "rail") return;
+    registerComposerEl(composerRef.current);
+    return () => registerComposerEl(null);
+  }, [variant, registerComposerEl]);
+
   useEffect(() => {
     if (!active) return;
     clearUnread();
+    if (variant !== "page") return;
     const input = composerRef.current?.querySelector("textarea");
     input?.focus();
-  }, [active, clearUnread]);
+  }, [active, clearUnread, variant]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (e.key === "Escape" && variant === "rail") {
@@ -84,16 +74,47 @@ export function CoachRail({
       onKeyDown={onKeyDown}
       className={cn(
         "flex h-full min-h-0 flex-col bg-elevated",
-        variant === "rail" ? "border-l border-border" : "",
+        // Only the rail variant borders visible workspace to its left; the
+        // page (mobile) variant fills its own full-screen tab with nothing
+        // beside it to cast a shadow onto.
+        variant === "rail" ? "border-l border-border shadow-edge-left" : "",
       )}
     >
-      <header className="flex shrink-0 items-center gap-2 border-b border-border px-3 py-1.5">
+      <header
+        className={cn(
+          "flex shrink-0 items-start gap-2.5 border-b border-border px-3",
+          // Only the rail carries the masthead; the mobile branch is a lone
+          // clear button and does not need the height that title earns.
+          variant === "rail" ? "py-2.5" : "py-1.5",
+        )}
+      >
         {variant === "rail" ? (
           <>
-            <ChatCircle size={16} weight="bold" className="text-accent" aria-hidden />
-            <h2 className="flex-1 font-display text-sm font-bold uppercase tracking-tight">
-              Coach
-            </h2>
+            {/*
+              A solid mark rather than an accent-tinted glyph: the same
+              bg-pop/text-on-pop pair the wordmark uses, which is a designed
+              couple. An accent-coloured icon here would sit on --elevated,
+              the lightest dark surface, where accentUi does not clear 3:1.
+            */}
+            <span
+              aria-hidden
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop text-on-pop"
+            >
+              <ChatCircle size={17} weight="fill" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <h2 className="font-display text-[1.3rem] font-bold leading-none tracking-tight text-foreground">
+                Coach
+              </h2>
+              {/*
+                Says what this one knows that a general chat box does not —
+                the composer and empty state already carry "won't write the
+                code", so repeating it here would spend the line twice.
+              */}
+              <p className="mt-1 text-[0.7rem] leading-snug text-muted">
+                Reads your code and this problem.
+              </p>
+            </span>
           </>
         ) : (
           // The mobile tab bar already reads "Coach" — a second title here
@@ -104,7 +125,7 @@ export function CoachRail({
           type="button"
           onClick={clearThread}
           aria-label="Clear coach thread"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="-mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           <Trash size={16} weight="bold" />
         </button>
@@ -114,7 +135,7 @@ export function CoachRail({
             aria-label="Close problem coach"
             aria-expanded
             onClick={() => setRailOpen(false)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="-mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             <X size={16} weight="bold" />
           </button>

@@ -93,7 +93,7 @@ function ModuleNode({
               : "text-foreground/80 hover:bg-surface hover:text-foreground",
           )}
         >
-          <span className="mr-1.5 tabular-nums text-[11px] text-muted/70">
+          <span className="mr-1.5 tabular-nums text-[11px] text-muted">
             {navModule.number}.
           </span>
           {navModule.shortTitle}
@@ -109,7 +109,7 @@ function ModuleNode({
                   ? "text-on-pop/70"
                   : doneCount === navModule.lessons.length
                     ? "text-mark"
-                    : "text-muted/60",
+                    : "text-muted",
               )}
             >
               {doneCount}/{navModule.lessons.length}

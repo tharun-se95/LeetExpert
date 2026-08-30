@@ -22,6 +22,7 @@ export function PanelSplit({
   maxPrimary = 0.75,
   className,
   resizeLabel,
+  secondaryCollapsed = false,
 }: {
   orientation: "horizontal" | "vertical";
   primary: ReactNode;
@@ -31,6 +32,16 @@ export function PanelSplit({
   maxPrimary?: number;
   className?: string;
   resizeLabel?: string;
+  /**
+   * Primary fills the container; the handle and secondary are not rendered.
+   * This is how a caller closes the secondary pane WITHOUT switching which
+   * element type wraps `primary` at the call site — doing that (e.g.
+   * returning a bare div instead of <PanelSplit>) makes React treat it as a
+   * different tree and remount everything inside `primary`, discarding any
+   * state it holds. PanelSplit itself stays mounted across the toggle, so
+   * `primary`'s subtree never unmounts.
+   */
+  secondaryCollapsed?: boolean;
 }) {
   const [primaryFrac, setPrimaryFrac] = useState(initialPrimary);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,9 +85,11 @@ export function PanelSplit({
   };
 
   const horizontal = orientation === "horizontal";
-  const primaryStyle = horizontal
-    ? { width: `${primaryFrac * 100}%` }
-    : { height: `${primaryFrac * 100}%` };
+  const primaryStyle = secondaryCollapsed
+    ? undefined
+    : horizontal
+      ? { width: `${primaryFrac * 100}%` }
+      : { height: `${primaryFrac * 100}%` };
 
   return (
     <div
@@ -91,31 +104,38 @@ export function PanelSplit({
       )}
     >
       <div
-        className="flex h-full min-h-0 min-w-0 w-full flex-col overflow-hidden"
+        className={cn(
+          "flex h-full min-h-0 min-w-0 flex-col overflow-hidden",
+          secondaryCollapsed ? "w-full flex-1" : "w-full",
+        )}
         style={primaryStyle}
       >
         {primary}
       </div>
-      <button
-        type="button"
-        aria-label={
-          resizeLabel ??
-          (horizontal
-            ? "Resize description and editor"
-            : "Resize editor and tests")
-        }
-        onPointerDown={(e) => {
-          e.preventDefault();
-          startDrag();
-        }}
-        className={cn(
-          "shrink-0 touch-none bg-border transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none",
-          horizontal ? "w-1 cursor-col-resize" : "h-1 cursor-row-resize",
-        )}
-      />
-      <div className="flex h-full min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden">
-        {secondary}
-      </div>
+      {secondaryCollapsed ? null : (
+        <>
+          <button
+            type="button"
+            aria-label={
+              resizeLabel ??
+              (horizontal
+                ? "Resize description and editor"
+                : "Resize editor and tests")
+            }
+            onPointerDown={(e) => {
+              e.preventDefault();
+              startDrag();
+            }}
+            className={cn(
+              "shrink-0 touch-none bg-border transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none",
+              horizontal ? "w-1 cursor-col-resize" : "h-1 cursor-row-resize",
+            )}
+          />
+          <div className="flex h-full min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden">
+            {secondary}
+          </div>
+        </>
+      )}
     </div>
   );
 }
