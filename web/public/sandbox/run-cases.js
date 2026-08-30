@@ -46,9 +46,23 @@
     return factory(S.ListNode, S.TreeNode, S.Node);
   }
 
-  function captureLogs(logs, run) {
+  /**
+   * Per-case log ceiling. A `print` inside the main loop is the most ordinary
+   * debugging move there is, and problems here state inputs up to n = 1e4 —
+   * so without a cap one such line accumulates tens of thousands of strings
+   * per case in the worker, long before the UI ever gets a say. Capped here,
+   * at the source, rather than trimmed at render time: the memory cost is
+   * paid in this array, not in the DOM.
+   */
+  const LOG_CAP = 500;
+
+  function captureLogs(counter, logs, run) {
     const native = console.log;
     console.log = (...parts) => {
+      if (logs.length >= LOG_CAP) {
+        counter.dropped += 1;
+        return;
+      }
       logs.push(
         parts
           .map((p) => (typeof p === "string" ? p : JSON.stringify(jsonSafe(p))))
@@ -71,6 +85,7 @@
     for (let i = 0; i < cases.length; i++) {
       const testCase = cases[i];
       const logs = [];
+      const logCount = { dropped: 0 };
       let ret = null;
       let argAfter = null;
       let opResults;
@@ -84,7 +99,7 @@
           // only honest claim is that the pair is each other's inverse.
           const raw = JSON.parse(JSON.stringify(testCase.args));
           const input = S.decodeArg(raw[0], (shape && shape[0]) || "value");
-          ret = captureLogs(logs, () => {
+          ret = captureLogs(logCount, logs, () => {
             const instance = new target();
             const [encode, decode] = req.roundtrip;
             if (typeof instance[encode] !== "function") {
@@ -98,12 +113,12 @@
             );
           });
         } else if (isSequence) {
-          const instance = captureLogs(logs, () => {
+          const instance = captureLogs(logCount, logs, () => {
             const ctorArgs = JSON.parse(JSON.stringify(testCase.construct ?? []));
             return new target(...ctorArgs);
           });
           opResults = [];
-          captureLogs(logs, () => {
+          captureLogs(logCount, logs, () => {
             for (const [method, opArgs] of testCase.ops ?? []) {
               if (typeof instance[method] !== "function") {
                 throw new Error(`No method \`${method}\` on the class`);
@@ -120,7 +135,7 @@
             S.decodeArg(v, (shape && shape[idx]) || "value"),
           );
           S.resolveNodeArgs(built, raw, shape);
-          const result = captureLogs(logs, () => target(...built));
+          const result = captureLogs(logCount, logs, () => target(...built));
           ret = jsonSafe(S.encodeResult(result, returns || "value"));
           // "Return a deep copy" problems: a returned original serialises
           // exactly like a correct clone, so equality alone cannot separate
@@ -134,7 +149,10 @@
         error = describe(err);
       }
 
-      outcomes.push({ index: i, ret, argAfter, logs, error, opResults, aliased });
+      outcomes.push({
+        index: i, ret, argAfter, logs, logsDropped: logCount.dropped,
+        error, opResults, aliased,
+      });
     }
 
     return outcomes;

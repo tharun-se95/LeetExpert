@@ -10,6 +10,7 @@ function result(partial: Partial<CaseResult> & Pick<CaseResult, "passed">): Case
     expected: "1",
     error: null,
     logs: [],
+    logsDropped: 0,
     ...partial,
   };
 }

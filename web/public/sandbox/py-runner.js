@@ -206,6 +206,54 @@ def __safe(v):
     except TypeError:
         return repr(v)
 
+# Must match LOG_CAP in run-cases.js — the two runtimes have to truncate at
+# the same point, or the same program would report different output depending
+# on which language tab the learner happened to pick.
+__LOG_CAP = 500
+
+class __CappedOut(io.TextIOBase):
+    """
+    Collects print() output line-by-line and stops accumulating past the cap,
+    counting the rest. A plain StringIO would hold every line: a print inside
+    the main loop at the stated input sizes (n up to 1e4) builds a multi-
+    megabyte buffer here long before the UI gets a say. Only the trailing
+    partial line is retained, so memory stays bounded by the cap.
+    """
+    def __init__(self, cap):
+        self._cap = cap
+        self._buf = ""
+        self.lines = []
+        self.dropped = 0
+
+    def write(self, s):
+        if not s:
+            return 0
+        self._buf += s
+        if "\n" in self._buf:
+            parts = self._buf.split("\n")
+            self._buf = parts.pop()
+            for line in parts:
+                self._take(line)
+        return len(s)
+
+    def _take(self, line):
+        # Blank lines were dropped by the previous split-and-filter too;
+        # keeping that behaviour so a bare print() still reads as no output.
+        if line == "":
+            return
+        if len(self.lines) < self._cap:
+            self.lines.append(line)
+        else:
+            self.dropped += 1
+
+    def flush(self):
+        pass
+
+    def finish(self):
+        if self._buf:
+            self._take(self._buf)
+            self._buf = ""
+
 def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_json, returns, roundtrip_json="[]"):
     cases = json.loads(cases_json)
     shape = json.loads(shape_json)
@@ -224,7 +272,7 @@ def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_js
 
     outcomes = []
     for i, case in enumerate(cases):
-        buf = io.StringIO()
+        buf = __CappedOut(__LOG_CAP)
         ret, arg_after, op_results, error = None, None, None, None
         aliased = None
         try:
@@ -265,10 +313,11 @@ def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_js
                         arg_after = __safe(__encode(built[arg_index], shape.get(str(arg_index), "value")))
         except Exception as exc:
             error = type(exc).__name__ + ": " + str(exc)
-        logs = [ln for ln in buf.getvalue().split("\n") if ln != ""]
+        buf.finish()
         outcomes.append({
             "index": i, "ret": ret, "argAfter": arg_after,
-            "logs": logs, "error": error, "opResults": op_results,
+            "logs": buf.lines, "logsDropped": buf.dropped,
+            "error": error, "opResults": op_results,
             "aliased": aliased,
         })
     return json.dumps({"outcomes": outcomes})

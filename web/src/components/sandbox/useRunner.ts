@@ -194,6 +194,7 @@ export function useRunner(spec: SandboxSpec) {
               ? "This returns the original graph, not a copy — the shape is right, but at least one node is the very same object."
               : null),
           logs: outcome.logs,
+          logsDropped: outcome.logsDropped ?? 0,
         };
       }),
     [spec],

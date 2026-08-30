@@ -200,6 +200,7 @@ describe("resolveInsight", () => {
         expected: "[0, 1]",
         error: null,
         logs: [],
+        logsDropped: 0,
       },
     });
 

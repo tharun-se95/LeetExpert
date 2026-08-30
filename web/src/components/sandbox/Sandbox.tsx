@@ -519,7 +519,11 @@ function IdeWorkspace({
           resultsTab === "console" ? "flex flex-col" : "hidden",
         )}
       >
-        <IdeConsole results={results} />
+        <IdeConsole
+          results={results}
+          active={activeCase}
+          onActiveChange={setActiveCase}
+        />
       </div>
     </div>
   );
@@ -877,12 +881,27 @@ function IdeTestcases({
 }
 
 /**
- * All print()/console.log() output from the last run, in case order. Each
- * case already carries its own `.logs` (shown inline under that case in
- * Tests) — this just gives the whole run's output one continuous place to
- * read, so output from a passing case isn't buried behind a click.
+ * print()/console.log() output for ONE case at a time.
+ *
+ * Concatenating every case was unusable the moment a learner put a print
+ * inside their main loop: cases mostly run the same path, so the wall was
+ * near-identical output repeated per case, and reaching the failing case's
+ * trace meant scrolling past all the passing ones.
+ *
+ * The selector shares `activeCase` with the Tests tab rather than keeping
+ * its own: the panel then has ONE notion of "the case you're looking at",
+ * so picking a case in Tests and flipping to Console lands on that case's
+ * output instead of resetting.
  */
-function IdeConsole({ results }: { results: CaseResult[] | null }) {
+function IdeConsole({
+  results,
+  active,
+  onActiveChange,
+}: {
+  results: CaseResult[] | null;
+  active: number;
+  onActiveChange: (index: number) => void;
+}) {
   const withLogs = (results ?? []).filter((r) => r.logs.length > 0);
 
   if (withLogs.length === 0) {
@@ -911,24 +930,71 @@ function IdeConsole({ results }: { results: CaseResult[] | null }) {
     );
   }
 
-  // A case label only earns its place when there's more than one source to
-  // tell apart — one case's output doesn't need "Case 1" repeated above it.
-  const labelCases = withLogs.length > 1;
+  const all = results ?? [];
+  const current = all[active] ?? all[0];
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-      <div className="flex flex-col gap-3 font-mono text-[0.75rem] leading-relaxed">
-        {withLogs.map((r) => (
-          <div key={r.index}>
-            {labelCases ? (
-              <p className="mb-1 text-muted">Case {r.index + 1}</p>
-            ) : null}
-            <pre className="overflow-x-auto whitespace-pre-wrap break-words text-foreground">
-              {r.logs.join("\n")}
-            </pre>
-          </div>
-        ))}
-      </div>
+    <div className="flex min-h-0 flex-1 flex-col">
+      {/*
+        Only worth a selector when there's more than one case to choose
+        between — a single-case run should just show its output.
+      */}
+      {all.length > 1 ? (
+        <div
+          role="tablist"
+          aria-label="Console output by case"
+          className="flex shrink-0 flex-wrap gap-1.5 border-b border-border px-3 py-2"
+        >
+          {all.map((r, i) => (
+            <button
+              key={r.index}
+              type="button"
+              role="tab"
+              aria-selected={active === i}
+              onClick={() => onActiveChange(i)}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-[length:var(--radius-md)] px-2.5 py-1 font-mono text-[0.7rem] font-medium transition-colors",
+                active === i
+                  ? "bg-elevated text-foreground ring-2 ring-inset ring-pop"
+                  : "text-muted hover:bg-surface hover:text-foreground",
+              )}
+            >
+              {/*
+                A dot, not the Tests pills' full fill: pass/fail is that tab's
+                job, and repeating its exact treatment here would suggest these
+                chips do the same thing. This only needs to help you find the
+                case worth reading.
+              */}
+              {!r.passed ? (
+                <span className="h-1.5 w-1.5 rounded-full bg-bad" aria-hidden />
+              ) : null}
+              Case {r.index + 1}
+              <span className="text-muted tabular-nums">{r.logs.length}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {current && current.logs.length > 0 ? (
+        <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+          <pre className="overflow-x-auto font-mono text-[0.75rem] leading-relaxed whitespace-pre-wrap break-words text-foreground">
+            {current.logs.join("\n")}
+          </pre>
+          {current.logsDropped > 0 ? (
+            <p className="mt-3 border-t border-border pt-2 text-[0.7rem] text-warn">
+              Output stopped after {current.logs.length} lines —{" "}
+              {current.logsDropped.toLocaleString()} more were not captured.
+              Narrow what you print, or print only on the case you care about.
+            </p>
+          ) : null}
+        </div>
+      ) : (
+        <div className="flex min-h-[6rem] flex-1 items-center justify-center px-6 text-center">
+          <p className="text-[0.75rem] text-muted">
+            Case {(current?.index ?? 0) + 1} printed nothing.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

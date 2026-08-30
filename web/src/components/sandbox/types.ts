@@ -121,6 +121,12 @@ export interface CaseOutcome {
   /** args[arg] as it stood after the call */
   argAfter: unknown;
   logs: string[];
+  /**
+   * How many log lines were dropped past the per-case cap. Carried as a
+   * count rather than a sentinel line so the UI can present truncation as
+   * chrome instead of faking it as program output.
+   */
+  logsDropped?: number;
   error: string | null;
   /**
    * `sequence` mode only — what each op actually returned, so a failure can
@@ -144,6 +150,8 @@ export interface CaseResult {
   expected: string;
   error: string | null;
   logs: string[];
+  /** Log lines dropped past the per-case cap; 0 when nothing was cut. */
+  logsDropped: number;
 }
 
 /** Worker → main. `ready` is only sent by the Python worker, after boot. */
