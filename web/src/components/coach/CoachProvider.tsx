@@ -22,8 +22,10 @@ export type ThreadItem =
 interface CoachContextValue {
   sandboxId: string;
   hintLabels: string[];
-  railOpen: boolean;
-  setRailOpen: (open: boolean) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  /** Closes the panel AND returns focus to the launcher. */
+  closeCoach: () => void;
   unread: boolean;
   clearUnread: () => void;
   thread: ThreadItem[];
@@ -57,6 +59,12 @@ interface CoachContextValue {
    * rather than in CoachRail itself.
    */
   registerComposerEl: (el: HTMLElement | null) => void;
+  /**
+   * CoachLauncher calls this with its button element so this provider can
+   * return focus to it when the panel closes — a floating disclosure that
+   * drops focus on the document body is a keyboard dead end.
+   */
+  registerLauncherEl: (el: HTMLElement | null) => void;
 }
 
 const CoachContext = createContext<CoachContextValue | null>(null);
@@ -112,7 +120,7 @@ export function CoachProvider({
   hintLabels: string[];
   children: ReactNode;
 }) {
-  const [railOpen, setRailOpenState] = useState(false);
+  const [open, setOpenState] = useState(false);
   const [unread, setUnread] = useState(false);
   const [thread, setThread] = useState<ThreadItem[]>([]);
   const [diagnosis, setDiagnosis] = useState<Diagnosis | null>(null);
@@ -136,6 +144,11 @@ export function CoachProvider({
   const registerComposerEl = useCallback((el: HTMLElement | null) => {
     composerElRef.current = el;
   }, []);
+  const launcherElRef = useRef<HTMLElement | null>(null);
+  const registerLauncherEl = useCallback((el: HTMLElement | null) => {
+    launcherElRef.current = el;
+  }, []);
+  const [closeRequest, setCloseRequest] = useState(0);
 
   // Focus the composer only for an EXPLICIT open (focusRequest bumped by
   // toggleCoach/openCoach below), never for reportRun's automatic
@@ -157,9 +170,23 @@ export function CoachProvider({
     input?.focus();
   }, [focusRequest]);
 
+  // Focus returns to the launcher on an explicit close. The ordering is load
+  // bearing and works because effects run child-before-parent: setting `open`
+  // false remounts CoachLauncher, whose own effect registers its element, and
+  // only then does this (ancestor) effect run and find it. `isFirstRun` guards
+  // the initial mount so a page load never yanks focus.
+  const isFirstCloseEffect = useRef(true);
+  useEffect(() => {
+    if (isFirstCloseEffect.current) {
+      isFirstCloseEffect.current = false;
+      return;
+    }
+    launcherElRef.current?.focus();
+  }, [closeRequest]);
+
   useEffect(() => {
     try {
-      setRailOpenState(window.localStorage.getItem(RAIL_KEY) === "1");
+      setOpenState(window.localStorage.getItem(RAIL_KEY) === "1");
     } catch {
       /* private mode */
     }
@@ -200,39 +227,47 @@ export function CoachProvider({
 
   const clearUnread = useCallback(() => setUnread(false), []);
 
-  const setRailOpen = useCallback((open: boolean) => {
-    setRailOpenState(open);
-    if (open) setUnread(false);
+  const setOpen = useCallback((next: boolean) => {
+    setOpenState(next);
+    if (next) setUnread(false);
     try {
-      window.localStorage.setItem(RAIL_KEY, open ? "1" : "0");
+      // The stored key keeps its original "rail" name on purpose: the string
+      // is persisted in real learners' browsers, so renaming it for tidiness
+      // would silently discard everyone's open/closed preference.
+      window.localStorage.setItem(RAIL_KEY, next ? "1" : "0");
     } catch {
       /* ignore */
     }
   }, []);
 
+  const closeCoach = useCallback(() => {
+    setOpen(false);
+    setCloseRequest((n) => n + 1);
+  }, [setOpen]);
+
   const toggleCoach = useCallback(() => {
     if (isDesktopViewport()) {
-      const opening = !railOpen;
-      setRailOpen(opening);
+      const opening = !open;
+      setOpen(opening);
       // Only opening is a focus-worthy event — closing has nowhere to focus.
       if (opening) setFocusRequest((n) => n + 1);
       return;
     }
     setUnread(false);
     setMobileCoachTick((n) => n + 1);
-  }, [railOpen, setRailOpen]);
+  }, [open, setOpen]);
 
   // Separate from toggleCoach on purpose: a control labelled "Open coach" that
   // closes an already-open coach is the label lying about what the click does.
   const openCoach = useCallback(() => {
     if (isDesktopViewport()) {
-      setRailOpen(true);
+      setOpen(true);
       setFocusRequest((n) => n + 1);
       return;
     }
     setUnread(false);
     setMobileCoachTick((n) => n + 1);
-  }, [setRailOpen]);
+  }, [setOpen]);
 
   const reportRun = useCallback(
     (input: {
@@ -285,12 +320,12 @@ export function CoachProvider({
           typeof window !== "undefined" &&
           window.matchMedia("(min-width: 1024px)").matches
         ) {
-          setRailOpen(true);
+          setOpen(true);
         }
       }
-      if (failed && !railOpen) setUnread(true);
+      if (failed && !open) setUnread(true);
     },
-    [hintLabels.length, persistThread, railOpen, setRailOpen],
+    [hintLabels.length, persistThread, open, setOpen],
   );
 
   const setSource = useCallback((lang: SandboxLang, code: string) => {
@@ -419,8 +454,9 @@ export function CoachProvider({
     () => ({
       sandboxId,
       hintLabels,
-      railOpen,
-      setRailOpen,
+      open,
+      setOpen,
+      closeCoach,
       unread,
       clearUnread,
       thread,
@@ -441,12 +477,14 @@ export function CoachProvider({
       toggleCoach,
       openCoach,
       registerComposerEl,
+      registerLauncherEl,
     }),
     [
       sandboxId,
       hintLabels,
-      railOpen,
-      setRailOpen,
+      open,
+      setOpen,
+      closeCoach,
       unread,
       clearUnread,
       thread,
@@ -467,6 +505,7 @@ export function CoachProvider({
       toggleCoach,
       openCoach,
       registerComposerEl,
+      registerLauncherEl,
     ],
   );
 

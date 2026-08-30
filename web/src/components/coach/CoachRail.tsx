@@ -17,7 +17,7 @@ export function CoachRail({
   /** False while the mobile tab is hidden so we do not steal Code focus. */
   active?: boolean;
 }) {
-  const { setRailOpen, clearThread, clearUnread, registerComposerEl } =
+  const { closeCoach, clearThread, clearUnread, registerComposerEl } =
     useCoach();
   const composerRef = useRef<HTMLDivElement>(null);
   const [privacySeen, setPrivacySeen] = useState(true);
@@ -55,7 +55,7 @@ export function CoachRail({
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (e.key === "Escape" && variant === "rail") {
       e.stopPropagation();
-      setRailOpen(false);
+      closeCoach();
     }
   };
 
@@ -133,8 +133,7 @@ export function CoachRail({
           <button
             type="button"
             aria-label="Close problem coach"
-            aria-expanded
-            onClick={() => setRailOpen(false)}
+            onClick={closeCoach}
             className="-mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             <X size={16} weight="bold" />

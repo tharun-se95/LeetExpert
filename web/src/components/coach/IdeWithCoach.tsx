@@ -6,7 +6,7 @@ import { useCoach } from "./CoachProvider";
 import { CoachRail } from "./CoachRail";
 
 export function IdeWithCoach({ sandbox }: { sandbox: ReactNode }) {
-  const { railOpen } = useCoach();
+  const { open } = useCoach();
 
   // Always PanelSplit, never a bare div in the closed branch: switching which
   // element wraps `sandbox` at this position makes React treat it as a new
@@ -20,11 +20,11 @@ export function IdeWithCoach({ sandbox }: { sandbox: ReactNode }) {
       minPrimary={0.55}
       maxPrimary={0.82}
       resizeLabel="Resize editor and coach"
-      secondaryCollapsed={!railOpen}
+      secondaryCollapsed={!open}
       primary={
         <div className="h-full min-h-0 min-w-0 overflow-hidden">{sandbox}</div>
       }
-      secondary={railOpen ? <CoachRail /> : null}
+      secondary={open ? <CoachRail /> : null}
     />
   );
 }

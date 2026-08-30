@@ -228,7 +228,7 @@ function SandboxBody({
             type="button"
             onClick={coach.toggleCoach}
             aria-label="Toggle problem coach"
-            aria-expanded={coach.railOpen}
+            aria-expanded={coach.open}
             className="inline-flex h-11 items-center gap-1.5 rounded-[length:var(--radius-md)] px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
           >
             <ChatCircle size={12} weight="bold" aria-hidden />
@@ -751,10 +751,10 @@ function CoachFailBanner() {
         "flex items-center justify-between gap-2 border-b border-border bg-info-surface px-3 py-2",
         // Redundant once the coach rail is already open right next to this
         // panel — the diagnosis is already on screen. Only at lg: though:
-        // `railOpen` is a desktop-rail concept and can be stale from a past
+        // `open` is a desktop-panel concept and can be stale from a past
         // session, but on mobile the coach lives behind its own tab, so this
         // banner is still the only thing telling a mobile learner it exists.
-        coach.railOpen && "lg:hidden",
+        coach.open && "lg:hidden",
       )}
     >
       <p className="min-w-0 text-xs text-info">
