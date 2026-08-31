@@ -59,7 +59,7 @@ export default async function LessonPage({ params }: PageProps) {
   const Embed = LESSON_EMBEDS[lessonId(moduleSlug, lessonSlug)];
 
   const breadcrumbs = [
-    { label: "Lessons", href: "/course" },
+    { label: "Lessons", href: "/courses/dsa" },
     { label: mod.shortTitle, href: moduleHref(mod.slug) },
     { label: meta.lesson.title },
   ];

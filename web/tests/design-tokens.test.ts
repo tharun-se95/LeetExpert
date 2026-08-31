@@ -386,7 +386,10 @@ describe("design tokens", () => {
   });
 
   it("module cards and problem groups scope per-module family colors", () => {
-    const coursePage = readFileSync(join(SRC, "app", "course", "page.tsx"), "utf8");
+    const coursePage = readFileSync(
+      join(SRC, "app", "courses", "dsa", "page.tsx"),
+      "utf8",
+    );
     const problemsList = readFileSync(
       join(SRC, "components", "problems", "ProblemsListClient.tsx"),
       "utf8",

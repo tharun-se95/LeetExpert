@@ -1,5 +1,5 @@
 import { MODULES, STAGES, modulesByStage } from "@/lib/course/manifest";
-import { lessonHref } from "@/lib/course/nav";
+import { lessonHref, moduleHref, problemHref } from "@/lib/course/nav";
 
 export function curriculumStats() {
   const lessons = MODULES.flatMap((m) => m.lessons);
@@ -45,20 +45,20 @@ export const START_HERE = [
 ] as const;
 
 export const TOPIC_CHIPS = [
-  { label: "Arrays", href: "/course/arrays" },
-  { label: "Hash Tables", href: "/course/hash-tables" },
-  { label: "Trees", href: "/course/binary-trees" },
-  { label: "Graphs", href: "/course/graphs" },
-  { label: "DP", href: "/course/dynamic-programming" },
-  { label: "Two Pointers", href: "/course/two-pointers" },
-  { label: "Binary Search", href: "/course/binary-search" },
-  { label: "Recursion", href: "/course/recursion-backtracking" },
+  { label: "Arrays", href: moduleHref("arrays") },
+  { label: "Hash Tables", href: moduleHref("hash-tables") },
+  { label: "Trees", href: moduleHref("binary-trees") },
+  { label: "Graphs", href: moduleHref("graphs") },
+  { label: "DP", href: moduleHref("dynamic-programming") },
+  { label: "Two Pointers", href: moduleHref("two-pointers") },
+  { label: "Binary Search", href: moduleHref("binary-search") },
+  { label: "Recursion", href: moduleHref("recursion-backtracking") },
 ] as const;
 
 export const FIRST_LESSON = lessonHref("getting-started", "course-introduction");
-export const CURRICULUM = "/course";
-export const BIG_O = "/course/big-o";
-export const FIRST_PROBLEM = "/problems/two-sum";
+export const CURRICULUM = "/courses/dsa";
+export const BIG_O = moduleHref("big-o");
+export const FIRST_PROBLEM = problemHref("two-sum");
 export const GITHUB_REPO = "https://github.com/tharun-se95/dsa-handbook";
 
 /** Honest early-bird framing — no fake countdown. */

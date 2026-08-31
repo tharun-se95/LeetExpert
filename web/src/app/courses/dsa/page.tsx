@@ -41,7 +41,7 @@ export default function CourseOverviewPage() {
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            href="/course/getting-started/course-introduction"
+            href="/courses/dsa/getting-started/course-introduction"
             className="inline-flex h-10 items-center gap-2 rounded-[length:var(--radius-md)] bg-pop px-4 text-sm font-semibold text-on-pop transition hover:opacity-90"
           >
             Start the course

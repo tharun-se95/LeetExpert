@@ -35,15 +35,15 @@ export function lessonId(moduleSlug: string, lessonSlug: string): string {
 }
 
 export function lessonHref(moduleSlug: string, lessonSlug: string): string {
-  return `/course/${moduleSlug}/${lessonSlug}`;
+  return `/courses/dsa/${moduleSlug}/${lessonSlug}`;
 }
 
 export function moduleHref(moduleSlug: string): string {
-  return `/course/${moduleSlug}`;
+  return `/courses/dsa/${moduleSlug}`;
 }
 
 export function problemHref(slug: string): string {
-  return `/problems/${slug}`;
+  return `/courses/dsa/problems/${slug}`;
 }
 
 /** Count visited Lessons-nav ids only (ignore problem drills in the chip). */
@@ -87,21 +87,23 @@ export function buildCourseNav(): CourseNavStage[] {
  * URL and its new hub URL count as the same lesson for progress purposes.
  */
 export function lessonIdFromPathname(pathname: string): string | null {
-  const courseMatch = /^\/course\/([^/]+)\/([^/]+)\/?$/.exec(pathname);
+  const problemMatch = /^\/courses\/dsa\/problems\/([^/]+)\/?$/.exec(
+    pathname,
+  );
+  if (problemMatch) {
+    const [, slug] = problemMatch;
+    const hit = findProblemBySlug(slug);
+    if (!hit) return null;
+    return lessonId(hit.module.slug, hit.lesson.slug);
+  }
+
+  const courseMatch = /^\/courses\/dsa\/([^/]+)\/([^/]+)\/?$/.exec(pathname);
   if (courseMatch) {
     const [, moduleSlug, lessonSlug] = courseMatch;
     const mod = MODULES.find((m) => m.slug === moduleSlug);
     if (!mod) return null;
     if (!mod.lessons.some((l) => l.slug === lessonSlug)) return null;
     return lessonId(moduleSlug, lessonSlug);
-  }
-
-  const problemMatch = /^\/problems\/([^/]+)\/?$/.exec(pathname);
-  if (problemMatch) {
-    const [, slug] = problemMatch;
-    const hit = findProblemBySlug(slug);
-    if (!hit) return null;
-    return lessonId(hit.module.slug, hit.lesson.slug);
   }
 
   return null;

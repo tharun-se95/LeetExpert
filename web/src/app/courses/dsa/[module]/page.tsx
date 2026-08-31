@@ -67,7 +67,10 @@ export default async function ModulePage({ params }: PageProps) {
         style={family ? familyCssVars(family) : undefined}
       >
         <Breadcrumbs
-          items={[{ label: "Lessons", href: "/course" }, { label: mod.title }]}
+          items={[
+            { label: "Lessons", href: "/courses/dsa" },
+            { label: mod.title },
+          ]}
         />
 
         {/* Hero */}
