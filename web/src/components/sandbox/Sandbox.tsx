@@ -37,6 +37,7 @@ import { InsightPanel } from "@/components/insight/InsightPanel";
 import { resolveInsight } from "@/lib/insight/resolveInsight";
 import type { ExtractedComplexity } from "@/lib/insight/extractComplexity";
 import { useCoachOptional } from "@/components/coach/CoachProvider";
+import { JavaScriptMark, PythonMark } from "@/components/sandbox/languageMarks";
 
 const LANGS: SandboxLang[] = ["python", "javascript"];
 
@@ -218,8 +219,13 @@ function SandboxBody({
         `-mb-px` pulls the strip over the toolbar's bottom border so the
         active tab's fill meets the editor with no line between them — the
         tab reads as the top edge of the buffer rather than a control above
-        it. The card variant keeps the shared pill styling, since a lesson
-        snippet has no editable canvas for a tab to belong to.
+        it. `-ml-3` cancels the toolbar's own left px-3 for the ide variant
+        only: a real editor's tab bar starts flush at the window edge, and
+        the container's padding — correct for centering the card variant's
+        pill tabs — read as dead margin in front of a bar that's otherwise
+        full-bleed chrome. The card variant keeps the shared pill styling
+        and the container's padding, since a lesson snippet has no editable
+        canvas for a tab to belong to.
       */}
       <div
         className={cn(
@@ -228,7 +234,7 @@ function SandboxBody({
           // carry: .code-surface-tabs's own align-items is unlayered CSS, so
           // a layered Tailwind utility can never win against it. See the
           // comment on .editor-tabs in globals.css.
-          variant === "ide" && "editor-tabs -mb-px self-stretch",
+          variant === "ide" && "editor-tabs -mb-px -ml-3 self-stretch",
         )}
       >
         {LANGS.map((l) => (
@@ -242,32 +248,64 @@ function SandboxBody({
             aria-pressed={lang === l}
             data-active={lang === l ? "true" : "false"}
             className={cn(
-              "font-mono",
+              "inline-flex items-center gap-1.5 font-mono",
               variant === "ide" ? "editor-tab" : "code-tab",
             )}
           >
+            {l === "python" ? <PythonMark /> : <JavaScriptMark />}
             {LANG_LABEL[l]}
           </button>
         ))}
       </div>
 
-      <div className="ml-auto flex shrink-0 items-center gap-1">
+      {/*
+        Mirrors the tab strip's own flush treatment: full toolbar height
+        (self-stretch on the wrapper, no fixed h-11 on the buttons) and
+        -mr-3 to reach the bar's true right edge, the same way -ml-3 does
+        for the tabs on the left. Reset and Run used to float as separate
+        soft-cornered pills at a slightly shorter height than the bar
+        itself — the one part of this toolbar that read as bolted-on UI
+        rather than chrome, next to a tab strip that was already flush and
+        full-height. Square corners here are not an oversight: a
+        soft-cornered pill flush against the bar's straight top/bottom
+        edges would notch its own corners against them, which is what
+        "resize it properly" was actually pointing at more than the
+        literal button dimensions.
+      */}
+      <div
+        className={cn(
+          "ml-auto flex shrink-0",
+          variant === "ide"
+            ? "-mr-3 self-stretch items-stretch gap-0"
+            : "items-center gap-1",
+        )}
+      >
         <button
           type="button"
           onClick={restoreStarter}
           title="Restore the starter code"
-          className="inline-flex h-11 items-center gap-1.5 rounded-[length:var(--radius-md)] px-2 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
+          className={cn(
+            "inline-flex items-center gap-1.5 text-muted transition-colors hover:bg-code hover:text-foreground",
+            variant === "ide"
+              ? "px-3 text-[0.75rem]"
+              : "h-11 rounded-[length:var(--radius-md)] px-2 text-[0.7rem]",
+          )}
         >
-          <RotateCcw size={12} aria-hidden />
+          <RotateCcw size={variant === "ide" ? 14 : 12} aria-hidden />
           Reset
         </button>
         <button
           type="button"
           onClick={() => run(lang, drafts[lang])}
           disabled={busy}
-          className="inline-flex h-11 items-center gap-1.5 whitespace-nowrap rounded-[length:var(--radius-md)] bg-pop px-3 text-[0.72rem] font-semibold text-on-pop transition-opacity hover:opacity-90 disabled:opacity-55"
+          className={cn(
+            "inline-flex items-center gap-1.5 whitespace-nowrap bg-pop font-semibold text-on-pop transition-opacity hover:opacity-90 disabled:opacity-55",
+            variant === "ide"
+              ? "px-4 text-[0.78rem]"
+              : "h-11 rounded-[length:var(--radius-md)] px-3 text-[0.72rem]",
+          )}
         >
-          <Play size={12} aria-hidden />
+          <Play size={variant === "ide" ? 14 : 12} aria-hidden />
           {state.status === "booting"
             ? "Starting Python…"
             : state.status === "running"
