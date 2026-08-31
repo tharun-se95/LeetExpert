@@ -184,9 +184,19 @@ export function SearchDialog({
                 : "Type at least two characters."}
             </p>
           ) : hits.length === 0 ? (
-            <p className="px-4 py-8 text-center text-[0.82rem] text-muted">
-              Nothing matches “{query.trim()}”.
-            </p>
+            <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
+              {/*
+                A no-results state is a dead end until something tells you
+                the search ran and simply found nothing — the same reason the
+                sandbox console gained a mark rather than a lone grey line.
+              */}
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-surface text-muted">
+                <MagnifyingGlass className="h-4 w-4" aria-hidden />
+              </span>
+              <p className="text-[0.82rem] text-muted">
+                Nothing matches “{query.trim()}”.
+              </p>
+            </div>
           ) : (
             hits.map((hit, i) => (
               <button

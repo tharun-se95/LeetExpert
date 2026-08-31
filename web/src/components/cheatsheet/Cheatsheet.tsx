@@ -1,8 +1,33 @@
+import {
+  MagnifyingGlass,
+  SquaresFour,
+  Target,
+  WarningCircle,
+} from "@phosphor-icons/react/dist/ssr";
+// Type-only, so it is erased at build and never pulls the client entry into
+// this server component — the ssr subpath does not re-export the type.
+import type { Icon } from "@phosphor-icons/react";
 import { ComplexityStrip } from "@/components/cheatsheet/ComplexityStrip";
 import { PatternCard } from "@/components/cheatsheet/PatternCard";
 import { SmellCues } from "@/components/cheatsheet/SmellCues";
 import { TrapList } from "@/components/cheatsheet/TrapList";
 import type { ModuleCheatsheet } from "@/lib/course/cheatsheets/types";
+
+/**
+ * The four sections are otherwise identical uppercase muted heads, and the
+ * sheet is a scanning surface — you come back to it mid-problem looking for
+ * one of them, not to read it top to bottom. A leading mark gives each
+ * section a shape to find. Decorative only: the words still carry the
+ * meaning, so the icons stay aria-hidden.
+ */
+function SectionHead({ icon: Glyph, children }: { icon: Icon; children: string }) {
+  return (
+    <h3 className="mb-3 flex items-center gap-1.5 font-display text-sm font-semibold tracking-wide text-muted uppercase">
+      <Glyph className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      {children}
+    </h3>
+  );
+}
 
 export function Cheatsheet({
   sheet,
@@ -36,16 +61,12 @@ export function Cheatsheet({
 
       <div className="mt-6 space-y-6 sm:space-y-8">
         <div>
-          <h3 className="mb-3 font-display text-sm font-semibold tracking-wide text-muted uppercase">
-            Smell → pattern
-          </h3>
+          <SectionHead icon={MagnifyingGlass}>Smell → pattern</SectionHead>
           <SmellCues smells={sheet.smells} />
         </div>
 
         <div>
-          <h3 className="mb-3 font-display text-sm font-semibold tracking-wide text-muted uppercase">
-            Patterns
-          </h3>
+          <SectionHead icon={SquaresFour}>Patterns</SectionHead>
           {/*
             auto-fit + minmax, not a fixed column count: a fixed 3-col grid
             leaves a lone trailing card stranded in an otherwise-empty row
@@ -62,16 +83,12 @@ export function Cheatsheet({
         </div>
 
         <div>
-          <h3 className="mb-3 font-display text-sm font-semibold tracking-wide text-muted uppercase">
-            Complexity targets
-          </h3>
+          <SectionHead icon={Target}>Complexity targets</SectionHead>
           <ComplexityStrip rows={sheet.complexity} />
         </div>
 
         <div>
-          <h3 className="mb-3 font-display text-sm font-semibold tracking-wide text-muted uppercase">
-            Traps
-          </h3>
+          <SectionHead icon={WarningCircle}>Traps</SectionHead>
           <TrapList traps={sheet.traps} />
         </div>
       </div>

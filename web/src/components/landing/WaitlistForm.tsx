@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { CheckCircle, PaperPlaneTilt } from "@phosphor-icons/react";
 
 const WAITLIST_KEY = "dsa:paid-launch-waitlist-email";
 
@@ -41,9 +42,21 @@ export function WaitlistForm() {
 
   if (saved) {
     return (
-      <p className="rounded-[length:var(--radius-md)] border border-good/40 bg-good/10 px-4 py-3 text-sm text-foreground">
-        You’re on the list for the paid launch notice (
-        <span className="font-mono text-xs text-muted">{saved}</span>).
+      <p className="flex items-start gap-2 rounded-[length:var(--radius-md)] border border-good/40 bg-good/10 px-4 py-3 text-sm text-foreground">
+        {/*
+          The confirmation previously leaned on a green tint alone. A check
+          states the outcome in a second channel, which matters most for the
+          state a learner sees once and needs to trust immediately.
+        */}
+        <CheckCircle
+          className="mt-0.5 h-4 w-4 shrink-0 text-good"
+          weight="fill"
+          aria-hidden
+        />
+        <span>
+          You’re on the list for the paid launch notice (
+          <span className="font-mono text-xs text-muted">{saved}</span>).
+        </span>
       </p>
     );
   }
@@ -68,9 +81,10 @@ export function WaitlistForm() {
       />
       <button
         type="submit"
-        className="shrink-0 rounded-[length:var(--radius-md)] bg-pop px-4 py-2.5 text-sm font-semibold text-on-pop transition hover:opacity-90"
+        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-[length:var(--radius-md)] bg-pop px-4 py-2.5 text-sm font-semibold text-on-pop transition hover:opacity-90"
       >
         Notify me
+        <PaperPlaneTilt className="h-4 w-4 shrink-0" aria-hidden />
       </button>
     </form>
   );

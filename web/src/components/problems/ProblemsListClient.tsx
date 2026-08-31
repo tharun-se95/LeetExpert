@@ -348,7 +348,10 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
           })}
 
           {filtered.length === 0 ? (
-            <div className="rounded-[length:var(--radius-lg)] border border-dashed border-border bg-elevated px-6 py-12 text-center">
+            <div className="flex flex-col items-center rounded-[length:var(--radius-lg)] border border-dashed border-border bg-elevated px-6 py-12 text-center">
+              <span className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-surface text-muted">
+                <MagnifyingGlass className="h-5 w-5" aria-hidden />
+              </span>
               <p className="text-sm font-medium">No matches</p>
               <p className="mt-1 text-sm text-muted">
                 {query.trim()

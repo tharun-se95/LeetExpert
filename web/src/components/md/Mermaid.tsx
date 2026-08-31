@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useTheme } from "next-themes";
-import { ArrowsOut as Maximize2, X } from "@phosphor-icons/react";
+import { ArrowsOut as Maximize2, WarningCircle, X } from "@phosphor-icons/react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -224,7 +224,10 @@ export function Mermaid({ chart }: MermaidProps) {
   if (error) {
     return (
       <div className="my-6 overflow-hidden rounded-[length:var(--radius-md)] border border-warn/30 bg-warn/5 p-4">
-        <p className="text-sm font-medium text-warn">Diagram failed to render</p>
+        <p className="flex items-center gap-1.5 text-sm font-medium text-warn">
+          <WarningCircle className="h-4 w-4 shrink-0" aria-hidden />
+          Diagram failed to render
+        </p>
         <p className="mt-1 text-xs text-muted">{error}</p>
         <button
           type="button"

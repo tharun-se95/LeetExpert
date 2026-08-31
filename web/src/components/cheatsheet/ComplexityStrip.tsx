@@ -1,3 +1,4 @@
+import { Clock, Database } from "@phosphor-icons/react/dist/ssr";
 import type { ComplexityRow } from "@/lib/course/cheatsheets/types";
 import { cn } from "@/lib/utils";
 
@@ -24,14 +25,25 @@ function isTargetBigO(value: string): boolean {
   return /^o\(n\)\*?$/.test(v) || /^o\(h\)/.test(v) || /^o\(w\)/.test(v) || /^o\(k\)/.test(v);
 }
 
+/**
+ * Clock for time, Database for space — the same pair the lesson-body
+ * `complexity` block already uses (course/Complexity.tsx). The mobile list
+ * stacks time above space with only a colour between them, so without the
+ * marks the two rows are one undifferentiated pair of big-O strings.
+ *
+ * The icon is decorative here: each value already sits under a "Time" or
+ * "Space" column header (desktop) or beside its own label (mobile), so
+ * aria-hidden keeps a screen reader from hearing the axis named twice.
+ */
 function TimeCell({ value }: { value: string }) {
   return (
     <span
       className={cn(
-        "font-mono text-xs",
+        "inline-flex items-center gap-1 font-mono text-xs",
         isTargetBigO(value) ? "text-good" : "text-info",
       )}
     >
+      <Clock className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
       {value}
     </span>
   );
@@ -41,10 +53,11 @@ function SpaceCell({ value }: { value: string }) {
   return (
     <span
       className={cn(
-        "font-mono text-xs",
+        "inline-flex items-center gap-1 font-mono text-xs",
         isTargetBigO(value) ? "text-good" : "text-info",
       )}
     >
+      <Database className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
       {value}
     </span>
   );
