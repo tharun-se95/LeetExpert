@@ -31,6 +31,7 @@ const HEX_ALLOW = new Set([
   "lib/visual/familyTheme.ts", // per-family accent map for PatternLab
   "components/md/Mermaid.tsx", // Mermaid theme API wants resolved hex
   "components/sandbox/editorTheme.ts", // may mirror --tok-* literals
+  "app/courses/dsa/registry.ts", // per-course accent hex, same pattern as familyTheme.ts
 ]);
 
 function walk(dir: string): string[] {
