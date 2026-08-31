@@ -281,14 +281,57 @@ constant):
       "../../courses/dsa/getting-started/course-roadmap.md",
 ```
 
-- [ ] **Step 5: Run the full test suite to confirm nothing else references the old path**
+- [ ] **Step 5: Fix the two build scripts so `npm run build` and `npm run dev` don't crash**
+
+`package.json`'s `prebuild`/`predev` hooks run
+`scripts/build-search-index.mjs` and `scripts/build-coach-corpus.mjs`,
+both of which independently hardcode the old content root. Left as-is,
+`npm run build` and `npm run dev` crash immediately with an `ENOENT` on
+this branch — a direct violation of the project standard that `tsc`,
+`eslint`, `npm test`, AND `npm run build` must all pass before anything
+is claimed to work. (Task 9 later generalizes `build-search-index.mjs` to
+iterate every course under `courses/`, and Task 13 was going to fix
+`build-coach-corpus.mjs`'s same constant — this step does the minimal
+single-course fix now so the build never breaks in between; Task 9's
+later rewrite supersedes this step's `build-search-index.mjs` edit, and
+Task 13 becomes a no-op verification once this step lands.)
+
+`web/scripts/build-search-index.mjs:21`:
+```js
+const COURSE = join(here, "..", "..", "course");
+```
+→
+```js
+const COURSE = join(here, "..", "..", "courses", "dsa");
+```
+
+`web/scripts/build-coach-corpus.mjs:16,19`:
+```js
+const COURSE = join(here, "..", "..", "course");
+
+if (!existsSync(COURSE)) {
+  console.error(`[coach-corpus] course/ not found at ${COURSE}`);
+```
+→
+```js
+const COURSE = join(here, "..", "..", "courses", "dsa");
+
+if (!existsSync(COURSE)) {
+  console.error(`[coach-corpus] courses/dsa/ not found at ${COURSE}`);
+```
+
+- [ ] **Step 6: Run the full test suite and a full build to confirm nothing else references the old path**
 
 Run: `cd web && npm test`
 Expected: `Test Files  27 passed (27)` — every file green, zero references
 to a nonexistent `course/` root remaining. If any test still fails on an
-ENOENT for a `course/...` path, grep for it (`grep -rn '"course"' web/src web/tests | grep -v courses`) and fix it the same way before proceeding — do not leave any test red.
+ENOENT for a `course/...` path, grep for it (`grep -rn '"course"' web/src web/tests web/scripts | grep -v courses`) and fix it the same way before proceeding — do not leave any test red.
 
-- [ ] **Step 6: Commit**
+Run: `cd web && npm run build`
+Expected: succeeds — `prebuild` (which runs both scripts just fixed) no
+longer crashes, and the build completes.
+
+- [ ] **Step 7: Commit**
 
 ```bash
 git add -A
