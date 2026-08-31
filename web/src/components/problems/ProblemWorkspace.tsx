@@ -161,9 +161,6 @@ export function ProblemWorkspace({
               {backLabel}
             </span>
           </Link>
-          <span className="hidden text-border sm:inline" aria-hidden>
-            /
-          </span>
           {/*
             The lessons-drawer opener, inline next to the title it sits
             beside — desktop only (lg:); mobile keeps the app Header's own
@@ -186,22 +183,40 @@ export function ProblemWorkspace({
           >
             <List className="h-4 w-4" weight="bold" aria-hidden />
           </button>
+          {/*
+            Divides controls from content. This used to be a "/" sitting
+            BEFORE the drawer button, which read as a breadcrumb separator
+            pointing at a button — as if the toggle were a crumb in the
+            path. A rule after the controls says what is actually true:
+            everything left of it acts on the view, everything right of it
+            describes the problem.
+          */}
+          <span
+            className="hidden h-6 w-px shrink-0 bg-border sm:block"
+            aria-hidden
+          />
           <div className="min-w-0 flex-1">
             <h1 className="truncate font-display text-sm font-bold tracking-tight uppercase sm:text-base">
               {lesson.title}
             </h1>
             <p className="truncate text-[0.7rem] text-muted">{eyebrow}</p>
           </div>
+          {/*
+            Solved is the only state worth a chip. The old "Problem" pill it
+            replaced was constant — every page this component renders IS a
+            problem — so it spent prime space next to the nav saying nothing,
+            and its absence now carries "not solved yet" on its own.
+          */}
           {isSolved ? (
             <span className="inline-flex shrink-0 items-center gap-1 rounded-[length:var(--radius-md)] bg-good/15 px-2 py-0.5 text-[0.7rem] font-medium text-good">
               <Check size={11} strokeWidth={3} aria-hidden />
               Solved
             </span>
-          ) : (
-            <span className="hidden shrink-0 rounded-[length:var(--radius-md)] border border-border px-2 py-0.5 text-[0.7rem] text-muted sm:inline">
-              Problem
-            </span>
-          )}
+          ) : null}
+          <span
+            className="hidden h-6 w-px shrink-0 bg-border sm:block"
+            aria-hidden
+          />
           <nav
             className="flex shrink-0 items-center"
             aria-label="Problem navigation"
