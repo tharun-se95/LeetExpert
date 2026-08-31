@@ -192,8 +192,16 @@ function SandboxBody({
   const toolbar = (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-3 px-3 py-2",
-        variant === "ide" ? "border-b border-border bg-code" : "",
+        "flex flex-wrap items-center gap-3 px-3",
+        // Chrome, not canvas. The toolbar used to be bg-code — the same
+        // surface as the editor below it — so the tabs and Run floated on
+        // the very slab you type into, separated only by a hairline. An
+        // elevated strip over the recessed code well is the distinction
+        // every desktop editor draws, and shadow-edge-bottom is how a
+        // one-sided lift is spelled here.
+        variant === "ide"
+          ? "shadow-edge-bottom border-b border-border bg-elevated"
+          : "py-2",
       )}
     >
       {variant === "card" ? (
@@ -203,7 +211,19 @@ function SandboxBody({
         </span>
       ) : null}
 
-      <div className="code-surface-tabs inline-flex">
+      {/*
+        `-mb-px` pulls the strip over the toolbar's bottom border so the
+        active tab's fill meets the editor with no line between them — the
+        tab reads as the top edge of the buffer rather than a control above
+        it. The card variant keeps the shared pill styling, since a lesson
+        snippet has no editable canvas for a tab to belong to.
+      */}
+      <div
+        className={cn(
+          "code-surface-tabs inline-flex",
+          variant === "ide" && "-mb-px self-stretch items-stretch gap-0",
+        )}
+      >
         {LANGS.map((l) => (
           <button
             key={l}
@@ -214,7 +234,10 @@ function SandboxBody({
             }}
             aria-pressed={lang === l}
             data-active={lang === l ? "true" : "false"}
-            className="code-tab font-mono"
+            className={cn(
+              "font-mono",
+              variant === "ide" ? "editor-tab" : "code-tab",
+            )}
           >
             {LANG_LABEL[l]}
           </button>
@@ -382,6 +405,7 @@ function IdeWorkspace({
   extractedComplexity: ExtractedComplexity | null;
 }) {
   const [activeCase, setActiveCase] = useState(0);
+  const [cursor, setCursor] = useState({ line: 1, col: 1 });
   const [resultsOpen, setResultsOpen] = useState(false);
   const [resultsTab, setResultsTab] = useState<ResultsTab>("tests");
   const resultsPanelId = useId();
@@ -468,7 +492,23 @@ function IdeWorkspace({
           lang={lang}
           height="100%"
           ariaLabel={`${LANG_LABEL[lang]} solution editor`}
+          onCursorChange={setCursor}
         />
+      </div>
+      {/*
+        The strip every desktop editor puts under the buffer. Indent width
+        is not filler here: this course teaches Python, where mixing 4 and 2
+        spaces is a bug rather than a style nit, and the editor silently
+        switches indentUnit with the language.
+      */}
+      <div className="flex shrink-0 items-center gap-3 border-t border-border bg-elevated px-3 py-1 font-mono text-[0.65rem] text-muted">
+        <span className="tabular-nums">
+          Ln {cursor.line}, Col {cursor.col}
+        </span>
+        <span className="ml-auto">{LANG_LABEL[lang]}</span>
+        <span className="tabular-nums">
+          Spaces: {lang === "python" ? 4 : 2}
+        </span>
       </div>
     </div>
   );

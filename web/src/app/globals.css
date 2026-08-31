@@ -85,6 +85,10 @@
   --border: var(--press-rule);
   --surface: var(--press-paper-sunk); /* test panel / muted — deepest */
   --code: #e4e9f2; /* editor / code chrome — recessed below the page */
+  /* The band under the caret's line. Neutral, not the family accent: an
+     editor marks the active line with depth, and an accent tint would also
+     shift hue per topic family on a surface meant to read as constant. */
+  --editor-active-line: rgb(22 32 46 / 0.055); /* --press-ink, darkens paper */
   --elevated: #ffffff; /* sidebar, lesson panel, cards — brightest lift */
   --accent: var(--press-olive);
   --accent-hover: #334155; /* steel lift for hover */
@@ -191,6 +195,9 @@
   --surface: #0c0c0d; /* tests / muted — recess, deepest tier */
   --elevated: #26262a; /* sidebar / lesson / cards — brightest lift */
   --code: #19191d; /* editor — above the page, below elevated */
+  /* Flipped for the same reason the shadow tint is: a dark ink at low alpha
+     would do nothing over an already-dark editor, so the band lightens. */
+  --editor-active-line: rgb(255 255 255 / 0.045);
 
   /* A light ink at low alpha LIGHTENS a dark surface instead of shadowing
      it, so dark mode drops the ink tint and uses near-black instead —
@@ -666,6 +673,41 @@ body {
   /* Solid accent pill — paper/ink alone was invisible on bg-surface toolbars */
   background: var(--accent);
   color: var(--on-pop);
+  font-weight: 600;
+}
+
+/*
+  Editor-only tab treatment. Deliberately NOT folded into .code-tab: that
+  class is shared by every lesson code block and the viz panel, where a tab
+  is just a language switch. Here the tab sits on chrome and names the
+  buffer below it, so the active one drops its pill, takes the editor's own
+  background, and grows a top rule — the tab and the canvas read as one
+  piece, which is what makes a tab strip look like an editor's.
+*/
+.editor-tab {
+  position: relative;
+  border-radius: 0;
+  border-top: 2px solid transparent;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent;
+  transition:
+    color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.editor-tab:hover {
+  color: var(--foreground);
+  background: var(--code);
+}
+
+.editor-tab[aria-pressed="true"],
+.editor-tab[data-active="true"] {
+  border-top-color: var(--accent);
+  background: var(--code);
+  color: var(--foreground);
   font-weight: 600;
 }
 

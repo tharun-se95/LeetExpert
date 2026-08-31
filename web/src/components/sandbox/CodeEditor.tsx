@@ -27,6 +27,7 @@ export function CodeEditor({
   ariaLabel,
   height,
   minHeight = "10rem",
+  onCursorChange,
 }: {
   value: string;
   onChange: (next: string) => void;
@@ -35,6 +36,13 @@ export function CodeEditor({
   /** Fill a flex parent (IDE layout). When set, `minHeight` is ignored. */
   height?: string;
   minHeight?: string;
+  /**
+   * Caret position for the status bar, 1-based as editors report it.
+   * MUST be a stable reference (a setState function, or useCallback): it is
+   * an extension dependency, so a new identity each render rebuilds the
+   * whole extension array.
+   */
+  onCursorChange?: (pos: { line: number; col: number }) => void;
 }) {
   const hintId = useId();
 
@@ -47,12 +55,23 @@ export function CodeEditor({
       indentUnit.of(lang === "python" ? "    " : "  "),
       ...sandboxEditorTheme,
       EditorView.lineWrapping,
+      EditorView.updateListener.of((update) => {
+        // selectionSet alone misses the caret moving because text above it
+        // changed; docChanged covers that without firing on pure scrolls.
+        if (!update.selectionSet && !update.docChanged) return;
+        const head = update.state.selection.main.head;
+        const line = update.state.doc.lineAt(head);
+        onCursorChange?.({
+          line: line.number,
+          col: head - line.from + 1,
+        });
+      }),
       EditorView.contentAttributes.of({
         "aria-label": ariaLabel,
         "aria-describedby": hintId,
       }),
     ],
-    [lang, ariaLabel, hintId],
+    [lang, ariaLabel, hintId, onCursorChange],
   );
 
   return (

@@ -86,22 +86,29 @@ export const editorChrome = EditorView.theme({
   ".cm-content": { padding: "0.75rem 0", caretColor: "var(--accent)" },
   ".cm-line": { padding: "0 1rem 0 0" },
 
+  // A trough, not just dimmer numbers: the rule is what separates the
+  // gutter from the text column the way an editor's does, and it keeps the
+  // numbers from reading as part of the code.
   ".cm-gutters": {
     backgroundColor: "transparent",
     color: "color-mix(in oklab, var(--muted) 55%, transparent)",
     border: "none",
+    borderRight: "1px solid var(--border)",
     paddingLeft: "0.75rem",
   },
   ".cm-lineNumbers .cm-gutterElement": {
     padding: "0 0.75rem 0 0",
     minWidth: "2.25rem",
   },
+  // Full-strength ink rather than the accent: "which line am I on" is a
+  // position cue, not a themed one, and --accent is remapped per topic
+  // family — the caret's own line should not change hue with the module.
   ".cm-activeLineGutter": {
-    backgroundColor: "transparent",
-    color: "var(--accent)",
+    backgroundColor: "var(--editor-active-line)",
+    color: "var(--foreground)",
   },
   ".cm-activeLine": {
-    backgroundColor: "color-mix(in oklab, var(--accent) 12%, transparent)",
+    backgroundColor: "var(--editor-active-line)",
   },
 
   ".cm-cursor, .cm-dropCursor": {
