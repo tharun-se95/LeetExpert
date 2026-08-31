@@ -13,10 +13,10 @@ import { fileURLToPath } from "node:url";
 import { createJiti } from "jiti";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const COURSE = join(here, "..", "..", "course");
+const COURSE = join(here, "..", "..", "courses", "dsa");
 
 if (!existsSync(COURSE)) {
-  console.error(`[coach-corpus] course/ not found at ${COURSE}`);
+  console.error(`[coach-corpus] courses/dsa/ not found at ${COURSE}`);
   process.exit(1);
 }
 

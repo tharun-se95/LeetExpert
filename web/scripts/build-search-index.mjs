@@ -18,7 +18,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const COURSE = join(here, "..", "..", "course");
+const COURSE = join(here, "..", "..", "courses", "dsa");
 const OUT = join(here, "..", "public", "search-index.json");
 
 const entries = [];
