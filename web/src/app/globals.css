@@ -677,6 +677,23 @@ body {
 }
 
 /*
+  The IDE toolbar wraps its language tabs in .code-surface-tabs (below),
+  which centers its children — correct for the pill tabs every lesson code
+  block uses, wrong for editor tabs that are meant to stretch full height
+  and touch the border. Overriding align-items with a Tailwind utility on
+  the element does NOT work here: that utility lands in @layer utilities,
+  and .code-surface-tabs's align-items is unlayered plain CSS, which wins
+  regardless of source order or which one was written more recently — the
+  same rule that made the composer's own focus-visible:outline-none inert
+  earlier. This class exists so the override is unlayered too, not because
+  a second class name is inherently better.
+*/
+.editor-tabs {
+  align-items: stretch;
+  gap: 0;
+}
+
+/*
   Editor-only tab treatment. Deliberately NOT folded into .code-tab: that
   class is shared by every lesson code block and the viz panel, where a tab
   is just a language switch. Here the tab sits on chrome and names the

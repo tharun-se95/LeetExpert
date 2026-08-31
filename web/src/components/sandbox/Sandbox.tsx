@@ -12,12 +12,15 @@ import {
 import dynamic from "next/dynamic";
 import {
   Check,
+  Lightbulb,
+  ListChecks,
   Play,
   ArrowCounterClockwise as RotateCcw,
   Terminal as TerminalSquare,
   X,
   CaretUp,
   CaretDown,
+  type Icon,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useRunner } from "@/components/sandbox/useRunner";
@@ -221,7 +224,11 @@ function SandboxBody({
       <div
         className={cn(
           "code-surface-tabs inline-flex",
-          variant === "ide" && "-mb-px self-stretch items-stretch gap-0",
+          // .editor-tabs, not the items-stretch/gap-0 utilities this used to
+          // carry: .code-surface-tabs's own align-items is unlayered CSS, so
+          // a layered Tailwind utility can never win against it. See the
+          // comment on .editor-tabs in globals.css.
+          variant === "ide" && "editor-tabs -mb-px self-stretch",
         )}
       >
         {LANGS.map((l) => (
@@ -370,6 +377,21 @@ const RESULTS_OPEN_KEY = "dsa:ide:results-open";
 const RESULTS_TAB_KEY = "dsa:ide:results-tab";
 
 type ResultsTab = "insight" | "tests" | "console";
+
+/**
+ * Lightbulb for Insight even though "tip" callouts elsewhere use the same
+ * glyph — the two never share a surface (one is inline lesson prose, this
+ * is the results rail), and "a flash of understanding" is the plain-English
+ * reading of "insight" either way. ListChecks/Terminal both reuse an icon
+ * this file already shows elsewhere for the identical idea (Tests' pass
+ * marks, the console's own empty-state mark) rather than inventing a
+ * second symbol for the same thing.
+ */
+const RESULTS_TAB_ICON: Record<ResultsTab, Icon> = {
+  insight: Lightbulb,
+  tests: ListChecks,
+  console: TerminalSquare,
+};
 
 const RESULTS_TABS: ResultsTab[] = ["insight", "tests", "console"];
 
@@ -681,6 +703,7 @@ function ResultsRail({
           ] as const
         ).map(([id, label]) => {
           const selected = resultsOpen && resultsTab === id;
+          const RailIcon = RESULTS_TAB_ICON[id];
           return (
             <button
               key={id}
@@ -706,6 +729,11 @@ function ResultsRail({
                   : "text-muted after:bg-transparent hover:text-foreground hover:after:bg-border",
               )}
             >
+              <RailIcon
+                className="h-3.5 w-3.5 shrink-0"
+                weight={selected ? "fill" : undefined}
+                aria-hidden
+              />
               {label}
               {id === "tests" ? (
                 <span
