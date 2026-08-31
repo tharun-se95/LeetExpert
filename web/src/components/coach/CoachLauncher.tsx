@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ChatCircle } from "@phosphor-icons/react";
+import { Sparkle } from "@phosphor-icons/react";
 import { useCoach } from "./CoachProvider";
 
 /**
@@ -32,7 +32,7 @@ export function CoachLauncher() {
       // need to read and click is not.
       className="shadow-elevation fixed right-6 bottom-20 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-pop text-on-pop transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none motion-reduce:hover:scale-100"
     >
-      <ChatCircle size={24} weight="fill" aria-hidden />
+      <Sparkle size={24} weight="fill" aria-hidden />
       {unread ? (
         <>
           {/*

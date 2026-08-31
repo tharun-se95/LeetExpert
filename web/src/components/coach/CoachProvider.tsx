@@ -36,6 +36,8 @@ interface CoachContextValue {
     property: boolean;
   }) => void;
   setSource: (lang: SandboxLang, code: string) => void;
+  /** Which language the editor is on — shown in the coach's context strip. */
+  sourceLang: SandboxLang;
   send: (text: string) => Promise<void>;
   retry: () => Promise<void>;
   stop: () => void;
@@ -133,6 +135,7 @@ export function CoachProvider({
     lang: "python",
     code: "",
   });
+  const [sourceLang, setSourceLang] = useState<SandboxLang>("python");
   const lastUser = useRef<string | null>(null);
   const openedThisSession = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -315,6 +318,11 @@ export function CoachProvider({
 
   const setSource = useCallback((lang: SandboxLang, code: string) => {
     source.current = { lang, code };
+    // The code itself stays in the ref — this fires on every keystroke and
+    // re-rendering the whole provider per character would be absurd. Only
+    // the language is lifted to state, guarded so a same-language call is a
+    // no-op, because the context strip has to render it.
+    setSourceLang((prev) => (prev === lang ? prev : lang));
   }, []);
 
   const stop = useCallback(() => {
@@ -448,6 +456,7 @@ export function CoachProvider({
       diagnosis,
       reportRun,
       setSource,
+      sourceLang,
       send,
       retry,
       stop,
@@ -475,6 +484,7 @@ export function CoachProvider({
       diagnosis,
       reportRun,
       setSource,
+      sourceLang,
       send,
       retry,
       stop,

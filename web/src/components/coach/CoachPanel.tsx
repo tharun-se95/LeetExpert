@@ -1,13 +1,49 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { ChatCircle, X, Trash } from "@phosphor-icons/react";
+import { Sparkle, X, Trash } from "@phosphor-icons/react";
+import { LANG_LABEL } from "@/components/sandbox/types";
 import { cn } from "@/lib/utils";
 import { useCoach } from "./CoachProvider";
 import { CoachThread } from "./CoachThread";
 import { CoachComposer } from "./CoachComposer";
 
 const PRIVACY_KEY = "dsa:coach:privacy-seen";
+
+/**
+ * What the coach can actually see right now, as live state rather than a
+ * sentence claiming it. Every field is real: the language comes from the
+ * editor, the tally from the last run's diagnosis, the hint count from the
+ * lesson. Nothing here is rendered unless the coach genuinely has it — an
+ * agent that lists context it does not hold is worse than one that lists
+ * none.
+ */
+function CoachContext() {
+  const { diagnosis, hintLabels, sourceLang } = useCoach();
+  const parts: string[] = [LANG_LABEL[sourceLang]];
+  if (diagnosis && diagnosis.total > 0) {
+    parts.push(`${diagnosis.passed}/${diagnosis.total} tests passing`);
+  }
+  if (hintLabels.length > 0) {
+    parts.push(`${hintLabels.length} hint${hintLabels.length === 1 ? "" : "s"}`);
+  }
+
+  return (
+    <p className="flex shrink-0 flex-wrap items-center gap-x-1.5 gap-y-1 border-b border-border px-3 py-1.5 font-mono text-[0.65rem] text-muted">
+      <span className="text-muted/70">Reading</span>
+      {parts.map((part, i) => (
+        <span key={part} className="flex items-center gap-1.5">
+          {i > 0 ? (
+            <span aria-hidden className="text-border">
+              ·
+            </span>
+          ) : null}
+          {part}
+        </span>
+      ))}
+    </p>
+  );
+}
 
 export function CoachPanel({
   variant = "floating",
@@ -101,20 +137,18 @@ export function CoachPanel({
               aria-hidden
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop text-on-pop"
             >
-              <ChatCircle size={19} weight="fill" />
+              <Sparkle size={19} weight="fill" />
             </span>
             <span className="min-w-0 flex-1">
               <h2 className="font-display text-[1.3rem] font-bold leading-none tracking-tight text-foreground">
                 Coach
               </h2>
               {/*
-                Says what this one knows that a general chat box does not —
-                the composer and empty state already carry "won't write the
-                code", so repeating it here would spend the line twice.
+                The subtitle here used to read "Reads your code and this
+                problem." — a claim the panel never evidenced. CoachContext
+                below shows the same thing as live state instead, which is
+                the difference between asserting grounding and having it.
               */}
-              <p className="mt-1 text-[0.7rem] leading-snug text-muted">
-                Reads your code and this problem.
-              </p>
             </span>
           </>
         ) : (
@@ -141,6 +175,7 @@ export function CoachPanel({
           </button>
         ) : null}
       </header>
+      <CoachContext />
       {!privacySeen ? (
         <p className="shrink-0 border-b border-border bg-info-surface px-3 py-1.5 text-xs text-info">
           Sending a message sends your code and this problem’s hints to our model
