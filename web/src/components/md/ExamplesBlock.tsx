@@ -25,16 +25,30 @@ function OutputValue({ output }: { output: string }) {
     );
   }
   return (
-    <span className="whitespace-pre-wrap font-mono text-[0.8rem] font-semibold text-foreground">
+    <code className="block overflow-x-auto font-mono text-[0.8rem] leading-snug font-semibold break-normal whitespace-pre-wrap text-foreground">
       {output}
-    </span>
+    </code>
   );
 }
 
 /**
- * Input / Output on one row (reference-matched), an explanation line below
- * when present. Output is only pilled green/coral for a literal true/false;
- * most course examples return arrays or numbers and stay plain text.
+ * Input and Output are stacked, each on its own full-width line with a
+ * label in a shared left column.
+ *
+ * They used to sit side by side as `[minmax(0,1fr) auto]`, which was a
+ * losing fight: both are variable-length code strings, and an `auto`
+ * output column sizes to its content, so a long output starved the input
+ * column to a few characters. `break-words` then wrapped the survivor
+ * mid-token — `[0,0,1,1,1,2,2,3,3,4]` came out as six lines broken
+ * between digits. Stacking removes the competition entirely and is also
+ * shorter: two lines per example instead of four.
+ *
+ * Values wrap at spaces but never inside a token (`break-normal`), and a
+ * token too wide to fit scrolls in its own container rather than being
+ * shattered — the same rule the rest of the app uses for wide content.
+ *
+ * Output is only pilled green/coral for a literal true/false; most course
+ * examples return arrays or numbers and stay plain text.
  */
 export function ExamplesBlock({
   rows,
@@ -46,7 +60,9 @@ export function ExamplesBlock({
   return (
     <div
       className={cn(
-"my-3 rounded-[length:var(--radius-md)] border border-border bg-surface/40 px-2.5 py-1.5",
+        // No padding here: each row owns its own, so the divider between
+        // examples runs the full width instead of floating inside a gutter.
+        "my-3 overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-surface/40",
         className,
       )}
       role="list"
@@ -61,26 +77,24 @@ export function ExamplesBlock({
             i > 0 && "border-t border-border/80",
           )}
         >
-          <div className="mb-2 flex items-center gap-2">
-            <span className="font-mono text-[0.65rem] font-semibold tracking-wide text-muted uppercase">
-              Example {i + 1}
+          <p className="mb-2 font-mono text-[0.65rem] font-semibold tracking-wide text-muted uppercase">
+            Example {i + 1}
+          </p>
+          {/*
+            `auto` sizes the label column to the wider of the two words, so
+            both values start on the same left edge and read as a block.
+          */}
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1.5">
+            <span className="text-[0.65rem] font-semibold tracking-wide text-muted uppercase">
+              Input
             </span>
-          </div>
-          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:gap-4">
-            <div className="min-w-0">
-              <p className="mb-0.5 text-[0.65rem] font-semibold tracking-wide text-muted uppercase">
-                Input
-              </p>
-              <p className="font-mono text-[0.8rem] leading-snug break-words text-foreground">
-                {row.input}
-              </p>
-            </div>
-            <div className="sm:text-right">
-              <p className="mb-0.5 text-[0.65rem] font-semibold tracking-wide text-muted uppercase">
-                Output
-              </p>
-              <OutputValue output={row.output} />
-            </div>
+            <code className="block overflow-x-auto font-mono text-[0.8rem] leading-snug break-normal whitespace-pre-wrap text-foreground">
+              {row.input}
+            </code>
+            <span className="text-[0.65rem] font-semibold tracking-wide text-muted uppercase">
+              Output
+            </span>
+            <OutputValue output={row.output} />
           </div>
           {row.note ? (
             <p className="mt-2 border-t border-border/60 pt-2 text-[0.75rem] leading-snug text-muted">
