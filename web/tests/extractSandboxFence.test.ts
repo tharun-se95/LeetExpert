@@ -47,7 +47,8 @@ describe("extractSandboxFence", () => {
       __dirname,
       "..",
       "..",
-      "course",
+      "courses",
+      "dsa",
       "recursion-backtracking",
       "subsets.md",
     );

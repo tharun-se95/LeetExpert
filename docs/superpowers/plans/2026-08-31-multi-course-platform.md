@@ -188,12 +188,107 @@ const COURSE_DIR = join(__dirname, "..", "..", "course");
 const COURSE_DIR = join(__dirname, "..", "..", "courses", "dsa");
 ```
 
-- [ ] **Step 4: Run the content test suite**
+- [ ] **Step 4: Fix every other hardcoded reference to the old `course/` root**
 
-Run: `cd web && npx vitest run tests/content.test.ts`
-Expected: PASS (same assertions, new path)
+A full-suite run after Step 3 (not just `content.test.ts`) surfaces 6
+failing test files — the old `course/` root is referenced independently
+in more places than `load.ts` and `content.test.ts`. Fix all of them now,
+in this task, rather than leaving the suite red until whichever later
+task happens to touch each file — Global Constraints require every
+existing test to keep passing.
 
-- [ ] **Step 5: Commit**
+`web/src/lib/coach/buildCorpus.ts` has its own independent
+`resolveCourseRoot()` (a second implementation, not a call into
+`load.ts`'s) and its own directory join:
+
+```ts
+    if (existsSync(join(dir, "course"))) return dir;
+```
+→
+```ts
+    if (existsSync(join(dir, "courses", "dsa"))) return dir;
+```
+
+```ts
+  const courseDir = join(courseRoot, "course");
+```
+→
+```ts
+  const courseDir = join(courseRoot, "courses", "dsa");
+```
+
+Four more test files hardcode the same old path as a constant or inline
+segment:
+
+`web/tests/reference.test.ts:28`:
+```ts
+const COURSE = join(__dirname, "..", "..", "course");
+```
+→
+```ts
+const COURSE = join(__dirname, "..", "..", "courses", "dsa");
+```
+
+`web/tests/coach-thesis.test.ts:9`:
+```ts
+const COURSE = join(__dirname, "..", "..", "course");
+```
+→
+```ts
+const COURSE = join(__dirname, "..", "..", "courses", "dsa");
+```
+
+`web/tests/coach-extract.test.ts:9`:
+```ts
+const COURSE = join(__dirname, "..", "..", "course");
+```
+→
+```ts
+const COURSE = join(__dirname, "..", "..", "courses", "dsa");
+```
+
+`web/tests/extractSandboxFence.test.ts:45-52` — current:
+```ts
+    const path = join(
+      __dirname,
+      "..",
+      "..",
+      "course",
+      "recursion-backtracking",
+      "subsets.md",
+    );
+```
+→
+```ts
+    const path = join(
+      __dirname,
+      "..",
+      "..",
+      "courses",
+      "dsa",
+      "recursion-backtracking",
+      "subsets.md",
+    );
+```
+
+`web/tests/roadmap.test.ts:73` (inline relative path, not a `COURSE`
+constant):
+```ts
+      "../../course/getting-started/course-roadmap.md",
+```
+→
+```ts
+      "../../courses/dsa/getting-started/course-roadmap.md",
+```
+
+- [ ] **Step 5: Run the full test suite to confirm nothing else references the old path**
+
+Run: `cd web && npm test`
+Expected: `Test Files  27 passed (27)` — every file green, zero references
+to a nonexistent `course/` root remaining. If any test still fails on an
+ENOENT for a `course/...` path, grep for it (`grep -rn '"course"' web/src web/tests | grep -v courses`) and fix it the same way before proceeding — do not leave any test red.
+
+- [ ] **Step 6: Commit**
 
 ```bash
 git add -A

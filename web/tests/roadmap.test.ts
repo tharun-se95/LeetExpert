@@ -70,7 +70,7 @@ describe("course-roadmap content", () => {
   it("has one roadmap fence with stages 0–4", () => {
     const file = path.resolve(
       __dirname,
-      "../../course/getting-started/course-roadmap.md",
+      "../../courses/dsa/getting-started/course-roadmap.md",
     );
     const raw = fs.readFileSync(file, "utf8");
     const body = raw.replace(/^---\r?\n[\s\S]*?---\r?\n/, "");

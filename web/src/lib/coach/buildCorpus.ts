@@ -17,7 +17,7 @@ function resolveCourseRoot(): string {
     process.cwd(),
   ];
   for (const dir of candidates) {
-    if (existsSync(join(dir, "course"))) return dir;
+    if (existsSync(join(dir, "courses", "dsa"))) return dir;
   }
   return join(process.cwd(), "..");
 }
@@ -38,7 +38,7 @@ function walkMarkdown(dir: string): string[] {
  * at request time (Vercel Root Directory is `web`).
  */
 export function buildCorpus(courseRoot = resolveCourseRoot()): Record<string, CoachProblem> {
-  const courseDir = join(courseRoot, "course");
+  const courseDir = join(courseRoot, "courses", "dsa");
   const corpus: Record<string, CoachProblem> = {};
 
   for (const path of walkMarkdown(courseDir)) {
