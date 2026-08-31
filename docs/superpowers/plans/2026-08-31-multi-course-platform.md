@@ -691,7 +691,16 @@ Expected: `location: /courses/dsa/problems/two-sum`
 
 Stop the dev server after verifying.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Confirm the redirects also work in a production build**
+
+Run: `cd web && npm run build`
+Expected: build succeeds (this is the Global Constraints' "run `npm run
+build` after Task 4" checkpoint — dev-mode redirects and build-time
+redirect-manifest generation are handled by different code paths in
+Next.js, so a successful build here is the real confirmation, not just
+the dev-server curl checks above).
+
+- [ ] **Step 4: Commit**
 
 ```bash
 git add web/next.config.ts
