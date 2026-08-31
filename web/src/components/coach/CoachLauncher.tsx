@@ -25,7 +25,12 @@ export function CoachLauncher() {
       onClick={toggleCoach}
       aria-label="Open problem coach"
       aria-expanded={false}
-      className="shadow-elevation fixed right-6 bottom-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-pop text-on-pop transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none motion-reduce:hover:scale-100"
+      // bottom-20, not bottom-6: the editor's status bar (~23px) and the
+      // results rail (~41px) are stacked at the foot of the workspace, and
+      // at 24px this sat on top of both. Floating over results *content* is
+      // fine — that is what an overlay does — but covering chrome you still
+      // need to read and click is not.
+      className="shadow-elevation fixed right-6 bottom-20 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-pop text-on-pop transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none motion-reduce:hover:scale-100"
     >
       <ChatCircle size={24} weight="fill" aria-hidden />
       {unread ? (

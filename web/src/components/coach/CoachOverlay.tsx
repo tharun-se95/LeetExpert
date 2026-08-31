@@ -35,10 +35,16 @@ export function CoachOverlay() {
         {open ? (
           <motion.div
             key="coach-panel"
+            // bottom-20 clears the editor status bar and the results rail
+            // stacked at the foot of the workspace — the rail's tabs stay
+            // clickable while the coach is open, which they were not when
+            // this sat at bottom-6.
+            //
             // max-h keeps the panel clear of the h-14 sticky header even on
-            // short viewports, which is why z-40 (the header's own layer) is
-            // safe, and it still sits below the z-50 modal layer.
-            className="shadow-elevation fixed right-6 bottom-6 z-40 flex h-[40rem] max-h-[calc(100vh-6rem)] w-[26rem] origin-bottom-right flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated"
+            // short viewports (now 5rem of bottom offset + the header + a
+            // gap), which is why z-40 (the header's own layer) is safe, and
+            // it still sits below the z-50 modal layer.
+            className="shadow-elevation fixed right-6 bottom-20 z-40 flex h-[40rem] max-h-[calc(100vh-10rem)] w-[26rem] origin-bottom-right flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated"
             initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 8 }}
             animate={reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 8 }}
