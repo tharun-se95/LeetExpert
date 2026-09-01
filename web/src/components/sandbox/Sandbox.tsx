@@ -44,7 +44,7 @@ const LANGS: SandboxLang[] = ["python", "javascript"];
  * measures the DOM on construction and has nothing to render server-side.
  */
 const CodeEditor = dynamic(
-  () => import("@/components/sandbox/CodeEditor").then((m) => m.CodeEditor),
+  () => import("@/components/kit/CodeEditor").then((m) => m.CodeEditor),
   {
     ssr: false,
     loading: () => (
