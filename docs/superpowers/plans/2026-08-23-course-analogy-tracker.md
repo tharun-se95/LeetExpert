@@ -693,3 +693,35 @@ Retrieval (download + compress + land in
 batch of completed assets — recommend batching it per-module or
 per-week rather than per-asset to keep it from being 300+ individual
 downloads.
+
+**Notebooks renamed to the manifest convention (2026-08-31).** All 24
+NotebookLM notebooks (one per module, per Phase 1/2 above) renamed from
+their NotebookLM-auto-generated titles to `NN · Module Title`, using the
+exact module number and title strings from `web/src/lib/course/
+manifest.ts` — e.g. "The Mechanics of Contiguous Memory and Array
+Performance" → "04 · Arrays & Dynamic Arrays". This makes the notebook
+grid sort and scan in course order instead of by whatever headline
+NotebookLM generated from each module's pasted content. `06 · Hash
+Tables` was already named this way from Phase 1 (Task A) and needed no
+change; the other 23 were renamed this session. The unrelated "Enterprise
+Agent Orchestration" notebook (not part of this course) was left
+untouched.
+
+Renaming method note for future sessions: NotebookLM's inline notebook
+title field (click the title in the notebook's own header) does **not**
+save on `cmd+a` + type + Return — that sequence visibly updates the
+field but silently reverts to the old title on reload. The reliable
+sequence is `triple_click` the title (selects existing text) → `type`
+the replacement → `left_click` elsewhere on the page to blur (never
+Return) — confirmed persisted via a hard page reload after every rename
+in this pass. The notebook-grid's "⋮" → "Edit title" modal (a separate
+UI path, used for the very first rename in this pass, Tries) also
+persists correctly via its own Save button; either path works, but the
+inline-title method is faster once you're inside a notebook.
+
+Downloaded/landed-asset tracking has moved to its own file:
+`docs/superpowers/plans/2026-08-31-media-assets-tracker.md` — this file
+stays focused on prose/analogy/mind-map/generation status per the
+columns above; that one tracks retrieval (download → compress → land in
+`web/public/media/`) per asset, which is a distinct, user-present-only
+step from generation.
