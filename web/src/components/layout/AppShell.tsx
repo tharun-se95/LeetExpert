@@ -31,6 +31,16 @@ function isIdePath(pathname: string): boolean {
   return /^\/problems\/[^/]+\/?$/.test(pathname);
 }
 
+/**
+ * The problems list also needs a viewport-locked main — its filter sidebar
+ * and result list scroll internally, not the page, so a fixed height chrome
+ * above them doesn't leave `main` scrolling to reveal blank space beneath a
+ * shorter column (see ProblemsListClient.tsx).
+ */
+function isProblemsListPath(pathname: string): boolean {
+  return pathname === "/problems" || pathname === "/problems/";
+}
+
 /** Course overview is a full-width landing — no course nav chrome. */
 function isLandingPath(pathname: string): boolean {
   return pathname === "/";
@@ -64,6 +74,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const totalProblemCount = allProblemSlugs().length;
   const pathname = usePathname();
   const ideViewport = isIdePath(pathname);
+  const fillMain = ideViewport || isProblemsListPath(pathname);
   const showCourseNav = !isLandingPath(pathname);
   const family = activeFamilyFor(pathname);
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
@@ -165,12 +176,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <main
                 className={cn(
                   "min-w-0 flex-1",
-                  ideViewport
+                  fillMain
                     ? "flex min-h-0 flex-col overflow-hidden"
                     : "overflow-y-auto",
                 )}
               >
-                <PageEnter fill={ideViewport}>{children}</PageEnter>
+                <PageEnter fill={fillMain}>{children}</PageEnter>
               </main>
             </div>
           </div>

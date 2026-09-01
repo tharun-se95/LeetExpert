@@ -18,15 +18,10 @@ import { cn } from "@/lib/utils";
 
 const NEUTRAL_DOT = "var(--muted)";
 
-/**
- * Same sticky + capped-height + edge-fade treatment as
- * TableOfContents.tsx's EDGE_FADE_MASK: `top-24`/`7rem` clear the sticky
- * app header (Header.tsx's `h-14` plus breathing room). `lg:`-gated so
- * mobile keeps ordinary document-flow scrolling instead of a trapped
- * inner scrollbar.
- */
-const SCROLL_RAIL_CLASS =
-  "lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:[mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)] lg:[-webkit-mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)]";
+/** Same top/bottom fade TableOfContents.tsx's EDGE_FADE_MASK uses on its own scroll rail. */
+const EDGE_FADE_MASK =
+  "linear-gradient(to bottom, transparent, black 12px, black calc(100% - 12px), transparent)";
+const EDGE_FADE_STYLE = { maskImage: EDGE_FADE_MASK, WebkitMaskImage: EDGE_FADE_MASK };
 
 export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
   const { solved, solvedCount, totalProblemCount } = useProgress();
@@ -125,112 +120,126 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
   };
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[22rem] bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_14%,transparent),_transparent_62%)]"
       />
 
-      <div className="relative mx-auto max-w-5xl px-4 py-10 lg:px-8 lg:py-14">
-        <p className="text-xs font-medium tracking-[0.14em] text-mark uppercase">
-          Drill the course
-        </p>
-        <h1 className="mt-3 max-w-2xl font-display text-4xl font-bold tracking-tight text-balance uppercase sm:text-5xl">
-          Practice
-        </h1>
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
-          {totalProblemCount} solve-first problems, one list. Search, filter to
-          exactly what you need, and drill it.
-        </p>
+      <div className="relative mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col px-4 py-10 lg:px-8 lg:py-14">
+        <div className="shrink-0">
+          <p className="text-xs font-medium tracking-[0.14em] text-mark uppercase">
+            Drill the course
+          </p>
+          <h1 className="mt-3 max-w-2xl font-display text-4xl font-bold tracking-tight text-balance uppercase sm:text-5xl">
+            Practice
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
+            {totalProblemCount} solve-first problems, one list. Search, filter
+            to exactly what you need, and drill it.
+          </p>
 
-        <div className="mt-8 grid grid-cols-3 gap-2 sm:gap-3">
-          <StatCard label="Problems" value={String(totalProblemCount)} hint="In the hub" />
-          <StatCard
-            label="Solved"
-            value={String(solvedCount)}
-            hint={`${pct}% complete`}
-            tone="good"
-          />
-          <StatCard label="Remaining" value={String(remaining)} hint="Still to crack" />
-        </div>
+          <div className="mt-8 grid grid-cols-3 gap-2 sm:gap-3">
+            <StatCard label="Problems" value={String(totalProblemCount)} hint="In the hub" />
+            <StatCard
+              label="Solved"
+              value={String(solvedCount)}
+              hint={`${pct}% complete`}
+              tone="good"
+            />
+            <StatCard label="Remaining" value={String(remaining)} hint="Still to crack" />
+          </div>
 
-        <div
-          className="mt-4 h-1.5 overflow-hidden rounded-full bg-border/60"
-          role="progressbar"
-          aria-valuenow={pct}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={`${pct}% of problems solved`}
-        >
           <div
-            className="h-full rounded-full bg-pop transition-[width] duration-[var(--dur)] ease-[var(--ease)] motion-reduce:transition-none"
-            style={{ width: `${pct}%` }}
-          />
+            className="mt-4 h-1.5 overflow-hidden rounded-full bg-border/60"
+            role="progressbar"
+            aria-valuenow={pct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`${pct}% of problems solved`}
+          >
+            <div
+              className="h-full rounded-full bg-pop transition-[width] duration-[var(--dur)] ease-[var(--ease)] motion-reduce:transition-none"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+
+          <label
+            className={cn(
+              "mt-6 flex min-h-11 items-center gap-3 rounded-[length:var(--radius-lg)] border border-border bg-elevated px-4 py-3",
+              "transition-[border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
+              "focus-within:border-accent/45 focus-within:bg-accent/[0.04]",
+            )}
+          >
+            <MagnifyingGlass className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by problem, module, or difficulty…"
+              aria-label="Search problems"
+              className="min-w-0 flex-1 appearance-none bg-transparent text-sm text-foreground outline-none placeholder:text-muted focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden"
+            />
+            {query ? (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-xs font-medium text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground motion-reduce:transition-none"
+              >
+                Clear
+              </button>
+            ) : null}
+          </label>
+
+          <button
+            type="button"
+            onClick={() => setMobileFiltersOpen(true)}
+            aria-label={
+              activeFilterCount > 0
+                ? `Open filters, ${activeFilterCount} active`
+                : "Open filters"
+            }
+            className="mt-3 flex min-h-11 w-full touch-manipulation items-center justify-center gap-2 rounded-[length:var(--radius-md)] border border-border bg-elevated text-sm font-medium text-foreground lg:hidden"
+          >
+            <FunnelSimple className="h-4 w-4" aria-hidden />
+            Filters
+            {activeFilterCount > 0 ? (
+              <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-pop px-1 text-[10px] font-bold text-on-pop">
+                {activeFilterCount}
+              </span>
+            ) : null}
+          </button>
         </div>
 
-        <label
-          className={cn(
-            "mt-6 flex min-h-11 items-center gap-3 rounded-[length:var(--radius-lg)] border border-border bg-elevated px-4 py-3",
-            "transition-[border-color,background-color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
-            "focus-within:border-accent/45 focus-within:bg-accent/[0.04]",
-          )}
-        >
-          <MagnifyingGlass className="h-4 w-4 shrink-0 text-muted" aria-hidden />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by problem, module, or difficulty…"
-            aria-label="Search problems"
-            className="min-w-0 flex-1 appearance-none bg-transparent text-sm text-foreground outline-none placeholder:text-muted focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden"
-          />
-          {query ? (
-            <button
-              type="button"
-              onClick={() => setQuery("")}
-              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-xs font-medium text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground motion-reduce:transition-none"
-            >
-              Clear
-            </button>
-          ) : null}
-        </label>
-
-        <button
-          type="button"
-          onClick={() => setMobileFiltersOpen(true)}
-          aria-label={
-            activeFilterCount > 0
-              ? `Open filters, ${activeFilterCount} active`
-              : "Open filters"
-          }
-          className="mt-3 flex min-h-11 w-full touch-manipulation items-center justify-center gap-2 rounded-[length:var(--radius-md)] border border-border bg-elevated text-sm font-medium text-foreground lg:hidden"
-        >
-          <FunnelSimple className="h-4 w-4" aria-hidden />
-          Filters
-          {activeFilterCount > 0 ? (
-            <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-pop px-1 text-[10px] font-bold text-on-pop">
-              {activeFilterCount}
-            </span>
-          ) : null}
-        </button>
-
-        <div className="mt-6 grid gap-6 lg:grid-cols-[272px_1fr] lg:items-start">
-          <aside className={cn("hidden lg:block", SCROLL_RAIL_CLASS)}>
+        {/*
+          The chrome above is shrink-0 (fixed height); this row fills
+          whatever's left of the viewport and is the ONLY thing that
+          scrolls — each column scrolls internally instead of growing the
+          page, matching the app-shell's own fixed-viewport main (see
+          isProblemsListPath in AppShell.tsx).
+        */}
+        <div className="mt-6 grid min-h-0 flex-1 gap-6 lg:grid-cols-[272px_1fr]">
+          <aside
+            className="hidden overflow-y-auto lg:flex lg:h-full lg:min-h-0 lg:flex-col"
+            style={EDGE_FADE_STYLE}
+          >
             <ProblemFilterPanel {...filterPanelProps} />
           </aside>
 
-          <div className={SCROLL_RAIL_CLASS}>
-            <p className="mb-3 text-sm text-muted">
+          <div className="flex h-full min-h-0 flex-col">
+            <p className="mb-3 shrink-0 text-sm text-muted">
               Showing <span className="font-medium text-foreground">{filtered.length}</span>{" "}
               of {totalProblemCount}
             </p>
-            <ProblemsFlatList
-              problems={filtered}
-              solved={solved}
-              hasActiveFilters={hasActiveFilters}
-              emptyMessage={emptyMessage}
-              onClearFilters={clearFilters}
-            />
+            <div className="min-h-0 flex-1 overflow-y-auto" style={EDGE_FADE_STYLE}>
+              <ProblemsFlatList
+                problems={filtered}
+                solved={solved}
+                hasActiveFilters={hasActiveFilters}
+                emptyMessage={emptyMessage}
+                onClearFilters={clearFilters}
+              />
+            </div>
           </div>
         </div>
       </div>
