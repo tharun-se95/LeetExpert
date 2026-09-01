@@ -35,17 +35,25 @@ function isLandingPath(pathname: string): boolean {
 }
 
 /**
- * The current topic's family, derived from the route. Lifted to the shell so
- * the whole chrome (header, sidebar, mobile sheet, search) tints with the
- * lesson's family instead of staying steel. List/landing routes have no
+ * The current topic's theme, derived from the route. Lifted to the shell
+ * so the whole chrome (header, sidebar, mobile sheet, search) tints with
+ * the lesson's theme instead of staying steel. List/landing routes have no
  * single topic → null → monochrome.
+ *
+ * DSA resolves its theme via its own 7-family lookup (moduleFamily). A
+ * future course under /courses/<slug>/ can dispatch to whatever theming
+ * logic it wants here — one accent per module, a single course-wide
+ * accent, or none — this function is the one place that needs a new
+ * branch per course, not a shared family system every course must adopt.
  */
-function activeFamilyFor(pathname: string): FamilyId | null {
-  const course = /^\/course\/([^/]+)/.exec(pathname);
-  if (course) return moduleFamily(course[1]);
-  const problem = /^\/problems\/([^/]+)/.exec(pathname);
-  if (problem) {
-    const hit = findProblemBySlug(problem[1]);
+function activeThemeFor(pathname: string): FamilyId | null {
+  const dsaModule = /^\/courses\/dsa\/(?!problems(?:\/|$))([^/]+)/.exec(
+    pathname,
+  );
+  if (dsaModule) return moduleFamily(dsaModule[1]);
+  const dsaProblem = /^\/courses\/dsa\/problems\/([^/]+)/.exec(pathname);
+  if (dsaProblem) {
+    const hit = findProblemBySlug(dsaProblem[1]);
     if (hit) return moduleFamily(hit.module);
   }
   return null;
@@ -75,7 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const ideViewport = isIdePath(pathname);
   const showCourseNav = !isLandingPath(pathname);
-  const family = activeFamilyFor(pathname);
+  const family = activeThemeFor(pathname);
 
   useEffect(() => {
     const mq = window.matchMedia(DESKTOP_MQ);
