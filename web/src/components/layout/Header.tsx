@@ -93,10 +93,13 @@ export function Header({
         className="flex shrink-0 items-center gap-0.5 justify-self-center sm:gap-1"
         aria-label="Product modes"
       >
-        <Link href="/course" className={modeLinkClass(lessonsActive)}>
+        <Link href="/courses/dsa" className={modeLinkClass(lessonsActive)}>
           Lessons
         </Link>
-        <Link href="/problems" className={modeLinkClass(practiceActive)}>
+        <Link
+          href="/courses/dsa/problems"
+          className={modeLinkClass(practiceActive)}
+        >
           Practice
         </Link>
       </nav>
