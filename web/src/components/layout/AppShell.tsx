@@ -25,13 +25,17 @@ const SIDEBAR_KEY = "dsa-sidebar-open";
 /** Matches Tailwind `lg` — persistent sidebar only at this width and above. */
 const DESKTOP_MQ = "(min-width: 1024px)";
 
-function isIdePath(pathname: string): boolean {
-  return /^\/problems\/[^/]+\/?$/.test(pathname);
+/** Exported for `appShellRouting.test.ts` — these are pure route-matching
+ *  functions with no React dependency, and had zero test coverage until a
+ *  final-review pass caught `isIdePath` still matching the pre-migration
+ *  `/problems/[slug]` shape instead of `/courses/dsa/problems/[slug]`. */
+export function isIdePath(pathname: string): boolean {
+  return /^\/courses\/dsa\/problems\/[^/]+\/?$/.test(pathname);
 }
 
 /** Both the catalog root and DSA's own marketing page are full-width
  *  landings — no course nav chrome. */
-function isLandingPath(pathname: string): boolean {
+export function isLandingPath(pathname: string): boolean {
   return pathname === "/" || pathname === "/courses/dsa/marketing";
 }
 
@@ -47,7 +51,7 @@ function isLandingPath(pathname: string): boolean {
  * accent, or none — this function is the one place that needs a new
  * branch per course, not a shared family system every course must adopt.
  */
-function activeThemeFor(pathname: string): FamilyId | null {
+export function activeThemeFor(pathname: string): FamilyId | null {
   const dsaModule = /^\/courses\/dsa\/(?!problems(?:\/|$))([^/]+)/.exec(
     pathname,
   );
@@ -67,7 +71,7 @@ function activeThemeFor(pathname: string): FamilyId | null {
  * returning null — the one course that exists is the reasonable default
  * until a second course makes that default ambiguous.
  */
-function activeCourseSlugFor(pathname: string): string {
+export function activeCourseSlugFor(pathname: string): string {
   const match = /^\/courses\/([^/]+)/.exec(pathname);
   return match ? match[1] : "dsa";
 }
