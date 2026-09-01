@@ -53,4 +53,16 @@ describe("progress storage key namespacing", () => {
     migrateLegacyProgress("dsa");
     expect(localStorage.getItem("course-progress:dsa")).toBeNull();
   });
+
+  it("does NOT leak DSA's legacy progress into a different course's namespaced key", async () => {
+    localStorage.setItem(
+      "dsa-course-progress",
+      JSON.stringify(["arrays/contiguous-memory"]),
+    );
+    const { migrateLegacyProgress } = await import(
+      "../src/components/providers/progressStorage"
+    );
+    migrateLegacyProgress("nextjs");
+    expect(localStorage.getItem("course-progress:nextjs")).toBeNull();
+  });
 });
