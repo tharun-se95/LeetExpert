@@ -29,9 +29,10 @@ function isIdePath(pathname: string): boolean {
   return /^\/problems\/[^/]+\/?$/.test(pathname);
 }
 
-/** Course overview is a full-width landing — no course nav chrome. */
+/** Both the catalog root and DSA's own marketing page are full-width
+ *  landings — no course nav chrome. */
 function isLandingPath(pathname: string): boolean {
-  return pathname === "/";
+  return pathname === "/" || pathname === "/courses/dsa/marketing";
 }
 
 /**
