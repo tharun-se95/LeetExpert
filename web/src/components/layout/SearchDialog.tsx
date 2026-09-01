@@ -6,14 +6,9 @@ import { MagnifyingGlass, ArrowRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { MODULES } from "@/lib/course/manifest";
 import { lessonHref, problemHref } from "@/lib/course/nav";
+import type { SearchDocument } from "@/lib/search/types";
 
-interface Entry {
-  m: string;
-  s: string;
-  t: string;
-  y: string;
-  h: string[];
-}
+type Entry = SearchDocument;
 
 interface Hit {
   entry: Entry;
