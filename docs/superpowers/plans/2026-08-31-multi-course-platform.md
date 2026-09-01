@@ -1014,6 +1014,18 @@ describe("progress storage key namespacing", () => {
     migrateLegacyProgress("dsa");
     expect(localStorage.getItem("course-progress:dsa")).toBeNull();
   });
+
+  it("does NOT leak DSA's legacy progress into a different course's namespaced key", async () => {
+    localStorage.setItem(
+      "dsa-course-progress",
+      JSON.stringify(["arrays/contiguous-memory"]),
+    );
+    const { migrateLegacyProgress } = await import(
+      "../src/components/providers/progressStorage"
+    );
+    migrateLegacyProgress("nextjs");
+    expect(localStorage.getItem("course-progress:nextjs")).toBeNull();
+  });
 });
 ```
 
@@ -1063,13 +1075,17 @@ export function writeSet(key: string, value: Set<string>) {
 }
 
 /**
- * One-time migration from the pre-multi-course flat keys into this
- * course's namespaced keys. Only DSA ever had the legacy keys (it was the
- * only course when they were written), so this is a no-op for any future
- * course — but it's written generically rather than DSA-hardcoded so it
- * stays correct if DSA's slug ever needs to change.
+ * One-time migration from the pre-multi-course flat keys into DSA's
+ * namespaced keys. Only DSA ever had the legacy keys (it was the only
+ * course when they were written) — gated explicitly on courseSlug, not
+ * just "does this course lack a namespaced key yet," because that weaker
+ * gate would copy DSA's legacy visited/solved ids into ANY future
+ * course's bucket the first time a user opens it (a real cross-course
+ * data leak caught in review, not a hypothetical — see the amended
+ * Task 6 report).
  */
 export function migrateLegacyProgress(courseSlug: string) {
+  if (courseSlug !== "dsa") return;
   try {
     if (localStorage.getItem(visitedKey(courseSlug)) === null) {
       const legacy = localStorage.getItem(LEGACY_VISITED_KEY);
