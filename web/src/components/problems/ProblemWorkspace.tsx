@@ -11,7 +11,20 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, CaretLeft, List } from "@phosphor-icons/react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Brain,
+  Check,
+  Code,
+  CaretLeft,
+  FileText,
+  List,
+  PencilSimple,
+  Question,
+  Sparkle,
+  type Icon,
+} from "@phosphor-icons/react";
 import { Markdown } from "@/components/md/Markdown";
 import { Sandbox } from "@/components/sandbox/Sandbox";
 import { PanelSplit } from "@/components/problems/PanelSplit";
@@ -35,6 +48,21 @@ interface NeighborLink {
 
 type ContentTab = "description" | "explanation" | "solution" | "quiz";
 type WorkspaceTab = ContentTab | "code" | "coach";
+
+/**
+ * One icon per tab, chosen to be distinct from its neighbours in the SAME
+ * bar rather than globally unique across the app — Code (reference, static)
+ * next to PencilSimple (the live editor you write in) is the pairing that
+ * has to hold up, not whether some other panel elsewhere also uses a pencil.
+ */
+const TAB_ICON: Record<WorkspaceTab, Icon> = {
+  description: FileText,
+  explanation: Brain,
+  solution: Code,
+  quiz: Question,
+  code: PencilSimple,
+  coach: Sparkle,
+};
 
 const CONTENT_TABS: { id: ContentTab; label: string }[] = [
   { id: "description", label: "Description" },
@@ -516,6 +544,7 @@ function TabList({
     >
       {tabs.map((t, i) => {
         const selected = active === t.id;
+        const TabIcon = TAB_ICON[t.id];
         return (
           <button
             key={t.id}
@@ -542,6 +571,17 @@ function TabList({
             )}
           >
             <span className="inline-flex items-center gap-1.5">
+              {/*
+                weight stays at the app-wide bold default (IconContext,
+                ThemeProvider.tsx) when unselected — only the selected tab
+                steps up to fill, echoing the same rest/active weight bump
+                CoachThread's mark uses.
+              */}
+              <TabIcon
+                className="h-3.5 w-3.5 shrink-0"
+                weight={selected ? "fill" : undefined}
+                aria-hidden
+              />
               {t.label}
               {badgeId === t.id && !selected ? (
                 <span className="h-1.5 w-1.5 rounded-full bg-pop" aria-hidden />

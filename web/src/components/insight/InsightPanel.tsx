@@ -1,13 +1,44 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
-import { CaretDown, CaretUp } from "@phosphor-icons/react";
+import { useEffect, useId, useState, type ReactNode } from "react";
+import {
+  CaretDown,
+  CaretUp,
+  Cube,
+  Eye,
+  Gauge,
+  ListChecks,
+  type Icon,
+} from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { TONE_CHIP } from "@/components/cheatsheet/tone";
 import { MemoryStrip } from "@/components/insight/MemoryStrip";
 import type { ResolvedInsight } from "@/lib/insight/types";
 
 const COLLAPSE_KEY = "dsa:insight:collapsed";
+
+/**
+ * Four sections here were visually identical uppercase heads stacked in one
+ * scroll — "How fast it should be" ran right into "This test case" with only
+ * whitespace between them, and this panel is read while mid-problem, not
+ * top to bottom. A leading mark gives each section a shape to scan for. As
+ * in the cheatsheet's own SectionHead, this is decorative: the words carry
+ * the meaning, so the icon is aria-hidden.
+ */
+function InsightSectionHead({
+  icon: Glyph,
+  children,
+}: {
+  icon: Icon;
+  children: ReactNode;
+}) {
+  return (
+    <h3 className="flex items-center gap-1.5 text-[0.7rem] font-semibold tracking-wide text-muted uppercase">
+      <Glyph className="h-3 w-3 shrink-0" aria-hidden />
+      {children}
+    </h3>
+  );
+}
 
 /**
  * Compact teaching strip between editor and testcases.
@@ -165,9 +196,9 @@ function LearnerInsight({
     <div className="flex flex-col gap-4">
       {insight.complexity ? (
         <section>
-          <h3 className="text-[0.7rem] font-semibold tracking-wide text-muted uppercase">
+          <InsightSectionHead icon={Gauge}>
             How fast it should be
-          </h3>
+          </InsightSectionHead>
           <p className="mt-1 text-sm text-foreground">
             Aim for{" "}
             <span className="font-mono text-info">
@@ -189,9 +220,7 @@ function LearnerInsight({
 
       {insight.memory ? (
         <section>
-          <h3 className="text-[0.7rem] font-semibold tracking-wide text-muted uppercase">
-            This test case
-          </h3>
+          <InsightSectionHead icon={Cube}>This test case</InsightSectionHead>
           <div className="mt-2">
             <MemoryStrip memory={insight.memory} />
           </div>
@@ -200,11 +229,11 @@ function LearnerInsight({
 
       {caseVars.length > 0 || runVars.length > 0 ? (
         <section>
-          <h3 className="text-[0.7rem] font-semibold tracking-wide text-muted uppercase">
+          <InsightSectionHead icon={Eye}>
             {runVars.length > 0
               ? "This case and your last run"
               : "This test case"}
-          </h3>
+          </InsightSectionHead>
           <dl className="mt-1.5 flex flex-col gap-1 font-mono text-[0.75rem]">
             {caseVars.map((v) => (
               <div key={`case-${v.name}`} className="flex gap-2">
@@ -241,9 +270,9 @@ function LearnerInsight({
 
       {insight.checklist.length > 0 ? (
         <section>
-          <h3 className="text-[0.7rem] font-semibold tracking-wide text-muted uppercase">
+          <InsightSectionHead icon={ListChecks}>
             What to watch for
-          </h3>
+          </InsightSectionHead>
           <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-foreground">
             {insight.checklist.map((item) => (
               <li key={item.label}>{item.label}</li>
