@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { COURSES } from "@/lib/courses/registry";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Courses",
@@ -26,7 +27,13 @@ export default function CatalogPage() {
                 : "#"
             }
             aria-disabled={course.status !== "available"}
-            className="block rounded-[length:var(--radius-lg)] border border-border bg-elevated p-5 shadow-elevation transition-colors hover:border-accent"
+            tabIndex={course.status === "available" ? undefined : -1}
+            className={cn(
+              "block rounded-[length:var(--radius-lg)] border border-border bg-elevated p-5 shadow-elevation transition-colors",
+              course.status === "available"
+                ? "hover:border-accent"
+                : "pointer-events-none opacity-60",
+            )}
             style={{ borderTopColor: course.accent, borderTopWidth: 3 }}
           >
             <h2 className="text-lg font-semibold text-foreground">
