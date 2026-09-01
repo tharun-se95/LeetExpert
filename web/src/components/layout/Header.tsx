@@ -29,9 +29,10 @@ export function Header({
   const pct = totalCount > 0 ? Math.round((visitedCount / totalCount) * 100) : 0;
 
   const lessonsActive =
-    pathname === "/course" || pathname.startsWith("/course/");
-  const practiceActive =
-    pathname === "/problems" || pathname.startsWith("/problems/");
+    pathname === "/courses/dsa" ||
+    (pathname.startsWith("/courses/dsa/") &&
+      !pathname.startsWith("/courses/dsa/problems"));
+  const practiceActive = pathname.startsWith("/courses/dsa/problems");
 
   const modeLinkClass = (active: boolean) =>
     cn(
