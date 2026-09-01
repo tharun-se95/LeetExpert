@@ -100,78 +100,56 @@ export function ProblemFilterPanel({
           Topics
         </p>
         {/*
-          21 modules is long enough to need a capped, scrollable height —
-          same overflow-y-auto + bottom mask-image fade TableOfContents.tsx
-          already uses, not a new scroll treatment.
+          No scroll/fade treatment of its own — the desktop sidebar wraps
+          the whole panel (Status + Difficulty + Topics together) in one
+          scroll region, and the mobile sheet already scrolls its own body,
+          so a second, nested scroll area here would just trap the wheel.
         */}
-        <div
-          className="flex max-h-[420px] flex-col overflow-y-auto rounded-[length:var(--radius-lg)] border border-border bg-code"
-          style={{
-            maskImage:
-              "linear-gradient(to bottom, black calc(100% - 24px), transparent)",
-            WebkitMaskImage:
-              "linear-gradient(to bottom, black calc(100% - 24px), transparent)",
-          }}
-        >
+        <div className="flex flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-code">
           {topics.map((t, i) => {
             const checked = selectedTopics.has(t.slug);
-            const topicPct = t.count > 0 ? Math.round((t.solvedCount / t.count) * 100) : 0;
             return (
               <label
                 key={t.slug}
                 className={cn(
-                  "flex min-h-11 touch-manipulation flex-col justify-center gap-1 px-3 py-1.5",
+                  "flex min-h-11 touch-manipulation items-center gap-2 px-3 py-2",
                   i > 0 && "border-t border-border",
                 )}
               >
-                <span className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => onToggleTopic(t.slug)}
-                    className="sr-only"
-                  />
-                  <span
-                    aria-hidden
-                    className={cn(
-                      "flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border",
-                      checked
-                        ? "border-accent bg-accent"
-                        : "border-border bg-transparent",
-                    )}
-                  >
-                    {checked ? (
-                      <Check size={10} weight="bold" className="text-on-pop" />
-                    ) : null}
-                  </span>
-                  <span
-                    aria-hidden
-                    className="h-[7px] w-[7px] shrink-0 rounded-full"
-                    style={{ backgroundColor: t.color }}
-                  />
-                  <span
-                    className={cn(
-                      "min-w-0 flex-1 truncate text-[12.5px]",
-                      checked ? "text-foreground" : "text-muted",
-                    )}
-                  >
-                    {t.label}
-                  </span>
-                  <span className="shrink-0 font-mono text-[10.5px] text-muted">
-                    {t.solvedCount}/{t.count}
-                  </span>
-                </span>
-                {/* Mini per-topic progress bar — the same solvedCount/count
-                    ratio the old per-module section header showed, now
-                    doing real work as filter context instead of a header. */}
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => onToggleTopic(t.slug)}
+                  className="sr-only"
+                />
                 <span
                   aria-hidden
-                  className="ml-[25px] h-1 overflow-hidden rounded-full bg-border/60"
+                  className={cn(
+                    "flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border",
+                    checked
+                      ? "border-accent bg-accent"
+                      : "border-border bg-transparent",
+                  )}
                 >
-                  <span
-                    className="block h-full rounded-full"
-                    style={{ width: `${topicPct}%`, backgroundColor: t.color }}
-                  />
+                  {checked ? (
+                    <Check size={10} weight="bold" className="text-on-pop" />
+                  ) : null}
+                </span>
+                <span
+                  aria-hidden
+                  className="h-[7px] w-[7px] shrink-0 rounded-full"
+                  style={{ backgroundColor: t.color }}
+                />
+                <span
+                  className={cn(
+                    "min-w-0 flex-1 truncate text-[12.5px]",
+                    checked ? "text-foreground" : "text-muted",
+                  )}
+                >
+                  {t.label}
+                </span>
+                <span className="shrink-0 font-mono text-[10.5px] text-muted">
+                  {t.solvedCount}/{t.count}
                 </span>
               </label>
             );

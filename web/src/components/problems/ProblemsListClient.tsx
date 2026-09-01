@@ -18,6 +18,16 @@ import { cn } from "@/lib/utils";
 
 const NEUTRAL_DOT = "var(--muted)";
 
+/**
+ * Same sticky + capped-height + edge-fade treatment as
+ * TableOfContents.tsx's EDGE_FADE_MASK: `top-24`/`7rem` clear the sticky
+ * app header (Header.tsx's `h-14` plus breathing room). `lg:`-gated so
+ * mobile keeps ordinary document-flow scrolling instead of a trapped
+ * inner scrollbar.
+ */
+const SCROLL_RAIL_CLASS =
+  "lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:[mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)] lg:[-webkit-mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)]";
+
 export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
   const { solved, solvedCount, totalProblemCount } = useProgress();
   const [query, setQuery] = useState("");
@@ -205,11 +215,11 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
         </button>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[272px_1fr] lg:items-start">
-          <aside className="hidden lg:block">
+          <aside className={cn("hidden lg:block", SCROLL_RAIL_CLASS)}>
             <ProblemFilterPanel {...filterPanelProps} />
           </aside>
 
-          <div>
+          <div className={SCROLL_RAIL_CLASS}>
             <p className="mb-3 text-sm text-muted">
               Showing <span className="font-medium text-foreground">{filtered.length}</span>{" "}
               of {totalProblemCount}
