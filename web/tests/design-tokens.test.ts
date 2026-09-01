@@ -493,19 +493,33 @@ describe("design tokens", () => {
     expect(shell).toMatch(/moduleFamily/);
   });
 
-  it("module cards and problem groups scope per-module family colors", () => {
+  it("curriculum map cards scope per-module family colors", () => {
     const coursePage = readFileSync(join(SRC, "app", "course", "page.tsx"), "utf8");
-    const problemsList = readFileSync(
-      join(SRC, "components", "problems", "ProblemsListClient.tsx"),
-      "utf8",
-    );
     // Each curriculum-map card applies its own module's family scope so the
     // glyph, wash band, and hover read that module's colour.
     expect(coursePage).toMatch(/moduleFamily\(module\)/);
     expect(coursePage).toMatch(/familyCssVars\(family\)/);
-    // Each module group on the Practice page does the same.
-    expect(problemsList).toMatch(/familyCssVars\(family\.id\)/);
-    expect(problemsList).toMatch(/getFamilyTheme\(familyId\)/);
+  });
+
+  it("the practice dashboard colours its topic dots by family, not by section scope", () => {
+    // The flat problem list (2026-09 redesign) has no per-module section to
+    // scope with familyCssVars — each row/topic just carries a small literal
+    // dot in that module's real accent colour, in both the sidebar's Topics
+    // list (ProblemsListClient) and each row's module tag (ProblemsFlatList).
+    // Deliberately different from the curriculum-map card pattern above: a
+    // dense list of 116 rows accent-washing per row would be noise, not a
+    // design.
+    const problemsList = readFileSync(
+      join(SRC, "components", "problems", "ProblemsListClient.tsx"),
+      "utf8",
+    );
+    const flatList = readFileSync(
+      join(SRC, "components", "problems", "ProblemsFlatList.tsx"),
+      "utf8",
+    );
+    expect(problemsList).toMatch(/moduleFamily\(g\.module\)/);
+    expect(problemsList).toMatch(/getFamilyTheme\(familyId\)\.accent/);
+    expect(flatList).toMatch(/getFamilyTheme\(p\.familyId\)\.accent/);
   });
 
   it("chapter headings carry the family accent bar", () => {
