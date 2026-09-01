@@ -8,7 +8,7 @@ import {
   MagnifyingGlass,
   Target,
 } from "@phosphor-icons/react";
-import { ModuleGlyph } from "@/components/course/ModuleGlyph";
+import { ModuleGlyph } from "@/app/courses/dsa/_components/ModuleGlyph";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import {
   STAGES,

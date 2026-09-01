@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Lock } from "@phosphor-icons/react/dist/ssr";
-import { ModuleGlyph } from "@/components/course/ModuleGlyph";
+import { ModuleGlyph } from "@/app/courses/dsa/_components/ModuleGlyph";
 import {
   MODULES,
   STAGES,
