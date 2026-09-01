@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 
 // This project's default vitest environment is "node" (see vitest.config.ts),
 // which has no `localStorage` global — the brief's assumption that jsdom was
