@@ -51,6 +51,18 @@ function activeFamilyFor(pathname: string): FamilyId | null {
   return null;
 }
 
+/**
+ * Every route currently belongs to DSA (the only registered course) or to
+ * no course at all (the catalog root). Progress still needs a bucket even
+ * on non-course routes today, so this defaults to "dsa" rather than
+ * returning null — the one course that exists is the reasonable default
+ * until a second course makes that default ambiguous.
+ */
+function activeCourseSlugFor(pathname: string): string {
+  const match = /^\/courses\/([^/]+)/.exec(pathname);
+  return match ? match[1] : "dsa";
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -120,6 +132,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ProgressProvider
+      courseSlug={activeCourseSlugFor(pathname)}
       totalCount={totalCount}
       totalProblemCount={totalProblemCount}
       lessonProgressIds={lessonProgressIds}
