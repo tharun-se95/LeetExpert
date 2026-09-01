@@ -18,11 +18,6 @@ import { cn } from "@/lib/utils";
 
 const NEUTRAL_DOT = "var(--muted)";
 
-/** Same top/bottom fade TableOfContents.tsx's EDGE_FADE_MASK uses on its own scroll rail. */
-const EDGE_FADE_MASK =
-  "linear-gradient(to bottom, transparent, black 12px, black calc(100% - 12px), transparent)";
-const EDGE_FADE_STYLE = { maskImage: EDGE_FADE_MASK, WebkitMaskImage: EDGE_FADE_MASK };
-
 export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
   const { solved, solvedCount, totalProblemCount } = useProgress();
   const [query, setQuery] = useState("");
@@ -219,10 +214,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
           isProblemsListPath in AppShell.tsx).
         */}
         <div className="mt-6 grid min-h-0 flex-1 gap-6 lg:grid-cols-[272px_1fr]">
-          <aside
-            className="hidden overflow-y-auto lg:flex lg:h-full lg:min-h-0 lg:flex-col"
-            style={EDGE_FADE_STYLE}
-          >
+          <aside className="hidden overflow-y-auto lg:flex lg:h-full lg:min-h-0 lg:flex-col">
             <ProblemFilterPanel {...filterPanelProps} />
           </aside>
 
@@ -231,7 +223,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
               Showing <span className="font-medium text-foreground">{filtered.length}</span>{" "}
               of {totalProblemCount}
             </p>
-            <div className="min-h-0 flex-1 overflow-y-auto" style={EDGE_FADE_STYLE}>
+            <div className="min-h-0 flex-1 overflow-y-auto">
               <ProblemsFlatList
                 problems={filtered}
                 solved={solved}
