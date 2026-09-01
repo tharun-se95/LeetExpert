@@ -42,8 +42,8 @@ export function ProblemFilterPanel({
   onClearFilters: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-5">
-      <div role="group" aria-label="Filter by status">
+    <div className="flex h-full min-h-0 flex-col gap-5">
+      <div role="group" aria-label="Filter by status" className="shrink-0">
         <p className="mb-2 text-[11px] font-semibold tracking-wide text-muted uppercase">
           Status
         </p>
@@ -70,7 +70,7 @@ export function ProblemFilterPanel({
         </div>
       </div>
 
-      <div role="group" aria-label="Filter by difficulty">
+      <div role="group" aria-label="Filter by difficulty" className="shrink-0">
         <p className="mb-2 text-[11px] font-semibold tracking-wide text-muted uppercase">
           Difficulty
         </p>
@@ -95,17 +95,20 @@ export function ProblemFilterPanel({
         </div>
       </div>
 
-      <div>
-        <p className="mb-2 text-[11px] font-semibold tracking-wide text-muted uppercase">
+      <div className="flex min-h-0 flex-1 flex-col">
+        <p className="mb-2 shrink-0 text-[11px] font-semibold tracking-wide text-muted uppercase">
           Topics
         </p>
         {/*
-          No scroll/fade treatment of its own — the desktop sidebar wraps
-          the whole panel (Status + Difficulty + Topics together) in one
-          scroll region, and the mobile sheet already scrolls its own body,
-          so a second, nested scroll area here would just trap the wheel.
+          Topics is the one long list here, so it's the only part that
+          scrolls in its own contained box — Status/Difficulty stay put
+          above it. On desktop the sidebar hands this a bounded height
+          (h-full), so min-h-0/flex-1/overflow-y-auto actually constrain
+          it; in the mobile sheet the parent has no bounded height, so
+          this degrades to its natural size and the sheet's own scroll
+          takes over instead — no separate mobile case needed.
         */}
-        <div className="flex flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-code">
+        <div className="min-h-0 flex-1 overflow-y-auto rounded-[length:var(--radius-lg)] border border-border bg-code">
           {topics.map((t, i) => {
             const checked = selectedTopics.has(t.slug);
             return (
@@ -161,7 +164,7 @@ export function ProblemFilterPanel({
         <button
           type="button"
           onClick={onClearFilters}
-          className="text-left text-xs font-medium text-mark hover:opacity-80"
+          className="shrink-0 text-left text-xs font-medium text-mark hover:opacity-80"
         >
           Clear filters
         </button>

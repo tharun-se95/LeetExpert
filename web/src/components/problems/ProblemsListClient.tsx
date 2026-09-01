@@ -214,7 +214,7 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
           isProblemsListPath in AppShell.tsx).
         */}
         <div className="mt-6 grid min-h-0 flex-1 gap-6 lg:grid-cols-[272px_1fr]">
-          <aside className="hidden overflow-y-auto lg:flex lg:h-full lg:min-h-0 lg:flex-col">
+          <aside className="hidden lg:flex lg:h-full lg:min-h-0 lg:flex-col">
             <ProblemFilterPanel {...filterPanelProps} />
           </aside>
 
