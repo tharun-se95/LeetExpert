@@ -456,8 +456,8 @@ written. Lesson counts are final per Phase 1's breakdown above.
 | 5. State Management & URL-as-State | 2 | 5 | 5/5 ✅ | 0/4 (1 conceptual, no drill) | |
 | 6. Security & Production Ops | 2 | 7 | 7/7 ✅ | 0/6 (1 conceptual, no drill) | |
 | 7. System Design & Scale | 3 | 8 | 8/8 ✅ | 0/7 (1 conceptual, no drill) | |
-| 8. Interactive Mock Interview Drills | 3 | 6 | 0/6 | 0/6 | |
-| **Total** | **22** | **62** | **56/62** | **0/54 drill-bearing** | |
+| 8. Interactive Mock Interview Drills | 3 | 6 | 6/6 ✅ | 0/6 | |
+| **Total** | **22** | **62** | **62/62 ✅** | **0/54 drill-bearing** | |
 
 **Module 1 (RSC Architecture & Hydration) is fully authored — 8/8
 lessons**, the first complete module. All content lives under
@@ -552,9 +552,46 @@ full Vitest suite (608 tests), a clean production build (431 static
 pages), and a live HTTP smoke-test returning 200 for all 8 new lesson
 URLs.
 
-**Next up:** Module 8 (Interactive Mock Interview Drills, 6 lessons
-across 3 chapters) — the final module, completing the full 62-lesson
-curriculum.
+**Module 8 (Interactive Mock Interview Drills) is fully authored — 6/6
+lessons**, all under `courses/nextjs/interactive-mock-interview-drills/`.
+Covers E2E/Playwright trace-audit diagnosis for SSR hydration failures
+(using the Phase 0-flagged pre-recorded `.trace.zip` workaround, not a
+live headless browser), live mismatch-recovery diagnosis requiring
+learners to distinguish hydration bugs from stale-cache and
+state-seeding bugs, the request-lifecycle oral defense that synthesizes
+every prior module into one coherent verbal answer, Pages-to-App-Router
+incremental migration strategy, and two capstone system-design sessions
+(e-commerce rendering-strategy mapping across route types; distributed
+multi-container Redis cache-handler design under concurrent load). 2
+pr-review/trace, 4 canvas-defense. Verified with `tsc --noEmit`, the full
+Vitest suite (608 tests), a clean production build (431 static pages),
+and a live HTTP smoke-test returning 200 for all 6 new lesson URLs.
+
+## ✅ PHASE 4 COMPLETE — all 62/62 lessons authored across all 8 modules
+
+Every lesson in the full curriculum now has real, complete,
+non-stub content: 8 modules, 22 chapters, 62 lessons, verified end to
+end (tsc, full test suite, production build generating all 62 lesson
+routes, and a live HTTP smoke-test of every single lesson URL added
+across every module). Format breakdown across the 62 lessons: 8
+conceptual-only, ~24 sandbox, ~9 trace, ~14 pr-review, 6 canvas-defense
+(exact per-lesson tags are authoritative in `manifest.ts`).
+
+**What's real right now:** every lesson page renders genuine, accurate,
+well-explained Next.js content — a learner can read the entire course
+today and learn the material. **What's still a placeholder:** every
+drill-bearing lesson (54 of 62) shows an honest "practice component not
+built yet" note instead of a working interactive drill, because none of
+the four practice-format components (Phase 3) have been built yet. The
+course registry status stays `coming-soon` for exactly this reason: full
+lesson content existing without a working practice mechanism is not yet
+what this course is meant to be — CLAUDE.md's "no shortcuts" standard
+means flipping to `available` waits until practice actually works, not
+until content merely exists.
+
+**Next up:** Phase 3 — practice-format engineering. This is the
+remaining work standing between the current state and an actually
+shippable course.
 
 ## Session log
 
@@ -589,8 +626,13 @@ completed same session (7/7 lessons: 1 conceptual, 1 sandbox, 5
 pr-review), verified identically and committed. Module 7 (System Design &
 Scale) completed same session (8/8 lessons: 1 conceptual, 1
 canvas-defense, 6 sandbox/pr-review), verified identically and
-committed. Next: complete Phase 4 content authoring with Module 8
-(Interactive Mock Interview Drills), the final module, then pick up
-Phase 3 (practice-format engineering) once a drill-bearing lesson needs a
-real interactive component rather than the honest "not built yet"
-placeholder.
+committed. Module 8 (Interactive Mock Interview Drills) completed same
+session (6/6 lessons: 2 pr-review/trace, 4 canvas-defense), verified
+identically and committed — **this closes out Phase 4 entirely: all
+62/62 lessons across all 8 modules are now authored, verified, and
+live.** Next: Phase 3, practice-format engineering — designing and
+building the four practice components (Trace-the-Execution,
+Semi-Constrained Sandbox, PR Code Review, Architectural Canvas +
+Defense) so the 54 drill-bearing lessons' "not built yet" placeholders
+become real, working practice. This is the remaining work before the
+course can honestly move from `coming-soon` to `available`.
