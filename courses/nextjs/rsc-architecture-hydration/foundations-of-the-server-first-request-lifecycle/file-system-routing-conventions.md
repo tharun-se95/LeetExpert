@@ -103,3 +103,52 @@ them) that produces exactly that behavior. The constraint that makes this
 a real interview-style exercise rather than a copy-paste exercise: no
 autocomplete or file-tree suggestions — you have to know which file names
 Next.js actually looks for, not recognize them from a dropdown.
+
+## Try it
+
+Design the file tree for this app: a root shell with global navigation,
+and two independent sections — `/dashboard/reports` and
+`/dashboard/team` — each of which should keep its own local UI state
+(an open filter panel, a selected tab) when a user navigates *within*
+that section, without either section's state leaking into the other or
+resetting on every click. Write out the folder/file structure below as
+comments, the way the nesting diagram above did it.
+
+```scratchpad file-system-routing-conventions
+// Sketch the folder tree here. Example format:
+// app/
+//   layout.tsx        — ...
+//   dashboard/
+//     ...
+```
+
+````reveal A worked file tree
+One correct shape:
+
+```
+app/
+  layout.tsx                    — global nav, wraps everything
+  dashboard/
+    layout.tsx                   — shared dashboard chrome (sidebar)
+    page.tsx                      — /dashboard itself
+    reports/
+      layout.tsx                  — reports-local state lives here
+      page.tsx                     — /dashboard/reports
+      [id]/
+        page.tsx                   — /dashboard/reports/[id]
+    team/
+      layout.tsx                  — team-local state lives here
+      page.tsx                     — /dashboard/team
+```
+
+The key decision: each section (`reports/`, `team/`) gets **its own
+`layout.tsx`**, not just a `page.tsx`. That section-scoped layout is
+where local UI state (a filter panel, a selected tab) actually lives —
+because a layout persists across navigation *within its own subtree*,
+moving from `/dashboard/reports` to `/dashboard/reports/42` keeps
+`reports/layout.tsx` mounted, preserving its state, while moving over to
+`/dashboard/team` mounts `team/layout.tsx` fresh, with no shared state
+between the two sections at all. Putting that same state one level up in
+`dashboard/layout.tsx` instead would have been the wrong call — it would
+force both sections to share state that should stay independent.
+````

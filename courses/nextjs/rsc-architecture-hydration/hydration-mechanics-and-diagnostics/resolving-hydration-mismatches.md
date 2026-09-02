@@ -114,3 +114,53 @@ code that produced it. Your task is to identify which of the root causes
 above is responsible, explain precisely why the server and client
 outputs diverge in this specific case, and refactor the code to eliminate
 the mismatch.
+
+## Try it
+
+Console error:
+
+```
+Warning: Text content did not match. Server: "Posted 3 hours ago"
+Client: "Posted 4 hours ago"
+```
+
+Component:
+
+```tsx
+function PostMeta({ postedAt }: { postedAt: string }) {
+  const minutesAgo = Math.floor((Date.now() - new Date(postedAt).getTime()) / 60000);
+  return <span>Posted {formatRelative(minutesAgo)}</span>;
+}
+```
+
+What's the root cause here, and how would you fix it?
+
+````reveal Work through the diagnosis
+This is the timezone/time-dependent rendering pattern. `Date.now()`
+evaluates to a *different* millisecond value on the server (when the
+page was rendered) than on the client (when hydration runs moments —
+or, on a slow connection, many seconds — later). "3 hours ago" vs. "4
+hours ago" isn't a bug in `formatRelative` at all; it's two genuinely
+different inputs producing two genuinely different, both-correct
+outputs.
+
+**The fix:** render a stable value on the initial pass — the actual
+timestamp, or a placeholder — and compute the relative time in a
+`useEffect` that runs only on the client, after hydration completes:
+
+```tsx
+function PostMeta({ postedAt }: { postedAt: string }) {
+  const [label, setLabel] = useState(() => new Date(postedAt).toLocaleDateString());
+  useEffect(() => {
+    const minutesAgo = Math.floor((Date.now() - new Date(postedAt).getTime()) / 60000);
+    setLabel(formatRelative(minutesAgo));
+  }, [postedAt]);
+  return <span>Posted {label}</span>;
+}
+```
+
+The server and the client's first render now both produce the same
+stable date string — no mismatch — and the relative-time upgrade happens
+safely after hydration, when there's no server output left to disagree
+with.
+````

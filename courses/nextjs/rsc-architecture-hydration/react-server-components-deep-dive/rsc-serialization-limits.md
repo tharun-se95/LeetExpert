@@ -74,3 +74,42 @@ into a Client Component. Your task is to identify which snippets would
 actually fail at the serialization boundary, explain the specific reason
 for each failure, and distinguish those from snippets that look
 suspicious but are actually fine.
+
+## Try it
+
+Three Server Components, each passing a prop to a `"use client"` child.
+Which ones cross the boundary safely, and which fail?
+
+```
+// A
+<ClientWidget onSave={() => db.save(data)} />
+
+// B
+<ClientWidget createdAt={new Date(post.createdAt)} />
+
+// C
+<ClientWidget summary={{ title: post.title, views: post.views }} />
+```
+
+````reveal Work through each prop
+**A fails.** `onSave` is a function closure that captures `db` — a
+server-only object. Functions aren't serializable data at all, and this
+one specifically closes over something that has no meaning in the
+browser even if it could cross.
+
+**B fails, but more subtly.** A `Date` instance isn't a plain
+serializable value — it has methods and internal state beyond its
+timestamp. It commonly *appears* to work because it gets coerced to a
+string somewhere down the line, but the client component receives that
+coerced form, not a real `Date` object, which breaks any code expecting
+`.getMonth()` or similar to exist on it.
+
+**C is fine.** A plain object with only primitive values (a string, a
+number) serializes cleanly — this is exactly the shape a Server
+Component should hand a Client Component.
+
+The fix for A: move `onSave`'s logic into a `"use server"` function and
+pass a reference to *that* instead of a raw closure. The fix for B: pass
+`post.createdAt.toISOString()` — a plain string — and let the client
+component construct its own `Date` from it if it needs one.
+````

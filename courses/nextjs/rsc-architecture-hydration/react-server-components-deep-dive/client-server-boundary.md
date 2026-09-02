@@ -84,3 +84,54 @@ boundary actually sits — which components render only server-side, which
 one hydrates in the browser, and which specific function call triggers a
 network round-trip back to the server despite being invoked from client
 code.
+
+## Try it
+
+```
+// app/page.tsx (no directive)
+import LikeButton from "./LikeButton";
+
+async function Page() {
+  const post = await db.posts.find(1);
+  return <article>{post.title}<LikeButton postId={post.id} /></article>;
+}
+
+// LikeButton.tsx
+"use client";
+import { likePost } from "./actions";
+
+function LikeButton({ postId }) {
+  return <button onClick={() => likePost(postId)}>Like</button>;
+}
+
+// actions.ts
+"use server";
+export async function likePost(id) {
+  await db.likes.increment(id);
+}
+```
+
+For each of `Page`, `LikeButton`, and `likePost`, decide: does it run
+only on the server, does it hydrate and run in the browser, or does it
+run on the server but get *called* from the browser over the network?
+
+````reveal Work through the boundary
+**`Page`** has no directive and calls `await db.posts.find(1)` directly
+— a Server Component. It never ships its own code to the browser; its
+output crosses as a serialized RSC payload.
+
+**`LikeButton`** is marked `"use client"` — it hydrates and runs for
+real in the browser, which is exactly why it's allowed to attach an
+`onClick` handler at all. Its compiled code ships as a real JS chunk.
+
+**`likePost`** is marked `"use server"` — despite being *called* from
+inside `LikeButton`'s browser-executed `onClick` handler, its own body
+never runs client-side. Calling it compiles to a network request; the
+increment happens back on the server, where `db.likes` is actually
+reachable.
+
+The trap this snippet is built to catch: assuming that because
+`likePost` is *invoked* from client code, it *runs* on the client. The
+`"use server"` directive is what determines execution location — not
+which component happens to call it.
+````

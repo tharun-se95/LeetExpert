@@ -121,7 +121,7 @@ export default async function NextjsLessonPage({ params }: PageProps) {
           />
         </div>
 
-        {hit.lesson.practiceFormat ? (
+        {hit.lesson.practiceFormat && !loaded.hasEmbeddedPractice ? (
           <div className="mt-10 rounded-[length:var(--radius-lg)] border border-dashed border-border bg-surface p-5">
             <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
               <Wrench className="h-4 w-4" weight="bold" />
@@ -131,8 +131,8 @@ export default async function NextjsLessonPage({ params }: PageProps) {
               {hit.lesson.practiceScenario}
             </p>
             <p className="mt-3 text-xs text-muted">
-              This lesson&rsquo;s interactive drill component hasn&rsquo;t
-              been built yet — see Phase 3 of the course build-out plan.
+              This lesson&rsquo;s interactive drill hasn&rsquo;t been wired
+              up yet — see Phase 3 of the course build-out plan.
             </p>
           </div>
         ) : null}

@@ -100,3 +100,43 @@ Client Components — HTML output for some parts, a serialized RSC payload
 for others, and a JavaScript bundle for the client-rendered pieces. Your
 job is to correctly identify which trace entries came from which kind of
 component, and explain why each one produced what it did.
+
+## Try it
+
+A page renders three components: `<ProductPrice>` (reads from a
+database, no interactivity), `<AddToCartButton>` (has an `onClick`
+handler and local pending state), and `<PageLayout>` (the wrapping shell,
+no interactivity). Below is what the browser's network panel shows for
+one request to this page. For each entry, decide: did this come from a
+Server Component or a Client Component, and why?
+
+```
+1. GET /product/42                    → 4.1 KB   text/x-component
+2. GET /_next/static/chunks/847.js    → 12.8 KB  application/javascript
+3. GET /_next/static/chunks/main.js   → 31.2 KB  application/javascript
+```
+
+````reveal Work through the trace
+**Entry 1** (`text/x-component`, an RSC payload, not plain HTML) is the
+serialized description of the whole tree — `PageLayout` and
+`ProductPrice` are Server Components, so their rendered output travels
+as this serialized payload rather than as their source code. Nothing
+about their own implementation ever reaches the browser as JavaScript.
+
+**Entry 2** is `AddToCartButton`'s own compiled code. It has to ship as
+real JavaScript because it's a Client Component — it needs `onClick` and
+local state to work in the browser at all, and that only works if its
+code actually runs there.
+
+**Entry 3** is Next.js's own client runtime (React, the router, hydration
+logic) — not any of your three components specifically, but the shared
+machinery every page with at least one Client Component needs loaded to
+hydrate it.
+
+The diagnostic habit this builds: **`text/x-component` responses are the
+signature of Server Component output** — if you ever see that content
+type in a real trace, whatever produced it never shipped its own code to
+the browser, regardless of how much data or logic it contains server-side.
+A `.js` chunk, by contrast, is direct, inspectable evidence that whatever
+it contains runs client-side.
+````

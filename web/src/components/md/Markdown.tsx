@@ -16,6 +16,7 @@ import {
 import { Quiz } from "@/components/course/Quiz";
 import { CodeTabs } from "@/components/course/CodeTabs";
 import { Reveal } from "@/components/course/Reveal";
+import { Scratchpad } from "@/components/course/Scratchpad";
 import { Complexity } from "@/components/course/Complexity";
 import { Viz } from "@/components/viz/Viz";
 import { MarginNote } from "@/components/md/MarginNote";
@@ -157,6 +158,11 @@ export function Markdown({
               />
             </Reveal>
           );
+        }
+        if (className.includes("language-scratchpad")) {
+          const storageKey =
+            codeEl.props.node?.data?.meta?.trim() || "default";
+          return <Scratchpad source={text()} storageKey={storageKey} />;
         }
         if (className.includes("language-roadmap")) {
           const stages = parseRoadmapStages(text());

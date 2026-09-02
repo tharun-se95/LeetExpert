@@ -34,6 +34,7 @@ const NON_CODE_LANGS = new Set([
   "roadmap",
   "practice-problems",
   "examples",
+  "scratchpad",
   "tip",
   "note",
   "goal",

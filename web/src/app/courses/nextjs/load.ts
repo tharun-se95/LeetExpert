@@ -86,6 +86,15 @@ export interface LoadedNextjsLesson {
   sourcePath: string;
   highlightedBlocks: Record<string, string | null>;
   highlightedTabs: Record<string, TabBlock[]>;
+  /**
+   * Whether this lesson already authors its own practice drill inline
+   * (a `reveal` fence with a worked answer, optionally paired with a
+   * `scratchpad`) rather than relying on the page-level placeholder.
+   * A plain substring check, not a full parse: false positives would
+   * require the phrase to appear inside a fence *opener* specifically,
+   * which lesson prose never does.
+   */
+  hasEmbeddedPractice: boolean;
 }
 
 export async function loadNextjsLesson(
@@ -130,6 +139,7 @@ export async function loadNextjsLesson(
     sourcePath: relative,
     highlightedBlocks: blocks,
     highlightedTabs: tabs,
+    hasEmbeddedPractice: /^`{3,4}reveal\b/m.test(trimmed),
   };
 }
 
