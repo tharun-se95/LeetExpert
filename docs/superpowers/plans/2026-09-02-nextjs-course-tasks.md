@@ -450,14 +450,14 @@ written. Lesson counts are final per Phase 1's breakdown above.
 | Module | Chapters | Lessons | Content drafted | Practice components wired | Reviewed |
 | --- | :-: | :-: | :-: | :-: | :-: |
 | 1. RSC Architecture & Hydration | 3 | 8 | 8/8 ✅ | 0/5 (3 conceptual, no drill) | |
-| 2. Routing & Layout Architecture | 3 | 9 | 0/9 | 0/9 | |
+| 2. Routing & Layout Architecture | 3 | 9 | 9/9 ✅ | 0/9 | |
 | 3. Data Lifecycle | 3 | 9 | 0/9 | 0/9 | |
 | 4. Rendering & Performance | 3 | 10 | 0/10 | 0/8 (2 conceptual, no drill) | |
 | 5. State Management & URL-as-State | 2 | 5 | 0/5 | 0/4 (1 conceptual, no drill) | |
 | 6. Security & Production Ops | 2 | 7 | 0/7 | 0/6 (1 conceptual, no drill) | |
 | 7. System Design & Scale | 3 | 8 | 0/8 | 0/7 (1 conceptual, no drill) | |
 | 8. Interactive Mock Interview Drills | 3 | 6 | 0/6 | 0/6 | |
-| **Total** | **22** | **62** | **8/62** | **0/54 drill-bearing** | |
+| **Total** | **22** | **62** | **17/62** | **0/54 drill-bearing** | |
 
 **Module 1 (RSC Architecture & Hydration) is fully authored — 8/8
 lessons**, the first complete module. All content lives under
@@ -469,9 +469,21 @@ module has real content rendering its scenario text and the honest
 module for what "done" looks like content-wise, the same role
 hash-tables played for the DSA course.
 
-**Next up:** Module 2 (Routing & Layout Architecture, 9 lessons, 0
-conceptual — every lesson in this module is drill-bearing), continuing
-sequentially through the curriculum above.
+**Module 2 (Routing & Layout Architecture) is fully authored — 9/9
+lessons**, all under `courses/nextjs/routing-and-layout-architecture/`.
+Every lesson in this module is drill-bearing (0 conceptual-only): 6
+`sandbox` lessons (dynamic segments, layouts vs. templates, route groups,
+route handlers, middleware fundamentals, plus the two advanced-depth
+parallel/intercepting-routes lessons) and 2 `pr-review` lessons
+(middleware performance/scoping, redirects/rewrites vs. compiler config).
+Verified with `tsc --noEmit`, the full Vitest suite (608 tests), a clean
+production build (431 static pages, all 9 new lesson routes present in
+the route manifest), and a live HTTP smoke-test returning 200 for each of
+the 9 new lesson URLs against a production server.
+
+**Next up:** Module 3 (Data Lifecycle: Fetching, Caching & Revalidation,
+9 lessons across 3 chapters), continuing sequentially through the
+curriculum above.
 
 ## Session log
 
@@ -490,6 +502,12 @@ registration, rather than a placeholder file, when the
 course-content-coverage guard correctly flagged the empty directory.
 Two Phase 2 items deliberately deferred with reasoning recorded above
 (progress-tracking wiring, per-course theming) since forcing them now
-would be premature given 1/62 lessons exist. Next: continue Phase 4
-content authoring through the rest of Module 1, then pick up Phase 3
-(practice-format engineering) once a drill-bearing lesson needs one.
+would be premature given 1/62 lessons exist. Module 1 completed same
+session (8/8 lessons) as the pipeline reference module. Module 2
+completed in a later session (9/9 lessons, all drill-bearing across
+`sandbox` and `pr-review` formats), verified end to end (tsc, tests,
+production build, live route smoke-test) and committed. Next: continue
+Phase 4 content authoring through Module 3 (Data Lifecycle), then pick
+up Phase 3 (practice-format engineering) once a drill-bearing lesson
+needs a real interactive component rather than the honest
+"not built yet" placeholder.
