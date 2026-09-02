@@ -839,3 +839,26 @@ per-course theming, which stays deferred — the design doc explicitly
 allows "one accent per module, a single course-wide accent, or none,"
 and this course's monochrome fallback is a valid choice under that
 rule, not a gap like the two that got fixed this session.
+
+**2026-09-02 (design pass — rich callouts):** User feedback: text-heavy
+chapters read as a monochrome wall of prose, and asked for rich
+text/highlighting/icons. Piloted on Module 1 first (per their explicit
+request) before rolling out further. Wired `warn` and `brain` as new
+first-class `Callout` fence types in `Markdown.tsx` (alongside the
+existing `tip`/`note`/`goal`/`constraint`), reusing the platform's
+already-shipped `Callout` component and `CalloutType` values — both
+existed already, just weren't reachable as an explicit fence before.
+No new styling was needed, so light/dark-mode correctness came for free
+from the same component 191 DSA lessons already use.
+
+After the user approved the pilot ("proceed"), rolled the same
+treatment across all remaining 7 modules (53 lessons), one module at a
+time with the established verify-then-commit cadence (tsc, full test
+suite, live browser check, commit) — landing 8 separate commits, one
+per module. Each lesson got 1-3 callouts total, placed on the single
+strongest "trap," "trade-off," or "mental model" paragraph the lesson
+already called out in prose, rather than a callout per paragraph —
+over-highlighting reads worse than none. All 62 lessons across all 8
+modules now carry this treatment. Final full verification (tsc, 620
+tests, eslint, a clean production build of all 431 pages) passed
+end-to-end after the complete rollout.
