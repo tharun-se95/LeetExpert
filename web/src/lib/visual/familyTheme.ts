@@ -261,22 +261,41 @@ export function getFamilyTheme(id: FamilyId | string): FamilyTheme {
   };
 }
 
-export function familyCssVars(id: FamilyId | string): CSSProperties {
-  const theme = getFamilyTheme(id);
+function accentCssVars(accent: string, accentUi: string, onAccentUi: string): CSSProperties {
   return {
-    "--family-accent": theme.accent,
-    "--family-on-accent": theme.onAccent,
-    "--family-wash": `color-mix(in oklab, ${theme.accent} 12%, transparent)`,
+    "--family-accent": accent,
+    "--family-on-accent": pickInk(accent),
+    "--family-wash": `color-mix(in oklab, ${accent} 12%, transparent)`,
     // The family becomes the page's primary inside this scope. accentUi is
     // the 3:1-on-every-surface-safe variant; on-pop is onAccentUi (paired
     // with accentUi specifically, NOT onAccent — see the FamilyTheme
     // comment for why the two fills need different ink). --mark is
     // deliberately NOT remapped — it stays the steel body ink everywhere.
-    "--accent": theme.accentUi,
-    "--accent-hover": `color-mix(in oklab, ${theme.accentUi} 85%, white)`,
-    "--accent-active": theme.accentUi,
-    "--pop": theme.accentUi,
-    "--on-pop": theme.onAccentUi,
-    "--highlight": `color-mix(in oklab, ${theme.accentUi} 14%, transparent)`,
+    "--accent": accentUi,
+    "--accent-hover": `color-mix(in oklab, ${accentUi} 85%, white)`,
+    "--accent-active": accentUi,
+    "--pop": accentUi,
+    "--on-pop": onAccentUi,
+    "--highlight": `color-mix(in oklab, ${accentUi} 14%, transparent)`,
   } as CSSProperties;
+}
+
+export function familyCssVars(id: FamilyId | string): CSSProperties {
+  const theme = getFamilyTheme(id);
+  return accentCssVars(theme.accent, theme.accentUi, theme.onAccentUi);
+}
+
+/**
+ * The single-course-wide-accent option the multi-course design doc
+ * explicitly allows as an alternative to DSA's per-module family system
+ * (see docs/superpowers/specs/2026-08-31-multi-course-platform-design.md).
+ * Reuses the exact same contrast math as `familyCssVars` (`uiAccent`,
+ * `pickInk`) rather than the DSA-specific `FAMILIES` lookup table, since a
+ * course using this option authors ONE accent hex, not seven named
+ * families — `getFamilyTheme` has no entry for it and would silently fall
+ * back to DSA's "linear-traversal" green instead.
+ */
+export function singleAccentCssVars(accent: string): CSSProperties {
+  const accentUi = uiAccent(accent);
+  return accentCssVars(accent, accentUi, pickInk(accentUi));
 }

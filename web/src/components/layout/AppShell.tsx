@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
@@ -19,7 +19,8 @@ import {
   moduleFamily,
 } from "@/lib/course/manifest";
 import { allLessonIds as allNextjsLessonIds } from "@/app/courses/nextjs/manifest";
-import { familyCssVars } from "@/lib/visual/familyTheme";
+import { NEXTJS_COURSE } from "@/app/courses/nextjs/registry";
+import { familyCssVars, singleAccentCssVars } from "@/lib/visual/familyTheme";
 import type { FamilyId } from "@/lib/content/manifest";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
 import { cn } from "@/lib/utils";
@@ -81,6 +82,26 @@ export function activeThemeFor(pathname: string): FamilyId | null {
   return null;
 }
 
+/**
+ * The actual inline-style CSS custom properties AppShell applies, built on
+ * top of `activeThemeFor`. DSA resolves to a `FamilyId` and gets
+ * `familyCssVars`; the Next.js course chose the design doc's other allowed
+ * option — one accent for the whole course rather than per-module families
+ * — so it gets `singleAccentCssVars` instead of being forced through DSA's
+ * named-family lookup table (which has no entry for an arbitrary hex and
+ * would silently fall back to DSA's own default family). Routes with no
+ * course-specific theme (the catalog root, DSA's marketing page) return
+ * `undefined`, leaving the shell monochrome.
+ */
+export function themeStyleFor(pathname: string): CSSProperties | undefined {
+  const family = activeThemeFor(pathname);
+  if (family) return familyCssVars(family);
+  if (activeCourseSlugFor(pathname) === "nextjs") {
+    return singleAccentCssVars(NEXTJS_COURSE.accent);
+  }
+  return undefined;
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -102,7 +123,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const ideViewport = isIdePath(pathname);
   const fillMain = ideViewport || isProblemsListPath(pathname);
   const showCourseNav = !isLandingPath(pathname);
-  const family = activeThemeFor(pathname);
+  const themeStyle = themeStyleFor(pathname);
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
   useEffect(() => {
@@ -165,10 +186,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       totalProblemCount={totalProblemCount}
       lessonProgressIds={lessonProgressIds}
     >
-      <div
-        className="contents"
-        style={family ? familyCssVars(family) : undefined}
-      >
+      <div className="contents" style={themeStyle}>
         <VisitTracker />
         <ScrollbarAutoHide />
         <SidebarProvider open={sidebarOpen} toggle={toggleSidebar}>
