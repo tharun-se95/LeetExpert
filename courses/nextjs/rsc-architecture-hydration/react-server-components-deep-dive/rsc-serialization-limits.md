@@ -6,13 +6,11 @@ depth: essential
 
 ## Why this lesson isn't optional advanced trivia
 
-The Phase 0 review that shaped this course's depth tags specifically
-moved this topic from "advanced" to "essential," and the reasoning is
-worth stating plainly: **this isn't a rare edge case — it's a
-foundational gatekeeper.** If you don't understand what can and can't
-cross the client-server boundary, you will write code that fails in ways
-that look confusing and arbitrary, because you're missing the one rule
-that would have made the failure predictable.
+This isn't a rare edge case — it's a foundational gatekeeper. If you
+don't understand what can and can't cross the client-server boundary,
+you will write code that fails in ways that look confusing and
+arbitrary, because you're missing the one rule that would have made the
+failure predictable.
 
 ## What "crossing the boundary" actually means
 

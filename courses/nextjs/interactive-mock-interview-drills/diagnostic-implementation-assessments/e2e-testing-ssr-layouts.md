@@ -19,14 +19,13 @@ test touches.
 ## Why this course uses trace audits instead of a live browser
 
 Running an actual headless browser inside a self-paced, browser-based
-learning platform is one of the three things Phase 0's pedagogy
-investigation flagged as genuinely hard to fake safely and reliably in
-this format. The workaround: Playwright's own Trace Viewer can replay a
-**pre-recorded `.trace.zip`** capture of a real failing test run —
-screenshots, DOM snapshots, console output, network activity, all
-frozen at the moment of failure — giving you the full diagnostic
-experience of investigating a real E2E failure without this platform
-needing to spin up live browser infrastructure per learner.
+learning platform is genuinely hard to do safely and reliably. The
+workaround: Playwright's own Trace Viewer can replay a **pre-recorded
+`.trace.zip`** capture of a real failing test run — screenshots, DOM
+snapshots, console output, network activity, all frozen at the moment
+of failure — giving you the full diagnostic experience of investigating
+a real E2E failure without needing to spin up live browser
+infrastructure per learner.
 
 ## What a real trace-based diagnosis looks like
 
