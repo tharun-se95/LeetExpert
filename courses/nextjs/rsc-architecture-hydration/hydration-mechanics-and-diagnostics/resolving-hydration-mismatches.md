@@ -82,24 +82,28 @@ different, `window`-dependent result once it actually runs in the
 browser during hydration. Either way, the server's rendered output and
 the client's hydration-time render disagree.
 
+```tip
 The standard fix is to **defer browser-only logic until after hydration
 is already complete**, using `useEffect` — code inside `useEffect` runs
 only in the browser, and only after the initial render has already
-happened, so it can't create a mismatch between what the server sent and
-what hydration expects to see. The component renders one consistent
+happened, so it can't create a mismatch between what the server sent
+and what hydration expects to see. The component renders one consistent
 value during hydration (often a sensible default), then updates itself
 afterward once the effect runs.
+```
 
 ## The shared pattern across all three causes
 
+```brain
 Notice what all three have in common: **the server and the client
 disagreed about what a component should render, for reasons that have
 nothing to do with a bug in the component's logic itself.** Fixing
 hydration mismatches is less about "finding the broken code" and more
 about finding the specific point where a value or a rendering decision
-can legitimately differ between server and client execution — and either
-eliminating that difference, or deferring it to run safely after
+can legitimately differ between server and client execution — and
+either eliminating that difference, or deferring it to run safely after
 hydration.
+```
 
 ## What the practice drill is testing
 

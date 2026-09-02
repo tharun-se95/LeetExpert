@@ -114,11 +114,13 @@ export function Markdown({
           className.includes("language-tip") ||
           className.includes("language-note") ||
           className.includes("language-goal") ||
-          className.includes("language-constraint")
+          className.includes("language-constraint") ||
+          className.includes("language-warn") ||
+          className.includes("language-brain")
         ) {
-          const lang = /language-(tip|note|goal|constraint)/.exec(className)?.[1] as
-            | CalloutType
-            | undefined;
+          const lang = /language-(tip|note|goal|constraint|warn|brain)/.exec(
+            className,
+          )?.[1] as CalloutType | undefined;
           return (
             <Callout type={lang ?? "note"}>
               <Markdown

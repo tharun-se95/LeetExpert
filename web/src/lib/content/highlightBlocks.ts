@@ -39,6 +39,8 @@ const NON_CODE_LANGS = new Set([
   "note",
   "goal",
   "constraint",
+  "warn",
+  "brain",
   "text",
 ]);
 

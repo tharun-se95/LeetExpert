@@ -46,13 +46,17 @@ separate mapping step required.
 ## Why layout nesting controls more than visual layout
 
 Here's the detail that's easy to skim past and important to actually sit
-with: because a layout wraps everything beneath it, **the layout also
-defines a server-render boundary.** Each layout's own server-side work
-(any data it fetches, before this course gets to Server Components and
-Server Actions in detail) happens independently of the page nested inside
-it. A slow page doesn't block a fast layout from being ready, and — just
-as importantly — a layout's own re-render doesn't force everything nested
-inside it to restart from zero.
+with.
+
+```brain
+Because a layout wraps everything beneath it, **the layout also defines
+a server-render boundary.** Each layout's own server-side work (any
+data it fetches, before this course gets to Server Components and
+Server Actions in detail) happens independently of the page nested
+inside it. A slow page doesn't block a fast layout from being ready,
+and — just as importantly — a layout's own re-render doesn't force
+everything nested inside it to restart from zero.
+```
 
 This is why "where do I put this layout file?" isn't a purely cosmetic
 decision. Put a layout too high in the tree, and you lose the ability for

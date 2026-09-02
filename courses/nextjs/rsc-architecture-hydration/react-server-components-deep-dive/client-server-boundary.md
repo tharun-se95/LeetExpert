@@ -22,16 +22,17 @@ that's the starting assumption. `"use client"` is what opts a component
 imports, transitively) needs to run in the browser, because it uses
 state, effects, event handlers, or a browser-only API.
 
-Here's the detail that's easy to misread: **`"use client"` does not mean
-"this component only runs in the browser."** A Client Component still
-gets server-rendered once, for its first paint — the server produces
-initial HTML for it exactly like it would for anything else, so the user
-sees content immediately rather than a blank space waiting for
-JavaScript. What `"use client"` actually controls is that the component's
-code *also* ships to the browser and hydrates, so it can keep running
-there after that first paint, responding to clicks and holding state.
-"Client Component" describes where it becomes interactive, not the only
-place it ever executes.
+```warn
+**`"use client"` does not mean "this component only runs in the
+browser."** A Client Component still gets server-rendered once, for its
+first paint — the server produces initial HTML for it exactly like it
+would for anything else, so the user sees content immediately rather
+than a blank space waiting for JavaScript. What `"use client"` actually
+controls is that the component's code *also* ships to the browser and
+hydrates, so it can keep running there after that first paint,
+responding to clicks and holding state. "Client Component" describes
+where it becomes interactive, not the only place it ever executes.
+```
 
 ## What `"use server"` actually marks
 
@@ -55,11 +56,15 @@ handles for you, not something you write by hand.
 ## Why this distinction is the actual interview question
 
 Framed as "what do these two directives do," this can sound like
-memorizing two definitions. The version interviewers are actually
-testing is closer to: **given a piece of code, can you correctly say
-where each part of it executes, and why?** That requires holding both
-directives' real behavior at once — not "client runs in the browser,
-server runs on the server" (too vague to be useful), but specifically:
+memorizing two definitions.
+
+```brain
+The version interviewers are actually testing is closer to: **given a
+piece of code, can you correctly say where each part of it executes,
+and why?** That requires holding both directives' real behavior at once
+— not "client runs in the browser, server runs on the server" (too
+vague to be useful), but something specific:
+```
 
 - A component with no directive: Server Component, runs only on the
   server, ships no code to the browser.

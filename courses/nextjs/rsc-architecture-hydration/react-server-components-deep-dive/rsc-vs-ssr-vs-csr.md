@@ -9,10 +9,13 @@ depth: essential
 By this point you understand *why* rendering location matters (Module
 1.1) and *how* the App Router organizes routes and layouts (also 1.1).
 This lesson introduces the piece that trips up even experienced React
-developers moving to Next.js: **React Server Components (RSC) are not
-just "SSR, but newer."** They're a genuinely different execution model,
-and confusing the two is one of the fastest ways to lose credibility in a
-technical interview.
+developers moving to Next.js.
+
+```warn
+**React Server Components (RSC) are not just "SSR, but newer."** They're
+a genuinely different execution model, and confusing the two is one of
+the fastest ways to lose credibility in a technical interview.
+```
 
 ## Refresher: SSR still ships your component's code to the browser
 
@@ -80,11 +83,13 @@ directly:
   fast first paint, then ships its JavaScript so the browser can hydrate
   it into something interactive.
 
+```brain
 The App Router's real innovation isn't "we added server rendering" —
 Next.js already had that. It's that **a single page can mix Server and
-Client Components freely**, so you pay the "ship JavaScript and hydrate"
-cost only for the specific pieces that genuinely need interactivity,
-instead of the whole page.
+Client Components freely**, so you pay the "ship JavaScript and
+hydrate" cost only for the specific pieces that genuinely need
+interactivity, instead of the whole page.
+```
 
 ## What the practice drill is testing
 

@@ -6,11 +6,13 @@ depth: essential
 
 ## Why this lesson isn't optional advanced trivia
 
+```warn
 This isn't a rare edge case — it's a foundational gatekeeper. If you
 don't understand what can and can't cross the client-server boundary,
 you will write code that fails in ways that look confusing and
 arbitrary, because you're missing the one rule that would have made the
 failure predictable.
+```
 
 ## What "crossing the boundary" actually means
 
@@ -54,11 +56,14 @@ Without knowing this constraint exists, the failure mode looks
 mysterious: your code compiles fine, the types might even look correct if
 your typing is loose, and then at runtime you get an opaque
 serialization error — or worse, silently broken behavior where the prop
-just isn't what you expected on the client side. Once you know the rule,
-the fix is almost always mechanical: move whatever non-serializable logic
-you were trying to pass down so it constructs the value it needs *inside*
-the Client Component itself, rather than trying to hand it a
-non-serializable value from the server.
+just isn't what you expected on the client side.
+
+```tip
+Once you know the rule, the fix is almost always mechanical: move
+whatever non-serializable logic you were trying to pass down so it
+constructs the value it needs *inside* the Client Component itself,
+rather than trying to hand it a non-serializable value from the server.
+```
 
 ## What the practice drill is testing
 

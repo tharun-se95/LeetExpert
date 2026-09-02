@@ -59,10 +59,12 @@ live. Two things commonly happen instead, and both are bad:
    "render the layout the instant it's ready, and let the slower content
    stream in after" — it's all one all-or-nothing render.
 
+```warn
 Neither of these is a minor inconvenience you can code around cleanly
-within the model. They're structural: the Pages Router treats "the page"
-as the only unit of both rendering and data-fetching, and a real
+within the model. They're structural: the Pages Router treats "the
+page" as the only unit of both rendering and data-fetching, and a real
 application's layout hierarchy doesn't match that assumption.
+```
 
 ## What the App Router changed
 
@@ -95,14 +97,17 @@ all the real work alone.
 
 It's tempting to treat this as "the App Router is strictly better, full
 stop" — but the more useful framing, and the one that holds up under
-interview follow-up questions, is narrower: **the App Router solves a
-specific structural limitation in how the Pages Router coupled
-page-level data-fetching to a single, flat unit of rendering.** If your
-app genuinely has no meaningful shared layout and no meaningful
-difference in data freshness across sections of a page, that specific
-problem doesn't bite as hard — but almost every real production
-application has *some* shared layout with its own data needs, which is
-exactly the case this lesson walked through.
+interview follow-up questions, is narrower.
+
+```brain
+The App Router solves a specific structural limitation in how the Pages
+Router coupled page-level data-fetching to a single, flat unit of
+rendering. If your app genuinely has no meaningful shared layout and no
+meaningful difference in data freshness across sections of a page, that
+specific problem doesn't bite as hard — but almost every real
+production application has *some* shared layout with its own data
+needs, which is exactly the case this lesson walked through.
+```
 
 The next lesson moves from "why this architecture exists" to "how it's
 actually expressed in the file system" — the concrete conventions

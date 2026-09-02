@@ -69,12 +69,14 @@ hydration). What SSR changes is the *order* of operations: content first,
 interactivity second, instead of interactivity being a prerequisite for
 content to exist at all.
 
-The trade-off SSR introduces: because the server does real work — running
-your component code — on *every single request*, that work costs time on
-every request. If the underlying data barely changes (think: a blog post
-published last month, a marketing page, a documentation article), you're
-paying that same rendering cost over and over for content that's
-identical every time.
+```warn
+**The trade-off SSR introduces:** because the server does real work —
+running your component code — on *every single request*, that work costs
+time on every request. If the underlying data barely changes (think: a
+blog post published last month, a marketing page, a documentation
+article), you're paying that same rendering cost over and over for
+content that's identical every time.
+```
 
 ## The second fix: do the rendering once, ahead of time
 
@@ -91,25 +93,32 @@ there's no per-request rendering cost, because there's no per-request
 rendering at all. It's also cheaper to run at scale, since serving a
 static file is far less work than executing component code on every hit.
 
-The trade-off SSG introduces is the mirror image of SSR's: the content is
-now locked in at build time. If the underlying data changes — a price
-updates, a typo gets fixed, new content gets published — that change
-won't show up until the site is rebuilt and redeployed. For content that
-truly never changes, that's a non-issue. For content that changes
-occasionally but not on every request, it's a real limitation SSG on its
-own can't solve — which is exactly the gap Incremental Static
-Regeneration (a topic in the next module) exists to close, letting a
-statically-generated page get quietly refreshed in the background without
-a full rebuild.
+```warn
+**The trade-off SSG introduces** is the mirror image of SSR's: the
+content is now locked in at build time. If the underlying data changes —
+a price updates, a typo gets fixed, new content gets published — that
+change won't show up until the site is rebuilt and redeployed. For
+content that truly never changes, that's a non-issue. For content that
+changes occasionally but not on every request, it's a real limitation
+SSG on its own can't solve.
+```
+
+This is exactly the gap Incremental Static Regeneration (a topic in the
+next module) exists to close, letting a statically-generated page get
+quietly refreshed in the background without a full rebuild.
 
 ## Why none of this is really about "which one is best"
 
 It's tempting to rank these — SSG fastest, SSR most flexible, CSR most
 interactive — but that framing misses the actual point, and it's the
-point interviewers are usually probing for. **These aren't competing
-technologies where one wins. They're different answers to the same
-underlying question: given this specific piece of content, when is the
-best time to do the work of turning your components into HTML?**
+point interviewers are usually probing for.
+
+```brain
+These aren't competing technologies where one wins. They're different
+answers to the same underlying question: given this specific piece of
+content, **when is the best time to do the work of turning your
+components into HTML?**
+```
 
 - If the content is identical for everyone and rarely changes: do the
   work once, at build time. That's SSG.

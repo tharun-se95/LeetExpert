@@ -35,12 +35,16 @@ attaching itself to what's already there.
 ## Why the "should match" assumption matters
 
 That word "expects" in the previous paragraph is the crux of this whole
-topic. Hydration is fundamentally a **matching** process — React assumes
-the client-side render output will be identical to what the server
-already sent, and it hydrates on that assumption rather than
-re-rendering everything from scratch (which would be wasteful, given the
-whole point of SSR was to avoid making the user wait for a from-scratch
-client render).
+topic.
+
+```brain
+Hydration is fundamentally a **matching** process — React assumes the
+client-side render output will be identical to what the server already
+sent, and it hydrates on that assumption rather than re-rendering
+everything from scratch (which would be wasteful, given the whole point
+of SSR was to avoid making the user wait for a from-scratch client
+render).
+```
 
 When that assumption holds, hydration is close to free — a quick
 walk-and-attach operation. When it doesn't hold — when what the client
