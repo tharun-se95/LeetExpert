@@ -386,21 +386,43 @@ behavioral/architectural mock interviews.*
    Coordinating distributed server memory state. *Format D* — whiteboard
    a redundant Redis cache-sync mechanism for concurrent load. Essential.
 
-## Phase 2 — Platform implementation groundwork
+## Phase 2 — Platform implementation groundwork (DONE for the shape that exists so far)
 
-Per the multi-course platform design, onboarding a new course needs:
-
-- [ ] `courses/nextjs/` content directory created
-- [ ] `app/courses/nextjs/...` route tree — own shape, decided once the
-  lesson-level curriculum (Phase 1) and practice-format engineering
-  (below) are both known
-- [ ] `CourseRegistryEntry` for Next.js exported and registered in
-  `courses/registry.ts`
-- [ ] Decide accent/theming for this course (single course-wide accent,
-  or per-module, per the design doc's "course decides its own theming"
-  clause)
-- [ ] Progress-tracking wiring (course slug `nextjs`, reusing the
-  namespaced `ProgressProvider` mechanism already built for the platform)
+- [x] `courses/nextjs/` content directory created
+- [x] `web/src/app/courses/nextjs/manifest.ts` — this course's own
+  Module → Chapter → Lesson shape (not DSA's), with `practiceFormat`/
+  `depth` per lesson, encoding the full 62-lesson curriculum. Locked in
+  with `web/tests/nextjsManifest.test.ts` (structural counts, slug
+  uniqueness, representative lookups).
+- [x] `web/src/app/courses/nextjs/load.ts` — dedicated content loader for
+  this course's 3-level directory layout and frontmatter shape, reusing
+  the course-agnostic `lib/content/highlightBlocks` rather than DSA's
+  `lib/course/load.ts`. A lesson with no `.md` file yet returns `null`
+  and the page renders an honest "not written yet" state — not a 404,
+  not a fake stub.
+- [x] `CourseRegistryEntry` (`app/courses/nextjs/registry.ts`) exported
+  and registered in `courses/registry.ts`. Accent: `#4F46E5` (single
+  course-wide accent, not DSA's per-module family system — this course
+  chose the simpler option the design doc explicitly allows). **Status:
+  `coming-soon`** — flip to `available` once enough real content exists
+  to actually publish (see Phase 4 progress below).
+- [x] Route tree: `app/courses/nextjs/page.tsx` (module/chapter/lesson
+  curriculum overview) and
+  `app/courses/nextjs/[module]/[chapter]/[lesson]/page.tsx` (lesson
+  page) — a 3-level shape, deliberately different from DSA's 2-level
+  `[module]/[lesson]`. Verified live: catalog card renders correctly
+  and is properly non-interactive while coming-soon; real lesson
+  content renders; an unauthored lesson shows the graceful fallback;
+  build generates all 62 lesson paths (431 total pages site-wide).
+- [ ] Progress-tracking wiring (course slug `nextjs` through the
+  existing namespaced `ProgressProvider`) — not done yet; no reason to
+  track progress through a course with 1/62 lessons authored. Revisit
+  once Phase 4 has enough real lessons that "progress" means something.
+- [ ] `activeThemeFor` in `AppShell.tsx` doesn't yet dispatch a theme for
+  `/courses/nextjs/...` routes (currently falls through to monochrome,
+  which is a valid, explicitly-allowed choice per the design doc — "one
+  accent per module, a single course-wide accent, or none"). Revisit
+  if/when a real per-lesson accent is wanted instead of monochrome.
 
 ## Phase 3 — Practice-format engineering (new platform capability)
 
@@ -427,15 +449,23 @@ written. Lesson counts are final per Phase 1's breakdown above.
 
 | Module | Chapters | Lessons | Content drafted | Practice components wired | Reviewed |
 | --- | :-: | :-: | :-: | :-: | :-: |
-| 1. RSC Architecture & Hydration | 3 | 8 | | | |
-| 2. Routing & Layout Architecture | 3 | 9 | | | |
-| 3. Data Lifecycle | 3 | 9 | | | |
-| 4. Rendering & Performance | 3 | 10 | | | |
-| 5. State Management & URL-as-State | 2 | 5 | | | |
-| 6. Security & Production Ops | 2 | 7 | | | |
-| 7. System Design & Scale | 3 | 8 | | | |
-| 8. Interactive Mock Interview Drills | 3 | 6 | | | |
-| **Total** | **22** | **62** | | | |
+| 1. RSC Architecture & Hydration | 3 | 8 | 1/8 | 0/6 (2 conceptual, no drill) | |
+| 2. Routing & Layout Architecture | 3 | 9 | 0/9 | 0/9 | |
+| 3. Data Lifecycle | 3 | 9 | 0/9 | 0/9 | |
+| 4. Rendering & Performance | 3 | 10 | 0/10 | 0/8 (2 conceptual, no drill) | |
+| 5. State Management & URL-as-State | 2 | 5 | 0/5 | 0/4 (1 conceptual, no drill) | |
+| 6. Security & Production Ops | 2 | 7 | 0/7 | 0/6 (1 conceptual, no drill) | |
+| 7. System Design & Scale | 3 | 8 | 0/8 | 0/6 (2 conceptual, no drill) | |
+| 8. Interactive Mock Interview Drills | 3 | 6 | 0/6 | 0/6 | |
+| **Total** | **22** | **62** | **1/62** | **0/54 drill-bearing** | |
+
+**Lesson 1.1.1 (React's Server-Side Evolution)** is the first real lesson
+authored — `courses/nextjs/rsc-architecture-hydration/foundations-of-the-server-first-request-lifecycle/react-server-side-evolution.md`.
+Conceptual-only (no practice drill), so it's a complete proof of the
+content pipeline (manifest → loader → markdown rendering → live route)
+without yet needing a Phase 3 practice component. The next drill-bearing
+lesson authored will be the first real test of wiring a practice format
+into the lesson page.
 
 ## Session log
 
@@ -444,6 +474,16 @@ v1→v2, pedagogy investigation). This doc created to track the full
 build-out. Phase 1 completed same session: NotebookLM produced the full
 8-module/22-chapter/62-lesson breakdown with scope/practice-format/depth
 per lesson, plus the track-split recommendation for Module 7 (accepted).
-Generated a Mind Map in Studio for the top-level structure. Proceeding
-into Phase 2 (platform implementation groundwork) per standing
-autonomous-execution instruction — no pause for confirmation.
+Generated a Mind Map in Studio for the top-level structure. Phase 2
+(platform groundwork) substantially completed same session: manifest,
+loader, registry entry (status `coming-soon`), and the full route tree
+all built and verified live (build, tests, tsc, eslint all green;
+catalog card renders correctly and non-interactively). Landed the first
+real lesson (1.1.1, conceptual-only) as genuine content backing the
+registration, rather than a placeholder file, when the
+course-content-coverage guard correctly flagged the empty directory.
+Two Phase 2 items deliberately deferred with reasoning recorded above
+(progress-tracking wiring, per-course theming) since forcing them now
+would be premature given 1/62 lessons exist. Next: continue Phase 4
+content authoring through the rest of Module 1, then pick up Phase 3
+(practice-format engineering) once a drill-bearing lesson needs one.
