@@ -52,3 +52,29 @@ structure where a shared `packages/ui` component has an import reaching
 into an app-specific package, correctly identify this as an inverted
 dependency direction, and refactor the import boundary to remove the
 violation.
+
+## Try it
+
+Review this import inside `packages/ui/Button.tsx`:
+
+```ts
+import { formatInvoiceNumber } from "@/apps/dashboard/lib/invoices";
+```
+
+Is this a problem?
+
+````reveal Work through the review
+Yes — `packages/ui` is meant to be a shared, domain-agnostic design
+system that any app can depend on. Reaching into
+`apps/dashboard/lib/invoices` inverts that: now `packages/ui` depends on
+`dashboard`-specific logic, meaning any *other* app depending on
+`packages/ui` transitively pulls in dashboard-specific code it has no
+business needing, and any change inside `dashboard` risks silently
+breaking a component every app relies on.
+
+The fix: move `formatInvoiceNumber` (or a generic version of whatever
+formatting it actually does) into a genuinely shared package like
+`packages/utils`, and have both `packages/ui` and `apps/dashboard`
+depend on that instead — restoring the correct dependency direction
+where shared packages are depended upon, never the reverse.
+````

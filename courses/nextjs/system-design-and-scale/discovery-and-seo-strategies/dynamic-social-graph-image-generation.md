@@ -57,3 +57,38 @@ window), not on every individual social-media crawl or user share.
 `opengraph-image` route that renders a post's actual title and metadata
 into a generated social-card image, correctly sized for standard OG
 image dimensions.
+
+## Try it
+
+Write `app/blog/[slug]/opengraph-image.tsx` so sharing a blog post link
+shows that post's real title in the preview card image.
+
+```scratchpad dynamic-social-graph-image-generation
+import { ImageResponse } from "next/og";
+
+export default async function Image({ params }) {
+  // ...
+}
+```
+
+````reveal Work through it
+```tsx
+import { ImageResponse } from "next/og";
+
+export default async function Image({ params }: { params: { slug: string } }) {
+  const post = await getPost(params.slug);
+  return new ImageResponse(
+    <div style={{ fontSize: 64, background: "white", padding: 60 }}>
+      {post.title}
+    </div>,
+    { width: 1200, height: 630 },
+  );
+}
+```
+
+The key move: fetching `post` inside `opengraph-image.tsx` using the
+same route `params` a normal page would receive, so each individual post
+gets its own genuinely rendered image showing its actual title — not a
+single shared static asset every post's share link would otherwise use.
+`1200×630` is the standard OG image aspect ratio most platforms expect.
+````

@@ -74,3 +74,48 @@ otherwise hand-write and re-verify manually.
 mutation pipeline using Zod schema validation on incoming form data,
 returning immediate, field-specific feedback when validation fails
 rather than a generic error.
+
+## Try it
+
+Write a Server Action `createPost` that validates a `title` (1-200
+chars) and `content` (non-empty) using Zod, returning field-specific
+errors on failure instead of a generic message.
+
+```scratchpad startup-track-rapid-tooling
+"use server";
+import { z } from "zod";
+
+export async function createPost(formData: FormData) {
+  // ...
+}
+```
+
+````reveal Work through it
+```ts
+"use server";
+import { z } from "zod";
+
+const schema = z.object({
+  title: z.string().min(1).max(200),
+  content: z.string().min(1),
+});
+
+export async function createPost(formData: FormData) {
+  const parsed = schema.safeParse({
+    title: formData.get("title"),
+    content: formData.get("content"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.flatten() };
+  }
+
+  await db.posts.create({ data: parsed.data });
+}
+```
+
+`safeParse` (not `parse`) is the right call here — it returns a result
+object instead of throwing, letting the action return structured,
+field-specific feedback (`parsed.error.flatten()`) rather than crashing
+or returning one generic error message for any invalid field.
+````

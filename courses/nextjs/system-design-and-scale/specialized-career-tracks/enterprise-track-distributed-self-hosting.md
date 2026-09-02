@@ -56,3 +56,34 @@ self-hosting topology — containers, load balancer, shared external cache
 handler, CDN layer — on a design canvas, then record an audio defense of
 the design, explaining specifically why a local-disk cache handler fails
 in this topology and how the shared cache handler resolves it.
+
+## Try it
+
+Sketch the topology (containers, load balancer, cache layer, CDN) for a
+Next.js app running as 4 replicas behind a load balancer. Then answer
+out loud: "A teammate says caching is caching — why would a local-disk
+cache handler cause a real bug here?" Write your own answer before
+revealing the model one.
+
+```scratchpad enterprise-track-distributed-self-hosting
+// Sketch the topology in comments, then draft your spoken answer below.
+```
+
+````reveal A model defense
+**Topology:** 4 `output: 'standalone'` containers behind a load
+balancer, each independently capable of serving any request; a shared
+external cache store (Redis) all 4 containers read/write; a CDN layer in
+front for static assets.
+
+**The answer to the teammate:** with the default local-disk cache
+handler, each of the 4 containers maintains its *own* independent
+cache. Two users hitting the same route through different containers
+(a real, common outcome behind a load balancer) can see **different
+cached content** depending purely on which container happened to serve
+them — not a performance nitpick, but a correctness bug, since the
+"cache" is supposed to represent one consistent view of the data.
+Overriding the cache handler to write to a shared external store (Redis)
+restores one coherent cache across the whole fleet, so every container
+serves the same cached state regardless of which one a given request
+lands on.
+````

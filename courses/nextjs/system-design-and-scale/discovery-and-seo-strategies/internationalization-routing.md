@@ -73,3 +73,39 @@ request to the right locale-scoped route tree in the first place.
 detects an appropriate locale from request headers and redirects to a
 locale-prefixed path, structured to work with a `[locale]` dynamic route
 segment.
+
+## Try it
+
+Write middleware that redirects a first-time visitor with no locale in
+the path to `/fr/...` if their browser prefers French, or `/en/...`
+otherwise — but never re-redirects a request that already has a locale
+prefix.
+
+```scratchpad internationalization-routing
+const locales = ["en", "fr"];
+export function middleware(request: NextRequest) {
+  // ...
+}
+```
+
+````reveal Work through it
+```ts
+const locales = ["en", "fr"];
+
+export function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  const hasLocale = locales.some((l) => pathname.startsWith(`/${l}`));
+  if (hasLocale) return NextResponse.next();
+
+  const preferred = request.headers.get("accept-language")?.split(",")[0].split("-")[0];
+  const locale = locales.includes(preferred ?? "") ? preferred : "en";
+  return NextResponse.redirect(new URL(`/${locale}${pathname}`, request.url));
+}
+```
+
+The `hasLocale` early return is the detail that prevents an infinite
+redirect loop — without it, a request already at `/fr/pricing` would
+get redirected to `/fr/fr/pricing`, then `/fr/fr/fr/pricing`, since
+middleware re-evaluates on every request including the one it just
+redirected to.
+````

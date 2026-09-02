@@ -69,3 +69,36 @@ how your content surfaces in search results at all.
 `generateMetadata` function that produces correct, data-driven titles
 and descriptions per route, including structured markup output for a
 content type of your choosing.
+
+## Try it
+
+Write `generateMetadata` for `app/blog/[slug]/page.tsx` so each post
+gets its own real title and description, rather than a shared fallback.
+
+```scratchpad metadata-api-and-structured-discovery
+export async function generateMetadata({ params }) {
+  // ...
+}
+```
+
+````reveal Work through it
+```ts
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const post = await getPost(params.slug);
+  return {
+    title: post.title,
+    description: post.excerpt,
+  };
+}
+```
+
+`generateMetadata` runs on the server with access to the same route
+params the page component receives, and can `await` real data — so each
+post's tab title and search-result snippet reflect that specific post's
+actual content, rather than a single generic fallback shared across
+every blog post on the site.
+````

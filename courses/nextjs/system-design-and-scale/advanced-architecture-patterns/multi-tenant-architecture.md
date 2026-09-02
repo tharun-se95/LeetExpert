@@ -58,3 +58,34 @@ request reaches your data layer.
 extracts the tenant identifier from a request's subdomain and rewrites
 the request to route it correctly, internally, to that tenant's
 resources — the routing half of a multi-tenant architecture.
+
+## Try it
+
+Write middleware that routes `acme.yourapp.com/dashboard` internally to
+`/tenants/acme/dashboard`, without changing the URL the browser shows.
+
+```scratchpad multi-tenant-architecture
+export function middleware(request: NextRequest) {
+  // ...
+}
+```
+
+````reveal Work through it
+```ts
+export function middleware(request: NextRequest) {
+  const hostname = request.headers.get("host") || "";
+  const tenant = hostname.split(".")[0];
+
+  const url = request.nextUrl.clone();
+  url.pathname = `/tenants/${tenant}${url.pathname}`;
+
+  return NextResponse.rewrite(url);
+}
+```
+
+`NextResponse.rewrite` is the right call, not `redirect` — a redirect
+would change the visible URL to `/tenants/acme/dashboard`, breaking the
+clean subdomain experience the requirement asked for. A rewrite serves
+the internal path's content while the browser's address bar still shows
+`acme.yourapp.com/dashboard`.
+````
