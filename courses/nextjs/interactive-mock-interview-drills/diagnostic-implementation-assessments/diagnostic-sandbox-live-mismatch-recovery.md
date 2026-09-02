@@ -29,6 +29,18 @@ actually is, before attempting a fix, is the real skill this drill is
 built around.
 ```
 
+```diagram
+{
+  "id": "decision-framework",
+  "question": "Random client rendering offsets — which category of bug is it?",
+  "branches": [
+    { "condition": "Console shows a hydration warning", "outcome": "Genuine hydration mismatch (Module 1)", "highlight": true },
+    { "condition": "No warning, refresh always shows correct data", "outcome": "Stale Router Cache (Module 3)" },
+    { "condition": "No warning, client state looks wrong from mount", "outcome": "Bad state seeding (Module 5)" }
+  ]
+}
+```
+
 ## The diagnostic process this drill exercises
 
 1. **Observe the actual symptom precisely** — what specifically is

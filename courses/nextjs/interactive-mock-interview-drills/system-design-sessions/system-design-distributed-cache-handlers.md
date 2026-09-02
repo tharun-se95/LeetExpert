@@ -46,6 +46,20 @@ disk-based one. The design has to account for:
   (slower, but correct) rather than serving corrupted or crashing
   outright.
 
+```diagram
+{
+  "id": "layered-bands",
+  "bands": [
+    { "label": "Request Memoization", "detail": "per-render, in-process" },
+    { "label": "Data Cache", "detail": "per-fetch, server-wide" },
+    { "label": "Full Route Cache", "detail": "per-route, server-wide" },
+    { "label": "Router Cache", "detail": "per-client, in the browser" },
+    { "label": "Distributed shared cache", "detail": "one store, every container", "highlight": true }
+  ],
+  "caption": "Every earlier layer, plus one more: a single Redis-backed layer all containers share."
+}
+```
+
 ## Why this is the right capstone
 
 Every earlier lesson in this course taught one piece of the caching

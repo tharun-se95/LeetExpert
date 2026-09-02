@@ -27,6 +27,16 @@ of failure — giving you the full diagnostic experience of investigating
 a real E2E failure without needing to spin up live browser
 infrastructure per learner.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Unit test", "points": ["One component, in isolation", "Can't see the SSR/CSR boundary"] },
+    { "title": "E2E (Playwright)", "points": ["Real HTML meets real client JS", "Catches hydration & streaming bugs"], "highlight": true }
+  ]
+}
+```
+
 ## What a real trace-based diagnosis looks like
 
 ```brain

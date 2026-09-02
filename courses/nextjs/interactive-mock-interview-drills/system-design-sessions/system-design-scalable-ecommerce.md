@@ -31,6 +31,18 @@ correctly for each one.
   since a shareable, bookmarkable filtered view is a real product
   requirement for e-commerce search.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Category pages", "points": ["Strategy: ISR", "Same for all, changes rarely"] },
+    { "title": "Product pages", "points": ["Strategy: SSG + on-demand", "generateStaticParams + dynamicParams"] },
+    { "title": "Cart/checkout", "points": ["Strategy: SSR or PPR", "Per-user, must be fresh"], "highlight": true },
+    { "title": "Search results", "points": ["Strategy: URL-as-state", "Shareable, bookmarkable"] }
+  ]
+}
+```
+
 ## Where the mutation and caching layers plug in
 
 Adding an item to a cart is a **Server Action** (Module 3), and the

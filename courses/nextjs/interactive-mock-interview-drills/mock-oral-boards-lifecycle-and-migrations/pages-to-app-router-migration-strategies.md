@@ -41,6 +41,18 @@ Router" as a single atomic switch.
    subtle regression, so they benefit most from being tackled once the
    team has practical migration experience from the easier routes.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "New features", "detail": "built in app/, zero risk" },
+    { "label": "Leaf routes", "detail": "/blog, no layout coupling" },
+    { "label": "Directory by directory", "detail": "verify at each step", "highlight": true },
+    { "label": "_app.tsx-coupled routes", "detail": "highest risk, done last" }
+  ]
+}
+```
+
 ## What makes this answer credible in an interview
 
 ```brain

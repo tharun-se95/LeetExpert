@@ -27,6 +27,21 @@ to re-execute or can be served from cache (Module 3); the response
 independently (Module 4); and finally **hydration** attaching client
 interactivity to the delivered HTML (Module 1).
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Middleware", "detail": "before routing" },
+    { "label": "Routing + layouts", "detail": "nested tree resolves" },
+    { "label": "RSC rendering", "detail": "serialized payload" },
+    { "label": "Cache layers", "detail": "checked before work runs", "highlight": true },
+    { "label": "Streaming", "detail": "Suspense resolves independently" },
+    { "label": "Hydration", "detail": "client becomes interactive" }
+  ],
+  "perRow": 3
+}
+```
+
 ## Why this is a speaking drill, not a writing drill
 
 ```brain
