@@ -46,6 +46,16 @@ lookup required — to trust the claims inside it.
   denylist/blocklist check), which partially erodes the "no database
   lookup" advantage that made JWTs attractive in the first place.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Database sessions", "points": ["Revocation: instant", "Cost: a DB round trip per request", "Simple to reason about"] },
+    { "title": "JWTs", "points": ["Revocation: hard, needs a denylist", "Cost: signature check only", "Fits the Edge runtime"], "highlight": true }
+  ]
+}
+```
+
 ## Why this trade-off is the actual interview-relevant content
 
 ```brain

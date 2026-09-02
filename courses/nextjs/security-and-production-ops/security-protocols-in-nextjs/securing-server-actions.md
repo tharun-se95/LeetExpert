@@ -55,6 +55,18 @@ export async function deletePost(postId: string) {
    validation has to happen inside the action itself, not in the form
    that happens to call it under normal use.
 
+```diagram
+{
+  "id": "decision-framework",
+  "question": "A Server Action is called — what must it verify itself?",
+  "branches": [
+    { "condition": "Is anyone logged in?", "outcome": "Authentication check" },
+    { "condition": "Does this user own this resource?", "outcome": "Authorization check", "highlight": true },
+    { "condition": "Does the input match the expected shape?", "outcome": "Schema validation" }
+  ]
+}
+```
+
 ## Why "the UI won't let you do that" is not a security control
 
 ```warn

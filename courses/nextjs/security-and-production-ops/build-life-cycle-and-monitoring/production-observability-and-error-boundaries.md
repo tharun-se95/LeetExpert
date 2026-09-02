@@ -53,6 +53,16 @@ errors from its own parent layout). Because it replaces the root layout
 entirely, `global-error.tsx` must render its own complete `<html>` and
 `<body>` tags — there's no surrounding shell left to rely on.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "error.tsx", "points": ["Catches: this route segment", "Layout/nav stays intact", "reset() retries in place"] },
+    { "title": "global-error.tsx", "points": ["Catches: root layout itself", "Replaces the whole shell", "Must render own <html>/<body>"], "highlight": true }
+  ]
+}
+```
+
 ## The monitoring connection is what makes this "observability," not just UX
 
 ```warn

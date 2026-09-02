@@ -43,6 +43,16 @@ default, often going unnoticed because the code "works" while being
 completely broken from a security standpoint.
 ```
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "NEXT_PUBLIC_*", "points": ["Inlined into client bundle", "Visible in DevTools", "For: values safe to expose"] },
+    { "title": "No prefix", "points": ["Stays server-only", "undefined in the browser", "For: real secrets"], "highlight": true }
+  ]
+}
+```
+
 ## The check this lesson trains you to run
 
 Given any environment variable reference in a codebase, ask: is this

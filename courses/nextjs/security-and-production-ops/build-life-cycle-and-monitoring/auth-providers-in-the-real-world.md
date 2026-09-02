@@ -41,6 +41,16 @@ all of it already reviewed, hardened, and battle-tested against real
 attacks by a project maintained specifically for this purpose, rather
 than freshly written and only as secure as one team's review caught.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Hand-rolled handler", "points": ["Happy path works", "CSRF, cookie flags, refresh: easy to miss", "As safe as one review caught"] },
+    { "title": "Auth.js / Clerk", "points": ["OAuth, CSRF, cookies handled", "Battle-tested, maintained", "Few lines of config"], "highlight": true }
+  ]
+}
+```
+
 ## The judgment this lesson is building
 
 This isn't "never write your own auth code" — the earlier lessons in

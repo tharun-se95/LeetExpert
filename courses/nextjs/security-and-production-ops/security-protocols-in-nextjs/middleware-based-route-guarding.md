@@ -60,6 +60,18 @@ covered automatically the moment its path matches the guard's
 add the check themselves.
 ```
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Request to /dashboard", "detail": "matcher catches it" },
+    { "label": "Session checked", "detail": "verifySession(token)" },
+    { "label": "Invalid → redirect", "detail": "to /login?redirectedFrom=...", "highlight": true },
+    { "label": "Valid → NextResponse.next()", "detail": "route renders" }
+  ]
+}
+```
+
 ## The `redirectedFrom` detail
 
 Passing the originally-requested path as a query param to the login page

@@ -46,6 +46,18 @@ the current nonce value — their injected script lacks a valid nonce
 attribute and the browser refuses to execute it, while Next.js's own
 legitimately-nonced hydration scripts still run correctly.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Request arrives", "detail": "middleware runs" },
+    { "label": "Nonce generated", "detail": "fresh, random, per-request" },
+    { "label": "CSP header set", "detail": "script-src 'nonce-...'", "highlight": true },
+    { "label": "Only nonced scripts run", "detail": "injected script has none" }
+  ]
+}
+```
+
 ## The failure mode worth specifically knowing
 
 ```warn
