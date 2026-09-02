@@ -452,12 +452,12 @@ written. Lesson counts are final per Phase 1's breakdown above.
 | 1. RSC Architecture & Hydration | 3 | 8 | 8/8 ✅ | 0/5 (3 conceptual, no drill) | |
 | 2. Routing & Layout Architecture | 3 | 9 | 9/9 ✅ | 0/9 | |
 | 3. Data Lifecycle | 3 | 9 | 9/9 ✅ | 0/9 | |
-| 4. Rendering & Performance | 3 | 10 | 0/10 | 0/8 (2 conceptual, no drill) | |
+| 4. Rendering & Performance | 3 | 10 | 10/10 ✅ | 0/8 (2 conceptual, no drill) | |
 | 5. State Management & URL-as-State | 2 | 5 | 0/5 | 0/4 (1 conceptual, no drill) | |
 | 6. Security & Production Ops | 2 | 7 | 0/7 | 0/6 (1 conceptual, no drill) | |
 | 7. System Design & Scale | 3 | 8 | 0/8 | 0/7 (1 conceptual, no drill) | |
 | 8. Interactive Mock Interview Drills | 3 | 6 | 0/6 | 0/6 | |
-| **Total** | **22** | **62** | **26/62** | **0/54 drill-bearing** | |
+| **Total** | **22** | **62** | **36/62** | **0/54 drill-bearing** | |
 
 **Module 1 (RSC Architecture & Hydration) is fully authored — 8/8
 lessons**, the first complete module. All content lives under
@@ -494,9 +494,22 @@ lessons in this module. Verified with `tsc --noEmit`, the full Vitest
 suite (608 tests), a clean production build (431 static pages), and a
 live HTTP smoke-test returning 200 for all 9 new lesson URLs.
 
-**Next up:** Module 4 (Rendering Paradigms & Performance Optimization,
-10 lessons across 3 chapters), continuing sequentially through the
-curriculum above.
+**Module 4 (Rendering Paradigms & Performance Optimization) is fully
+authored — 10/10 lessons**, all under
+`courses/nextjs/rendering-and-performance/`. Covers the CSR/SSR/SSG/ISR
+rendering matrix (conceptual), `generateStaticParams`/`dynamicParams`
+fallback behavior, streaming SSR with Suspense boundary placement,
+Partial Prerendering's static-shell-plus-dynamic-holes model, mapping
+Core Web Vitals (LCP/INP/CLS) to architectural causes (conceptual),
+bundle-analyzer/DevTools profiling, `next/image` and `next/font`
+optimization, `next/dynamic` code splitting, and the Node vs. Edge
+runtime trade-off. 2 conceptual-only, 4 sandbox, 2 trace, 2 pr-review.
+Verified with `tsc --noEmit`, the full Vitest suite (608 tests), a clean
+production build (431 static pages), and a live HTTP smoke-test
+returning 200 for all 10 new lesson URLs.
+
+**Next up:** Module 5 (State Management & URL-as-State, 5 lessons across
+2 chapters), continuing sequentially through the curriculum above.
 
 ## Session log
 
@@ -521,8 +534,11 @@ completed in a later session (9/9 lessons, all drill-bearing across
 `sandbox` and `pr-review` formats), verified end to end (tsc, tests,
 production build, live route smoke-test) and committed. Module 3 (Data
 Lifecycle) completed same session as Module 2 (9/9 lessons: 6 sandbox, 2
-trace, 1 pr-review), verified end to end identically and committed. Next:
-continue Phase 4 content authoring through Module 4 (Rendering &
-Performance), then pick up Phase 3 (practice-format engineering) once a
-drill-bearing lesson needs a real interactive component rather than the
-honest "not built yet" placeholder.
+trace, 1 pr-review), verified end to end identically and committed.
+Module 4 (Rendering & Performance) completed same session (10/10
+lessons: 2 conceptual, 4 sandbox, 2 trace, 2 pr-review), verified
+identically and committed. Next: continue Phase 4 content authoring
+through Module 5 (State Management & URL-as-State), then pick up Phase 3
+(practice-format engineering) once a drill-bearing lesson needs a real
+interactive component rather than the honest "not built yet"
+placeholder.
