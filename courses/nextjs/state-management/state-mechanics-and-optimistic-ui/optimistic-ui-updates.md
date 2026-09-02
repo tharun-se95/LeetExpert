@@ -67,3 +67,56 @@ path and calling component need to account for explicitly.
 form so a newly submitted comment appears immediately in the UI via
 `useOptimistic`, before the underlying Server Action's mutation has
 actually completed.
+
+## Try it
+
+Add optimistic updates to this comment form so a new comment appears
+instantly, before `addComment`'s server round trip resolves.
+
+```scratchpad optimistic-ui-updates
+"use client";
+function Comments({ comments }: { comments: Comment[] }) {
+  async function handleSubmit(formData: FormData) {
+    await addComment(formData);
+  }
+  return (
+    <>
+      {comments.map((c) => <p key={c.id}>{c.text}</p>)}
+      <form action={handleSubmit}>{/* ... */}</form>
+    </>
+  );
+}
+```
+
+````reveal Work through it
+```tsx
+"use client";
+import { useOptimistic } from "react";
+
+function Comments({ comments }: { comments: Comment[] }) {
+  const [optimisticComments, addOptimistic] = useOptimistic(
+    comments,
+    (state, newComment: Comment) => [...state, newComment],
+  );
+
+  async function handleSubmit(formData: FormData) {
+    const text = formData.get("text") as string;
+    addOptimistic({ id: "temp", text });
+    await addComment(formData);
+  }
+
+  return (
+    <>
+      {optimisticComments.map((c) => <p key={c.id}>{c.text}</p>)}
+      <form action={handleSubmit}>{/* ... */}</form>
+    </>
+  );
+}
+```
+
+Calling `addOptimistic` immediately, before `await addComment(formData)`
+resolves, is what makes the new comment appear right away. Once the real
+mutation completes and `comments` updates with the server's confirmed
+data, React reconciles the optimistic state back to the real state
+automatically.
+````

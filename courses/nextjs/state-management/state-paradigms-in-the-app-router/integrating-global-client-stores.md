@@ -69,3 +69,39 @@ with the client/server boundary principles from Module 1.
 store provider around a specific subtree of a layout, correctly
 instantiating the store inside a client component rather than at module
 scope, avoiding the cross-request sharing bug this lesson describes.
+
+## Try it
+
+This cart store is created at module scope. What's wrong with it, and
+how would you fix it?
+
+```scratchpad integrating-global-client-stores
+export const cartStore = createStore(() => ({ items: [] }));
+```
+
+````reveal Work through it
+A module is loaded once and reused across every request the server
+process handles. A cart store created at module scope becomes a single
+shared instance across every user hitting this server — one user's cart
+additions would be visible to another user reading the same store.
+
+```tsx
+"use client";
+import { createContext, useRef } from "react";
+
+const CartContext = createContext(null);
+
+export function CartProvider({ children }: { children: React.ReactNode }) {
+  const storeRef = useRef(createStore(() => ({ items: [] })));
+  return (
+    <CartContext.Provider value={storeRef.current}>
+      {children}
+    </CartContext.Provider>
+  );
+}
+```
+
+Creating the store inside a client component, held in `useRef`, gives
+each client mount its own instance — scoped correctly per user session
+instead of shared across the server process.
+````

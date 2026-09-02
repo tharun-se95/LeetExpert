@@ -77,3 +77,56 @@ depend on the changed param.
 sidebar where each filter selection updates the URL's search params via
 client-side navigation, and a Server Component reads those params to
 render filtered results, without a full page reload.
+
+## Try it
+
+Wire up a sort dropdown that updates a `sort` search param without a
+full page reload, read by a Server Component.
+
+```scratchpad managing-url-as-state
+"use client";
+function SortDropdown() {
+  // ...
+}
+```
+
+````reveal Work through it
+```tsx
+"use client";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+
+function SortDropdown() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  function handleChange(value: string) {
+    const params = new URLSearchParams(searchParams);
+    params.set("sort", value);
+    router.push(`${pathname}?${params.toString()}`);
+  }
+
+  return (
+    <select onChange={(e) => handleChange(e.target.value)}>
+      <option value="newest">Newest</option>
+      <option value="price">Price</option>
+    </select>
+  );
+}
+```
+
+```tsx
+export default async function ProductList({
+  searchParams,
+}: {
+  searchParams: { sort?: string };
+}) {
+  const products = await getProducts({ sort: searchParams.sort });
+  return <Grid products={products} />;
+}
+```
+
+`router.push` triggers a client-side navigation to the new URL, which
+re-runs the Server Component with the updated `searchParams` — no full
+reload, and the resulting URL is shareable and refresh-safe.
+````

@@ -58,3 +58,39 @@ objects wholesale.
 Server Component and correctly seed it as the initial state of a client
 component's own interactive state, choosing exactly which fields cross
 the boundary rather than forwarding the full server-fetched object.
+
+## Try it
+
+A Server Component fetches a `product` record that includes a
+`refreshInventory()` method (a live class instance from your ORM). It
+needs to hand a client `<QuantitySelector>` an initial quantity and the
+product's name. What would you actually pass down?
+
+```scratchpad passing-state-across-rsc-boundaries
+async function ProductPage({ params }) {
+  const product = await getProduct(params.id);
+  return <QuantitySelector /* ... */ />;
+}
+```
+
+````reveal Work through it
+```tsx
+async function ProductPage({ params }: { params: { id: string } }) {
+  const product = await getProduct(params.id);
+  return (
+    <QuantitySelector
+      productName={product.name}
+      initialQuantity={1}
+    />
+  );
+}
+```
+
+Passing `product` wholesale would try to serialize
+`refreshInventory` — a function/class-instance member — across the
+boundary, which either fails outright or silently drops in a way that
+breaks anything expecting it to exist client-side. The fix is
+deliberate: hand the client component only the specific plain-data
+fields (`product.name`, a chosen initial quantity) it actually needs to
+seed its own state, not the full server-fetched object.
+````
