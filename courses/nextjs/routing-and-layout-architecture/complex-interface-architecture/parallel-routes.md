@@ -31,6 +31,10 @@ app/
     page.tsx
 ```
 
+```diagram
+{"id": "parallel-routes"}
+```
+
 The `layout.tsx` receives each slot as a prop matching its folder name,
 alongside the normal `children`:
 

@@ -42,6 +42,10 @@ The `<Header>` here, and any other content outside a Suspense boundary,
 reaches the browser and becomes visible right away, regardless of how
 slow `SlowRecommendations` turns out to be.
 
+```diagram
+{"id": "streaming-chunks"}
+```
+
 ## Where you place the boundary is the actual design decision
 
 ```brain

@@ -34,6 +34,10 @@ import { DpTableDiagram } from "@/components/md/diagrams/DpTableDiagram";
 import { MergeTreeDiagram } from "@/components/md/diagrams/MergeTreeDiagram";
 import { BacktrackingTreeDiagram } from "@/components/md/diagrams/BacktrackingTreeDiagram";
 import { GraphLayersDiagram } from "@/components/md/diagrams/GraphLayersDiagram";
+import { StreamingChunksDiagram } from "@/components/md/diagrams/StreamingChunksDiagram";
+import { InterceptingNavigationDiagram } from "@/components/md/diagrams/InterceptingNavigationDiagram";
+import { ParallelRoutesDiagram } from "@/components/md/diagrams/ParallelRoutesDiagram";
+import { PartialShellDiagram } from "@/components/md/diagrams/PartialShellDiagram";
 
 export type DiagramComponent = ComponentType<Record<string, unknown>>;
 
@@ -73,6 +77,15 @@ export const DIAGRAM_REGISTRY: Record<string, DiagramComponent> = {
   "merge-tree": MergeTreeDiagram,
   "backtracking-tree": BacktrackingTreeDiagram,
   "graph-layers": GraphLayersDiagram,
+  // Next.js course diagrams — original illustrations of App Router
+  // concepts (streaming, intercepting routes, parallel routes, Partial
+  // Prerendering), not reproductions of any third-party documentation's
+  // artwork. Neutral `--accent` (this course's single-accent theme),
+  // like the DSA utility diagrams above.
+  "streaming-chunks": StreamingChunksDiagram,
+  "intercepting-navigation": InterceptingNavigationDiagram,
+  "parallel-routes": ParallelRoutesDiagram,
+  "partial-shell": PartialShellDiagram,
 };
 
 /**

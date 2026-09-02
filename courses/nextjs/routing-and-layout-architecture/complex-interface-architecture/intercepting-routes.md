@@ -13,6 +13,10 @@ photo as a full standalone page, not a broken modal with no feed behind
 it. That dual behavior — same URL, two different presentations depending
 on *how* you arrived — is what intercepting routes implement.
 
+```diagram
+{"id": "intercepting-navigation"}
+```
+
 ## The syntax: `(.)`, `(..)`, `(..)(..)`, `(...)`
 
 A folder prefixed with a dot-convention **intercepts** navigation to

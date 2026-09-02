@@ -16,6 +16,10 @@ the static shell served instantly from a prerendered cache and the
 dynamic holes streamed in afterward using the same Suspense mechanism
 from the previous lesson.
 
+```diagram
+{"id": "partial-shell"}
+```
+
 ## What this looks like in practice
 
 ```tsx
