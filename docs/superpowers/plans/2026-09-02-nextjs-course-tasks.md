@@ -424,11 +424,34 @@ behavioral/architectural mock interviews.*
   existing namespaced `ProgressProvider`) — not done yet; no reason to
   track progress through a course with 1/62 lessons authored. Revisit
   once Phase 4 has enough real lessons that "progress" means something.
+  **Update:** now that the course is fully authored and `available`,
+  this is the more pressing of the two remaining items — see below.
 - [ ] `activeThemeFor` in `AppShell.tsx` doesn't yet dispatch a theme for
   `/courses/nextjs/...` routes (currently falls through to monochrome,
   which is a valid, explicitly-allowed choice per the design doc — "one
   accent per module, a single course-wide accent, or none"). Revisit
   if/when a real per-lesson accent is wanted instead of monochrome.
+- [x] **Fixed (2026-09-02):** the shared `Header`/`CourseNavTree` chrome
+  was still hardcoded to DSA regardless of the active course — a
+  Next.js lesson page showed DSA's module tree in the Lessons drawer,
+  "DSA" in the header wordmark, DSA's Lessons/Practice mode links, and
+  (worse) DSA's lesson-progress count in the header progress chip,
+  since `AppShell` computed `totalCount` from DSA's manifest
+  unconditionally. Fixed by adding `buildNextjsCourseNav()`
+  (`app/courses/nextjs/nav.ts`, adapting this course's Module → Chapter
+  → Lesson shape into the shared nav tree types), extracting
+  `activeCourseSlugFor` into its own module
+  (`lib/courses/activeCourse.ts`) to avoid an import cycle, adding an
+  optional `navLabel` to `CourseRegistryEntry` for the header's short
+  course label, and gating the progress chip to the DSA course only
+  (rather than show a wrong count) until progress tracking is actually
+  wired up for this course. Verified live: both courses now render
+  their own correct sidebar tree, header label, mode nav, and progress
+  chip visibility independently. This was caught by the user reviewing
+  a live lesson page, not by any automated check — a good argument for
+  actually wiring up progress tracking next, since a namespaced
+  `ProgressProvider` with a real per-course total is the more durable
+  fix than "hide the chip elsewhere."
 
 ## Phase 3 — Practice-format engineering (new platform capability)
 
