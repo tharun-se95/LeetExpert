@@ -120,6 +120,17 @@ content, **when is the best time to do the work of turning your
 components into HTML?**
 ```
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "CSR", "points": ["Work happens: in the browser", "Content exists: after JS runs", "Freshness: always current"] },
+    { "title": "SSR", "points": ["Work happens: every request", "Content exists: on arrival", "Freshness: always current"], "highlight": true },
+    { "title": "SSG", "points": ["Work happens: once, at build", "Content exists: on arrival", "Freshness: frozen until rebuild"] }
+  ]
+}
+```
+
 - If the content is identical for everyone and rarely changes: do the
   work once, at build time. That's SSG.
 - If the content depends on the specific request (a logged-in user's

@@ -94,6 +94,17 @@ afterward once the effect runs.
 
 ## The shared pattern across all three causes
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Timing/env values", "points": ["new Date(), Math.random()", "Value differs by the moment"] },
+    { "title": "Illegal nesting", "points": ["<div> inside <p>", "Browser silently rewrites DOM"] },
+    { "title": "Browser-only checks", "points": ["window, localStorage", "Doesn't exist during SSR"] }
+  ]
+}
+```
+
 ```brain
 Notice what all three have in common: **the server and the client
 disagreed about what a component should render, for reasons that have

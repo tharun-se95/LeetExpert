@@ -38,6 +38,12 @@ import { StreamingChunksDiagram } from "@/components/md/diagrams/StreamingChunks
 import { InterceptingNavigationDiagram } from "@/components/md/diagrams/InterceptingNavigationDiagram";
 import { ParallelRoutesDiagram } from "@/components/md/diagrams/ParallelRoutesDiagram";
 import { PartialShellDiagram } from "@/components/md/diagrams/PartialShellDiagram";
+import { FlowStepsDiagram } from "@/components/md/diagrams/FlowStepsDiagram";
+import { ComparisonCardsDiagram } from "@/components/md/diagrams/ComparisonCardsDiagram";
+import { LayeredBandsDiagram } from "@/components/md/diagrams/LayeredBandsDiagram";
+import { FileTreeDiagram } from "@/components/md/diagrams/FileTreeDiagram";
+import { TimelineDiagram } from "@/components/md/diagrams/TimelineDiagram";
+import { DecisionFrameworkDiagram } from "@/components/md/diagrams/DecisionFrameworkDiagram";
 
 export type DiagramComponent = ComponentType<Record<string, unknown>>;
 
@@ -86,6 +92,17 @@ export const DIAGRAM_REGISTRY: Record<string, DiagramComponent> = {
   "intercepting-navigation": InterceptingNavigationDiagram,
   "parallel-routes": ParallelRoutesDiagram,
   "partial-shell": PartialShellDiagram,
+  // Generic, prop-driven shapes reused across many Next.js lessons rather
+  // than one bespoke SVG per lesson — a horizontal flow/pipeline, an N-way
+  // comparison, stacked layers, a file tree, a timeline, and a decision
+  // framework cover the vast majority of what any given lesson needs to
+  // show spatially.
+  "flow-steps": FlowStepsDiagram,
+  "comparison-cards": ComparisonCardsDiagram,
+  "layered-bands": LayeredBandsDiagram,
+  "file-tree": FileTreeDiagram,
+  "timeline": TimelineDiagram,
+  "decision-framework": DecisionFrameworkDiagram,
 };
 
 /**

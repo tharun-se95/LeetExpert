@@ -32,6 +32,18 @@ nodes, without discarding and rebuilding them. The user never sees a
 flicker, because the visible content doesn't change; React is just
 attaching itself to what's already there.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Server", "detail": "renders HTML" },
+    { "label": "Browser", "detail": "downloads JS" },
+    { "label": "React", "detail": "walks DOM + tree" },
+    { "label": "Attach", "detail": "match → listeners", "highlight": true }
+  ]
+}
+```
+
 ## Why the "should match" assumption matters
 
 That word "expects" in the previous paragraph is the crux of this whole

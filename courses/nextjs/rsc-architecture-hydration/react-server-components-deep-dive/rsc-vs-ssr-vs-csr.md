@@ -69,6 +69,17 @@ alongside it.
 Here's the mental model this module has been building toward, stated
 directly:
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Server Component", "points": ["Runs: server only", "Ships JS: never", "Default in App Router"], "highlight": true },
+    { "title": "Client Component", "points": ["Runs: server once, then browser", "Ships JS: yes, hydrates", "Use for: state, events, browser APIs"] },
+    { "title": "Traditional SSR", "points": ["A Client Component's first request", "Server renders HTML for fast paint", "Then ships JS to hydrate it"] }
+  ]
+}
+```
+
 - **Server Components** run only on the server, ship no JavaScript to the
   browser, and are the default in the App Router. Use them for anything
   that doesn't need browser-only interactivity — most of a typical page's

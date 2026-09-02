@@ -38,6 +38,16 @@ output in a shared `<Layout>` component from a custom `_app.tsx` file.
 That layout wrapper doesn't have its own place in the data-fetching
 story — it's just JSX wrapping whatever the page returned.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Pages Router", "points": ["Layout: plain JSX wrapper", "Data-fetching unit: whole page", "Layout data: re-fetched per page"] },
+    { "title": "App Router", "points": ["Layout: first-class routing concept", "Data-fetching unit: each layout level", "Layout data: fetched once, persists"], "highlight": true }
+  ]
+}
+```
+
 ## Where that breaks down
 
 Here's the concrete problem: suppose your shared layout needs its own

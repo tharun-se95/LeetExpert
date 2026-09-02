@@ -88,6 +88,24 @@ content actually changes. That's not an optimization you have to opt
 into; it's the direct, structural consequence of where each `layout.tsx`
 sits in the folder tree.
 
+```diagram
+{
+  "id": "file-tree",
+  "caption": "layout.tsx (accent) persists across navigation; page.tsx swaps",
+  "lines": [
+    { "text": "app/" },
+    { "text": "layout.tsx", "indent": 1, "color": "var(--family-accent, var(--accent))", "note": "wraps entire site" },
+    { "text": "dashboard/", "indent": 1 },
+    { "text": "layout.tsx", "indent": 2, "color": "var(--family-accent, var(--accent))", "note": "wraps /dashboard/*" },
+    { "text": "page.tsx", "indent": 2, "note": "/dashboard" },
+    { "text": "settings/", "indent": 2 },
+    { "text": "page.tsx", "indent": 3, "note": "/dashboard/settings" },
+    { "text": "billing/", "indent": 2 },
+    { "text": "page.tsx", "indent": 3, "note": "/dashboard/billing" }
+  ]
+}
+```
+
 ## What you're building in this lesson's practice
 
 The concepts above are straightforward to *state*. The part that actually

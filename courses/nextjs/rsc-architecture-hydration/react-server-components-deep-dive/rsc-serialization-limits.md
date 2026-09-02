@@ -50,6 +50,16 @@ fail.**
   browser-only globals that don't exist during server execution in the
   first place.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Fails to cross", "points": ["Functions / closures", "Class instances", "Some Map/Set, browser globals"] },
+    { "title": "Crosses cleanly", "points": ["Strings, numbers, booleans", "Plain objects, arrays", "null / undefined"], "highlight": true }
+  ]
+}
+```
+
 ## Why the error is confusing if you don't know this rule
 
 Without knowing this constraint exists, the failure mode looks
