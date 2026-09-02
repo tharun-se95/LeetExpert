@@ -40,17 +40,19 @@ platform rather than a single route.
 
 ## Why tenant isolation needs more than routing
 
+```warn
 Correctly routing a request to the right tenant's *data* is only half
-the problem — a real multi-tenant system needs a database strategy that
-guarantees Tenant A's queries can never accidentally return Tenant B's
-rows. Two common approaches: a `tenantId` column enforced on every query
-(cheaper to operate, but a single missed `WHERE tenantId = ...` clause is
-a data-leak vulnerability), or fully separate per-tenant database pools
-or schemas (stronger isolation guarantee, more operational overhead to
-manage at scale). The subdomain-routing middleware from this lesson is
-what determines *which* tenant a request belongs to; a separate,
-equally-important layer has to actually enforce that isolation once the
-request reaches your data layer.
+the problem — a real multi-tenant system needs a database strategy
+that guarantees Tenant A's queries can never accidentally return
+Tenant B's rows. Two common approaches: a `tenantId` column enforced on
+every query (cheaper to operate, but a single missed `WHERE tenantId =
+...` clause is a data-leak vulnerability), or fully separate per-tenant
+database pools or schemas (stronger isolation guarantee, more
+operational overhead). The subdomain-routing middleware from this
+lesson is what determines *which* tenant a request belongs to; a
+separate, equally-important layer has to actually enforce that
+isolation once the request reaches your data layer.
+```
 
 ## What the practice drill is testing
 

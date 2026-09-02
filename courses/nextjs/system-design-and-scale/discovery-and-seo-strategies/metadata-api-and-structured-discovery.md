@@ -57,11 +57,13 @@ directly in search listings.
 
 ## What makes this a discoverability system, not just page titles
 
+```brain
 The throughline connecting metadata, sitemaps, and structured data is
 that all three are inputs to how search engines and other automated
-consumers understand and index your content — none of them are visible
-to a human visitor directly, but all three materially affect whether and
-how your content surfaces in search results at all.
+consumers understand and index your content — none of them are
+visible to a human visitor directly, but all three materially affect
+whether and how your content surfaces in search results at all.
+```
 
 ## What the practice drill is testing
 

@@ -60,12 +60,15 @@ locale detection.
 
 ## Why this is condensed to one lesson rather than a full i18n curriculum
 
+```tip
 A dedicated third-party i18n library handles the deeper mechanics of
 string interpolation, pluralization rules, and translation-file
-management — genuinely valuable, but a separate, orthogonal concern from
-what's specific to Next.js. This lesson isolates exactly the part that
-*is* Next.js-specific: the routing and middleware pattern that gets a
-request to the right locale-scoped route tree in the first place.
+management — genuinely valuable, but a separate, orthogonal concern
+from what's specific to Next.js. This lesson isolates exactly the part
+that *is* Next.js-specific: the routing and middleware pattern that
+gets a request to the right locale-scoped route tree in the first
+place.
+```
 
 ## What the practice drill is testing
 

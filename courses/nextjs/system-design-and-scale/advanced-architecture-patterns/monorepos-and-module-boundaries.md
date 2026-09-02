@@ -33,17 +33,17 @@ component is legitimately shared; a component that already knows about
 
 ## Why this specific violation is easy to introduce and hard to notice
 
+```warn
 The violation this lesson's drill is built around: a developer working
 inside `packages/ui`, under time pressure, imports a domain-specific
-utility from `apps/dashboard` directly — maybe to reuse a formatting
-function that happens to already exist there — creating a dependency
-that flows the *wrong direction*. Shared packages are supposed to be
+utility from `apps/dashboard` directly — creating a dependency that
+flows the *wrong direction*. Shared packages are supposed to be
 depended upon, never to depend on the specific apps that consume them.
 This kind of violation typically doesn't break anything immediately; it
 breaks the moment a second, unrelated app also tries to depend on
 `packages/ui` and pulls in dashboard-specific logic it has no business
-needing, or when `dashboard`'s internal code changes and unexpectedly
-breaks the supposedly-independent shared package.
+needing.
+```
 
 ## What the practice drill is testing
 

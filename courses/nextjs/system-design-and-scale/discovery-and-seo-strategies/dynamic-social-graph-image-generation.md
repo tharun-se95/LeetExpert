@@ -45,11 +45,14 @@ asset shared across every post.
 
 ## Why this connects back to caching
 
+```tip
 A dynamically-generated image at request time sounds expensive if it
 regenerates on every single share — but this is the exact same caching
-model from Module 3: the generated image response can be cached, so the
-actual rendering cost is paid once per post (or once per revalidation
-window), not on every individual social-media crawl or user share.
+model from Module 3: the generated image response can be cached, so
+the actual rendering cost is paid once per post (or once per
+revalidation window), not on every individual social-media crawl or
+user share.
+```
 
 ## What the practice drill is testing
 

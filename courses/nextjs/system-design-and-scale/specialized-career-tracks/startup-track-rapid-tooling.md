@@ -25,15 +25,15 @@ export const posts = pgTable("posts", {
 });
 ```
 
+```tip
 Tools like Drizzle and Prisma generate fully-typed database clients
 directly from your schema — a query against `posts` is type-checked
 against the actual column types, catching a mismatched field name or
 type at compile time rather than as a runtime database error. For a
 small team without dedicated backend infrastructure engineers, this
 compresses a category of bug that would otherwise only surface in
-production into one the editor catches immediately, which is a large
-part of why "developer velocity" is a legitimate, specific engineering
-concern, not just a hiring-pitch phrase.
+production into one the editor catches immediately.
+```
 
 ## Validation at the exact boundary where untrusted data enters
 

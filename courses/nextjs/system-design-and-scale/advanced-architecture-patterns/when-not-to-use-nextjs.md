@@ -42,11 +42,13 @@ legitimate reasons the "just use Next.js" default doesn't hold.
 
 ## The actual skill being assessed
 
+```brain
 This lesson has no drill because the skill it builds is argumentative,
-not mechanical: articulating a genuine, specific trade-off — not simply
-listing frameworks — grounded in what a particular product actually
-needs versus what Next.js's App Router architecture is specifically
-optimized for. An interviewer asking this question is testing whether
-you understand Next.js's design *because* you understand where its
-design stops paying for itself, not whether you can recite its feature
-list.
+not mechanical: articulating a genuine, specific trade-off — not
+simply listing frameworks — grounded in what a particular product
+actually needs versus what Next.js's App Router architecture is
+specifically optimized for. An interviewer asking this question is
+testing whether you understand Next.js's design *because* you
+understand where its design stops paying for itself, not whether you
+can recite its feature list.
+```

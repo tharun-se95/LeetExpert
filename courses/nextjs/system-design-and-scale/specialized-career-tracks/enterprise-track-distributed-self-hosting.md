@@ -32,17 +32,21 @@ cluster.
 
 ## The distributed caching problem this creates
 
+```warn
 Next.js's default cache handler assumes a **local disk** — fine for a
-single server, but actively wrong for a fleet: Container A's local-disk
-cache entry is invisible to Container B, meaning two containers serving
-the same route can each independently regenerate and cache the same data,
-defeating the purpose of a shared cache and risking each container
-showing different cached content to different users depending on which
-one happened to serve their request. The fix is overriding Next.js's
-cache handler to write to a shared, external store (Redis, a distributed
-cache service) that every container instance can read from and write to
-consistently, restoring one coherent cache across the whole fleet instead
-of N independent, inconsistent local ones.
+single server, but actively wrong for a fleet: Container A's
+local-disk cache entry is invisible to Container B, meaning two
+containers serving the same route can each independently regenerate
+and cache the same data, defeating the purpose of a shared cache and
+risking each container showing different cached content to different
+users depending on which one happened to serve their request.
+```
+
+The fix is overriding Next.js's cache handler to write to a shared,
+external store (Redis, a distributed cache service) that every
+container instance can read from and write to consistently, restoring
+one coherent cache across the whole fleet instead of N independent,
+inconsistent local ones.
 
 ## What the practice drill is testing
 
