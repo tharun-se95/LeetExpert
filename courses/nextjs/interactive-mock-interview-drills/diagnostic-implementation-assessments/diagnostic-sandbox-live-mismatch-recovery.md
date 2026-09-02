@@ -16,17 +16,18 @@ advance which specific cause to look for.
 
 ## Why "random offsets" is the deliberately harder version
 
+```warn
 A single, isolated hydration bug is straightforward once you know the
 category of mistake to look for. A **live dashboard showing random
-client rendering state offsets** is a harder, more realistic diagnostic
-situation: the symptom (data appearing shifted, duplicated, or
-inconsistent between what the server sent and what the client shows) is
-observable, but the underlying cause isn't announced — it could be a
-genuine hydration mismatch, a stale Router Cache entry from Module 3, or
-a race condition in client state initialization that only resembles a
-hydration bug on the surface. Correctly narrowing down *which* category
-of bug this actually is, before attempting a fix, is the real skill this
-drill is built around.
+client rendering state offsets** is a harder, more realistic
+diagnostic situation: the symptom is observable, but the underlying
+cause isn't announced — it could be a genuine hydration mismatch, a
+stale Router Cache entry from Module 3, or a race condition in client
+state initialization that only resembles a hydration bug on the
+surface. Correctly narrowing down *which* category of bug this
+actually is, before attempting a fix, is the real skill this drill is
+built around.
+```
 
 ## The diagnostic process this drill exercises
 

@@ -16,14 +16,16 @@ behavior.
 
 ## Restating the core problem precisely
 
+```warn
 Module 7 established the failure mode: Next.js's default cache handler
 assumes local disk, so each container in a fleet maintains its own
-independent, inconsistent cache. Under concurrent load, this gets worse
-than just inconsistency — multiple containers can simultaneously receive
-requests for the same not-yet-cached data and **each independently**
-trigger the expensive underlying computation or database query, a
-redundant "thundering herd" of duplicate work that a single shared cache
-would have prevented entirely.
+independent, inconsistent cache. Under concurrent load, this gets
+worse than just inconsistency — multiple containers can simultaneously
+receive requests for the same not-yet-cached data and **each
+independently** trigger the expensive underlying computation or
+database query, a redundant "thundering herd" of duplicate work that a
+single shared cache would have prevented entirely.
+```
 
 ## Designing the shared layer
 

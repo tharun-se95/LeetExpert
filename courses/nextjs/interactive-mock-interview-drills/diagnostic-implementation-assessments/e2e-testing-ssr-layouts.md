@@ -29,14 +29,17 @@ infrastructure per learner.
 
 ## What a real trace-based diagnosis looks like
 
-Given a failing trace showing a hydration crash, the diagnostic process
-is exactly what Module 1's hydration lessons trained: correlate the
-console error's reported mismatch against the DOM snapshot at that exact
-moment, and trace it back to a specific cause — a `Date`-dependent
-render, an invalid nesting, a `window` check that ran during SSR. The
-trace format doesn't change *what* you're diagnosing; it changes *how*
-you access the evidence, replacing "reproduce it yourself" with
-"replay the exact failure that was already captured."
+```brain
+Given a failing trace showing a hydration crash, the diagnostic
+process is exactly what Module 1's hydration lessons trained:
+correlate the console error's reported mismatch against the DOM
+snapshot at that exact moment, and trace it back to a specific cause —
+a `Date`-dependent render, an invalid nesting, a `window` check that
+ran during SSR. The trace format doesn't change *what* you're
+diagnosing; it changes *how* you access the evidence, replacing
+"reproduce it yourself" with "replay the exact failure that was
+already captured."
+```
 
 ## What the practice drill is testing
 

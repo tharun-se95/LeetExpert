@@ -29,13 +29,16 @@ interactivity to the delivered HTML (Module 1).
 
 ## Why this is a speaking drill, not a writing drill
 
+```brain
 Correctly *listing* these steps in an essay is a different skill from
 correctly *explaining* them out loud, under mild time pressure, in an
 order that builds logically and doesn't require the listener to
-backtrack — which is exactly what a real interview panel is evaluating.
-A candidate who deeply understands every individual piece can still fail
-this specific question by explaining it in a disorganized order, or by
-front-loading obscure detail before establishing the basic shape.
+backtrack — which is exactly what a real interview panel is
+evaluating. A candidate who deeply understands every individual piece
+can still fail this specific question by explaining it in a
+disorganized order, or by front-loading obscure detail before
+establishing the basic shape.
+```
 
 ## What the practice drill is testing
 

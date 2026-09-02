@@ -41,11 +41,13 @@ the header badge without a full page reload.
 
 ## What a strong answer demonstrates
 
+```brain
 The skill being assessed isn't "do you know these individual Next.js
-features" — every prior module already tested that. It's whether you can
-**correctly assign** each of them to the right part of a single coherent
-system, and explain *why* that assignment is correct for that
+features" — every prior module already tested that. It's whether you
+can **correctly assign** each of them to the right part of a single
+coherent system, and explain *why* that assignment is correct for that
 specific route's actual freshness and personalization requirements.
+```
 
 ## What the practice drill is testing
 

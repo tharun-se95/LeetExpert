@@ -43,11 +43,13 @@ Router" as a single atomic switch.
 
 ## What makes this answer credible in an interview
 
+```brain
 The skill being assessed is risk-awareness, not App Router trivia:
-recognizing which parts of a migration are low-risk and should go first,
-and which parts carry real regression risk and should be sequenced last,
-with verification built into every step rather than treated as a single
-finish-line event.
+recognizing which parts of a migration are low-risk and should go
+first, and which parts carry real regression risk and should be
+sequenced last, with verification built into every step rather than
+treated as a single finish-line event.
+```
 
 ## What the practice drill is testing
 
