@@ -3,14 +3,15 @@
 **Status: CORE BUILD COMPLETE.** All 62 lessons across 8 modules are
 authored, all 54 drill-bearing lessons have a real working practice
 exercise, the course is registered as `available` in the platform
-catalog, and every increment has been verified (tsc, full test suite,
-production build, live browser checks). This is the durable, resumable
-source of truth for the build — updated continuously as work happens,
-not just at milestones, so any session can pick up exactly where the
-last one left off without re-deriving state. Remaining open items
-(progress-tracking wiring, per-course theming — both deliberately
-deferred, see Phase 2) are polish, not blockers to the course being real
-and usable.
+catalog, progress tracking is fully wired up, and the shared
+Header/Sidebar chrome correctly reflects whichever course is active.
+Every increment has been verified (tsc, full test suite, production
+build, live browser checks). This is the durable, resumable source of
+truth for the build — updated continuously as work happens, not just at
+milestones, so any session can pick up exactly where the last one left
+off without re-deriving state. The one remaining open item (per-course
+theming — see Phase 2) is a deliberately deferred, valid-under-the-
+design-doc choice, not a gap.
 
 **Standing instruction governing this whole effort:** the user has asked
 for full autonomous execution — do not stop to ask for confirmation on
@@ -420,12 +421,18 @@ behavioral/architectural mock interviews.*
   and is properly non-interactive while coming-soon; real lesson
   content renders; an unauthored lesson shows the graceful fallback;
   build generates all 62 lesson paths (431 total pages site-wide).
-- [ ] Progress-tracking wiring (course slug `nextjs` through the
-  existing namespaced `ProgressProvider`) — not done yet; no reason to
-  track progress through a course with 1/62 lessons authored. Revisit
-  once Phase 4 has enough real lessons that "progress" means something.
-  **Update:** now that the course is fully authored and `available`,
-  this is the more pressing of the two remaining items — see below.
+- [x] **Progress-tracking wiring (2026-09-02) — DONE.** `ProgressProvider`
+  was already course-agnostic; the gaps were `AppShell` always feeding
+  it DSA's manifest counts and `VisitTracker`'s pathname parser only
+  recognizing DSA URLs. Fixed with `nextjsLessonIdFromPathname`
+  (`app/courses/nextjs/nav.ts`, validated against the manifest) and a
+  `courseLessonIdFromPathname` dispatcher
+  (`lib/courses/lessonId.ts`) that `VisitTracker` now calls instead of
+  DSA's parser directly; `AppShell` picks `lessonProgressIds`/
+  `totalCount` from whichever course is active. 12 new tests
+  (`nextjsNav.test.ts`). Verified live: visiting a Next.js lesson
+  increments a real "N/62" header chip and lights up its sidebar dot,
+  independently of DSA's own progress.
 - [ ] `activeThemeFor` in `AppShell.tsx` doesn't yet dispatch a theme for
   `/courses/nextjs/...` routes (currently falls through to monochrome,
   which is a valid, explicitly-allowed choice per the design doc — "one
@@ -799,3 +806,36 @@ through to the full course curriculum page. The two Phase 2 items still
 open (progress-tracking wiring, per-course theming) remain deliberately
 deferred as polish, not blockers — recorded above with the reasoning for
 picking them back up later.
+
+**2026-09-02 (continued further):** User caught, live in the browser,
+that the shared `Header`/`CourseNavTree` chrome was still hardcoded to
+DSA — a Next.js lesson page showed DSA's module tree in the sidebar,
+"DSA" in the header, DSA's Lessons/Practice mode links, and DSA's
+lesson-progress count in the header chip. Fixed by adding
+`buildNextjsCourseNav()` to adapt this course's Module→Chapter→Lesson
+shape into the shared nav tree, extracting `activeCourseSlugFor` into
+its own module to avoid an import cycle, adding an optional `navLabel`
+to `CourseRegistryEntry`, and (at the time) gating the progress chip to
+DSA only rather than show a wrong count.
+
+User also caught that two lessons had leaked internal curriculum-review
+process commentary into reader-facing text ("the Phase 0 review that
+shaped this course's depth tags," "one of the three things Phase 0's
+pedagogy investigation flagged") — asked to fix those and check for the
+same pattern elsewhere. Searched the whole course for "Phase N"
+references, NotebookLM mentions, and recalibration language; found and
+fixed the two instances, confirmed no others exist (the DSA course's own
+"Phase 1/2/3" mentions are legitimate algorithm-step labels, not process
+leakage — left alone).
+
+Then closed out the progress-tracking item flagged above: added
+`nextjsLessonIdFromPathname` and a `courseLessonIdFromPathname`
+dispatcher so `VisitTracker` recognizes Next.js lesson URLs, and made
+`AppShell` pick the active course's own manifest counts rather than
+always DSA's. The progress chip now shows correctly for both courses
+independently (verified live: a real "N/62" chip incrementing on visit,
+DSA's own "N/104" untouched). This closes every Phase 2 item except
+per-course theming, which stays deferred — the design doc explicitly
+allows "one accent per module, a single course-wide accent, or none,"
+and this course's monochrome fallback is a valid choice under that
+rule, not a gap like the two that got fixed this session.
