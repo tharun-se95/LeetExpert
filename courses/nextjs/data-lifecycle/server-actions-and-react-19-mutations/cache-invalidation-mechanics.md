@@ -40,14 +40,16 @@ export async function createPost(formData: FormData) {
 
 ## Why forgetting this is such a common bug
 
+```warn
 The mutation itself — the database write — has no relationship to the
 caching layer unless you explicitly connect them. A developer who
-correctly writes the database mutation but doesn't call `revalidatePath`
-or `revalidateTag` afterward has written *working* code from the
-database's perspective and *broken* code from the user's perspective:
-the write succeeded, but every cached surface that displayed the old
-data keeps displaying it indefinitely (or until its `revalidate` time
-window expires on its own).
+correctly writes the database mutation but doesn't call
+`revalidatePath` or `revalidateTag` afterward has written *working*
+code from the database's perspective and *broken* code from the user's
+perspective: the write succeeded, but every cached surface that
+displayed the old data keeps displaying it indefinitely (or until its
+`revalidate` time window expires on its own).
+```
 
 ## Choosing which one, and where
 

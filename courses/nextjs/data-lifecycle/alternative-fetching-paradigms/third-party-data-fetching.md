@@ -67,10 +67,12 @@ starting cold.
 
 ## What the practice drill is testing
 
-The concept of "prefetch on the server, hydrate on the client" is simple
-to state; correctly wiring the `QueryClient`/`dehydrate`/
+```warn
+The concept of "prefetch on the server, hydrate on the client" is
+simple to state; correctly wiring the `QueryClient`/`dehydrate`/
 `HydrationBoundary` plumbing so the client's `useQuery` call actually
 matches the server's prefetched query key is where mistakes happen.
+```
 
 **Practice (Semi-Constrained Sandbox):** you'll prefetch a query inside a
 Server Component and correctly pass its dehydrated cache state into a

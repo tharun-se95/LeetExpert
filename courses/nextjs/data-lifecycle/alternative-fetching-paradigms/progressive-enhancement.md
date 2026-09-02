@@ -28,14 +28,16 @@ built directly on top of rather than replacing.
 
 ## Where this breaks: client-only enhancements
 
+```warn
 The moment you add `useActionState` for pending-state UI or client-side
-validation before submission, you've layered *progressive enhancement* on
-top of a base that still works without it — but only if you're careful
-not to make the enhanced behavior a **requirement** for the form to
-function at all. A pattern like intercepting `onSubmit` to run
+validation before submission, you've layered *progressive enhancement*
+on top of a base that still works without it — but only if you're
+careful not to make the enhanced behavior a **requirement** for the
+form to function at all. A pattern like intercepting `onSubmit` to run
 client-only validation and calling `event.preventDefault()`
 unconditionally would silently break the no-JS fallback path, because
 now the form's actual submission depends on JavaScript having run.
+```
 
 ## The practical framing for an interview
 

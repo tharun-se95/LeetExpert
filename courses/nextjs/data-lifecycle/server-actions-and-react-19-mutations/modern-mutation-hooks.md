@@ -41,10 +41,14 @@ function NewPostForm() {
 wraps a Server Action so it can **return a value the form can read** —
 here, a validation error — while also exposing `isPending` directly,
 without you having to wire up separate state for "is this submitting
-right now." The action function itself needs to accept the previous
-state as its first argument to work with this hook (`createPost(prevState,
+right now."
+
+```warn
+The action function itself needs to accept the previous state as its
+first argument to work with this hook (`createPost(prevState,
 formData)`), which is the detail most likely to trip you up coming from
 a plain Server Action signature.
+```
 
 ## `useFormStatus` — pending state from a child, without prop drilling
 

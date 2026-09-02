@@ -44,15 +44,19 @@ implementation.
 
 ## Why this framing matters for security
 
+```warn
 Because a Server Action *is* an HTTP POST endpoint under the hood, it
 inherits the same attack-surface concerns as any other endpoint your
 server exposes: it can be called by anything that can construct the
-right request, not just your own form's submit handler. This isn't a
-side note — it's the entire reason a later lesson in this course
-(Securing Server Actions, Module 6) exists as its own dedicated topic.
-Treating a Server Action as "just a function I wrote" rather than "a
-public network endpoint I've exposed" is the exact misconception that
-leads to unvalidated, unauthorized Server Actions in production.
+right request, not just your own form's submit handler. Treating a
+Server Action as "just a function I wrote" rather than "a public
+network endpoint I've exposed" is the exact misconception that leads to
+unvalidated, unauthorized Server Actions in production.
+```
+
+This isn't a side note — it's the entire reason a later lesson in this
+course (Securing Server Actions, Module 6) exists as its own dedicated
+topic.
 
 ## The mechanics of the round trip
 

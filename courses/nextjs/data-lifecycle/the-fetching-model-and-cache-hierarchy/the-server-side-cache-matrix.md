@@ -9,10 +9,13 @@ depth: essential
 The previous lesson covered one caching mechanism — `fetch`'s own
 `cache`/`revalidate` options. But when you're debugging "why did this
 data not refresh" in a real Next.js app, that's only one of **three
-separate, independently-operating caching layers** on the server. Mixing
-them up is the single most common source of caching confusion in this
-framework, which is exactly why this lesson isolates each one and gives
-it a name.
+separate, independently-operating caching layers** on the server.
+
+```warn
+Mixing these three layers up is the single most common source of
+caching confusion in this framework, which is exactly why this lesson
+isolates each one and gives it a name.
+```
 
 ## The three layers
 

@@ -51,12 +51,15 @@ with no new network calls added.
 
 ## The actual decision point
 
+```brain
 The fix is mechanically simple once you see it; the skill is **noticing
 that a data dependency doesn't actually exist** in code that happens to
 be written sequentially. Not every sequential `await` chain is a bug —
 if `getPosts` genuinely needs a value that only `getUser`'s result
-provides, the dependency is real and `Promise.all` isn't applicable. The
-practice drill is built specifically around telling these two cases
+provides, the dependency is real and `Promise.all` isn't applicable.
+```
+
+The practice drill is built specifically around telling these two cases
 apart from a real waterfall trace.
 
 ## What the practice drill is testing

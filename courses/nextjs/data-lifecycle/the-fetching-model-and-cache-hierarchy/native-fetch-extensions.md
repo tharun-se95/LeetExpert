@@ -45,13 +45,15 @@ each of them triggering a fresh call to your backend or database.
 
 ## Bypass behavior matters as much as caching behavior
 
+```warn
 Knowing how to cache is only half the skill — knowing how to
 **deliberately not cache** a specific fetch, inside a route where other
-fetches are cached, is the part that trips people up. `cache: "no-store"`
-on one fetch call doesn't affect any other fetch call in the same
-component or route; caching behavior is set per fetch call, not
-per-route or globally, unless a route-level segment config (covered
+fetches are cached, is the part that trips people up. `cache:
+"no-store"` on one fetch call doesn't affect any other fetch call in
+the same component or route; caching behavior is set per fetch call,
+not per-route or globally, unless a route-level segment config (covered
 later in this module) overrides it.
+```
 
 ## What the practice drill is testing
 

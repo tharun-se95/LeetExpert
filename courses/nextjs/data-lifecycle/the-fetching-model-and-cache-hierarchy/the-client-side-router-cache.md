@@ -24,6 +24,7 @@ instant for revisited routes.
 
 ## The problem this causes
 
+```warn
 Here's the surprising part: because this cache lives on the client and
 is populated from what was fetched *earlier*, a mutation that changes
 server-side data doesn't automatically invalidate what's sitting in a
@@ -32,6 +33,7 @@ record, get redirected back to a list page, and see **stale data** —
 not because the server's Data Cache is wrong, but because the *client's*
 local Router Cache is still holding an older snapshot from before the
 mutation happened.
+```
 
 ## The fix: `router.refresh()`
 
