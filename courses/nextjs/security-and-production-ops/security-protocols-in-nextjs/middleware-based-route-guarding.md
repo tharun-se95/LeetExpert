@@ -71,3 +71,39 @@ page regardless of intent.
 checks a session token against a protected path pattern, redirecting
 unauthenticated requests to a login page while preserving the originally
 requested path for post-login redirection.
+
+## Try it
+
+Write middleware that redirects unauthenticated requests to `/admin/*`
+routes to `/login`, preserving the original path so login can redirect
+back afterward.
+
+```scratchpad middleware-based-route-guarding
+export async function middleware(request: NextRequest) {
+  // ...
+}
+export const config = { matcher: ["/admin/:path*"] };
+```
+
+````reveal Work through it
+```ts
+export async function middleware(request: NextRequest) {
+  const sessionToken = request.cookies.get("session")?.value;
+  const isValid = sessionToken && (await verifySession(sessionToken));
+
+  if (!isValid) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirectedFrom", request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+  return NextResponse.next();
+}
+export const config = { matcher: ["/admin/:path*"] };
+```
+
+The `matcher` already scopes this to `/admin/*`, so no additional path
+check is needed inside the function. Attaching `redirectedFrom` as a
+query param is what lets the login page send the user back to where
+they were actually trying to go, rather than a generic default landing
+page after they authenticate.
+````

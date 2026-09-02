@@ -57,3 +57,35 @@ implemented session handler, identify a specific missing protection (such
 as CSRF verification on an OAuth callback, or an insecurely-configured
 session cookie), and refactor the flow to use a standard auth provider
 framework instead.
+
+## Try it
+
+Review this hand-rolled OAuth callback handler:
+
+```ts
+export async function GET(request: Request) {
+  const code = new URL(request.url).searchParams.get("code");
+  const token = await exchangeCodeForToken(code);
+  const response = NextResponse.redirect("/dashboard");
+  response.cookies.set("session", token);
+  return response;
+}
+```
+
+What's missing?
+
+````reveal Work through the review
+Two real gaps: there's no CSRF `state` parameter verification on the
+OAuth callback — an attacker can potentially trick a user's browser into
+completing an OAuth flow initiated elsewhere. And the session cookie is
+set with no `httpOnly`, `secure`, or `sameSite` flags, leaving it
+readable by client-side JavaScript (an XSS vector) and sendable
+cross-site.
+
+Rather than hand-patching each gap individually (there are more —
+token refresh timing, session fixation), the actual fix this lesson
+argues for is replacing this handler with a maintained provider (Auth.js,
+Clerk) that already implements CSRF state verification and secure
+cookie configuration correctly, reviewed and hardened against exactly
+this class of vulnerability.
+````

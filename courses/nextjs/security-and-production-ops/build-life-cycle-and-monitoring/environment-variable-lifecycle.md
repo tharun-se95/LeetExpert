@@ -59,3 +59,36 @@ who loaded the page while the leak was live).
 environment variable that's incorrectly prefixed `NEXT_PUBLIC_`, leaking
 a private secret into the client bundle, identify the exact leak, and
 correct the configuration.
+
+## Try it
+
+Review this `.env` file and its usage:
+
+```
+NEXT_PUBLIC_ANALYTICS_ID=UA-12345
+NEXT_PUBLIC_STRIPE_SECRET_KEY=sk_live_51H...
+```
+
+```ts
+const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
+```
+
+What's wrong?
+
+````reveal Work through the review
+`NEXT_PUBLIC_STRIPE_SECRET_KEY` is a real secret key — the kind that
+authorizes actual charges — compiled directly into the client
+JavaScript bundle because of its `NEXT_PUBLIC_` prefix. Anyone who
+opens DevTools and inspects the bundle can read it in plain text.
+`NEXT_PUBLIC_ANALYTICS_ID` is fine to prefix — an analytics ID is meant
+to be public.
+
+```
+STRIPE_SECRET_KEY=sk_live_51H...
+```
+
+The fix: drop the `NEXT_PUBLIC_` prefix so it stays server-only, **and**
+rotate the key — it's already been shipped to anyone who loaded the page
+while the leak was live, so renaming the variable alone doesn't undo
+that exposure.
+````

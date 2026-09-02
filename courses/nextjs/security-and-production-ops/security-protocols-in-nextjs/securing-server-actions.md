@@ -70,3 +70,42 @@ Action itself, on the server, where the caller can't skip them.
 that's missing either its authorization check (any logged-in user can
 act on any resource) or its input validation, identify the exact gap,
 and implement the missing check.
+
+## Try it
+
+Review this pull request:
+
+```ts
+"use server";
+export async function deletePost(postId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+  await db.posts.delete({ where: { id: postId } });
+}
+```
+
+What's missing?
+
+````reveal Work through the review
+It checks that *someone* is logged in, but never checks that this
+specific user actually owns `postId`. Any authenticated user can delete
+any post, just by knowing or guessing its id — a real authorization
+vulnerability, not a hypothetical one.
+
+```ts
+"use server";
+export async function deletePost(postId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const post = await db.posts.findUnique({ where: { id: postId } });
+  if (post?.authorId !== user.id) throw new Error("Forbidden");
+
+  await db.posts.delete({ where: { id: postId } });
+}
+```
+
+"Is someone logged in" and "is this specific user allowed to act on this
+specific resource" are two different checks — this Server Action was
+missing the second one entirely.
+````

@@ -64,3 +64,30 @@ implementation and identify a configuration gap — such as an
 `'unsafe-inline'` directive undermining the nonce mechanism, or a missing
 nonce attachment to hydration scripts — then correct it to properly
 reject unauthorized script injection.
+
+## Try it
+
+Review this CSP header:
+
+```
+Content-Security-Policy: script-src 'self' 'unsafe-inline' 'nonce-abc123';
+```
+
+Does this actually block an injected inline script?
+
+````reveal Work through the review
+No — `'unsafe-inline'` tells the browser to allow **any** inline script
+regardless of nonce. An attacker's injected `<script>` tag has no valid
+nonce, but `'unsafe-inline'` doesn't require one, so it executes anyway.
+The nonce is present but functionally inert as long as `'unsafe-inline'`
+sits alongside it.
+
+```
+Content-Security-Policy: script-src 'self' 'nonce-abc123';
+```
+
+Removing `'unsafe-inline'` is the fix — now only scripts carrying the
+correct, per-request nonce execute. Legitimate hydration scripts (which
+Next.js tags with the matching nonce) still run; an attacker's injected
+script, lacking a valid nonce, does not.
+````

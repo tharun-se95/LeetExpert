@@ -69,3 +69,48 @@ without needing a user to manually file a bug report.
 error boundary that catches a backend data-fetching error, reports it to
 a monitoring call, and displays a friendly recovery UI with a working
 retry action.
+
+## Try it
+
+Write `app/dashboard/error.tsx` so it reports the error to monitoring
+and shows a recovery UI with a working retry button.
+
+```scratchpad production-observability-and-error-boundaries
+"use client";
+export default function DashboardError({ error, reset }) {
+  // ...
+}
+```
+
+````reveal Work through it
+```tsx
+"use client";
+import { useEffect } from "react";
+
+export default function DashboardError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    reportToMonitoring(error);
+  }, [error]);
+
+  return (
+    <div>
+      <h2>Something went wrong loading your dashboard.</h2>
+      <button onClick={reset}>Try again</button>
+    </div>
+  );
+}
+```
+
+`error.tsx` must be a Client Component (`"use client"`) since it uses
+`useEffect` and an event handler. The `reportToMonitoring` call inside
+`useEffect` is what turns this from a UX pattern into real production
+observability — without it, the crash is silently absorbed and never
+reaches anyone who could fix it. `reset` re-attempts rendering the
+segment without a full page reload.
+````
