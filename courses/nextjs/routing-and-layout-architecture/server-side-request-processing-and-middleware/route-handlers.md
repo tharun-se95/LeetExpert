@@ -84,3 +84,35 @@ skill this drill checks for.
 Route Handler that parses an incoming JSON payload and executes a
 database mutation, returning the correct response shape and status code
 for a successful creation.
+
+## Try it
+
+Write a `POST` handler at `app/api/comments/route.ts` that reads a JSON
+body `{ postId: string, text: string }`, creates a comment, and returns
+it with the correct HTTP status for a successful creation (not the
+default 200).
+
+```scratchpad route-handlers
+// app/api/comments/route.ts
+export async function POST(request: Request) {
+  // ...
+}
+```
+
+````reveal Work through it
+```ts
+export async function POST(request: Request) {
+  const { postId, text } = await request.json();
+  const comment = await db.comments.create({ data: { postId, text } });
+  return Response.json(comment, { status: 201 });
+}
+```
+
+Two details this drill is checking: reading the body requires `await
+request.json()` — it's an async operation on the `Request` object, not a
+synchronous property — and a successful *creation* should return `201
+Created`, not the default `200 OK` a bare `Response.json(comment)` would
+send. Returning 200 for a resource that was just created is technically
+functional but not the semantically correct status code a real API
+consumer (or an interviewer) would expect.
+````

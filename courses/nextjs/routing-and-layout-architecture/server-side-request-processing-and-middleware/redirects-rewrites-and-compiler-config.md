@@ -73,3 +73,43 @@ implementation handling what turns out to be a fixed, unconditional
 URL-to-URL redirect — the kind of rule that never actually varies by
 request — and asked to identify that this runtime logic is unnecessary,
 then move it into static `next.config.js` configuration instead.
+
+## Try it
+
+Review this pull request:
+
+```ts
+// middleware.ts
+export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname === "/old-pricing") {
+    return NextResponse.redirect(new URL("/pricing", request.url));
+  }
+  return NextResponse.next();
+}
+```
+
+Is middleware the right tool here? What would you change?
+
+````reveal Work through the review
+This redirect never depends on anything request-specific — `/old-pricing`
+always goes to `/pricing`, for every visitor, every time. There's no
+reason to pay a runtime JavaScript execution cost on every request to
+make a decision that's always the same answer.
+
+```js
+// next.config.js
+module.exports = {
+  async redirects() {
+    return [
+      { source: "/old-pricing", destination: "/pricing", permanent: true },
+    ];
+  },
+};
+```
+
+Moving this into static config lets Next.js resolve it at the routing
+layer directly, with no middleware function invocation needed at all.
+Middleware would still be the right call for a redirect that genuinely
+depends on a header, cookie, or other per-request signal — this one
+just isn't that.
+````

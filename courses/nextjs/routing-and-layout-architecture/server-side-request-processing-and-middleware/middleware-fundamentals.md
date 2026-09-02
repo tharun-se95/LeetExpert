@@ -79,3 +79,37 @@ the intended behavior — is the actual skill being checked.
 function implementing a localized redirect workflow, inspecting request
 headers to decide when a redirect should fire and constructing the
 correct destination URL.
+
+## Try it
+
+Write middleware that redirects any request where the `x-user-country`
+header is `"DE"` to a `/de` prefixed version of the same path — but only
+if the path isn't already under `/de`.
+
+```scratchpad middleware-fundamentals
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+export function middleware(request: NextRequest) {
+  // ...
+}
+```
+
+````reveal Work through it
+```ts
+export function middleware(request: NextRequest) {
+  const country = request.headers.get("x-user-country");
+  if (country === "DE" && !request.nextUrl.pathname.startsWith("/de")) {
+    return NextResponse.redirect(new URL(`/de${request.nextUrl.pathname}`, request.url));
+  }
+  return NextResponse.next();
+}
+```
+
+The `!request.nextUrl.pathname.startsWith("/de")` guard is the detail
+worth noticing: without it, a request already at `/de/pricing` would get
+redirected to `/de/de/pricing`, and the one after that to
+`/de/de/de/pricing` — an infinite redirect loop, since the middleware
+re-evaluates on every request including the one it just redirected to.
+````

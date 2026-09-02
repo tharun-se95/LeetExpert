@@ -80,3 +80,42 @@ external token-validation call, presented as a pull request. Your task is
 to identify the exact lines responsible for the performance problem and
 rewrite the matcher configuration to correctly exclude static assets,
 explaining why the original configuration was harming TTFB.
+
+## Try it
+
+Review this pull request:
+
+```ts
+// middleware.ts
+export async function middleware(request: NextRequest) {
+  const token = request.cookies.get("session")?.value;
+  const isValid = await fetch("https://auth.internal/verify", {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then((r) => r.ok);
+  if (!isValid) return NextResponse.redirect(new URL("/login", request.url));
+  return NextResponse.next();
+}
+// no `config` export
+```
+
+What's the performance problem, and what's the fix?
+
+````reveal Work through the review
+There's no `config.matcher` at all, which means this middleware — and
+its external `fetch` call to `auth.internal/verify` — runs on **every
+matching request by default**, including every image, CSS file, and JS
+chunk the page loads. A page with twenty static assets triggers twenty
+redundant calls to the auth service.
+
+```ts
+export const config = {
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};
+```
+
+Adding this matcher scopes the middleware to actual page navigations,
+eliminating the wasted calls entirely rather than trying to make each
+individual call faster.
+````

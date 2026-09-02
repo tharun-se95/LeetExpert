@@ -84,3 +84,52 @@ combined.
 **Practice (Semi-Constrained Sandbox):** you'll build a dashboard layout
 that renders two independently-loading analytics panels side by side using
 named parallel-route slots, each with its own loading state.
+
+## Try it
+
+Sketch the folder structure and layout signature for a `/dashboard` page
+that renders a `@revenue` slot and a `@activity` slot side by side, each
+independently loading.
+
+```scratchpad parallel-routes
+// app/dashboard/... folder structure, and the layout.tsx signature
+```
+
+````reveal Work through it
+```
+app/
+  dashboard/
+    layout.tsx
+    page.tsx
+    @revenue/
+      page.tsx
+    @activity/
+      page.tsx
+```
+
+```tsx
+export default function DashboardLayout({
+  children,
+  revenue,
+  activity,
+}: {
+  children: React.ReactNode;
+  revenue: React.ReactNode;
+  activity: React.ReactNode;
+}) {
+  return (
+    <div>
+      {children}
+      <div className="grid">
+        {revenue}
+        {activity}
+      </div>
+    </div>
+  );
+}
+```
+
+The slot prop names (`revenue`, `activity`) must match the `@`-prefixed
+folder names exactly — that's the mechanism connecting each slot's own
+`page.tsx` to the corresponding prop the layout receives.
+````

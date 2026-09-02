@@ -86,3 +86,31 @@ URL patterns a route needs to support, and asked to configure the correct
 route directory structure (choosing between `[param]`, `[...param]`, and
 `[[...param]]`) to make exactly those patterns resolve correctly, without
 breaking the route's existing boundaries.
+
+## Try it
+
+Design the route folder(s) needed to support all three of these URL
+shapes under `/docs`: `/docs`, `/docs/getting-started`, and
+`/docs/guides/routing/dynamic-segments` (an arbitrary-depth path).
+
+```scratchpad dynamic-routing-segments
+// Sketch the app/docs/... folder structure here.
+```
+
+````reveal Work through the shapes
+```
+app/
+  docs/
+    [[...slug]]/
+      page.tsx
+```
+
+A single **optional catch-all**, `[[...slug]]`, covers all three cases
+at once: with no segments at all, `slug` is `undefined` and the route
+matches bare `/docs`; with one segment, `slug` is `["getting-started"]`;
+with several, `slug` is `["guides", "routing", "dynamic-segments"]`. A
+plain `[...slug]` (non-optional catch-all) would have gotten the second
+and third cases right but 404'd on bare `/docs`, since a required
+catch-all needs at least one segment to match at all — that's the exact
+distinction this exercise is testing.
+````

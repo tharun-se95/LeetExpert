@@ -75,3 +75,40 @@ application to expose two distinct sections — authentication-related
 pages and user-settings pages — each with its own isolated layout, under
 a single unified URL structure where the route-group boundaries
 themselves don't appear anywhere in the resulting paths.
+
+## Try it
+
+Design a file tree so `/login` and `/signup` share one minimal
+"auth" layout (no sidebar, centered card), while `/profile` and
+`/billing` share a completely different "account" layout (sidebar,
+top bar) — with none of that grouping visible in the URLs.
+
+```scratchpad route-groups-and-semantic-isolation
+// Sketch the app/ folder structure here.
+```
+
+````reveal Work through the tree
+```
+app/
+  (auth)/
+    layout.tsx        — centered-card layout, no sidebar
+    login/
+      page.tsx          — /login
+    signup/
+      page.tsx          — /signup
+  (account)/
+    layout.tsx        — sidebar + top bar layout
+    profile/
+      page.tsx          — /profile
+    billing/
+      page.tsx          — /billing
+```
+
+Both `(auth)` and `(account)` are route groups — their names never
+appear in a URL — so `/login`, `/signup`, `/profile`, and `/billing` all
+resolve exactly as written, with each pair sharing its own isolated
+layout. Naming the folders as plain `auth/` and `account/` (no
+parentheses) instead would have produced `/auth/login` and
+`/account/profile` — a URL structure the requirement explicitly ruled
+out.
+````

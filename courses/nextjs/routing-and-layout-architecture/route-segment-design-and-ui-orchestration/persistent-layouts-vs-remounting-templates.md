@@ -76,3 +76,31 @@ that needs to preserve a user's local component input state across
 sibling-page navigation (the state should carry over, not reset) — you'll
 identify why the current setup doesn't achieve that, and refactor the
 route segment to use the correct file so the state actually persists.
+
+## Try it
+
+A multi-step form lives at `/onboarding/step-1`, `/onboarding/step-2`,
+and `/onboarding/step-3`. Right now, `app/onboarding/template.tsx` holds
+a sidebar showing overall progress, and the sidebar's "expanded/collapsed"
+toggle state resets every time the user moves to the next step — which
+is exactly the bug being reported. What's wrong, and what's the fix?
+
+```scratchpad persistent-layouts-vs-remounting-templates
+// Describe the fix: which file should the sidebar live in, and why?
+```
+
+````reveal Work through the fix
+`template.tsx` **remounts on every navigation** within its scope — that's
+its defining behavior, useful for things that should genuinely reset per
+page (an entrance animation, a per-page analytics event). A progress
+sidebar's expand/collapse state is the opposite: it should persist as the
+user moves between steps, which means it belongs in `layout.tsx`, not
+`template.tsx`.
+
+The fix: rename `app/onboarding/template.tsx` to
+`app/onboarding/layout.tsx`. Since `layout.tsx` does **not** remount
+across sibling navigation within its own subtree, the sidebar component
+(and its local `useState` for expanded/collapsed) survives the
+step-1-to-step-2-to-step-3 navigation instead of restarting fresh on
+each step.
+````

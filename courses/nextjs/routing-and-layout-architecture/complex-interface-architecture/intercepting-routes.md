@@ -72,3 +72,39 @@ interface where clicking a photo opens it in a modal overlaying the feed
 via a client-side navigation, while a direct visit to that same photo's
 URL renders it as a full standalone page — correctly wiring both the
 intercepting route and its non-intercepted counterpart.
+
+## Try it
+
+Sketch the folder structure for `/feed` so that clicking a photo (a
+client-side `<Link>` from within the feed) opens `/feed/photo/[id]` as a
+modal, while a hard navigation or shared link to that same URL still
+renders it as a full page.
+
+```scratchpad intercepting-routes
+// app/feed/... folder structure
+```
+
+````reveal Work through it
+```
+app/
+  feed/
+    page.tsx
+    @modal/
+      default.tsx          — renders nothing when no modal is active
+      (.)photo/
+        [id]/
+          page.tsx           — the intercepted, modal version
+    photo/
+      [id]/
+        page.tsx               — the real, standalone version
+```
+
+Both `photo/[id]/page.tsx` (the real route) and
+`@modal/(.)photo/[id]/page.tsx` (the intercepted version, layered into
+the `@modal` parallel-route slot) have to exist side by side.
+`(.)` intercepts a same-level segment specifically when navigation
+originates from within `/feed` via `<Link>`; a hard navigation or a
+freshly typed URL bypasses the interception and always resolves to the
+real `photo/[id]/page.tsx` instead, since interception only ever applies
+to soft, client-side navigation.
+````
