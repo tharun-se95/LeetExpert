@@ -1,10 +1,16 @@
 # Next.js Interview Prep Course — Master Tasks & Progress Tracker
 
-**Status: IN PROGRESS.** This is the durable, resumable source of truth for
-building the Next.js Interview Prep course end-to-end — curriculum,
-content, and platform implementation. Updated continuously as work
-happens, not just at milestones, so any session can pick up exactly where
-the last one left off without re-deriving state.
+**Status: CORE BUILD COMPLETE.** All 62 lessons across 8 modules are
+authored, all 54 drill-bearing lessons have a real working practice
+exercise, the course is registered as `available` in the platform
+catalog, and every increment has been verified (tsc, full test suite,
+production build, live browser checks). This is the durable, resumable
+source of truth for the build — updated continuously as work happens,
+not just at milestones, so any session can pick up exactly where the
+last one left off without re-deriving state. Remaining open items
+(progress-tracking wiring, per-course theming — both deliberately
+deferred, see Phase 2) are polish, not blockers to the course being real
+and usable.
 
 **Standing instruction governing this whole effort:** the user has asked
 for full autonomous execution — do not stop to ask for confirmation on
@@ -487,8 +493,35 @@ reveal added — this is the remaining Phase 3 work, tracked per module):**
 | 5. State Management & URL-as-State | 4 | 4/4 ✅ |
 | 6. Security & Production Ops | 6 | 6/6 ✅ |
 | 7. System Design & Scale | 7 | 7/7 ✅ |
-| 8. Interactive Mock Interview Drills | 6 | 0/6 |
-| **Total** | **54** | **48/54** |
+| 8. Interactive Mock Interview Drills | 6 | 6/6 ✅ |
+| **Total** | **54** | **54/54 ✅** |
+
+## ✅ PHASE 3 COMPLETE — every drill-bearing lesson has a real, working practice drill
+
+All 54 drill-bearing lessons across all 8 modules now carry a concrete
+"## Try it" exercise ending in a `reveal`-hidden worked answer (sandbox-
+format lessons additionally get a `Scratchpad` free-write workspace).
+Verified end to end: `tsc --noEmit`, the full Vitest suite (608 tests),
+a clean production build (431 static pages, all 62 lesson routes), and
+live browser checks of the retrofitted content across every module
+(Scratchpad accepts input and persists drafts; Reveal expands correctly
+with syntax-highlighted nested code; the manifest-driven placeholder
+correctly disappears once a lesson's markdown carries embedded
+practice).
+
+**What changed the plan from the original Phase 3 vision:** the original
+plan (Phase 0) called for four bespoke interactive components (a
+diagnostic trace UI, a constrained sandbox, a PR-diff review UI, a
+drawing canvas + audio recorder). After discovering the platform's
+existing `reveal` fence primitive (DSA already uses it for hidden
+answers — click-to-expand, DOM-absent until opened), and after
+confirming the approach with the user directly, the actual
+implementation converged on one shared mechanism (`reveal` for every
+format's worked answer, `scratchpad` additionally for `sandbox`) rather
+than four separate bespoke UIs — chosen explicitly over heavier
+automated-grading tooling because arbitrary React/Next.js code, PR
+judgment, and system-design diagrams can't be graded the way DSA's
+algorithm judge grades a pure function's output.
 
 The three Phase-0-flagged hard-to-fake-in-browser gatekeepers
 (distributed infra, E2E/Playwright, conversational pushback) are already
@@ -693,3 +726,53 @@ Semi-Constrained Sandbox, PR Code Review, Architectural Canvas +
 Defense) so the 54 drill-bearing lessons' "not built yet" placeholders
 become real, working practice. This is the remaining work before the
 course can honestly move from `coming-soon` to `available`.
+
+**2026-09-02 (continued):** Same standing autonomous-execution mandate,
+picked up mid-Phase-4. Completed content authoring for Modules 2-8
+sequentially (53 more lessons), each verified individually (tsc, full
+Vitest suite, production build, live HTTP smoke-test of every new
+lesson URL) and committed separately — closing out Phase 4 entirely at
+62/62 lessons across all 8 modules.
+
+Then tackled Phase 3. Before committing engineering time to four bespoke
+practice components, flagged the architecture decision explicitly to the
+user rather than guessing: discovered the platform already has a
+`reveal` fence primitive (DSA's existing click-to-expand, DOM-absent-
+until-opened hidden-answer mechanism) that could serve as a much lighter
+foundation than building real automated grading for open-ended
+React/Next.js code, PR judgment, and system-design diagrams — none of
+which can be judged the way DSA's algorithm judge grades a pure
+function's output. Presented the choice (reveal-based self-assessment
+vs. heavier automated tooling); the user confirmed reveal-based.
+
+Built the mechanism: a new `scratchpad` fence (+ `Scratchpad`/
+`ScratchpadEditor` components — a standalone TSX-configured CodeMirror
+instance, deliberately not reusing DSA's `SandboxLang`-typed judge-
+sandbox `CodeEditor`) for sandbox-format lessons, wired into the
+existing `Markdown.tsx` fence-handling pattern; `load.ts` now computes
+`hasEmbeddedPractice` so the lesson page's placeholder disappears
+automatically once a lesson's markdown gains a real `reveal`, with no
+new manifest field needed. Verified live in the browser end to end
+(Scratchpad renders/persists/resets; Reveal expands with syntax-
+highlighted nested code; placeholder logic correctly branches both ways)
+before scaling out.
+
+Retrofitted all 54 drill-bearing lessons across all 8 modules with a
+concrete "## Try it" exercise + reveal-hidden worked answer, module by
+module, each batch verified (tsc, full test suite, live browser spot-
+checks) and committed separately — closing out Phase 3's content work
+entirely. Hit one environmental snag along the way: running `rm -rf
+.next && npm run build` against the same `.next` directory a long-lived
+dev server was also writing to corrupted the dev server's cache twice;
+fixed by stopping the dev server before any one-off production build and
+restarting it cleanly afterward, rather than running both against the
+same build output concurrently.
+
+With Phases 3 and 4 both complete, flipped `NEXTJS_COURSE.status` from
+`coming-soon` to `available` in the platform registry — the course is
+genuinely ready to be its own real, live entry in the course catalog now,
+verified with a live click-through from the homepage catalog card
+through to the full course curriculum page. The two Phase 2 items still
+open (progress-tracking wiring, per-course theming) remain deliberately
+deferred as polish, not blockers — recorded above with the reasoning for
+picking them back up later.
