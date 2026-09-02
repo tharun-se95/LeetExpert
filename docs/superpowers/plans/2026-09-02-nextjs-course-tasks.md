@@ -484,11 +484,11 @@ reveal added — this is the remaining Phase 3 work, tracked per module):**
 | 2. Routing & Layout Architecture | 9 | 9/9 ✅ |
 | 3. Data Lifecycle | 9 | 9/9 ✅ |
 | 4. Rendering & Performance | 8 | 8/8 ✅ |
-| 5. State Management & URL-as-State | 4 | 0/4 |
+| 5. State Management & URL-as-State | 4 | 4/4 ✅ |
 | 6. Security & Production Ops | 6 | 0/6 |
 | 7. System Design & Scale | 7 | 0/7 |
 | 8. Interactive Mock Interview Drills | 6 | 0/6 |
-| **Total** | **54** | **31/54** |
+| **Total** | **54** | **35/54** |
 
 The three Phase-0-flagged hard-to-fake-in-browser gatekeepers
 (distributed infra, E2E/Playwright, conversational pushback) are already
