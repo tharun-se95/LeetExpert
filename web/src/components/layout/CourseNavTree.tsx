@@ -14,6 +14,7 @@ import {
   type CourseNavStage,
 } from "@/lib/course/nav";
 import { useProgress } from "@/components/providers/ProgressProvider";
+import { CURRICULUM } from "@/lib/landing/content";
 
 function isActivePath(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -192,11 +193,11 @@ export function CourseNavTree({
   return (
     <nav className={cn("flex-1 overflow-y-auto", className)} aria-label="Course">
       <Link
-        href="/course"
+        href={CURRICULUM}
         className={cn(
           "mb-2.5 block rounded-[length:var(--radius-xs)] px-2 text-[13px] font-medium transition-colors",
           compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5",
-          pathname === "/course"
+          pathname === CURRICULUM
             ? "bg-pop font-semibold text-on-pop"
             : "text-foreground hover:bg-surface",
         )}

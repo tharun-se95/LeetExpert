@@ -9,9 +9,9 @@ import {
   Lock,
 } from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { ModuleGlyph } from "@/components/course/ModuleGlyph";
-import { ModuleMedia } from "@/components/course/ModuleMedia";
-import { ModulePracticeProgress } from "@/components/course/ModulePracticeProgress";
+import { ModuleGlyph } from "@/app/courses/dsa/_components/ModuleGlyph";
+import { ModuleMedia } from "@/app/courses/dsa/_components/ModuleMedia";
+import { ModulePracticeProgress } from "@/app/courses/dsa/_components/ModulePracticeProgress";
 import {
   getModule,
   STAGES,
@@ -67,7 +67,10 @@ export default async function ModulePage({ params }: PageProps) {
         style={family ? familyCssVars(family) : undefined}
       >
         <Breadcrumbs
-          items={[{ label: "Lessons", href: "/course" }, { label: mod.title }]}
+          items={[
+            { label: "Lessons", href: "/courses/dsa" },
+            { label: mod.title },
+          ]}
         />
 
         {/* Hero */}

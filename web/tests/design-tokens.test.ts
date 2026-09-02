@@ -32,6 +32,7 @@ const HEX_ALLOW = new Set([
   "components/md/Mermaid.tsx", // Mermaid theme API wants resolved hex
   "components/sandbox/editorTheme.ts", // may mirror --tok-* literals
   "components/sandbox/languageMarks.tsx", // brand colour, not design-system colour
+  "app/courses/dsa/registry.ts", // per-course accent hex, same pattern as familyTheme.ts
 ]);
 
 function walk(dir: string): string[] {
@@ -494,7 +495,10 @@ describe("design tokens", () => {
   });
 
   it("curriculum map cards scope per-module family colors", () => {
-    const coursePage = readFileSync(join(SRC, "app", "course", "page.tsx"), "utf8");
+    const coursePage = readFileSync(
+      join(SRC, "app", "courses", "dsa", "page.tsx"),
+      "utf8",
+    );
     // Each curriculum-map card applies its own module's family scope so the
     // glyph, wash band, and hover read that module's colour.
     expect(coursePage).toMatch(/moduleFamily\(module\)/);

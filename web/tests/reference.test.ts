@@ -25,7 +25,7 @@ import {
  * about the other. Both must agree with the stored answer.
  */
 
-const COURSE = join(__dirname, "..", "..", "course");
+const COURSE = join(__dirname, "..", "..", "courses", "dsa");
 const REF = join(__dirname, "reference");
 
 interface Fence {

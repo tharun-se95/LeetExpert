@@ -9,7 +9,7 @@
     "lint": "eslint",
     "predev": "node scripts/copy-pyodide.mjs && node scripts/build-search-index.mjs && node scripts/build-coach-corpus.mjs",
     "prebuild": "node scripts/copy-pyodide.mjs && node scripts/build-search-index.mjs && node scripts/build-coach-corpus.mjs",
-    "test": "vitest run"
+    "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.39",
@@ -54,6 +54,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "jiti": "^2.7.0",
+    "jsdom": "^30.0.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10"

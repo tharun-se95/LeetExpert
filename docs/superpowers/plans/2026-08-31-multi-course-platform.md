@@ -188,12 +188,150 @@ const COURSE_DIR = join(__dirname, "..", "..", "course");
 const COURSE_DIR = join(__dirname, "..", "..", "courses", "dsa");
 ```
 
-- [ ] **Step 4: Run the content test suite**
+- [ ] **Step 4: Fix every other hardcoded reference to the old `course/` root**
 
-Run: `cd web && npx vitest run tests/content.test.ts`
-Expected: PASS (same assertions, new path)
+A full-suite run after Step 3 (not just `content.test.ts`) surfaces 6
+failing test files — the old `course/` root is referenced independently
+in more places than `load.ts` and `content.test.ts`. Fix all of them now,
+in this task, rather than leaving the suite red until whichever later
+task happens to touch each file — Global Constraints require every
+existing test to keep passing.
 
-- [ ] **Step 5: Commit**
+`web/src/lib/coach/buildCorpus.ts` has its own independent
+`resolveCourseRoot()` (a second implementation, not a call into
+`load.ts`'s) and its own directory join:
+
+```ts
+    if (existsSync(join(dir, "course"))) return dir;
+```
+→
+```ts
+    if (existsSync(join(dir, "courses", "dsa"))) return dir;
+```
+
+```ts
+  const courseDir = join(courseRoot, "course");
+```
+→
+```ts
+  const courseDir = join(courseRoot, "courses", "dsa");
+```
+
+Four more test files hardcode the same old path as a constant or inline
+segment:
+
+`web/tests/reference.test.ts:28`:
+```ts
+const COURSE = join(__dirname, "..", "..", "course");
+```
+→
+```ts
+const COURSE = join(__dirname, "..", "..", "courses", "dsa");
+```
+
+`web/tests/coach-thesis.test.ts:9`:
+```ts
+const COURSE = join(__dirname, "..", "..", "course");
+```
+→
+```ts
+const COURSE = join(__dirname, "..", "..", "courses", "dsa");
+```
+
+`web/tests/coach-extract.test.ts:9`:
+```ts
+const COURSE = join(__dirname, "..", "..", "course");
+```
+→
+```ts
+const COURSE = join(__dirname, "..", "..", "courses", "dsa");
+```
+
+`web/tests/extractSandboxFence.test.ts:45-52` — current:
+```ts
+    const path = join(
+      __dirname,
+      "..",
+      "..",
+      "course",
+      "recursion-backtracking",
+      "subsets.md",
+    );
+```
+→
+```ts
+    const path = join(
+      __dirname,
+      "..",
+      "..",
+      "courses",
+      "dsa",
+      "recursion-backtracking",
+      "subsets.md",
+    );
+```
+
+`web/tests/roadmap.test.ts:73` (inline relative path, not a `COURSE`
+constant):
+```ts
+      "../../course/getting-started/course-roadmap.md",
+```
+→
+```ts
+      "../../courses/dsa/getting-started/course-roadmap.md",
+```
+
+- [ ] **Step 5: Fix the two build scripts so `npm run build` and `npm run dev` don't crash**
+
+`package.json`'s `prebuild`/`predev` hooks run
+`scripts/build-search-index.mjs` and `scripts/build-coach-corpus.mjs`,
+both of which independently hardcode the old content root. Left as-is,
+`npm run build` and `npm run dev` crash immediately with an `ENOENT` on
+this branch — a direct violation of the project standard that `tsc`,
+`eslint`, `npm test`, AND `npm run build` must all pass before anything
+is claimed to work. (Task 9 later generalizes `build-search-index.mjs` to
+iterate every course under `courses/`, and Task 13 was going to fix
+`build-coach-corpus.mjs`'s same constant — this step does the minimal
+single-course fix now so the build never breaks in between; Task 9's
+later rewrite supersedes this step's `build-search-index.mjs` edit, and
+Task 13 becomes a no-op verification once this step lands.)
+
+`web/scripts/build-search-index.mjs:21`:
+```js
+const COURSE = join(here, "..", "..", "course");
+```
+→
+```js
+const COURSE = join(here, "..", "..", "courses", "dsa");
+```
+
+`web/scripts/build-coach-corpus.mjs:16,19`:
+```js
+const COURSE = join(here, "..", "..", "course");
+
+if (!existsSync(COURSE)) {
+  console.error(`[coach-corpus] course/ not found at ${COURSE}`);
+```
+→
+```js
+const COURSE = join(here, "..", "..", "courses", "dsa");
+
+if (!existsSync(COURSE)) {
+  console.error(`[coach-corpus] courses/dsa/ not found at ${COURSE}`);
+```
+
+- [ ] **Step 6: Run the full test suite and a full build to confirm nothing else references the old path**
+
+Run: `cd web && npm test`
+Expected: `Test Files  27 passed (27)` — every file green, zero references
+to a nonexistent `course/` root remaining. If any test still fails on an
+ENOENT for a `course/...` path, grep for it (`grep -rn '"course"' web/src web/tests web/scripts | grep -v courses`) and fix it the same way before proceeding — do not leave any test red.
+
+Run: `cd web && npm run build`
+Expected: succeeds — `prebuild` (which runs both scripts just fixed) no
+longer crashes, and the build completes.
+
+- [ ] **Step 7: Commit**
 
 ```bash
 git add -A
@@ -691,7 +829,16 @@ Expected: `location: /courses/dsa/problems/two-sum`
 
 Stop the dev server after verifying.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Confirm the redirects also work in a production build**
+
+Run: `cd web && npm run build`
+Expected: build succeeds (this is the Global Constraints' "run `npm run
+build` after Task 4" checkpoint — dev-mode redirects and build-time
+redirect-manifest generation are handled by different code paths in
+Next.js, so a successful build here is the real confirmation, not just
+the dev-server curl checks above).
+
+- [ ] **Step 4: Commit**
 
 ```bash
 git add web/next.config.ts
@@ -867,6 +1014,18 @@ describe("progress storage key namespacing", () => {
     migrateLegacyProgress("dsa");
     expect(localStorage.getItem("course-progress:dsa")).toBeNull();
   });
+
+  it("does NOT leak DSA's legacy progress into a different course's namespaced key", async () => {
+    localStorage.setItem(
+      "dsa-course-progress",
+      JSON.stringify(["arrays/contiguous-memory"]),
+    );
+    const { migrateLegacyProgress } = await import(
+      "../src/components/providers/progressStorage"
+    );
+    migrateLegacyProgress("nextjs");
+    expect(localStorage.getItem("course-progress:nextjs")).toBeNull();
+  });
 });
 ```
 
@@ -916,13 +1075,17 @@ export function writeSet(key: string, value: Set<string>) {
 }
 
 /**
- * One-time migration from the pre-multi-course flat keys into this
- * course's namespaced keys. Only DSA ever had the legacy keys (it was the
- * only course when they were written), so this is a no-op for any future
- * course — but it's written generically rather than DSA-hardcoded so it
- * stays correct if DSA's slug ever needs to change.
+ * One-time migration from the pre-multi-course flat keys into DSA's
+ * namespaced keys. Only DSA ever had the legacy keys (it was the only
+ * course when they were written) — gated explicitly on courseSlug, not
+ * just "does this course lack a namespaced key yet," because that weaker
+ * gate would copy DSA's legacy visited/solved ids into ANY future
+ * course's bucket the first time a user opens it (a real cross-course
+ * data leak caught in review, not a hypothetical — see the amended
+ * Task 6 report).
  */
 export function migrateLegacyProgress(courseSlug: string) {
+  if (courseSlug !== "dsa") return;
   try {
     if (localStorage.getItem(visitedKey(courseSlug)) === null) {
       const legacy = localStorage.getItem(LEGACY_VISITED_KEY);

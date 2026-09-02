@@ -5,15 +5,10 @@ import { useRouter } from "next/navigation";
 import { MagnifyingGlass, ArrowRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { MODULES } from "@/lib/course/manifest";
-import { problemHref } from "@/lib/course/nav";
+import { lessonHref, problemHref } from "@/lib/course/nav";
+import type { SearchDocument } from "@/lib/search/types";
 
-interface Entry {
-  m: string;
-  s: string;
-  t: string;
-  y: string;
-  h: string[];
-}
+type Entry = SearchDocument;
 
 interface Hit {
   entry: Entry;
@@ -106,7 +101,7 @@ export function SearchDialog({
       if (hit.entry.y === "problem") {
         router.push(problemHref(hit.entry.s));
       } else {
-        router.push(`/course/${hit.entry.m}/${hit.entry.s}`);
+        router.push(lessonHref(hit.entry.m, hit.entry.s));
       }
     },
     [onClose, router],

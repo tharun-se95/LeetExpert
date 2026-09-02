@@ -12,7 +12,7 @@ import {
   type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { ConceptMapNode, type ConceptMapNodeData } from "@/components/course/ConceptMapNode";
+import { ConceptMapNode, type ConceptMapNodeData } from "@/app/courses/dsa/_components/ConceptMapNode";
 import type { MindMapNode } from "@/lib/course/conceptMaps/types";
 
 interface ConceptMindMapProps {

@@ -27,7 +27,7 @@ import { MODULES } from "../src/lib/course/manifest";
  * plain Node test run for no benefit.
  */
 
-const COURSE_DIR = join(__dirname, "..", "..", "course");
+const COURSE_DIR = join(__dirname, "..", "..", "courses", "dsa");
 const PROPERTY_NAMES = propertyNames();
 const WEB_SRC = join(__dirname, "..", "src");
 

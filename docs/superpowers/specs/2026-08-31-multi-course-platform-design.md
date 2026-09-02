@@ -289,6 +289,36 @@ The touch-surface for a new course is deliberately small: one registry
 file, whatever kit pieces it opts into, and its own isolated route
 folder. Everything else is additive.
 
+## Implementation status (2026-09-01)
+
+Implemented per `docs/superpowers/plans/2026-08-31-multi-course-platform.md`
+(14 tasks, subagent-driven, final whole-branch review clean — see
+`.superpowers/sdd/progress.md` for the full task-by-task record). One
+deliberate divergence from this spec's migration step 10, made during
+planning and confirmed acceptable at final review:
+
+**Tracked follow-up, gates onboarding any course beyond DSA:**
+`web/tests/content.test.ts` was **not** generalized to iterate the course
+registry. Its deep validation (registry-id resolution for `viz`/`diagram`
+fences, sandbox-fence spec checks) is DSA-shaped by design — the same
+reasoning as the deliberately-deferred lesson-kit reclassification — and
+a lighter `web/tests/courseContentCoverage.test.ts` guard was added
+instead, asserting only that every registered course has a non-empty
+content directory. **End condition:** before a second course is
+registered in `COURSES`, decide explicitly whether its content needs
+registry-id/sandbox-spec-equivalent CI validation of its own (its own
+test file, or a generalized version of `content.test.ts`) — do not ship
+a second course with silent zero coverage on this axis, per CLAUDE.md
+§5's "a string id typo must fail CI, not render an error card in
+production."
+
+Also noted, not tracked as blocking: `SearchDialog.tsx` still resolves a
+search hit's module title via a direct `MODULES` import from DSA's
+manifest (`MODULE_TITLE = new Map(MODULES.map(...))`), predating this
+migration. Harmless with one course registered; will need generalizing
+(e.g. sourcing titles from each course's own registry entry) whenever a
+second course's search results need a real title instead of a raw slug.
+
 ## Explicitly out of scope for this design
 
 - The Next.js course's actual module/lesson structure and pedagogy

@@ -6,7 +6,7 @@ import { extractSandboxFence } from "../src/lib/content/extractSandboxFence";
 import { splitProblemTabs } from "../src/lib/content/splitProblemTabs";
 import { extractHints } from "../src/lib/coach/extractHints";
 
-const COURSE = join(__dirname, "..", "..", "course");
+const COURSE = join(__dirname, "..", "..", "courses", "dsa");
 
 function explanationOf(rel: string): string {
   const raw = readFileSync(join(COURSE, rel), "utf8").replace(/\r\n/g, "\n");

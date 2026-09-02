@@ -29,9 +29,10 @@ export function Header({
   const pct = totalCount > 0 ? Math.round((visitedCount / totalCount) * 100) : 0;
 
   const lessonsActive =
-    pathname === "/course" || pathname.startsWith("/course/");
-  const practiceActive =
-    pathname === "/problems" || pathname.startsWith("/problems/");
+    pathname === "/courses/dsa" ||
+    (pathname.startsWith("/courses/dsa/") &&
+      !pathname.startsWith("/courses/dsa/problems"));
+  const practiceActive = pathname.startsWith("/courses/dsa/problems");
 
   const modeLinkClass = (active: boolean) =>
     cn(
@@ -92,10 +93,13 @@ export function Header({
         className="flex shrink-0 items-center gap-0.5 justify-self-center sm:gap-1"
         aria-label="Product modes"
       >
-        <Link href="/course" className={modeLinkClass(lessonsActive)}>
+        <Link href="/courses/dsa" className={modeLinkClass(lessonsActive)}>
           Lessons
         </Link>
-        <Link href="/problems" className={modeLinkClass(practiceActive)}>
+        <Link
+          href="/courses/dsa/problems"
+          className={modeLinkClass(practiceActive)}
+        >
           Practice
         </Link>
       </nav>

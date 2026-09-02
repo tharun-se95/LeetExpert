@@ -57,7 +57,7 @@ export function extractToc(markdown: string): TocItem[] {
 }
 
 /**
- * Resolve the repo root (folder that contains `course/`).
+ * Resolve the repo root (folder that contains `courses/`).
  * Local & Vercel with Root Directory=`web` use the parent of cwd.
  * Override with `COURSE_ROOT` when needed.
  */
@@ -67,7 +67,7 @@ function resolveCourseRoot(): string {
   }
   const candidates = [path.resolve(process.cwd(), ".."), process.cwd()];
   for (const dir of candidates) {
-    if (fs.existsSync(path.join(dir, "course"))) {
+    if (fs.existsSync(path.join(dir, "courses", "dsa"))) {
       return dir;
     }
   }
@@ -97,7 +97,7 @@ export async function loadLesson(
   const hit = getLesson(moduleSlug, lessonSlug);
   if (!hit) return null;
 
-  const relative = path.join("course", moduleSlug, `${lessonSlug}.md`);
+  const relative = path.join("courses", "dsa", moduleSlug, `${lessonSlug}.md`);
   const full = path.join(courseRoot, relative);
   if (!fs.existsSync(full)) {
     throw new Error(`Lesson file not found: ${relative}`);

@@ -27,8 +27,12 @@ const SIDEBAR_KEY = "dsa-sidebar-open";
 /** Matches Tailwind `lg` — persistent sidebar only at this width and above. */
 const DESKTOP_MQ = "(min-width: 1024px)";
 
-function isIdePath(pathname: string): boolean {
-  return /^\/problems\/[^/]+\/?$/.test(pathname);
+/** Exported for `appShellRouting.test.ts` — these are pure route-matching
+ *  functions with no React dependency, and had zero test coverage until a
+ *  final-review pass caught `isIdePath` still matching the pre-migration
+ *  `/problems/[slug]` shape instead of `/courses/dsa/problems/[slug]`. */
+export function isIdePath(pathname: string): boolean {
+  return /^\/courses\/dsa\/problems\/[^/]+\/?$/.test(pathname);
 }
 
 /**
@@ -38,29 +42,53 @@ function isIdePath(pathname: string): boolean {
  * shorter column (see ProblemsListClient.tsx).
  */
 function isProblemsListPath(pathname: string): boolean {
-  return pathname === "/problems" || pathname === "/problems/";
+  return (
+    pathname === "/courses/dsa/problems" ||
+    pathname === "/courses/dsa/problems/"
+  );
 }
 
-/** Course overview is a full-width landing — no course nav chrome. */
-function isLandingPath(pathname: string): boolean {
-  return pathname === "/";
+/** Both the catalog root and DSA's own marketing page are full-width
+ *  landings — no course nav chrome. */
+export function isLandingPath(pathname: string): boolean {
+  return pathname === "/" || pathname === "/courses/dsa/marketing";
 }
 
 /**
- * The current topic's family, derived from the route. Lifted to the shell so
- * the whole chrome (header, sidebar, mobile sheet, search) tints with the
- * lesson's family instead of staying steel. List/landing routes have no
+ * The current topic's theme, derived from the route. Lifted to the shell
+ * so the whole chrome (header, sidebar, mobile sheet, search) tints with
+ * the lesson's theme instead of staying steel. List/landing routes have no
  * single topic → null → monochrome.
+ *
+ * DSA resolves its theme via its own 7-family lookup (moduleFamily). A
+ * future course under /courses/<slug>/ can dispatch to whatever theming
+ * logic it wants here — one accent per module, a single course-wide
+ * accent, or none — this function is the one place that needs a new
+ * branch per course, not a shared family system every course must adopt.
  */
-function activeFamilyFor(pathname: string): FamilyId | null {
-  const course = /^\/course\/([^/]+)/.exec(pathname);
-  if (course) return moduleFamily(course[1]);
-  const problem = /^\/problems\/([^/]+)/.exec(pathname);
-  if (problem) {
-    const hit = findProblemBySlug(problem[1]);
+export function activeThemeFor(pathname: string): FamilyId | null {
+  const dsaModule = /^\/courses\/dsa\/(?!problems(?:\/|$))([^/]+)/.exec(
+    pathname,
+  );
+  if (dsaModule) return moduleFamily(dsaModule[1]);
+  const dsaProblem = /^\/courses\/dsa\/problems\/([^/]+)/.exec(pathname);
+  if (dsaProblem) {
+    const hit = findProblemBySlug(dsaProblem[1]);
     if (hit) return moduleFamily(hit.module);
   }
   return null;
+}
+
+/**
+ * Every route currently belongs to DSA (the only registered course) or to
+ * no course at all (the catalog root). Progress still needs a bucket even
+ * on non-course routes today, so this defaults to "dsa" rather than
+ * returning null — the one course that exists is the reasonable default
+ * until a second course makes that default ambiguous.
+ */
+export function activeCourseSlugFor(pathname: string): string {
+  const match = /^\/courses\/([^/]+)/.exec(pathname);
+  return match ? match[1] : "dsa";
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -76,7 +104,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const ideViewport = isIdePath(pathname);
   const fillMain = ideViewport || isProblemsListPath(pathname);
   const showCourseNav = !isLandingPath(pathname);
-  const family = activeFamilyFor(pathname);
+  const family = activeThemeFor(pathname);
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
   useEffect(() => {
@@ -134,6 +162,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ProgressProvider
+      courseSlug={activeCourseSlugFor(pathname)}
       totalCount={totalCount}
       totalProblemCount={totalProblemCount}
       lessonProgressIds={lessonProgressIds}

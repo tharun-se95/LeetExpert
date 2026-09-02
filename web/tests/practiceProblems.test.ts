@@ -66,7 +66,7 @@ describe("mergePracticeProblems", () => {
       "rotate-array",
       "product-except-self",
     ]);
-    expect(rows[0].href).toBe("/problems/remove-duplicates-sorted");
+    expect(rows[0].href).toBe("/courses/dsa/problems/remove-duplicates-sorted");
     expect(rows[0].pattern).toBeUndefined();
   });
 

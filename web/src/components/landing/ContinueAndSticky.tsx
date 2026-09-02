@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "@phosphor-icons/react";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import { buildCourseNav } from "@/lib/course/nav";
-import { FIRST_LESSON } from "@/lib/landing/content";
+import { CURRICULUM, FIRST_LESSON } from "@/lib/landing/content";
 import { cn } from "@/lib/utils";
 
 /**
@@ -35,7 +35,7 @@ export function ContinueBanner() {
       }
     }
     // Everything visited — send them to the curriculum.
-    setHref("/course");
+    setHref(CURRICULUM);
     setTitle("Course overview");
   }, [visited, visitedCount]);
 
@@ -115,7 +115,7 @@ export function StickyCta() {
         </p>
         <div className="flex flex-1 items-center justify-end gap-2 sm:flex-initial">
           <Link
-            href="/course"
+            href={CURRICULUM}
             className="rounded-[length:var(--radius-md)] border border-border px-3 py-2 text-sm font-medium transition hover:bg-surface"
           >
             Curriculum
