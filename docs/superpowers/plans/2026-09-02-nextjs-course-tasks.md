@@ -449,13 +449,13 @@ written. Lesson counts are final per Phase 1's breakdown above.
 
 | Module | Chapters | Lessons | Content drafted | Practice components wired | Reviewed |
 | --- | :-: | :-: | :-: | :-: | :-: |
-| 1. RSC Architecture & Hydration | 3 | 8 | 1/8 | 0/6 (2 conceptual, no drill) | |
+| 1. RSC Architecture & Hydration | 3 | 8 | 3/8 | 0/5 (3 conceptual, no drill) | |
 | 2. Routing & Layout Architecture | 3 | 9 | 0/9 | 0/9 | |
 | 3. Data Lifecycle | 3 | 9 | 0/9 | 0/9 | |
 | 4. Rendering & Performance | 3 | 10 | 0/10 | 0/8 (2 conceptual, no drill) | |
 | 5. State Management & URL-as-State | 2 | 5 | 0/5 | 0/4 (1 conceptual, no drill) | |
 | 6. Security & Production Ops | 2 | 7 | 0/7 | 0/6 (1 conceptual, no drill) | |
-| 7. System Design & Scale | 3 | 8 | 0/8 | 0/6 (2 conceptual, no drill) | |
+| 7. System Design & Scale | 3 | 8 | 0/8 | 0/7 (1 conceptual, no drill) | |
 | 8. Interactive Mock Interview Drills | 3 | 6 | 0/6 | 0/6 | |
 | **Total** | **22** | **62** | **1/62** | **0/54 drill-bearing** | |
 
