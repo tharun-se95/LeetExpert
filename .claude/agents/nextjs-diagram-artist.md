@@ -117,6 +117,33 @@ structure. The specific techniques that made the difference between
   node. Don't introduce a third size without a real reason.
 - **Arrowheads are small and soft** (~6px marker, not 7-8px) — big sharp
   triangles read as clip-art.
+- **Use real iconography, not just rects/paths/text.** This repo already
+  depends on `@phosphor-icons/react` (used by the callout system in
+  `Callout.tsx`) — zero extra cost to pull into a diagram. Its icon
+  components render their own `<svg>`, which nests validly inside your
+  diagram's `<svg>` canvas (nested SVG viewports are legal per spec) and
+  accept `x`, `y`, `size`, and `color` as plain props, so you can drop
+  one in exactly like any other shape:
+  `<HardDrives x={12} y={8} size={13} color="var(--muted)" />`. Reach
+  for an icon wherever a label is naming a *kind of thing* rather than
+  a specific value — a server, a browser/window, a function, a
+  database, a cache, a lock, a clock/timer, a network call — instead of
+  representing that kind-of-thing with bare text alone. This was the
+  single biggest lever for moving a diagram from "boxes and lines" to
+  "reads like real documentation": `ClientServerBoundaryDiagram.tsx`
+  uses `HardDrives` for the server band header, `Browser` for the
+  client band header, `Function` on the `"use server"` node, and
+  `Lightning` (weight="fill") inside the `"use client"` crossover
+  marker. Search the installed set before inventing a workaround —
+  `node_modules/@phosphor-icons/react/dist/ssr/` lists every available
+  name (e.g. `grep -il <keyword>` there) — common useful ones include
+  `HardDrives`, `Browser`/`Browsers`, `Globe`, `Cloud`, `Database`,
+  `Cpu`, `Function`, `Lightning`, `Terminal`/`TerminalWindow`,
+  `ArrowRight`, `Repeat`, `Swap`, `Monitor`/`Desktop`. Never invent an
+  icon name — verify it exists in that directory first, or `tsc` will
+  fail on the import. Use icons for identity/category markers (2-4 per
+  diagram is usually right); don't scatter one on every shape or the
+  diagram starts reading as cluttered rather than illustrated.
 - **Give every inline edge label its own small pill background**
   (`var(--elevated)` fill, a thin themed-color border), not bare text
   floating over a line — bare text crossing a line is illegible at small

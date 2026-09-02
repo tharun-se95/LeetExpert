@@ -1,5 +1,7 @@
 "use client";
 
+import { Browser, Function as FunctionIcon, HardDrives, Lightning } from "@phosphor-icons/react";
+
 /**
  * The actual mechanism behind `"use client"` / `"use server"`, drawn as a
  * component tree cut by a boundary line — not a comparison of three bullet
@@ -10,6 +12,12 @@
  * dashed edge runs the other way — `likePost`, a `"use server"` *function*
  * called from inside that client code, drawn back on the server side of the
  * line, because a function crossing is a call, not a subtree relocation.
+ *
+ * Phosphor icon components render their own `<svg>`, which nests validly
+ * inside this canvas's `<svg>` (SVG explicitly allows nested viewports) and
+ * accepts `x`/`y`/`size`/`color` directly — real iconography instead of
+ * only rects, paths, and text, at zero extra dependency cost since
+ * `@phosphor-icons/react` already ships with the callout system.
  */
 export function ClientServerBoundaryDiagram() {
   const width = 520;
@@ -98,10 +106,12 @@ export function ClientServerBoundaryDiagram() {
       />
       <rect x={boundaryX} y={bandTop} width={width - 16 - boundaryX} height={bandBottom - bandTop} rx={14} fill="url(#csb-dots)" fillOpacity={0.5} />
 
-      <text x={(16 + boundaryX) / 2} y={bandTop - 12} fontSize={10} fontWeight={600} fill="var(--muted)" textAnchor="middle" fontFamily="var(--font-sans), system-ui" letterSpacing={1.2}>
+      <HardDrives x={(16 + boundaryX) / 2 - 46} y={bandTop - 21} size={13} color="var(--muted)" />
+      <text x={(16 + boundaryX) / 2 + 4} y={bandTop - 12} fontSize={10} fontWeight={600} fill="var(--muted)" textAnchor="middle" fontFamily="var(--font-sans), system-ui" letterSpacing={1.2}>
         SERVER
       </text>
-      <text x={(boundaryX + width - 16) / 2} y={bandTop - 12} fontSize={10} fontWeight={600} fill="var(--muted)" textAnchor="middle" fontFamily="var(--font-sans), system-ui" letterSpacing={1.2}>
+      <Browser x={(boundaryX + width - 16) / 2 - 42} y={bandTop - 21} size={13} color="var(--muted)" />
+      <text x={(boundaryX + width - 16) / 2 + 8} y={bandTop - 12} fontSize={10} fontWeight={600} fill="var(--muted)" textAnchor="middle" fontFamily="var(--font-sans), system-ui" letterSpacing={1.2}>
         BROWSER
       </text>
 
@@ -122,10 +132,11 @@ export function ClientServerBoundaryDiagram() {
 
       {/* Glowing crossover marker sitting ON the boundary line — the node
           itself never straddles it, only this marker does. */}
-      <circle cx={boundaryX} cy={crossY} r={11} fill="var(--family-accent, var(--accent))" fillOpacity={0.14} />
-      <circle cx={boundaryX} cy={crossY} r={3} fill="var(--family-accent, var(--accent))" />
-      <rect x={boundaryX - 38} y={crossY - 30} width={76} height={18} rx={9} fill="var(--elevated)" stroke="var(--family-accent, var(--accent))" strokeWidth={1} />
-      <text x={boundaryX} y={crossY - 18} fontSize={9} fontWeight={600} fill="var(--family-accent, var(--accent))" textAnchor="middle" fontFamily="var(--font-mono), monospace" letterSpacing={0.2}>
+      <circle cx={boundaryX} cy={crossY} r={12} fill="var(--family-accent, var(--accent))" fillOpacity={0.14} />
+      <circle cx={boundaryX} cy={crossY} r={7} fill="var(--elevated)" stroke="var(--family-accent, var(--accent))" strokeWidth={1.25} />
+      <Lightning x={boundaryX - 4.5} y={crossY - 4.5} size={9} color="var(--family-accent, var(--accent))" weight="fill" />
+      <rect x={boundaryX - 38} y={crossY - 32} width={76} height={18} rx={9} fill="var(--elevated)" stroke="var(--family-accent, var(--accent))" strokeWidth={1} />
+      <text x={boundaryX} y={crossY - 20} fontSize={9} fontWeight={600} fill="var(--family-accent, var(--accent))" textAnchor="middle" fontFamily="var(--font-mono), monospace" letterSpacing={0.2}>
         use client
       </text>
 
@@ -170,7 +181,8 @@ export function ClientServerBoundaryDiagram() {
 
       {/* likePost node — a function, drawn on the server side */}
       <rect x={postX} y={postY} width={nodeW} height={nodeH} rx={12} fill="var(--elevated)" stroke="var(--insight)" strokeWidth={1.5} strokeDasharray="4 3" />
-      <text x={postX + nodeW / 2} y={postY + 21} fontSize={13} fontWeight={600} fill="var(--foreground)" textAnchor="middle" fontFamily="var(--font-sans), system-ui">
+      <FunctionIcon x={postX + nodeW / 2 - 44} y={postY + 12} size={13} color="var(--insight)" />
+      <text x={postX + nodeW / 2 + 6} y={postY + 21} fontSize={13} fontWeight={600} fill="var(--foreground)" textAnchor="middle" fontFamily="var(--font-sans), system-ui">
         likePost()
       </text>
       <text x={postX + nodeW / 2} y={postY + 37} fontSize={9.5} fontWeight={600} fill="var(--insight)" textAnchor="middle" fontFamily="var(--font-mono), monospace">
