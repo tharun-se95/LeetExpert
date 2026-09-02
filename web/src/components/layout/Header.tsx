@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { List, MagnifyingGlass } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useProgress } from "@/components/providers/ProgressProvider";
+import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
+import { COURSES } from "@/lib/courses/registry";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -28,11 +30,16 @@ export function Header({
   const { visitedCount, totalCount } = useProgress();
   const pct = totalCount > 0 ? Math.round((visitedCount / totalCount) * 100) : 0;
 
+  const courseSlug = activeCourseSlugFor(pathname);
+  const course = COURSES.find((c) => c.slug === courseSlug);
+  const courseLabel = course?.navLabel ?? course?.title ?? courseSlug;
+
   const lessonsActive =
     pathname === "/courses/dsa" ||
     (pathname.startsWith("/courses/dsa/") &&
       !pathname.startsWith("/courses/dsa/problems"));
   const practiceActive = pathname.startsWith("/courses/dsa/problems");
+  const nextjsCurriculumActive = pathname.startsWith("/courses/nextjs");
 
   const modeLinkClass = (active: boolean) =>
     cn(
@@ -83,7 +90,7 @@ export function Header({
               aria-hidden
             />
             <span className="hidden truncate text-[13px] font-medium text-muted md:inline">
-              DSA
+              {courseLabel}
             </span>
           </span>
         </Link>
@@ -93,15 +100,26 @@ export function Header({
         className="flex shrink-0 items-center gap-0.5 justify-self-center sm:gap-1"
         aria-label="Product modes"
       >
-        <Link href="/courses/dsa" className={modeLinkClass(lessonsActive)}>
-          Lessons
-        </Link>
-        <Link
-          href="/courses/dsa/problems"
-          className={modeLinkClass(practiceActive)}
-        >
-          Practice
-        </Link>
+        {courseSlug === "nextjs" ? (
+          <Link
+            href="/courses/nextjs"
+            className={modeLinkClass(nextjsCurriculumActive)}
+          >
+            Curriculum
+          </Link>
+        ) : (
+          <>
+            <Link href="/courses/dsa" className={modeLinkClass(lessonsActive)}>
+              Lessons
+            </Link>
+            <Link
+              href="/courses/dsa/problems"
+              className={modeLinkClass(practiceActive)}
+            >
+              Practice
+            </Link>
+          </>
+        )}
       </nav>
 
       <div className="flex min-w-0 items-center justify-end gap-1.5 justify-self-end sm:gap-2 md:gap-3">

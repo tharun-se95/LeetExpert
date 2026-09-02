@@ -17,6 +17,7 @@ export const NEXTJS_COURSE: CourseRegistryEntry = {
   accent: "#4F46E5",
   status: "available",
   href: "/courses/nextjs",
+  navLabel: "Next.js",
   stats: [
     { label: "modules", value: String(MODULES.length) },
     { label: "lessons", value: String(totalLessonCount()) },

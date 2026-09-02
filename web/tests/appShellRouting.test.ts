@@ -3,8 +3,8 @@ import {
   isIdePath,
   isLandingPath,
   activeThemeFor,
-  activeCourseSlugFor,
 } from "../src/components/layout/AppShell";
+import { activeCourseSlugFor } from "../src/lib/courses/activeCourse";
 
 describe("isIdePath", () => {
   it("matches a DSA problem page", () => {

@@ -20,6 +20,7 @@ import {
 } from "@/lib/course/manifest";
 import { familyCssVars } from "@/lib/visual/familyTheme";
 import type { FamilyId } from "@/lib/content/manifest";
+import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_KEY = "dsa-sidebar-open";
@@ -79,18 +80,6 @@ export function activeThemeFor(pathname: string): FamilyId | null {
   return null;
 }
 
-/**
- * Every route currently belongs to DSA (the only registered course) or to
- * no course at all (the catalog root). Progress still needs a bucket even
- * on non-course routes today, so this defaults to "dsa" rather than
- * returning null — the one course that exists is the reasonable default
- * until a second course makes that default ambiguous.
- */
-export function activeCourseSlugFor(pathname: string): string {
-  const match = /^\/courses\/([^/]+)/.exec(pathname);
-  return match ? match[1] : "dsa";
-}
-
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -101,9 +90,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const totalCount = lessonProgressIds.length;
   const totalProblemCount = allProblemSlugs().length;
   const pathname = usePathname();
+  const courseSlug = activeCourseSlugFor(pathname);
   const ideViewport = isIdePath(pathname);
   const fillMain = ideViewport || isProblemsListPath(pathname);
   const showCourseNav = !isLandingPath(pathname);
+  // The lesson/problem counts above are DSA-specific (allLessonsNavIds()
+  // reads DSA's manifest only) — progress tracking for other courses
+  // hasn't been wired up yet (a deliberately deferred item, see
+  // docs/superpowers/plans/2026-09-02-nextjs-course-tasks.md Phase 2), so
+  // showing the chip there would display DSA's totals on someone else's
+  // course rather than something honestly empty or absent.
+  const showProgress = showCourseNav && courseSlug === "dsa";
   const family = activeThemeFor(pathname);
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
@@ -162,7 +159,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ProgressProvider
-      courseSlug={activeCourseSlugFor(pathname)}
+      courseSlug={courseSlug}
       totalCount={totalCount}
       totalProblemCount={totalProblemCount}
       lessonProgressIds={lessonProgressIds}
@@ -193,7 +190,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               showLessonsMenu={showCourseNav}
               lessonsMenuOpen={mobileNavOpen}
               onToggleLessonsMenu={() => setMobileNavOpen((v) => !v)}
-              showProgress={showCourseNav}
+              showProgress={showProgress}
             />
             <div className="flex min-h-0 flex-1">
               {showCourseNav ? (

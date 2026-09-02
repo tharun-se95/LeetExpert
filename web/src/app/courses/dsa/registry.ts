@@ -9,6 +9,7 @@ export const DSA_COURSE: CourseRegistryEntry = {
   accent: "#1E293B",
   status: "available",
   href: "/courses/dsa",
+  navLabel: "DSA",
   stats: [
     { label: "modules", value: String(MODULES.length) },
     { label: "problems", value: String(allProblemSlugs().length) },

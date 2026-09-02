@@ -13,8 +13,11 @@ import {
   type CourseNavModule,
   type CourseNavStage,
 } from "@/lib/course/nav";
+import { buildNextjsCourseNav } from "@/app/courses/nextjs/nav";
+import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import { CURRICULUM } from "@/lib/landing/content";
+import { NEXTJS_COURSE } from "@/app/courses/nextjs/registry";
 
 function isActivePath(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -180,7 +183,12 @@ export function CourseNavTree({
   className?: string;
 }) {
   const pathname = usePathname();
-  const nav = useMemo(() => buildCourseNav(), []);
+  const courseSlug = activeCourseSlugFor(pathname);
+  const nav = useMemo(
+    () => (courseSlug === "nextjs" ? buildNextjsCourseNav() : buildCourseNav()),
+    [courseSlug],
+  );
+  const curriculumHref = courseSlug === "nextjs" ? NEXTJS_COURSE.href : CURRICULUM;
   const [openModuleSlug, setOpenModuleSlug] = useState<string | null>(() =>
     activeModuleSlug(nav, pathname),
   );
@@ -193,11 +201,11 @@ export function CourseNavTree({
   return (
     <nav className={cn("flex-1 overflow-y-auto", className)} aria-label="Course">
       <Link
-        href={CURRICULUM}
+        href={curriculumHref}
         className={cn(
           "mb-2.5 block rounded-[length:var(--radius-xs)] px-2 text-[13px] font-medium transition-colors",
           compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5",
-          pathname === CURRICULUM
+          pathname === curriculumHref
             ? "bg-pop font-semibold text-on-pop"
             : "text-foreground hover:bg-surface",
         )}

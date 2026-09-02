@@ -13,6 +13,12 @@ export interface CourseRegistryEntry {
   status: "available" | "coming-soon";
   href: string;
   stats?: { label: string; value: string }[];
+  /**
+   * Short label for the header wordmark's course chip (e.g. "DSA",
+   * "Next.js") — `title` is too long to sit next to the wordmark.
+   * Falls back to `title` if omitted.
+   */
+  navLabel?: string;
 }
 
 import { DSA_COURSE } from "@/app/courses/dsa/registry";
