@@ -76,14 +76,7 @@ vague to be useful), but something specific:
   call Next.js generates for you.
 
 ```diagram
-{
-  "id": "comparison-cards",
-  "cards": [
-    { "title": "No directive", "points": ["Server Component", "Runs: server only", "Ships to browser: nothing"] },
-    { "title": "\"use client\"", "points": ["Rendered once for first paint", "Then hydrates in browser", "Needs: state, events, APIs"] },
-    { "title": "\"use server\"", "points": ["Marks a function, not a file", "Callable from client code", "Runs: always on the server"] }
-  ]
-}
+{ "id": "client-server-boundary" }
 ```
 
 ## What the practice drill is testing
