@@ -31,16 +31,17 @@ code doesn't work at all (it resolves to `undefined` in the browser).
 
 ## The security leak this creates when misapplied
 
-The realistic, damaging mistake is prefixing a variable that should have
-stayed server-only: `NEXT_PUBLIC_DATABASE_URL` or
+```warn
+The realistic, damaging mistake is prefixing a variable that should
+have stayed server-only: `NEXT_PUBLIC_DATABASE_URL` or
 `NEXT_PUBLIC_STRIPE_SECRET_KEY` compiles that secret directly into the
-publicly downloadable JavaScript bundle — anyone who opens their browser's
-DevTools and inspects the bundle can read it in plain text. This isn't a
-runtime vulnerability requiring an attack — it's a build-time
-misconfiguration that ships the secret to every visitor by default,
-often going unnoticed because the code "works" (the value genuinely is
-accessible where it's used) while being completely broken from a
-security standpoint.
+publicly downloadable JavaScript bundle — anyone who opens their
+browser's DevTools and inspects the bundle can read it in plain text.
+This isn't a runtime vulnerability requiring an attack — it's a
+build-time misconfiguration that ships the secret to every visitor by
+default, often going unnoticed because the code "works" while being
+completely broken from a security standpoint.
+```
 
 ## The check this lesson trains you to run
 

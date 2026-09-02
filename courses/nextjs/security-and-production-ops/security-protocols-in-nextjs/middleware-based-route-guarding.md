@@ -48,14 +48,17 @@ static assets.
 
 ## Why this belongs in middleware rather than each individual page
 
-Without a centralized guard, every single protected page or layout would
-need to independently re-implement its own "is this user authenticated"
-check at the top of its own render function — a pattern that's easy to
-forget on a newly-added route and creates a security gap by omission
-rather than by a deliberate, visible mistake. Centralizing the check in
-middleware means a new protected route is covered automatically the
-moment its path matches the guard's `matcher` pattern, rather than
-requiring the developer to remember to add the check themselves.
+```brain
+Without a centralized guard, every single protected page or layout
+would need to independently re-implement its own "is this user
+authenticated" check at the top of its own render function — a pattern
+that's easy to forget on a newly-added route and creates a security
+gap by omission rather than by a deliberate, visible mistake.
+Centralizing the check in middleware means a new protected route is
+covered automatically the moment its path matches the guard's
+`matcher` pattern, rather than requiring the developer to remember to
+add the check themselves.
+```
 
 ## The `redirectedFrom` detail
 

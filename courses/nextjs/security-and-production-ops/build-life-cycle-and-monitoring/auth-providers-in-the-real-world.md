@@ -8,15 +8,19 @@ depth: advanced
 
 The previous lessons in this module covered sessions, JWTs, and route
 guarding as concepts you'd implement yourself — and that's genuinely
-useful for understanding the mechanics. But a production auth system has
-to also correctly handle OAuth provider redirects and callback
-verification, CSRF protection on the auth flow itself, secure cookie
-flags (`httpOnly`, `secure`, `sameSite`) configured correctly for every
-environment, token refresh timing, and session fixation prevention —
-each one a specific, well-known class of vulnerability with its own
-established mitigation. A hand-rolled session handler that gets the
-happy path working correctly can still be missing several of these,
-invisibly, until someone specifically probes for them.
+useful for understanding the mechanics.
+
+```warn
+A production auth system has to also correctly handle OAuth provider
+redirects and callback verification, CSRF protection on the auth flow
+itself, secure cookie flags (`httpOnly`, `secure`, `sameSite`)
+configured correctly for every environment, token refresh timing, and
+session fixation prevention — each one a specific, well-known class of
+vulnerability with its own established mitigation. A hand-rolled
+session handler that gets the happy path working correctly can still be
+missing several of these, invisibly, until someone specifically probes
+for them.
+```
 
 ## What providers like Auth.js and Clerk actually abstract
 

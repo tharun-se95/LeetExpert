@@ -48,9 +48,12 @@ lookup required — to trust the claims inside it.
 
 ## Why this trade-off is the actual interview-relevant content
 
+```brain
 The correct answer to "which is better" is genuinely "it depends on
 what you're optimizing for" — instant revocation and simplicity favor
-database sessions; Edge-runtime compatibility and horizontal scalability
-without shared session storage favor JWTs. Being able to articulate this
-trade-off, rather than asserting one is simply superior, is the specific
-skill senior-level interviews are checking for on this topic.
+database sessions; Edge-runtime compatibility and horizontal
+scalability without shared session storage favor JWTs. Being able to
+articulate this trade-off, rather than asserting one is simply
+superior, is the specific skill senior-level interviews are checking
+for on this topic.
+```

@@ -57,12 +57,14 @@ export async function deletePost(postId: string) {
 
 ## Why "the UI won't let you do that" is not a security control
 
-A disabled button, a client-side validation rule, or a hidden form field
-are all *inside* the client bundle, fully visible and bypassable by
-anyone who can read the page's JavaScript or call the underlying
+```warn
+A disabled button, a client-side validation rule, or a hidden form
+field are all *inside* the client bundle, fully visible and bypassable
+by anyone who can read the page's JavaScript or call the underlying
 endpoint directly. None of that constitutes real authorization or
 validation — those checks only count when they run inside the Server
 Action itself, on the server, where the caller can't skip them.
+```
 
 ## What the practice drill is testing
 

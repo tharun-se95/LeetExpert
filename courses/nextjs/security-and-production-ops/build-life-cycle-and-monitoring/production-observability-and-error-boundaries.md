@@ -55,13 +55,15 @@ entirely, `global-error.tsx` must render its own complete `<html>` and
 
 ## The monitoring connection is what makes this "observability," not just UX
 
-A recovery UI without a `reportToMonitoring` call (or equivalent — Sentry,
-or another error-tracking service) means every production crash is
-silently absorbed by the boundary and never reaches anyone who could fix
-it. The `useEffect` reporting call inside the boundary component is what
-turns a graceful-failure UI pattern into genuine production
-observability: the team finds out a crash happened, with a stack trace,
-without needing a user to manually file a bug report.
+```warn
+A recovery UI without a `reportToMonitoring` call (or equivalent —
+Sentry, or another error-tracking service) means every production
+crash is silently absorbed by the boundary and never reaches anyone who
+could fix it. The `useEffect` reporting call inside the boundary
+component is what turns a graceful-failure UI pattern into genuine
+production observability: the team finds out a crash happened, with a
+stack trace, without needing a user to manually file a bug report.
+```
 
 ## What the practice drill is testing
 

@@ -48,14 +48,15 @@ legitimately-nonced hydration scripts still run correctly.
 
 ## The failure mode worth specifically knowing
 
+```warn
 A CSP configured with `'unsafe-inline'` in its `script-src` directive
-defeats the entire nonce mechanism — it tells the browser to allow *any*
-inline script regardless of nonce, which is exactly the blanket
+defeats the entire nonce mechanism — it tells the browser to allow
+*any* inline script regardless of nonce, which is exactly the blanket
 permission an XSS payload needs. This specific misconfiguration —
 present, functioning, and giving a false sense of security while
 providing none — is a realistic thing to encounter in an existing
-codebase's CSP setup, and recognizing it is the point of this lesson's
-review-format practice.
+codebase's CSP setup.
+```
 
 ## What the practice drill is testing
 
