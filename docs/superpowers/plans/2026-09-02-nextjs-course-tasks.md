@@ -449,7 +449,7 @@ written. Lesson counts are final per Phase 1's breakdown above.
 
 | Module | Chapters | Lessons | Content drafted | Practice components wired | Reviewed |
 | --- | :-: | :-: | :-: | :-: | :-: |
-| 1. RSC Architecture & Hydration | 3 | 8 | 3/8 | 0/5 (3 conceptual, no drill) | |
+| 1. RSC Architecture & Hydration | 3 | 8 | 8/8 ✅ | 0/5 (3 conceptual, no drill) | |
 | 2. Routing & Layout Architecture | 3 | 9 | 0/9 | 0/9 | |
 | 3. Data Lifecycle | 3 | 9 | 0/9 | 0/9 | |
 | 4. Rendering & Performance | 3 | 10 | 0/10 | 0/8 (2 conceptual, no drill) | |
@@ -457,15 +457,21 @@ written. Lesson counts are final per Phase 1's breakdown above.
 | 6. Security & Production Ops | 2 | 7 | 0/7 | 0/6 (1 conceptual, no drill) | |
 | 7. System Design & Scale | 3 | 8 | 0/8 | 0/7 (1 conceptual, no drill) | |
 | 8. Interactive Mock Interview Drills | 3 | 6 | 0/6 | 0/6 | |
-| **Total** | **22** | **62** | **1/62** | **0/54 drill-bearing** | |
+| **Total** | **22** | **62** | **8/62** | **0/54 drill-bearing** | |
 
-**Lesson 1.1.1 (React's Server-Side Evolution)** is the first real lesson
-authored — `courses/nextjs/rsc-architecture-hydration/foundations-of-the-server-first-request-lifecycle/react-server-side-evolution.md`.
-Conceptual-only (no practice drill), so it's a complete proof of the
-content pipeline (manifest → loader → markdown rendering → live route)
-without yet needing a Phase 3 practice component. The next drill-bearing
-lesson authored will be the first real test of wiring a practice format
-into the lesson page.
+**Module 1 (RSC Architecture & Hydration) is fully authored — 8/8
+lessons**, the first complete module. All content lives under
+`courses/nextjs/rsc-architecture-hydration/`. This proves the full
+pipeline end to end: 3 conceptual-only lessons (no drill), 1 `sandbox`
+lesson, and 4 `trace` lessons — every practice format used in this
+module has real content rendering its scenario text and the honest
+"component not built yet" note correctly. Module 1 is the reference
+module for what "done" looks like content-wise, the same role
+hash-tables played for the DSA course.
+
+**Next up:** Module 2 (Routing & Layout Architecture, 9 lessons, 0
+conceptual — every lesson in this module is drill-bearing), continuing
+sequentially through the curriculum above.
 
 ## Session log
 
