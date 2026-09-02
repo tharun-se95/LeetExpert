@@ -46,3 +46,27 @@ you'll be given a `.trace.zip`-style capture of a failing Playwright test
 against an SSR layout, and asked to diagnose from the trace's
 screenshots, console output, and DOM snapshots exactly why the hydration
 render crashed, then propose the fix as you would in a PR review.
+
+## Try it
+
+Trace capture summary: console shows `Warning: Text content did not
+match. Server: "$12.00" Client: "$12.00 USD"`. The DOM snapshot shows a
+`<PriceTag>` component. What's the likely cause, and what would you
+check first?
+
+````reveal Work through the trace
+The server and client rendered genuinely different text for the same
+component — a classic hydration mismatch. The specific pattern (extra
+`" USD"` suffix on the client) points at conditional formatting logic
+that behaves differently depending on execution environment — for
+example, a `typeof window !== "undefined"` branch inside `PriceTag`
+that appends currency context only when running client-side, or a
+locale-detection call that resolves differently on the server (no
+`Intl` locale context) versus the browser (real user locale available).
+
+The fix: make the formatting logic deterministic between server and
+client — pass the currency/locale as an explicit prop from the server
+rather than letting the component infer it differently in each
+environment, so both renders produce identical output on the first
+pass.
+````

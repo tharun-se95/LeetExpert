@@ -44,3 +44,36 @@ answer to "walk me through the lifecycle of a Next.js App Router
 request," ideally sketching the flow on a design canvas as you speak,
 covering middleware, routing/layouts, RSC rendering, caching, streaming,
 and hydration in a coherent, logically ordered explanation.
+
+## Try it
+
+Out loud (or written first, then read aloud), answer: "Walk me through
+the lifecycle of a Next.js App Router request." Give yourself 90 seconds,
+then compare against the model answer.
+
+```scratchpad explaining-the-request-lifecycle
+// Draft your answer here first.
+```
+
+````reveal A model answer
+"The request hits middleware first — before any route is even matched —
+where things like auth checks or locale redirects can happen. Next, the
+router resolves the matching route segment and walks the layout tree
+from the root down, since layouts nest and each one wraps everything
+beneath it. Server Components in that tree render on the server and
+produce a serialized RSC payload — not raw HTML with embedded JS, a
+lighter description of the UI. Before any of that rendering work
+actually happens, though, Next.js checks the relevant cache layers —
+Request Memoization for this render pass, the Data Cache for fetches,
+the Full Route Cache for the whole route — so a lot of what 'renders'
+might actually just be served from cache. The response then streams
+back to the client, with any Suspense boundaries resolving independently
+as their data becomes ready rather than blocking the whole page.
+Finally, once the HTML and RSC payload reach the browser, hydration
+attaches React's event handlers and client-side state to it, and any
+Client Components in the tree become interactive."
+
+Notice the order: middleware → routing/layouts → RSC rendering → caching
+→ streaming → hydration. That's the sequence a strong answer follows,
+not a random-access list of features.
+````

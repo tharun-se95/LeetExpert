@@ -52,3 +52,28 @@ dashboard exhibiting random client-rendering state offsets and asked to
 diagnose the specific root cause — distinguishing a genuine hydration
 mismatch from a stale-cache or state-seeding issue — before applying a
 fix.
+
+## Try it
+
+Symptom: a dashboard's "unread notifications" count sometimes shows a
+stale number right after a user marks all as read, but there's no
+hydration warning in the console at all, and refreshing the page always
+shows the correct count. What category of bug is this, and why can you
+rule out a hydration mismatch?
+
+````reveal Work through the diagnosis
+No hydration warning, and the count is correct after a full refresh —
+both point away from a hydration mismatch, which would show a specific
+console warning and would persist even after a genuine server round
+trip (a mismatch is about server vs. client disagreement on one render,
+not about which render is "current").
+
+This is a **stale Router Cache** symptom: the "mark all as read" action
+mutated server data correctly (proven by the refresh showing the right
+count), but the client's cached snapshot of the notifications route
+wasn't invalidated after the mutation. The fix is calling
+`router.refresh()` after the mark-as-read action completes, forcing the
+client to discard its stale cached view and pull current server state —
+not a hydration fix at all, despite the surface-level resemblance
+("numbers don't match what I expect").
+````

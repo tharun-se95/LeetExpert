@@ -55,3 +55,34 @@ finish-line event.
 verbally defend a directory-by-directory migration plan for moving a
 large production Pages Router application to the App Router
 incrementally, justifying the sequencing choices by relative risk.
+
+## Try it
+
+A production app has: a `/blog` section (mostly standalone pages), a
+`/checkout` flow deeply tied to `_app.tsx`'s global cart context, and a
+handful of brand-new features not yet built. Draft your migration order
+and the reasoning, then compare.
+
+```scratchpad pages-to-app-router-migration-strategies
+// Your proposed order and reasoning:
+```
+
+````reveal A model answer
+1. **New features, built directly in `app/`** — zero regression risk to
+   anything existing, and immediate real-world App Router experience for
+   the team.
+2. **`/blog`** — standalone, low-risk leaf routes with no deep
+   `_app.tsx` coupling. A natural second step once the team has some
+   App Router familiarity from step 1.
+3. **`/checkout`, last** — this is the highest-risk section precisely
+   because it's deeply tied to shared `_app.tsx` cart context. Migrating
+   it requires first untangling that shared state into something the
+   App Router's layout model can express cleanly, and a mistake here
+   directly threatens revenue. Tackling it only after the team has
+   practical migration experience from the safer sections is the
+   defensible sequencing.
+
+The reasoning that makes this credible isn't "App Router trivia" — it's
+consistently ordering by *risk*, cheapest and safest first, most
+coupled and highest-stakes last.
+````

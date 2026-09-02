@@ -53,3 +53,40 @@ specific route's actual freshness and personalization requirements.
 e-commerce storefront's system architecture — mapping each route type to
 its appropriate rendering strategy — and verbally defend the design,
 explaining the reasoning behind each choice.
+
+## Try it
+
+Map a rendering strategy to each of: the homepage/category pages,
+individual product pages, the cart/checkout flow, and search results.
+Justify each choice, then compare.
+
+```scratchpad system-design-scalable-ecommerce
+// homepage/category:
+// product pages:
+// cart/checkout:
+// search:
+```
+
+````reveal A model answer
+**Homepage/category pages** — ISR. Same content for every visitor,
+changes infrequently (new arrivals, promotions); serving cached pages
+instantly while regenerating periodically balances freshness against
+speed.
+
+**Product pages** — static generation for the most popular SKUs via
+`generateStaticParams`, with `dynamicParams` left at its default `true`
+so long-tail products render on-demand rather than 404ing.
+
+**Cart/checkout** — SSR, or a statically-shelled page using Partial
+Prerendering for the parts that must be per-user (real-time inventory,
+the user's actual cart). This is data that's wrong if served stale, so
+speed takes a back seat to correctness here.
+
+**Search results** — URL-as-state (`searchParams`), so a filtered,
+searched view is shareable and bookmarkable, with the actual search
+query handled server-side per request.
+
+Adding an item to cart is a Server Action; the header's cart-count badge
+needs `revalidateTag` applied everywhere cart data renders, so the
+mutation updates it without a full reload.
+````
