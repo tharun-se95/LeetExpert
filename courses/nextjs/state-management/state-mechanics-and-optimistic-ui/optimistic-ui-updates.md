@@ -55,11 +55,15 @@ before `addComment`'s server round trip has resolved at all.
 Once the real Server Action completes and the underlying `comments` prop
 updates with the server's confirmed data (through the same cache
 invalidation mechanics covered in Module 3), React reconciles the
-optimistic state back to the real, confirmed state automatically. If the
-mutation actually failed, the optimistic entry needs to be handled by
-your own error-recovery logic — `useOptimistic` doesn't automatically
-roll back a failed mutation for you; that's a case your action's error
-path and calling component need to account for explicitly.
+optimistic state back to the real, confirmed state automatically.
+
+```warn
+If the mutation actually failed, the optimistic entry needs to be
+handled by your own error-recovery logic — `useOptimistic` doesn't
+automatically roll back a failed mutation for you; that's a case your
+action's error path and calling component need to account for
+explicitly.
+```
 
 ## What the practice drill is testing
 

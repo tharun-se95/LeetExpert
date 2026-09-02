@@ -63,13 +63,15 @@ hard reload.
 
 ## Why "without unmounting layouts" is the specific engineering goal
 
+```brain
 The naive alternative — reloading the whole page on every filter change
 — would work functionally but would re-run and re-render everything,
 including layout chrome that never needed to change. Driving filter
 state through `searchParams` combined with client-side navigation gets
-both properties at once: shareable, refresh-safe state, and a
-surgical update that only re-renders the parts of the tree that actually
-depend on the changed param.
+both properties at once: shareable, refresh-safe state, and a surgical
+update that only re-renders the parts of the tree that actually depend
+on the changed param.
+```
 
 ## What the practice drill is testing
 

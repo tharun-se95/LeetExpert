@@ -35,14 +35,16 @@ only one of several legitimate answers.
 
 ## Why misallocating this causes real bugs, not just style complaints
 
+```warn
 Putting something that should be a URL param into client-only state
 means a user can't share a link to their current filtered view, and a
-page refresh silently resets it — a real, visible product defect, not an
-aesthetic preference. Putting something that should live in the database
-into client-only state means it evaporates the moment the tab closes.
-The pattern is consistent: state allocated to the wrong layer doesn't
-fail loudly — it fails as a subtly broken user experience that looks
-like a bug report, not a stack trace.
+page refresh silently resets it — a real, visible product defect, not
+an aesthetic preference. Putting something that should live in the
+database into client-only state means it evaporates the moment the tab
+closes. The pattern is consistent: state allocated to the wrong layer
+doesn't fail loudly — it fails as a subtly broken user experience that
+looks like a bug report, not a stack trace.
+```
 
 ## Why this lesson sets up the rest of the module
 

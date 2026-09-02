@@ -42,15 +42,17 @@ the client state changes, and shouldn't.
 
 ## The mistake this lesson is inoculating against
 
-Passing an entire server-side object graph down "just in case the client
-needs it," rather than deliberately choosing the specific serializable
-values a client component's *interactive* state actually needs to seed
-from, produces the exact serialization failures Module 1 covered:
-functions, class instances, or non-plain-object values baked into a
-larger server response quietly break when they hit the client boundary.
-The discipline is to seed client state with the minimal, plain-data
-subset that server rendering already computed, not to forward server
-objects wholesale.
+```warn
+Passing an entire server-side object graph down "just in case the
+client needs it," rather than deliberately choosing the specific
+serializable values a client component's *interactive* state actually
+needs to seed from, produces the exact serialization failures Module 1
+covered: functions, class instances, or non-plain-object values baked
+into a larger server response quietly break when they hit the client
+boundary. The discipline is to seed client state with the minimal,
+plain-data subset that server rendering already computed, not to
+forward server objects wholesale.
+```
 
 ## What the practice drill is testing
 

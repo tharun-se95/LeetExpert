@@ -23,12 +23,14 @@ single, shared instance across every request the server handles.**
 export const store = createStore(...); // module-level singleton
 ```
 
+```warn
 A module is loaded once and reused across requests on the server. If
-this store is meant to hold something like per-user cart contents, every
-user hitting this server process would be reading and writing the
-*same* store instance — a correctness bug that's invisible in local
-development with one browser tab open, and only shows up under real
-concurrent traffic.
+this store is meant to hold something like per-user cart contents,
+every user hitting this server process would be reading and writing
+the *same* store instance — a correctness bug that's invisible in
+local development with one browser tab open, and only shows up under
+real concurrent traffic.
+```
 
 ## The correct pattern: instantiate inside a client component, provide via context
 
