@@ -453,11 +453,11 @@ written. Lesson counts are final per Phase 1's breakdown above.
 | 2. Routing & Layout Architecture | 3 | 9 | 9/9 ✅ | 0/9 | |
 | 3. Data Lifecycle | 3 | 9 | 9/9 ✅ | 0/9 | |
 | 4. Rendering & Performance | 3 | 10 | 10/10 ✅ | 0/8 (2 conceptual, no drill) | |
-| 5. State Management & URL-as-State | 2 | 5 | 0/5 | 0/4 (1 conceptual, no drill) | |
+| 5. State Management & URL-as-State | 2 | 5 | 5/5 ✅ | 0/4 (1 conceptual, no drill) | |
 | 6. Security & Production Ops | 2 | 7 | 0/7 | 0/6 (1 conceptual, no drill) | |
 | 7. System Design & Scale | 3 | 8 | 0/8 | 0/7 (1 conceptual, no drill) | |
 | 8. Interactive Mock Interview Drills | 3 | 6 | 0/6 | 0/6 | |
-| **Total** | **22** | **62** | **36/62** | **0/54 drill-bearing** | |
+| **Total** | **22** | **62** | **41/62** | **0/54 drill-bearing** | |
 
 **Module 1 (RSC Architecture & Hydration) is fully authored — 8/8
 lessons**, the first complete module. All content lives under
@@ -508,8 +508,20 @@ Verified with `tsc --noEmit`, the full Vitest suite (608 tests), a clean
 production build (431 static pages), and a live HTTP smoke-test
 returning 200 for all 10 new lesson URLs.
 
-**Next up:** Module 5 (State Management & URL-as-State, 5 lessons across
-2 chapters), continuing sequentially through the curriculum above.
+**Module 5 (State Management & URL-as-State) is fully authored — 5/5
+lessons**, all under `courses/nextjs/state-management/`. Covers state
+allocation across server/URL/cookie/client layers (conceptual), safely
+scoping global client stores to avoid a cross-request sharing bug unique
+to the App Router's server-render model, passing state across the RSC
+boundary, URL-as-state for shareable filter/search UI via
+`searchParams`, and React 19's `useOptimistic`. 1 conceptual-only, 4
+sandbox. Verified with `tsc --noEmit`, the full Vitest suite (608
+tests), a clean production build (431 static pages), and a live HTTP
+smoke-test returning 200 for all 5 new lesson URLs.
+
+**Next up:** Module 6 (Security & Production Operations, 7 lessons
+across 2 chapters), continuing sequentially through the curriculum
+above.
 
 ## Session log
 
@@ -537,8 +549,10 @@ Lifecycle) completed same session as Module 2 (9/9 lessons: 6 sandbox, 2
 trace, 1 pr-review), verified end to end identically and committed.
 Module 4 (Rendering & Performance) completed same session (10/10
 lessons: 2 conceptual, 4 sandbox, 2 trace, 2 pr-review), verified
+identically and committed. Module 5 (State Management & URL-as-State)
+completed same session (5/5 lessons: 1 conceptual, 4 sandbox), verified
 identically and committed. Next: continue Phase 4 content authoring
-through Module 5 (State Management & URL-as-State), then pick up Phase 3
+through Module 6 (Security & Production Ops), then pick up Phase 3
 (practice-format engineering) once a drill-bearing lesson needs a real
 interactive component rather than the honest "not built yet"
 placeholder.
