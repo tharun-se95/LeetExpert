@@ -16,10 +16,11 @@ export interface CourseRegistryEntry {
 }
 
 import { DSA_COURSE } from "@/app/courses/dsa/registry";
+import { NEXTJS_COURSE } from "@/app/courses/nextjs/registry";
 
 /**
  * Static, compile-time registration — not a dynamic plugin loader. This is
  * the one file a new course must add itself to; everything else about a
  * course lives isolated under its own `app/courses/<slug>/` folder.
  */
-export const COURSES: CourseRegistryEntry[] = [DSA_COURSE];
+export const COURSES: CourseRegistryEntry[] = [DSA_COURSE, NEXTJS_COURSE];

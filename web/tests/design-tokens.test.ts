@@ -33,6 +33,7 @@ const HEX_ALLOW = new Set([
   "components/sandbox/editorTheme.ts", // may mirror --tok-* literals
   "components/sandbox/languageMarks.tsx", // brand colour, not design-system colour
   "app/courses/dsa/registry.ts", // per-course accent hex, same pattern as familyTheme.ts
+  "app/courses/nextjs/registry.ts", // per-course accent hex, same pattern as familyTheme.ts
 ]);
 
 function walk(dir: string): string[] {
