@@ -426,21 +426,78 @@ behavioral/architectural mock interviews.*
 
 ## Phase 3 — Practice-format engineering (new platform capability)
 
-None of DSA's Sandbox/AlgorithmJudge covers these. Each format needs its
-own design/build pass — this is real new engineering, not content
-authoring:
+**Architecture decision (confirmed with the user 2026-09-02):
+reveal-based self-assessment, not automated grading.** Arbitrary
+React/Next.js code, PR-review judgment, and system-design diagrams
+genuinely can't be graded the way DSA's algorithm judge grades a pure
+function's output against test cases — there is no correct single
+answer to compare against mechanically. The alternative considered
+(heavier automated tooling — a real drawing canvas, browser audio
+recording, diff/annotation UI) was explicitly rejected as substantially
+more engineering time for interactivity that still couldn't truly
+"grade" open-ended answers.
 
-- [ ] **Format A (Trace-the-Execution)** — component design + build
-- [ ] **Format B (Semi-Constrained Sandbox)** — component design + build
-  (can likely extend the shared `components/kit/CodeEditor` primitive
-  extracted during the platform migration, with autocomplete/instant-run
-  deliberately disabled)
-- [ ] **Format C (PR Code Review)** — component design + build
-- [ ] **Format D (Architectural Canvas + Defense)** — component design +
-  build (drag-and-drop canvas + scripted-adversary response flow)
-- [ ] Workarounds for the 3 hard-to-teach gatekeepers (Interactive
-  Telemetry Audits, Playwright Trace Viewer audits, "Defend Your PR"
-  roleplay) — design + build
+**What this looks like concretely, per format:**
+- **All formats** get a concrete "## Try it" exercise authored directly
+  in the lesson markdown, ending in a `reveal` fence (the platform's
+  existing course-agnostic click-to-expand primitive — DOM-absent until
+  opened, so not Ctrl+F-able, already used by DSA) holding a worked
+  answer/diagnosis walkthrough.
+- **`sandbox` format** additionally gets a `scratchpad` fence — a real,
+  free-write CodeMirror editor (new `Scratchpad`/`ScratchpadEditor`
+  components, TSX-configured, localStorage-persisted per lesson) sitting
+  above the reveal, so there's a genuine workspace to attempt the
+  exercise in before comparing against the reference approach. No
+  grading — this is not DSA's judged pure-function Sandbox.
+- **`trace` / `pr-review` / `canvas-defense`** formats use the
+  `reveal`-only pattern — a diagnosis or design prompt, then a reveal
+  with the full worked reasoning.
+
+**Mechanism status: DONE and verified.**
+- [x] `scratchpad` fence wired into `Markdown.tsx` (alongside the
+  existing reveal/quiz/complexity/viz pattern) and `highlightBlocks.ts`
+  (added to `NON_CODE_LANGS`).
+- [x] `Scratchpad.tsx` / `ScratchpadEditor.tsx` built
+  (`components/course/`) — standalone CodeMirror instance for JSX/TSX,
+  deliberately NOT reusing DSA's `SandboxLang`-typed `CodeEditor`
+  primitive (that type only covers python/javascript for the judge
+  sandbox; this needs `javascript({ jsx: true, typescript: true })`).
+- [x] `load.ts` computes `hasEmbeddedPractice` (detects a `reveal` fence
+  in the lesson body) so the lesson page can tell a retrofitted lesson
+  from one still carrying only the manifest-driven placeholder — no new
+  manifest field needed.
+- [x] `page.tsx`'s practice block now only shows the "hasn't been wired
+  up yet" note when `hasEmbeddedPractice` is false, so a retrofitted
+  lesson's placeholder disappears automatically once its markdown gains
+  a real `reveal`.
+- [x] Verified live in the browser: Scratchpad renders, accepts input,
+  persists drafts across reload; Reveal expands correctly with
+  syntax-highlighted nested code fences; the placeholder note correctly
+  shows for un-retrofitted lessons and disappears for retrofitted ones.
+
+**Content retrofit status (54 drill-bearing lessons need a "## Try it" +
+reveal added — this is the remaining Phase 3 work, tracked per module):**
+
+| Module | Drill lessons | Retrofitted |
+| --- | :-: | :-: |
+| 1. RSC Architecture & Hydration | 5 | 5/5 ✅ (reference implementation) |
+| 2. Routing & Layout Architecture | 9 | 0/9 |
+| 3. Data Lifecycle | 9 | 0/9 |
+| 4. Rendering & Performance | 8 | 0/8 |
+| 5. State Management & URL-as-State | 4 | 0/4 |
+| 6. Security & Production Ops | 6 | 0/6 |
+| 7. System Design & Scale | 7 | 0/7 |
+| 8. Interactive Mock Interview Drills | 6 | 0/6 |
+| **Total** | **54** | **5/54** |
+
+The three Phase-0-flagged hard-to-fake-in-browser gatekeepers
+(distributed infra, E2E/Playwright, conversational pushback) are already
+handled by the same reveal-based approach at the content level — the
+`canvas-defense` and `pr-review` lessons that touch them (e.g. Module
+7's distributed self-hosting lesson, Module 8's Playwright trace-audit
+lesson) already frame their "Try it" exercise around a described
+scenario or pre-recorded-style trace rather than requiring live
+infrastructure, consistent with the workarounds recorded in Phase 0.
 
 ## Phase 4 — Content authoring (per module, once Phase 1-3 land)
 
