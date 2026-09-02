@@ -76,3 +76,38 @@ practical skill.
 **Practice (Semi-Constrained Sandbox):** you'll write an isolated Server
 Action that receives form input, extracts and validates the submitted
 fields, and persists them via a database mutation call.
+
+## Try it
+
+Write a Server Action `createComment` that reads a `text` field from
+`FormData`, rejects empty submissions, and otherwise creates a comment.
+
+```scratchpad server-actions-architecture
+"use server";
+
+export async function createComment(formData: FormData) {
+  // ...
+}
+```
+
+````reveal Work through it
+```ts
+"use server";
+
+export async function createComment(formData: FormData) {
+  const text = formData.get("text");
+  if (typeof text !== "string" || text.trim().length === 0) {
+    throw new Error("Comment text is required");
+  }
+  await db.comments.create({ data: { text } });
+}
+```
+
+Two things worth noticing: `formData.get("text")` returns `FormDataEntryValue
+| null`, not a guaranteed `string` — a real form field can technically
+be a `File`, so a type check before trusting it as a string is genuinely
+necessary, not defensive-programming excess. And this function only ever
+executes on the server, even though `<form action={createComment}>` is
+called directly from client-rendered JSX — the `"use server"` directive
+is what makes that true.
+````

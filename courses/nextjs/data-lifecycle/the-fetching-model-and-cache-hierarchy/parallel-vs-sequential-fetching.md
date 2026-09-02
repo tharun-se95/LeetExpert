@@ -65,3 +65,36 @@ apart from a real waterfall trace.
 log exhibiting a request waterfall, and asked to identify which requests
 in the chain have no genuine data dependency on each other, then refactor
 the fetching code to run them concurrently with `Promise.all`.
+
+## Try it
+
+```
+[0ms]   GET /api/user/42        (started)
+[220ms] GET /api/user/42        (done)
+[221ms] GET /api/posts?user=42  (started)
+[480ms] GET /api/posts?user=42  (done)
+```
+
+The code behind this trace:
+
+```ts
+const user = await getUser(id);
+const posts = await getPosts(id);
+```
+
+Is this a genuine waterfall bug? What's the fix, if any?
+
+````reveal Work through the trace
+Yes — `getPosts(id)` only needs `id`, which is already known before
+`getUser` even runs. There's no real data dependency forcing it to wait
+for `user`'s result, so the 221ms delay between the two requests is pure
+waste.
+
+```ts
+const [user, posts] = await Promise.all([getUser(id), getPosts(id)]);
+```
+
+With `Promise.all`, both requests start at `[0ms]` instead of one
+starting after the other finishes — total time drops from roughly
+480ms to roughly 260ms (the slower of the two), for free.
+````

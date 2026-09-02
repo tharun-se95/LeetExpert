@@ -53,3 +53,43 @@ Action's HTML-form foundation actually buys me."
 Server Action as its `action` prop, layering in client-side pending-state
 UI without breaking the form's ability to submit and execute correctly
 via a plain native form POST when JavaScript is unavailable.
+
+## Try it
+
+This form intercepts submission for client-side validation. Does it
+still work with JavaScript disabled? If not, fix it.
+
+```scratchpad progressive-enhancement
+<form
+  onSubmit={(e) => {
+    e.preventDefault();
+    if (!isValid(data)) return;
+    createPost(data);
+  }}
+>
+  {/* ... */}
+</form>
+```
+
+````reveal Work through it
+No — `e.preventDefault()` runs unconditionally, inside a handler that
+only exists if JavaScript has loaded and executed. With JS disabled,
+there's no `onSubmit` handler at all to intercept anything, but there's
+also no `action` attribute pointing anywhere real, so the native
+form submission has nothing correct to fall back to.
+
+```tsx
+<form action={createPost}>
+  {/* client validation, layered on top, only intercepts when JS runs: */}
+  <SubmitButton />
+</form>
+```
+
+Passing the Server Action directly as `action` keeps the native
+fallback intact — a no-JS browser performs a real POST to the action's
+generated endpoint, and the action's own server-side validation (not
+shown here, but necessary regardless) is what actually enforces
+correctness either way. Client-side validation, if added, should be a
+non-blocking enhancement layered on top — never the only path to a
+working submission.
+````

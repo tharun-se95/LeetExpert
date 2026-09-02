@@ -68,3 +68,42 @@ rather than a full page reload is the practical skill.
 dashboard where, after a data mutation completes, the previously-cached
 view refreshes with current server data using `router.refresh()`,
 without forcing a full page reload.
+
+## Try it
+
+After a Server Action successfully archives a task, a task list page
+still shows the archived task — the mutation worked (confirmed in the
+database), but the visible list didn't update. Write the client-side fix.
+
+```scratchpad the-client-side-router-cache
+"use client";
+function ArchiveButton({ taskId }: { taskId: string }) {
+  async function handleClick() {
+    await archiveTask(taskId);
+    // ...
+  }
+  return <button onClick={handleClick}>Archive</button>;
+}
+```
+
+````reveal Work through it
+```tsx
+"use client";
+import { useRouter } from "next/navigation";
+
+function ArchiveButton({ taskId }: { taskId: string }) {
+  const router = useRouter();
+  async function handleClick() {
+    await archiveTask(taskId);
+    router.refresh();
+  }
+  return <button onClick={handleClick}>Archive</button>;
+}
+```
+
+The mutation succeeded server-side; the stale view is the **client-side
+Router Cache** still holding the pre-mutation snapshot it fetched
+earlier. `router.refresh()` re-fetches the current route's data and
+reconciles it into the existing UI, without a full page reload — exactly
+the tool for this specific symptom.
+````

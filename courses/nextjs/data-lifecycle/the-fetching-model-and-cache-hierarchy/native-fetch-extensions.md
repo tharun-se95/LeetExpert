@@ -65,3 +65,32 @@ getting the syntax exactly right — is what's actually being checked.
 characteristics — one that should never go stale, one that should
 refresh every few minutes, and one that must always hit the network —
 using the correct `cache`/`next.revalidate` configuration for each.
+
+## Try it
+
+Write three fetch calls: one for a company's static "About" page copy
+(never changes), one for a product's stock count (must always be fresh),
+and one for a homepage list of trending posts (fine being up to 5
+minutes stale).
+
+```scratchpad native-fetch-extensions
+const aboutCopy = await fetch("/api/about", { /* ... */ });
+const stockCount = await fetch("/api/stock/42", { /* ... */ });
+const trending = await fetch("/api/trending", { /* ... */ });
+```
+
+````reveal Work through each fetch
+```ts
+const aboutCopy = await fetch("/api/about", { cache: "force-cache" });
+const stockCount = await fetch("/api/stock/42", { cache: "no-store" });
+const trending = await fetch("/api/trending", { next: { revalidate: 300 } });
+```
+
+`force-cache` (also the default) is right for content that's genuinely
+fixed. `no-store` is right when staleness is unacceptable — real-time
+stock counts shown as cached data would be a real, visible bug.
+`revalidate: 300` sits between the two: cached for up to 5 minutes (300
+seconds), then transparently refreshed on the next request past that
+window — appropriate for content where perfect freshness isn't worth a
+network round-trip on every single request.
+````

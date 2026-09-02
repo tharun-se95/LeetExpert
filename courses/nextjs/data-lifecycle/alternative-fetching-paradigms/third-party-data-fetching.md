@@ -76,3 +76,38 @@ matches the server's prefetched query key is where mistakes happen.
 Server Component and correctly pass its dehydrated cache state into a
 client-side `QueryClient` provider so a child client component's
 `useQuery` call resolves instantly from the server-provided data.
+
+## Try it
+
+Wire up a Server Component that prefetches `["posts"]` via React Query
+and hands it to a client component using the same query key, so there's
+no loading flash on first render.
+
+```scratchpad third-party-data-fetching
+export default async function Page() {
+  // prefetch, then hand off to <PostsClientView />
+}
+```
+
+````reveal Work through it
+```tsx
+import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
+
+export default async function Page() {
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({ queryKey: ["posts"], queryFn: getPosts });
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PostsClientView />
+    </HydrationBoundary>
+  );
+}
+```
+
+The query key (`["posts"]`) must match **exactly** between the server's
+`prefetchQuery` and the client's `useQuery` call inside
+`PostsClientView` — a mismatched key means the client component's
+`useQuery` looks for a cache entry that doesn't exist under that key,
+falls back to fetching fresh, and the loading flash this whole pattern
+was meant to eliminate shows up anyway.
+````

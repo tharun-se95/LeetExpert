@@ -97,3 +97,43 @@ signature through `useActionState` — is the actual skill.
 **Practice (Semi-Constrained Sandbox):** you'll implement a multi-input
 form using `useActionState` for validation-error display and pending
 state, with a separately-composed submit button reading `useFormStatus`.
+
+## Try it
+
+Given a Server Action `updateEmail(prevState, formData)` that returns
+`{ error: string | null }`, wire up a form using `useActionState` to
+display the error and disable the button while pending.
+
+```scratchpad modern-mutation-hooks
+"use client";
+import { useActionState } from "react";
+import { updateEmail } from "./actions";
+
+function EmailForm() {
+  // ...
+}
+```
+
+````reveal Work through it
+```tsx
+"use client";
+import { useActionState } from "react";
+import { updateEmail } from "./actions";
+
+function EmailForm() {
+  const [state, formAction, isPending] = useActionState(updateEmail, { error: null });
+  return (
+    <form action={formAction}>
+      <input name="email" type="email" />
+      {state.error && <p>{state.error}</p>}
+      <button disabled={isPending}>{isPending ? "Saving..." : "Save"}</button>
+    </form>
+  );
+}
+```
+
+The detail this drill checks: `updateEmail` must accept `(prevState,
+formData)` as its signature to work with `useActionState` — a plain
+`(formData)` Server Action, correct for a bare `<form action={...}>`,
+won't match what this hook expects to call.
+````

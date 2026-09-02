@@ -65,3 +65,42 @@ where a database mutation succeeds but a layout elsewhere in the app
 keeps rendering stale data, identify the missing or too-narrowly-scoped
 invalidation call, and add the correct `revalidatePath`/`revalidateTag`
 call to fix it.
+
+## Try it
+
+Review this pull request. A new post shows up correctly at `/posts`, but
+a post-count badge in the site's shared header — rendered from a
+separately cached `fetch` tagged `"post-count"` — still shows the old
+number.
+
+```ts
+"use server";
+export async function createPost(formData: FormData) {
+  await db.posts.create({ data: { title: formData.get("title") } });
+  revalidatePath("/posts");
+}
+```
+
+What's missing?
+
+````reveal Work through the review
+`revalidatePath("/posts")` only invalidates the `/posts` route itself.
+The header's post-count badge lives in a different, shared layout,
+rendered from a `fetch` call tagged `"post-count"` — a *tag*-based
+invalidation is needed to reach it, since it's not scoped to the
+`/posts` path at all.
+
+```ts
+"use server";
+export async function createPost(formData: FormData) {
+  await db.posts.create({ data: { title: formData.get("title") } });
+  revalidatePath("/posts");
+  revalidateTag("post-count");
+}
+```
+
+The general lesson: `revalidatePath` invalidates one route; `revalidateTag`
+reaches every cached `fetch` anywhere in the app carrying that tag,
+regardless of which route it's rendered from — the right tool whenever
+the same underlying data shows up in more than one place.
+````

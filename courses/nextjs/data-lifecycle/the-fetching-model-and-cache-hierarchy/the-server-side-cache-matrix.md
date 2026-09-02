@@ -55,3 +55,31 @@ request logs against the same route and asked to determine, for each
 one, which of the three cache layers (or none) explains why the response
 came back the way it did — distinguishing a same-request dedup from a
 persistent Data Cache hit from a fully static Route Cache hit.
+
+## Try it
+
+A layout and its nested page both call `getUser(id)` (same `fetch`, same
+options) during **one single render** of one request — and the network
+tab shows only one actual call to `/api/user`. A moment later, a second,
+different user's request to the same route also completes without a
+fresh network call to the underlying data source. Which cache layer
+explains each observation?
+
+````reveal Work through it
+The first observation — one call, even though two components in the
+*same render* both requested it — is **Request Memoization**. It
+dedupes identical `fetch` calls within a single render pass, and it
+resets the instant that render finishes; it never persists across
+requests or users.
+
+The second observation — a *different* request, for a *different* user,
+still not triggering a fresh fetch — can't be Request Memoization (which
+is scoped per-render). It's the **Data Cache**: a persistent, server-wide
+cache that survives across requests and different users until its
+`revalidate` window expires or it's explicitly invalidated.
+
+The signal that separates them: Request Memoization only ever explains
+duplicate calls *within the same request's render*; anything shared
+*across* separate requests has to be the Data Cache (or, if the entire
+route's rendered output is what's being reused, the Full Route Cache).
+````
