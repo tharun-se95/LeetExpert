@@ -42,6 +42,16 @@ each individual blog post gets its own correct, unique title and
 description generated from its actual content, rather than every post
 sharing one generic fallback.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Static metadata", "points": ["export const metadata", "Fixed values", "For: pages with no route data"] },
+    { "title": "generateMetadata()", "points": ["Runs on the server", "Awaits real route data", "Unique title per post"], "highlight": true }
+  ]
+}
+```
+
 ## Sitemaps and structured markup
 
 A `sitemap.ts` file at the app root can programmatically generate a

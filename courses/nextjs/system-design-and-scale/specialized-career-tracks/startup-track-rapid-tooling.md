@@ -68,6 +68,18 @@ since a validated, typed payload eliminates an entire category of "is
 this field actually present and the right shape" bugs a small team would
 otherwise hand-write and re-verify manually.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "FormData arrives", "detail": "untrusted input" },
+    { "label": "schema.safeParse()", "detail": "Zod validates shape", "highlight": true },
+    { "label": "Invalid → error object", "detail": "field-specific, no throw" },
+    { "label": "Valid → db.posts.create", "detail": "typed, trusted data" }
+  ]
+}
+```
+
 ## What the practice drill is testing
 
 **Practice (Semi-Constrained Sandbox):** you'll implement a Server Action

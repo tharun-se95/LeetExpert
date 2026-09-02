@@ -38,6 +38,18 @@ distinction between a rewrite and a redirect this course covered in
 Module 2, applied at the architectural scale of an entire multi-tenant
 platform rather than a single route.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "acme.yourapp.com", "detail": "browser shows this URL" },
+    { "label": "Middleware runs", "detail": "extracts \"acme\" from host" },
+    { "label": "rewrite()", "detail": "→ /tenants/acme/...", "highlight": true },
+    { "label": "Tenant route serves", "detail": "URL still unchanged" }
+  ]
+}
+```
+
 ## Why tenant isolation needs more than routing
 
 ```warn

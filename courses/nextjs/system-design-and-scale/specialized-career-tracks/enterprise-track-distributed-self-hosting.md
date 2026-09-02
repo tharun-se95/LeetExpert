@@ -42,6 +42,16 @@ risking each container showing different cached content to different
 users depending on which one happened to serve their request.
 ```
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Local-disk cache", "points": ["Per-container, isolated", "Same route, different content", "Correctness bug behind an LB"] },
+    { "title": "Shared cache handler", "points": ["One external store (Redis)", "All containers read/write it", "One coherent view of data"], "highlight": true }
+  ]
+}
+```
+
 The fix is overriding Next.js's cache handler to write to a shared,
 external store (Redis, a distributed cache service) that every
 container instance can read from and write to consistently, restoring

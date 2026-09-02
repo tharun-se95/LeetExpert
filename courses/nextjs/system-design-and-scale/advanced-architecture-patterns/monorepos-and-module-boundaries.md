@@ -31,6 +31,21 @@ component is legitimately shared; a component that already knows about
 "orders" or "invoices" is domain-specific and belongs inside the
 `dashboard` app itself, not in a package other apps also depend on.
 
+```diagram
+{
+  "id": "file-tree",
+  "lines": [
+    { "text": "packages/", "indent": 0 },
+    { "text": "ui/", "indent": 1, "note": "shared, domain-agnostic", "color": "var(--family-accent, var(--accent))" },
+    { "text": "utils/", "indent": 1, "note": "shared, domain-agnostic", "color": "var(--family-accent, var(--accent))" },
+    { "text": "apps/", "indent": 0 },
+    { "text": "marketing/", "indent": 1, "note": "imports packages/*" },
+    { "text": "dashboard/", "indent": 1, "note": "imports packages/*  —  never the reverse", "color": "var(--insight)" }
+  ],
+  "caption": "Dependencies flow one direction: apps depend on packages, never packages on apps."
+}
+```
+
 ## Why this specific violation is easy to introduce and hard to notice
 
 ```warn

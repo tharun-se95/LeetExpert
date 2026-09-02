@@ -43,6 +43,18 @@ individually, with that specific post's real title and any other data
 you choose to render into the layout, rather than a single static
 asset shared across every post.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Link shared", "detail": "Slack/Twitter/iMessage" },
+    { "label": "opengraph-image.tsx", "detail": "runs with params.slug" },
+    { "label": "ImageResponse renders", "detail": "post's real title → PNG", "highlight": true },
+    { "label": "Response cached", "detail": "reused per revalidation window" }
+  ]
+}
+```
+
 ## Why this connects back to caching
 
 ```tip

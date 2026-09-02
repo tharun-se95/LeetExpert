@@ -33,7 +33,10 @@ export function FileTreeDiagram({
   );
   const noteX = PAD + maxLineLen * 6.6 + 24;
   const hasNotes = lines.some((l) => l.note);
-  const width = Math.max(280, hasNotes ? noteX + 160 : noteX);
+  const maxNoteLen = Math.max(0, ...lines.map((l) => l.note?.length ?? 0));
+  const contentWidth = hasNotes ? noteX + maxNoteLen * 5.6 + PAD : noteX;
+  const captionWidth = caption ? caption.length * 5.4 + PAD * 2 : 0;
+  const width = Math.max(280, contentWidth, captionWidth);
   const height = PAD * 2 + lines.length * LINE_H + (caption ? 20 : 0);
 
   return (

@@ -41,6 +41,18 @@ This is directly the same middleware-based redirect pattern from Module
 header) and redirecting to a locale-prefixed path — applied specifically
 to internationalization rather than a generic example.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Request, no locale", "detail": "e.g. /pricing" },
+    { "label": "Accept-Language read", "detail": "browser's preference" },
+    { "label": "Redirect", "detail": "→ /fr/pricing or /en/pricing", "highlight": true },
+    { "label": "[locale] segment", "detail": "loads that locale's strings" }
+  ]
+}
+```
+
 ## Structuring routes to carry the locale
 
 ```

@@ -40,6 +40,19 @@ product whose core need (real-time collaborative editing, for instance)
 is better served by a framework built around that specific problem, are
 legitimate reasons the "just use Next.js" default doesn't hold.
 
+```diagram
+{
+  "id": "decision-framework",
+  "question": "Does this product actually need what Next.js is optimized for?",
+  "branches": [
+    { "condition": "Internal tool, no SEO, small known user base", "outcome": "A plain client-rendered SPA" },
+    { "condition": "Truly static content, no personalization", "outcome": "A simpler static site generator" },
+    { "condition": "Core need is served better elsewhere", "outcome": "A different framework entirely" },
+    { "condition": "Public site needing SEO, caching, RSC", "outcome": "Next.js is the right call", "highlight": true }
+  ]
+}
+```
+
 ## The actual skill being assessed
 
 ```brain
