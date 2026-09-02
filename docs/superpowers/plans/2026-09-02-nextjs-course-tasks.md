@@ -875,3 +875,23 @@ over-highlighting reads worse than none. All 62 lessons across all 8
 modules now carry this treatment. Final full verification (tsc, 620
 tests, eslint, a clean production build of all 431 pages) passed
 end-to-end after the complete rollout.
+
+**2026-09-02 (diagrams):** User asked to investigate how the official
+Next.js docs illustrate concepts visually, then to "save all these
+diagrams and assets to our app." Flagged the actual request as a
+copyright problem — the docs' illustrations are Vercel's own artwork,
+and embedding their literal image files in a commercial product we
+sell isn't something a conversational fair-use quoting allowance
+covers. Proposed building original diagrams for the same underlying
+concepts instead; user confirmed. Built 4 new SVG diagram components
+(`components/md/diagrams/`) via the existing `Diagram` registry
+pattern — a shared `BrowserMockup` chrome helper plus
+`StreamingChunksDiagram`, `InterceptingNavigationDiagram`,
+`ParallelRoutesDiagram` (color-linked file-tree -> UI mapping), and
+`PartialShellDiagram` — embedded into the 4 lessons whose concepts
+most needed a spatial/temporal illustration (Streaming SSR, Intercepting
+Routes, Parallel Routes, Partial Prerendering). Caught and fixed two
+real design-token guard failures along the way (a comment containing
+the bare word "rounded", and a hardcoded hex color fallback) —
+evidence the existing design-system tests genuinely catch violations,
+not just DSA-authored ones. Verified live in both themes.
