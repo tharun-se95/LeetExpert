@@ -28,6 +28,16 @@ to get there.
   runtime's execution model, and importing it doesn't just run slowly —
   it fails to run at all.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Node.js Runtime", "points": ["Full Node API surface", "Any npm driver works", "Slower cold start"] },
+    { "title": "Edge Runtime", "points": ["Restricted Web-standard APIs", "No file system, no raw sockets", "Near-instant, geo-close"], "highlight": true }
+  ]
+}
+```
+
 ## The trap this lesson's drill is built around
 
 ```warn

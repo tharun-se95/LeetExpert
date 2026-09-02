@@ -31,6 +31,18 @@ where a given piece of UI sits on this spectrum.
   background after a specified time window, so content eventually catches
   up to fresh data without every request paying SSR's per-request cost.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "CSR", "points": ["Renders: in the browser", "Freshness: on interaction"] },
+    { "title": "SSG", "points": ["Renders: once, at build", "Freshness: frozen till rebuild"] },
+    { "title": "SSR", "points": ["Renders: every request", "Freshness: always current"], "highlight": true },
+    { "title": "ISR", "points": ["Renders: build + background", "Freshness: eventually current"] }
+  ]
+}
+```
+
 ## Why the choice actually matters for these three concerns
 
 - **Bundle size**: CSR ships the most JavaScript to the client, since the

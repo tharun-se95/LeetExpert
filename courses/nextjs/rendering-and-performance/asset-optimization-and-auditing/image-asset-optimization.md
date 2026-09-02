@@ -44,6 +44,16 @@ import Image from "next/image";
   the full image loads, improving perceived load experience without
   affecting CLS, since the placeholder occupies the same reserved space.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "<img>", "points": ["No reserved space → CLS", "No format/size negotiation", "No load-priority hint"] },
+    { "title": "<Image>", "points": ["width/height reserve space", "priority for the LCP element", "sizes picks the right variant"], "highlight": true }
+  ]
+}
+```
+
 ## The judgment call the practice drill is built around
 
 ```tip

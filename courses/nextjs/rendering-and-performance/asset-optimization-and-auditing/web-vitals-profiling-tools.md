@@ -39,6 +39,16 @@ tag, a chat widget) is the kind of finding that a bundle-size number
 alone wouldn't surface, since third-party scripts loaded via `<script>`
 tags aren't part of your own bundle analysis.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Bundle Analyzer", "points": ["Answers: what did I ship", "Catches: first-party bloat"] },
+    { "title": "DevTools Timeline", "points": ["Answers: what actually ran", "Catches: third-party scripts"], "highlight": true }
+  ]
+}
+```
+
 ## Why both tools, not just one
 
 ```brain

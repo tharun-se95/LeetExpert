@@ -39,6 +39,18 @@ system-font placeholder occupies nearly the same space the real font
 will need — minimizing the visible reflow when the swap happens, rather
 than eliminating the swap itself.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Fallback shown", "detail": "0ms, system font" },
+    { "label": "Font downloads", "detail": "next/font self-hosted" },
+    { "label": "Font swaps in", "detail": "340ms" },
+    { "label": "Reflow", "detail": "sized by metrics match", "highlight": true }
+  ]
+}
+```
+
 ## What actually causes the shift, precisely
 
 ```warn

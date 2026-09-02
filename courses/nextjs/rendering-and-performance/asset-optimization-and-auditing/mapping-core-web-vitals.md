@@ -25,6 +25,17 @@ of architectural decision this course has already covered.
   loading in without reserved space — images without dimensions, fonts
   swapping in with different metrics, injected banners.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "LCP", "points": ["Largest element's paint time", "Driven by rendering strategy"] },
+    { "title": "INP", "points": ["Response time to interaction", "Driven by JS execution cost"], "highlight": true },
+    { "title": "CLS", "points": ["Unexpected content movement", "Driven by unreserved space"] }
+  ]
+}
+```
+
 ## Why streaming specifically improves LCP
 
 Connecting this directly to the previous lesson: a page using Suspense

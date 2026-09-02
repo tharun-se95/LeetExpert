@@ -33,6 +33,17 @@ dynamic route segment into a set of genuinely static pages, with all of
 SSG's speed benefits, despite the route being defined with a dynamic
 `[slug]` folder.
 
+```diagram
+{
+  "id": "decision-framework",
+  "question": "Requested slug wasn't in generateStaticParams's list",
+  "branches": [
+    { "condition": "dynamicParams = true (default)", "outcome": "Render on-demand, then cache", "highlight": true },
+    { "condition": "dynamicParams = false", "outcome": "404, no fallback render" }
+  ]
+}
+```
+
 ## What happens for a slug that wasn't in the list
 
 ```warn

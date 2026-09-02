@@ -30,6 +30,18 @@ This defers loading `HeavyChart`'s JavaScript until it's actually needed
 tab) rather than downloading it as part of the initial page bundle
 regardless of whether the user ever triggers it.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Initial page loads", "detail": "HeavyChart excluded" },
+    { "label": "User clicks", "detail": "expand panel" },
+    { "label": "Chart JS fetched", "detail": "next/dynamic import()", "highlight": true },
+    { "label": "Chart renders", "detail": "ssr: false, client-only" }
+  ]
+}
+```
+
 ## Why `ssr: false` is sometimes the deliberate choice
 
 Setting `ssr: false` tells Next.js not to render this component on the
