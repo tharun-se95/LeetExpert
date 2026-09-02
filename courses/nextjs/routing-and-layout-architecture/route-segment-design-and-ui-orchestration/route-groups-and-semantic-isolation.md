@@ -36,14 +36,17 @@ app/
 ```
 
 Wait — that last line needs a correction, and it's the exact detail this
-lesson is testing whether you've actually understood, not just skimmed:
+lesson is testing whether you've actually understood, not just skimmed.
+
+```warn
 `app/(dashboard)/page.tsx` resolves to `/`, not `/dashboard`, because
-`(dashboard)` is a route group — its name is invisible in the URL. If you
-wanted an actual `/dashboard` path, you'd need a real (non-parenthesized)
-`dashboard` folder inside or alongside the group. Route groups organize
-your file tree and let you apply different layouts to different
-*sections* of your app — they are not a shorthand for adding a URL
-prefix.
+`(dashboard)` is a route group — its name is invisible in the URL. If
+you wanted an actual `/dashboard` path, you'd need a real
+(non-parenthesized) `dashboard` folder inside or alongside the group.
+Route groups organize your file tree and let you apply different
+layouts to different *sections* of your app — they are not a shorthand
+for adding a URL prefix.
+```
 
 ## Why this specific capability matters
 

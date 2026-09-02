@@ -38,13 +38,15 @@ a lookup than a computation. Middleware, by contrast, runs your own
 JavaScript function on every matching request, every time, to make that
 same kind of decision at runtime.
 
+```warn
 That distinction has a direct performance consequence: **if a redirect
-rule doesn't actually depend on anything that varies per-request** — it's
-a fixed old-URL-to-new-URL mapping that's true for every single user,
-every time — implementing it in middleware is strictly more expensive
-than it needs to be. You're paying a runtime JavaScript execution cost,
-on every request, for a decision that could have been resolved statically
-at build time instead.
+rule doesn't actually depend on anything that varies per-request** —
+it's a fixed old-URL-to-new-URL mapping that's true for every single
+user, every time — implementing it in middleware is strictly more
+expensive than it needs to be. You're paying a runtime JavaScript
+execution cost, on every request, for a decision that could have been
+resolved statically at build time instead.
+```
 
 ## When middleware is actually the right tool
 

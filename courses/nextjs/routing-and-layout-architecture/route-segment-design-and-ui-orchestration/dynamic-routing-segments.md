@@ -40,10 +40,12 @@ path as an **array**. For `app/docs/[...slug]/page.tsx`, visiting
 `/docs/react/hooks/useState` gives you `slug = ["react", "hooks",
 "useState"]` — one array, however many segments actually matched.
 
-The trade-off: a catch-all segment matches **one or more** segments — it
-still requires at least one. `/docs` by itself (with nothing after it)
-does **not** match `[...slug]`, because there's nothing to capture into
-the array.
+```warn
+The trade-off: a catch-all segment matches **one or more** segments —
+it still requires at least one. `/docs` by itself (with nothing after
+it) does **not** match `[...slug]`, because there's nothing to capture
+into the array.
+```
 
 ## Optional catch-all segments: `[[...param]]`
 
@@ -69,10 +71,12 @@ syntax preference:
   its own** (a docs home page that also needs to handle arbitrarily
   nested sub-pages under the same route file): `[[...param]]`.
 
+```tip
 Reaching for a catch-all when a single dynamic segment would do adds
 unnecessary array-handling code for no benefit; reaching for a single
 segment when you actually need variable depth means your route simply
 won't match the deeper URLs at all.
+```
 
 ## What the practice drill is testing
 

@@ -55,13 +55,17 @@ export default function DashboardLayout({
 }
 ```
 
-Each slot is populated by its own `page.tsx`, and — this is the
-architecturally important part — **each slot has its own independent
-loading and error state.** A slow `@analytics` query shows its own loading
-skeleton without blocking `@team` from rendering the moment its data is
-ready. This is the direct, practical payoff: parallel routes let you
-compose a page out of independently-fetching regions instead of one
-monolithic page-level suspense boundary.
+Each slot is populated by its own `page.tsx`, and this is the
+architecturally important part:
+
+```brain
+Each slot has its own independent loading and error state. A slow
+`@analytics` query shows its own loading skeleton without blocking
+`@team` from rendering the moment its data is ready. This is the
+direct, practical payoff: parallel routes let you compose a page out of
+independently-fetching regions instead of one monolithic page-level
+suspense boundary.
+```
 
 ## Why this matters for real dashboards
 

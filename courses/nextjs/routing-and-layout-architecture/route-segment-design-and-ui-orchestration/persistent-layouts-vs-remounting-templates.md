@@ -14,10 +14,12 @@ how you write it — same shape, wraps child routes the same way — but
 makes the *opposite* choice: **a template remounts on every navigation
 within its subtree**, discarding and rebuilding its state each time.
 
+```warn
 This lesson is about knowing which behavior you actually want, because
-picking the wrong one produces bugs that are easy to misdiagnose — state
-that mysteriously "sticks around" when you expected a reset, or state
-that "mysteriously resets" when you expected it to persist.
+picking the wrong one produces bugs that are easy to misdiagnose —
+state that mysteriously "sticks around" when you expected a reset, or
+state that "mysteriously resets" when you expected it to persist.
+```
 
 ## Why you'd deliberately want remounting
 
@@ -56,14 +58,18 @@ content inside the template's boundary remounts on each navigation.
 ## The decision this lesson is really teaching
 
 Don't think of this as "layout is the default, template is the special
-case" or vice versa — think of it as a direct question about the UI
-you're building: **should this piece of the tree remember its state
-across navigation, or should it start fresh every time?** If you're not
-sure, the persistent behavior (`layout.tsx`) is almost always the safer
-default for shared chrome, since it's also the one that gives you the
-single-fetch, no-unnecessary-rerender benefits from Module 1. Reach for
-`template.tsx` specifically when you've identified a concrete reason you
-need a fresh mount on every visit.
+case" or vice versa.
+
+```brain
+Think of it as a direct question about the UI you're building: **should
+this piece of the tree remember its state across navigation, or should
+it start fresh every time?** If you're not sure, the persistent
+behavior (`layout.tsx`) is almost always the safer default for shared
+chrome, since it's also the one that gives you the single-fetch,
+no-unnecessary-rerender benefits from Module 1. Reach for `template.tsx`
+specifically when you've identified a concrete reason you need a fresh
+mount on every visit.
+```
 
 ## What the practice drill is testing
 

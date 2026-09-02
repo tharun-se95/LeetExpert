@@ -61,12 +61,15 @@ logic runs.**
 
 It's tempting to reach for middleware as a general-purpose "run this
 logic on every request" hook, but that instinct causes real problems —
-which the very next lesson in this chapter covers in depth. For now, the
-short version: middleware runs on **every single matching request by
-default**, including requests for static assets unless you explicitly
-scope it otherwise. Heavy logic placed here — a slow external API call, a
-full database lookup — becomes a tax paid on every request that matches,
-not just the ones that actually need that logic.
+which the very next lesson in this chapter covers in depth.
+
+```warn
+Middleware runs on **every single matching request by default**,
+including requests for static assets unless you explicitly scope it
+otherwise. Heavy logic placed here — a slow external API call, a full
+database lookup — becomes a tax paid on every request that matches, not
+just the ones that actually need that logic.
+```
 
 ## What the practice drill is testing
 

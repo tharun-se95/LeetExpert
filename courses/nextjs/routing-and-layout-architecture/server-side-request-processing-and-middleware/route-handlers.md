@@ -43,18 +43,21 @@ differentiated purely by which HTTP method the incoming request used.
 
 ## Caching behaves differently than you might expect
 
-This is the detail most likely to surprise someone coming from a typical
-REST API mental model: **`GET` Route Handlers can be cached by default**,
-the same way a statically-rendered page can be. If a `GET` handler's
-output doesn't depend on request-specific data (no reading of headers,
-cookies, or the request URL's dynamic parts), Next.js may treat it as
-static and cache the response — which is usually exactly what you want
-for something like a `GET` that serves rarely-changing data, but can
-produce confusing "why isn't my endpoint returning fresh data" bugs if
-you didn't expect a `GET` handler to be cacheable at all. (This connects
-directly to the caching model covered in depth in the next module —
-Route Handlers participate in the same caching system, not a separate
-one.)
+```warn
+This is the detail most likely to surprise someone coming from a
+typical REST API mental model: **`GET` Route Handlers can be cached by
+default**, the same way a statically-rendered page can be. If a `GET`
+handler's output doesn't depend on request-specific data (no reading of
+headers, cookies, or the request URL's dynamic parts), Next.js may
+treat it as static and cache the response — which is usually exactly
+what you want for something like a `GET` that serves rarely-changing
+data, but can produce confusing "why isn't my endpoint returning fresh
+data" bugs if you didn't expect a `GET` handler to be cacheable at all.
+```
+
+This connects directly to the caching model covered in depth in the
+next module — Route Handlers participate in the same caching system, not
+a separate one.
 
 ## Choosing Node vs. Edge runtime
 

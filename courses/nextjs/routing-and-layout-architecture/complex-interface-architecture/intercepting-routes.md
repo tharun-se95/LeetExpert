@@ -56,14 +56,16 @@ the mental model of independently-rendered slots in a shared layout.
 
 ## The distinction the practice drill is built around
 
+```warn
 The single detail that separates "I've memorized the folder-naming
-convention" from "I understand what this is for" is: **interception only
-happens on soft, client-side navigation.** A hard navigation to the exact
-same URL — typed directly, refreshed, or opened from a shared link —
-always renders the real underlying route, never the intercepted modal
-version. Getting this backwards (assuming the modal is the only way that
-URL ever renders) is the most common misunderstanding this pattern
-produces.
+convention" from "I understand what this is for" is: **interception
+only happens on soft, client-side navigation.** A hard navigation to
+the exact same URL — typed directly, refreshed, or opened from a shared
+link — always renders the real underlying route, never the intercepted
+modal version. Getting this backwards (assuming the modal is the only
+way that URL ever renders) is the most common misunderstanding this
+pattern produces.
+```
 
 ## What the practice drill is testing
 

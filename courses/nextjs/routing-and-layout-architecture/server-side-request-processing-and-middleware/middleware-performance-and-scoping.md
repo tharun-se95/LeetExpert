@@ -8,11 +8,15 @@ depth: essential
 
 The previous lesson mentioned this in passing; this lesson makes it the
 whole point, because it's a genuinely common, genuinely expensive
-mistake: **middleware runs on every single request that matches its
+mistake.
+
+```warn
+**Middleware runs on every single request that matches its
 configuration by default — and the default configuration matches
 everything, including static assets.** Images, CSS files, JavaScript
 bundles, fonts — none of that is automatically excluded unless you tell
 Next.js to exclude it.
+```
 
 ## Why this is a real performance problem, not a theoretical one
 
@@ -53,13 +57,15 @@ export const config = {
 };
 ```
 
+```tip
 The exact pattern varies by project, but the principle is constant:
-**explicitly exclude the paths that don't need this middleware's logic**,
-rather than relying on the default of matching everything and hoping the
-middleware's own internal logic is cheap enough not to matter. A
-well-scoped matcher is the single highest-leverage middleware performance
-fix available, because it eliminates the wasted work entirely rather than
-trying to make that wasted work faster.
+**explicitly exclude the paths that don't need this middleware's
+logic**, rather than relying on the default of matching everything and
+hoping the middleware's own internal logic is cheap enough not to
+matter. A well-scoped matcher is the single highest-leverage middleware
+performance fix available, because it eliminates the wasted work
+entirely rather than trying to make that wasted work faster.
+```
 
 ## Why this is a code-review skill, not just a "know the config" skill
 
