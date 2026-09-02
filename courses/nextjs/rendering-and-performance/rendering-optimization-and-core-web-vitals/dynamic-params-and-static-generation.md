@@ -35,11 +35,14 @@ SSG's speed benefits, despite the route being defined with a dynamic
 
 ## What happens for a slug that wasn't in the list
 
+```warn
 This is the detail that separates surface familiarity from real
 understanding: what happens when a request comes in for a `slug` that
 existed in the database *after* the last build, and therefore wasn't
-included in `generateStaticParams`'s build-time list? The behavior
-depends on the route segment's `dynamicParams` export:
+included in `generateStaticParams`'s build-time list?
+```
+
+The behavior depends on the route segment's `dynamicParams` export:
 
 - **`dynamicParams = true`** (the default) — Next.js renders that page
   on-demand, on the server, the first time it's requested, then caches

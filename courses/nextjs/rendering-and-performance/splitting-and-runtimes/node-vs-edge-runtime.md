@@ -30,15 +30,17 @@ to get there.
 
 ## The trap this lesson's drill is built around
 
+```warn
 A Route Handler exported with `runtime = "edge"` for its faster
-cold-start and lower latency, importing a Node-native Postgres or MySQL
-driver, is a configuration that can pass a type check and even work in
-some local setups, then fail in production the moment it actually tries
-to open a real database connection through an API the Edge runtime
-doesn't provide. This is exactly why the practice format here is a code
-review: the bug isn't a syntax error the compiler catches — it's an
-architectural incompatibility between a runtime choice and a dependency
-choice that only fully surfaces at actual connection time.
+cold-start and lower latency, importing a Node-native Postgres or
+MySQL driver, is a configuration that can pass a type check and even
+work in some local setups, then fail in production the moment it
+actually tries to open a real database connection through an API the
+Edge runtime doesn't provide. The bug isn't a syntax error the compiler
+catches — it's an architectural incompatibility between a runtime
+choice and a dependency choice that only fully surfaces at actual
+connection time.
+```
 
 ## The real trade-off framing
 

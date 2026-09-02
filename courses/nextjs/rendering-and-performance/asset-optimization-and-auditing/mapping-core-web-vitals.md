@@ -39,10 +39,14 @@ page.
 
 ## Why this reframing matters for an interview
 
+```brain
 "Make the site faster" is not an answerable engineering question. "This
 route's LCP is high because the hero image isn't using `next/image`'s
 priority loading" is. The skill this lesson builds is translating a
-vague performance complaint into the specific Core Web Vital it maps to,
-and from there into the specific Next.js pattern — from this module or
-earlier ones — that actually addresses it, which is exactly the shape of
-reasoning the next few lessons' practice drills exercise directly.
+vague performance complaint into the specific Core Web Vital it maps
+to, and from there into the specific Next.js pattern — from this
+module or earlier ones — that actually addresses it.
+```
+
+This is exactly the shape of reasoning the next few lessons' practice
+drills exercise directly.

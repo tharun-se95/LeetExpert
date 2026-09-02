@@ -41,14 +41,16 @@ than eliminating the swap itself.
 
 ## What actually causes the shift, precisely
 
-The failure mode this lesson's drill is built around is a fallback font
-whose character widths meaningfully diverge from the loaded custom
-font's — the swap still happens (that's expected and often unavoidable),
-but the reflow it causes is large and visible rather than negligible.
-Spotting this in a rendering trace means correlating the visual jump
-with the exact moment a font-loaded event fires, then tracing that back
-to a fallback-metrics mismatch rather than assuming the swap itself is
-the irreducible problem.
+```warn
+The failure mode this lesson's drill is built around is a fallback
+font whose character widths meaningfully diverge from the loaded
+custom font's — the swap still happens (that's expected and often
+unavoidable), but the reflow it causes is large and visible rather than
+negligible. Spotting this in a rendering trace means correlating the
+visual jump with the exact moment a font-loaded event fires, then
+tracing that back to a fallback-metrics mismatch rather than assuming
+the swap itself is the irreducible problem.
+```
 
 ## What the practice drill is testing
 

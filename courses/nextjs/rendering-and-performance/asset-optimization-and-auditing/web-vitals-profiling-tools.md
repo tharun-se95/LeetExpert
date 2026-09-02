@@ -41,12 +41,14 @@ tags aren't part of your own bundle analysis.
 
 ## Why both tools, not just one
 
+```brain
 Bundle analysis answers "what did *I* ship." DevTools' timeline answers
 "what actually executed, blocking the user, regardless of source." A
 regression caused by your own code shows up in the bundle analyzer; a
-regression caused by a third-party script embedded elsewhere in the page
-shows up only in the DevTools timeline. Real diagnostic work uses both,
-because each one is blind to what the other one catches.
+regression caused by a third-party script embedded elsewhere in the
+page shows up only in the DevTools timeline. Real diagnostic work uses
+both, because each one is blind to what the other one catches.
+```
 
 ## What the practice drill is testing
 

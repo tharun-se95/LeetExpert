@@ -44,15 +44,17 @@ slow `SlowRecommendations` turns out to be.
 
 ## Where you place the boundary is the actual design decision
 
-The API is simple; the skill is architectural — deciding **which pieces
-of a page deserve their own Suspense boundary**. Wrap too coarsely (one
-boundary around the whole page) and you're back to blocking everything
-on the slowest piece. Wrap too granularly and you create a page that
-visibly pops in piece by piece in a way that reads as janky rather than
-progressive. The right boundary sits around exactly the slow,
-independently-useful unit of content — typically a specific data-heavy
-widget, not an entire page section that mixes fast and slow data
-together.
+```brain
+The API is simple; the skill is architectural — deciding **which
+pieces of a page deserve their own Suspense boundary**. Wrap too
+coarsely (one boundary around the whole page) and you're back to
+blocking everything on the slowest piece. Wrap too granularly and you
+create a page that visibly pops in piece by piece in a way that reads
+as janky rather than progressive. The right boundary sits around
+exactly the slow, independently-useful unit of content — typically a
+specific data-heavy widget, not an entire page section that mixes fast
+and slow data together.
+```
 
 ## What the practice drill is testing
 

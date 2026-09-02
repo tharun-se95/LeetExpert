@@ -46,10 +46,12 @@ import Image from "next/image";
 
 ## The judgment call the practice drill is built around
 
-The mechanical API is straightforward to read about; correctly deciding
-which images on a real page deserve `priority`, and setting `sizes` to
-match actual responsive breakpoints rather than leaving it at a
-one-size-fits-all default, is where real understanding shows.
+```tip
+The mechanical API is straightforward to read about; correctly
+deciding which images on a real page deserve `priority`, and setting
+`sizes` to match actual responsive breakpoints rather than leaving it
+at a one-size-fits-all default, is where real understanding shows.
+```
 
 ## What the practice drill is testing
 

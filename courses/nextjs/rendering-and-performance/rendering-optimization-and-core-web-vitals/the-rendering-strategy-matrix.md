@@ -45,6 +45,7 @@ where a given piece of UI sits on this spectrum.
 
 ## Why this is a matrix, not a single choice per app
 
+```brain
 The framing "which one does this app use" is itself a misconception —
 different routes within the *same* Next.js app routinely use different
 strategies: a marketing homepage as SSG, a user dashboard as SSR, a
@@ -52,3 +53,4 @@ product catalog as ISR. Choosing correctly per-route, based on that
 route's actual freshness and traffic characteristics, is the real skill
 this course keeps returning to as later lessons (streaming, PPR) refine
 these categories further.
+```

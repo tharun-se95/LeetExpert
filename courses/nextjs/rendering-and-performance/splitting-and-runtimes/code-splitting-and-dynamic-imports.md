@@ -43,6 +43,7 @@ output anyway.
 
 ## The trade-off this decision is actually making
 
+```tip
 Deferring a component's load until interaction reduces the **initial**
 bundle size and therefore initial load performance — but it does mean
 that specific component takes visibly longer to appear the first time a
@@ -51,6 +52,7 @@ right call depends on how likely a typical user is to need that
 component at all: a chart most users never expand is a clear candidate
 for deferral; a component every single user interacts with immediately
 gains little from splitting and only adds a visible delay.
+```
 
 ## What the practice drill is testing
 

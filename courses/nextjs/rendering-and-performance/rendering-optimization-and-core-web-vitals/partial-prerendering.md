@@ -41,14 +41,16 @@ per-request data.
 
 ## The trap: one uncached dynamic call can silently opt in the whole route
 
+```warn
 This is exactly why the practice format for this lesson is a code
 review rather than a build-from-scratch exercise: the most common PPR
 bug isn't a syntax error, it's an **accidental scope expansion**. If a
-dynamic data call — reading cookies, headers, or an uncached fetch — sits
-*outside* a Suspense boundary, at the top level of a route meant to be
-mostly static, it can force Next.js to treat far more of that route as
-dynamic than intended, quietly erasing the performance benefit PPR was
-supposed to provide, without producing any visible error.
+dynamic data call — reading cookies, headers, or an uncached fetch —
+sits *outside* a Suspense boundary, at the top level of a route meant
+to be mostly static, it can force Next.js to treat far more of that
+route as dynamic than intended, quietly erasing the performance benefit
+PPR was supposed to provide, without producing any visible error.
+```
 
 ## What the practice drill is testing
 
