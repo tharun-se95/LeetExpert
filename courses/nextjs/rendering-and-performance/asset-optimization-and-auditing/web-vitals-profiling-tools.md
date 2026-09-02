@@ -54,3 +54,31 @@ because each one is blind to what the other one catches.
 log from a real page load and asked to identify the specific third-party
 script responsible for blocking the main thread, distinguishing it from
 the page's own first-party rendering work.
+
+## Try it
+
+```
+Main thread timeline:
+[0-120ms]    First-party React render + hydration
+[120-140ms]  Idle
+[140-980ms]  Long task — script: chat-widget.vendor.com/embed.js
+[980-1010ms] First-party click handler attaches
+```
+
+INP for this page is poor. What does the timeline point to?
+
+````reveal Work through the trace
+The 840ms long task from `chat-widget.vendor.com/embed.js` is the
+dominant cost here — nearly seven times longer than the first-party
+render/hydration work combined. This is exactly the kind of finding a
+bundle analyzer alone would miss: `embed.js` isn't part of your own
+JavaScript bundle at all, since it's loaded via a separate `<script>` tag
+from a third-party domain — only a DevTools-style timeline capture
+surfaces it as the actual bottleneck.
+
+The fix isn't touching your own render code (it's already fast, at
+120ms) — it's addressing the third-party script itself: deferring its
+load until after initial interactivity, lazy-loading it on user
+intent (e.g. only when a chat icon is clicked), or evaluating whether a
+lighter-weight alternative exists.
+````

@@ -55,3 +55,39 @@ it.
 configured for the Edge runtime that imports a Node-native database
 driver, identify why this combination will fail, and correct the
 runtime/dependency mismatch.
+
+## Try it
+
+Review this pull request:
+
+```ts
+// app/api/orders/route.ts
+export const runtime = "edge";
+
+import { Pool } from "pg"; // Node-native Postgres driver
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+export async function GET() {
+  const result = await pool.query("SELECT * FROM orders LIMIT 10");
+  return Response.json(result.rows);
+}
+```
+
+This passed local testing. Will it work in production?
+
+````reveal Work through the review
+No — `pg` is built on Node's `net` module for raw TCP socket access,
+which the Edge runtime doesn't provide at all. This isn't a
+performance issue; it fails outright the moment `pool.query` actually
+tries to open a connection, in an environment where local testing may
+have masked it (e.g. running through a Node-compatible dev server
+rather than the real Edge runtime).
+
+Two valid fixes: drop `runtime = "edge"` and run this on the default
+Node.js runtime, where `pg` works normally; or, if Edge's latency
+benefit is genuinely needed, switch to a database client built
+specifically for the Edge runtime's constraints (an HTTP-based driver
+rather than a raw-socket one). The choice depends on whether this
+route's latency profile actually justifies Edge's restricted surface.
+````

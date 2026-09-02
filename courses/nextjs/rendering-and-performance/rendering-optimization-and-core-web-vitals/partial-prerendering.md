@@ -56,3 +56,55 @@ supposed to provide, without producing any visible error.
 Partial Prerendering and identify a dynamic data-access call placed
 outside its Suspense boundary that's forcing more of the layout into
 dynamic rendering than intended, then correctly re-scope it.
+
+## Try it
+
+Review this PPR-enabled product page:
+
+```tsx
+export default function ProductPage({ params }: { params: { id: string } }) {
+  const userId = cookies().get("userId")?.value; // reads a request cookie
+
+  return (
+    <div>
+      <StaticProductShell id={params.id} />
+      <Suspense fallback={<CartSkeleton />}>
+        <PersonalizedCart userId={userId} />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+Does this actually achieve a static shell with a dynamic hole?
+
+````reveal Work through the review
+No — `cookies()` is called at the **top level of the page component**,
+outside any Suspense boundary. Reading a per-request cookie is exactly
+the kind of dynamic data access that forces Next.js to treat the whole
+page (or a much larger portion of it than intended) as dynamic, silently
+erasing the static-shell benefit PPR was supposed to provide.
+
+```tsx
+export default function ProductPage({ params }: { params: { id: string } }) {
+  return (
+    <div>
+      <StaticProductShell id={params.id} />
+      <Suspense fallback={<CartSkeleton />}>
+        <PersonalizedCart id={params.id} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function PersonalizedCart({ id }: { id: string }) {
+  const userId = cookies().get("userId")?.value;
+  // ...
+}
+```
+
+Moving the `cookies()` read *inside* `PersonalizedCart` — the component
+already wrapped in Suspense — correctly scopes the dynamic access to
+just the hole meant to hold it, leaving `StaticProductShell` genuinely
+static.
+````

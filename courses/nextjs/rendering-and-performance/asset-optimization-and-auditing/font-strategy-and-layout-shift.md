@@ -56,3 +56,42 @@ the irreducible problem.
 exhibiting a flash-of-unstyled-text layout shift and asked to identify
 the exact moment the shift occurs, correlate it to the font swap, and
 apply the correct `next/font` fallback configuration to minimize it.
+
+## Try it
+
+```
+[0ms]    Page painted with fallback font (Arial)
+[340ms]  Custom font "Inter" finishes loading
+[341ms]  Font swap — headline reflows, CLS +0.18
+```
+
+Current setup:
+
+```tsx
+import { Inter } from "next/font/google";
+const inter = Inter({ subsets: ["latin"] });
+```
+
+Why does a 0.18 CLS event happen at the swap, and what would reduce it?
+
+````reveal Work through it
+The swap at `[341ms]` is expected — `next/font` doesn't eliminate the
+swap itself, only the network request for the font file (it's
+self-hosted, so there's no external CDN round-trip). A visible 0.18 CLS
+at swap time means the fallback font's character widths meaningfully
+diverge from Inter's actual metrics, so text reflows noticeably when the
+real font takes over.
+
+```tsx
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  fallback: ["system-ui", "arial"],
+});
+```
+
+`next/font` automatically calculates adjusted fallback metrics to more
+closely match the real font's sizing — explicitly listing appropriate
+fallbacks helps it pick a closer match, minimizing the reflow the swap
+causes even though the swap itself still happens.
+````

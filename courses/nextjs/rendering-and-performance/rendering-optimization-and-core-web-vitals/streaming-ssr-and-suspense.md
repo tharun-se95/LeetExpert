@@ -61,3 +61,45 @@ containing one deliberately slow third-party fetch mixed in with fast
 content, and asked to position a Suspense boundary that isolates exactly
 the slow fetch — letting the rest of the page stream in immediately
 rather than waiting on it.
+
+## Try it
+
+```tsx
+function Dashboard() {
+  return (
+    <div>
+      <Header />
+      <RecommendedProducts /> {/* fast, local DB query */}
+      <LiveInventoryFeed />   {/* slow, third-party API, 2s+ */}
+    </div>
+  );
+}
+```
+
+Users report the whole page feels slow, even though most of it renders
+instantly. Where would you add a Suspense boundary?
+
+````reveal Work through it
+```tsx
+function Dashboard() {
+  return (
+    <div>
+      <Header />
+      <RecommendedProducts />
+      <Suspense fallback={<InventorySkeleton />}>
+        <LiveInventoryFeed />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+Wrapping only `LiveInventoryFeed` — not the whole page, and not
+`RecommendedProducts` — is the correct scope. `Header` and
+`RecommendedProducts` reach the browser and render immediately once
+this change lands; only the genuinely slow piece shows its fallback and
+streams in once its data resolves. Wrapping the entire `<Dashboard>` in
+one outer Suspense boundary would have kept the old behavior — the fast
+content would still wait on the slow fetch, just with a different
+symptom.
+````

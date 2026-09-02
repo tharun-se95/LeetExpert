@@ -62,3 +62,32 @@ model — is the actual skill.
 `generateStaticParams` configuration for a multi-page blog, correctly
 shaping the returned param objects to match the route's dynamic segment,
 and configure fallback behavior for slugs outside the pre-generated set.
+
+## Try it
+
+Write `generateStaticParams` for `app/blog/[slug]/page.tsx`, pre-building
+only the 20 most-viewed posts at build time, while a post published
+*after* the last build should still render on-demand rather than 404.
+
+```scratchpad dynamic-params-and-static-generation
+export async function generateStaticParams() {
+  // ...
+}
+```
+
+````reveal Work through it
+```ts
+export async function generateStaticParams() {
+  const topPosts = await getTopPosts(20);
+  return topPosts.map((post) => ({ slug: post.slug }));
+}
+// dynamicParams defaults to true — no export needed for the on-demand case
+```
+
+Returning only the top 20 slugs means only those get pre-rendered at
+build time. Because `dynamicParams` defaults to `true`, a request for a
+slug outside that list still renders — on the server, on-demand, on
+first request — rather than 404ing. Explicitly setting
+`export const dynamicParams = false` would be the wrong call here, since
+the requirement specifically wants new posts to render, not be rejected.
+````

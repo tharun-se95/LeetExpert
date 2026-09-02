@@ -57,3 +57,35 @@ one-size-fits-all default, is where real understanding shows.
 page's plain `<img>` tags into `next/image`, correctly setting
 dimensions, marking the genuine LCP candidate with `priority`, and
 configuring `sizes` for real responsive breakpoints.
+
+## Try it
+
+Convert this hero image — the largest visible element on the page — to
+`next/image`, sized correctly and with the right loading priority.
+
+```scratchpad image-asset-optimization
+<img src="/hero.jpg" alt="Product hero shot" />
+```
+
+````reveal Work through it
+```tsx
+import Image from "next/image";
+
+<Image
+  src="/hero.jpg"
+  alt="Product hero shot"
+  width={1200}
+  height={630}
+  priority
+  sizes="100vw"
+/>
+```
+
+`width`/`height` reserve the correct layout space before the image
+loads, preventing CLS. `priority` is warranted specifically because this
+*is* the LCP candidate — marking every image `priority` would defeat its
+purpose by telling the browser everything is equally urgent. `sizes`
+tells the browser which responsive variant to request; `100vw` is
+appropriate here since a full-width hero occupies the entire viewport
+width at every breakpoint.
+````

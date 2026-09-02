@@ -58,3 +58,52 @@ gains little from splitting and only adds a visible delay.
 chart component using `next/dynamic` so its JavaScript loads only when a
 user actually expands the panel containing it, rather than as part of
 the page's initial bundle.
+
+## Try it
+
+`AnalyticsChart` is a heavy client-only charting component that should
+only load once a user clicks "Show analytics" — not as part of the
+page's initial bundle.
+
+```scratchpad code-splitting-and-dynamic-imports
+import AnalyticsChart from "./AnalyticsChart";
+
+function Panel() {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <button onClick={() => setShow(true)}>Show analytics</button>
+      {show && <AnalyticsChart />}
+    </div>
+  );
+}
+```
+
+````reveal Work through it
+```tsx
+import dynamic from "next/dynamic";
+
+const AnalyticsChart = dynamic(() => import("./AnalyticsChart"), {
+  loading: () => <ChartSkeleton />,
+  ssr: false,
+});
+
+function Panel() {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <button onClick={() => setShow(true)}>Show analytics</button>
+      {show && <AnalyticsChart />}
+    </div>
+  );
+}
+```
+
+A plain `import AnalyticsChart from "./AnalyticsChart"` bundles its code
+into the initial page load regardless of whether `show` is ever true —
+the conditional render only controls when it's *displayed*, not when
+its JavaScript is *downloaded*. `next/dynamic` is what actually defers
+the download itself. `ssr: false` is appropriate here since a charting
+library that measures the browser viewport has no meaningful
+server-rendered output anyway.
+````
