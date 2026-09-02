@@ -454,10 +454,10 @@ written. Lesson counts are final per Phase 1's breakdown above.
 | 3. Data Lifecycle | 3 | 9 | 9/9 ✅ | 0/9 | |
 | 4. Rendering & Performance | 3 | 10 | 10/10 ✅ | 0/8 (2 conceptual, no drill) | |
 | 5. State Management & URL-as-State | 2 | 5 | 5/5 ✅ | 0/4 (1 conceptual, no drill) | |
-| 6. Security & Production Ops | 2 | 7 | 0/7 | 0/6 (1 conceptual, no drill) | |
+| 6. Security & Production Ops | 2 | 7 | 7/7 ✅ | 0/6 (1 conceptual, no drill) | |
 | 7. System Design & Scale | 3 | 8 | 0/8 | 0/7 (1 conceptual, no drill) | |
 | 8. Interactive Mock Interview Drills | 3 | 6 | 0/6 | 0/6 | |
-| **Total** | **22** | **62** | **41/62** | **0/54 drill-bearing** | |
+| **Total** | **22** | **62** | **48/62** | **0/54 drill-bearing** | |
 
 **Module 1 (RSC Architecture & Hydration) is fully authored — 8/8
 lessons**, the first complete module. All content lives under
@@ -519,8 +519,25 @@ sandbox. Verified with `tsc --noEmit`, the full Vitest suite (608
 tests), a clean production build (431 static pages), and a live HTTP
 smoke-test returning 200 for all 5 new lesson URLs.
 
-**Next up:** Module 6 (Security & Production Operations, 7 lessons
-across 2 chapters), continuing sequentially through the curriculum
+**Module 6 (Security & Production Operations) is fully authored — 7/7
+lessons**, all under `courses/nextjs/security-and-production-ops/`.
+Covers session-vs-JWT authentication trade-offs (conceptual), securing
+Server Actions against automated agents (authorization + schema
+validation as separate, both-required checks), Content Security Policies
+with per-request nonces for hydration scripts, middleware-based route
+guarding building directly on Module 2's middleware and matcher
+scoping, when a hand-rolled session handler should be replaced by a real
+auth provider, the `NEXT_PUBLIC_` env var client-bundle leak trap, and
+production error boundaries (`error.tsx`/`global-error.tsx`) wired to
+monitoring. 1 conceptual-only, 1 sandbox, 5 pr-review — this module
+leans heavily on PR-review format given how much of production security
+work is *auditing existing code* rather than building from scratch.
+Verified with `tsc --noEmit`, the full Vitest suite (608 tests), a clean
+production build (431 static pages), and a live HTTP smoke-test
+returning 200 for all 7 new lesson URLs.
+
+**Next up:** Module 7 (System Design & Architecting at Scale, 8 lessons
+across 3 chapters), continuing sequentially through the curriculum
 above.
 
 ## Session log
@@ -551,8 +568,10 @@ Module 4 (Rendering & Performance) completed same session (10/10
 lessons: 2 conceptual, 4 sandbox, 2 trace, 2 pr-review), verified
 identically and committed. Module 5 (State Management & URL-as-State)
 completed same session (5/5 lessons: 1 conceptual, 4 sandbox), verified
-identically and committed. Next: continue Phase 4 content authoring
-through Module 6 (Security & Production Ops), then pick up Phase 3
-(practice-format engineering) once a drill-bearing lesson needs a real
-interactive component rather than the honest "not built yet"
+identically and committed. Module 6 (Security & Production Ops)
+completed same session (7/7 lessons: 1 conceptual, 1 sandbox, 5
+pr-review), verified identically and committed. Next: continue Phase 4
+content authoring through Module 7 (System Design & Scale), then pick up
+Phase 3 (practice-format engineering) once a drill-bearing lesson needs a
+real interactive component rather than the honest "not built yet"
 placeholder.
