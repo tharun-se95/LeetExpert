@@ -33,6 +33,19 @@ only one of several legitimate answers.
   whether a dropdown is open, an in-progress unsaved form draft, a hover
   state.
 
+```diagram
+{
+  "id": "decision-framework",
+  "question": "Where does this piece of state actually belong?",
+  "branches": [
+    { "condition": "Persists across devices/sessions", "outcome": "The database" },
+    { "condition": "Describes what's being viewed, shareable", "outcome": "The URL (searchParams)", "highlight": true },
+    { "condition": "Needed on first server request, no DB", "outcome": "Cookies" },
+    { "condition": "Ephemeral, tab-local interaction", "outcome": "Actual client state" }
+  ]
+}
+```
+
 ## Why misallocating this causes real bugs, not just style complaints
 
 ```warn

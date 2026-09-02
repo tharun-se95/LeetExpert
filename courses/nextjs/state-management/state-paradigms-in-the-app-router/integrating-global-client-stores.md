@@ -58,6 +58,16 @@ Context, ensures each client-side mount gets its own store instance,
 scoped correctly to that user's session rather than shared at the module
 level across the server process.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Module-scope store", "points": ["Created once per server process", "Shared across every request", "Cross-user data leak"] },
+    { "title": "Context + useRef", "points": ["Created inside client component", "One instance per mount", "Correctly scoped per user"], "highlight": true }
+  ]
+}
+```
+
 ## Where in the tree to place the provider
 
 Wrapping the provider around only the subtree that actually needs the

@@ -40,6 +40,16 @@ ongoing interaction state (`quantity`, as the user clicks +/-) is owned
 entirely by the client — the server component doesn't re-run every time
 the client state changes, and shouldn't.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Pass product wholesale", "points": ["Includes refreshInventory()", "Fails to serialize", "Breaks at the boundary"] },
+    { "title": "Pass minimal fields", "points": ["productName, initialQuantity", "Plain, serializable data", "Client owns state from there"], "highlight": true }
+  ]
+}
+```
+
 ## The mistake this lesson is inoculating against
 
 ```warn

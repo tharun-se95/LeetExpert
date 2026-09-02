@@ -50,6 +50,18 @@ tentative update to it. The moment `addOptimisticComment` is called, the
 UI reflects the new comment — visually distinguished as `pending` here —
 before `addComment`'s server round trip has resolved at all.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "User submits", "detail": "form action fires" },
+    { "label": "addOptimistic()", "detail": "UI updates instantly", "highlight": true },
+    { "label": "Server mutates", "detail": "real round trip" },
+    { "label": "Reconciled", "detail": "confirmed state replaces it" }
+  ]
+}
+```
+
 ## What happens when the server responds
 
 Once the real Server Action completes and the underlying `comments` prop

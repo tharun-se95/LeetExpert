@@ -61,6 +61,18 @@ data, **without unmounting the surrounding layout** the way a full page
 navigation would, since this is App Router client-side navigation, not a
 hard reload.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "User picks filter", "detail": "select onChange" },
+    { "label": "router.push()", "detail": "new URLSearchParams" },
+    { "label": "URL updates", "detail": "shareable, refresh-safe", "highlight": true },
+    { "label": "Server re-renders", "detail": "layout stays mounted" }
+  ]
+}
+```
+
 ## Why "without unmounting layouts" is the specific engineering goal
 
 ```brain
