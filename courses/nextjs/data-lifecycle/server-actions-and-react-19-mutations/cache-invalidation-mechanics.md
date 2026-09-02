@@ -38,6 +38,16 @@ export async function createPost(formData: FormData) {
   list on another page) and a single mutation needs to invalidate all of
   them at once.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "revalidatePath", "points": ["Invalidates: one route", "For: a narrow, single-page fix"] },
+    { "title": "revalidateTag", "points": ["Invalidates: every tagged fetch", "For: data shown in many places"], "highlight": true }
+  ]
+}
+```
+
 ## Why forgetting this is such a common bug
 
 ```warn

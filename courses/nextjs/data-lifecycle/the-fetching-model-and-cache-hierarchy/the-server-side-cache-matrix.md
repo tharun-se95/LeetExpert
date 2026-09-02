@@ -38,6 +38,18 @@ a route is fully static (no uncached dynamic data access), Next.js can
 skip re-rendering it altogether and serve the pre-rendered HTML/RSC
 payload directly.
 
+```diagram
+{
+  "id": "layered-bands",
+  "caption": "checked in this order — narrowest scope first",
+  "bands": [
+    { "label": "Request Memoization", "detail": "one render pass, resets after" },
+    { "label": "Data Cache", "detail": "persistent, server-wide" },
+    { "label": "Full Route Cache", "detail": "entire static route's output" }
+  ]
+}
+```
+
 ## Why the distinction is the actual skill
 
 These three layers operate at completely different scopes and get

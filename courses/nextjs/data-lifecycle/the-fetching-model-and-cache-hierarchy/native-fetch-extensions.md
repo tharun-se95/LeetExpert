@@ -33,6 +33,17 @@ fetch("https://api.example.com/products", {
   request past that point." A `revalidate: 60` fetch call serves cached
   data instantly for up to 60 seconds, then transparently refreshes.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "force-cache", "points": ["Cache indefinitely", "Default behavior", "For content that never changes"] },
+    { "title": "revalidate: N", "points": ["Stale after N seconds", "Then refetches", "Balances speed + freshness"], "highlight": true },
+    { "title": "no-store", "points": ["Never cache", "Always hits network", "For must-be-fresh data"] }
+  ]
+}
+```
+
 ## Why this belongs to Next.js, not just the browser
 
 A browser's native `fetch` cache is scoped to that browser, that user,

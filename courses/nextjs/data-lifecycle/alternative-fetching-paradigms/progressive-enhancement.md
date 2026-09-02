@@ -39,6 +39,16 @@ unconditionally would silently break the no-JS fallback path, because
 now the form's actual submission depends on JavaScript having run.
 ```
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "JS loaded", "points": ["onSubmit intercepts", "Client validation runs", "Enhancement layered on top"], "highlight": true },
+    { "title": "JS disabled/slow", "points": ["No onSubmit handler exists", "Native POST to action's endpoint", "Server Action still runs"] }
+  ]
+}
+```
+
 ## The practical framing for an interview
 
 The interview-relevant claim here isn't "always build for no-JS users" —

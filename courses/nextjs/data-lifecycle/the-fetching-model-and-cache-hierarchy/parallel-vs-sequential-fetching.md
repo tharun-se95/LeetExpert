@@ -49,6 +49,16 @@ time drops from the sum of both requests to roughly the slower of the
 two — a 600ms sequential chain becomes a ~300ms parallel one, for free,
 with no new network calls added.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Sequential", "points": ["getUser: 0-300ms", "getPosts: 300-600ms", "Total: 600ms"] },
+    { "title": "Promise.all", "points": ["Both start: 0ms", "Both finish: ~300ms", "Total: ~300ms"], "highlight": true }
+  ]
+}
+```
+
 ## The actual decision point
 
 ```brain

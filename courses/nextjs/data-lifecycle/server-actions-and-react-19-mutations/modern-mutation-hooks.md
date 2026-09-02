@@ -92,6 +92,17 @@ function LikeButton({ postId }: { postId: string }) {
 }
 ```
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "useActionState", "points": ["Returns: value + isPending", "Needs (prevState, formData)", "For: the form itself"], "highlight": true },
+    { "title": "useFormStatus", "points": ["Reads nearest <form>'s state", "No prop drilling needed", "For: a child submit button"] },
+    { "title": "useTransition", "points": ["Non-blocking transition", "Works outside <form>", "For: like buttons, drag reorder"] }
+  ]
+}
+```
+
 ## What the practice drill is testing
 
 Each hook solves a distinct sub-problem; picking the right one for a

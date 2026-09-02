@@ -35,6 +35,18 @@ local Router Cache is still holding an older snapshot from before the
 mutation happened.
 ```
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Mutation", "detail": "server data updated" },
+    { "label": "Router Cache", "detail": "still holds old snapshot" },
+    { "label": "router.refresh()", "detail": "discards stale cache", "highlight": true },
+    { "label": "Fresh UI", "detail": "no full reload" }
+  ]
+}
+```
+
 ## The fix: `router.refresh()`
 
 ```tsx

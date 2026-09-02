@@ -60,6 +60,18 @@ topic.
 
 ## The mechanics of the round trip
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Form submits", "detail": "client-rendered" },
+    { "label": "POST request", "detail": "generated endpoint" },
+    { "label": "Function runs", "detail": "on the server", "highlight": true },
+    { "label": "Revalidate", "detail": "UI updates" }
+  ]
+}
+```
+
 1. The client-rendered `<form>` submits.
 2. Next.js serializes the form data and posts it to the generated
    endpoint for `createPost`.
