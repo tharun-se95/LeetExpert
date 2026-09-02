@@ -71,6 +71,17 @@ syntax preference:
   its own** (a docs home page that also needs to handle arbitrarily
   nested sub-pages under the same route file): `[[...param]]`.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "[param]", "points": ["Matches: exactly 1 segment", "/blog/hello-world", "No slashes allowed"] },
+    { "title": "[...param]", "points": ["Matches: 1+ segments", "/docs/a/b/c → array", "Bare /docs: 404"] },
+    { "title": "[[...param]]", "points": ["Matches: 0+ segments", "Also matches bare /docs", "Most flexible of the three"], "highlight": true }
+  ]
+}
+```
+
 ```tip
 Reaching for a catch-all when a single dynamic segment would do adds
 unnecessary array-handling code for no benefit; reaching for a single

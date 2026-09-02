@@ -55,6 +55,16 @@ content with its own, separately-remounting boundary. The layout's
 persistent state (the shared header, the sidebar) stays put; only the
 content inside the template's boundary remounts on each navigation.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "layout.tsx", "points": ["Persists across navigation", "State survives", "Safer default for chrome"], "highlight": true },
+    { "title": "template.tsx", "points": ["Remounts every navigation", "State resets", "Use for: animations, resets"] }
+  ]
+}
+```
+
 ## The decision this lesson is really teaching
 
 Don't think of this as "layout is the default, template is the special

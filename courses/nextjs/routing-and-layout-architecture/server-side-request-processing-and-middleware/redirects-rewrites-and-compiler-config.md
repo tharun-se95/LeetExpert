@@ -48,6 +48,16 @@ execution cost, on every request, for a decision that could have been
 resolved statically at build time instead.
 ```
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "next.config.js", "points": ["Decided at: build time", "No per-request JS runs", "Only fixed mappings"], "highlight": true },
+    { "title": "Middleware", "points": ["Decided at: request time", "Runs JS every request", "Needed for per-request signals"] }
+  ]
+}
+```
+
 ## When middleware is actually the right tool
 
 This isn't "always prefer static config" — it's "match the tool to

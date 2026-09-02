@@ -13,6 +13,18 @@ point, before any route, layout, or page component has been selected,
 and it can inspect, modify, or redirect the request before normal routing
 even begins.
 
+```diagram
+{
+  "id": "flow-steps",
+  "steps": [
+    { "label": "Request", "detail": "arrives" },
+    { "label": "Middleware", "detail": "runs first", "highlight": true },
+    { "label": "Route match", "detail": "layouts, page" },
+    { "label": "Response" }
+  ]
+}
+```
+
 ## The file and its shape
 
 A single `middleware.ts` file at your project root (not nested inside

@@ -76,6 +76,16 @@ one matters for what your handler is allowed to do:
 A Route Handler opts into the Edge runtime by exporting `export const
 runtime = "edge";` — without that, it runs on Node by default.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "Node.js (default)", "points": ["Full Node API access", "File system, most npm pkgs", "Node-native DB drivers work"], "highlight": true },
+    { "title": "Edge runtime", "points": ["Faster cold start", "Runs closer to the request", "No file system, restricted APIs"] }
+  ]
+}
+```
+
 ## What the practice drill is testing
 
 Reading about the `GET`/`POST` convention is straightforward; correctly

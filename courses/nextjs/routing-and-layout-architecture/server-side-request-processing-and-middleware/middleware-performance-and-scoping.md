@@ -36,6 +36,16 @@ for when discussing performance. Unscoped middleware doesn't just waste
 backend resources; it makes every matching request measurably slower,
 including ones where that slowness is completely unnecessary.
 
+```diagram
+{
+  "id": "comparison-cards",
+  "cards": [
+    { "title": "No matcher", "points": ["Runs on every request", "Images, CSS, JS, fonts too", "20 assets = 20 auth calls"] },
+    { "title": "Scoped matcher", "points": ["Excludes static assets", "Runs only where needed", "Eliminates the waste entirely"], "highlight": true }
+  ]
+}
+```
+
 ## The fix: a `matcher` config
 
 Middleware supports an exported `config` object with a `matcher` field

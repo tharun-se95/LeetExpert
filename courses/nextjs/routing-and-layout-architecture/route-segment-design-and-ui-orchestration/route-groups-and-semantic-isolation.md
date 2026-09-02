@@ -50,6 +50,22 @@ for adding a URL prefix.
 
 ## Why this specific capability matters
 
+```diagram
+{
+  "id": "file-tree",
+  "caption": "route group names never appear in the resulting URL",
+  "lines": [
+    { "text": "app/" },
+    { "text": "(marketing)/", "indent": 1, "color": "var(--family-accent, var(--accent))" },
+    { "text": "layout.tsx", "indent": 2 },
+    { "text": "page.tsx", "indent": 2, "note": "/" },
+    { "text": "(dashboard)/", "indent": 1, "color": "var(--insight)" },
+    { "text": "layout.tsx", "indent": 2 },
+    { "text": "page.tsx", "indent": 2, "note": "/  (not /dashboard!)" }
+  ]
+}
+```
+
 Without route groups, applying genuinely different top-level layouts to
 different sections of your app — a marketing site's nav-and-footer chrome
 versus a logged-in dashboard's sidebar-and-topbar chrome — would force
