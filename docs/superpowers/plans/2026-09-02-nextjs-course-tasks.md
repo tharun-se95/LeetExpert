@@ -895,3 +895,45 @@ real design-token guard failures along the way (a comment containing
 the bare word "rounded", and a hardcoded hex color fallback) —
 evidence the existing design-system tests genuinely catch violations,
 not just DSA-authored ones. Verified live in both themes.
+
+**2026-09-02/03 (diagrams, full-course rollout):** User then asked to
+enrich "each and every lesson" with diagrams and code snippets — a
+62-lesson rollout, not just the 4 pilot lessons above. Rather than
+building 58 more bespoke one-off SVGs, designed 6 generic, prop-driven
+diagram components mirroring how DSA's own diagrams are parametrized:
+`FlowStepsDiagram` (a labeled step pipeline, wraps to multiple rows via
+`perRow`), `ComparisonCardsDiagram` (N side-by-side cards of bullet
+points), `LayeredBandsDiagram` (stacked bands with connecting arrows),
+`FileTreeDiagram` (a monospace file tree with optional per-line color
+and trailing notes), `TimelineDiagram`, and `DecisionFrameworkDiagram`
+(one question branching into N outcomes). Registered all 6 in
+`DIAGRAM_REGISTRY` alongside the 4 bespoke ones. Every lesson's
+existing prose already implied one clear comparison, sequence, layer
+stack, file structure, or branching decision — the authoring pattern
+was reading each lesson and matching it to whichever generic shape
+best fit its actual content, not forcing a diagram where none belonged.
+
+Rolled out module by module with the same verify-then-commit cadence
+(tsc, full test suite, live browser spot-check, commit) as every prior
+full-course change: Module 3 (Data Lifecycle, 9 lessons), Module 4
+(Rendering & Performance, 8 of 10 — 2 already had bespoke diagrams from
+the pilot), Module 5 (State Management, 5 lessons), Module 6 (Security
+& Production Ops, 7 lessons), Module 7 (System Design & Scale, 8
+lessons), Module 8 (Mock Interview Drills, 6 lessons) — 8 commits
+total across this and the prior session, one per module, covering
+every one of the 62 lessons. Code snippets were not a real gap: nearly
+every lesson already carried working code from the original authoring
+pass, so this phase focused entirely on diagrams.
+
+Found and fixed a real bug in `FileTreeDiagram` along the way: its SVG
+`viewBox` width was computed only from the file/folder text length,
+ignoring the length of per-line notes and the caption — a longer note
+or caption (first hit by the monorepo-boundaries lesson's diagram)
+rendered visibly clipped off the right edge. Fixed by sizing width from
+the longest note and the caption too, verified live before and after.
+
+Final full verification after the complete 62-lesson rollout: `tsc
+--noEmit` clean, all 620 tests passing, and a clean production build
+(`rm -rf .next && npm run build`) generating all 431 pages with no
+errors, dev server stopped before the build and restarted after per
+the established pattern for avoiding `.next` cache corruption.
