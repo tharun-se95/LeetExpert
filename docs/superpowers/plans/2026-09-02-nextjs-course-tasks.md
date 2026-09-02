@@ -1,17 +1,18 @@
 # Next.js Interview Prep Course — Master Tasks & Progress Tracker
 
 **Status: CORE BUILD COMPLETE.** All 62 lessons across 8 modules are
-authored, all 54 drill-bearing lessons have a real working practice
+authored (each with rich `warn`/`brain`/`tip` callouts breaking up the
+prose), all 54 drill-bearing lessons have a real working practice
 exercise, the course is registered as `available` in the platform
-catalog, progress tracking is fully wired up, and the shared
-Header/Sidebar chrome correctly reflects whichever course is active.
-Every increment has been verified (tsc, full test suite, production
-build, live browser checks). This is the durable, resumable source of
-truth for the build — updated continuously as work happens, not just at
-milestones, so any session can pick up exactly where the last one left
-off without re-deriving state. The one remaining open item (per-course
-theming — see Phase 2) is a deliberately deferred, valid-under-the-
-design-doc choice, not a gap.
+catalog, progress tracking is fully wired up, the shared Header/Sidebar
+chrome correctly reflects whichever course is active, and the course's
+own indigo accent (not monochrome) now tints its chrome in both themes.
+Every Phase 2 platform item is closed. Every increment has been
+verified (tsc, full test suite, production build, live browser checks).
+This is the durable, resumable source of truth for the build — updated
+continuously as work happens, not just at milestones, so any session
+can pick up exactly where the last one left off without re-deriving
+state.
 
 **Standing instruction governing this whole effort:** the user has asked
 for full autonomous execution — do not stop to ask for confirmation on
@@ -433,11 +434,23 @@ behavioral/architectural mock interviews.*
   (`nextjsNav.test.ts`). Verified live: visiting a Next.js lesson
   increments a real "N/62" header chip and lights up its sidebar dot,
   independently of DSA's own progress.
-- [ ] `activeThemeFor` in `AppShell.tsx` doesn't yet dispatch a theme for
-  `/courses/nextjs/...` routes (currently falls through to monochrome,
-  which is a valid, explicitly-allowed choice per the design doc — "one
-  accent per module, a single course-wide accent, or none"). Revisit
-  if/when a real per-lesson accent is wanted instead of monochrome.
+- [x] **Fixed (2026-09-02, user-reported):** `activeThemeFor` never
+  dispatched a theme for `/courses/nextjs/...` routes, so the course sat
+  fully monochrome despite `NEXTJS_COURSE.accent` (`#4F46E5`) already
+  being defined in the registry and never applied anywhere. Fixed with
+  a new `singleAccentCssVars(accent)` in `familyTheme.ts` (factored out
+  of `familyCssVars` into a shared `accentCssVars` helper, reusing the
+  same AA-safe `uiAccent`/`pickInk` contrast math without going through
+  DSA's named-family lookup table) and a new `themeStyleFor(pathname)`
+  in `AppShell.tsx` that resolves DSA routes to a family as before and
+  Next.js routes to the course's single accent — `activeThemeFor`
+  itself untouched, so its existing tests still pass unchanged.
+  Verified live in both dark and light mode: the indigo accent now
+  tints the header pill, section-heading rules, TOC active state, and
+  sidebar active row across the whole course, DSA unaffected. This was
+  the design doc's "single course-wide accent" option, not the
+  "per-lesson accent" option — no further per-lesson theming is
+  planned for this course.
 - [x] **Fixed (2026-09-02):** the shared `Header`/`CourseNavTree` chrome
   was still hardcoded to DSA regardless of the active course — a
   Next.js lesson page showed DSA's module tree in the Lessons drawer,
