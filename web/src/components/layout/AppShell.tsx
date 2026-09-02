@@ -18,6 +18,7 @@ import {
   findProblemBySlug,
   moduleFamily,
 } from "@/lib/course/manifest";
+import { allLessonIds as allNextjsLessonIds } from "@/app/courses/nextjs/manifest";
 import { familyCssVars } from "@/lib/visual/familyTheme";
 import type { FamilyId } from "@/lib/content/manifest";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
@@ -86,21 +87,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   // Start false so mobile never writes SIDEBAR_KEY before matchMedia runs.
   const [isDesktop, setIsDesktop] = useState(false);
-  const lessonProgressIds = allLessonsNavIds();
-  const totalCount = lessonProgressIds.length;
-  const totalProblemCount = allProblemSlugs().length;
   const pathname = usePathname();
   const courseSlug = activeCourseSlugFor(pathname);
+  // Each course owns its own manifest and lesson-id shape, so the counts
+  // ProgressProvider tracks against have to be picked per course rather
+  // than always reading DSA's — otherwise a Next.js page would report
+  // progress against DSA's lesson count instead of its own.
+  const isNextjs = courseSlug === "nextjs";
+  const lessonProgressIds = isNextjs ? allNextjsLessonIds() : allLessonsNavIds();
+  const totalCount = lessonProgressIds.length;
+  // The Next.js course has no separate problems hub — "solved" doesn't
+  // apply to it, so 0 rather than DSA's count.
+  const totalProblemCount = isNextjs ? 0 : allProblemSlugs().length;
   const ideViewport = isIdePath(pathname);
   const fillMain = ideViewport || isProblemsListPath(pathname);
   const showCourseNav = !isLandingPath(pathname);
-  // The lesson/problem counts above are DSA-specific (allLessonsNavIds()
-  // reads DSA's manifest only) — progress tracking for other courses
-  // hasn't been wired up yet (a deliberately deferred item, see
-  // docs/superpowers/plans/2026-09-02-nextjs-course-tasks.md Phase 2), so
-  // showing the chip there would display DSA's totals on someone else's
-  // course rather than something honestly empty or absent.
-  const showProgress = showCourseNav && courseSlug === "dsa";
   const family = activeThemeFor(pathname);
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
@@ -190,7 +191,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               showLessonsMenu={showCourseNav}
               lessonsMenuOpen={mobileNavOpen}
               onToggleLessonsMenu={() => setMobileNavOpen((v) => !v)}
-              showProgress={showProgress}
+              showProgress={showCourseNav}
             />
             <div className="flex min-h-0 flex-1">
               {showCourseNav ? (

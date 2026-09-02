@@ -1,5 +1,5 @@
 import type { CourseNavStage } from "@/lib/course/nav";
-import { MODULES } from "./manifest";
+import { getLesson, MODULES } from "./manifest";
 
 /**
  * Adapts this course's own Module → Chapter → Lesson shape into the
@@ -8,10 +8,9 @@ import { MODULES } from "./manifest";
  * just with different names for the middle two: a Next.js Module maps to
  * a nav "Stage" (the section header), and a Chapter maps to a nav
  * "Module" (the expandable row) — no UI changes needed, only this
- * adapter. Lesson `id`s are unused by progress tracking today (Phase 2
- * of the course build-out deliberately deferred wiring `ProgressProvider`
- * up for this course), but are still unique per lesson so the tree
- * renders correctly once that lands.
+ * adapter. Lesson `id`s are `module/chapter/lesson`, matching both
+ * `allLessonIds()` in `./manifest` and `nextjsLessonIdFromPathname`
+ * below — the same id space `ProgressProvider` tracks visits against.
  */
 export function buildNextjsCourseNav(): CourseNavStage[] {
   return MODULES.map((mod) => ({
@@ -35,4 +34,21 @@ export function buildNextjsCourseNav(): CourseNavStage[] {
       };
     }),
   }));
+}
+
+/**
+ * Maps a Next.js lesson pathname to its progress id
+ * (`module/chapter/lesson`, same format `allLessonIds()` returns), or
+ * `null` for any other path. Validates the triple against the manifest
+ * rather than just shape-matching the URL, so a stale or mistyped path
+ * never gets recorded as a visited lesson.
+ */
+export function nextjsLessonIdFromPathname(pathname: string): string | null {
+  const match = /^\/courses\/nextjs\/([^/]+)\/([^/]+)\/([^/]+)\/?$/.exec(
+    pathname,
+  );
+  if (!match) return null;
+  const [, moduleSlug, chapterSlug, lessonSlug] = match;
+  if (!getLesson(moduleSlug, chapterSlug, lessonSlug)) return null;
+  return `${moduleSlug}/${chapterSlug}/${lessonSlug}`;
 }
