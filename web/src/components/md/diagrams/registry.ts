@@ -46,6 +46,8 @@ import { CacheInvalidationScopeDiagram } from "@/components/md/diagrams/CacheInv
 import { FetchWaterfallTimelineDiagram } from "@/components/md/diagrams/FetchWaterfallTimelineDiagram";
 import { MutationHookScopeDiagram } from "@/components/md/diagrams/MutationHookScopeDiagram";
 import { ServerActionRpcDiagram } from "@/components/md/diagrams/ServerActionRpcDiagram";
+import { ProgressiveEnhancementForkDiagram } from "@/components/md/diagrams/ProgressiveEnhancementForkDiagram";
+import { QueryHydrationHandoffDiagram } from "@/components/md/diagrams/QueryHydrationHandoffDiagram";
 import { FlowStepsDiagram } from "@/components/md/diagrams/FlowStepsDiagram";
 import { ComparisonCardsDiagram } from "@/components/md/diagrams/ComparisonCardsDiagram";
 import { LayeredBandsDiagram } from "@/components/md/diagrams/LayeredBandsDiagram";
@@ -108,6 +110,8 @@ export const DIAGRAM_REGISTRY: Record<string, DiagramComponent> = {
   "fetch-waterfall-timeline": FetchWaterfallTimelineDiagram,
   "mutation-hook-scope": MutationHookScopeDiagram,
   "server-action-rpc": ServerActionRpcDiagram,
+  "progressive-enhancement-fork": ProgressiveEnhancementForkDiagram,
+  "query-hydration-handoff": QueryHydrationHandoffDiagram,
   // Generic, prop-driven shapes reused across many Next.js lessons rather
   // than one bespoke SVG per lesson — a horizontal flow/pipeline, an N-way
   // comparison, stacked layers, a file tree, a timeline, and a decision

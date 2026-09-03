@@ -57,13 +57,10 @@ function PostsClientView() {
 
 ```diagram
 {
-  "id": "flow-steps",
-  "steps": [
-    { "label": "Server prefetches", "detail": "queryClient.prefetchQuery" },
-    { "label": "dehydrate()", "detail": "cache → serializable state" },
-    { "label": "HydrationBoundary", "detail": "state reaches client", "highlight": true },
-    { "label": "useQuery resolves", "detail": "instantly, no fetch" }
-  ]
+  "id": "query-hydration-handoff",
+  "serverKey": "[\"posts\"]",
+  "matchedClientKey": "[\"posts\"]",
+  "mismatchedClientKey": "[\"blogPosts\"]"
 }
 ```
 
