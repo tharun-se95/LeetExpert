@@ -937,3 +937,105 @@ Final full verification after the complete 62-lesson rollout: `tsc
 (`rm -rf .next && npm run build`) generating all 431 pages with no
 errors, dev server stopped before the build and restarted after per
 the established pattern for avoiding `.next` cache corruption.
+
+**2026-09-03 (diagrams, quality bar rejected — specialized rebuild
+started):** User reviewed the 62-lesson diagram rollout above and
+correctly rejected it: the generic `comparison-cards`/`flow-steps`
+shapes were decoration, not diagrams — bullet points in boxes with no
+arrows, no timing, no spatial relationship, nothing an actual Next.js
+docs figure would show. Explored an AI-image-generation alternative
+first (a local Google-Flow browser-automation service,
+`/Volumes/Seagate/auto-flow/`) on the client/server-boundary concept —
+the result was visually promising (text rendered correctly, a
+tree+boundary+glow composition worked) but failed the course's hard
+requirements: not theme-aware (baked one fixed dark palette), no real
+accessibility layer, not editable, one node literally bisected by the
+boundary line (a genuine conceptual error), and real per-lesson
+weight. Concluded hand-authored, token-driven SVG is still the right
+tool, with the AI image's composition kept as a validated *layout*
+reference rather than discarded.
+
+Built `.claude/agents/nextjs-diagram-artist.md`, a specialized subagent
+with a concrete, non-negotiable standard: a diagram only earns its
+place if a reader could answer "what happens, in what order, to what,
+and where" from the picture alone, modeled on the visual shapes real
+Next.js docs actually reach for (boundary-split trees, timelines,
+layered stacks with fallthrough, browser mockups, before/after
+contrasts) rather than card grids. Iterated the spec through two test
+diagrams before trusting it for a rollout:
+
+1. **Client/server boundary** (rebuilding the AI-image concept
+   correctly) — validated the mechanism-accuracy bar, then the user
+   asked for more polish and separately for it to stop looking like
+   "boxes and lines." Added a **visual polish standard** (radius scale,
+   dot-grid zone texture, faded line ends, pill-shaped edge labels,
+   soft arrowheads) and, bigger, discovered `@phosphor-icons/react`
+   (already a dependency, used by the callout system) drops real
+   iconography straight into an SVG canvas via nested `<svg>` — zero
+   new cost, and the single biggest lever for looking like real
+   documentation instead of a wireframe.
+2. **Distributed multi-container cache handlers** (the course's own
+   declared "hardest lesson") — deliberately picked to stress-test
+   range beyond one tree. Produced a genuine before/after of the same
+   6-container fleet (broken per-container caching causing both
+   inconsistency and a thundering herd, vs. one shared store with a
+   single-flight lock and a dashed Redis-down bypass). Caught a real
+   **measured contrast bug** inherited from diagram 1:
+   `var(--family-accent, var(--accent))` on `<text>` resolves to the
+   *raw*, un-derived brand color (2.4:1 against `--elevated` — fails
+   WCAG AA) because `--family-accent` is always set course-wide, so
+   the intended fallback to the safe derived `--accent` (3.01:1, fine
+   for borders/icons, still not text) never triggers; only `var(--mark)`
+   (10.15:1) clears the actual text floor. Fixed both diagrams and
+   turned the specific numbers into a permanent rule in the subagent's
+   spec: verify contrast live with real computed hex values before
+   shipping a new color pairing, never pattern-match a sibling file
+   that might itself be wrong.
+
+**2026-09-03 (diagrams, Module 3 full rebuild):** Rolled the reviewed
+subagent out across all 9 lessons of Module 3 (Data Lifecycle:
+Fetching, Caching & Revalidation) in 3 batches of 3, each batch
+independently re-verified (tsc, tests, both themes live, a
+screen-space `getBoundingClientRect` overlap/bounds check — not raw
+`getBBox`, which ignores ancestor `<g transform>` and threw false
+positives on a multi-panel diagram the first time it was tried) before
+committing. Real findings surfaced by the agents along the way, not
+just diagrams:
+
+- A factual error in the-server-side-cache-matrix.md's own prose: the
+  lesson implied caches are checked in the scope order they're taught
+  in (memo → data → route), but the real request-time order is Full
+  Route Cache first, at the routing layer, before rendering even
+  starts — memoization and the Data Cache only get consulted if that
+  misses and a render actually runs. Corrected the lesson text itself,
+  not just the diagram, and cross-checked against Next.js's own
+  bundled docs before accepting the fix.
+- A real CI coverage gap: `content.test.ts` only ever walked
+  `courses/dsa`, so a broken or unknown diagram `id` anywhere in the
+  62 Next.js lessons would have shipped with every test green. Added
+  equivalent registry-fence-resolution coverage for the Next.js course.
+- A leftover "TEMPORARY verification harness" scratch route
+  (`web/src/app/diagcheck/`) an agent forgot to delete before
+  finishing — caught via `git status` before commit, removed.
+
+Also hit a real operational incident worth recording for next time:
+the first batch-2 dispatch (3 Opus-model agents) failed repeatedly —
+first an account-wide rate limit, then several rounds of transient
+`529 Overloaded` errors from what looked like sustained API
+infrastructure load — and were resumed via `SendMessage` to their
+original agent ids each time, per a standing "never respawn, always
+resume the same subagent" rule. When the user asked to switch to
+Sonnet mid-incident, 3 fresh Sonnet runs were started for the same 3
+lessons as a new dispatch (a model override isn't possible on a
+`SendMessage` resume) — but the abandoned Opus runs then *also*
+independently succeeded on a later resume, producing 3 pairs of agents
+racing the same files. Caught before any real damage via `git status`
+(the Sonnet duplicates, once told to stand down, confirmed making zero
+edits — read-only verification only). Lesson for future incidents:
+either fully commit to switching a batch's model, or don't dispatch a
+parallel replacement batch while a resume is still in flight for the
+same lessons.
+
+All 9 Module 3 lessons now carry a diagram-artist diagram. Final state
+verified after the last batch: `tsc --noEmit` clean, 625 tests passing
+across 36 files.
