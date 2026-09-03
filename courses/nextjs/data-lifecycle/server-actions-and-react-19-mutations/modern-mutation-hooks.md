@@ -92,14 +92,15 @@ function LikeButton({ postId }: { postId: string }) {
 }
 ```
 
+The three hooks are not really three competing options — each one belongs
+to a different *position* in the tree. Laid out on a single page, the
+choice becomes a question of where the component sits:
+
 ```diagram
 {
-  "id": "comparison-cards",
-  "cards": [
-    { "title": "useActionState", "points": ["Returns: value + isPending", "Needs (prevState, formData)", "For: the form itself"], "highlight": true },
-    { "title": "useFormStatus", "points": ["Reads nearest <form>'s state", "No prop drilling needed", "For: a child submit button"] },
-    { "title": "useTransition", "points": ["Non-blocking transition", "Works outside <form>", "For: like buttons, drag reorder"] }
-  ]
+  "id": "mutation-hook-scope",
+  "errorMessage": "Title is required",
+  "submitPendingLabel": "Saving…"
 }
 ```
 

@@ -42,7 +42,10 @@ import { ClientServerBoundaryDiagram } from "@/components/md/diagrams/ClientServ
 import { DistributedCacheHandlerDiagram } from "@/components/md/diagrams/DistributedCacheHandlerDiagram";
 import { RouterCacheStaleViewDiagram } from "@/components/md/diagrams/RouterCacheStaleViewDiagram";
 import { CacheLayerFallthroughDiagram } from "@/components/md/diagrams/CacheLayerFallthroughDiagram";
+import { CacheInvalidationScopeDiagram } from "@/components/md/diagrams/CacheInvalidationScopeDiagram";
 import { FetchWaterfallTimelineDiagram } from "@/components/md/diagrams/FetchWaterfallTimelineDiagram";
+import { MutationHookScopeDiagram } from "@/components/md/diagrams/MutationHookScopeDiagram";
+import { ServerActionRpcDiagram } from "@/components/md/diagrams/ServerActionRpcDiagram";
 import { FlowStepsDiagram } from "@/components/md/diagrams/FlowStepsDiagram";
 import { ComparisonCardsDiagram } from "@/components/md/diagrams/ComparisonCardsDiagram";
 import { LayeredBandsDiagram } from "@/components/md/diagrams/LayeredBandsDiagram";
@@ -101,7 +104,10 @@ export const DIAGRAM_REGISTRY: Record<string, DiagramComponent> = {
   "distributed-cache-handler": DistributedCacheHandlerDiagram,
   "router-cache-stale-view": RouterCacheStaleViewDiagram,
   "cache-layer-fallthrough": CacheLayerFallthroughDiagram,
+  "cache-invalidation-scope": CacheInvalidationScopeDiagram,
   "fetch-waterfall-timeline": FetchWaterfallTimelineDiagram,
+  "mutation-hook-scope": MutationHookScopeDiagram,
+  "server-action-rpc": ServerActionRpcDiagram,
   // Generic, prop-driven shapes reused across many Next.js lessons rather
   // than one bespoke SVG per lesson — a horizontal flow/pipeline, an N-way
   // comparison, stacked layers, a file tree, a timeline, and a decision

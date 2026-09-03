@@ -62,13 +62,11 @@ topic.
 
 ```diagram
 {
-  "id": "flow-steps",
-  "steps": [
-    { "label": "Form submits", "detail": "client-rendered" },
-    { "label": "POST request", "detail": "generated endpoint" },
-    { "label": "Function runs", "detail": "on the server", "highlight": true },
-    { "label": "Revalidate", "detail": "UI updates" }
-  ]
+  "id": "server-action-rpc",
+  "actionName": "createPost",
+  "endpointPath": "/new-post",
+  "actionId": "7f3a2c",
+  "mutationLine": "await db.posts.create(…)"
 }
 ```
 

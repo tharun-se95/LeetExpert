@@ -38,13 +38,15 @@ export async function createPost(formData: FormData) {
   list on another page) and a single mutation needs to invalidate all of
   them at once.
 
+The difference between them is not "narrow versus wide" in the abstract —
+it is which *shape* of the app each one purges, and the two shapes are
+perpendicular to each other:
+
 ```diagram
 {
-  "id": "comparison-cards",
-  "cards": [
-    { "title": "revalidatePath", "points": ["Invalidates: one route", "For: a narrow, single-page fix"] },
-    { "title": "revalidateTag", "points": ["Invalidates: every tagged fetch", "For: data shown in many places"], "highlight": true }
-  ]
+  "id": "cache-invalidation-scope",
+  "path": "/posts",
+  "tag": "post-count"
 }
 ```
 
