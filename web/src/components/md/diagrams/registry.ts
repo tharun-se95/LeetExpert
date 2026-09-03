@@ -39,6 +39,7 @@ import { InterceptingNavigationDiagram } from "@/components/md/diagrams/Intercep
 import { ParallelRoutesDiagram } from "@/components/md/diagrams/ParallelRoutesDiagram";
 import { PartialShellDiagram } from "@/components/md/diagrams/PartialShellDiagram";
 import { ClientServerBoundaryDiagram } from "@/components/md/diagrams/ClientServerBoundaryDiagram";
+import { DistributedCacheHandlerDiagram } from "@/components/md/diagrams/DistributedCacheHandlerDiagram";
 import { FlowStepsDiagram } from "@/components/md/diagrams/FlowStepsDiagram";
 import { ComparisonCardsDiagram } from "@/components/md/diagrams/ComparisonCardsDiagram";
 import { LayeredBandsDiagram } from "@/components/md/diagrams/LayeredBandsDiagram";
@@ -94,6 +95,7 @@ export const DIAGRAM_REGISTRY: Record<string, DiagramComponent> = {
   "parallel-routes": ParallelRoutesDiagram,
   "partial-shell": PartialShellDiagram,
   "client-server-boundary": ClientServerBoundaryDiagram,
+  "distributed-cache-handler": DistributedCacheHandlerDiagram,
   // Generic, prop-driven shapes reused across many Next.js lessons rather
   // than one bespoke SVG per lesson — a horizontal flow/pipeline, an N-way
   // comparison, stacked layers, a file tree, a timeline, and a decision

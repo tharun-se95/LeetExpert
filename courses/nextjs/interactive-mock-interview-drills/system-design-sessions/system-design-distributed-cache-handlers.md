@@ -48,15 +48,9 @@ disk-based one. The design has to account for:
 
 ```diagram
 {
-  "id": "layered-bands",
-  "bands": [
-    { "label": "Request Memoization", "detail": "per-render, in-process" },
-    { "label": "Data Cache", "detail": "per-fetch, server-wide" },
-    { "label": "Full Route Cache", "detail": "per-route, server-wide" },
-    { "label": "Router Cache", "detail": "per-client, in the browser" },
-    { "label": "Distributed shared cache", "detail": "one store, every container", "highlight": true }
-  ],
-  "caption": "Every earlier layer, plus one more: a single Redis-backed layer all containers share."
+  "id": "distributed-cache-handler",
+  "containerCount": 6,
+  "cacheKey": "/products/42"
 }
 ```
 

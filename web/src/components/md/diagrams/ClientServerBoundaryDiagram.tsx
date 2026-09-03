@@ -101,7 +101,7 @@ export function ClientServerBoundaryDiagram() {
         width={width - 16 - boundaryX}
         height={bandBottom - bandTop}
         rx={14}
-        fill="var(--family-accent, var(--accent))"
+        fill="var(--accent)"
         fillOpacity={0.05}
       />
       <rect x={boundaryX} y={bandTop} width={width - 16 - boundaryX} height={bandBottom - bandTop} rx={14} fill="url(#csb-dots)" fillOpacity={0.5} />
@@ -132,11 +132,11 @@ export function ClientServerBoundaryDiagram() {
 
       {/* Glowing crossover marker sitting ON the boundary line — the node
           itself never straddles it, only this marker does. */}
-      <circle cx={boundaryX} cy={crossY} r={12} fill="var(--family-accent, var(--accent))" fillOpacity={0.14} />
-      <circle cx={boundaryX} cy={crossY} r={7} fill="var(--elevated)" stroke="var(--family-accent, var(--accent))" strokeWidth={1.25} />
-      <Lightning x={boundaryX - 4.5} y={crossY - 4.5} size={9} color="var(--family-accent, var(--accent))" weight="fill" />
-      <rect x={boundaryX - 38} y={crossY - 32} width={76} height={18} rx={9} fill="var(--elevated)" stroke="var(--family-accent, var(--accent))" strokeWidth={1} />
-      <text x={boundaryX} y={crossY - 20} fontSize={9} fontWeight={600} fill="var(--family-accent, var(--accent))" textAnchor="middle" fontFamily="var(--font-mono), monospace" letterSpacing={0.2}>
+      <circle cx={boundaryX} cy={crossY} r={12} fill="var(--accent)" fillOpacity={0.14} />
+      <circle cx={boundaryX} cy={crossY} r={7} fill="var(--elevated)" stroke="var(--accent)" strokeWidth={1.25} />
+      <Lightning x={boundaryX - 4.5} y={crossY - 4.5} size={9} color="var(--accent)" weight="fill" />
+      <rect x={boundaryX - 38} y={crossY - 32} width={76} height={18} rx={9} fill="var(--elevated)" stroke="var(--accent)" strokeWidth={1} />
+      <text x={boundaryX} y={crossY - 20} fontSize={9} fontWeight={600} fill="var(--mark)" textAnchor="middle" fontFamily="var(--font-mono), monospace" letterSpacing={0.2}>
         use client
       </text>
 
@@ -168,11 +168,11 @@ export function ClientServerBoundaryDiagram() {
       </text>
 
       {/* LikeButton node — the crossover component */}
-      <rect x={likeX} y={likeY} width={nodeW} height={nodeH} rx={12} fill="var(--elevated)" stroke="var(--family-accent, var(--accent))" strokeWidth={1.5} />
+      <rect x={likeX} y={likeY} width={nodeW} height={nodeH} rx={12} fill="var(--elevated)" stroke="var(--accent)" strokeWidth={1.5} />
       <text x={likeX + nodeW / 2} y={likeY + 21} fontSize={13} fontWeight={600} fill="var(--foreground)" textAnchor="middle" fontFamily="var(--font-sans), system-ui">
         LikeButton
       </text>
-      <text x={likeX + nodeW / 2} y={likeY + 37} fontSize={9.5} fontWeight={600} fill="var(--family-accent, var(--accent))" textAnchor="middle" fontFamily="var(--font-mono), monospace">
+      <text x={likeX + nodeW / 2} y={likeY + 37} fontSize={9.5} fontWeight={600} fill="var(--mark)" textAnchor="middle" fontFamily="var(--font-mono), monospace">
         &quot;use client&quot;
       </text>
       <text x={likeX + nodeW / 2} y={likeY + 50} fontSize={9.5} fill="var(--muted)" textAnchor="middle" fontFamily="var(--font-sans), system-ui">

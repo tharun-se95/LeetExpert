@@ -152,6 +152,39 @@ structure. The specific techniques that made the difference between
   more breathing room between nodes and around text than feels
   necessary; cramped diagrams read as rushed regardless of correctness.
 
+**A measured contrast rule, not a style opinion — `var(--family-accent,
+var(--accent))` must never fill a `<text>` element.** A second test
+diagram (`DistributedCacheHandlerDiagram.tsx`) shipped that pattern for
+a badge label, and it was caught only by actually computing the WCAG
+ratio live in the browser: `--family-accent` in this course's dark
+theme is `#4F46E5` against an `--elevated` background of `#26262a` —
+**2.4:1**, well under the 4.5:1 text floor. The reason: `--accent`
+(alone, no `family-accent` fallback) is already the *derived*,
+UI-safe version of the brand color — CLAUDE.md calls this `accentUi`,
+"the 3:1-on-both-papers UI fill" — measured at `#635be8` against the
+same background, **3.01:1**: correct for a border, a stroke, or an
+icon fill, but still not enough for text. Only `--mark` (measured at
+**10.15:1** on the same background) clears the actual text floor. So:
+  - **Any `<text>` (or an icon standing in for a word, like the
+    `Lightning` glyph in the crossover marker) painted in the accent
+    hue uses `var(--mark)`.**
+  - **Any non-text shape — a rect's `stroke`, a `<line>`, an arrowhead
+    `<path>`, a low-opacity background wash, an icon used as a category
+    marker rather than a word-replacement — uses plain `var(--accent)`**
+    (never the `var(--family-accent, var(--accent))` fallback chain;
+    on every Next.js-course page `--family-accent` is already set
+    course-wide, so that fallback never actually falls back, and you
+    silently get the unsafe raw value instead of the safe derived one).
+  - `var(--insight)` (`#facc15`, ~9.84:1) and `var(--bad)` (`#f15858`,
+    ~4.51:1, right at the floor) are already safe for text as-is — this
+    rule is specifically about the accent hue, not every status color.
+  - Don't take this on faith — verify it the same way it was caught:
+    `getComputedStyle(document.documentElement).getPropertyValue(...)`
+    in the live page for the actual hex values, then compute the ratio
+    (relative luminance formula, WCAG 2.1) before shipping any new
+    color pairing you haven't seen used elsewhere in this file's
+    existing diagrams.
+
 Before calling a diagram done, hold it up against this checklist the
 same way you hold it up against the mechanism-accuracy standard above —
 both bars have to clear, not just one.
