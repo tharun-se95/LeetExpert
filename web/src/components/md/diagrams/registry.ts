@@ -40,6 +40,9 @@ import { ParallelRoutesDiagram } from "@/components/md/diagrams/ParallelRoutesDi
 import { PartialShellDiagram } from "@/components/md/diagrams/PartialShellDiagram";
 import { ClientServerBoundaryDiagram } from "@/components/md/diagrams/ClientServerBoundaryDiagram";
 import { DistributedCacheHandlerDiagram } from "@/components/md/diagrams/DistributedCacheHandlerDiagram";
+import { RouterCacheStaleViewDiagram } from "@/components/md/diagrams/RouterCacheStaleViewDiagram";
+import { CacheLayerFallthroughDiagram } from "@/components/md/diagrams/CacheLayerFallthroughDiagram";
+import { FetchWaterfallTimelineDiagram } from "@/components/md/diagrams/FetchWaterfallTimelineDiagram";
 import { FlowStepsDiagram } from "@/components/md/diagrams/FlowStepsDiagram";
 import { ComparisonCardsDiagram } from "@/components/md/diagrams/ComparisonCardsDiagram";
 import { LayeredBandsDiagram } from "@/components/md/diagrams/LayeredBandsDiagram";
@@ -96,6 +99,9 @@ export const DIAGRAM_REGISTRY: Record<string, DiagramComponent> = {
   "partial-shell": PartialShellDiagram,
   "client-server-boundary": ClientServerBoundaryDiagram,
   "distributed-cache-handler": DistributedCacheHandlerDiagram,
+  "router-cache-stale-view": RouterCacheStaleViewDiagram,
+  "cache-layer-fallthrough": CacheLayerFallthroughDiagram,
+  "fetch-waterfall-timeline": FetchWaterfallTimelineDiagram,
   // Generic, prop-driven shapes reused across many Next.js lessons rather
   // than one bespoke SVG per lesson — a horizontal flow/pipeline, an N-way
   // comparison, stacked layers, a file tree, a timeline, and a decision

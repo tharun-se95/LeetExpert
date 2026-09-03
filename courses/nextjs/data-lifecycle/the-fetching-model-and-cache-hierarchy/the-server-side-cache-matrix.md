@@ -38,15 +38,19 @@ a route is fully static (no uncached dynamic data access), Next.js can
 skip re-rendering it altogether and serve the pre-rendered HTML/RSC
 payload directly.
 
+Listing them by scope is how you *learn* them; it is not the order a
+request meets them. A request arrives at the Full Route Cache first,
+before any rendering is attempted at all — a hit there means the render
+function never runs, so the other two layers are never even reached.
+Only a miss starts a render, and only inside that render does a `fetch`
+consult Request Memoization and then the Data Cache. Each layer is a
+gate that can answer and stop the descent, and the layers below a hit
+are never consulted:
+
 ```diagram
 {
-  "id": "layered-bands",
-  "caption": "checked in this order — narrowest scope first",
-  "bands": [
-    { "label": "Request Memoization", "detail": "one render pass, resets after" },
-    { "label": "Data Cache", "detail": "persistent, server-wide" },
-    { "label": "Full Route Cache", "detail": "entire static route's output" }
-  ]
+  "id": "cache-layer-fallthrough",
+  "route": "/products/42"
 }
 ```
 

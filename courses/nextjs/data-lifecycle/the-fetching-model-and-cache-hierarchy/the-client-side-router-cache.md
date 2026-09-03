@@ -37,13 +37,10 @@ mutation happened.
 
 ```diagram
 {
-  "id": "flow-steps",
-  "steps": [
-    { "label": "Mutation", "detail": "server data updated" },
-    { "label": "Router Cache", "detail": "still holds old snapshot" },
-    { "label": "router.refresh()", "detail": "discards stale cache", "highlight": true },
-    { "label": "Fresh UI", "detail": "no full reload" }
-  ]
+  "id": "router-cache-stale-view",
+  "url": "app.com/tasks",
+  "keptRows": ["Ship v2 landing", "Fix login redirect"],
+  "staleRow": "Archive backlog"
 }
 ```
 

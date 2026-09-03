@@ -119,6 +119,47 @@ describe("registry-addressed fences resolve", () => {
   }
 });
 
+/**
+ * The Next.js course renders through the same `diagram` fence and the same
+ * DIAGRAM_REGISTRY, but LESSONS above only walks `courses/dsa` — so until
+ * this block existed, a typo'd or unregistered diagram id in any of the 62
+ * Next.js lessons shipped an error card in production with a green CI.
+ */
+describe("Next.js course registry-addressed fences resolve", () => {
+  const NEXTJS_LESSONS = walk(join(__dirname, "..", "..", "courses", "nextjs")).map(
+    (path) => ({
+      rel: relative(join(__dirname, "..", "..", "courses", "nextjs"), path),
+      body: readFileSync(path, "utf8"),
+    }),
+  );
+
+  it("walks a non-empty lesson set", () => {
+    expect(NEXTJS_LESSONS.length).toBeGreaterThan(0);
+  });
+
+  it("every `diagram` id is registered and its spec is valid JSON", () => {
+    const ids = registryIds("components/md/diagrams/registry.ts");
+    const broken: string[] = [];
+    for (const lesson of NEXTJS_LESSONS) {
+      for (const f of fences(lesson.body, "diagram")) {
+        let spec: { id?: unknown };
+        try {
+          spec = JSON.parse(f.json);
+        } catch {
+          broken.push(`${lesson.rel}:${f.line} — not valid JSON`);
+          continue;
+        }
+        if (typeof spec.id !== "string") {
+          broken.push(`${lesson.rel}:${f.line} — missing "id"`);
+        } else if (!ids.has(spec.id)) {
+          broken.push(`${lesson.rel}:${f.line} — unknown id "${spec.id}"`);
+        }
+      }
+    }
+    expect(broken).toEqual([]);
+  });
+});
+
 describe("hand-authored JSON fences", () => {
   it("every `quiz` block is well formed", () => {
     const broken: string[] = [];

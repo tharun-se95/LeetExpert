@@ -51,11 +51,11 @@ with no new network calls added.
 
 ```diagram
 {
-  "id": "comparison-cards",
-  "cards": [
-    { "title": "Sequential", "points": ["getUser: 0-300ms", "getPosts: 300-600ms", "Total: 600ms"] },
-    { "title": "Promise.all", "points": ["Both start: 0ms", "Both finish: ~300ms", "Total: ~300ms"], "highlight": true }
-  ]
+  "id": "fetch-waterfall-timeline",
+  "firstLabel": "getUser()",
+  "secondLabel": "getPosts()",
+  "firstMs": 300,
+  "secondMs": 300
 }
 ```
 
