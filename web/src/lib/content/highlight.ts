@@ -12,6 +12,26 @@ const SUPPORTED_LANGS = [
 ] as const;
 
 /*
+  Lesson markdown fences the way authors actually type them — `ts`, `js`,
+  `py`, `sh` — not the canonical Shiki grammar ids. Without this map those
+  fences silently fell through the SUPPORTED_LANGS gate below and rendered
+  as unhighlighted plain text everywhere in the app, since `lang` is
+  compared by strict equality, not against Shiki's own internal aliases.
+*/
+const LANG_ALIASES: Record<string, (typeof SUPPORTED_LANGS)[number]> = {
+  ts: "typescript",
+  js: "javascript",
+  py: "python",
+  sh: "bash",
+  shell: "bash",
+  jsonc: "json",
+};
+
+function canonicalLang(lang: string): string {
+  return LANG_ALIASES[lang] ?? lang;
+}
+
+/*
   Custom themes rather than stock ones. GitHub's palette on the press paper
   reads as borrowed, and — more concretely — the sandbox editor paints from
   `--tok-*` in globals.css, so a stock theme here would put the code block
@@ -44,13 +64,14 @@ export async function highlightCode(
   code: string,
   lang: string,
 ): Promise<string | null> {
-  if (!(SUPPORTED_LANGS as readonly string[]).includes(lang)) {
+  const resolvedLang = canonicalLang(lang);
+  if (!(SUPPORTED_LANGS as readonly string[]).includes(resolvedLang)) {
     return null;
   }
   try {
     const highlighter = await getHighlighter();
     return highlighter.codeToHtml(code, {
-      lang,
+      lang: resolvedLang,
       themes: { light: LIGHT_NAME, dark: DARK_NAME },
       defaultColor: false,
     });

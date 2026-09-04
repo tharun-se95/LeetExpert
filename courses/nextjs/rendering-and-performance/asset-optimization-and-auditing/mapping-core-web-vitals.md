@@ -27,12 +27,7 @@ of architectural decision this course has already covered.
 
 ```diagram
 {
-  "id": "comparison-cards",
-  "cards": [
-    { "title": "LCP", "points": ["Largest element's paint time", "Driven by rendering strategy"] },
-    { "title": "INP", "points": ["Response time to interaction", "Driven by JS execution cost"], "highlight": true },
-    { "title": "CLS", "points": ["Unexpected content movement", "Driven by unreserved space"] }
-  ]
+  "id": "core-web-vitals-timeline"
 }
 ```
 

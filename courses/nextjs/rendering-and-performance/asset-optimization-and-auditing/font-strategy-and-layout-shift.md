@@ -41,13 +41,13 @@ than eliminating the swap itself.
 
 ```diagram
 {
-  "id": "flow-steps",
-  "steps": [
-    { "label": "Fallback shown", "detail": "0ms, system font" },
-    { "label": "Font downloads", "detail": "next/font self-hosted" },
-    { "label": "Font swaps in", "detail": "340ms" },
-    { "label": "Reflow", "detail": "sized by metrics match", "highlight": true }
-  ]
+  "id": "font-swap-reflow",
+  "fallbackLabel": "Arial",
+  "customLabel": "Inter",
+  "loadMs": 340,
+  "swapMs": 341,
+  "clsMismatched": "+0.18",
+  "clsMatched": "~0.02"
 }
 ```
 

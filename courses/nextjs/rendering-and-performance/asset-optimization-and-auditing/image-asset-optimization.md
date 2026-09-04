@@ -46,11 +46,9 @@ import Image from "next/image";
 
 ```diagram
 {
-  "id": "comparison-cards",
-  "cards": [
-    { "title": "<img>", "points": ["No reserved space → CLS", "No format/size negotiation", "No load-priority hint"] },
-    { "title": "<Image>", "points": ["width/height reserve space", "priority for the LCP element", "sizes picks the right variant"], "highlight": true }
-  ]
+  "id": "layout-shift-comparison",
+  "paragraph": "Free shipping on orders over $50",
+  "shiftAmount": "+180px"
 }
 ```
 
