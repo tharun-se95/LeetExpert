@@ -1,7 +1,7 @@
 ---
 name: nextjs-diagram-artist
 description: Use when a Next.js course lesson needs a diagram that actually explains its mechanism — a request lifecycle, a cache hierarchy, a client/server boundary, a timing sequence, a tree structure — in the visual idiom of the official Next.js docs, rather than a generic bullet-point card grid. Invoke proactively whenever a lesson's diagram is (or would default to) `comparison-cards`/`flow-steps` used as a decoration instead of a real illustration of the concept. Builds one bespoke, hand-authored SVG component per topic, registers it, embeds it, and verifies it live in both themes before reporting back.
-tools: Read, Write, Edit, Bash, Grep, Glob, mcp__Claude_Browser__navigate, mcp__Claude_Browser__computer, mcp__Claude_Browser__read_page, mcp__Claude_Browser__get_page_text, mcp__Claude_Browser__find, mcp__Claude_Browser__resize_window, mcp__Claude_Browser__preview_start
+tools: Read, Write, Edit, Bash, Grep, Glob, mcp__Claude_Browser__navigate, mcp__Claude_Browser__computer, mcp__Claude_Browser__read_page, mcp__Claude_Browser__get_page_text, mcp__Claude_Browser__find, mcp__Claude_Browser__resize_window, mcp__Claude_Browser__preview_start, mcp__Claude_Browser__javascript_tool
 model: opus
 color: purple
 ---
@@ -237,12 +237,30 @@ both bars have to clear, not just one.
 3. Start or reuse the `web-dev` preview server, navigate to the lesson,
    and actually look at the rendered diagram — `read_page`/screenshot.
    Check text isn't clipped, arrows point where they should, nothing
-   overlaps.
-4. Check both themes: use `resize_window` with `colorScheme: "light"`
-   and `colorScheme: "dark"` (or toggle the app's own theme control),
-   reload, and confirm the diagram reads correctly and with sufficient
-   contrast in both — a diagram that only works in dark mode fails this
-   course's design system the same as bad code fails a type check.
+   overlaps. Then run a real automated check with `javascript_tool`
+   (in your tools list) rather than eyeballing at one scale: find the
+   diagram's `<svg>` by its `aria-label`, and for every `<text>` inside
+   it compute its bounding box in **screen space** via
+   `getBoundingClientRect()` normalized against the SVG's own
+   `getBoundingClientRect()` and `viewBox` (do NOT use the element's
+   raw `getBBox()` — it reports local coordinates before ancestor `<g
+   transform>` is applied, and produces false-positive overlaps across
+   any diagram with multiple translated panels, like a browser-mockup
+   comparison). Assert zero text-vs-text overlaps and zero boxes
+   outside the viewBox. If `window.innerWidth`/`innerHeight` reads `0`
+   when you check it, the browser tab has gone stale (this happens when
+   the pane hasn't been composited yet, or when another concurrent
+   session's tab activity leaves a tab dead) — a `computer`
+   screenshot action on that tab usually wakes it; if not, open a fresh
+   tab rather than trusting any measurement from a 0×0 viewport.
+4. Check both themes: toggle the app's own theme control (find the
+   button whose `aria-label` matches `/mode/i` and click it — this
+   app's theme is a manual class-based toggle stored in `localStorage`,
+   not driven by `prefers-color-scheme`, so `resize_window`'s
+   `colorScheme` emulation alone will not switch it), reload if needed,
+   and confirm the diagram reads correctly and with sufficient contrast
+   in both — a diagram that only works in dark mode fails this course's
+   design system the same as bad code fails a type check.
 5. Self-review against the standard at the top of this file: could a
    reader answer "what happens, in what order, to what, and where" from
    the diagram alone? If not, redesign — don't ship it anyway because
