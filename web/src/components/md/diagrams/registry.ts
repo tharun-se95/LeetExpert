@@ -44,6 +44,7 @@ import { RouterCacheStaleViewDiagram } from "@/components/md/diagrams/RouterCach
 import { CacheLayerFallthroughDiagram } from "@/components/md/diagrams/CacheLayerFallthroughDiagram";
 import { CacheInvalidationScopeDiagram } from "@/components/md/diagrams/CacheInvalidationScopeDiagram";
 import { FetchWaterfallTimelineDiagram } from "@/components/md/diagrams/FetchWaterfallTimelineDiagram";
+import { DynamicImportTimingDiagram } from "@/components/md/diagrams/DynamicImportTimingDiagram";
 import { MutationHookScopeDiagram } from "@/components/md/diagrams/MutationHookScopeDiagram";
 import { ServerActionRpcDiagram } from "@/components/md/diagrams/ServerActionRpcDiagram";
 import { ProgressiveEnhancementForkDiagram } from "@/components/md/diagrams/ProgressiveEnhancementForkDiagram";
@@ -112,6 +113,7 @@ export const DIAGRAM_REGISTRY: Record<string, DiagramComponent> = {
   "cache-layer-fallthrough": CacheLayerFallthroughDiagram,
   "cache-invalidation-scope": CacheInvalidationScopeDiagram,
   "fetch-waterfall-timeline": FetchWaterfallTimelineDiagram,
+  "dynamic-import-timing": DynamicImportTimingDiagram,
   "mutation-hook-scope": MutationHookScopeDiagram,
   "server-action-rpc": ServerActionRpcDiagram,
   "progressive-enhancement-fork": ProgressiveEnhancementForkDiagram,

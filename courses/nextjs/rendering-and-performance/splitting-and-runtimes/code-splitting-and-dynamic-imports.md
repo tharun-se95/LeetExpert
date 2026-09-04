@@ -32,13 +32,9 @@ regardless of whether the user ever triggers it.
 
 ```diagram
 {
-  "id": "flow-steps",
-  "steps": [
-    { "label": "Initial page loads", "detail": "HeavyChart excluded" },
-    { "label": "User clicks", "detail": "expand panel" },
-    { "label": "Chart JS fetched", "detail": "next/dynamic import()", "highlight": true },
-    { "label": "Chart renders", "detail": "ssr: false, client-only" }
-  ]
+  "id": "dynamic-import-timing",
+  "mainBundleLabel": "main bundle",
+  "chunkLabel": "HeavyChart.js"
 }
 ```
 
