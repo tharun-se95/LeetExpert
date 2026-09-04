@@ -33,13 +33,7 @@ where a given piece of UI sits on this spectrum.
 
 ```diagram
 {
-  "id": "comparison-cards",
-  "cards": [
-    { "title": "CSR", "points": ["Renders: in the browser", "Freshness: on interaction"] },
-    { "title": "SSG", "points": ["Renders: once, at build", "Freshness: frozen till rebuild"] },
-    { "title": "SSR", "points": ["Renders: every request", "Freshness: always current"], "highlight": true },
-    { "title": "ISR", "points": ["Renders: build + background", "Freshness: eventually current"] }
-  ]
+  "id": "rendering-strategy-matrix"
 }
 ```
 

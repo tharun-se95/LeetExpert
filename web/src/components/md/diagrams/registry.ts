@@ -50,6 +50,7 @@ import { ProgressiveEnhancementForkDiagram } from "@/components/md/diagrams/Prog
 import { QueryHydrationHandoffDiagram } from "@/components/md/diagrams/QueryHydrationHandoffDiagram";
 import { CoreWebVitalsTimelineDiagram } from "@/components/md/diagrams/CoreWebVitalsTimelineDiagram";
 import { LayoutShiftComparisonDiagram } from "@/components/md/diagrams/LayoutShiftComparisonDiagram";
+import { RenderingStrategyMatrixDiagram } from "@/components/md/diagrams/RenderingStrategyMatrixDiagram";
 import { FlowStepsDiagram } from "@/components/md/diagrams/FlowStepsDiagram";
 import { ComparisonCardsDiagram } from "@/components/md/diagrams/ComparisonCardsDiagram";
 import { LayeredBandsDiagram } from "@/components/md/diagrams/LayeredBandsDiagram";
@@ -118,6 +119,7 @@ export const DIAGRAM_REGISTRY: Record<string, DiagramComponent> = {
   "core-web-vitals-timeline": CoreWebVitalsTimelineDiagram,
   "layout-shift-comparison": LayoutShiftComparisonDiagram,
   "font-swap-reflow": FontSwapReflowDiagram,
+  "rendering-strategy-matrix": RenderingStrategyMatrixDiagram,
   // Generic, prop-driven shapes reused across many Next.js lessons rather
   // than one bespoke SVG per lesson — a horizontal flow/pipeline, an N-way
   // comparison, stacked layers, a file tree, a timeline, and a decision
