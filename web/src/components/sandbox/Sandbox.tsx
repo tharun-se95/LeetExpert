@@ -568,7 +568,7 @@ function IdeWorkspace({
         spaces is a bug rather than a style nit, and the editor silently
         switches indentUnit with the language.
       */}
-      <div className="flex shrink-0 items-center gap-3 border-t border-border bg-elevated px-3 py-1 font-mono text-[0.65rem] text-muted">
+      <div className="flex shrink-0 items-center gap-3 border-t border-code-editor-border bg-code-editor px-3 py-1 font-mono text-[0.65rem] text-[color:var(--tok-comment)]">
         <span className="tabular-nums">
           Ln {cursor.line}, Col {cursor.col}
         </span>
@@ -581,11 +581,12 @@ function IdeWorkspace({
   );
 
   const resultsBody = (
-    // bg-elevated, not bg-surface: the result card inside is already
-    // bg-elevated, so the recessed panel behind it read as two unrelated
-    // greys stacked with a visible seam. Same tone now — the card's own
-    // border is what separates it, not a colour step.
-    <div className="flex h-full min-h-0 flex-col bg-elevated">
+    // bg-code-editor, matching the editor pane above it: Insight, Tests, and
+    // Console are all reading/reasoning about the code you just wrote, not
+    // page chrome, so they share the code well's (theme-inverted) surface
+    // and --tok-* ink rather than page tokens, which don't have guaranteed
+    // contrast against it (same reasoning as .editor-tab in globals.css).
+    <div className="flex h-full min-h-0 flex-col bg-code-editor">
       {statusBanner}
       <div
         role="tabpanel"
@@ -649,7 +650,7 @@ function IdeWorkspace({
           id={resultsPanelId}
           hidden={!resultsOpen}
           className={cn(
-            "min-h-0 shrink-0 overflow-hidden border-t border-border",
+            "min-h-0 shrink-0 overflow-hidden border-t border-code-editor-border",
             // max-h, not h: a two-line "Case failed" result was being force-
             // stretched to fill a fixed 38vh/22rem panel regardless of how
             // little content it held, which is the cavernous-empty-space
@@ -725,7 +726,7 @@ function ResultsRail({
   const status = railStatus(busy, failed, ran, passed, total, allPassed);
 
   return (
-    <div className="flex min-h-11 shrink-0 items-stretch border-t border-border bg-elevated">
+    <div className="flex min-h-11 shrink-0 items-stretch border-t border-code-editor-border bg-code-editor">
       <div
         role="tablist"
         aria-label="Insight, tests, and console"
@@ -769,9 +770,13 @@ function ResultsRail({
                 // mirror image of TabList's bottom rule, for the same reason.
                 "relative inline-flex min-h-11 items-center gap-1.5 px-3.5 text-[0.75rem] font-medium transition-colors motion-reduce:transition-none",
                 "after:absolute after:inset-x-2 after:-top-px after:h-[2px] after:rounded-full after:transition-colors after:duration-[var(--dur-fast)] after:content-['']",
+                // --tok-keyword/--tok-name, not --pop/--foreground: a
+                // family/site accent isn't guaranteed visible against a well
+                // whose brightness doesn't track the page theme (same
+                // reasoning as .code-tab/.editor-tab in globals.css).
                 selected
-                  ? "text-foreground after:bg-pop"
-                  : "text-muted after:bg-transparent hover:text-foreground hover:after:bg-border",
+                  ? "text-[color:var(--tok-name)] after:bg-[var(--tok-keyword)]"
+                  : "text-[color:var(--tok-comment)] after:bg-transparent hover:text-[color:var(--tok-name)] hover:after:bg-code-editor-border",
               )}
             >
               <RailIcon
@@ -787,19 +792,19 @@ function ResultsRail({
                     // Real pass/fail colour regardless of selection now —
                     // there's no more filled tab background to contrast
                     // against, so the count reads its own status colour on
-                    // the shared bg-elevated surface in both states.
+                    // the shared bg-code-editor surface in both states.
                     ran && allPassed
-                      ? "text-good"
+                      ? "text-[color:var(--tok-string)]"
                       : ran
-                        ? "text-bad"
-                        : "text-muted",
+                        ? "text-[color:var(--tok-invalid)]"
+                        : "text-[color:var(--tok-comment)]",
                   )}
                 >
                   {ran ? `${passed}/${total}` : total}
                 </span>
               ) : null}
               {id === "console" && logCount > 0 ? (
-                <span className="rounded-[length:var(--radius-xs)] px-1.5 font-mono text-[0.65rem] font-semibold text-muted">
+                <span className="rounded-[length:var(--radius-xs)] px-1.5 font-mono text-[0.65rem] font-semibold text-[color:var(--tok-comment)]">
                   {logCount}
                 </span>
               ) : null}
@@ -811,10 +816,10 @@ function ResultsRail({
         className={cn(
           "flex min-w-0 flex-1 items-center px-3 text-[0.75rem]",
           status.tone === "good"
-            ? "text-good"
+            ? "text-[color:var(--tok-string)]"
             : status.tone === "bad"
-              ? "text-bad"
-              : "text-muted",
+              ? "text-[color:var(--tok-invalid)]"
+              : "text-[color:var(--tok-comment)]",
         )}
       >
         {status.text}
@@ -825,7 +830,7 @@ function ResultsRail({
         aria-controls={resultsPanelId}
         aria-label={resultsOpen ? "Collapse panel" : "Expand panel"}
         onClick={onToggle}
-        className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+        className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-[color:var(--tok-comment)] hover:bg-[var(--editor-active-line)] hover:text-[color:var(--tok-name)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[color:var(--tok-keyword)]"
       >
         {resultsOpen ? (
           <CaretDown size={14} weight="bold" aria-hidden />
@@ -872,7 +877,7 @@ function IdeTestcases({
       <div
         role="tablist"
         aria-label="Test cases"
-        className="flex flex-wrap gap-1.5 border-b border-border/60 px-3 py-2"
+        className="flex flex-wrap gap-1.5 border-b border-code-editor-border px-3 py-2"
       >
         {spec.cases.map((_, i) => {
           const r = results?.[i];
@@ -893,10 +898,16 @@ function IdeTestcases({
                 "rounded-[length:var(--radius-md)] px-2.5 py-1 font-mono text-[0.7rem] font-medium transition-colors",
                 r
                   ? r.passed
-                    ? "bg-good/15 text-good"
-                    : "bg-bad/15 text-bad"
-                  : "text-muted hover:bg-surface hover:text-foreground",
-                active === i ? "ring-2 ring-inset ring-pop" : "",
+                    ? "bg-[color:var(--tok-string)]/15 text-[color:var(--tok-string)]"
+                    : "bg-[color:var(--tok-invalid)]/15 text-[color:var(--tok-invalid)]"
+                  : "text-[color:var(--tok-comment)] hover:bg-[var(--editor-active-line)] hover:text-[color:var(--tok-name)]",
+                // ring-[--tok-keyword], not ring-pop: a family/site accent
+                // isn't guaranteed visible against a well whose brightness
+                // doesn't track the page theme (same reasoning as the
+                // .code-tab/.editor-tab active state in globals.css).
+                active === i
+                  ? "ring-2 ring-inset ring-[color:var(--tok-keyword)]"
+                  : "",
               )}
             >
               <span className="inline-flex items-center gap-1.5">
@@ -905,14 +916,14 @@ function IdeTestcases({
                     <Check
                       size={10}
                       weight="bold"
-                      className="text-good"
+                      className="text-[color:var(--tok-string)]"
                       aria-hidden
                     />
                   ) : (
                     <X
                       size={10}
                       weight="bold"
-                      className="text-bad"
+                      className="text-[color:var(--tok-invalid)]"
                       aria-hidden
                     />
                   )
@@ -936,7 +947,9 @@ function IdeTestcases({
               <p
                 className={cn(
                   "mb-3 flex items-center gap-1.5 text-[0.7rem] font-semibold tracking-wide uppercase",
-                  result.passed ? "text-good" : "text-bad",
+                  result.passed
+                    ? "text-[color:var(--tok-string)]"
+                    : "text-[color:var(--tok-invalid)]",
                 )}
               >
                 {result.passed ? (
@@ -949,30 +962,32 @@ function IdeTestcases({
             ) : null}
             <div className="flex flex-col gap-3 font-mono text-[0.75rem]">
               <div>
-                <p className="mb-1 text-[0.65rem] font-medium tracking-wide text-muted uppercase">
+                <p className="mb-1 text-[0.65rem] font-medium tracking-wide text-[color:var(--tok-comment)] uppercase">
                   Input
                 </p>
-                <p className="overflow-x-auto whitespace-pre text-foreground">
+                <p className="overflow-x-auto whitespace-pre text-[color:var(--tok-name)]">
                   {caseInputLabel(testCase)}
                 </p>
               </div>
               <div>
-                <p className="mb-1 text-[0.65rem] font-medium tracking-wide text-muted uppercase">
+                <p className="mb-1 text-[0.65rem] font-medium tracking-wide text-[color:var(--tok-comment)] uppercase">
                   Expected
                 </p>
-                <p className="overflow-x-auto whitespace-pre text-good">
+                <p className="overflow-x-auto whitespace-pre text-[color:var(--tok-string)]">
                   {result?.expected ?? caseExpectedLabel(spec, testCase)}
                 </p>
               </div>
               {result ? (
                 <div>
-                  <p className="mb-1 text-[0.65rem] font-medium tracking-wide text-muted uppercase">
+                  <p className="mb-1 text-[0.65rem] font-medium tracking-wide text-[color:var(--tok-comment)] uppercase">
                     Your output
                   </p>
                   <p
                     className={cn(
                       "overflow-x-auto whitespace-pre",
-                      result.passed ? "text-good" : "text-bad",
+                      result.passed
+                        ? "text-[color:var(--tok-string)]"
+                        : "text-[color:var(--tok-invalid)]",
                     )}
                   >
                     {result.error ?? result.got ?? "—"}
@@ -1027,14 +1042,14 @@ function IdeConsole({
       <div className="flex min-h-[9rem] flex-1 flex-col items-center justify-center gap-2 px-6 py-8 text-center">
         <span
           aria-hidden
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-surface text-muted"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--editor-active-line)] text-[color:var(--tok-comment)]"
         >
           <TerminalSquare size={16} />
         </span>
-        <p className="text-[0.8rem] font-medium text-foreground">
+        <p className="text-[0.8rem] font-medium text-[color:var(--tok-name)]">
           {neverRan ? "No output yet" : "Nothing printed"}
         </p>
-        <p className="max-w-[24rem] text-[0.75rem] leading-relaxed text-muted">
+        <p className="max-w-[24rem] text-[0.75rem] leading-relaxed text-[color:var(--tok-comment)]">
           {neverRan
             ? "Run your code — anything you print() or console.log() lands here, grouped by case."
             : "Your code ran without printing anything. Add a print() or console.log() to trace what it is doing."}
@@ -1056,7 +1071,7 @@ function IdeConsole({
         <div
           role="tablist"
           aria-label="Console output by case"
-          className="flex shrink-0 flex-wrap gap-1.5 border-b border-border px-3 py-2"
+          className="flex shrink-0 flex-wrap gap-1.5 border-b border-code-editor-border px-3 py-2"
         >
           {all.map((r, i) => (
             <button
@@ -1068,8 +1083,8 @@ function IdeConsole({
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-[length:var(--radius-md)] px-2.5 py-1 font-mono text-[0.7rem] font-medium transition-colors",
                 active === i
-                  ? "bg-elevated text-foreground ring-2 ring-inset ring-pop"
-                  : "text-muted hover:bg-surface hover:text-foreground",
+                  ? "bg-[var(--editor-active-line)] text-[color:var(--tok-name)] ring-2 ring-inset ring-[color:var(--tok-keyword)]"
+                  : "text-[color:var(--tok-comment)] hover:bg-[var(--editor-active-line)] hover:text-[color:var(--tok-name)]",
               )}
             >
               {/*
@@ -1079,10 +1094,15 @@ function IdeConsole({
                 case worth reading.
               */}
               {!r.passed ? (
-                <span className="h-1.5 w-1.5 rounded-full bg-bad" aria-hidden />
+                <span
+                  className="h-1.5 w-1.5 rounded-full bg-[color:var(--tok-invalid)]"
+                  aria-hidden
+                />
               ) : null}
               Case {r.index + 1}
-              <span className="text-muted tabular-nums">{r.logs.length}</span>
+              <span className="text-[color:var(--tok-comment)] tabular-nums">
+                {r.logs.length}
+              </span>
             </button>
           ))}
         </div>
@@ -1090,11 +1110,11 @@ function IdeConsole({
 
       {current && current.logs.length > 0 ? (
         <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-          <pre className="overflow-x-auto font-mono text-[0.75rem] leading-relaxed whitespace-pre-wrap break-words text-foreground">
+          <pre className="overflow-x-auto font-mono text-[0.75rem] leading-relaxed whitespace-pre-wrap break-words text-[color:var(--tok-name)]">
             {current.logs.join("\n")}
           </pre>
           {current.logsDropped > 0 ? (
-            <p className="mt-3 border-t border-border pt-2 text-[0.7rem] text-warn">
+            <p className="mt-3 border-t border-code-editor-border pt-2 text-[0.7rem] text-[color:var(--tok-invalid)]">
               Output stopped after {current.logs.length} lines —{" "}
               {current.logsDropped.toLocaleString()} more were not captured.
               Narrow what you print, or print only on the case you care about.
@@ -1103,7 +1123,7 @@ function IdeConsole({
         </div>
       ) : (
         <div className="flex min-h-[6rem] flex-1 items-center justify-center px-6 text-center">
-          <p className="text-[0.75rem] text-muted">
+          <p className="text-[0.75rem] text-[color:var(--tok-comment)]">
             Case {(current?.index ?? 0) + 1} printed nothing.
           </p>
         </div>

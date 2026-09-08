@@ -4,13 +4,17 @@ import { cn } from "@/lib/utils";
 import type { MemoryModel } from "@/lib/insight/types";
 import { mapMarkersToDisplay } from "@/lib/insight/parseCaseMemory";
 
+// Sits on --code-editor (see InsightPanel), so markers read from --tok-*
+// rather than the page's --accent/--mark/--good/--warn, which aren't
+// guaranteed visible against a well whose brightness doesn't track the
+// page theme (same reasoning as .code-tab/.editor-tab in globals.css).
 const MARKER_COLOR: Record<string, string> = {
-  left: "var(--accent)",
-  right: "var(--accent)",
-  "window-lo": "var(--mark)",
-  "window-hi": "var(--mark)",
-  write: "var(--good)",
-  read: "var(--warn)",
+  left: "var(--tok-keyword)",
+  right: "var(--tok-keyword)",
+  "window-lo": "var(--tok-entity)",
+  "window-hi": "var(--tok-entity)",
+  write: "var(--tok-string)",
+  read: "var(--tok-constant)",
 };
 
 const CELL_H = 28;
@@ -39,7 +43,12 @@ export function MemoryStrip({
 }) {
   if (memory.cells.length === 0) {
     return (
-      <p className={cn("font-mono text-xs text-muted", className)}>
+      <p
+        className={cn(
+          "font-mono text-xs text-[color:var(--tok-comment)]",
+          className,
+        )}
+      >
         {memory.label ?? "—"}
       </p>
     );
@@ -69,7 +78,9 @@ export function MemoryStrip({
   return (
     <div className={cn("overflow-x-auto", className)}>
       {memory.label ? (
-        <p className="mb-1 font-mono text-[0.65rem] text-muted">{memory.label}</p>
+        <p className="mb-1 font-mono text-[0.65rem] text-[color:var(--tok-comment)]">
+          {memory.label}
+        </p>
       ) : null}
       <svg
         width={width}
@@ -95,15 +106,15 @@ export function MemoryStrip({
                   isEllipsis
                     ? "transparent"
                     : isMarked
-                      ? "color-mix(in oklab, var(--accent) 14%, transparent)"
-                      : "var(--elevated)"
+                      ? "color-mix(in oklab, var(--tok-keyword) 14%, transparent)"
+                      : "var(--editor-active-line)"
                 }
                 stroke={
                   isEllipsis
                     ? "none"
                     : isMarked
-                      ? "var(--accent)"
-                      : "var(--border)"
+                      ? "var(--tok-keyword)"
+                      : "var(--code-editor-border)"
                 }
                 strokeWidth={1.25}
               />
@@ -116,7 +127,9 @@ export function MemoryStrip({
                   fontSize,
                   fontFamily: "var(--font-mono-face), ui-monospace, monospace",
                   fontWeight: 600,
-                  fill: isEllipsis ? "var(--muted)" : "var(--foreground)",
+                  fill: isEllipsis
+                    ? "var(--tok-comment)"
+                    : "var(--tok-name)",
                 }}
               >
                 {value}
@@ -147,7 +160,7 @@ export function MemoryStrip({
         })}
       </svg>
       {memory.truncated ? (
-        <p className="mt-1 font-mono text-[0.65rem] text-muted">
+        <p className="mt-1 font-mono text-[0.65rem] text-[color:var(--tok-comment)]">
           {memory.cells.length - (memory.cells.includes("…") ? 1 : 0)}/
           {memory.totalLength}
         </p>

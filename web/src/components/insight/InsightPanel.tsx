@@ -33,7 +33,7 @@ function InsightSectionHead({
   children: ReactNode;
 }) {
   return (
-    <h3 className="flex items-center gap-1.5 text-[0.7rem] font-semibold tracking-wide text-muted uppercase">
+    <h3 className="flex items-center gap-1.5 text-[0.7rem] font-semibold tracking-wide text-[color:var(--tok-comment)] uppercase">
       <Glyph className="h-3 w-3 shrink-0" aria-hidden />
       {children}
     </h3>
@@ -184,7 +184,7 @@ function LearnerInsight({
 
   if (!hasAnything) {
     return (
-      <p className="text-sm text-muted">
+      <p className="text-sm text-[color:var(--tok-comment)]">
         Run the tests, then come back here. Insight explains the target speed
         and what this case looks like in memory — it does not write the
         solution.
@@ -199,19 +199,19 @@ function LearnerInsight({
           <InsightSectionHead icon={Gauge}>
             How fast it should be
           </InsightSectionHead>
-          <p className="mt-1 text-sm text-foreground">
+          <p className="mt-1 text-sm text-[color:var(--tok-name)]">
             Aim for{" "}
-            <span className="font-mono text-info">
+            <span className="font-mono text-[color:var(--tok-keyword)]">
               {insight.complexity.time}
             </span>{" "}
             time and{" "}
-            <span className="font-mono text-info">
+            <span className="font-mono text-[color:var(--tok-keyword)]">
               {insight.complexity.space}
             </span>{" "}
             extra memory.
           </p>
           {insight.complexity.why ? (
-            <p className="mt-1 text-sm leading-snug text-muted">
+            <p className="mt-1 text-sm leading-snug text-[color:var(--tok-comment)]">
               {insight.complexity.why}
             </p>
           ) : null}
@@ -237,13 +237,17 @@ function LearnerInsight({
           <dl className="mt-1.5 flex flex-col gap-1 font-mono text-[0.75rem]">
             {caseVars.map((v) => (
               <div key={`case-${v.name}`} className="flex gap-2">
-                <dt className="shrink-0 text-muted">{v.name}</dt>
-                <dd className="min-w-0 break-all text-foreground">{v.value}</dd>
+                <dt className="shrink-0 text-[color:var(--tok-comment)]">
+                  {v.name}
+                </dt>
+                <dd className="min-w-0 break-all text-[color:var(--tok-name)]">
+                  {v.value}
+                </dd>
               </div>
             ))}
             {runVars.map((v) => (
               <div key={`run-${v.name}`} className="flex gap-2">
-                <dt className="shrink-0 text-muted">
+                <dt className="shrink-0 text-[color:var(--tok-comment)]">
                   {v.name === "status" ? "result" : v.name}
                 </dt>
                 <dd
@@ -251,9 +255,9 @@ function LearnerInsight({
                     "min-w-0 break-all",
                     v.name === "status"
                       ? v.value === "passed"
-                        ? "text-good"
-                        : "text-bad"
-                      : "text-foreground",
+                        ? "text-[color:var(--tok-string)]"
+                        : "text-[color:var(--tok-invalid)]"
+                      : "text-[color:var(--tok-name)]",
                   )}
                 >
                   {v.name === "status"
@@ -273,7 +277,7 @@ function LearnerInsight({
           <InsightSectionHead icon={ListChecks}>
             What to watch for
           </InsightSectionHead>
-          <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-foreground">
+          <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-[color:var(--tok-name)]">
             {insight.checklist.map((item) => (
               <li key={item.label}>{item.label}</li>
             ))}
