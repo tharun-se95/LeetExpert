@@ -1,11 +1,11 @@
-# codeMacha Brand Design System v1.0 — token adoption (scope A)
+# leetExpert Brand Design System v1.0 — token adoption (scope A)
 
-> **Superseded** by `2026-07-31-codemacha-handbook-identity-design.md`
+> **Superseded** by `2026-07-31-leetexpert-handbook-identity-design.md`
 > (Stone press handbook inks; purple SaaS tokens retired).
 
 **Date:** 2026-07-30  
 **Status:** superseded  
-**Source:** `codeMacha_Brand_Design_System_v1.0.docx` + product mockup (tokens only)  
+**Source:** `leetExpert_Brand_Design_System_v1.0.docx` + product mockup (tokens only)  
 **Out of scope:** landing layout rebuild, new nav/progress/viz chrome
 
 ## Light

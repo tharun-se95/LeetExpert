@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship codeMacha’s handbook identity — Stone press tokens + flat depth (Milestone A), then restyle/reorder `/` as proof (Milestone B).
+**Goal:** Ship leetExpert’s handbook identity — Stone press tokens + flat depth (Milestone A), then restyle/reorder `/` as proof (Milestone B).
 
 **Architecture:** Two-tier CSS tokens in `globals.css` (tier-1 press inks only under `.dark`). Components keep semantic names. Home keeps section inventory; composition becomes editorial (rules/halftone, no soft shadows). Sticky CTA binds to `<main>` scroll.
 
@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Keep product name **codeMacha**; retire purple `#6E63FF` and warm cream `#FBF5E9`.
+- Keep product name **leetExpert**; retire purple `#6E63FF` and warm cream `#FBF5E9`.
 - Depth: ink, rules, halftone only — **no** `--shadow-card` / `.elevated-card` box-shadow.
 - `--accent` (text) ≠ `--pop` (fill); never use pop as small text on paper.
 - AA: accent-on-paper and on-pop-on-pop ≥ **4.5:1** (record ratios in comments).
@@ -19,7 +19,7 @@
 - Do not restructure course/sandbox/lesson chrome in this plan.
 - Prefer not to commit unless the owner asks (owner may request commits separately).
 
-**Spec:** `docs/superpowers/specs/2026-07-31-codemacha-handbook-identity-design.md`
+**Spec:** `docs/superpowers/specs/2026-07-31-leetexpert-handbook-identity-design.md`
 
 ## File map
 
@@ -62,9 +62,9 @@
 **Files:**
 - Modify: `CLAUDE.md` (design system §)
 - Modify: `HANDOFF.md` (tokens + lime trap)
-- Modify: `docs/superpowers/specs/2026-07-30-codemacha-brand-ds-tokens-design.md` (superseded banner)
+- Modify: `docs/superpowers/specs/2026-07-30-leetexpert-brand-ds-tokens-design.md` (superseded banner)
 - Modify: `docs/superpowers/specs/2026-07-30-landing-home-v3-design.md` (superseded banner)
-- Modify: `docs/superpowers/specs/2026-07-31-codemacha-handbook-identity-design.md` (status: approved)
+- Modify: `docs/superpowers/specs/2026-07-31-leetexpert-handbook-identity-design.md` (status: approved)
 
 - [ ] **Step 1: Update CLAUDE.md §4**
 
@@ -104,7 +104,7 @@ With `npm run dev`, scroll home inside main — sticky bar should appear.
 
 - [ ] **Step 1: Hero brand-first + accent-only chips**
 
-Add hero-level `codeMacha` lockup above/beside thesis. Feature + Approach icon tones → `bg-accent/10 text-accent` only. Soften SaaS card chrome to `border border-border bg-surface` (no elevated lift). Light polish: stats title “Curriculum at a glance”.
+Add hero-level `leetExpert` lockup above/beside thesis. Feature + Approach icon tones → `bg-accent/10 text-accent` only. Soften SaaS card chrome to `border border-border bg-surface` (no elevated lift). Light polish: stats title “Curriculum at a glance”.
 
 - [ ] **Step 2: Reorder sections + print bands**
 

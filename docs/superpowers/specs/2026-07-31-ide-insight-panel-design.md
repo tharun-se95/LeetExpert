@@ -10,7 +10,7 @@
 
 On the problem IDE, the vertical split leaves a large empty band between the
 code editor and the testcases panel. That space reads as unfinished chrome.
-codeMacha’s differentiator is teaching while coding — the gap should carry
+leetExpert’s differentiator is teaching while coding — the gap should carry
 algorithm intuition (memory shape, invariants, complexity, case-bound
 variables), not blank gray.
 

@@ -6,7 +6,7 @@
 
 ## Goal
 
-Course Mermaid flowcharts read as handbook figures aligned with codeMacha Brand DS v1.0, not default zinc Mermaid.
+Course Mermaid flowcharts read as handbook figures aligned with leetExpert Brand DS v1.0, not default zinc Mermaid.
 
 ## Theme mapping
 

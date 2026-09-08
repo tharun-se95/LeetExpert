@@ -183,6 +183,6 @@ stays steel in every scope, so body-size accent text is always AA.
   perceptible flat ladder with the same relative order, never an inversion.
 - Sheet Success/Warning/Error are too bright for body text on light paper; light theme uses darkened AA text inks in the same hue families (`#036F42` / `#92400E` / `#B91C1C`).
 - Depth stays flat (print language): ink, soft rules, and halftone — never drop shadows.
-- The palette is custom (steel + cyan), not from the codeMacha sheet. To
+- The palette is custom (steel + cyan), not from the leetExpert sheet. To
   re-theme later, provide the sheet hexes the same way and re-measure every
   ratio — the design-tokens suite enforces the floors.

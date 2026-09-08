@@ -1965,8 +1965,8 @@ git commit -m "feat(catalog): make the root page a course catalog"
 ```ts
 export const metadata: Metadata = {
   title: {
-    default: "codeMacha — DSA Course: Data Structures & Algorithms",
-    template: "%s · codeMacha",
+    default: "leetExpert — DSA Course: Data Structures & Algorithms",
+    template: "%s · leetExpert",
   },
   description:
     "Learn data structures and algorithms from first principles. Interactive lessons, live sandboxes in Python and JavaScript, visualizations, and solve-first problems — 212 lessons.",
@@ -1978,8 +1978,8 @@ export const metadata: Metadata = {
 ```ts
 export const metadata: Metadata = {
   title: {
-    default: "codeMacha",
-    template: "%s · codeMacha",
+    default: "leetExpert",
+    template: "%s · leetExpert",
   },
   description:
     "Interactive courses with live sandboxes, visualizations, and solve-first problems. Start with Data Structures & Algorithms.",

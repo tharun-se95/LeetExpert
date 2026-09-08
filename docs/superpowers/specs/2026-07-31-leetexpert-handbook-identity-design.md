@@ -1,11 +1,11 @@
-# codeMacha Handbook Identity — design
+# leetExpert Handbook Identity — design
 
 **Date:** 2026-07-31  
 **Status:** approved — implementing  
 **Programme:** One identity spec · two implementation milestones  
 **Supersedes (partial):**
 
-- `2026-07-30-codemacha-brand-ds-tokens-design.md` — purple SaaS tokens retired  
+- `2026-07-30-leetexpert-brand-ds-tokens-design.md` — purple SaaS tokens retired  
 - `2026-07-30-landing-home-v3-design.md` — calm SaaS chrome / soft shadows retired; **section inventory kept**  
 - Doctrine conflict in `CLAUDE.md` §4 vs Brand DS shadows — resolve in favour of **flat Riso depth**
 
@@ -15,7 +15,7 @@
 
 ## 1. Positioning
 
-**Product name:** codeMacha (unchanged).
+**Product name:** leetExpert (unchanged).
 
 **Identity:** An editorial **handbook** that runs in the browser — not a purple SaaS dashboard, not a LeetCode clone, not a video binge.
 
@@ -108,7 +108,7 @@ On `/` and other marketing surfaces, feature/approach icons use **accent wash + 
 
 **Handbook tweaks (Milestone A doctrine + light home polish):**
 
-- Brand wordmark: `code` in ink + `Macha` in accent (keep), but increase presence on `/` (see §3).  
+- Brand wordmark: `leet` in ink + `Expert` in accent (keep), but increase presence on `/` (see §3).  
 - Section labels: small caps / tracked mono or display — one pattern app-wide.  
 - No new webfonts in this programme.
 
@@ -130,7 +130,7 @@ On `/` and other marketing surfaces, feature/approach icons use **accent wash + 
 2. Remove shadow-card elevation path.  
 3. Update `CLAUDE.md` §4: Handbook press inks; flat depth; accent≠pop; purple Brand DS retired.  
 4. Update `HANDOFF.md` design-tokens blurb + trap “lime cannot be text”.  
-5. Mark `2026-07-30-codemacha-brand-ds-tokens-design.md` as **superseded**.  
+5. Mark `2026-07-30-leetexpert-brand-ds-tokens-design.md` as **superseded**.  
 6. Extend or add a token/contrast test if cheap (optional but preferred): accent-on-paper and on-pop-on-pop ≥ 4.5.
 
 ### 2.8 Out of scope for Milestone A
@@ -166,7 +166,7 @@ On `/` and other marketing surfaces, feature/approach icons use **accent wash + 
 ### 3.2 Composition principles
 
 1. **One composition above the fold** — brand + thesis + primary CTA; avoid mini-dashboard density. Stats array may stay but as a **print teaching figure**, not a SaaS analytics card.  
-2. **Brand first** — codeMacha readable as the hero signal; headline must not erase the brand.  
+2. **Brand first** — leetExpert readable as the hero signal; headline must not erase the brand.  
 3. **Rules over cards** — vertical/horizontal rules, sunk paper bands, halftone; no soft elevated-card grids. Approach / FAQ may use bordered sunk panels without shadow.  
 4. **One primary CTA label family** — “Start learning for free” / “Start free” alignment; early-bird is a strip, not a third competing button style. Secondary = curriculum text/button outline.  
 5. **Accent-only marketing icons** — drop rainbow chip tones.  

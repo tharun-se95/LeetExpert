@@ -828,8 +828,8 @@ export function Header({
           {"</>"}
         </span>
         <span className="truncate text-sm font-semibold tracking-tight">
-          <span className="text-foreground">code</span>
-          <span className="text-accent">Macha</span>
+          <span className="text-foreground">leet</span>
+          <span className="text-accent">Expert</span>
         </span>
       </Link>
 

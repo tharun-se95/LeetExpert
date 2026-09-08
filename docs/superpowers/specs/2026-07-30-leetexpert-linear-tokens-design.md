@@ -1,4 +1,4 @@
-# codeMacha Linear tokens + type (scope A)
+# leetExpert Linear tokens + type (scope A)
 
 **Date:** 2026-07-30  
 **Status:** approved — implement colors + typography only  

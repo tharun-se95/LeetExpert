@@ -3,7 +3,7 @@
 **Date:** 2026-08-20  
 **Status:** in progress  
 **Applies to:** `web/src/components/viz/**` (19 tracers, `VizPlayer`, `pieces.tsx`, stage CSS)  
-**Prior art:** `2026-07-31-codemacha-handbook-identity-design.md` (tokens/accents), `2026-07-25-in-place-diagrams-design.md` (diagram language), the approved FamilySpotlight hero visual (soft radial washes, family accents, motion-forward, no heavy card boxes).
+**Prior art:** `2026-07-31-leetexpert-handbook-identity-design.md` (tokens/accents), `2026-07-25-in-place-diagrams-design.md` (diagram language), the approved FamilySpotlight hero visual (soft radial washes, family accents, motion-forward, no heavy card boxes).
 
 ## Problem
 

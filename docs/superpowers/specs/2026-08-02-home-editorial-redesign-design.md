@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-02
 **Status:** approved — implementing
-**Builds on:** `2026-07-31-codemacha-handbook-identity-design.md` (tokens, Milestone A/B)
+**Builds on:** `2026-07-31-leetexpert-handbook-identity-design.md` (tokens, Milestone A/B)
 **Does not supersede:** the identity spec's token system — this is a composition-only pass.
 
 ---
@@ -23,7 +23,7 @@ Milestone B goals found:
 4. **Repetitive rhythm** — nine sections in a row share one shape (bordered rectangle,
    label, heading, body), against the identity spec's "rules over cards, not a soft card
    grid" principle (§3.2.3).
-5. **Hero has no brand signal** — codeMacha only appears in the top nav, not the hero,
+5. **Hero has no brand signal** — leetExpert only appears in the top nav, not the hero,
    against the identity spec's stated success criterion (§3.2.2).
 6. Minor: the hero stats caption ("read leads · write fills the counts") assumes
    read/write-pointer vocabulary before a visitor has taken a lesson.

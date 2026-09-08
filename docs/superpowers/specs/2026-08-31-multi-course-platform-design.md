@@ -64,7 +64,7 @@ The product becomes a multi-course platform starting now, not
 DSA-primary-with-extras. The root landing page (`app/page.tsx`) becomes a
 course catalog; DSA is the first, most complete entry in it, not the
 site's permanent identity. Site metadata (`<title>` template, root
-description) goes course-agnostic: "codeMacha" rather than "codeMacha —
+description) goes course-agnostic: "leetExpert" rather than "leetExpert —
 DSA Course."
 
 ## Routing
