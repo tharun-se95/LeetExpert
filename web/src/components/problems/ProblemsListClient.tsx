@@ -212,13 +212,22 @@ export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
           scrolls — each column scrolls internally instead of growing the
           page, matching the app-shell's own fixed-viewport main (see
           isProblemsListPath in AppShell.tsx).
+
+          overflow-hidden alongside min-h-0 on both this grid and the list
+          column below: Chrome shrinks a min-h-0 flex/grid item to its
+          container correctly on its own, but WebKit (mobile Safari) doesn't
+          reliably apply that shrink without an explicit overflow-hidden
+          backstop — without it, the row can render at its content's full
+          height and the list spills past the viewport instead of scrolling
+          in its own box, the same failure mode `main` in AppShell.tsx
+          already guards against with this exact pairing.
         */}
-        <div className="mt-6 grid min-h-0 flex-1 gap-6 lg:grid-cols-[272px_1fr]">
+        <div className="mt-6 grid min-h-0 flex-1 gap-6 overflow-hidden lg:grid-cols-[272px_1fr]">
           <aside className="hidden lg:flex lg:h-full lg:min-h-0 lg:flex-col">
             <ProblemFilterPanel {...filterPanelProps} />
           </aside>
 
-          <div className="flex h-full min-h-0 flex-col">
+          <div className="flex h-full min-h-0 flex-col overflow-hidden">
             <p className="mb-3 shrink-0 text-sm text-muted">
               Showing <span className="font-medium text-foreground">{filtered.length}</span>{" "}
               of {totalProblemCount}
