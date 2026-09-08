@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
 import { COURSES } from "@/lib/courses/registry";
+import { DSA_COURSE } from "@/app/courses/dsa/registry";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -31,8 +32,13 @@ export function Header({
   const pct = totalCount > 0 ? Math.round((visitedCount / totalCount) * 100) : 0;
 
   const courseSlug = activeCourseSlugFor(pathname);
-  const course = COURSES.find((c) => c.slug === courseSlug);
-  const courseLabel = course?.navLabel ?? course?.title ?? courseSlug;
+  const routeCourse = COURSES.find((c) => c.slug === courseSlug);
+  // A disabled course's own name never surfaces in chrome — including on
+  // its own now-404 pages, since the route still resolves a slug for
+  // activeCourseSlugFor even though there's no real content there anymore.
+  // Falls back to DSA, the one course guaranteed available.
+  const course = routeCourse?.status === "available" ? routeCourse : DSA_COURSE;
+  const courseLabel = course.navLabel ?? course.title;
 
   const lessonsActive =
     pathname === "/courses/dsa" ||
@@ -82,8 +88,8 @@ export function Header({
                 showLessonsMenu && "max-sm:hidden",
               )}
             >
-              <span className="text-foreground">code</span>
-              <span className="text-mark">Macha</span>
+              <span className="text-foreground">leet</span>
+              <span className="text-mark">Expert</span>
             </span>
             <span
               className="hidden h-3.5 w-px shrink-0 bg-border md:block"
@@ -100,7 +106,7 @@ export function Header({
         className="flex shrink-0 items-center gap-0.5 justify-self-center sm:gap-1"
         aria-label="Product modes"
       >
-        {courseSlug === "nextjs" ? (
+        {courseSlug === "nextjs" && routeCourse?.status === "available" ? (
           <Link
             href="/courses/nextjs"
             className={modeLinkClass(nextjsCurriculumActive)}

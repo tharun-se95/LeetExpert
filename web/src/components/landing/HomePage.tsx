@@ -2,12 +2,20 @@ import Link from "next/link";
 import {
   ArrowRight,
   Books,
+  Browser,
   ChartLineUp,
   Check,
+  Clock,
   Code,
+  CurrencyDollar,
   Eye,
   Gift,
   GithubLogo,
+  Lightning,
+  Quotes,
+  Sparkle,
+  Stack,
+  Target,
 } from "@phosphor-icons/react/dist/ssr";
 import {
   StickyCta,
@@ -17,7 +25,6 @@ import { FamilySpotlight } from "@/components/landing/FamilySpotlight";
 import { LandingSandbox } from "@/components/landing/LandingSandbox";
 import { LandingVizStrip } from "@/components/landing/LandingViz";
 import { WaitlistForm } from "@/components/landing/WaitlistForm";
-import { WhoNotPractical } from "@/components/landing/WhoNotPractical";
 import {
   CURRICULUM,
   EARLY_BIRD_LINE,
@@ -62,6 +69,93 @@ const FEATURES = [
   { icon: ChartLineUp, label: "Track progress" },
 ] as const;
 
+/** The product's real proof points — what the live sandbox to the left
+ * actually does. Copy is grounded in the shipped runner, not aspiration. */
+const SANDBOX_POINTS = [
+  {
+    icon: Lightning,
+    title: "Runs in-browser",
+    body: "Python via Pyodide, JS natively. Zero setup, works offline once loaded.",
+  },
+  {
+    icon: Check,
+    title: "Real test cases",
+    body: "Edge cases included — the ones that catch the mistakes you'd actually make.",
+  },
+  {
+    icon: Code,
+    title: "Both languages",
+    body: "Every problem ships starter code and a reference solution in Python and JavaScript.",
+  },
+  {
+    icon: Target,
+    title: "Solve-first",
+    body: "The write-up stays hidden until you've tried — no spoilers, no passive reading.",
+  },
+] as const;
+
+/** Why the course exists, as differentiators — replaces the older
+ * who/not/practical split with a single scannable grid. */
+const WHY = [
+  {
+    icon: Stack,
+    title: "Structure before syntax",
+    body: "We teach why a structure exists and what it costs — so new problems become variations you can reason about, not puzzles you have to have seen.",
+  },
+  {
+    icon: Clock,
+    title: "Built for retention",
+    body: "Solve-first ordering, spaced quizzes and progress tracking. You come back because the next thing is right there, not buried.",
+  },
+  {
+    icon: Browser,
+    title: "Nothing to install",
+    body: "The whole course runs in the browser — editor, runtime, tests, visualizations. Open a tab, start learning, on any machine.",
+  },
+  {
+    icon: Target,
+    title: "Interview-honest",
+    body: "Content maps to how interviews actually test — the patterns that recur and the edge cases interviewers reach for.",
+  },
+  {
+    icon: Code,
+    title: "Two runtimes, one lesson",
+    body: "Learn the idea once; see it in Python and JavaScript side by side. Switch languages without losing your place.",
+  },
+  {
+    icon: Sparkle,
+    title: "Free while in early access",
+    body: "Every lesson, every sandbox, both runtimes — open now, no card. Pricing arrives only when the paid tier ships.",
+  },
+] as const;
+
+/**
+ * TODO(launch): replace with REAL, attributed testimonials before going
+ * live. CLAUDE.md forbids shipping fabricated content on the paid page —
+ * these bracketed placeholders exist only to lock the layout and MUST NOT
+ * ship as-is. Drop the whole section if real quotes aren't ready by launch.
+ */
+const TESTIMONIALS = [
+  {
+    quote:
+      "The tracers finally made recursion click. I'd read the same explanation five times elsewhere — watching the call stack build itself was the thing that landed.",
+    name: "[Learner name]",
+    detail: "[role · company]",
+  },
+  {
+    quote:
+      "Solve-first is brutal in the best way. Being forced to try before the write-up unlocked is why I actually remember two pointers now instead of re-googling it.",
+    name: "[Learner name]",
+    detail: "[role · company]",
+  },
+  {
+    quote:
+      "The complexity breakdowns finally made Big-O intuitive. I can look at a nested loop now and know the cost without second-guessing every time.",
+    name: "[Learner name]",
+    detail: "[role · company]",
+  },
+] as const;
+
 function SectionLabel({
   children,
   icon: Icon,
@@ -85,9 +179,11 @@ function SectionLabel({
 }
 
 /**
- * Indigo Modern home — editorial rhythm: alternating section shapes (band,
- * asymmetric split, connected rail, asymmetric split, accordion, pop slab)
- * instead of a uniform card stack. Honest curriculum counts only.
+ * DSA course home. Editorial rhythm over a uniform card stack: hero with
+ * the live pattern-family spotlight, a stat band, alternating feature
+ * splits wrapping the REAL viz + sandbox (not screenshots), the method
+ * rail, a why grid, social proof, pricing, and the waitlist. Curriculum
+ * counts are read from the manifest — honest numbers only.
  */
 export default function HomePage() {
   const stats = curriculumStats();
@@ -107,17 +203,17 @@ export default function HomePage() {
                 {"</>"}
               </span>
               <p className="text-xs font-semibold tracking-[0.16em] text-accent uppercase">
-                Interactive learning platform
+                Interactive DSA course
               </p>
             </div>
             <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-balance sm:text-4xl lg:text-[2.85rem] lg:leading-[1.08]">
-              Understand deeply.{" "}
-              <span className="text-accent">Build confidently.</span>
+              Data structures, the way they{" "}
+              <span className="text-accent">finally click.</span>
             </h1>
             <p className="mt-2.5 max-w-lg text-sm leading-relaxed text-muted sm:mt-3 sm:text-[0.95rem]">
-              Master data structures through interactive lessons,
-              visualizations, and solve-first practice — until the pattern is
-              muscle memory.
+              Learn every structure from first principles — visual
+              explanations, live in-browser sandboxes, and solve-first practice
+              until the pattern is muscle memory, not a flashcard.
             </p>
             <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-6">
               <Link
@@ -192,46 +288,129 @@ export default function HomePage() {
         </section>
       </div>
 
-      {/* See it in action — promoted, full-bleed band (the product's proof) */}
-      <section className="mt-8 border-y border-border bg-code/40 py-8 lg:mt-12 lg:py-12">
-        <div className="mx-auto max-w-6xl px-4 lg:px-8">
-          <div className="max-w-xl">
-            <SectionLabel>See it in action</SectionLabel>
-            <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
-              Visualizations aren’t decoration. They teach.
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted">
-              Same tracers you’ll use inside lessons — flip topics; one live viz
-              at a time.
-            </p>
-          </div>
-          <div className="mt-6">
-            <LandingVizStrip />
-          </div>
-
-          {/* The product's other half — a live, judge-able sandbox, not a
-              screenshot. Same editor and test runner learners use inside
-              lessons; CodeMirror is lazy-loaded only when this mounts. */}
-          <div className="mt-8 border-t border-border pt-8">
-            <SectionLabel>Your turn</SectionLabel>
-            <h3 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
-              Solve it live — same editor, same tests.
-            </h3>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-              Two Sum, the classic opening problem. Write the function, hit Run,
-              and watch the tests judge it — in Python or JavaScript.
-            </p>
-            <div className="mt-4">
-              <LandingSandbox />
+      {/* Stat band — honest curriculum counts, full-bleed */}
+      <section className="mt-8 border-y border-border bg-elevated lg:mt-12">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 px-4 py-8 sm:grid-cols-4 lg:px-8">
+          {[
+            { value: String(stats.modules), label: "modules" },
+            { value: String(stats.lessons), label: "lessons" },
+            { value: String(stats.problems), label: "solve-first problems" },
+            { value: "2", label: "runtimes, zero setup" },
+          ].map((s, i) => (
+            <div
+              key={s.label}
+              className={`flex flex-col items-center gap-1 px-2 ${
+                i > 0 ? "sm:border-l sm:border-border" : ""
+              }`}
+            >
+              <span className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+                {s.value}
+              </span>
+              <span className="text-center font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
+                {s.label}
+              </span>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl space-y-8 px-4 pt-8 pb-10 lg:space-y-12 lg:px-8 lg:pt-12 lg:pb-14">
-        <WhoNotPractical />
+      <div className="mx-auto max-w-6xl space-y-16 px-4 pt-16 pb-10 lg:space-y-20 lg:px-8 lg:pt-20 lg:pb-14">
+        {/* Feature: visual explanations — full-width header, then the LIVE
+            viz strip gets the whole row. It already splits itself in two
+            (tracer | code) — squeezing it beside a text column halved that
+            split again and clipped the code panel around ~260px wide. */}
+        <section>
+          <div className="max-w-2xl">
+            <SectionLabel>See it in action</SectionLabel>
+            <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              See the algorithm think.
+            </h2>
+            <p className="mt-2.5 text-sm leading-relaxed text-muted">
+              Static diagrams freeze one moment. Our tracers replay the whole
+              run — every pointer glide, every eliminated branch, every stack
+              frame — using one visual grammar across every module.
+            </p>
+            <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2.5">
+              {[
+                "Step through forward and back — code line, data, and pointers stay in lockstep.",
+                "One grammar everywhere: cells, pointers and ranges mean the same thing in arrays as in trees and graphs.",
+                "Reduced-motion aware — it settles on the finished frame, never a barrier.",
+              ].map((point) => (
+                <li key={point} className="flex max-w-sm gap-2.5 text-sm text-muted">
+                  <Check
+                    weight="bold"
+                    className="mt-0.5 h-4 w-4 shrink-0 text-mark"
+                    aria-hidden
+                  />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="mt-8">
+            <LandingVizStrip />
+          </div>
+        </section>
+
+        {/* Feature: live sandbox — the LIVE sandbox + proof points */}
+        <section className="grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
+          <LandingSandbox />
+          <div>
+            <SectionLabel>Your turn</SectionLabel>
+            <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              Your code, judged instantly.
+            </h2>
+            <p className="mt-2.5 text-sm leading-relaxed text-muted">
+              No installs, no boilerplate, no “clone this repo.” Write a
+              solution, hit Run, and watch real test cases pass or fail — the
+              same editor and runner inside every lesson.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {SANDBOX_POINTS.map(({ icon: Icon, title, body }) => (
+                <div
+                  key={title}
+                  className="rounded-[length:var(--radius-md)] border border-border bg-elevated shadow-elevation p-4"
+                >
+                  <span className="flex h-9 w-9 items-center justify-center rounded-[length:var(--radius-sm)] bg-accent/10 text-accent">
+                    <Icon weight="regular" className="h-4 w-4" aria-hidden />
+                  </span>
+                  <p className="mt-3 text-sm font-semibold">{title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-muted">
+                    {body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <ApproachRail firstLessonHref={FIRST_LESSON} />
+
+        {/* Why this course — differentiator grid */}
+        <section>
+          <div className="flex flex-col items-center text-center">
+            <SectionLabel>Why leetExpert</SectionLabel>
+            <h2 className="mt-1.5 max-w-xl font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              Not another video course you’ll never finish.
+            </h2>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {WHY.map(({ icon: Icon, title, body }) => (
+              <div
+                key={title}
+                className="rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation p-6"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-[length:var(--radius-md)] bg-accent/10 text-accent">
+                  <Icon weight="regular" className="h-5 w-5" aria-hidden />
+                </span>
+                <h3 className="mt-4 font-display text-base font-semibold tracking-tight">
+                  {title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* Start path */}
         <section className="rounded-[length:var(--radius-lg)] border border-border bg-surface p-6 lg:p-8">
@@ -290,6 +469,158 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/*
+          TODO(launch): social proof is placeholder. Replace every
+          [bracketed] field with a real, attributed testimonial (name + role
+          the person approved) before this ships to the paid page, or delete
+          the section. Fabricated testimonials must not go live — see
+          CLAUDE.md §3 (content standards) and §6 (reporting).
+        */}
+        <section>
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <SectionLabel>Early learners</SectionLabel>
+              <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+                What early learners are saying.
+              </h2>
+            </div>
+            <span className="hidden font-mono text-[11px] text-muted/70 sm:block">
+              [placeholder — replace before launch]
+            </span>
+          </div>
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            {TESTIMONIALS.map((t) => (
+              <figure
+                key={t.quote}
+                className="flex flex-col rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation p-6"
+              >
+                <Quotes
+                  weight="fill"
+                  className="h-7 w-7 text-surface"
+                  aria-hidden
+                />
+                <blockquote className="mt-2 flex-1 text-sm leading-relaxed text-foreground">
+                  {t.quote}
+                </blockquote>
+                <figcaption className="mt-5 flex items-center gap-3">
+                  <span
+                    className="h-9 w-9 shrink-0 rounded-full bg-surface"
+                    aria-hidden
+                  />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold">
+                      {t.name}
+                    </span>
+                    <span className="block font-mono text-[11px] text-muted">
+                      {t.detail}
+                    </span>
+                  </span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+
+        {/*
+          TODO(launch): pricing is a placeholder. The Pro price is [$X] and
+          the Pro feature list is unconfirmed — do not ship a fabricated
+          price to the paid page (CLAUDE.md §3/§6). Set a real price and
+          real inclusions, or keep only the free tier, before launch.
+        */}
+        <section>
+          <div className="flex flex-col items-center text-center">
+            <SectionLabel icon={CurrencyDollar}>Pricing</SectionLabel>
+            <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              Free now. Fair later.
+            </h2>
+            <p className="mt-2.5 max-w-lg text-sm leading-relaxed text-muted">
+              Everything is open while leetExpert is in early access. When the
+              paid tier ships, early learners keep a founding rate.
+            </p>
+          </div>
+          <div className="mx-auto mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
+            {/* Free — real, current offer */}
+            <div className="relative rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation p-6">
+              <span className="absolute right-5 top-5 inline-flex items-center gap-1.5 rounded-full bg-good-surface px-2.5 py-1 text-[11px] font-semibold text-good">
+                <span className="h-1.5 w-1.5 rounded-full bg-good" aria-hidden />
+                Available now
+              </span>
+              <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
+                Early access
+              </p>
+              <p className="mt-3 font-display text-4xl font-semibold tracking-tight">
+                Free
+              </p>
+              <p className="mt-1.5 text-sm text-muted">
+                The full course, no card. While early access lasts.
+              </p>
+              <Link
+                href={FIRST_LESSON}
+                className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[length:var(--radius-md)] bg-pop text-sm font-semibold text-on-pop transition hover:bg-accent-hover"
+              >
+                Start learning free
+              </Link>
+              <ul className="mt-5 space-y-2.5">
+                {[
+                  `All ${stats.modules} modules & ${stats.lessons} lessons`,
+                  "Live sandboxes, both runtimes",
+                  `All ${stats.problems} solve-first problems`,
+                  "Progress tracking",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-2.5 text-sm text-muted"
+                  >
+                    <Check
+                      weight="bold"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-mark"
+                      aria-hidden
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Pro — PLACEHOLDER, do not ship */}
+            <div className="rounded-[length:var(--radius-lg)] border border-border bg-surface p-6">
+              <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
+                Pro · coming soon
+              </p>
+              <p className="mt-3 font-display text-4xl font-semibold tracking-tight text-muted">
+                [$X]
+                <span className="text-base font-normal text-muted/70">/mo</span>
+              </p>
+              <p className="mt-1.5 text-sm text-muted">
+                For when the paid tier ships — founding rate locked for early
+                learners.
+              </p>
+              <a
+                href="#paid-launch"
+                className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[length:var(--radius-md)] border border-accent/40 bg-background text-sm font-medium text-accent transition hover:border-accent"
+              >
+                Get founding-rate notice
+              </a>
+              <ul className="mt-5 space-y-2.5">
+                {[
+                  "Everything in Early access",
+                  "[Mock interviews — planned]",
+                  "[Certificates — planned]",
+                  "[Priority support — planned]",
+                ].map((item) => (
+                  <li key={item} className="flex gap-2.5 text-sm text-muted">
+                    <Check
+                      weight="bold"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-muted/60"
+                      aria-hidden
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
         {/* Author + waitlist */}
         <section
           id="paid-launch"
@@ -339,7 +670,7 @@ export default function HomePage() {
           <h2 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
             Common questions
           </h2>
-<div className="mt-4 grid gap-2 sm:grid-cols-2">
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {faq.map((item) => (
               <details
                 key={item.q}
