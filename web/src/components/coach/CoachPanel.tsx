@@ -2,48 +2,11 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Sparkle, X, Trash } from "@phosphor-icons/react";
-import { LANG_LABEL } from "@/components/sandbox/types";
-import { cn } from "@/lib/utils";
 import { useCoach } from "./CoachProvider";
 import { CoachThread } from "./CoachThread";
 import { CoachComposer } from "./CoachComposer";
 
 const PRIVACY_KEY = "dsa:coach:privacy-seen";
-
-/**
- * What the coach can actually see right now, as live state rather than a
- * sentence claiming it. Every field is real: the language comes from the
- * editor, the tally from the last run's diagnosis, the hint count from the
- * lesson. Nothing here is rendered unless the coach genuinely has it — an
- * agent that lists context it does not hold is worse than one that lists
- * none.
- */
-function CoachContext() {
-  const { diagnosis, hintLabels, sourceLang } = useCoach();
-  const parts: string[] = [LANG_LABEL[sourceLang]];
-  if (diagnosis && diagnosis.total > 0) {
-    parts.push(`${diagnosis.passed}/${diagnosis.total} tests passing`);
-  }
-  if (hintLabels.length > 0) {
-    parts.push(`${hintLabels.length} hint${hintLabels.length === 1 ? "" : "s"}`);
-  }
-
-  return (
-    <p className="flex shrink-0 flex-wrap items-center gap-x-1.5 gap-y-1 border-b border-border px-3 py-1.5 font-mono text-[0.65rem] text-muted">
-      <span className="text-muted/70">Reading</span>
-      {parts.map((part, i) => (
-        <span key={part} className="flex items-center gap-1.5">
-          {i > 0 ? (
-            <span aria-hidden className="text-border">
-              ·
-            </span>
-          ) : null}
-          {part}
-        </span>
-      ))}
-    </p>
-  );
-}
 
 export function CoachPanel({
   variant = "floating",
@@ -53,7 +16,7 @@ export function CoachPanel({
   /** False while the mobile tab is hidden so we do not steal Code focus. */
   active?: boolean;
 }) {
-  const { closeCoach, clearThread, clearUnread, registerComposerEl } =
+  const { closeCoach, clearThread, clearUnread, registerComposerEl, thread } =
     useCoach();
   const composerRef = useRef<HTMLDivElement>(null);
   const [privacySeen, setPrivacySeen] = useState(true);
@@ -115,56 +78,29 @@ export function CoachPanel({
       onKeyDown={onKeyDown}
       // No border, radius, or shadow here: CoachOverlay owns the floating
       // surface's own chrome, and the page (mobile) variant fills its tab.
-      className="flex h-full min-h-0 flex-col bg-elevated"
+      // relative: both the clear-thread button and the composer below are
+      // positioned against this panel, not document flow.
+      className="relative flex h-full min-h-0 flex-col bg-elevated"
     >
-      <header
-        className={cn(
-          "flex shrink-0 items-start gap-2.5 border-b border-border px-3",
-          // Only the floating panel carries the masthead; the mobile branch is a lone
-          // clear button and does not need the height that title earns.
-          variant === "floating" ? "py-2.5" : "py-1.5",
-        )}
-      >
-        {variant === "floating" ? (
-          <>
-            {/*
-              A solid mark rather than an accent-tinted glyph: the same
-              bg-pop/text-on-pop pair the wordmark uses, which is a designed
-              couple. An accent-coloured icon here would sit on --elevated,
-              the lightest dark surface, where accentUi does not clear 3:1.
-            */}
-            <span
-              aria-hidden
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop text-on-pop"
-            >
-              <Sparkle size={19} weight="fill" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <h2 className="font-display text-[1.3rem] font-bold leading-none tracking-tight text-foreground">
-                Coach
-              </h2>
-              {/*
-                The subtitle here used to read "Reads your code and this
-                problem." — a claim the panel never evidenced. CoachContext
-                below shows the same thing as live state instead, which is
-                the difference between asserting grounding and having it.
-              */}
-            </span>
-          </>
-        ) : (
-          // The mobile tab bar already reads "Coach" — a second title here
-          // would repeat it. Just the still-needed clear action stays.
-          <span className="flex-1" />
-        )}
-        <button
-          type="button"
-          onClick={clearThread}
-          aria-label="Clear coach thread"
-          className="-mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          <Trash size={16} weight="bold" />
-        </button>
-        {variant === "floating" ? (
+      {variant === "floating" ? (
+        <header className="flex shrink-0 items-start gap-2.5 border-b border-border px-3 py-2.5">
+          {/*
+            A solid mark rather than an accent-tinted glyph: the same
+            bg-pop/text-on-pop pair the wordmark uses, which is a designed
+            couple. An accent-coloured icon here would sit on --elevated,
+            the lightest dark surface, where accentUi does not clear 3:1.
+          */}
+          <span
+            aria-hidden
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop text-on-pop"
+          >
+            <Sparkle size={19} weight="fill" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <h2 className="font-display text-[1.3rem] font-bold leading-none tracking-tight text-foreground">
+              Coach
+            </h2>
+          </span>
           <button
             type="button"
             aria-label="Close problem coach"
@@ -173,9 +109,8 @@ export function CoachPanel({
           >
             <X size={16} weight="bold" />
           </button>
-        ) : null}
-      </header>
-      <CoachContext />
+        </header>
+      ) : null}
       {!privacySeen ? (
         <p className="shrink-0 border-b border-border bg-info-surface px-3 py-1.5 text-xs text-info">
           Sending a message sends your code and this problem’s hints to our model
@@ -189,7 +124,40 @@ export function CoachPanel({
           </button>
         </p>
       ) : null}
-      <CoachThread />
+      {/*
+        flex flex-col, not just a bare block: CoachThread sizes itself with
+        `min-h-0 flex-1`, which are inert inside a block parent — it then
+        renders at full content height and its own overflow-y-auto never
+        engages, putting every message past the first screenful out of
+        reach. This wrapper exists only to give the floating button below a
+        containing block, so it has to hand the thread the same flex context
+        the section used to.
+      */}
+      <div className="relative flex min-h-0 flex-1 flex-col">
+        <CoachThread active={active} />
+        {/*
+          Floats over the thread instead of sitting in the header row it
+          used to share with the title/close button, and anchored to the
+          BOTTOM corner rather than the top: the thread follows the newest
+          message, so the top of the visible area always has text in it and
+          a button there reads as a hole punched through a reply. The foot
+          of the thread is the one spot that is reliably empty, and
+          CoachThread's own bottom padding keeps it that way — messages
+          only pass underneath while the learner scrolls back up.
+        */}
+        {/* Nothing to clear on an untouched thread — an enabled control
+            whose only outcome is nothing is worse than no control. */}
+        {thread.length > 0 ? (
+          <button
+            type="button"
+            onClick={clearThread}
+            aria-label="Clear coach thread"
+            className="shadow-elevation absolute right-3 bottom-3 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-elevated text-muted transition hover:border-accent/40 hover:bg-accent/5 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <Trash size={16} weight="bold" />
+          </button>
+        ) : null}
+      </div>
       <div ref={composerRef}>
         <CoachComposer />
       </div>

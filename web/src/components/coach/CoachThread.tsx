@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Sparkle } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import type { Diagnosis } from "@/lib/coach/types";
@@ -120,7 +121,7 @@ function EmptyState() {
   );
 }
 
-export function CoachThread() {
+export function CoachThread({ active = true }: { active?: boolean }) {
   const { thread, pending } = useCoach();
   const isEmpty = thread.length === 0 && !pending;
   // Diagnosis cards are the coach talking to itself; the prompts stay up
@@ -129,8 +130,45 @@ export function CoachThread() {
     (i) => i.kind === "user" || i.kind === "assistant",
   );
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // Whether the learner was already at the bottom when new content arrived.
+  // Following unconditionally would yank them mid-sentence every time a
+  // reply streamed in while they were reading something further up.
+  const following = useRef(true);
+
+  // `active` is in the deps, not just the thread: the mobile Coach tab
+  // stays mounted under `display: none` while another tab is showing, so
+  // every scroll this effect performs while hidden is a no-op against a
+  // zero-height box. Without re-running when the tab comes back, the
+  // learner lands on the oldest message with the newest reply offscreen.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || !active || !following.current) return;
+    el.scrollTop = el.scrollHeight;
+  }, [thread, pending, active]);
+
+  const onScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    // Slack rather than an exact equality: streamed content grows the box
+    // between frames, and sub-pixel heights mean the arithmetic rarely
+    // lands on zero even when the learner is pinned to the bottom.
+    following.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+  };
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3 py-3">
+    <div
+      ref={scrollRef}
+      onScroll={onScroll}
+      // pb-16: the panel's floating clear button is 44px tall at bottom-3,
+      // so 56px of scrollable space under the last message is the minimum
+      // that keeps it hovering over blank ground once the thread has
+      // followed to the bottom. 64px instead, because at the exact fit the
+      // button's top edge lands flush on the last line's box with nothing
+      // left for its focus ring. Both are rem utilities, so the clearance
+      // survives the root-size step-down in globals.css.
+      className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3 pt-3 pb-16"
+    >
       {isEmpty ? <EmptyState /> : null}
       {thread.map((item) => {
         if (item.kind === "diagnosis") {
