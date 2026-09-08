@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import { CODE_LIGHT } from "../src/lib/content/codePalette";
+import { CODE_LIGHT, CODE_DARK } from "../src/lib/content/codePalette";
 import {
   FAMILY_THEMES,
   familyCssVars,
@@ -18,7 +18,7 @@ import { MODULES, moduleFamily } from "../src/lib/course/manifest";
  * `text-on-pop` on `bg-pop`. Pop is fill-only on paper; accent carries
  * coloured text.
  *
- * Spec: docs/superpowers/specs/2026-07-31-codemacha-handbook-identity-design.md
+ * Spec: docs/superpowers/specs/2026-07-31-leetexpert-handbook-identity-design.md
  */
 
 const SRC = join(__dirname, "..", "src");
@@ -296,33 +296,66 @@ describe("design tokens", () => {
     }
   });
 
-  it("code colours are one source and clear AA on the code surface", () => {
+  it("code colours are one source and clear AA on the code-editor surface", () => {
     // CLAUDE.md: "Code colour has one source." codePalette.ts feeds Shiki;
-    // the light --tok-* block in globals.css feeds CodeMirror. They must not
-    // drift, and every token must clear 4.5:1 on --code (which now steps
-    // below the page, so the old palette no longer passes — see the ladder).
+    // --tok-* in globals.css feeds CodeMirror. They must not drift.
+    //
+    // The code-editor surface (--code-editor) is DELIBERATELY inverted from
+    // the page theme — a dark editor on the light site theme, a light one
+    // on the dark site theme (see the --code-editor comment in globals.css)
+    // — so it's :root that carries CODE_DARK's ink and .dark that carries
+    // CODE_LIGHT's, not the other way around. Every token must still clear
+    // 4.5:1 against whichever --code-editor background it actually paints
+    // on.
     const css = readFileSync(GLOBALS, "utf8");
-    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    const codeSurface = firstHexVar(root, "code")!;
-    const tokStart = css.lastIndexOf(":root");
-    const tokRoot = css.slice(
-      tokStart,
-      css.indexOf(".dark", tokStart),
+    const ladderRoot = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
+    const ladderDark = css.slice(
+      css.indexOf(".dark"),
+      css.indexOf("@theme inline"),
     );
-    const tok = (name: string) => firstHexVar(tokRoot, name);
+    const codeEditorLight = firstHexVar(ladderRoot, "code-editor")!; // :root's editor bg (dark)
+    const codeEditorDark = firstHexVar(ladderDark, "code-editor")!; // .dark's editor bg (light)
 
-    expect(tok("tok-comment")).toBe(CODE_LIGHT.comment);
-    expect(tok("tok-keyword")).toBe(CODE_LIGHT.keyword);
-    expect(tok("tok-string")).toBe(CODE_LIGHT.string);
-    expect(tok("tok-constant")).toBe(CODE_LIGHT.constant);
-    expect(tok("tok-entity")).toBe(CODE_LIGHT.entity);
-    expect(tok("tok-variable")).toBe(CODE_LIGHT.variable);
-    expect(tok("tok-name")).toBe(CODE_LIGHT.fg);
+    const tokSection = css.slice(
+      css.indexOf("Editor token palette"),
+      css.indexOf("Visual OS / PatternLab"),
+    );
+    const tokRoot = tokSection.slice(
+      tokSection.indexOf(":root"),
+      tokSection.indexOf(".dark"),
+    );
+    const tokDark = tokSection.slice(tokSection.indexOf(".dark"));
+    const tokIn = (region: string, name: string) => firstHexVar(region, name);
 
+    // :root's editor is dark -> CODE_DARK's ink.
+    expect(tokIn(tokRoot, "tok-comment")).toBe(CODE_DARK.comment);
+    expect(tokIn(tokRoot, "tok-keyword")).toBe(CODE_DARK.keyword);
+    expect(tokIn(tokRoot, "tok-string")).toBe(CODE_DARK.string);
+    expect(tokIn(tokRoot, "tok-constant")).toBe(CODE_DARK.constant);
+    expect(tokIn(tokRoot, "tok-entity")).toBe(CODE_DARK.entity);
+    expect(tokIn(tokRoot, "tok-variable")).toBe(CODE_DARK.variable);
+    expect(tokIn(tokRoot, "tok-name")).toBe(CODE_DARK.fg);
+
+    // .dark's editor is light -> CODE_LIGHT's ink.
+    expect(tokIn(tokDark, "tok-comment")).toBe(CODE_LIGHT.comment);
+    expect(tokIn(tokDark, "tok-keyword")).toBe(CODE_LIGHT.keyword);
+    expect(tokIn(tokDark, "tok-string")).toBe(CODE_LIGHT.string);
+    expect(tokIn(tokDark, "tok-constant")).toBe(CODE_LIGHT.constant);
+    expect(tokIn(tokDark, "tok-entity")).toBe(CODE_LIGHT.entity);
+    expect(tokIn(tokDark, "tok-variable")).toBe(CODE_LIGHT.variable);
+    expect(tokIn(tokDark, "tok-name")).toBe(CODE_LIGHT.fg);
+
+    for (const [name, hex] of Object.entries(CODE_DARK)) {
+      expect(
+        contrastRatio(hex, codeEditorLight),
+        `${name} vs :root's code-editor`,
+      ).toBeGreaterThanOrEqual(4.5);
+    }
     for (const [name, hex] of Object.entries(CODE_LIGHT)) {
-      expect(contrastRatio(hex, codeSurface), `${name} vs code`).toBeGreaterThanOrEqual(
-        4.5,
-      );
+      expect(
+        contrastRatio(hex, codeEditorDark),
+        `${name} vs .dark's code-editor`,
+      ).toBeGreaterThanOrEqual(4.5);
     }
   });
 
@@ -481,18 +514,29 @@ describe("design tokens", () => {
     }
   });
 
-  it("AppShell lifts the family scope over all course chrome", () => {
-    // The sidebar/header/mobile sheet live OUTSIDE the page scopes, so the
-    // shell applies familyCssVars on a display:contents wrapper — active
-    // module chips, progress bars, and hover states all tint with the topic.
+  it("AppShell resolves the route's family but does not tint chrome with it", () => {
+    // Reversed from the original design: the sidebar/header/mobile sheet
+    // used to tint with the lesson's family via a familyCssVars(...) remap
+    // on a display:contents wrapper around the whole shell. General UI is
+    // steel/indigo everywhere now — one design across the app — and a
+    // family or course accent is scoped to the specific components that
+    // still legitimately want it (viz tracers, curriculum-card identity),
+    // not lifted to the shell. AppShell still RESOLVES which family a
+    // route belongs to (activeThemeFor, tested in appShellRouting.test.ts)
+    // for any scoped component that wants it, it just no longer turns that
+    // into a page-wide CSS variable remap itself.
     const shell = readFileSync(
       join(SRC, "components", "layout", "AppShell.tsx"),
       "utf8",
     );
-    expect(shell).toMatch(/className="contents"/);
-    expect(shell).toMatch(/familyCssVars\(family\)/);
     expect(shell).toMatch(/findProblemBySlug/);
     expect(shell).toMatch(/moduleFamily/);
+    // Precise call-syntax match (not a bare substring test) so this
+    // doesn't trip over the two names appearing in prose in a comment
+    // explaining why they're gone from here.
+    expect(shell).not.toMatch(/familyCssVars\(/);
+    expect(shell).not.toMatch(/singleAccentCssVars\(/);
+    expect(shell).not.toMatch(/className="contents"/);
   });
 
   it("curriculum map cards scope per-module family colors", () => {

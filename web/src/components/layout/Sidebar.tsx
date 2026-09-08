@@ -1,12 +1,22 @@
 "use client";
 
-import { CaretLeft } from "@phosphor-icons/react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { CaretLeft, DotsSixVertical } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { CourseNavTree } from "@/components/layout/CourseNavTree";
 
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
+}
+
+const WIDTH_KEY = "dsa-sidebar-width";
+const DEFAULT_WIDTH = 320;
+const MIN_WIDTH = 240;
+const MAX_WIDTH = 480;
+
+function clampWidth(px: number): number {
+  return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, px));
 }
 
 /**
@@ -18,25 +28,98 @@ interface SidebarProps {
  * horizontal space, so a drawer nobody has open should cost none of it.
  */
 export function Sidebar({ open, onClose }: SidebarProps) {
+  // Always starts at the default so the client's first render matches the
+  // server's — reading localStorage during init would hydrate a width the
+  // server never rendered. The persisted width is applied right after
+  // mount instead, same as AppShell does for the open/closed state.
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(WIDTH_KEY);
+      const parsed = raw ? Number(raw) : NaN;
+      if (Number.isFinite(parsed)) setWidth(clampWidth(parsed));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+  const [dragging, setDragging] = useState(false);
+  const draggingRef = useRef(false);
+  // Width at drag start, so the handle can be dragged from anywhere on its
+  // track without the panel jumping to the cursor's absolute position first.
+  const startX = useRef(0);
+  const startWidth = useRef(width);
+
+  const onPointerMove = useCallback((e: PointerEvent) => {
+    if (!draggingRef.current) return;
+    setWidth(clampWidth(startWidth.current + (e.clientX - startX.current)));
+  }, []);
+
+  const stopDrag = useCallback(() => {
+    if (!draggingRef.current) return;
+    draggingRef.current = false;
+    setDragging(false);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+    setWidth((w) => {
+      try {
+        localStorage.setItem(WIDTH_KEY, String(w));
+      } catch {
+        /* ignore */
+      }
+      return w;
+    });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", stopDrag);
+    window.addEventListener("pointercancel", stopDrag);
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", stopDrag);
+      window.removeEventListener("pointercancel", stopDrag);
+    };
+  }, [onPointerMove, stopDrag]);
+
+  const startDrag = (e: React.PointerEvent) => {
+    draggingRef.current = true;
+    setDragging(true);
+    startX.current = e.clientX;
+    startWidth.current = width;
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  };
+
   return (
     <aside
       id="lessons-sidebar"
       // Stays mounted so the width transition has something to collapse, and
       // inert while closed so the clipped tree leaves the tab order with it.
       inert={!open}
+      style={{ width: open ? width : 0 }}
       className={cn(
-        "print:hidden relative z-20 hidden h-full shrink-0 flex-col overflow-hidden bg-elevated transition-[width] duration-[var(--dur)] ease-[var(--ease)] lg:flex",
+        // sidebar-rail (globals.css): whole-panel wash of the topic's
+        // primary colour, split by theme — see the comment there for why
+        // light and dark can't share one strength.
+        "sidebar-rail print:hidden relative z-20 hidden h-full shrink-0 flex-col overflow-hidden lg:flex",
+        // Width changes fire from two very different sources: the open/close
+        // toggle (should glide) and the drag handle (should track the
+        // pointer 1:1, or the panel visibly lags the cursor). Only animate
+        // the former.
+        !dragging &&
+          "transition-[width] duration-[var(--dur)] ease-[var(--ease)]",
         // box-shadow isn't clipped by the element's own overflow-hidden, so
         // a w-0 closed drawer would still show a shadow sliver if this were
         // unconditional.
-        open ? "w-80 border-r border-border shadow-edge-right" : "w-0",
+        open ? "border-r border-border shadow-edge-right" : "",
       )}
     >
       {/*
         Fixed inner width: the panel has to clip as it collapses rather than
         reflow its contents down to nothing on the way.
       */}
-      <div className="flex h-full w-80 flex-col">
+      <div className="flex h-full flex-col" style={{ width }}>
         <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
           <span className="truncate text-sm font-semibold tracking-tight">
             Lessons
@@ -52,6 +135,28 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
         <CourseNavTree compact className="px-5 py-6" />
       </div>
+      {/*
+        Same grip-chip idiom as PanelSplit's drag handle: a hairline track
+        that's visually part of the existing border, with a floating pill
+        that says "this moves" without making every drawer edge in the app
+        look draggable.
+      */}
+      <button
+        type="button"
+        aria-label="Resize lessons drawer"
+        onPointerDown={(e) => {
+          e.preventDefault();
+          startDrag(e);
+        }}
+        className="group absolute top-0 right-0 z-10 h-full w-2 cursor-col-resize touch-none focus-visible:outline-none"
+      >
+        <span
+          aria-hidden
+          className="shadow-elevation pointer-events-none absolute top-1/2 left-1/2 flex h-9 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-elevated text-muted opacity-0 transition-all duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:opacity-100 group-hover:border-accent/40 group-hover:text-foreground group-focus-visible:opacity-100 group-focus-visible:border-accent/40 group-focus-visible:text-foreground motion-reduce:transition-none"
+        >
+          <DotsSixVertical size={12} weight="bold" />
+        </span>
+      </button>
     </aside>
   );
 }

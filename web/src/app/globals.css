@@ -85,10 +85,24 @@
   --border: var(--press-rule);
   --surface: var(--press-paper-sunk); /* test panel / muted — deepest */
   --code: #e4e9f2; /* editor / code chrome — recessed below the page */
-  /* The band under the caret's line. Neutral, not the family accent: an
-     editor marks the active line with depth, and an accent tint would also
-     shift hue per topic family on a surface meant to read as constant. */
-  --editor-active-line: rgb(22 32 46 / 0.055); /* --press-ink, darkens paper */
+  /*
+    The actual code-block/sandbox-editor canvas is deliberately NOT part of
+    the light/dark paper ladder above — it's always a dark "editor" surface
+    in the light theme and always a light one in the dark theme (an
+    intentional inversion the user chose, not a bug: the code well reads as
+    its own fixed instrument regardless of which theme the surrounding page
+    is in, the way a terminal or IDE panel often does). --tok-* below is
+    swapped the same way. Never used for anything but the code surface —
+    see `.code-surface`, `.editor-tab`, and every `bg-code-editor` site.
+  */
+  --code-editor: #14202e;
+  /* Hairline gutter border + active-line tint, tuned for THIS (dark) bg —
+     reusing the site's own dark-theme --border/--editor-active-line
+     formulas below, since those were already proven legible on a dark
+     surface; swapped below (in the dark-theme block) for the same reason
+     in reverse. */
+  --code-editor-border: rgba(244, 244, 245, 0.09);
+  --editor-active-line: rgb(255 255 255 / 0.045);
   --elevated: #ffffff; /* sidebar, lesson panel, cards — brightest lift */
   --accent: var(--press-olive);
   --accent-hover: #334155; /* steel lift for hover */
@@ -195,9 +209,14 @@
   --surface: #0c0c0d; /* tests / muted — recess, deepest tier */
   --elevated: #26262a; /* sidebar / lesson / cards — brightest lift */
   --code: #19191d; /* editor — above the page, below elevated */
+  /* Code surface inverts relative to the page here too: dark theme gets a
+     LIGHT code well. Reuses the light theme's original --code value — see
+     the long comment on --code-editor in :root. */
+  --code-editor: #e4e9f2;
+  --code-editor-border: rgba(22, 32, 46, 0.09);
   /* Flipped for the same reason the shadow tint is: a dark ink at low alpha
      would do nothing over an already-dark editor, so the band lightens. */
-  --editor-active-line: rgb(255 255 255 / 0.045);
+  --editor-active-line: rgb(22 32 46 / 0.055);
 
   /* A light ink at low alpha LIGHTENS a dark surface instead of shadowing
      it, so dark mode drops the ink tint and uses near-black instead —
@@ -227,6 +246,8 @@
   --color-border: var(--border);
   --color-surface: var(--surface);
   --color-code: var(--code);
+  --color-code-editor: var(--code-editor);
+  --color-code-editor-border: var(--code-editor-border);
   --color-elevated: var(--elevated);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
@@ -612,14 +633,17 @@ body {
   content: none;
 }
 
+/* Swapped: the light theme's code well is dark (Shiki's "dark" variant
+   ink), the dark theme's is light (Shiki's "light" variant ink) — see the
+   --code-editor comment in :root. */
 .handbook-prose .shiki,
 .handbook-prose .shiki span {
-  color: var(--shiki-light);
+  color: var(--shiki-dark);
 }
 
 .dark .handbook-prose .shiki,
 .dark .handbook-prose .shiki span {
-  color: var(--shiki-dark);
+  color: var(--shiki-light);
 }
 
 .handbook-prose .shiki {
@@ -633,9 +657,13 @@ body {
 */
 .code-surface {
   overflow: hidden;
-  border: 1px solid var(--border);
+  /* --code-editor-border, not --border: this frame sits on --code-editor,
+     whose brightness is inverted from the page (see the comment on
+     --code-editor in :root), so the page's own hairline would be
+     low-contrast against it in one theme. */
+  border: 1px solid var(--code-editor-border);
   border-radius: var(--radius-sm);
-  background: var(--code);
+  background: var(--code-editor);
 }
 
 .code-surface-header {
@@ -643,63 +671,71 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--code-editor-border);
   padding: 0.375rem 0.5rem;
 }
 
+/*
+  Stretch + flush, not centered: a tab strip that sits directly on
+  --code-editor (every .code-tab lives here; .editor-tab's active/hover
+  states do too) reads as part of the buffer only when the tabs touch the
+  header's own top/bottom edges and each other, the way a real editor's
+  tab bar does. This used to be .editor-tab-only (the "ide" IDE toolbar),
+  with lesson code blocks kept on a centered, gapped, pill-tab layout —
+  now both look the same; see .code-tab below.
+*/
 .code-surface-tabs {
   display: flex;
-  align-items: center;
-  gap: 0.25rem;
+  align-items: stretch;
+  gap: 0;
 }
 
+/*
+  Flush tab shape shared with .editor-tab (below) — a top accent rule on
+  the active tab, no pill, background matches the code canvas it names.
+  Kept as a separate class rather than folded into .editor-tab because the
+  two differ in exactly one place: DEFAULT (unpressed, unhovered) ink.
+  .code-tab always sits on --code-editor (the language-fence header has no
+  background of its own — see .code-surface), so its resting ink can
+  already be --tok-name-based. .editor-tab's resting state sits on the ide
+  toolbar's --elevated instead (its own background is transparent until
+  hover/active pull in --code-editor), so it rests on --muted. Every other
+  rule is identical on purpose.
+*/
 .code-tab {
-  border-radius: var(--radius-sm);
-  padding: 0.25rem 0.625rem;
-  font-size: 0.75rem;
+  position: relative;
+  border-radius: 0;
+  border-top: 2px solid transparent;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  color: var(--muted);
+  background: transparent;
+  /* --tok-name, not --muted — see the class comment above. */
+  color: color-mix(in oklab, var(--tok-name) 65%, transparent);
   transition:
     color var(--dur-fast) var(--ease),
     background-color var(--dur-fast) var(--ease);
 }
 
 .code-tab:hover {
-  color: var(--foreground);
+  color: var(--tok-name);
 }
 
 .code-tab[aria-pressed="true"],
 .code-tab[data-active="true"] {
-  /* Solid accent pill — paper/ink alone was invisible on bg-surface toolbars */
-  background: var(--accent);
-  color: var(--on-pop);
+  /* --tok-keyword rather than --accent: a family/site accent isn't
+     guaranteed visible against a well whose brightness doesn't track the
+     page theme (same reasoning as editorTheme.ts's caret). */
+  border-top-color: var(--tok-keyword);
+  background: var(--code-editor);
+  color: var(--tok-name);
   font-weight: 600;
 }
 
 /*
-  The IDE toolbar wraps its language tabs in .code-surface-tabs (below),
-  which centers its children — correct for the pill tabs every lesson code
-  block uses, wrong for editor tabs that are meant to stretch full height
-  and touch the border. Overriding align-items with a Tailwind utility on
-  the element does NOT work here: that utility lands in @layer utilities,
-  and .code-surface-tabs's align-items is unlayered plain CSS, which wins
-  regardless of source order or which one was written more recently — the
-  same rule that made the composer's own focus-visible:outline-none inert
-  earlier. This class exists so the override is unlayered too, not because
-  a second class name is inherently better.
-*/
-.editor-tabs {
-  align-items: stretch;
-  gap: 0;
-}
-
-/*
-  Editor-only tab treatment. Deliberately NOT folded into .code-tab: that
-  class is shared by every lesson code block and the viz panel, where a tab
-  is just a language switch. Here the tab sits on chrome and names the
-  buffer below it, so the active one drops its pill, takes the editor's own
-  background, and grows a top rule — the tab and the canvas read as one
-  piece, which is what makes a tab strip look like an editor's.
+  Same flush shape as .code-tab (see its comment for why they're still two
+  classes, not one) — this is the "ide" toolbar's variant, whose resting
+  state sits on --elevated rather than --code-editor.
 */
 .editor-tab {
   position: relative;
@@ -708,6 +744,11 @@ body {
   padding: 0.3rem 0.75rem;
   font-size: 0.72rem;
   font-weight: 500;
+  /* Sits on the TOOLBAR's own background (bg-elevated, transparent here),
+     which tracks the page theme normally — --muted is correct. Only
+     hover/active actually switch their background to --code-editor
+     (inverted from the page — see the comment on --code-editor in :root),
+     which is why only THOSE two rules switch their ink to --tok-name. */
   color: var(--muted);
   background: transparent;
   transition:
@@ -716,15 +757,19 @@ body {
 }
 
 .editor-tab:hover {
-  color: var(--foreground);
-  background: var(--code);
+  color: var(--tok-name);
+  background: var(--code-editor);
 }
 
 .editor-tab[aria-pressed="true"],
 .editor-tab[data-active="true"] {
-  border-top-color: var(--accent);
-  background: var(--code);
-  color: var(--foreground);
+  /* --tok-keyword rather than --accent: a family/site accent isn't
+     guaranteed visible against a well whose brightness doesn't track the
+     page theme, the same reason the CodeMirror caret uses it (see
+     editorTheme.ts). */
+  border-top-color: var(--tok-keyword);
+  background: var(--code-editor);
+  color: var(--tok-name);
   font-weight: 600;
 }
 
@@ -750,14 +795,15 @@ body {
   color: var(--tok-name);
 }
 
+/* Swapped — see the .handbook-prose .shiki comment above. */
 .code-body .shiki,
 .code-body .shiki span {
-  color: var(--shiki-light);
+  color: var(--shiki-dark);
 }
 
 .dark .code-body .shiki,
 .dark .code-body .shiki span {
-  color: var(--shiki-dark);
+  color: var(--shiki-light);
 }
 
 .code-body .shiki {
@@ -784,16 +830,18 @@ body {
   margin-right: 0.75rem;
   padding-left: 0.75rem;
   text-align: right;
-  color: color-mix(in oklab, var(--muted) 55%, transparent);
+  /* --tok-name, not --muted — see the .code-gutter comment above. */
+  color: color-mix(in oklab, var(--tok-name) 55%, transparent);
   user-select: none;
 }
 
+/* Swapped — see the .handbook-prose .shiki comment above. */
 .viz-shiki .viz-code-token {
-  color: var(--shiki-light);
+  color: var(--shiki-dark);
 }
 
 .dark .viz-shiki .viz-code-token {
-  color: var(--shiki-dark);
+  color: var(--shiki-light);
 }
 
 .code-gutter {
@@ -801,7 +849,12 @@ body {
   flex-shrink: 0;
   padding-right: 0.75rem;
   text-align: right;
-  color: color-mix(in oklab, var(--muted) 55%, transparent);
+  /* Dimmed --tok-name, not --muted: this sits on --code-editor, whose
+     brightness is inverted from the page (see the comment on --code-editor
+     in :root), so the page's own muted ink would be low-contrast here in
+     one theme or the other. --tok-name already tracks the editor's own
+     ink correctly in both. */
+  color: color-mix(in oklab, var(--tok-name) 55%, transparent);
   user-select: none;
 }
 
@@ -812,8 +865,30 @@ body {
  * engines paint code on this site (Shiki server-side for code blocks,
  * CodeMirror client-side for the sandbox editor); the only thing keeping
  * them identical is that both read the same values. Change one, change both.
+ *
+ * Swapped from what you'd expect: the code surface (--code-editor) is
+ * inverted from the page theme (dark editor on the light site theme, light
+ * editor on the dark site theme — see --code-editor above), so the ink
+ * that goes with it is inverted too. The block below headed by the plain
+ * root selector (light page, dark editor) carries CODE_DARK's ink; the
+ * block headed by the dark-mode class selector (dark page, light editor)
+ * carries CODE_LIGHT's. Neither corresponds to its own name's ink anymore —
+ * read it as "ink for whichever code-editor brightness this page theme
+ * gets," not "ink for this theme."
  */
 :root {
+  --tok-comment: #94a3b8;
+  --tok-keyword: #7dd3fc;
+  --tok-string: #86efac;
+  --tok-constant: #4ade80;
+  --tok-entity: #c7d2fe;
+  --tok-variable: #e6edf4;
+  --tok-name: #e6edf4;
+  --tok-tag: #4ade80;
+  --tok-invalid: #ef4444;
+}
+
+.dark {
   --tok-comment: #5c6573;
   --tok-keyword: #4f46e5;
   --tok-string: #047857;
@@ -823,18 +898,6 @@ body {
   --tok-name: #111827;
   --tok-tag: #065f46;
   --tok-invalid: #b91c1c;
-}
-
-.dark {
-  --tok-comment: #9ca9b8;
-  --tok-keyword: #60a5fa;
-  --tok-string: #6ee7b7;
-  --tok-constant: #fbbf24;
-  --tok-entity: #22d3ee;
-  --tok-variable: #e6edf4;
-  --tok-name: #e6edf4;
-  --tok-tag: #6ee7b7;
-  --tok-invalid: #ef4444;
 }
 
 /*
@@ -850,6 +913,31 @@ body {
 [data-family] {
   --family-accent: var(--accent);
   --family-wash: color-mix(in oklab, var(--family-accent) 12%, transparent);
+}
+
+/*
+  Lessons rail: a whole-panel wash of the topic's primary colour instead of
+  flat --elevated, same idea as .lab-stage's family-tinted backdrop. Split
+  by theme rather than reusing --family-wash's flat 12% everywhere — a
+  saturated colour read at the same alpha shows up far stronger against
+  white than against near-black, so a strength picked to look right in dark
+  reads as a garish solid pastel panel in light. Falls back to the
+  themeless steel --accent when no family/course scope is active, same as
+  every other --family-accent consumer.
+*/
+.sidebar-rail {
+  background-color: var(--elevated);
+  background-image: linear-gradient(
+    color-mix(in oklab, var(--family-accent, var(--accent)) 4%, transparent),
+    color-mix(in oklab, var(--family-accent, var(--accent)) 4%, transparent)
+  );
+}
+
+.dark .sidebar-rail {
+  background-image: linear-gradient(
+    color-mix(in oklab, var(--family-accent, var(--accent)) 10%, transparent),
+    color-mix(in oklab, var(--family-accent, var(--accent)) 10%, transparent)
+  );
 }
 
 .lab-stage {

@@ -39,8 +39,8 @@ describe("isLandingPath", () => {
     expect(isLandingPath("/")).toBe(true);
   });
 
-  it("matches DSA's marketing page", () => {
-    expect(isLandingPath("/courses/dsa/marketing")).toBe(true);
+  it("does not match /courses/dsa/marketing (that route redirects to / and never reaches this check)", () => {
+    expect(isLandingPath("/courses/dsa/marketing")).toBe(false);
   });
 
   it("does not match the module list page", () => {

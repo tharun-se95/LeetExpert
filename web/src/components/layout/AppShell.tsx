@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
@@ -20,7 +20,6 @@ import {
 } from "@/lib/course/manifest";
 import { allLessonIds as allNextjsLessonIds } from "@/app/courses/nextjs/manifest";
 import { NEXTJS_COURSE } from "@/app/courses/nextjs/registry";
-import { familyCssVars, singleAccentCssVars } from "@/lib/visual/familyTheme";
 import type { FamilyId } from "@/lib/content/manifest";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
 import { cn } from "@/lib/utils";
@@ -51,17 +50,29 @@ function isProblemsListPath(pathname: string): boolean {
   );
 }
 
-/** Both the catalog root and DSA's own marketing page are full-width
- *  landings — no course nav chrome. */
+/** The home page is a full-width landing — no course nav chrome.
+ *  /courses/dsa/marketing used to be a second route rendering the same
+ *  page; it now permanently redirects to "/", so it never reaches this
+ *  client-side pathname check and doesn't need a branch here. */
 export function isLandingPath(pathname: string): boolean {
-  return pathname === "/" || pathname === "/courses/dsa/marketing";
+  return pathname === "/";
 }
 
 /**
- * The current topic's theme, derived from the route. Lifted to the shell
- * so the whole chrome (header, sidebar, mobile sheet, search) tints with
- * the lesson's theme instead of staying steel. List/landing routes have no
- * single topic → null → monochrome.
+ * The current lesson's pattern family, derived from the route.
+ *
+ * This USED to also drive `themeStyleFor`, which lifted the family's accent
+ * to the shell so the whole chrome (header, sidebar, buttons, focus rings)
+ * tinted with the lesson's theme. That's gone: general UI is steel/indigo
+ * everywhere now, one design across the app, and a family/course accent is
+ * scoped to the specific components that still legitimately want it — the
+ * viz tracers and curriculum-card identity that already call
+ * `familyCssVars`/`singleAccentCssVars` themselves, directly on their own
+ * element (`FamilySpotlight`, `VizPlayer`, `PatternLab`, `Diagram`, the
+ * course-hub and module-page cards). `activeThemeFor` stays, tested and
+ * exported, for exactly that use — a scoped component on a lesson page
+ * that needs to know "which family is this page's content in" without the
+ * shell doing any global remapping on its behalf.
  *
  * DSA resolves its theme via its own 7-family lookup (moduleFamily). A
  * future course under /courses/<slug>/ can dispatch to whatever theming
@@ -80,26 +91,6 @@ export function activeThemeFor(pathname: string): FamilyId | null {
     if (hit) return moduleFamily(hit.module);
   }
   return null;
-}
-
-/**
- * The actual inline-style CSS custom properties AppShell applies, built on
- * top of `activeThemeFor`. DSA resolves to a `FamilyId` and gets
- * `familyCssVars`; the Next.js course chose the design doc's other allowed
- * option — one accent for the whole course rather than per-module families
- * — so it gets `singleAccentCssVars` instead of being forced through DSA's
- * named-family lookup table (which has no entry for an arbitrary hex and
- * would silently fall back to DSA's own default family). Routes with no
- * course-specific theme (the catalog root, DSA's marketing page) return
- * `undefined`, leaving the shell monochrome.
- */
-export function themeStyleFor(pathname: string): CSSProperties | undefined {
-  const family = activeThemeFor(pathname);
-  if (family) return familyCssVars(family);
-  if (activeCourseSlugFor(pathname) === "nextjs") {
-    return singleAccentCssVars(NEXTJS_COURSE.accent);
-  }
-  return undefined;
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -122,8 +113,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const totalProblemCount = isNextjs ? 0 : allProblemSlugs().length;
   const ideViewport = isIdePath(pathname);
   const fillMain = ideViewport || isProblemsListPath(pathname);
-  const showCourseNav = !isLandingPath(pathname);
-  const themeStyle = themeStyleFor(pathname);
+  // Every /courses/nextjs/* route 404s while the course is disabled (see
+  // NEXTJS_COURSE.status), but the root layout still renders AppShell
+  // around that 404 body — without this, a disabled course's full sidebar
+  // and progress chrome would render around content that isn't there.
+  const showCourseNav =
+    !isLandingPath(pathname) && (!isNextjs || NEXTJS_COURSE.status === "available");
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
   useEffect(() => {
@@ -186,7 +181,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       totalProblemCount={totalProblemCount}
       lessonProgressIds={lessonProgressIds}
     >
-      <div className="contents" style={themeStyle}>
+      <>
         <VisitTracker />
         <ScrollbarAutoHide />
         <SidebarProvider open={sidebarOpen} toggle={toggleSidebar}>
@@ -231,7 +226,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </SidebarProvider>
-      </div>
+      </>
     </ProgressProvider>
   );
 }

@@ -196,7 +196,7 @@ export function Markdown({
         }
       }
       return (
-        <pre className="overflow-x-auto rounded-[length:var(--radius-sm)] border border-border bg-code px-4 py-3 font-mono text-[0.85rem] leading-relaxed">
+        <pre className="overflow-x-auto rounded-[length:var(--radius-sm)] border border-border bg-code-editor px-4 py-3 font-mono text-[0.85rem] leading-relaxed">
           {children}
         </pre>
       );

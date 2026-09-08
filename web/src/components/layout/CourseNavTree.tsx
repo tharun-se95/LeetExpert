@@ -56,7 +56,15 @@ function ModuleNode({
 }) {
   const { visited } = useProgress();
   const hasLessons = navModule.lessons.length > 0;
-  const selfActive = pathname === navModule.href;
+  // Some courses (Next.js) give a module no overview page of its own —
+  // its href just points at its first lesson. That lesson row below
+  // already highlights itself, so treating the module row as "self
+  // active" too would double-highlight the same page.
+  const isAliasedToFirstLesson = navModule.lessons.some(
+    (l) => l.href === navModule.href,
+  );
+  const selfActive =
+    pathname === navModule.href && !isAliasedToFirstLesson;
 
   const doneCount = navModule.lessons.filter((l) => visited.has(l.id)).length;
   // Desktop: ~32px rows; mobile sheet: ≥44px taps.

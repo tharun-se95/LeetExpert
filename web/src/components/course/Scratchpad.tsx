@@ -15,7 +15,7 @@ const ScratchpadEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-40 animate-pulse border-t border-border bg-code" />
+      <div className="h-40 animate-pulse border-t border-border bg-code-editor" />
     ),
   },
 );
@@ -85,7 +85,7 @@ export function Scratchpad({
           Reset
         </button>
       </div>
-      <div className="border-b border-border bg-code">
+      <div className="border-b border-code-editor-border bg-code-editor">
         <ScratchpadEditor
           value={value}
           onChange={onChange}

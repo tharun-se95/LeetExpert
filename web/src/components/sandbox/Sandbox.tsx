@@ -51,7 +51,7 @@ const CodeEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-full min-h-40 animate-pulse border-t border-border bg-code" />
+      <div className="h-full min-h-40 animate-pulse border-t border-border bg-code-editor" />
     ),
   },
 );
@@ -74,6 +74,7 @@ export function Sandbox({
   variant = "card",
   moduleSlug,
   extractedComplexity = null,
+  embedded = false,
 }: {
   source: string;
   onSolved?: () => void;
@@ -82,6 +83,10 @@ export function Sandbox({
   /** Module for cheatsheet pattern / complexity fallbacks (IDE Insight). */
   moduleSlug?: string;
   extractedComplexity?: ExtractedComplexity | null;
+  /** `card` variant only: drop the outer margin/border/rounding/shadow —
+   *  for a caller that's already inside its own surface (same convention
+   *  as `Viz`'s `embedded` prop). */
+  embedded?: boolean;
 }) {
   const spec = useMemo(() => parseSandboxSpec(source), [source]);
   if (!spec) return <ErrorCard message="Invalid sandbox block." />;
@@ -92,6 +97,7 @@ export function Sandbox({
       variant={variant}
       moduleSlug={moduleSlug}
       extractedComplexity={extractedComplexity}
+      embedded={embedded}
     />
   );
 }
@@ -102,12 +108,14 @@ function SandboxBody({
   variant,
   moduleSlug,
   extractedComplexity,
+  embedded = false,
 }: {
   spec: SandboxSpec;
   onSolved?: () => void;
   variant: "card" | "ide";
   moduleSlug?: string;
   extractedComplexity: ExtractedComplexity | null;
+  embedded?: boolean;
 }) {
   const [lang, setLang] = useState<SandboxLang>("python");
   const [drafts, setDrafts] = useState<Record<SandboxLang, string>>({
@@ -217,24 +225,20 @@ function SandboxBody({
 
       {/*
         `-mb-px` pulls the strip over the toolbar's bottom border so the
-        active tab's fill meets the editor with no line between them — the
-        tab reads as the top edge of the buffer rather than a control above
-        it. `-ml-3` cancels the toolbar's own left px-3 for the ide variant
-        only: a real editor's tab bar starts flush at the window edge, and
-        the container's padding — correct for centering the card variant's
-        pill tabs — read as dead margin in front of a bar that's otherwise
-        full-bleed chrome. The card variant keeps the shared pill styling
-        and the container's padding, since a lesson snippet has no editable
-        canvas for a tab to belong to.
+        active tab's top-accent rule meets the editor with no line between
+        them — the tab reads as the top edge of the buffer rather than a
+        control above it. `-ml-3` cancels the toolbar's own left px-3 for
+        the ide variant only: a real editor's tab bar starts flush at the
+        window edge, and the container's padding — correct for centering
+        the card variant's tabs — reads as dead margin in front of a bar
+        that's otherwise full-bleed chrome. Both variants share the same
+        flush tab styling (.code-tab === .editor-tab's look, see globals.css)
+        now; only these edge margins are ide-specific.
       */}
       <div
         className={cn(
           "code-surface-tabs inline-flex",
-          // .editor-tabs, not the items-stretch/gap-0 utilities this used to
-          // carry: .code-surface-tabs's own align-items is unlayered CSS, so
-          // a layered Tailwind utility can never win against it. See the
-          // comment on .editor-tabs in globals.css.
-          variant === "ide" && "editor-tabs -mb-px -ml-3 self-stretch",
+          variant === "ide" && "-mb-px -ml-3",
         )}
       >
         {LANGS.map((l) => (
@@ -361,13 +365,16 @@ function SandboxBody({
   return (
     <div
       className={cn(
-        "print:hidden my-7 overflow-hidden rounded-[length:var(--radius-lg)] border bg-surface/30 shadow-elevation transition-colors",
-        allPassed ? "border-good/40" : "border-border",
+        "print:hidden overflow-hidden bg-surface/30 transition-colors",
+        embedded
+          ? "border-t border-border"
+          : "my-7 rounded-[length:var(--radius-lg)] border shadow-elevation",
+        !embedded && (allPassed ? "border-good/40" : "border-border"),
       )}
     >
       {toolbar}
 
-      <div className="border-y border-border bg-code">
+      <div className="border-y border-code-editor-border bg-code-editor">
         <div className="code-body p-0">
           <CodeEditor
             value={drafts[lang]}
@@ -544,7 +551,7 @@ function IdeWorkspace({
   );
 
   const editor = (
-    <div className="flex h-full min-h-0 flex-col bg-code">
+    <div className="flex h-full min-h-0 flex-col bg-code-editor">
       <div className="code-body min-h-0 flex-1 overflow-hidden p-0">
         <CodeEditor
           value={drafts[lang]}
@@ -975,7 +982,7 @@ function IdeTestcases({
             </div>
 
             {result?.logs.length ? (
-              <pre className="mt-3 overflow-x-auto rounded-[length:var(--radius-sm)] bg-code px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-muted">
+              <pre className="mt-3 overflow-x-auto rounded-[length:var(--radius-sm)] bg-code-editor px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-[color:var(--tok-comment)]">
                 {result.logs.join("\n")}
               </pre>
             ) : null}
@@ -1208,7 +1215,7 @@ function CardResults({
                 )}
 
                 {result.logs.length > 0 ? (
-                  <pre className="mt-1.5 overflow-x-auto rounded-[length:var(--radius-sm)] bg-code px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-muted">
+                  <pre className="mt-1.5 overflow-x-auto rounded-[length:var(--radius-sm)] bg-code-editor px-2 py-1.5 font-mono text-[0.7rem] leading-relaxed text-[color:var(--tok-comment)]">
                     {result.logs.join("\n")}
                   </pre>
                 ) : null}

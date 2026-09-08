@@ -30,14 +30,17 @@ export const CODE_LIGHT: CodeInk = {
 };
 
 export const CODE_DARK: CodeInk = {
-  fg: "#f9fafc",
-  comment: "#a1a1aa",
-  keyword: "#818cf8",
-  string: "#22d497",
-  constant: "#a5b4fc",
-  entity: "#c4b5fd",
-  type: "#f59e0b",
-  variable: "#f9fafc",
+  // Cooler, sky/mint family (was indigo/violet) — matches the ink already
+  // used for dark-mode body text (--press-ink dark), so code doesn't sit in
+  // a different color world than the prose around it.
+  fg: "#e6edf4",
+  comment: "#94a3b8",
+  keyword: "#7dd3fc",
+  string: "#86efac",
+  constant: "#4ade80",
+  entity: "#c7d2fe",
+  type: "#fbbf24",
+  variable: "#e6edf4",
 };
 
 /** Minimal TextMate theme shape — enough for Shiki, without pulling its types. */

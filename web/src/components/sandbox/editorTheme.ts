@@ -11,6 +11,15 @@ import { tags as t } from "@lezer/highlight";
  *   2. the palette mirrors `codePalette.ts` (same ink as Shiki handbook + viz),
  *      so all three code surfaces stay identical.
  *
+ * The editor's own canvas (--code-editor) is deliberately inverted from the
+ * page theme — dark editor on the light site theme, light editor on the
+ * dark one (see the comment on --code-editor in globals.css). That means
+ * every colour below reads from a --tok- or --code-editor- prefixed token,
+ * NEVER from a page-theme token like --accent, --foreground, --muted or
+ * --border: those are tuned for the PAGE's brightness, which no longer
+ * matches the editor's once the two are decoupled, and would go
+ * low-contrast or invisible in exactly one theme.
+ *
  * `basicSetup.syntaxHighlighting` MUST stay false where this is used.
  * CodeMirror's built-in defaultHighlightStyle is tuned for light
  * backgrounds; leaving it on paints near-invisible tokens over a dark
@@ -83,7 +92,10 @@ export const editorChrome = EditorView.theme({
     fontFamily: "var(--font-mono), ui-monospace, monospace",
     lineHeight: "1.65",
   },
-  ".cm-content": { padding: "0.75rem 0", caretColor: "var(--accent)" },
+  // --tok-keyword, not --accent: the caret needs to be visible against
+  // --code-editor specifically, and a family/site accent isn't guaranteed
+  // to clear that (see the file header comment).
+  ".cm-content": { padding: "0.75rem 0", caretColor: "var(--tok-keyword)" },
   ".cm-line": { padding: "0 1rem 0 0" },
 
   // A trough, not just dimmer numbers: the rule is what separates the
@@ -91,37 +103,36 @@ export const editorChrome = EditorView.theme({
   // numbers from reading as part of the code.
   ".cm-gutters": {
     backgroundColor: "transparent",
-    color: "color-mix(in oklab, var(--muted) 55%, transparent)",
+    color: "color-mix(in oklab, var(--tok-name) 55%, transparent)",
     border: "none",
-    borderRight: "1px solid var(--border)",
+    borderRight: "1px solid var(--code-editor-border)",
     paddingLeft: "0.75rem",
   },
   ".cm-lineNumbers .cm-gutterElement": {
     padding: "0 0.75rem 0 0",
     minWidth: "2.25rem",
   },
-  // Full-strength ink rather than the accent: "which line am I on" is a
-  // position cue, not a themed one, and --accent is remapped per topic
-  // family — the caret's own line should not change hue with the module.
+  // Full-strength editor ink rather than a themed accent: "which line am I
+  // on" is a position cue, not a themed one.
   ".cm-activeLineGutter": {
     backgroundColor: "var(--editor-active-line)",
-    color: "var(--foreground)",
+    color: "var(--tok-name)",
   },
   ".cm-activeLine": {
     backgroundColor: "var(--editor-active-line)",
   },
 
   ".cm-cursor, .cm-dropCursor": {
-    borderLeftColor: "var(--accent)",
+    borderLeftColor: "var(--tok-keyword)",
     borderLeftWidth: "2px",
   },
   "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
-    { backgroundColor: "color-mix(in oklab, var(--accent) 25%, transparent)" },
+    { backgroundColor: "color-mix(in oklab, var(--tok-keyword) 25%, transparent)" },
   ".cm-selectionMatch": {
-    backgroundColor: "color-mix(in oklab, var(--accent) 16%, transparent)",
+    backgroundColor: "color-mix(in oklab, var(--tok-keyword) 16%, transparent)",
   },
   ".cm-matchingBracket, &.cm-focused .cm-matchingBracket": {
-    backgroundColor: "color-mix(in oklab, var(--accent) 22%, transparent)",
+    backgroundColor: "color-mix(in oklab, var(--tok-keyword) 22%, transparent)",
     color: "inherit",
     outline: "none",
   },

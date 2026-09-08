@@ -74,12 +74,21 @@ The content is the product. Code exists to serve it.
 - **All colour goes through tokens.** No hardcoded Tailwind palette values
   (`emerald-500`, `red-400`) in components — they survive a palette change
   and silently break the theme.
-- **Primary is per-topic, not global.** The base has no colour; the route's
-  module family is lifted to the AppShell (`display: contents` wrapper), so
-  the header, sidebar, and mobile sheet tint with the topic, and each
-  curriculum card / problem group applies its own family scope. The family
-  re-maps `--accent/--pop/--highlight/--on-pop` via `familyCssVars(family)`.
-  Family colours are authored as ONE `accent` hex per family in
+- **Primary is steel/indigo everywhere; family colour is scoped to content,
+  never lifted to chrome.** This reverses the original design (below is what
+  changed, kept for context): AppShell no longer applies `familyCssVars`/
+  `singleAccentCssVars` on a page-wide wrapper, so the header, sidebar,
+  buttons, and focus rings stay one steel/indigo design across every course
+  and module — they do not tint per lesson. `activeThemeFor` in
+  `AppShell.tsx` still resolves which family a route belongs to (tested in
+  `appShellRouting.test.ts`), but only as a lookup for the specific
+  components that legitimately want it: viz tracers (`VizPlayer`, `Diagram`,
+  `PatternLab`, `FamilySpotlight`) and curriculum-card identity (the course
+  hub and module-page cards in `app/courses/dsa/`), which call
+  `familyCssVars(family)` themselves, scoped to their own element. Guarded
+  by `design-tokens.test.ts`'s "AppShell resolves the route's family but
+  does not tint chrome with it". Family colours are still authored as ONE
+  `accent` hex per family in
   `web/src/lib/visual/familyTheme.ts`; `accentUi` (the 3:1-on-both-papers UI
   fill, gold darkened to `#AB8921`) is derived by `uiAccent()` — recolor a
   family by changing one hex. `accentUi` clears only the 3:1 UI floor on
