@@ -29,9 +29,14 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  // Resolves relative URLs in metadata (canonical links, OG/Twitter images)
+  // against the real production origin instead of leaving them host-
+  // relative, which is what Next warns about and what search engines and
+  // social crawlers need to resolve them correctly off-site.
+  metadataBase: new URL("https://www.leetexpert.com"),
   title: {
-    default: "codeMacha",
-    template: "%s · codeMacha",
+    default: "leetExpert",
+    template: "%s · leetExpert",
   },
   description:
     "Interactive courses with live sandboxes, visualizations, and solve-first problems. Start with Data Structures & Algorithms.",
