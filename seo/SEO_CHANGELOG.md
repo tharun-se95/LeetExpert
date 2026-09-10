@@ -2,6 +2,39 @@
 
 ---
 
+## 2026-09-10 — Deployed; sitemap accepted by Google
+
+**Milestone, verified in Search Console:**
+
+| Sitemap | Submitted | Last read | Status | Discovered pages |
+| --- | --- | --- | --- | --- |
+| `https://www.leetexpert.com/sitemap.xml` | 2026-09-10 | 2026-09-10 | **Success** | **247** |
+
+247 matches the live file exactly. Page indexing still reports "Processing
+data" — expected for a property verified the same day.
+
+**Deploy was blocked first, and it was not a code problem.** Vercel refused the
+build because the commit author email `ext-ttharun@sophiagenetics.com` is not
+attached to the GitHub account `tharun-se95`. This was pre-existing: all 356
+commits in the repo carried that work email. Fixed by setting the repo-local
+`user.email` to `187791551+tharun-se95@users.noreply.github.com` (GitHub's own
+noreply address — always matches the account, needs no verification, exposes no
+personal address) and re-authoring the two SEO commits. Content was verified
+byte-identical across the rewrite before force-pushing.
+
+**Search Console reported "Sitemap could not be read" once.** It was stale:
+Google's first fetch happened while the deploy was still blocked and the URL
+404ed. It flipped to Success on its own after re-reading. Nothing was wrong with
+the file — headers verified as Googlebot: `200`, `content-type:
+application/xml`, no BOM, well-formed, 247 `<url>` elements, 47 KB.
+
+**Next measurement.** Page indexing report in ~1 day: how many of the 247 are
+"Indexed" vs "Discovered – currently not indexed". That ratio is the first real
+signal about crawl priority.
+
+---
+---
+
 ## 2026-09-09 — Structured data + meta descriptions
 
 **Change.**

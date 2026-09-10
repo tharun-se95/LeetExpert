@@ -11,12 +11,13 @@ the floor on how fast anything else can work.
 
 | Source | Status |
 | --- | --- |
-| Google Search Console | **Not set up.** No verification token anywhere in the repo. |
+| Google Search Console | **Verified 2026-09-10** (Domain property, DNS TXT). Sitemap submitted: **Success, 247 discovered pages**. Page-indexing data still processing. |
 | Analytics (any) | **Not installed.** No GA, Plausible, Vercel Analytics, PostHog. |
 | Rank tracking | None. |
 
-**Every metric this document would normally carry — impressions, clicks, CTR,
-average position, indexed pages, top queries — is unavailable.** They are not
+**As of 2026-09-10 the only confirmed number is 247 discovered sitemap pages.**
+Impressions, clicks, CTR, average position, indexed pages and top queries are
+still unavailable — the property was verified today and has no history. They are not
 estimated here, because an invented baseline is worse than none: it would
 make later "improvements" unfalsifiable.
 
