@@ -13,6 +13,7 @@ import {
   extractToc,
   getLessonNeighbors,
   loadLesson,
+  readLessonMarkdown,
 } from "@/lib/course/load";
 import { getCheatsheet } from "@/lib/course/cheatsheets/registry";
 import { getChapterMedia } from "@/lib/course/media";
@@ -24,6 +25,10 @@ import {
 } from "@/lib/content/parsePracticeProblems";
 import { splitPracticeBody } from "@/lib/content/splitPracticeBody";
 import { lessonHref, lessonId, moduleHref, problemHref } from "@/lib/course/nav";
+import { canonicalFor } from "@/lib/seo/site";
+import { metaDescription } from "@/lib/seo/description";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { learningResourceLd } from "@/lib/seo/jsonLd";
 
 interface PageProps {
   params: Promise<{ module: string; lesson: string }>;
@@ -39,7 +44,19 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { module: moduleSlug, lesson: lessonSlug } = await params;
   const hit = getLesson(moduleSlug, lessonSlug);
-  return { title: hit ? hit.lesson.title : "Lesson" };
+  // A problem lesson permanentRedirects to the problems hub below, so its
+  // canonical must name the destination, not this URL — otherwise the two
+  // addresses compete for the same content.
+  const canonicalPath =
+    hit?.lesson.type === "problem"
+      ? problemHref(lessonSlug)
+      : lessonHref(moduleSlug, lessonSlug);
+  const body = readLessonMarkdown(moduleSlug, lessonSlug);
+  return {
+    title: hit ? hit.lesson.title : "Lesson",
+    description: body ? metaDescription(body) : undefined,
+    alternates: canonicalFor(canonicalPath),
+  };
 }
 
 export default async function LessonPage({ params }: PageProps) {
@@ -63,6 +80,17 @@ export default async function LessonPage({ params }: PageProps) {
     { label: mod.shortTitle, href: moduleHref(mod.slug) },
     { label: meta.lesson.title },
   ];
+  const lessonJsonLd = (
+    <JsonLd
+      data={learningResourceLd({
+        name: meta.lesson.title,
+        path: lessonHref(moduleSlug, lessonSlug),
+        learningResourceType:
+          meta.lesson.type === "practice" ? "Practice set" : "Concept lesson",
+        description: metaDescription(lesson.markdown),
+      })}
+    />
+  );
   const prevLink = prev
     ? {
         href: lessonHref(prev.module, prev.lesson),
@@ -99,6 +127,7 @@ export default async function LessonPage({ params }: PageProps) {
         lesson={{ ...lesson, markdown: intro, toc }}
         eyebrow={`Module ${mod.number} · ${mod.title}`}
         typeLabel="Practice"
+        jsonLd={lessonJsonLd}
         breadcrumbs={breadcrumbs}
         prev={prevLink}
         next={nextLink}
@@ -124,6 +153,7 @@ export default async function LessonPage({ params }: PageProps) {
       lesson={{ ...lesson, markdown: body }}
       eyebrow={`Module ${mod.number} · ${mod.title}`}
       typeLabel="Concept"
+      jsonLd={lessonJsonLd}
       breadcrumbs={breadcrumbs}
       prev={prevLink}
       next={nextLink}

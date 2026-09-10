@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { CaretRight as ChevronRight } from "@phosphor-icons/react/dist/ssr";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbLd } from "@/lib/seo/jsonLd";
 
 export interface Crumb {
   label: string;
@@ -8,7 +10,15 @@ export interface Crumb {
 
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
-    <nav aria-label="Breadcrumb" className="print:hidden mb-6">
+    <>
+      {/* Emitted here, from the same `items`, so the BreadcrumbList markup
+          cannot drift from the trail the visitor actually sees. */}
+      <JsonLd
+        data={breadcrumbLd(
+          items.map((item) => ({ name: item.label, path: item.href })),
+        )}
+      />
+      <nav aria-label="Breadcrumb" className="print:hidden mb-6">
       <ol className="flex flex-wrap items-center gap-1 text-sm text-muted">
         <li>
           <Link href="/" className="transition hover:text-foreground">
@@ -27,7 +37,8 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
             )}
           </li>
         ))}
-      </ol>
-    </nav>
+        </ol>
+      </nav>
+    </>
   );
 }

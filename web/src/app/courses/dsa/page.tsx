@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Lock } from "@phosphor-icons/react/dist/ssr";
 import { ModuleGlyph } from "@/app/courses/dsa/_components/ModuleGlyph";
@@ -10,6 +11,22 @@ import {
 import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
 import { moduleHref } from "@/lib/course/nav";
 import { cn } from "@/lib/utils";
+import { canonicalFor } from "@/lib/seo/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { courseLd } from "@/lib/seo/jsonLd";
+
+/**
+ * This page had no metadata export at all, so it inherited the layout's
+ * default title ("leetExpert") — the curriculum map, the single most
+ * link-worthy page in the course, was competing for search results with
+ * a title that said nothing about it.
+ */
+export const metadata: Metadata = {
+  title: "Data Structures & Algorithms Course",
+  description:
+    "The full DSA curriculum — 24 modules from Big-O to dynamic programming, each with visualizations, live sandboxes and solve-first problems.",
+  alternates: canonicalFor("/courses/dsa"),
+};
 
 /**
  * Full curriculum map — stages and modules. The marketing sell page lives
@@ -22,6 +39,7 @@ export default function CourseOverviewPage() {
 
   return (
     <div className="relative overflow-hidden">
+      <JsonLd data={courseLd()} />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_12%,transparent),_transparent_60%)]"

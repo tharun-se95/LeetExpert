@@ -30,6 +30,12 @@ interface LessonViewProps {
   infographic?: ReactNode;
   /** Injected after markdown (e.g. Practice problem list). */
   afterMarkdown?: ReactNode;
+  /**
+   * Page-level JSON-LD. A slot rather than a computed value because only the
+   * route knows its own path, and this component has two call sites (concept
+   * and practice lessons) that would otherwise each need to wrap their return.
+   */
+  jsonLd?: ReactNode;
 }
 
 export function LessonView({
@@ -44,10 +50,12 @@ export function LessonView({
   headerVideo,
   infographic,
   afterMarkdown,
+  jsonLd,
 }: LessonViewProps) {
   return (
     <div className="mx-auto flex w-full max-w-[90rem] gap-10 px-4 py-8 lg:px-8 lg:py-10">
       <article className="min-w-0 flex-1">
+        {jsonLd}
         <Breadcrumbs items={breadcrumbs} />
         <p className="mb-2 text-xs font-medium uppercase tracking-wider text-mark">
           {eyebrow}

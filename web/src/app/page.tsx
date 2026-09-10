@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+import { canonicalFor } from "@/lib/seo/site";
+
 /**
  * The root route IS the product's home page now — there's exactly one
  * active course (see NEXTJS_COURSE.status: "coming-soon" in
@@ -11,5 +14,13 @@
  * relationship between them (a duplicate-content issue for search
  * engines). That route now redirects here instead of rendering its own
  * copy; see its page.tsx for why.
+ *
+ * The canonical tag is the belt to that redirect's braces: it names "/" as
+ * the one indexable address for this content no matter which host or query
+ * string a crawler arrives on.
  */
+export const metadata: Metadata = {
+  alternates: canonicalFor("/"),
+};
+
 export { default } from "@/components/landing/HomePage";

@@ -125,6 +125,30 @@ export async function loadLesson(
   };
 }
 
+/**
+ * A lesson's raw body, frontmatter stripped and nothing else done to it.
+ *
+ * generateMetadata only needs the prose to derive a meta description, and
+ * loadLesson() runs Shiki over every code block — paying that a second time
+ * per page, at build time, across 220 pages, to produce one sentence would be
+ * a real cost for no benefit.
+ */
+export function readLessonMarkdown(
+  moduleSlug: string,
+  lessonSlug: string,
+): string | null {
+  if (!getLesson(moduleSlug, lessonSlug)) return null;
+  const full = path.join(
+    courseRoot,
+    "courses",
+    "dsa",
+    moduleSlug,
+    `${lessonSlug}.md`,
+  );
+  if (!fs.existsSync(full)) return null;
+  return matter(fs.readFileSync(full, "utf8")).content;
+}
+
 export function allLessonParams(): { module: string; lesson: string }[] {
   return MODULES.flatMap((m) =>
     m.lessons.map((l) => ({ module: m.slug, lesson: l.slug })),

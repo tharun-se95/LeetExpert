@@ -4,15 +4,39 @@
     {
       "name": "web-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "web", "run", "dev"],
+      "runtimeArgs": [
+        "--prefix",
+        "web",
+        "run",
+        "dev"
+      ],
       "port": 3002,
       "autoPort": true
     },
     {
       "name": "video-studio",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "video", "run", "dev"],
+      "runtimeArgs": [
+        "--prefix",
+        "video",
+        "run",
+        "dev"
+      ],
       "port": 3001
+    },
+    {
+      "name": "web-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "web",
+        "run",
+        "start",
+        "--",
+        "--port",
+        "3105"
+      ],
+      "port": 3105
     }
   ]
 }

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Sora } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
+import { SITE_ORIGIN } from "@/lib/seo/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { organizationLd, websiteLd } from "@/lib/seo/jsonLd";
 import "./globals.css";
 
 /**
@@ -33,7 +36,7 @@ export const metadata: Metadata = {
   // against the real production origin instead of leaving them host-
   // relative, which is what Next warns about and what search engines and
   // social crawlers need to resolve them correctly off-site.
-  metadataBase: new URL("https://www.leetexpert.com"),
+  metadataBase: new URL(SITE_ORIGIN),
   title: {
     default: "leetExpert",
     template: "%s · leetExpert",
@@ -54,6 +57,11 @@ export default function RootLayout({
       className={`${display.variable} ${sans.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background font-sans text-foreground">
+        {/* Site-wide entity graph. Both carry stable @ids so the per-page
+            Course and LearningResource nodes can reference them instead of
+            re-declaring a second, unlinked publisher. */}
+        <JsonLd data={organizationLd()} />
+        <JsonLd data={websiteLd()} />
         <ThemeProvider>
           <AppShell>{children}</AppShell>
         </ThemeProvider>

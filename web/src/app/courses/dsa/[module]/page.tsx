@@ -22,7 +22,8 @@ import { CHEATSHEETS } from "@/lib/course/cheatsheets/registry";
 import { getConceptMap } from "@/lib/course/conceptMaps/registry";
 import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
 import { allModuleSlugs } from "@/lib/course/load";
-import { lessonHref } from "@/lib/course/nav";
+import { lessonHref, moduleHref } from "@/lib/course/nav";
+import { canonicalFor } from "@/lib/seo/site";
 
 interface PageProps {
   params: Promise<{ module: string }>;
@@ -37,7 +38,13 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { module: slug } = await params;
   const mod = getModule(slug);
-  return { title: mod ? mod.title : "Course" };
+  return {
+    title: mod ? mod.title : "Course",
+    // The manifest already carries authored module copy; reusing it beats
+    // letting Google synthesise a snippet from the page chrome.
+    description: mod?.description,
+    alternates: canonicalFor(moduleHref(slug)),
+  };
 }
 
 export default async function ModulePage({ params }: PageProps) {

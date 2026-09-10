@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProblemWorkspace } from "@/components/problems/ProblemWorkspace";
-import { loadLesson } from "@/lib/course/load";
+import { loadLesson, readLessonMarkdown } from "@/lib/course/load";
 import {
   findProblemBySlug,
   getProblemNeighbors,
   allProblemSlugs,
 } from "@/lib/course/manifest";
 import { lessonHref, moduleHref, problemHref } from "@/lib/course/nav";
+import { canonicalFor } from "@/lib/seo/site";
+import { metaDescription } from "@/lib/seo/description";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbLd, learningResourceLd } from "@/lib/seo/jsonLd";
 import { splitProblemTabs } from "@/lib/content/splitProblemTabs";
 import { extractHints } from "@/lib/coach/extractHints";
 
@@ -24,7 +28,14 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const hit = findProblemBySlug(slug);
-  return { title: hit ? hit.lesson.title : "Problem" };
+  const body = hit
+    ? readLessonMarkdown(hit.module.slug, hit.lesson.slug)
+    : null;
+  return {
+    title: hit ? hit.lesson.title : "Problem",
+    description: body ? metaDescription(body) : undefined,
+    alternates: canonicalFor(problemHref(slug)),
+  };
 }
 
 export default async function ProblemPage({ params }: PageProps) {
@@ -47,14 +58,34 @@ export default async function ProblemPage({ params }: PageProps) {
   const hintLabels = extractHints(explanation).map((h) => h.label);
 
   return (
-    <ProblemWorkspace
+    <>
+      {/* ProblemWorkspace shows the module eyebrow and a back link rather
+          than a full trail, so the hierarchy is visible but not as a
+          <Breadcrumbs>; emit the list here instead. */}
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "Practice", path: "/courses/dsa/problems" },
+          { name: hit.module.shortTitle, path: moduleHref(hit.module.slug) },
+          { name: hit.lesson.title },
+        ])}
+      />
+      <JsonLd
+        data={learningResourceLd({
+          name: hit.lesson.title,
+          path: problemHref(slug),
+          learningResourceType: "Coding problem",
+          description: metaDescription(lesson.markdown),
+        })}
+      />
+      <ProblemWorkspace
       lesson={{ ...lesson, sandbox: lesson.sandbox }}
       eyebrow={`Module ${hit.module.number} · ${hit.module.title}`}
       backHref={backHref}
       backLabel={backLabel}
       hintLabels={hintLabels}
       prev={prev ? { href: problemHref(prev.slug), title: prev.title } : null}
-      next={next ? { href: problemHref(next.slug), title: next.title } : null}
-    />
+        next={next ? { href: problemHref(next.slug), title: next.title } : null}
+      />
+    </>
   );
 }
