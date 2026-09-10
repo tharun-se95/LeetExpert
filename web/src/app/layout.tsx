@@ -5,6 +5,8 @@ import { AppShell } from "@/components/layout/AppShell";
 import { SITE_ORIGIN } from "@/lib/seo/site";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationLd, websiteLd } from "@/lib/seo/jsonLd";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 /**
@@ -65,6 +67,20 @@ export default function RootLayout({
         <ThemeProvider>
           <AppShell>{children}</AppShell>
         </ThemeProvider>
+        {/*
+         * Both are cookieless and collect no personal data, so they need no
+         * consent gate — which is why they were chosen over GA4 (see
+         * seo/SEO_CHANGELOG.md). ~1KB each, and the /next builds hook the App
+         * Router so client-side navigations are counted too.
+         *
+         * SpeedInsights is the load-bearing one for SEO: Core Web Vitals are
+         * a ranking signal, and Search Console's CWV report stays empty until
+         * the site clears CrUX's traffic threshold. This reports field data
+         * from the first visitor — which matters on a site that ships Pyodide,
+         * CodeMirror and Mermaid.
+         */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

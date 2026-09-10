@@ -241,6 +241,30 @@ describe("structured data is emitted where it belongs", () => {
   });
 });
 
+// Core Web Vitals are a ranking signal, and Search Console's CWV report is
+// CrUX-powered — it reports nothing until a site clears a traffic threshold.
+// Speed Insights is the only field-data source this site has, so losing it
+// silently would leave the performance half of SEO unmeasurable.
+describe("analytics is mounted site-wide", () => {
+  const layout = () => read("layout.tsx");
+
+  it("mounts Speed Insights for real-user Core Web Vitals", () => {
+    expect(layout()).toContain("<SpeedInsights />");
+  });
+
+  it("mounts Web Analytics for traffic and referrers", () => {
+    expect(layout()).toContain("<Analytics />");
+  });
+
+  // The bare "@vercel/analytics" entry does not track App Router client-side
+  // navigations; the /next subpath hooks into the router. Importing the wrong
+  // one silently under-reports every soft navigation.
+  it("imports the App Router builds, not the generic ones", () => {
+    expect(layout()).toContain('from "@vercel/analytics/next"');
+    expect(layout()).toContain('from "@vercel/speed-insights/next"');
+  });
+});
+
 describe("root layout", () => {
   it("derives metadataBase from the shared origin instead of a second literal", () => {
     const layout = read("layout.tsx");

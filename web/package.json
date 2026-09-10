@@ -20,6 +20,8 @@
     "@tailwindcss/typography": "^0.5.20",
     "@uiw/react-codemirror": "^4.25.11",
     "@upstash/redis": "^1.38.2",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "@xyflow/react": "^12.11.3",
     "ai": "^7.0.66",
     "clsx": "^2.1.1",

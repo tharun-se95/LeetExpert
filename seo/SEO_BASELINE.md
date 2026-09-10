@@ -12,7 +12,7 @@ the floor on how fast anything else can work.
 | Source | Status |
 | --- | --- |
 | Google Search Console | **Verified 2026-09-10** (Domain property, DNS TXT). Sitemap submitted: **Success, 247 discovered pages**. Page-indexing data still processing. |
-| Analytics (any) | **Not installed.** No GA, Plausible, Vercel Analytics, PostHog. |
+| Analytics | **Vercel Web Analytics + Speed Insights mounted 2026-09-10.** Cookieless, no consent gate. Needs the project toggles enabled to report. |
 | Rank tracking | None. |
 
 **As of 2026-09-10 the only confirmed number is 247 discovered sitemap pages.**
@@ -73,6 +73,6 @@ lessons' course URLs (308 → problems hub), `/courses/dsa/marketing` (308 → `
 ## Priorities
 
 - **P0** — Verify Search Console; submit the sitemap. *Manual, blocks everything.*
-- **P0** — Install analytics. Without it, no change here is measurable.
+- ~~**P0** — Install analytics.~~ Done 2026-09-10; awaiting first data.
 - **P1** — Long-tail pattern content (see `SEO_KEYWORDS.md`).
 - **P2** — Internal linking depth (see `SEO_INTERNAL_LINKING.md`).

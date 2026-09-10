@@ -2,6 +2,51 @@
 
 ---
 
+## 2026-09-10 — Analytics: Vercel Speed Insights + Web Analytics
+
+**Change.** Mounted `<Analytics />` and `<SpeedInsights />` in the root layout,
+importing the `/next` subpaths so App Router client-side navigations are counted
+(the bare entry points miss soft navigations and silently under-report).
+
+**Reason.** The measurement gap named as P0 in `SEO_BASELINE.md`. Search Console
+covers search performance; nothing covered on-site behaviour or real-user
+performance.
+
+**Why these and not GA4.** Two reasons, in order of weight:
+
+1. *No consent banner exists on this site.* GA4 sets cookies and processes
+   personal data, so under GDPR it must not fire before consent — which would
+   mean building consent infrastructure, and would still lose a slice of EU
+   traffic to opt-outs. Both Vercel products are cookieless and collect no
+   personal data, so no banner is required.
+2. *Core Web Vitals are a ranking signal, and Search Console cannot report them
+   yet.* Its CWV report is CrUX-powered and stays empty until a site clears a
+   traffic threshold — months away on a domain registered 2026-09-08. Speed
+   Insights reports field data from the first visitor, which matters on a site
+   shipping Pyodide, CodeMirror and Mermaid.
+
+**Cost, measured (not quoted from marketing).** In-bundle injectors are 8,953
+and 8,559 bytes unminified; the telemetry scripts themselves load at runtime
+from Vercel's edge (`/_vercel/insights/script.js`,
+`/_vercel/speed-insights/script.js`), not from the app bundle.
+
+**Deferred.** GA4, specifically for the GA4 x Search Console linkage that joins
+query -> landing page -> behaviour. Worth adding once there is traffic and a
+real conversion event to funnel toward; both are absent today.
+
+**Requires a dashboard action.** Both features must be enabled in the Vercel
+project or the injected scripts 404 in production too.
+
+**Validation.** tsc clean; eslint 0 errors; 701 tests across 39 files; build
+exit 0; both scripts verified injecting in a production build, degrading
+gracefully with a log (not a throw) when the endpoints are absent.
+
+**Next measurement.** After ~1 week of traffic: p75 LCP and INP in Speed
+Insights, and top organic landing pages in Web Analytics.
+
+---
+---
+
 ## 2026-09-10 — Deployed; sitemap accepted by Google
 
 **Milestone, verified in Search Console:**
