@@ -71,6 +71,16 @@ The content is the product. Code exists to serve it.
   monochrome base** (accent/pop/mark all steel: light `#1E293B`, dark
   `#CBD5E1`). Fill-in map:
   `docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md`.
+- **Type system: three faces, three jobs.** Space Mono (`--font-display`)
+  for the wordmark and every heading; Space Grotesk (`--font-sans-face`) —
+  Space Mono's proportional sibling — for body and UI; JetBrains Mono for
+  code only, so a heading is never mistaken for a code block. Space Mono
+  ships only 400/700: display call sites use regular or `font-bold`, never
+  `font-semibold` (guarded in `design-tokens.test.ts`). Space Grotesk has no
+  italic, so emphasis is weight — `em` 500, `strong` 700 — never a
+  synthesised slant. Diagram label sizing is checked against real glyph
+  advances in `tests/diagramTextFit.test.tsx`; change a face and that test
+  tells you which `CH_*` constants to retune.
 - **All colour goes through tokens.** No hardcoded Tailwind palette values
   (`emerald-500`, `red-400`) in components — they survive a palette change
   and silently break the theme.
@@ -94,8 +104,11 @@ The content is the product. Code exists to serve it.
   family by changing one hex. `accentUi` clears only the 3:1 UI floor on
   paper, so **body-size accent text uses `--mark`, never `--accent`**
   (`text-mark`) — `--mark` is never remapped by a family scope and stays AA
-  steel in both themes (the wordmark uses it too). Chapter headings carry a
-  short family-accent rule above `h2`; heading text stays ink.
+  steel in both themes (the wordmark uses it too). Chapter headings are a
+  1px `--rule-strong` hairline plus a decorative `// 01` counter label (CSS
+  alt text `/ ""` keeps it out of the accessible name); component sections
+  share it through `.chapter-rule` + `.chapter-heading`, never a copied bar.
+  Heading text stays ink.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
   `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
   brightness ladder in BOTH themes — elevated brightest, surface deepest,
