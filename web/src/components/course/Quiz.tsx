@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { Check, X } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
@@ -216,6 +216,8 @@ function QuestionBlock({
 
 export function Quiz({ source }: { source: string }) {
   const spec = useMemo(() => parseSpec(source), [source]);
+  // useId, not a fixed id: a page can render more than one quiz.
+  const headingId = useId();
 
   if (!spec) {
     return (
@@ -226,9 +228,11 @@ export function Quiz({ source }: { source: string }) {
   }
 
   return (
-    <section className="my-8">
+    <section className="my-8" aria-labelledby={headingId}>
       <header className="chapter-rule mb-2 flex items-end justify-between gap-3">
-        <p className="chapter-heading">Check yourself</p>
+        <h2 id={headingId} className="chapter-heading">
+          Check yourself
+        </h2>
         <p className="mb-1 shrink-0 font-mono text-[10px] tabular-nums text-muted">
           {spec.questions.length}{" "}
           {spec.questions.length === 1 ? "question" : "questions"}

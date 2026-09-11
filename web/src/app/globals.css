@@ -508,8 +508,15 @@ body {
   prose no longer receives — outside a family scope both fell back to steel
   and read as a grey button. Structure comes from the rule and the number,
   so it holds in the monochrome base.
+
+  :not(.chapter-heading) because the quiz renders inside prose in every
+  problem's Quiz tab and in the multi-quiz drill lessons (a lone quiz fence is
+  lifted out after the markdown instead). Its h2.chapter-heading sits in a
+  flex row that already carries .chapter-rule: without the exclusion it gets a
+  second hairline, prose h2 margins, and a counter number stolen from the
+  chapters after it.
 */
-.handbook-prose h2 {
+.handbook-prose h2:not(.chapter-heading) {
   margin-top: 2.5rem;
   margin-bottom: 0.85rem;
   padding-top: 0.85rem;
@@ -539,7 +546,7 @@ body {
   border-top: 1px solid var(--rule-strong);
 }
 
-.handbook-prose h2::before {
+.handbook-prose h2:not(.chapter-heading)::before {
   counter-increment: chapter;
   /* `/ ""` is CSS alt text. Generated content otherwise joins the heading's
      accessible name and every h2 is announced "slash slash zero one, …". */
@@ -586,7 +593,7 @@ body {
   line-height: 1.5;
 }
 
-.problem-prose .handbook-prose h2 {
+.problem-prose .handbook-prose h2:not(.chapter-heading) {
   margin-top: 1.75rem;
 }
 

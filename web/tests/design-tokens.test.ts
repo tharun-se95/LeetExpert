@@ -812,11 +812,20 @@ describe("type system", () => {
 
   it("chapter headings are a hairline plus a decorative counter label", () => {
     const css = readFileSync(GLOBALS, "utf8");
-    const h2 = cssBlock(css, ".handbook-prose h2");
+    // The quiz renders inside .handbook-prose in every problem's Quiz tab and
+    // in the multi-quiz drill lessons, and its heading is an h2.chapter-heading
+    // inside a flex row that already carries .chapter-rule — the article rules
+    // must skip it, or it gets a second hairline and steals a chapter number
+    // from the sections after it.
+    expect(css).not.toMatch(/\n\.handbook-prose h2( |::before) \{/);
+    const h2 = cssBlock(css, ".handbook-prose h2:not(.chapter-heading)");
     expect(h2).toMatch(/border-top:\s*1px solid var\(--rule-strong\)/);
     // The old pill + wash assumed a family colour prose no longer gets.
     expect(h2).not.toMatch(/background|family-wash/);
-    const label = cssBlock(css, ".handbook-prose h2::before");
+    expect(cssBlock(css, ".problem-prose .handbook-prose h2:not(.chapter-heading)")).toMatch(
+      /margin-top:\s*1\.75rem/,
+    );
+    const label = cssBlock(css, ".handbook-prose h2:not(.chapter-heading)::before");
     expect(label).toMatch(/counter-increment:\s*chapter/);
     // `/ ""` is CSS alt text: without it "// 01" joins the accessible name.
     expect(label).toMatch(
