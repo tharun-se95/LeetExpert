@@ -12,11 +12,14 @@ export interface CacheLayerFallthroughDiagramProps {
 /* Per-character advance estimates, used to size the viewBox from the actual
    strings rendered rather than from a guessed constant. Deliberately a little
    generous so the widest realistic label still clears its box's padding. */
-const CH_TITLE = 7.0; // 13px semibold sans
-const CH_CAPTION = 5.0; // 9.5px sans
-const CH_PILL = 4.8; // 9px sans inside a pill
-const CH_LEAD = 6.3; // 10.5px sans in the entry pill
-const CH_BOXHDR = 5.0; // 9.5px sans in the render-pass box header
+/* Floors measured from Space Grotesk / JetBrains Mono glyph advances by
+   tests/diagramTextFit.test.tsx (PRINT_ADVANCES=1); each value is at least
+   its role's widest measured run. */
+const CH_TITLE = 7.2; // 13px semibold sans — measured 7.2
+const CH_CAPTION = 5.0; // 9.5px sans — measured 4.9
+const CH_PILL = 4.8; // 9px sans inside a pill — measured 4.6
+const CH_LEAD = 6.35; // 10.5px sans + semibold mono route tspan — mono measured 6.35
+const CH_BOXHDR = 5.0; // 9.5px sans in the render-pass box header — measured 4.9
 
 const PAD = 18; // canvas edge -> content
 const GUTTER = 34; // left channel reserved for the dashed write-back path

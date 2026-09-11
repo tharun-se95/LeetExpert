@@ -20,12 +20,14 @@ export interface ServerActionRpcDiagramProps {
    guessed constant — a longer `actionName` or `endpointPath` widens the
    canvas instead of overflowing it. Deliberately a touch generous so the
    widest realistic label still clears its node's padding. */
-const CH_TITLE = 7.0; // 13px sans, weight 600
+/* Sans floors measured from Space Grotesk glyph advances by
+   tests/diagramTextFit.test.tsx (PRINT_ADVANCES=1). */
+const CH_TITLE = 7.0; // 13px sans, weight 600 — measured 7.0
 const CH_MONO = 6.05; // 10px mono
-const CH_CAPTION = 5.0; // 9.5px sans
-const CH_PILL = 4.85; // 9px sans inside a pill
+const CH_CAPTION = 5.0; // 9.5px sans — measured 4.95
+const CH_PILL = 4.95; // 9px sans inside a pill — measured 4.95
 const CH_CARD = 5.45; // 9px mono inside the request card
-const CH_HEADER = 7.2; // 10px sans 600 with 1.2 letter-spacing
+const CH_HEADER = 7.85; // 10px sans 600 with 1.2 letter-spacing — measured 7.85
 
 /* Layout constants. Horizontal sizes are computed below; these are the fixed
    vertical rhythm and the paddings the width formula depends on. */

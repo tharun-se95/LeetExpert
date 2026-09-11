@@ -18,8 +18,11 @@ export interface CacheInvalidationScopeDiagramProps {
    so every string that appears below is fed through one of these. */
 const CH_CALL = 7.3; // 12px mono, the revalidate* call
 const CH_ROUTE = 7.4; // 12.5px mono semibold, a route path
-const CH_CAPTION = 5.0; // 9.5px sans
-const CH_PILL = 4.9; // 9px sans inside a pill
+/* Sans floors measured from Space Grotesk glyph advances by
+   tests/diagramTextFit.test.tsx (PRINT_ADVANCES=1). Both also size weight-600
+   labels (badge labels; state and note pills), which are the widest runs. */
+const CH_CAPTION = 5.55; // 9.5px sans — semibold badge label measured 5.55
+const CH_PILL = 5.35; // 9px sans inside a pill — semibold pill label measured 5.35
 /* 9px *mono* is markedly wider per character than 9px sans: sizing the tag
    pill with CH_PILL left its closing brace hanging outside the pill. */
 const CH_MONOPILL = 5.5;

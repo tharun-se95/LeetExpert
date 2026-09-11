@@ -18,10 +18,12 @@ export interface DistributedCacheHandlerDiagramProps {
 /* Per-character advance estimates, used to size the viewBox from the actual
    strings rendered rather than from a guessed constant. Deliberately slightly
    generous so the widest realistic label still clears the panel padding. */
-const CH_HEADER = 6.3; // 10.5px semibold sans / mono tspan
-const CH_TITLE = 7.0; // 13px semibold sans
-const CH_PILL = 4.8; // 9px sans inside a pill
-const CH_CAPTION = 5.0; // 9.5px sans
+/* Sans floors measured from Space Grotesk glyph advances by
+   tests/diagramTextFit.test.tsx (PRINT_ADVANCES=1). */
+const CH_HEADER = 6.35; // 10.5px semibold sans / mono tspan — mono measured 6.35
+const CH_TITLE = 7.0; // 13px semibold sans — measured 6.65
+const CH_PILL = 4.9; // 9px sans inside a pill — measured 4.9
+const CH_CAPTION = 5.0; // 9.5px sans — measured 4.95
 const CH_CHIP = 5.1; // 8.5px mono inside a container's cache chip
 
 const PAD = 18; // canvas edge -> panel edge

@@ -15,9 +15,10 @@ export interface QueryHydrationHandoffDiagramProps {
 /* Per-character advance estimates for each rendered type role — the viewBox
    is derived from these, not a guessed constant, so a longer query key
    widens the canvas instead of clipping. */
-const CH_TITLE = 6.6; // 12.5px sans, weight 600
+/* Sans floors measured from Space Grotesk glyph advances by
+   tests/diagramTextFit.test.tsx (PRINT_ADVANCES=1). */
+const CH_TITLE = 7.0; // 12.5px sans, weight 600 — measured 7.0
 const CH_MONO = 5.85; // 10px mono
-const CH_CAPTION = 4.95; // 9.5px sans
 
 const NODE_PAD = 14;
 const EDGE = 16;
