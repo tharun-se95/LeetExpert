@@ -52,7 +52,7 @@ function enqueueMermaid<T>(task: () => Promise<T>): Promise<T> {
 function themeConfig(isDark: boolean) {
   const accent = isDark ? "#22d3ee" : "#0891b2";
   const fontFamily =
-    "var(--font-sans), Inter, ui-sans-serif, system-ui, sans-serif";
+    "var(--font-sans), 'Space Grotesk', ui-sans-serif, system-ui, sans-serif";
 
   const flowchart = {
     htmlLabels: true as const,

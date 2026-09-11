@@ -763,3 +763,26 @@ describe("design tokens", () => {
     expect(hits).toEqual([]);
   });
 });
+
+describe("type system", () => {
+  it("binds Space Mono to display and Space Grotesk to body", () => {
+    const layout = readFileSync(join(SRC, "app", "layout.tsx"), "utf8");
+    const imported =
+      layout.match(/import \{([^}]*)\} from "next\/font\/google"/)?.[1] ?? "";
+    expect(
+      imported
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .sort(),
+    ).toEqual(["JetBrains_Mono", "Space_Grotesk", "Space_Mono"]);
+    // Space Mono has no variable axis: without an explicit weight list
+    // next/font refuses to load it, and a missing 700 would be faked.
+    expect(layout).toMatch(
+      /Space_Mono\(\{[^}]*weight:\s*\["400",\s*"700"\][^}]*variable:\s*"--font-display"/,
+    );
+    expect(layout).toMatch(
+      /Space_Grotesk\(\{[^}]*variable:\s*"--font-sans-face"/,
+    );
+  });
+});

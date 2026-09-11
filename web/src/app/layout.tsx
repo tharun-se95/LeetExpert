@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Sora } from "next/font/google";
+import { JetBrains_Mono, Space_Grotesk, Space_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import { SITE_ORIGIN } from "@/lib/seo/site";
@@ -10,18 +10,26 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 /**
- * Three faces, three jobs (Linear/educational sheet).
+ * Three faces, three jobs.
  *
- * Display (Sora) carries logo + headings; Inter is the long-read body;
- * JetBrains Mono serves code blocks and mono UI labels.
+ * Space Mono (display) carries the wordmark and every heading. Space Grotesk
+ * — its proportional sibling, same letterforms — is the body and UI face, so
+ * headings and prose read as one system. JetBrains Mono stays on code, which
+ * keeps a monospaced heading from ever being mistaken for a code block.
+ *
+ * Space Mono ships only 400 and 700: display call sites must use one of those
+ * or the browser synthesises a fake bold (guarded in design-tokens.test.ts).
+ * Space Grotesk has no italic at all, so emphasis is weight, not slant
+ * (globals.css `@layer base`).
  */
-const display = Sora({
+const display = Space_Mono({
+  weight: ["400", "700"],
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
 });
 
-const sans = Inter({
+const sans = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-sans-face",
   display: "swap",
