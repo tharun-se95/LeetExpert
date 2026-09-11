@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="leetExpert">
+  <title>leetExpert</title>
+  <!--
+    Full-bleed (rx=0) variant of mark.svg, for apple-icon.png only. iOS
+    applies its own squircle mask on top of whatever square you hand it —
+    baking in our own rounded corners produces a double-rounded, inset look
+    once iOS's mask is applied. Every other consumer (favicon, Android,
+    manifest) uses the rounded mark.svg instead.
+  -->
+  <rect width="64" height="64" fill="#1E293B" />
+  <g
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M22 16 L12 32 L22 48" />
+    <path d="M42 16 L52 32 L42 48" />
+    <path d="M25 33 L30 40 L41 24" />
+  </g>
+</svg>

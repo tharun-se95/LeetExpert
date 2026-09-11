@@ -1,18 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="leetExpert">
   <title>leetExpert</title>
-  <!-- Indigo Modern Primary plate + white strokes (on-pop). -->
-  <rect width="64" height="64" rx="14" fill="#5B5CEB" />
+  <!--
+    Steel plate + white strokes — matches the site's monochrome Blueprint
+    palette (--accent/--mark = #1E293B light, #CBD5E1 dark; see
+    globals.css's --press-olive/--press-blue). Previously indigo (#5B5CEB),
+    which no longer exists anywhere in the live theme tokens.
+
+    Code brackets flank a checkmark: the brackets read as "code", the
+    checkmark as "solved" — the two things the course actually does. Strokes
+    are bold (6, was 3.2) and the path count is cut from five sub-paths to
+    three so the mark survives reduction to a 16x16 favicon; the previous
+    version's finer detail (inner chevron + drop stroke) disappeared into a
+    grey smear at that size.
+  -->
+  <rect width="64" height="64" rx="14" fill="#1E293B" />
   <g
     fill="none"
     stroke="#FFFFFF"
-    stroke-width="3.2"
+    stroke-width="6"
     stroke-linecap="round"
     stroke-linejoin="round"
   >
-    <path d="M18 18 L10 32 L18 46" />
-    <path d="M46 18 L54 32 L46 46" />
-    <path d="M26 26 V34" />
-    <path d="M34 32 L38 28 L42 32" />
-    <path d="M26 40 Q32 46 38 40" />
+    <path d="M22 16 L12 32 L22 48" />
+    <path d="M42 16 L52 32 L42 48" />
+    <path d="M25 33 L30 40 L41 24" />
   </g>
 </svg>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Space_Grotesk, Space_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
@@ -53,6 +53,30 @@ export const metadata: Metadata = {
   },
   description:
     "Interactive courses with live sandboxes, visualizations, and solve-first problems. Start with Data Structures & Algorithms.",
+  // og:image / twitter:image themselves come from the opengraph-image.tsx /
+  // twitter-image.tsx file convention (auto-wires og:image:width/height/type)
+  // — this block supplies the surrounding card fields those files don't.
+  openGraph: {
+    type: "website",
+    url: SITE_ORIGIN,
+    siteName: "leetExpert",
+    title: "leetExpert",
+    description:
+      "Interactive courses with live sandboxes, visualizations, and solve-first problems. Start with Data Structures & Algorithms.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "leetExpert",
+    description:
+      "Interactive courses with live sandboxes, visualizations, and solve-first problems. Start with Data Structures & Algorithms.",
+  },
+};
+
+// Split from `metadata` per Next's viewport API (themeColor/colorScheme moved
+// out of Metadata in App Router) — tints Android's installed-PWA status bar
+// and task-switcher card with the brand's steel ink.
+export const viewport: Viewport = {
+  themeColor: "#1e293b",
 };
 
 export default function RootLayout({
