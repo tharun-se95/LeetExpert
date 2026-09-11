@@ -227,17 +227,8 @@ export function Quiz({ source }: { source: string }) {
 
   return (
     <section className="my-8">
-      <header className="mb-2 flex items-end justify-between gap-3">
-        <div>
-          {/* Same family-accent rule + display heading as the article's own h2s (globals.css .handbook-prose h2). */}
-          <span
-            aria-hidden
-            className="mb-2 block h-[3px] w-10 rounded-[length:var(--radius-xs)] bg-[var(--family-accent,var(--accent))]"
-          />
-          <p className="font-display text-[1.44em] font-semibold tracking-[-0.015em] text-foreground">
-            Check yourself
-          </p>
-        </div>
+      <header className="chapter-rule mb-2 flex items-end justify-between gap-3">
+        <p className="chapter-heading">Check yourself</p>
         <p className="mb-1 shrink-0 font-mono text-[10px] tabular-nums text-muted">
           {spec.questions.length}{" "}
           {spec.questions.length === 1 ? "question" : "questions"}

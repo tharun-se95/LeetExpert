@@ -60,7 +60,7 @@ export function LessonView({
         <p className="mb-2 text-xs font-medium uppercase tracking-wider text-mark">
           {eyebrow}
         </p>
-        <h1 className="press-overprint font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]">
+        <h1 className="press-overprint font-display text-3xl font-bold tracking-tight text-balance sm:text-[2.1rem]">
           {lesson.title}
         </h1>
         <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted">

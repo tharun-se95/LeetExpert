@@ -31,6 +31,7 @@
   --press-ink-soft: #56606e; /* 5.77:1 on paper; 4.67:1 on sunk — AA deepest */
   /* Almost-invisible rule — the tonal ladder now carries the structure */
   --press-rule: rgba(22, 32, 46, 0.09);
+  --press-rule-strong: rgba(22, 32, 46, 0.18); /* chapter hairline — twice the soft rule */
 
   /*
     The base theme is MONOCHROME: accent, pop and mark are all steel #1E293B,
@@ -83,6 +84,7 @@
   --foreground: var(--press-ink);
   --muted: var(--press-ink-soft);
   --border: var(--press-rule);
+  --rule-strong: var(--press-rule-strong);
   --surface: var(--press-paper-sunk); /* test panel / muted — deepest */
   --code: #e4e9f2; /* editor / code chrome — recessed below the page */
   /*
@@ -187,6 +189,7 @@
   --press-ink: #e6edf4; /* 17.1:1 — sheet Text Primary */
   --press-ink-soft: #9ca9b8; /* 8.19:1 — sheet Text Muted */
   --press-rule: rgba(244, 244, 245, 0.09); /* soft rule */
+  --press-rule-strong: rgba(244, 244, 245, 0.18); /* chapter hairline — twice the soft rule */
 
   --press-lime: #cbd5e1; /* pop — light-steel chip (dark CTA fill) */
   --press-olive: #cbd5e1; /* accent — light steel on charcoal */
@@ -490,63 +493,74 @@ body {
   font-size: var(--prose-size);
   line-height: 1.62;
   color: color-mix(in oklab, var(--foreground) 94%, transparent);
+  counter-reset: chapter;
 }
 
+/* A Markdown nested inside prose (roadmap stage bodies) must continue the
+   lesson's chapter numbering, not restart it at 01. */
+.handbook-prose .handbook-prose {
+  counter-reset: none;
+}
+
+/*
+  Chapter heading: a hairline and a `// 01` counter label above the heading
+  text. Replaces a family-accent pill + wash that assumed a family colour
+  prose no longer receives — outside a family scope both fell back to steel
+  and read as a grey button. Structure comes from the rule and the number,
+  so it holds in the monochrome base.
+*/
 .handbook-prose h2 {
   margin-top: 2.5rem;
   margin-bottom: 0.85rem;
-  padding: 0 1rem 0.3rem 0;
-  border-radius: var(--radius-md);
-  /*
-    A soft family-tinted wash bleeding from the left, fading out by two
-    thirds across — the "pop" comes from this colour field, not from
-    colouring the heading text itself (body/display-size accent text must
-    stay AA-safe --mark, never --accent; a background wash has no such
-    contrast obligation on the ink sitting on top of it at this opacity).
-    Sized/positioned to hug the text's own line box only — the chapter-
-    marker bar above (::before) sits outside it, not inside the same tint.
-  */
-  background-image: linear-gradient(
-    to right,
-    var(--family-wash, color-mix(in oklab, var(--accent) 12%, transparent)),
-    transparent 65%
-  );
-  background-repeat: no-repeat;
-  background-size: 100% 2em;
-  background-position: left bottom;
-  /*
-    Section headings take the display face but stay sentence case.
-    Uppercase is reserved for the lesson title and small labels —
-    at 191 lessons, uppercase on every h2 reads as shouting.
-  */
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule-strong);
+}
+
+/*
+  One definition of chapter typography, shared with component section
+  headings (Quiz, Cheatsheet, Problems) through .chapter-heading. Sentence
+  case: uppercase is for small labels and short page titles — at 220 lessons
+  an uppercase monospaced h2 reads as shouting.
+*/
+.handbook-prose h2,
+.chapter-heading {
   font-family: var(--font-display), var(--font-sans-face), sans-serif;
-  font-size: 1.44em;
-  font-weight: 600;
-  letter-spacing: -0.015em;
+  font-size: 1.3em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.22;
   color: var(--foreground);
 }
 
-/* Chapter marker: a short family-accent rule above each section heading.
-   Heading text itself stays ink — the accent bar and the wash above are
-   the only per-chapter colour, and both resolve to steel outside a family
-   scope. */
+/* The hairline for component sections whose heading sits in a flex row: the
+   rule belongs on the row, not on the heading's own shrink-wrapped width. */
+.chapter-rule {
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule-strong);
+}
+
 .handbook-prose h2::before {
-  content: "";
+  counter-increment: chapter;
+  /* `/ ""` is CSS alt text. Generated content otherwise joins the heading's
+     accessible name and every h2 is announced "slash slash zero one, …". */
+  content: "// " counter(chapter, decimal-leading-zero) / "";
   display: block;
-  width: 3rem;
-  height: 5px;
-  margin-bottom: 0.65rem;
-  border-radius: var(--radius-xs);
-  background: var(--family-accent, var(--accent));
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display), monospace;
+  font-size: 0.56em;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
 }
 
 .handbook-prose h3 {
   margin-top: 1.75rem;
   margin-bottom: 0.5rem;
   font-family: var(--font-display), var(--font-sans-face), sans-serif;
+  /* 1.14em is load-bearing: Roadmap.tsx derives its rail-disc offset from it. */
   font-size: 1.14em;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--foreground);
 }
 
@@ -574,6 +588,12 @@ body {
 
 .problem-prose .handbook-prose h2 {
   margin-top: 1.75rem;
+}
+
+/* A problem statement is scanned, not read in chapters: keep the hairline,
+   drop the number. */
+.problem-prose .handbook-prose h2::before {
+  content: none;
 }
 
 .problem-prose .handbook-prose > :first-child {

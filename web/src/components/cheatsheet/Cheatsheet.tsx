@@ -42,15 +42,7 @@ export function Cheatsheet({
       aria-labelledby="cheatsheet"
       data-cheatsheet-tier={sheet.tier}
     >
-      {/* Same family-accent rule + display heading as the article's own h2s (globals.css .handbook-prose h2). */}
-      <span
-        aria-hidden
-        className="mb-2 block h-[3px] w-10 rounded-[length:var(--radius-xs)] bg-[var(--family-accent,var(--accent))]"
-      />
-      <h2
-        id="cheatsheet"
-        className="font-display text-[1.44em] font-semibold tracking-[-0.015em] text-foreground"
-      >
+      <h2 id="cheatsheet" className="chapter-rule chapter-heading">
         Cheatsheet
       </h2>
       <p className="mt-1 text-sm text-muted">

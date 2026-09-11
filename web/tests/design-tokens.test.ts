@@ -583,16 +583,6 @@ describe("design tokens", () => {
     expect(flatList).toMatch(/getFamilyTheme\(p\.familyId\)\.accent/);
   });
 
-  it("chapter headings carry the family accent bar", () => {
-    // The per-chapter colour lives on a flat rule above h2 (handbook-prose).
-    // Heading text stays ink; the rule is the accent. Steel outside a scope.
-    const css = readFileSync(GLOBALS, "utf8");
-    expect(css).toMatch(/\.handbook-prose h2::before/);
-    expect(css).toMatch(
-      /background:\s*var\(--family-accent,\s*var\(--accent\)\)/,
-    );
-  });
-
   it("every module declares a valid family or none", () => {
     const valid = new Set(FAMILY_THEMES.map((f) => f.id));
     for (const mod of MODULES) {
@@ -815,5 +805,68 @@ describe("type system", () => {
       "utf8",
     );
     expect(coach).not.toMatch(/\[&_strong\]:font-semibold/);
+  });
+
+  it("chapter headings are a hairline plus a decorative counter label", () => {
+    const css = readFileSync(GLOBALS, "utf8");
+    const h2 = cssBlock(css, ".handbook-prose h2");
+    expect(h2).toMatch(/border-top:\s*1px solid var\(--rule-strong\)/);
+    // The old pill + wash assumed a family colour prose no longer gets.
+    expect(h2).not.toMatch(/background|family-wash/);
+    const label = cssBlock(css, ".handbook-prose h2::before");
+    expect(label).toMatch(/counter-increment:\s*chapter/);
+    // `/ ""` is CSS alt text: without it "// 01" joins the accessible name.
+    expect(label).toMatch(
+      /content:\s*"\/\/ " counter\(chapter, decimal-leading-zero\) \/ "";/,
+    );
+    expect(cssBlock(css, ".problem-prose .handbook-prose h2::before")).toMatch(
+      /content:\s*none/,
+    );
+    expect(cssBlock(css, ".chapter-rule")).toMatch(
+      /border-top:\s*1px solid var\(--rule-strong\)/,
+    );
+    expect(css).toMatch(/--press-rule-strong:\s*rgba\(22, 32, 46, 0\.18\)/);
+    expect(css).toMatch(/--press-rule-strong:\s*rgba\(244, 244, 245, 0\.18\)/);
+    expect(css).toMatch(/--rule-strong:\s*var\(--press-rule-strong\)/);
+  });
+
+  it("component section headings share the class, not a copied accent bar", () => {
+    expect(
+      FILES.filter((f) => f.body.includes("h-[3px] w-10")).map((f) => f.rel),
+    ).toEqual([]);
+    for (const rel of [
+      "components/course/Quiz.tsx",
+      "components/cheatsheet/Cheatsheet.tsx",
+      "components/md/PracticeProblemsList.tsx",
+    ]) {
+      const body = FILES.find((f) => f.rel === rel)?.body ?? "";
+      expect(body, rel).toMatch(/\bchapter-heading\b/);
+      expect(body, rel).toMatch(/\bchapter-rule\b/);
+    }
+  });
+
+  it("lesson numbering cannot restart mid-lesson", () => {
+    const css = readFileSync(GLOBALS, "utf8");
+    expect(cssBlock(css, ".handbook-prose")).toMatch(/counter-reset:\s*chapter/);
+    // Roadmap stage bodies nest a second .handbook-prose.
+    expect(cssBlock(css, ".handbook-prose .handbook-prose")).toMatch(
+      /counter-reset:\s*none/,
+    );
+    for (const rel of [
+      "components/course/LessonView.tsx",
+      "app/courses/nextjs/[module]/[chapter]/[lesson]/page.tsx",
+    ]) {
+      const body = FILES.find((f) => f.rel === rel)?.body ?? "";
+      expect(body.match(/<Markdown\b/g)?.length, rel).toBe(1);
+    }
+  });
+
+  it("lesson titles render in title case", () => {
+    // Uppercase monospace wraps a 57-character title to 4–5 lines at 375px.
+    const body =
+      FILES.find((f) => f.rel === "components/course/LessonView.tsx")?.body ?? "";
+    const h1 = body.match(/<h1 className="([^"]*)"/)?.[1] ?? "";
+    expect(h1).toMatch(/\bfont-display\b/);
+    expect(h1).not.toMatch(/\buppercase\b/);
   });
 });

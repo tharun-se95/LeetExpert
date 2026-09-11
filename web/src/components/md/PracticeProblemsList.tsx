@@ -33,17 +33,9 @@ export function PracticeProblemsList({
 
   return (
     <section className="my-10" aria-labelledby="problems">
-      <header className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <header className="chapter-rule mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          {/* Same family-accent rule + display heading as the article's own h2s (globals.css .handbook-prose h2). */}
-          <span
-            aria-hidden
-            className="mb-2 block h-[3px] w-10 rounded-[length:var(--radius-xs)] bg-[var(--family-accent,var(--accent))]"
-          />
-          <h2
-            id="problems"
-            className="font-display text-[1.44em] font-semibold tracking-[-0.015em] text-foreground"
-          >
+          <h2 id="problems" className="chapter-heading">
             Problems
           </h2>
           <p className="mt-1 text-sm text-muted">
