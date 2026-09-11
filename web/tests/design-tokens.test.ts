@@ -92,6 +92,18 @@ function firstHexVar(css: string, name: string): string | null {
   return m?.[1]?.toLowerCase() ?? null;
 }
 
+/**
+ * Body of the first rule whose selector line is exactly `selector` (a
+ * selector list is passed with its newlines, e.g. "em,\ni"). Empty string
+ * when absent, so a missing rule fails the assertion instead of throwing.
+ */
+function cssBlock(css: string, selector: string): string {
+  const start = css.indexOf(`\n${selector} {`);
+  if (start === -1) return "";
+  const open = css.indexOf("{", start);
+  return css.slice(open + 1, css.indexOf("}", open));
+}
+
 describe("design tokens", () => {
   it("no Tailwind palette colour classes in components", () => {
     const hits: string[] = [];
@@ -784,5 +796,24 @@ describe("type system", () => {
     expect(layout).toMatch(
       /Space_Grotesk\(\{[^}]*variable:\s*"--font-sans-face"/,
     );
+  });
+
+  it("emphasis is carried by weight, never a synthesised slant", () => {
+    // Space Grotesk ships no italic: <em> would render as a fake oblique.
+    const css = readFileSync(GLOBALS, "utf8");
+    const em = cssBlock(css, "  em,\n  i");
+    expect(em).toMatch(/font-style:\s*normal/);
+    expect(em).toMatch(/font-weight:\s*500/);
+    // 500 vs 600 read as one weight in review; 700 keeps them apart.
+    expect(cssBlock(css, "  strong,\n  b")).toMatch(/font-weight:\s*700/);
+    expect(cssBlock(css, "  :is(code, pre, kbd, samp) :is(em, i)")).toMatch(
+      /font-style:\s*italic/,
+    );
+    expect(cssBlock(css, ".handbook-prose strong")).toMatch(/font-weight:\s*700/);
+    const coach = readFileSync(
+      join(SRC, "components", "coach", "CoachMarkdown.tsx"),
+      "utf8",
+    );
+    expect(coach).not.toMatch(/\[&_strong\]:font-semibold/);
   });
 });

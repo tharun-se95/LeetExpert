@@ -347,6 +347,32 @@ body {
 }
 
 /*
+  Space Grotesk ships no italic, so a slanted <em> would be a synthesised
+  oblique. Emphasis is weight instead: 500 against 400 body, with strong at
+  700 so the two stay distinguishable (500 vs 600 read as the same weight in
+  review). Code keeps its italic. In @layer base so a utility on the element
+  (e.g. `<strong className="font-medium">` in BigOObservatory) still wins —
+  unlayered rules would beat every utility.
+*/
+@layer base {
+  em,
+  i {
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  strong,
+  b {
+    font-weight: 700;
+  }
+
+  :is(code, pre, kbd, samp) :is(em, i) {
+    font-style: italic;
+    font-weight: inherit;
+  }
+}
+
+/*
   One focus treatment for the whole app. Previously each component
   invented its own, which meant keyboard users got different feedback
   depending on where they were.
@@ -583,7 +609,7 @@ body {
 }
 
 .handbook-prose strong {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--foreground);
 }
 
