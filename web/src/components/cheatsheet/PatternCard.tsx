@@ -25,7 +25,7 @@ export function PatternCard({ card }: { card: PatternCardData }) {
       )}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
+        <h3 className="font-display text-base font-bold tracking-tight text-foreground">
           {card.title}
         </h3>
         <span

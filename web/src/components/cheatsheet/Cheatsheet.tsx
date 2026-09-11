@@ -22,7 +22,7 @@ import type { ModuleCheatsheet } from "@/lib/course/cheatsheets/types";
  */
 function SectionHead({ icon: Glyph, children }: { icon: Icon; children: string }) {
   return (
-    <h3 className="mb-3 flex items-center gap-1.5 font-display text-sm font-semibold tracking-wide text-muted uppercase">
+    <h3 className="mb-3 flex items-center gap-1.5 font-display text-sm font-bold tracking-wide text-muted uppercase">
       <Glyph className="h-3.5 w-3.5 shrink-0" aria-hidden />
       {children}
     </h3>

@@ -206,7 +206,7 @@ export default function HomePage() {
                 Interactive DSA course
               </p>
             </div>
-            <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-balance sm:text-4xl lg:text-[2.85rem] lg:leading-[1.08]">
+            <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-[2.85rem] lg:leading-[1.08]">
               Data structures, the way they{" "}
               <span className="text-accent">finally click.</span>
             </h1>
@@ -303,7 +303,7 @@ export default function HomePage() {
                 i > 0 ? "sm:border-l sm:border-border" : ""
               }`}
             >
-              <span className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+              <span className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
                 {s.value}
               </span>
               <span className="text-center font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
@@ -322,7 +322,7 @@ export default function HomePage() {
         <section>
           <div className="max-w-2xl">
             <SectionLabel>See it in action</SectionLabel>
-            <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            <h2 className="mt-1.5 font-display text-xl font-bold tracking-tight sm:text-2xl">
               See the algorithm think.
             </h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted">
@@ -357,7 +357,7 @@ export default function HomePage() {
           <LandingSandbox />
           <div>
             <SectionLabel>Your turn</SectionLabel>
-            <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            <h2 className="mt-1.5 font-display text-xl font-bold tracking-tight sm:text-2xl">
               Your code, judged instantly.
             </h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted">
@@ -390,7 +390,7 @@ export default function HomePage() {
         <section>
           <div className="flex flex-col items-center text-center">
             <SectionLabel>Why leetExpert</SectionLabel>
-            <h2 className="mt-1.5 max-w-xl font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            <h2 className="mt-1.5 max-w-xl font-display text-xl font-bold tracking-tight sm:text-2xl">
               Not another video course you’ll never finish.
             </h2>
           </div>
@@ -403,7 +403,7 @@ export default function HomePage() {
                 <span className="flex h-11 w-11 items-center justify-center rounded-[length:var(--radius-md)] bg-accent/10 text-accent">
                   <Icon weight="regular" className="h-5 w-5" aria-hidden />
                 </span>
-                <h3 className="mt-4 font-display text-base font-semibold tracking-tight">
+                <h3 className="mt-4 font-display text-base font-bold tracking-tight">
                   {title}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
@@ -417,7 +417,7 @@ export default function HomePage() {
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
               <SectionLabel>Start here</SectionLabel>
-              <h2 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
+              <h2 className="mt-1.5 font-display text-lg font-bold tracking-tight">
                 First three lessons
               </h2>
               <ol className="mt-3 space-y-2">
@@ -444,7 +444,7 @@ export default function HomePage() {
             </div>
             <div>
               <SectionLabel>Jump in by topic</SectionLabel>
-              <h2 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
+              <h2 className="mt-1.5 font-display text-lg font-bold tracking-tight">
                 Popular modules
               </h2>
               <div className="mt-3 flex flex-wrap gap-1.5">
@@ -480,7 +480,7 @@ export default function HomePage() {
           <div className="flex items-end justify-between gap-4">
             <div>
               <SectionLabel>Early learners</SectionLabel>
-              <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              <h2 className="mt-1.5 font-display text-xl font-bold tracking-tight sm:text-2xl">
                 What early learners are saying.
               </h2>
             </div>
@@ -530,7 +530,7 @@ export default function HomePage() {
         <section>
           <div className="flex flex-col items-center text-center">
             <SectionLabel icon={CurrencyDollar}>Pricing</SectionLabel>
-            <h2 className="mt-1.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            <h2 className="mt-1.5 font-display text-xl font-bold tracking-tight sm:text-2xl">
               Free now. Fair later.
             </h2>
             <p className="mt-2.5 max-w-lg text-sm leading-relaxed text-muted">
@@ -548,7 +548,7 @@ export default function HomePage() {
               <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
                 Early access
               </p>
-              <p className="mt-3 font-display text-4xl font-semibold tracking-tight">
+              <p className="mt-3 font-display text-4xl font-bold tracking-tight">
                 Free
               </p>
               <p className="mt-1.5 text-sm text-muted">
@@ -586,7 +586,7 @@ export default function HomePage() {
               <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
                 Pro · coming soon
               </p>
-              <p className="mt-3 font-display text-4xl font-semibold tracking-tight text-muted">
+              <p className="mt-3 font-display text-4xl font-bold tracking-tight text-muted">
                 [$X]
                 <span className="text-base font-normal text-muted/70">/mo</span>
               </p>
@@ -629,7 +629,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-[1.5fr_1fr]">
             <div className="border-b border-border p-6 lg:border-r lg:border-b-0 lg:p-8">
               <SectionLabel>Why this exists</SectionLabel>
-              <h2 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
+              <h2 className="mt-1.5 font-display text-lg font-bold tracking-tight">
                 A note from the author
               </h2>
               <p className="mt-2.5 text-sm leading-relaxed text-muted">
@@ -650,7 +650,7 @@ export default function HomePage() {
             </div>
             <div className="p-6 lg:p-8">
               <SectionLabel>Paid launch</SectionLabel>
-              <h2 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
+              <h2 className="mt-1.5 font-display text-lg font-bold tracking-tight">
                 Get notified
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -667,7 +667,7 @@ export default function HomePage() {
         {/* FAQ */}
         <section>
           <SectionLabel>FAQ</SectionLabel>
-          <h2 className="mt-1.5 font-display text-lg font-semibold tracking-tight">
+          <h2 className="mt-1.5 font-display text-lg font-bold tracking-tight">
             Common questions
           </h2>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -701,7 +701,7 @@ export default function HomePage() {
           className="flex flex-col gap-4 rounded-[length:var(--radius-lg)] bg-pop px-5 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-8"
         >
           <div>
-            <h2 className="font-display text-xl font-semibold tracking-tight text-on-pop">
+            <h2 className="font-display text-xl font-bold tracking-tight text-on-pop">
               Start while it’s free
             </h2>
             <p className="mt-1 text-sm text-on-pop">{EARLY_BIRD_LINE}</p>

@@ -28,7 +28,7 @@ export function WhoNotPractical() {
           <Users className="h-3.5 w-3.5" weight="regular" aria-hidden />
           Who it’s for
         </p>
-        <h2 className="mt-2 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+        <h2 className="mt-2 font-display text-xl font-bold tracking-tight sm:text-2xl">
           Interview prep without cheat sheets
         </h2>
         <p className="mt-2.5 max-w-md text-sm leading-relaxed text-muted">

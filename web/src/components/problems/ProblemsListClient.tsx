@@ -273,7 +273,7 @@ function StatCard({
       </p>
       <p
         className={cn(
-          "mt-1 font-display text-xl font-semibold tracking-tight tabular-nums sm:text-2xl",
+          "mt-1 font-display text-xl font-bold tracking-tight tabular-nums sm:text-2xl",
           tone === "good" && "text-good",
         )}
       >

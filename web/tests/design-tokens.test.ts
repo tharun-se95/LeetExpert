@@ -869,4 +869,27 @@ describe("type system", () => {
     expect(h1).toMatch(/\bfont-display\b/);
     expect(h1).not.toMatch(/\buppercase\b/);
   });
+
+  it("pairs the display face only with weights Space Mono ships (400/700)", () => {
+    const UNSHIPPED =
+      /\bfont-(?:thin|extralight|light|medium|semibold|extrabold|black)\b|\bfont-\[\d+\]/;
+    const hits: string[] = [];
+    for (const f of FILES) {
+      if (!f.rel.endsWith(".tsx")) continue;
+      f.body.split("\n").forEach((line, i) => {
+        if (/\bfont-display\b/.test(line) && UNSHIPPED.test(line)) {
+          hits.push(`${f.rel}:${i + 1}`);
+        }
+      });
+    }
+    const css = readFileSync(GLOBALS, "utf8");
+    for (const block of css.split("}")) {
+      if (!block.includes("var(--font-display)")) continue;
+      const weight = block.match(/font-weight:\s*([^;]+);/)?.[1]?.trim();
+      if (weight && !["400", "700", "normal", "bold"].includes(weight)) {
+        hits.push(`app/globals.css: font-weight ${weight} with the display face`);
+      }
+    }
+    expect(hits).toEqual([]);
+  });
 });

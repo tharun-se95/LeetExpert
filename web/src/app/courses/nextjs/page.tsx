@@ -12,7 +12,7 @@ export default function NextjsCoursePage() {
       <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
         Next.js Interview Prep
       </p>
-      <h1 className="mt-1.5 font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+      <h1 className="mt-1.5 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
         Course curriculum
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-muted">
@@ -29,7 +29,7 @@ export default function NextjsCoursePage() {
               <span className="font-mono text-xs font-semibold text-muted">
                 {String(mod.number).padStart(2, "0")}
               </span>
-              <h2 className="font-display text-lg font-semibold tracking-tight text-foreground">
+              <h2 className="font-display text-lg font-bold tracking-tight text-foreground">
                 {mod.title}
               </h2>
             </div>

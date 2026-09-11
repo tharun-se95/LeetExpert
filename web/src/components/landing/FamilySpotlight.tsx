@@ -416,7 +416,7 @@ export function FamilySpotlight({ stats }: { stats: SpotlightStats }) {
             >
               <Glyph phase={phase} />
             </div>
-            <h3 className="mt-3 font-display text-lg font-semibold tracking-tight">
+            <h3 className="mt-3 font-display text-lg font-bold tracking-tight">
               {family.title}
             </h3>
             <p className="mt-1 max-w-xs text-center text-xs leading-relaxed text-muted">
