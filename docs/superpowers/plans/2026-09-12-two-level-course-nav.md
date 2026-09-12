@@ -26,18 +26,13 @@
 
 ## Execution setup
 
-`main` is clean apart from unrelated untracked folders (`marketing/`, `design-drafts/`, `.opencode-shots/`, the social-artist agent). Work on a branch, not on `main`.
+**Done:** branch `feat/two-level-nav` (spec + plan committed as `bd41b1a`), and an isolated worktree at `.worktrees/two-level-nav` with dependencies installed and a green baseline (42 files, 720 tests).
 
-- [ ] **Create the branch and commit the spec**
+The worktree is not optional here: another session is editing the main checkout (including `CourseNavTree.tsx`, `nav.ts`, `globals.css`) with uncommitted work. Do not switch branches in `/Users/tharunk/leetExpert`, and do not copy their in-flight files into this branch.
 
-```bash
-cd /Users/tharunk/leetExpert
-git checkout -b feat/two-level-nav
-git add docs/superpowers/specs/2026-09-12-two-level-course-nav-design.md docs/superpowers/plans/2026-09-12-two-level-course-nav.md
-git commit -m "$(printf 'docs(nav): two-level course nav spec and plan\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>')"
-```
+**Baseline:** committed `main` — no `extras` on `CourseNavModule`, and no extras rows in the nav. Level 2 therefore renders lessons only; re-adding extras is the tracked follow-up in the spec.
 
-All commands below run from `/Users/tharunk/leetExpert/web`. `T` means `NODE_OPTIONS=--no-experimental-webstorage npx vitest run`.
+All commands below run from `/Users/tharunk/leetExpert/.worktrees/two-level-nav/web`. `T` means `NODE_OPTIONS=--no-experimental-webstorage npx vitest run`.
 
 ---
 
@@ -61,13 +56,11 @@ import { activeModuleSlug, resolveNavView } from "@/lib/course/navLevel";
 const stages = buildCourseNav();
 const modules = stages.flatMap((s) => s.modules);
 const withLessons = modules.find((m) => m.lessons.length > 0)!;
-const withExtras = modules.find((m) => (m.extras ?? []).length > 0)!;
 
 describe("activeModuleSlug", () => {
-  it("matches a module page, a lesson under it, and an extra under it", () => {
+  it("matches a module page and a lesson under it", () => {
     expect(activeModuleSlug(stages, withLessons.href)).toBe(withLessons.slug);
     expect(activeModuleSlug(stages, withLessons.lessons[0]!.href)).toBe(withLessons.slug);
-    expect(activeModuleSlug(stages, withExtras.extras![0]!.href)).toBe(withExtras.slug);
   });
 
   it("returns null off the course", () => {
@@ -93,7 +86,7 @@ describe("resolveNavView", () => {
   });
 
   it("never opens an empty level 2 for a module with no lessons", () => {
-    const empty = { ...withLessons, lessons: [], extras: [] };
+    const empty = { ...withLessons, lessons: [] };
     const onlyEmpty = [{ number: 1, title: "Stage", modules: [empty] }];
     expect(resolveNavView({ stages: onlyEmpty, pathname: empty.href })).toEqual({
       level: "modules",
@@ -122,7 +115,7 @@ function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Module whose page, lesson, or extra destination matches the current route. */
+/** Module whose page or a lesson under it matches the current route. */
 export function activeModuleSlug(
   stages: CourseNavStage[],
   pathname: string,
@@ -131,11 +124,6 @@ export function activeModuleSlug(
     for (const navModule of stage.modules) {
       if (pathname === navModule.href) return navModule.slug;
       if (navModule.lessons.some((l) => isActivePath(pathname, l.href))) {
-        return navModule.slug;
-      }
-      // Extras must open the module too: without this, visiting a module's
-      // concept map drops the nav back to the module list.
-      if ((navModule.extras ?? []).some((e) => isActivePath(pathname, e.href))) {
         return navModule.slug;
       }
     }
@@ -209,7 +197,7 @@ import { CourseNavPanel } from "@/components/layout/CourseNavPanel";
 
 const nav = buildCourseNav();
 const modules = nav.flatMap((s) => s.modules);
-const navModule = modules.find((m) => (m.extras ?? []).length > 0 && m.lessons.length > 0)!;
+const navModule = modules.find((m) => m.lessons.length > 1)!;
 const other = modules.find((m) => m.slug !== navModule.slug)!;
 const lesson = navModule.lessons[0]!;
 
@@ -244,9 +232,8 @@ describe("CourseNavPanel level 1", () => {
 describe("CourseNavPanel level 2", () => {
   const html = render({ level: "module", navModule }, lesson.href);
 
-  it("shows only the open module's lessons and extras", () => {
+  it("shows only the open module's lessons", () => {
     for (const l of navModule.lessons) expect(html).toContain(l.title);
-    for (const e of navModule.extras ?? []) expect(html).toContain(e.title);
     // Match the href, not the title: a module's short title can appear inside
     // another module's lesson titles ("… (Linked Lists module)").
     expect(html).not.toContain(`href="${other.href}"`);
@@ -275,10 +262,9 @@ Expected: FAIL — cannot resolve `@/components/layout/CourseNavPanel`.
 
 import type { ReactNode, Ref } from "react";
 import Link from "next/link";
-import { CaretLeft, CaretRight, TreeStructure } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import type {
-  CourseNavExtra,
   CourseNavLesson,
   CourseNavModule,
   CourseNavStage,
@@ -436,28 +422,6 @@ function LessonRow({
   );
 }
 
-function ExtraRow({
-  extra,
-  pathname,
-  compact,
-}: {
-  extra: CourseNavExtra;
-  pathname: string;
-  compact: boolean;
-}) {
-  return (
-    <DestinationRow
-      href={extra.href}
-      title={extra.title}
-      pathname={pathname}
-      compact={compact}
-      marker={
-        <TreeStructure weight="bold" className="h-3 w-3 text-muted" aria-hidden />
-      }
-    />
-  );
-}
-
 /**
  * Props-only view for both nav levels — no hooks and no context, so it
  * renders under renderToStaticMarkup in tests without mocking the router.
@@ -508,16 +472,6 @@ export function CourseNavPanel({
               lesson={lesson}
               pathname={pathname}
               visited={visited}
-              compact={compact}
-            />
-          ))}
-          {/* Non-lesson destinations: no completion dot, and deliberately not
-              part of the x/y count above — they have no progress to track. */}
-          {(navModule.extras ?? []).map((extra) => (
-            <ExtraRow
-              key={extra.id}
-              extra={extra}
-              pathname={pathname}
               compact={compact}
             />
           ))}

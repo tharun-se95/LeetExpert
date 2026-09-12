@@ -31,19 +31,26 @@ the reader has.
 
 1. A back row: `←  All modules`.
 2. A module header: number, full `title`, and progress `2/5`.
-3. The module's lessons, each with its completion dot, then its `extras`
-   (e.g. Concept map), exactly as the open branch renders them today.
+3. The module's lessons, each with its completion dot.
 
 No stage headings, no other module.
+
+**Baseline, and one tracked follow-up.** This is built on committed `main`.
+A concurrent session is adding non-lesson module destinations (`extras`, e.g.
+a per-module Concept map) to `CourseNavModule` and the nav; that work is
+uncommitted and is deliberately **not** copied into this branch. When it
+lands, level 2 must render those rows under the lessons (no completion dot,
+outside the `x/y` count) and `activeModuleSlug` must treat an extra's href as
+opening its module. Until then this nav has no extras support — an explicitly
+incomplete capability with the end condition "their nav work is committed".
 
 ## 3. Which level is showing
 
 Level is derived, not stored:
 
-- **From the route.** If the pathname matches a module page, one of its
-  lessons, or one of its extras, the nav opens at that module's level 2.
-  Otherwise level 1. This is today's `activeModuleSlug` logic, which already
-  handles all three cases.
+- **From the route.** If the pathname matches a module page or one of its
+  lessons, the nav opens at that module's level 2. Otherwise level 1. This is
+  today's `activeModuleSlug` logic, moved as-is.
 - **Back is an override.** Pressing back shows level 1 without navigating, so
   a reader can browse other modules while staying on the page they are
   reading. The override is dropped on the next pathname change, so following
