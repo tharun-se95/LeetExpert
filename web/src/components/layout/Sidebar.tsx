@@ -131,7 +131,7 @@ export function Sidebar({
         "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col overflow-hidden lg:flex",
         // The drag handle must track the pointer 1:1, so it opts out.
         !dragging &&
-          "transition-[width] duration-[var(--dur)] ease-[var(--ease)] motion-reduce:transition-none",
+          "transition-[width] duration-[var(--dur-gentle)] ease-[var(--ease-gentle)] motion-reduce:transition-none",
         // box-shadow isn't clipped by the element's own overflow-hidden, so a
         // 0-width closed drawer would still show a shadow sliver.
         open ? "border-r border-border shadow-edge-right" : "",

@@ -51,6 +51,17 @@ describe("hover-driven drawer", () => {
     expect(sidebar).toMatch(/transition-\[width\]/);
   });
 
+  it("pushes gently, on tokens rather than a one-off duration", () => {
+    const globals = readFileSync(
+      join(__dirname, "..", "src", "app", "globals.css"),
+      "utf8",
+    );
+    expect(globals).toMatch(/--dur-gentle:/);
+    expect(globals).toMatch(/--ease-gentle:/);
+    expect(sidebar).toContain("duration-[var(--dur-gentle)]");
+    expect(sidebar).toContain("ease-[var(--ease-gentle)]");
+  });
+
   it("closes by pointer position, not only by the panel's own leave event", () => {
     // The drawer slides in under a stationary cursor, so pointerenter never
     // fires on it and pointerleave never follows — it would hang open.

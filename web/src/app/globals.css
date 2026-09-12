@@ -168,6 +168,15 @@
   --dur-fast: 150ms;
   --dur: 250ms;
   --ease: cubic-bezier(0.2, 0, 0, 1);
+  /*
+    Gentle: for motion that moves the page itself rather than one control —
+    the lessons drawer widening pushes the article across, and at --dur's
+    250ms with its near-linear-in curve that shove reads as a snap. Longer,
+    with a curve that leaves quickly and settles slowly, so the column glides
+    into its new width instead of jumping to it.
+  */
+  --dur-gentle: 420ms;
+  --ease-gentle: cubic-bezier(0.32, 0.72, 0, 1);
 
   /* --- focus --------------------------------------------- */
   --focus-ring: 2px;
