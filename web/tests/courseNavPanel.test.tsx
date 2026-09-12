@@ -56,6 +56,15 @@ describe("CourseNavPanel level 1", () => {
     expect(stageBlock).toMatch(/pl-3/);
   });
 
+  it("names modules without a leading number", () => {
+    // The stage headings already carry the curriculum's order.
+    expect(html).not.toMatch(/tabular-nums[^"]*"[^>]*>\s*\d+\./);
+    const row = html.match(
+      new RegExp(`<a[^>]*href="${modules[0]!.href}"[^>]*>([\\s\\S]*?)</a>`),
+    )![1];
+    expect(row.replace(/<[^>]*>/g, "").trim()).not.toMatch(/^\d+\./);
+  });
+
   it("marks a coming-soon module", () => {
     const soon = modules.find((m) => m.status === "coming-soon");
     if (soon) expect(html).toContain("soon");

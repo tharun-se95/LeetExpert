@@ -78,9 +78,6 @@ function ModuleRow({
       )}
     >
       <span className="min-w-0 flex-1 truncate">
-        <span className="mr-1.5 tabular-nums text-[11px] text-muted">
-          {navModule.number}.
-        </span>
         {navModule.shortTitle}
         {navModule.status === "coming-soon" ? (
           <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted/50">
