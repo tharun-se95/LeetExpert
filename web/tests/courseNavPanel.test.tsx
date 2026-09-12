@@ -51,6 +51,11 @@ describe("CourseNavPanel level 1", () => {
     expect(html).not.toContain("All modules");
   });
 
+  it("indents module rows under their stage heading", () => {
+    const stageBlock = html.slice(html.indexOf(esc(nav[0]!.title)));
+    expect(stageBlock).toMatch(/pl-3/);
+  });
+
   it("marks a coming-soon module", () => {
     const soon = modules.find((m) => m.status === "coming-soon");
     if (soon) expect(html).toContain("soon");
@@ -121,6 +126,15 @@ describe("CourseNavPanel level 2", () => {
     expect(back).toContain("text-foreground");
     expect(back).not.toContain("text-accent");
     expect(back).not.toMatch(/style="[^"]*--accent:/);
+  });
+
+  it("stairsteps section > module > lesson by indent", () => {
+    // Each level one step deeper, so the tree reads without rules or dots.
+    const heading = html.match(/<div class="[^"]*border-b[^"]*"[^>]*>/)![0];
+    // Deeper than a bare step: the section row above it starts after a caret.
+    expect(heading).toContain("pl-6");
+    const rows = html.match(/<div class="mt-2[^"]*"/)![0];
+    expect(rows).toContain("pl-2");
   });
 
   it("ranks the module title between the section label and the rows", () => {

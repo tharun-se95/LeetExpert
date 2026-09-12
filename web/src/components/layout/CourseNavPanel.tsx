@@ -30,6 +30,19 @@ export interface CourseNavPanelProps {
   returnRowRef?: Ref<HTMLAnchorElement>;
 }
 
+/**
+ * One indent step per level of the tree: stage > module on level 1, section >
+ * module > lesson on level 2. Rows keep their own px-2 so the hover/active
+ * fill still starts left of the text.
+ *
+ * The section row's caret hangs in the nav's own left padding rather than
+ * sitting in the text flow. Inline, it pushed the section label ~20px right of
+ * every other row, so the module title beneath it read as the SAME level (or
+ * further left) instead of one step in.
+ */
+const INDENT = "pl-3";
+const INDENT_UNDER_CARET = "pl-6";
+
 const rowPad = (compact: boolean) =>
   compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5";
 const iconBox = (compact: boolean) => (compact ? "h-8 w-6" : "h-11 w-11");
@@ -220,15 +233,20 @@ export function CourseNavPanel({
           // verb and still contains it (WCAG 2.5.3, label in name).
           aria-label={`Back to ${view.stage.title}`}
           className={cn(
-            "mb-1 flex w-full items-center gap-1.5 rounded-[length:var(--radius-xs)] px-2 py-1 text-foreground transition-colors hover:bg-surface",
+            "relative mb-1 flex w-full items-center rounded-[length:var(--radius-xs)] px-2 py-1 text-foreground transition-colors hover:bg-surface",
           )}
         >
-          <CaretLeft aria-hidden className="h-4 w-4 shrink-0 text-muted" />
+          <CaretLeft
+            aria-hidden
+            className="absolute top-1/2 left-[-16px] h-4 w-4 -translate-y-1/2 text-muted"
+          />
           <span className="min-w-0 truncate text-[19px] leading-tight font-bold tracking-tight">
             {view.stage.title}
           </span>
         </button>
-        <div className="border-b border-border px-2 pb-2">
+        <div
+          className={cn("border-b border-border pr-2 pb-2", INDENT_UNDER_CARET)}
+        >
           {/* Sits between the 19px section label and the 13px rows, so the
               hierarchy reads section > module > lesson. */}
           <h2 className="font-display text-[15px] font-bold tracking-tight text-foreground">
@@ -243,7 +261,9 @@ export function CourseNavPanel({
             </p>
           ) : null}
         </div>
-        <div className={cn("mt-2", compact ? "space-y-0.5" : "space-y-1")}>
+        <div
+          className={cn("mt-2", "pl-2", compact ? "space-y-0.5" : "space-y-1")}
+        >
           {navModule.lessons.map((lesson) => (
             <LessonRow
               key={lesson.id}
@@ -296,7 +316,9 @@ export function CourseNavPanel({
           >
             {stage.title}
           </p>
-          <div className={cn(compact ? "space-y-1" : "space-y-1.5")}>
+          <div
+            className={cn(INDENT, compact ? "space-y-1" : "space-y-1.5")}
+          >
             {stage.modules.map((m) => (
               <ModuleRow
                 key={m.slug}
