@@ -70,7 +70,7 @@ export function Scratchpad({
 
   return (
     <div className="my-6 overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-surface/30 shadow-elevation">
-      <div className="flex items-center justify-between border-b border-border bg-elevated px-3 py-2">
+      <div className="flex items-center justify-between border-b border-border bg-elevated in-[.reading-page]:bg-background px-3 py-2">
         <span className="flex items-center gap-1.5 text-[0.7rem] font-semibold tracking-wide text-muted uppercase">
           <CodeIcon size={13} aria-hidden />
           Your workspace

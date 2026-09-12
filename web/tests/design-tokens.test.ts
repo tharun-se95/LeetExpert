@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, posix, relative } from "node:path";
 import { CODE_LIGHT, CODE_DARK } from "../src/lib/content/codePalette";
 import {
   FAMILY_THEMES,
@@ -901,6 +901,113 @@ describe("type system", () => {
       if (weight && !["400", "700", "normal", "bold"].includes(weight)) {
         hits.push(`app/globals.css: font-weight ${weight} with the display face`);
       }
+    }
+    expect(hits).toEqual([]);
+  });
+});
+
+describe("lesson reading page", () => {
+  const byRel = new Map(FILES.map((f) => [f.rel, f.body]));
+  const SHADOW_SCOPE =
+    '.reading-page .shadow-elevation:not([role="dialog"], [role="dialog"] *)';
+
+  it("sets the reading, and only the reading, on one page", () => {
+    const view = byRel.get("components/course/LessonView.tsx") ?? "";
+    expect(view.match(/\breading-page\b/g)).toHaveLength(1);
+    expect(view).toMatch(/<article className="reading-column\b/);
+    const open = view.indexOf('className="reading-page shadow-elevation');
+    expect(open).toBeGreaterThan(-1);
+    const page = view.slice(open, view.indexOf("<nav"));
+    for (const inside of ["<Markdown", "{infographic ?", "{afterMarkdown ?"]) {
+      expect(page, inside).toContain(inside);
+    }
+    // Header and stage stay on the desk, above the page.
+    const desk = view.slice(0, open);
+    for (const outside of ["<h1", "{stage ?"]) {
+      expect(desk, outside).toContain(outside);
+    }
+  });
+
+  it("the page is paper, the column holds the measure, and cards in it lose their lift", () => {
+    const css = readFileSync(GLOBALS, "utf8");
+    expect(css).toMatch(/--reading-measure:\s*54rem/);
+    expect(cssBlock(css, ".reading-column")).toMatch(
+      /max-width:\s*calc\(var\(--reading-measure\) \+ 2 \* var\(--reading-page-pad\)\)/,
+    );
+    expect(cssBlock(css, ".reading-page")).toMatch(/background:\s*var\(--elevated\)/);
+    expect(cssBlock(css, SHADOW_SCOPE)).toMatch(/box-shadow:\s*none/);
+  });
+
+  it("in-flow cards rendered inside the page step down to a well", () => {
+    // Walk imports from everything LessonView sets on the page, so a new
+    // markdown component is covered without anyone remembering to list it.
+    // A bg-elevated card in that tree is white on white unless it pairs the
+    // page variant.
+    const ROOTS = [
+      "components/md/Markdown.tsx",
+      "components/course/Quiz.tsx",
+      "components/course/ChapterInfographic.tsx",
+      "components/md/PracticeProblemsList.tsx",
+      "components/cheatsheet/Cheatsheet.tsx",
+    ];
+    // Files the walk reaches whose bg-elevated is not an in-flow card on the
+    // page. Counts are pinned so a new card in the same file still fails.
+    const NOT_IN_PAGE_FLOW: Record<string, number> = {
+      // Its fullscreen dialog, floating over a scrim.
+      "components/md/Mermaid.tsx": 2,
+      // Only in difficultyFilterChipClass (problems hub filter panel); the walk
+      // arrives because PracticeProblemsList imports a sibling export.
+      "lib/course/problemDifficulty.ts": 1,
+    };
+    const ELEVATED = /\bbg-elevated(\/\d+)?(?![\w/-])/g;
+
+    const resolve = (from: string, spec: string): string | null => {
+      const base = spec.startsWith("@/")
+        ? spec.slice(2)
+        : spec.startsWith(".")
+          ? posix.join(posix.dirname(from), spec)
+          : null;
+      if (base === null) return null;
+      const hit = [".tsx", ".ts", "/index.tsx", "/index.ts"]
+        .map((ext) => base + ext)
+        .find((rel) => byRel.has(rel));
+      return hit ?? null;
+    };
+
+    for (const root of ROOTS) expect(byRel.has(root), root).toBe(true);
+    const seen = new Set<string>();
+    const queue = [...ROOTS];
+    while (queue.length) {
+      const rel = queue.pop()!;
+      if (seen.has(rel)) continue;
+      seen.add(rel);
+      const body = byRel.get(rel) ?? "";
+      for (const m of body.matchAll(/(?:from\s+|import\(\s*)["']([^"']+)["']/g)) {
+        const next = resolve(rel, m[1]);
+        if (next) queue.push(next);
+      }
+    }
+
+    // Comments that name the class (Mermaid explains its dialog fill) are not
+    // surfaces.
+    const codeLines = (body: string) =>
+      body.split("\n").map((line) => (/^\s*(?:\/\/|\/?\*)/.test(line) ? "" : line));
+
+    const hits: string[] = [];
+    for (const rel of seen) {
+      const lines = codeLines(byRel.get(rel) ?? "");
+      if (rel in NOT_IN_PAGE_FLOW) {
+        const count = lines.reduce((n, line) => n + (line.match(ELEVATED)?.length ?? 0), 0);
+        expect(count, rel).toBe(NOT_IN_PAGE_FLOW[rel]);
+        continue;
+      }
+      lines.forEach((line, i) => {
+        for (const m of line.matchAll(ELEVATED)) {
+          if (!line.includes(`in-[.reading-page]:bg-background${m[1] ?? ""}`)) {
+            hits.push(`${rel}:${i + 1}`);
+          }
+        }
+      });
     }
     expect(hits).toEqual([]);
   });

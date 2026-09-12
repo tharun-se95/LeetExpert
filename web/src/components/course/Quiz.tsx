@@ -25,9 +25,12 @@ function InlineText({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         part.startsWith("`") && part.endsWith("`") ? (
+          // An accent tint, not a surface fill: options are white on the desk
+          // but grey wells on the reading page, and a fill matching either
+          // vanishes on the other.
           <code
             key={i}
-            className="rounded-[length:var(--radius-sm)] border border-border bg-background px-1.5 py-0.5 font-mono text-[0.85em]"
+            className="rounded-[length:var(--radius-sm)] border border-accent/20 bg-accent/[0.07] px-1.5 py-0.5 font-mono text-[0.85em]"
           >
             {part.slice(1, -1)}
           </code>
@@ -147,8 +150,11 @@ function QuestionBlock({
               aria-pressed={isSelected}
               className={cn(
                 "group/opt flex w-full items-center gap-3 rounded-[length:var(--radius-md)] border px-3 py-2.5 text-left text-sm leading-relaxed transition",
+                // The quiz also renders outside a reading page (problem Quiz
+                // tab); inside one, the page is already white, so options
+                // step down to a well instead of lifting.
                 !answered &&
-                  "border-border bg-elevated hover:border-accent/40 hover:bg-accent/[0.06]",
+                  "border-border bg-elevated in-[.reading-page]:bg-background hover:border-accent/40 hover:bg-accent/[0.06]",
                 answered &&
                   isAnswer &&
                   "border-good/50 bg-good/10 text-foreground",
@@ -159,7 +165,7 @@ function QuestionBlock({
                 answered &&
                   !isSelected &&
                   !isAnswer &&
-                  "border-border/60 bg-elevated/50 text-muted",
+                  "border-border/60 bg-elevated/50 in-[.reading-page]:bg-background/50 text-muted",
               )}
             >
               <span

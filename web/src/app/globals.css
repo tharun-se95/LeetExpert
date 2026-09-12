@@ -293,6 +293,17 @@ html {
 :root {
   --prose-size: 1.1875rem; /* 19px */
   --code-size: 0.85rem; /* 13.6px */
+  /*
+    Lesson reading measure: ~94 characters of 19px Space Grotesk (measured
+    9.22px average advance), deliberately past the classic 65–90 band so the
+    page uses the desk it sits on rather than stranding it either side.
+    rem, not px: the laptop steps below shrink the root while --prose-size
+    holds the text near desktop size, so the measure narrows with them —
+    ~93 characters at the 15px root, ~88 at 13px. A px measure would run to
+    ~109 as the type shrank.
+  */
+  --reading-measure: 54rem;
+  --reading-page-pad: 4rem;
 }
 
 /*
@@ -446,9 +457,9 @@ body {
 }
 
 /*
-  The press is a flat, printed idiom: depth comes from ink and rules, never
-  from blur. Shadows are deliberately absent from the token set — if a
-  surface needs to lift, give it a border or an offset block.
+  Depth is ink and rules first. Where a surface genuinely lifts, the paper
+  ladder plus the soft --shadow-elevation / --shadow-edge-* tokens carry it
+  (see "Elevation shadow" below) — never a hard offset block.
 */
 
 /* A printed dot screen for raised panels. Applied per surface, not page-wide. */
@@ -485,10 +496,9 @@ body {
     actually use (Red Blob Games 20px, Ciechanowski 19.2px). The old
     16.2px was app-sized, not reading-sized.
 
-    No max-width here by design — the article column (LessonView) is the
-    one place that constrains width, so prose fills it fully on wide
-    screens rather than sitting in a fixed-ch column with dead space
-    beside it.
+    No max-width here by design — the layout hosting the prose owns width
+    (on a lesson, .reading-column via --reading-measure), so prose fills
+    whatever it sits on instead of carrying a second, competing measure.
   */
   font-size: var(--prose-size);
   line-height: 1.62;
@@ -1185,6 +1195,16 @@ body {
 
   Reveals stay collapsed on paper. Their content is conditionally rendered
   rather than hidden, so no stylesheet can expand it — and that is worth
+
+  /* the sheet of paper is the page itself; its frame and desk shadow are screen-only */
+  .reading-page {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
   keeping, because it is also what stops Ctrl+F leaking solutions in a
   solve-first course.
 */
@@ -1210,6 +1230,58 @@ body {
   .press-stamp {
     border-color: #000 !important;
     color: #000 !important;
+  }
+}
+
+/*
+  The lesson reading page (LessonView): prose, infographic and quiz set on a
+  sheet of --elevated paper against the --background desk, while header,
+  stage and prev/next stay on the desk. The column is the measure plus the
+  page's own padding, so everything in it shares the page's outer edge.
+*/
+.reading-column {
+  max-width: calc(var(--reading-measure) + 2 * var(--reading-page-pad));
+}
+
+.reading-page {
+  background: var(--elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem var(--reading-page-pad);
+}
+
+/*
+  The page's padding is the top margin now. A lesson that opens on a chapter
+  would otherwise stack the h2's own margin on it — measured 81px above the
+  first hairline against 45px at the sides.
+*/
+.reading-page .handbook-prose > h2:first-child {
+  margin-top: 0;
+}
+
+/*
+  The page is already the brightest surface, so a card set into it is a well,
+  not a lift — and recessed surfaces carry no shadow. Its fill steps down at
+  the call site (in-[.reading-page]:bg-background); its shadow can only be
+  removed here, because .shadow-elevation is unlayered and no utility can
+  override it. A dialog rendered inside the page (Mermaid's fullscreen view is
+  not portaled) genuinely floats over a scrim and keeps its shadow.
+*/
+.reading-page .shadow-elevation:not([role="dialog"], [role="dialog"] *) {
+  box-shadow: none;
+}
+
+/*
+  Below sm the page is the screen: nothing beside it to cast onto, so no side
+  border, radius or shadow. The negative margin cancels LessonView's px-4.
+*/
+@media (width < 40rem) {
+  .reading-page.shadow-elevation {
+    margin-inline: -1rem;
+    padding: 1.75rem 1rem;
+    border-inline: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 }
 

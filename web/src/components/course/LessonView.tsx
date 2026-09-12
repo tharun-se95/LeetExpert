@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { Markdown } from "@/components/md/Markdown";
-import { TableOfContents } from "@/components/md/TableOfContents";
 import { Breadcrumbs, type Crumb } from "@/components/layout/Breadcrumbs";
 import type { LoadedLesson } from "@/lib/course/load";
 
@@ -53,8 +52,8 @@ export function LessonView({
   jsonLd,
 }: LessonViewProps) {
   return (
-    <div className="mx-auto flex w-full max-w-[90rem] gap-10 px-4 py-8 lg:px-8 lg:py-10">
-      <article className="min-w-0 flex-1">
+    <div className="mx-auto flex w-full justify-center gap-10 px-4 py-8 lg:px-8 lg:py-10">
+      <article className="reading-column min-w-0 flex-1">
         {jsonLd}
         <Breadcrumbs items={breadcrumbs} />
         <p className="mb-2 text-xs font-medium uppercase tracking-wider text-mark">
@@ -81,16 +80,17 @@ export function LessonView({
           ) : null}
         </p>
         {stage ? <div className="mt-6 print:hidden">{stage}</div> : null}
-        <div className="mt-8">
+        {/* Header, stage and neighbours stay on the desk; only the reading is set on paper. */}
+        <div className="reading-page shadow-elevation mt-8">
           <Markdown
             source={lesson.markdown}
             highlightedBlocks={lesson.highlightedBlocks}
             highlightedTabs={lesson.highlightedTabs}
           />
+          {infographic ? <div className="mt-10 print:hidden">{infographic}</div> : null}
+          {afterMarkdown ? <div className="mt-2">{afterMarkdown}</div> : null}
         </div>
-        {infographic ? <div className="mt-10 print:hidden">{infographic}</div> : null}
-        {afterMarkdown ? <div className="mt-2">{afterMarkdown}</div> : null}
-        <nav className="mt-12 flex items-stretch justify-between gap-4 border-t border-border pt-6">
+        <nav className="mt-10 flex items-stretch justify-between gap-4">
           {prev ? (
             <Link
               href={prev.href}
@@ -129,9 +129,6 @@ export function LessonView({
           )}
         </nav>
       </article>
-      <aside className="print:hidden hidden w-52 shrink-0 xl:block">
-        <TableOfContents items={lesson.toc} />
-      </aside>
     </div>
   );
 }
