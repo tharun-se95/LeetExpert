@@ -143,7 +143,9 @@ export function Sidebar({
           FloatingLessonsButton hides itself then. Hover only opens; the
           pointer-out timer is a slow tidy-up, not the close affordance.
         */}
-        <div className="flex h-9 shrink-0 items-center justify-end px-3">
+        {/* px-5 matches CourseNavTree's gutter, so the X sits on the same right
+            margin as every row below it rather than 8px outside it. */}
+        <div className="flex h-9 shrink-0 items-center justify-end px-5">
           <button
             type="button"
             onClick={onClose}
