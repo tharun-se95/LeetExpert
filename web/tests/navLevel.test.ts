@@ -45,6 +45,17 @@ describe("resolveNavView", () => {
     ).toEqual({ level: "modules" });
   });
 
+  it("opens a module whose href is aliased to its first lesson", () => {
+    // The Next.js course shape: a module with no overview page of its own.
+    // Its own nav is not mounted on those routes today, so this is the only
+    // guarantee that shape keeps resolving to level 2.
+    const aliased = { ...withLessons, href: withLessons.lessons[0]!.href };
+    const aliasedStages = [{ number: 1, title: "Stage", modules: [aliased] }];
+    expect(
+      resolveNavView({ stages: aliasedStages, pathname: aliased.href }),
+    ).toEqual({ level: "module", navModule: aliased });
+  });
+
   it("never opens an empty level 2 for a module with no lessons", () => {
     const empty = { ...withLessons, lessons: [] };
     const onlyEmpty = [{ number: 1, title: "Stage", modules: [empty] }];

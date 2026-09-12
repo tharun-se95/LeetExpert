@@ -109,6 +109,18 @@ The content is the product. Code exists to serve it.
   it until 2026-09-12, removed on request); component sections
   share it through `.chapter-rule` + `.chapter-heading`, never a copied bar.
   Heading text stays ink.
+- **The course nav is two levels, and the level is derived from the route.**
+  Level 1 is stage headings + module rows; following a module row navigates
+  to it and drills into level 2, that module's lessons. `lib/course/navLevel.ts`
+  owns the resolution (`resolveNavView`) — the only stored state is the back
+  override, which shows level 1 without navigating and is dropped on the next
+  pathname change; a stored level would go stale against the URL. Markup
+  lives in the props-only `CourseNavPanel` (rendered in
+  `courseNavPanel.test.tsx` without a router), and `CourseNavTree` keeps the
+  hooks, the cross-slide (`motion/react`, skipped under `useReducedMotion`)
+  and focus. Focus after back moves from a **callback ref**: under
+  `AnimatePresence mode="wait"` the incoming level has not mounted when an
+  effect or `onExitComplete` fires.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
   `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
   brightness ladder in BOTH themes — elevated brightest, surface deepest,
