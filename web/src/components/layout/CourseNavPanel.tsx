@@ -45,7 +45,6 @@ const INDENT_UNDER_CARET = "pl-6";
 
 const rowPad = (compact: boolean) =>
   compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5";
-const iconBox = (compact: boolean) => (compact ? "h-8 w-6" : "h-11 w-11");
 
 function ModuleRow({
   navModule,
@@ -117,39 +116,37 @@ function DestinationRow({
   title,
   pathname,
   compact,
-  marker,
+  done = false,
+  icon,
 }: {
   href: string;
   title: string;
   pathname: string;
   compact: boolean;
-  marker: ReactNode;
+  /** Paints this row's segment of the guide line as completed. */
+  done?: boolean;
+  icon?: ReactNode;
 }) {
   const active = pathname === href;
   return (
-    <div className="flex items-start gap-1">
-      <span
-        className={cn(
-          "inline-flex shrink-0 items-center justify-center",
-          iconBox(compact),
-        )}
-      >
-        {marker}
-      </span>
-      <Link
-        href={href}
-        aria-current={active ? "page" : undefined}
-        className={cn(
-          "flex min-w-0 flex-1 items-center rounded-[length:var(--radius-xs)] px-2 text-[13px] leading-snug transition-colors",
-          rowPad(compact),
-          active
-            ? "bg-pop font-semibold text-on-pop"
-            : "text-muted hover:bg-surface hover:text-foreground",
-        )}
-      >
-        <span className="min-w-0">{title}</span>
-      </Link>
-    </div>
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        // The rail IS the marker: each row owns a segment of one continuous
+        // line, so the list reads as a branch of the module rather than a
+        // column of dots. Rows sit flush (no space-y) or the line breaks.
+        "flex min-w-0 items-center gap-1.5 border-l-2 pr-2 pl-3 text-[13px] leading-snug transition-colors",
+        rowPad(compact),
+        done ? "border-accent" : "border-border",
+        active
+          ? "border-accent bg-pop font-semibold text-on-pop"
+          : "text-muted hover:bg-surface hover:text-foreground",
+      )}
+    >
+      {icon}
+      <span className="min-w-0">{title}</span>
+    </Link>
   );
 }
 
@@ -164,22 +161,13 @@ function LessonRow({
   visited: Set<string>;
   compact: boolean;
 }) {
-  const isDone = visited.has(lesson.id);
   return (
     <DestinationRow
       href={lesson.href}
       title={lesson.title}
       pathname={pathname}
       compact={compact}
-      marker={
-        <span
-          className={cn(
-            "h-2 w-2 rounded-[length:var(--radius-xs)] transition-colors",
-            isDone ? "bg-accent" : "border border-border bg-transparent",
-          )}
-          title={isDone ? "Completed" : "Not completed"}
-        />
-      }
+      done={visited.has(lesson.id)}
     />
   );
 }
@@ -199,8 +187,13 @@ function ExtraRow({
       title={extra.title}
       pathname={pathname}
       compact={compact}
-      marker={
-        <TreeStructure weight="bold" className="h-3 w-3 text-muted" aria-hidden />
+      // Not a lesson: it carries its own glyph and never a completed segment.
+      icon={
+        <TreeStructure
+          weight="bold"
+          className="h-3 w-3 shrink-0 text-muted"
+          aria-hidden
+        />
       }
     />
   );
@@ -248,21 +241,20 @@ export function CourseNavPanel({
           className={cn("border-b border-border pr-2 pb-2", INDENT_UNDER_CARET)}
         >
           {/* Sits between the 19px section label and the 13px rows, so the
-              hierarchy reads section > module > lesson. */}
-          <h2 className="font-display text-[15px] font-bold tracking-tight text-foreground">
-            <span className="mr-1.5 tabular-nums text-[11px] text-muted">
-              {navModule.number}.
-            </span>
-            {navModule.title}
+              hierarchy reads section > module > lesson. The count rides on the
+              same line: on its own row it read as a separate fact rather than
+              this module's progress. */}
+          <h2 className="flex items-baseline gap-2 font-display text-[15px] font-bold tracking-tight text-foreground">
+            <span className="min-w-0">{navModule.title}</span>
+            {navModule.lessons.length > 0 ? (
+              <span className="shrink-0 font-mono text-[10px] font-normal tabular-nums text-muted">
+                {doneCount}/{navModule.lessons.length}
+              </span>
+            ) : null}
           </h2>
-          {navModule.lessons.length > 0 ? (
-            <p className="mt-0.5 font-mono text-[10px] tabular-nums text-muted">
-              {doneCount}/{navModule.lessons.length}
-            </p>
-          ) : null}
         </div>
         <div
-          className={cn("mt-2", "pl-2", compact ? "space-y-0.5" : "space-y-1")}
+          className={cn("mt-2", "pl-2")}
         >
           {navModule.lessons.map((lesson) => (
             <LessonRow

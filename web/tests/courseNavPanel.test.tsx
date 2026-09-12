@@ -143,6 +143,45 @@ describe("CourseNavPanel level 2", () => {
     expect(heading).toContain("font-bold");
   });
 
+  it("draws one guide line instead of per-row dots", () => {
+    // The rail is the marker now: every row owns a segment, and rows sit
+    // flush so the line does not break between them.
+    expect(html).not.toMatch(/h-2 w-2 rounded/);
+    const rows = navModule.lessons.map(
+      (l) => html.match(new RegExp(`<a[^>]*href="${l.href}"[^>]*>`))![0],
+    );
+    expect(rows.length).toBeGreaterThan(0);
+    for (const row of rows) expect(row).toContain("border-l-2");
+  });
+
+  it("paints a completed lesson's segment with the accent", () => {
+    const withProgress = renderToStaticMarkup(
+      <CourseNavPanel
+        nav={nav}
+        view={{
+          level: "module",
+          navModule,
+          stage: { number: stage.number, title: stage.title },
+        }}
+        pathname="/courses/dsa"
+        visited={new Set([lesson.id])}
+        compact
+        curriculumHref="/courses/dsa"
+        onBack={() => {}}
+      />,
+    );
+    const doneRow = withProgress.match(
+      new RegExp(`<a[^>]*href="${lesson.href}"[^>]*>`),
+    )![0];
+    expect(doneRow).toContain("border-accent");
+  });
+
+  it("puts the count beside the module name, with no module number", () => {
+    const heading = html.match(/<h2[\s\S]*?<\/h2>/)![0];
+    expect(heading).toContain(`0/${navModule.lessons.length}`);
+    expect(heading).not.toContain(`${navModule.number}.`);
+  });
+
   it("marks the active lesson for assistive tech", () => {
     expect(html).toMatch(
       new RegExp(
