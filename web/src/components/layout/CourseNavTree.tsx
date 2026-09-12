@@ -8,43 +8,13 @@ import {
   CaretRight,
  TreeStructure } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import {
-  buildCourseNav,
-  type CourseNavModule,
-  type CourseNavStage,
-} from "@/lib/course/nav";
+import { buildCourseNav, type CourseNavModule } from "@/lib/course/nav";
+import { activeModuleSlug } from "@/lib/course/navLevel";
 import { buildNextjsCourseNav } from "@/app/courses/nextjs/nav";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import { CURRICULUM } from "@/lib/landing/content";
 import { NEXTJS_COURSE } from "@/app/courses/nextjs/registry";
-
-function isActivePath(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-/** Module whose page, lesson, or extra destination matches the current route. */
-function activeModuleSlug(
-  stages: CourseNavStage[],
-  pathname: string,
-): string | null {
-  for (const stage of stages) {
-    for (const navModule of stage.modules) {
-      if (pathname === navModule.href) return navModule.slug;
-      if (navModule.lessons.some((l) => isActivePath(pathname, l.href))) {
-        return navModule.slug;
-      }
-      // Extras must open the module too. Without this, visiting a module's
-      // concept map collapses its branch and the link the user just followed
-      // disappears from the tree.
-      if ((navModule.extras ?? []).some((e) => isActivePath(pathname, e.href))) {
-        return navModule.slug;
-      }
-    }
-  }
-  return null;
-}
 
 function ModuleNode({
   navModule,
