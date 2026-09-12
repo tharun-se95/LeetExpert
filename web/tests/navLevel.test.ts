@@ -5,12 +5,21 @@ import { activeModuleSlug, resolveNavView } from "@/lib/course/navLevel";
 const stages = buildCourseNav();
 const modules = stages.flatMap((s) => s.modules);
 const withLessons = modules.find((m) => m.lessons.length > 0)!;
+const withExtras = modules.find((m) => (m.extras ?? []).length > 0)!;
 
 describe("activeModuleSlug", () => {
   it("matches a module page and a lesson under it", () => {
     expect(activeModuleSlug(stages, withLessons.href)).toBe(withLessons.slug);
     expect(activeModuleSlug(stages, withLessons.lessons[0]!.href)).toBe(
       withLessons.slug,
+    );
+  });
+
+  it("matches a module's extra destination, e.g. its concept map", () => {
+    // Without this, opening a concept map drops the nav back to the module
+    // list and the link the reader just followed disappears.
+    expect(activeModuleSlug(stages, withExtras.extras![0]!.href)).toBe(
+      withExtras.slug,
     );
   });
 
@@ -27,6 +36,12 @@ describe("resolveNavView", () => {
       pathname: withLessons.lessons[0]!.href,
     });
     expect(view).toEqual({ level: "module", navModule: withLessons });
+  });
+
+  it("keeps the module open on one of its extras", () => {
+    expect(
+      resolveNavView({ stages, pathname: withExtras.extras![0]!.href }),
+    ).toEqual({ level: "module", navModule: withExtras });
   });
 
   it("shows the module list on the hub", () => {

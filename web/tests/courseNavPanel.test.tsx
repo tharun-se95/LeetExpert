@@ -54,7 +54,7 @@ describe("CourseNavPanel level 1", () => {
 describe("CourseNavPanel level 2", () => {
   const html = render({ level: "module", navModule }, lesson.href);
 
-  it("shows only the open module's lessons", () => {
+  it("shows only the open module's lessons and extras", () => {
     for (const l of navModule.lessons) expect(html).toContain(esc(l.title));
     // Match hrefs, not titles: a module's short title can appear inside
     // another module's lesson titles ("… (Linked Lists module)"). The module
@@ -62,8 +62,26 @@ describe("CourseNavPanel level 2", () => {
     // so leaking every module's lessons would slip past it.
     expect(html).not.toContain(`href="${other.href}"`);
     expect(html).not.toContain(`href="${other.lessons[0]!.href}"`);
-    const lessonLinks = html.match(/href="\/courses\/dsa\/[^"]+\/[^"]+"/g) ?? [];
-    expect(lessonLinks).toHaveLength(navModule.lessons.length);
+    const rendered = (html.match(/href="\/courses\/dsa\/[^"]+\/[^"]+"/g) ?? [])
+      .map((h) => h.slice('href="'.length, -1))
+      .sort();
+    const expected = [
+      ...navModule.lessons.map((l) => l.href),
+      ...(navModule.extras ?? []).map((e) => e.href),
+    ].sort();
+    expect(rendered).toEqual(expected);
+  });
+
+  it("renders non-lesson destinations, outside the progress count", () => {
+    // Every module carries a Concept map extra. It gets no completion dot and
+    // must not inflate the x/y count, which is lessons only.
+    const extras = navModule.extras ?? [];
+    expect(extras.length).toBeGreaterThan(0);
+    for (const e of extras) {
+      expect(html).toContain(`href="${e.href}"`);
+      expect(html).toContain(esc(e.title));
+    }
+    expect(html).toContain(`0/${navModule.lessons.length}`);
   });
 
   it("offers a back control and names the module", () => {

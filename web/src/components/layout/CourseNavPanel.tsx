@@ -2,9 +2,10 @@
 
 import type { ReactNode, Ref } from "react";
 import Link from "next/link";
-import { CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, TreeStructure } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import type {
+  CourseNavExtra,
   CourseNavLesson,
   CourseNavModule,
   CourseNavStage,
@@ -162,6 +163,28 @@ function LessonRow({
   );
 }
 
+function ExtraRow({
+  extra,
+  pathname,
+  compact,
+}: {
+  extra: CourseNavExtra;
+  pathname: string;
+  compact: boolean;
+}) {
+  return (
+    <DestinationRow
+      href={extra.href}
+      title={extra.title}
+      pathname={pathname}
+      compact={compact}
+      marker={
+        <TreeStructure weight="bold" className="h-3 w-3 text-muted" aria-hidden />
+      }
+    />
+  );
+}
+
 /**
  * Props-only view for both nav levels — no hooks and no context, so it
  * renders under renderToStaticMarkup in tests without mocking the router.
@@ -212,6 +235,16 @@ export function CourseNavPanel({
               lesson={lesson}
               pathname={pathname}
               visited={visited}
+              compact={compact}
+            />
+          ))}
+          {/* Non-lesson destinations: no completion dot, and deliberately not
+              part of the x/y count above — they have no progress to track. */}
+          {(navModule.extras ?? []).map((extra) => (
+            <ExtraRow
+              key={extra.id}
+              extra={extra}
+              pathname={pathname}
               compact={compact}
             />
           ))}

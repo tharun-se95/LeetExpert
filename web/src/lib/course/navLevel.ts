@@ -10,7 +10,7 @@ function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Module whose page or a lesson under it matches the current route. */
+/** Module whose page, lesson, or extra destination matches the current route. */
 export function activeModuleSlug(
   stages: CourseNavStage[],
   pathname: string,
@@ -19,6 +19,12 @@ export function activeModuleSlug(
     for (const navModule of stage.modules) {
       if (pathname === navModule.href) return navModule.slug;
       if (navModule.lessons.some((l) => isActivePath(pathname, l.href))) {
+        return navModule.slug;
+      }
+      // Extras must open the module too: without this, following a module's
+      // concept map drops the nav back to the module list, and the link the
+      // reader just followed is no longer on screen.
+      if ((navModule.extras ?? []).some((e) => isActivePath(pathname, e.href))) {
         return navModule.slug;
       }
     }
