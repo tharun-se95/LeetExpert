@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CaretLeft, DotsSixVertical } from "@phosphor-icons/react";
+import { DotsSixVertical, X } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { CourseNavTree } from "@/components/layout/CourseNavTree";
 
@@ -147,10 +147,10 @@ export function Sidebar({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Close lessons drawer"
           >
-            <CaretLeft className="h-4 w-4" weight="bold" />
+            <X className="h-4 w-4" weight="bold" />
           </button>
         </div>
         <CourseNavTree compact className="px-5 pb-6" />
