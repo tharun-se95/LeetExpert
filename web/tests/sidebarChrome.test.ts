@@ -45,6 +45,12 @@ describe("hover-driven drawer", () => {
     expect(shell).toMatch(/onPointerLeave=\{canHover \? closeAfterGrace : undefined\}/);
   });
 
+  it("pushes the article rather than overlaying it", () => {
+    expect(sidebar).toContain("relative z-[45]");
+    expect(sidebar).not.toMatch(/fixed top-14 bottom-0 left-0/);
+    expect(sidebar).toMatch(/transition-\[width\]/);
+  });
+
   it("closes by pointer position, not only by the panel's own leave event", () => {
     // The drawer slides in under a stationary cursor, so pointerenter never
     // fires on it and pointerleave never follows — it would hang open.
