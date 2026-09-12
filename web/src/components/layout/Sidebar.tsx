@@ -123,10 +123,13 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         reflow its contents down to nothing on the way.
       */}
       <div className="flex h-full flex-col" style={{ width }}>
-        <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
-          <span className="truncate text-sm font-semibold tracking-tight">
-            Lessons
-          </span>
+        {/*
+          No title bar: the panel already names where you are (Overview, or a
+          section + module header). What survives is the collapse control —
+          FloatingLessonsButton hides itself while the drawer is open, so this
+          is the only way to close it on desktop.
+        */}
+        <div className="flex h-9 shrink-0 items-center justify-end px-3">
           <button
             type="button"
             onClick={onClose}
@@ -136,7 +139,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             <CaretLeft className="h-4 w-4" weight="bold" />
           </button>
         </div>
-        <CourseNavTree compact className="px-5 py-6" />
+        <CourseNavTree compact className="px-5 pb-6" />
       </div>
       {/*
         Same grip-chip idiom as PanelSplit's drag handle: a hairline track

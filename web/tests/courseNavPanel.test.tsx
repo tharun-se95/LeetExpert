@@ -46,6 +46,11 @@ describe("CourseNavPanel level 1", () => {
     expect(html).not.toContain(`href="${lesson.href}"`);
   });
 
+  it("labels the hub link Overview", () => {
+    expect(html).toMatch(/<a[^>]*href="\/courses\/dsa"[^>]*>Overview<\/a>/);
+    expect(html).not.toContain("All modules");
+  });
+
   it("marks a coming-soon module", () => {
     const soon = modules.find((m) => m.status === "coming-soon");
     if (soon) expect(html).toContain("soon");
@@ -102,6 +107,20 @@ describe("CourseNavPanel level 2", () => {
       /<button[^>]*>[\s\S]*?All modules[\s\S]*?<\/button>/,
     );
     expect(html).toContain(esc(navModule.title));
+  });
+
+  it("sets the section label larger than the rows, in ink", () => {
+    const back = html.match(
+      /<button[^>]*aria-label="Back to [^"]*"[^>]*>[\s\S]*?<\/button>/,
+    )![0];
+    // Prominence comes from size and weight, not colour: the label stays
+    // --foreground. A family accent here would also have needed >=18.66px
+    // bold to clear AA (accentUi is a 3:1 token, not 4.5:1).
+    expect(back).toMatch(/text-\[19px\]/);
+    expect(back).toContain("font-bold");
+    expect(back).toContain("text-foreground");
+    expect(back).not.toContain("text-accent");
+    expect(back).not.toMatch(/style="[^"]*--accent:/);
   });
 
   it("marks the active lesson for assistive tech", () => {

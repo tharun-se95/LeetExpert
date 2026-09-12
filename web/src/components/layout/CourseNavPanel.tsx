@@ -220,12 +220,13 @@ export function CourseNavPanel({
           // verb and still contains it (WCAG 2.5.3, label in name).
           aria-label={`Back to ${view.stage.title}`}
           className={cn(
-            "mb-2.5 flex w-full items-center gap-1.5 rounded-[length:var(--radius-xs)] px-2 text-[13px] font-medium text-foreground transition-colors hover:bg-surface",
-            rowPad(compact),
+            "mb-1 flex w-full items-center gap-1.5 rounded-[length:var(--radius-xs)] px-2 py-1 text-foreground transition-colors hover:bg-surface",
           )}
         >
-          <CaretLeft aria-hidden className="h-3.5 w-3.5 shrink-0 text-muted" />
-          <span className="min-w-0 truncate">{view.stage.title}</span>
+          <CaretLeft aria-hidden className="h-4 w-4 shrink-0 text-muted" />
+          <span className="min-w-0 truncate text-[19px] leading-tight font-bold tracking-tight">
+            {view.stage.title}
+          </span>
         </button>
         <div className="border-b border-border px-2 pb-2">
           <h2 className="font-display text-[13px] font-bold tracking-tight text-foreground">
@@ -278,7 +279,7 @@ export function CourseNavPanel({
             : "text-foreground hover:bg-surface",
         )}
       >
-        All modules
+        Overview
       </Link>
       {nav.map((stage) => (
         <div
