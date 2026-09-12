@@ -31,7 +31,8 @@ the reader has.
 
 1. A back row: `←  All modules`.
 2. A module header: number, full `title`, and progress `2/5`.
-3. The module's lessons, each with its completion dot.
+3. The module's lessons, each with its completion dot, then its `extras`
+   (e.g. Concept map) — tree icon, no dot, outside the `x/y` count.
 
 No stage headings, no other module.
 
@@ -61,7 +62,7 @@ state and markup, which is also why it has no render test today.
   - `activeModuleSlug(stages, pathname): string | null` — moved verbatim from
     the component.
   - `resolveNavView({ stages, pathname, backToModules }): NavView` where
-    `NavView = { level: "modules" } | { level: "module"; module: CourseNavModule }`.
+    `NavView = { level: "modules" } | { level: "module"; navModule: CourseNavModule }`.
     `backToModules` is the override from §3.
   - A module with **no lessons** never resolves to level 2: following it just
     navigates, and the nav stays on level 1 rather than showing an empty
@@ -138,10 +139,18 @@ Each new test is seen failing before it is trusted (`CLAUDE.md` §2).
   module.
 - Back, then read on: level 1 stays until the next navigation.
 - Course hub and a problem page (the drawer is hidden on IDE routes).
-- The Next.js course's aliased modules (module `href` equals its first
-  lesson's `href`) still resolve to level 2 — verified with the course gate
-  lifted locally, since `/courses/nextjs` 404s by design.
-- `prefers-reduced-motion: reduce` emulated: levels swap with no animation.
+- A module's concept map route: the nav stays on that module and marks the
+  Concept map row `aria-current="page"`.
+
+**Two items could not be verified in the browser, and are covered otherwise:**
+
+- The Next.js course's aliased modules. With the course gate lifted locally,
+  those lesson pages turned out not to mount this nav at all (they have their
+  own layout — no `#lessons-sidebar`, no Course landmark), so the shape is
+  pinned by a `navLevel.test.ts` case instead.
+- `prefers-reduced-motion`. The Browser pane emulates viewport and colour
+  scheme but not reduced motion, so only the `courseNavTree.test.ts` guard
+  covers that branch.
 
 ## 9. Rejected alternatives
 
