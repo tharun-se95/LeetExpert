@@ -189,7 +189,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const onMove = (e: PointerEvent) => {
       const rail = document.getElementById("lessons-sidebar");
       if (!rail) return;
-      if (e.clientX > rail.getBoundingClientRect().right) closeAfterGrace();
+      // The close button hangs past the rail's right edge on purpose, so the
+      // edge test alone reads "pointer left the drawer" while the pointer is
+      // on the drawer's own control. Hit-testing what is under the pointer
+      // covers that, and anything else the panel hangs outside itself later.
+      const onDrawer = e.target instanceof Node && rail.contains(e.target);
+      if (!onDrawer && e.clientX > rail.getBoundingClientRect().right)
+        closeAfterGrace();
       else cancelHoverClose();
     };
     window.addEventListener("pointermove", onMove);

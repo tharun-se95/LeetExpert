@@ -122,7 +122,10 @@ export function Sidebar({
         // covering it. That means the open/close animation is a width change
         // and so relayouts the column each frame — the cost of pushing; a
         // transform slide can only be smooth because it moves nothing else.
-        "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col overflow-hidden lg:flex",
+        // No overflow-hidden here: the close button hangs past the right
+        // edge, and the aside clipping its own overflow would cut it off.
+        // The inner wrapper does the clipping instead.
+        "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col lg:flex",
         // The drag handle must track the pointer 1:1, so it opts out.
         !dragging &&
           "transition-[width] duration-[var(--dur-gentle)] ease-[var(--ease-gentle)] motion-reduce:transition-none",
@@ -132,30 +135,35 @@ export function Sidebar({
       )}
     >
       {/*
-        Fixed inner width: the panel has to clip as it collapses rather than
-        reflow its contents down to nothing on the way.
+        The close button sits OUTSIDE the panel, in the page margin beside it:
+        no chrome row above the tree, so the nav starts at the top of the rail.
+        It is the deliberate way out, and the only one on desktop while the
+        drawer is open, since FloatingLessonsButton hides itself then — hover
+        only opens; the pointer-out timer is a slow tidy-up, not the close
+        affordance. Rendered only while open, or it would float over the
+        article with nothing to close. Still a descendant of the aside, so
+        pointer-leave and AppShell's rail.contains() hit test both treat it as
+        part of the drawer.
       */}
-      <div className="flex h-full flex-col" style={{ width }}>
-        {/*
-          No title bar: the panel names where you are (Overview, or a section +
-          module header). What sits here is the close button — the deliberate
-          way out, and the only one on desktop while the drawer is open, since
-          FloatingLessonsButton hides itself then. Hover only opens; the
-          pointer-out timer is a slow tidy-up, not the close affordance.
-        */}
-        {/* px-5 matches CourseNavTree's gutter, so the X sits on the same right
-            margin as every row below it rather than 8px outside it. */}
-        <div className="flex h-9 shrink-0 items-center justify-end px-5">
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            aria-label="Close lessons drawer"
-          >
-            <X className="h-4 w-4" weight="bold" />
-          </button>
+      {open ? (
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-2 -right-10 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          aria-label="Close lessons drawer"
+        >
+          <X className="h-4 w-4" weight="bold" />
+        </button>
+      ) : null}
+      {/*
+        Takes the clipping the aside gave up, at exactly the animating width:
+        the fixed-width column inside has to clip as the panel collapses
+        rather than reflow its contents down to nothing on the way.
+      */}
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <div className="flex h-full flex-col" style={{ width }}>
+          <CourseNavTree compact className="px-5 pt-3 pb-6" />
         </div>
-        <CourseNavTree compact className="px-5 pb-6" />
       </div>
       {/*
         Same grip-chip idiom as PanelSplit's drag handle: a hairline track

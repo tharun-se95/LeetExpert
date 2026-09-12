@@ -16,6 +16,9 @@ const shell = readFileSync(
 );
 
 describe("Sidebar chrome", () => {
+  /** Comments sit between JSX nodes here; ordering assertions read the tree. */
+  const jsx = sidebar.replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
+
   it("drops the 'Lessons' title bar — the panel names itself now", () => {
     expect(sidebar).not.toMatch(/>\s*Lessons\s*</);
   });
@@ -26,6 +29,40 @@ describe("Sidebar chrome", () => {
     expect(sidebar).toContain('aria-label="Close lessons drawer"');
     expect(sidebar).not.toContain("showClose");
     expect(floating).toContain("if (open) return null;");
+  });
+
+  it("hangs the close button past the panel's edge, not above the rows", () => {
+    const close = jsx.match(
+      /<button[\s\S]*?aria-label="Close lessons drawer"[\s\S]*?<\/button>/,
+    )![0];
+    expect(close).toMatch(/absolute/);
+    // A negative right offset is what puts it outside the rail.
+    expect(close).toMatch(/-right-/);
+    // It would otherwise sit over the article with the drawer shut.
+    expect(jsx).toMatch(/\{open \?[\s\S]*?aria-label="Close lessons drawer"/);
+  });
+
+  it("puts the way out before the rows in the tab order", () => {
+    // Absolute positioning frees source order from visual order, so the close
+    // button leads: tabbing into the drawer should not cost 20 lesson rows to
+    // reach it. Esc is the other way out (see the hover-drawer tests).
+    expect(jsx.indexOf('aria-label="Close lessons drawer"')).toBeLessThan(
+      jsx.indexOf("<CourseNavTree"),
+    );
+  });
+
+  it("starts the nav at the top of the panel", () => {
+    // No chrome row above it: the close button left the flow entirely.
+    expect(jsx).toMatch(/style=\{\{ width \}\}>\s*<CourseNavTree/);
+  });
+
+  it("keeps the collapsing column clipped by an inner wrapper", () => {
+    // The aside can no longer hide its overflow — that is what lets the close
+    // button hang outside — so the clip moves to a wrapper that is exactly as
+    // wide as the animating rail. Without it the tree spills out when closed.
+    expect(jsx).toMatch(
+      /overflow-hidden[^"]*">\s*<div className="flex h-full flex-col" style=\{\{ width \}\}/,
+    );
   });
 });
 
@@ -70,6 +107,12 @@ describe("hover-driven drawer", () => {
     // fires on it and pointerleave never follows — it would hang open.
     expect(shell).toContain('window.addEventListener("pointermove", onMove)');
     expect(shell).toMatch(/clientX > rail\.getBoundingClientRect\(\)\.right/);
+  });
+
+  it("counts the drawer's own overhanging controls as still inside it", () => {
+    // The close button sits past the rail's right edge on purpose, so the x
+    // test alone would start the close timer while the pointer is on it.
+    expect(shell).toMatch(/rail\.contains\(/);
   });
 
   it("is dismissible from the keyboard (WCAG 1.4.13)", () => {
