@@ -51,9 +51,19 @@ describe("CourseNavPanel level 1", () => {
     expect(html).not.toContain("All modules");
   });
 
-  it("indents module rows under their stage heading", () => {
-    const stageBlock = html.slice(html.indexOf(esc(nav[0]!.title)));
-    expect(stageBlock).toMatch(/pl-3/);
+  it("uses the level-2 tree treatment: stage label, indent, guide line", () => {
+    // Both panels are the same tree, so a stage looks like a section and a
+    // module row looks like a lesson row.
+    const stageLabel = html.match(
+      new RegExp(`<p[^>]*>${esc(nav[0]!.title)}</p>`),
+    )![0];
+    expect(stageLabel).toContain("text-[19px]");
+    expect(stageLabel).toContain("font-bold");
+    const row = html.match(
+      new RegExp(`<a[^>]*href="${modules[0]!.href}"[^>]*>`),
+    )![0];
+    expect(row).toContain("border-l-2");
+    expect(row).toContain("pl-3");
   });
 
   it("names modules without a leading number", () => {

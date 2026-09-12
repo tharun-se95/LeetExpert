@@ -31,20 +31,66 @@ export interface CourseNavPanelProps {
 }
 
 /**
- * One indent step per level of the tree: stage > module on level 1, section >
- * module > lesson on level 2. Rows keep their own px-2 so the hover/active
- * fill still starts left of the text.
- *
- * The section row's caret hangs in the nav's own left padding rather than
- * sitting in the text flow. Inline, it pushed the section label ~20px right of
- * every other row, so the module title beneath it read as the SAME level (or
- * further left) instead of one step in.
+ * Level 2's module header sits one step in from the section label above it.
+ * That label's back caret hangs in the nav's own left padding rather than the
+ * text flow — inline, it pushed the section ~20px right of every other row, so
+ * the module title beneath read as the SAME level instead of one step in.
+ * Rows themselves indent via their own pl-3 plus the guide-line segment.
  */
-const INDENT = "pl-3";
 const INDENT_UNDER_CARET = "pl-6";
 
 const rowPad = (compact: boolean) =>
   compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5";
+
+/**
+ * Every row in both levels: a segment of the guide line, an optional glyph, a
+ * label, and optional trailing content. Sharing it is what keeps level 1 and
+ * level 2 looking like the same tree — they differ only in tone and trailing.
+ */
+function NavRow({
+  href,
+  pathname,
+  compact,
+  done = false,
+  tone,
+  icon,
+  trailing,
+  rowRef,
+  children,
+}: {
+  href: string;
+  pathname: string;
+  compact: boolean;
+  /** Paints this row's segment of the line as completed. */
+  done?: boolean;
+  tone: string;
+  icon?: ReactNode;
+  trailing?: ReactNode;
+  rowRef?: Ref<HTMLAnchorElement>;
+  children: ReactNode;
+}) {
+  const active = pathname === href;
+  return (
+    <Link
+      ref={rowRef}
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        // Rows sit flush (no space-y) so the segments join into one line.
+        "group flex min-w-0 items-center gap-1.5 border-l-2 pr-2 pl-3 text-[13px] leading-snug transition-colors",
+        rowPad(compact),
+        done ? "border-accent" : "border-border",
+        active
+          ? "border-accent bg-pop font-semibold text-on-pop"
+          : cn(tone, "hover:bg-surface hover:text-foreground"),
+      )}
+    >
+      {icon}
+      <span className="min-w-0 flex-1 truncate">{children}</span>
+      {trailing}
+    </Link>
+  );
+}
 
 function ModuleRow({
   navModule,
@@ -64,86 +110,48 @@ function ModuleRow({
   const active = pathname === navModule.href;
 
   return (
-    <Link
-      ref={rowRef}
+    <NavRow
       href={navModule.href}
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        "group flex items-center gap-1 rounded-[length:var(--radius-xs)] px-2 text-[13px] transition-colors",
-        rowPad(compact),
-        navModule.status === "coming-soon" && "text-muted/60",
-        active
-          ? "bg-pop font-semibold text-on-pop"
-          : "text-foreground/80 hover:bg-surface hover:text-foreground",
-      )}
+      pathname={pathname}
+      compact={compact}
+      // A module's segment fills only when every lesson in it is done — the
+      // same rule the lesson segments follow, one level up.
+      done={hasLessons && doneCount === navModule.lessons.length}
+      tone={
+        navModule.status === "coming-soon"
+          ? "text-muted/60"
+          : "text-foreground/80"
+      }
+      rowRef={rowRef}
+      trailing={
+        hasLessons ? (
+          <CaretRight
+            aria-hidden
+            className="h-3 w-3 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
+          />
+        ) : null
+      }
     >
-      <span className="min-w-0 flex-1 truncate">
-        {navModule.shortTitle}
-        {navModule.status === "coming-soon" ? (
-          <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted/50">
-            soon
-          </span>
-        ) : hasLessons ? (
-          <span
-            className={cn(
-              "ml-1.5 font-mono text-[10px] tabular-nums",
-              active
-                ? "text-on-pop/70"
-                : doneCount === navModule.lessons.length
-                  ? "text-mark"
-                  : "text-muted",
-            )}
-          >
-            {doneCount}/{navModule.lessons.length}
-          </span>
-        ) : null}
-      </span>
-      {hasLessons ? (
-        <CaretRight
-          aria-hidden
-          className="h-3 w-3 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
-        />
+      {navModule.shortTitle}
+      {navModule.status === "coming-soon" ? (
+        <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted/50">
+          soon
+        </span>
+      ) : hasLessons ? (
+        <span
+          className={cn(
+            "ml-1.5 font-mono text-[10px] tabular-nums",
+            active
+              ? "text-on-pop/70"
+              : doneCount === navModule.lessons.length
+                ? "text-mark"
+                : "text-muted",
+          )}
+        >
+          {doneCount}/{navModule.lessons.length}
+        </span>
       ) : null}
-    </Link>
-  );
-}
-
-function DestinationRow({
-  href,
-  title,
-  pathname,
-  compact,
-  done = false,
-  icon,
-}: {
-  href: string;
-  title: string;
-  pathname: string;
-  compact: boolean;
-  /** Paints this row's segment of the guide line as completed. */
-  done?: boolean;
-  icon?: ReactNode;
-}) {
-  const active = pathname === href;
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        // The rail IS the marker: each row owns a segment of one continuous
-        // line, so the list reads as a branch of the module rather than a
-        // column of dots. Rows sit flush (no space-y) or the line breaks.
-        "flex min-w-0 items-center gap-1.5 border-l-2 pr-2 pl-3 text-[13px] leading-snug transition-colors",
-        rowPad(compact),
-        done ? "border-accent" : "border-border",
-        active
-          ? "border-accent bg-pop font-semibold text-on-pop"
-          : "text-muted hover:bg-surface hover:text-foreground",
-      )}
-    >
-      {icon}
-      <span className="min-w-0">{title}</span>
-    </Link>
+    </NavRow>
   );
 }
 
@@ -159,13 +167,15 @@ function LessonRow({
   compact: boolean;
 }) {
   return (
-    <DestinationRow
+    <NavRow
       href={lesson.href}
-      title={lesson.title}
       pathname={pathname}
       compact={compact}
       done={visited.has(lesson.id)}
-    />
+      tone="text-muted"
+    >
+      {lesson.title}
+    </NavRow>
   );
 }
 
@@ -179,12 +189,12 @@ function ExtraRow({
   compact: boolean;
 }) {
   return (
-    <DestinationRow
+    <NavRow
       href={extra.href}
-      title={extra.title}
       pathname={pathname}
       compact={compact}
-      // Not a lesson: it carries its own glyph and never a completed segment.
+      tone="text-muted"
+      // Not a lesson: its own glyph, and never a completed segment.
       icon={
         <TreeStructure
           weight="bold"
@@ -192,7 +202,9 @@ function ExtraRow({
           aria-hidden
         />
       }
-    />
+    >
+      {extra.title}
+    </NavRow>
   );
 }
 
@@ -297,17 +309,12 @@ export function CourseNavPanel({
           key={stage.number}
           className={cn(compact ? "mt-5 first:mt-3" : "mt-6 first:mt-4")}
         >
-          <p
-            className={cn(
-              "border-b border-border px-2 font-display text-[11px] font-bold uppercase tracking-[0.1em] text-foreground/70",
-              compact ? "mb-2 pb-1.5" : "mb-3 pb-2",
-            )}
-          >
+          {/* Same treatment as the level-2 section label, so a stage reads as
+              the same kind of thing in both panels. */}
+          <p className="mb-1 px-2 text-[19px] leading-tight font-bold tracking-tight text-foreground">
             {stage.title}
           </p>
-          <div
-            className={cn(INDENT, compact ? "space-y-1" : "space-y-1.5")}
-          >
+          <div className="pl-2">
             {stage.modules.map((m) => (
               <ModuleRow
                 key={m.slug}
