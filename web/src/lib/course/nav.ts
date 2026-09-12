@@ -14,6 +14,18 @@ export interface CourseNavLesson {
   type: LessonType;
 }
 
+/**
+ * A module-level destination that is NOT a lesson: it has no markdown file, no
+ * progress state, and must stay out of the x/y counts. Kept separate from
+ * `lessons` so adding one cannot shift a module's completion figures or the
+ * course total.
+ */
+export interface CourseNavExtra {
+  id: string;
+  title: string;
+  href: string;
+}
+
 export interface CourseNavModule {
   slug: string;
   number: number;
@@ -22,6 +34,8 @@ export interface CourseNavModule {
   href: string;
   status: ModuleMeta["status"];
   lessons: CourseNavLesson[];
+  /** Optional: the Next.js course nav does not build these. */
+  extras?: CourseNavExtra[];
 }
 
 export interface CourseNavStage {
@@ -36,6 +50,13 @@ export function lessonId(moduleSlug: string, lessonSlug: string): string {
 
 export function lessonHref(moduleSlug: string, lessonSlug: string): string {
   return `/courses/dsa/${moduleSlug}/${lessonSlug}`;
+}
+
+/**
+ * Static segment, so it wins over [lesson] — no lesson slug can collide with it.
+ */
+export function conceptMapHref(moduleSlug: string): string {
+  return `/courses/dsa/${moduleSlug}/concept-map`;
 }
 
 export function moduleHref(moduleSlug: string): string {
@@ -75,6 +96,17 @@ export function buildCourseNav(): CourseNavStage[] {
         href: lessonHref(m.slug, l.slug),
         type: l.type,
       })),
+      // Every module has a concept map (CONCEPT_MAPS covers all 24, asserted in
+      // tests/conceptMapCoverage.test.ts), so this is unconditional — and the
+      // registry stays out of the client bundle, which importing it here to
+      // check would not.
+      extras: [
+        {
+          id: `${m.slug}/concept-map`,
+          title: "Concept map",
+          href: conceptMapHref(m.slug),
+        },
+      ],
     })),
   }));
 }

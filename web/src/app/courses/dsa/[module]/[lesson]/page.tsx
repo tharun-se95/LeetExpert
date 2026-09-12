@@ -182,7 +182,7 @@ export default async function LessonPage({ params }: PageProps) {
           />
         ) : undefined
       }
-      afterMarkdown={quizSource ? <Quiz source={quizSource} /> : undefined}
+      afterPage={quizSource ? <Quiz source={quizSource} /> : undefined}
     />
   );
 }

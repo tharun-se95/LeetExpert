@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Lock } from "@phosphor-icons/react/dist/ssr";
 import { ModuleGlyph } from "@/app/courses/dsa/_components/ModuleGlyph";
@@ -9,6 +10,7 @@ import {
   modulesByStage,
 } from "@/lib/course/manifest";
 import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
+import { getModuleArt } from "@/lib/course/media";
 import { moduleHref } from "@/lib/course/nav";
 import { cn } from "@/lib/utils";
 import { canonicalFor } from "@/lib/seo/site";
@@ -44,7 +46,7 @@ export default function CourseOverviewPage() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_12%,transparent),_transparent_60%)]"
       />
-      <div className="relative mx-auto max-w-5xl px-4 py-12 lg:px-8 lg:py-16">
+      <div className="relative mx-auto max-w-6xl px-4 py-12 lg:px-8 lg:py-16">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-accent">
           Curriculum
         </p>
@@ -87,7 +89,7 @@ export default function CourseOverviewPage() {
                 {stage.description}
               </p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               {modulesByStage(stage.number).map((module) => {
                 const available = module.status === "available";
                 // Each card carries its own family scope so the glyph, wash
@@ -96,55 +98,123 @@ export default function CourseOverviewPage() {
                 const familyLabel = family
                   ? getFamilyTheme(family).label
                   : null;
+                // Generated art when the module has it; the hand-drawn glyph
+                // is the fallback, so a missing or rejected image degrades to
+                // the previous design rather than to a hole in the grid.
+                const art = getModuleArt(module.slug);
                 return (
                   <Link
                     key={module.slug}
                     href={moduleHref(module.slug)}
                     style={family ? familyCssVars(family) : undefined}
                     className={cn(
-                      "group flex flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition hover:border-accent/45",
+                      "module-card group block overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition hover:border-accent/45",
                       !available && "opacity-70",
                     )}
                   >
-                    <div className="relative border-b border-border bg-accent/[0.08] px-3 pt-3 pb-2">
-                      <div className="h-16 w-full sm:h-[4.5rem]">
-                        <ModuleGlyph slug={module.slug} />
+                    <div className="module-card-inner h-full">
+                      {/* Front — art and the module's name, nothing else. */}
+                      <div className="module-card-face module-card-front">
+                        <div
+                          className={cn(
+                            "relative border-b border-border bg-accent/[0.08]",
+                            !art && "px-3 pt-3 pb-2",
+                          )}
+                        >
+                          {art ? (
+                            // alt="" on purpose: the art now has the module
+                            // title drawn INTO it, and an image of text that
+                            // duplicates adjacent DOM text is decorative. The
+                            // real heading is the sr-only h3 below — that is
+                            // what carries the name to assistive tech, so the
+                            // title is never trapped in pixels.
+                            <div className="relative aspect-[43/24] w-full">
+                              <Image
+                                src={art.light}
+                                alt=""
+                                fill
+                                sizes="(min-width: 1024px) 560px, (min-width: 640px) 46vw, 92vw"
+                                className="module-art-light object-cover"
+                              />
+                              <Image
+                                src={art.dark}
+                                alt=""
+                                fill
+                                sizes="(min-width: 1024px) 560px, (min-width: 640px) 46vw, 92vw"
+                                className="module-art-dark object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-16 w-full sm:h-[4.5rem]">
+                              <ModuleGlyph slug={module.slug} />
+                            </div>
+                          )}
+                          {available && familyLabel ? (
+                            <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-elevated/95 px-2 py-0.5">
+                              <span
+                                className="h-1.5 w-1.5 rounded-full bg-accent"
+                                aria-hidden
+                              />
+                              <span className="font-mono text-[10px] tracking-wide text-muted">
+                                {familyLabel}
+                              </span>
+                            </span>
+                          ) : null}
+                          {!available ? (
+                            <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted">
+                              <Lock weight="bold" className="h-3 w-3" />
+                              Soon
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="flex flex-1 flex-col p-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs tabular-nums text-muted">
+                              {String(module.number).padStart(2, "0")}
+                            </span>
+                            {available ? (
+                              <span className="ml-auto font-mono text-[10px] tracking-wide text-muted">
+                                {module.lessons.length} lessons
+                              </span>
+                            ) : null}
+                          </div>
+                          {/* The generated art carries the title now. Kept in
+                              the DOM as the card's heading so screen readers,
+                              the heading outline and search all still have it —
+                              an image of a word is not a heading. */}
+                          <h3 className="sr-only">{module.title}</h3>
+                        </div>
                       </div>
-                      {available && familyLabel ? (
-                        <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-elevated/95 px-2 py-0.5">
+                      {/* Back — the description. Kept in the DOM and not
+                          aria-hidden: the flip is visual only, so this text is
+                          still read aloud and still indexed. The number and
+                          title ARE hidden here, to avoid announcing them twice. */}
+                      <div className="module-card-face module-card-back bg-elevated">
+                        <div className="flex flex-1 flex-col p-4">
+                          {/* Repeats the front's heading for the flipped
+                              state. Hidden from screen readers always, and
+                              hidden visually when the faces stack (touch),
+                              where the front's copy is right above it. */}
+                          <div className="module-card-back-head" aria-hidden>
+                            <span className="text-xs tabular-nums text-muted">
+                              {String(module.number).padStart(2, "0")}
+                            </span>
+                            <p className="mt-1.5 text-sm font-semibold text-accent">
+                              {module.title}
+                            </p>
+                          </div>
+                          <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">
+                            {module.description}
+                          </p>
                           <span
-                            className="h-1.5 w-1.5 rounded-full bg-accent"
                             aria-hidden
-                          />
-                          <span className="font-mono text-[10px] tracking-wide text-muted">
-                            {familyLabel}
+                            className="mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wide text-accent"
+                          >
+                            Open module
+                            <ArrowRight weight="bold" className="h-3 w-3" />
                           </span>
-                        </span>
-                      ) : null}
-                      {!available ? (
-                        <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted">
-                          <Lock weight="bold" className="h-3 w-3" />
-                          Soon
-                        </span>
-                      ) : null}
-                    </div>
-                    <div className="flex flex-1 flex-col p-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs tabular-nums text-muted">
-                          {String(module.number).padStart(2, "0")}
-                        </span>
-                        {available ? (
-                          <span className="ml-auto font-mono text-[10px] tracking-wide text-muted">
-                            {module.lessons.length} lessons
-                          </span>
-                        ) : null}
+                        </div>
                       </div>
-                      <h3 className="mt-1.5 text-sm font-semibold group-hover:text-accent">
-                        {module.title}
-                      </h3>
-                      <p className="mt-1 flex-1 text-[13px] leading-relaxed text-muted">
-                        {module.description}
-                      </p>
                     </div>
                   </Link>
                 );

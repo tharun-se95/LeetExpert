@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { MODULES, allProblemSlugs } from "@/lib/course/manifest";
-import { lessonHref, moduleHref, problemHref } from "@/lib/course/nav";
+import { lessonHref, moduleHref, problemHref,
+  conceptMapHref,
+} from "@/lib/course/nav";
 
 /**
  * The one canonical origin for the site. Production redirects the apex to
@@ -49,6 +51,9 @@ export function indexableRoutes(): string[] {
 
   for (const mod of MODULES) {
     routes.push(moduleHref(mod.slug));
+    // The concept map has its own page and its own metadata; it is real
+    // content, not chrome, so it is submittable like any lesson.
+    routes.push(conceptMapHref(mod.slug));
     for (const lesson of mod.lessons) {
       if (lesson.type === "problem") continue;
       routes.push(lessonHref(mod.slug, lesson.slug));

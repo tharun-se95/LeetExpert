@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -10,7 +11,6 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ModuleGlyph } from "@/app/courses/dsa/_components/ModuleGlyph";
-import { ModuleMedia } from "@/app/courses/dsa/_components/ModuleMedia";
 import { ModulePracticeProgress } from "@/app/courses/dsa/_components/ModulePracticeProgress";
 import {
   getModule,
@@ -19,7 +19,7 @@ import {
   moduleFamily,
 } from "@/lib/course/manifest";
 import { CHEATSHEETS } from "@/lib/course/cheatsheets/registry";
-import { getConceptMap } from "@/lib/course/conceptMaps/registry";
+import { getModuleArt } from "@/lib/course/media";
 import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
 import { allModuleSlugs } from "@/lib/course/load";
 import { lessonHref, moduleHref } from "@/lib/course/nav";
@@ -61,7 +61,9 @@ export default async function ModulePage({ params }: PageProps) {
   const family = moduleFamily(mod);
   const familyLabel = family ? getFamilyTheme(family).label : null;
   const sheet = CHEATSHEETS[mod.slug];
-  const conceptMap = getConceptMap(mod.slug);
+  // Same image the curriculum card uses — it already carries the module
+  // title as type, which is why the h1 below goes sr-only when it exists.
+  const art = getModuleArt(mod.slug);
 
   return (
     <div className="relative overflow-hidden">
@@ -81,10 +83,36 @@ export default async function ModulePage({ params }: PageProps) {
         />
 
         {/* Hero */}
-        <div className="mt-6 flex items-start gap-5">
-          <div className="hidden h-20 w-30 shrink-0 sm:block">
-            <ModuleGlyph slug={mod.slug} className="text-accent" />
+        {art ? (
+          // The box matches the art's own 8:5, and object-contain guarantees
+          // the whole frame is shown: a 16:6 box with object-cover threw away
+          // 40% of the height (measured), slicing the bottom off trees and
+          // chains. Nothing about the art is cropped here.
+          <div className="relative mt-6 aspect-[43/24] w-full overflow-hidden rounded-[length:var(--radius-lg)] border border-border shadow-elevation">
+            <Image
+              src={art.light}
+              alt=""
+              fill
+              priority
+              sizes="(min-width: 1152px) 1088px, 100vw"
+              className="module-art-light object-contain"
+            />
+            <Image
+              src={art.dark}
+              alt=""
+              fill
+              priority
+              sizes="(min-width: 1152px) 1088px, 100vw"
+              className="module-art-dark object-contain"
+            />
           </div>
+        ) : null}
+        <div className="mt-6 flex items-start gap-5">
+          {!art ? (
+            <div className="hidden h-20 w-30 shrink-0 sm:block">
+              <ModuleGlyph slug={mod.slug} className="text-accent" />
+            </div>
+          ) : null}
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
               <p className="text-xs font-medium uppercase tracking-wider text-accent">
@@ -99,7 +127,16 @@ export default async function ModulePage({ params }: PageProps) {
                 </span>
               ) : null}
             </div>
-            <h1 className="press-overprint mt-2 font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]">
+            {/* The banner already shows the module name as type. Keeping a
+                real h1 in the DOM (visually hidden when the art is present)
+                means the page still has one, for assistive tech and search. */}
+            <h1
+              className={
+                art
+                  ? "sr-only"
+                  : "press-overprint mt-2 font-display text-3xl font-bold tracking-tight text-balance uppercase sm:text-[2.1rem]"
+              }
+            >
               {mod.title}
             </h1>
             <p className="mt-3 max-w-2xl text-lg leading-relaxed text-muted">
@@ -157,7 +194,6 @@ export default async function ModulePage({ params }: PageProps) {
           </div>
         </dl>
 
-        <ModuleMedia conceptMap={conceptMap} moduleTitle={mod.title} />
 
         {mod.status === "coming-soon" ? (
           <div className="mt-8 rounded-[length:var(--radius-lg)] border border-dashed border-border bg-surface/40 p-6">

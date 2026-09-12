@@ -503,28 +503,22 @@ body {
   font-size: var(--prose-size);
   line-height: 1.62;
   color: color-mix(in oklab, var(--foreground) 94%, transparent);
-  counter-reset: chapter;
-}
-
-/* A Markdown nested inside prose (roadmap stage bodies) must continue the
-   lesson's chapter numbering, not restart it at 01. */
-.handbook-prose .handbook-prose {
-  counter-reset: none;
 }
 
 /*
-  Chapter heading: a hairline and a `// 01` counter label above the heading
-  text. Replaces a family-accent pill + wash that assumed a family colour
-  prose no longer receives — outside a family scope both fell back to steel
-  and read as a grey button. Structure comes from the rule and the number,
-  so it holds in the monochrome base.
+  Chapter heading: a hairline above the heading text. Replaces a family-accent
+  pill + wash that assumed a family colour prose no longer receives — outside a
+  family scope both fell back to steel and read as a grey button. Structure now
+  comes from the rule alone, so it holds in the monochrome base. (A decorative
+  `// 01` counter label sat here until 2026-09-12; removed on request, along
+  with its counter-reset scaffolding and the problem-prose rule whose only job
+  was suppressing it.)
 
   :not(.chapter-heading) because the quiz renders inside prose in every
   problem's Quiz tab and in the multi-quiz drill lessons (a lone quiz fence is
   lifted out after the markdown instead). Its h2.chapter-heading sits in a
   flex row that already carries .chapter-rule: without the exclusion it gets a
-  second hairline, prose h2 margins, and a counter number stolen from the
-  chapters after it.
+  second hairline and prose h2 margins.
 */
 .handbook-prose h2:not(.chapter-heading) {
   margin-top: 2.5rem;
@@ -554,20 +548,6 @@ body {
 .chapter-rule {
   padding-top: 0.85rem;
   border-top: 1px solid var(--rule-strong);
-}
-
-.handbook-prose h2:not(.chapter-heading)::before {
-  counter-increment: chapter;
-  /* `/ ""` is CSS alt text. Generated content otherwise joins the heading's
-     accessible name and every h2 is announced "slash slash zero one, …". */
-  content: "// " counter(chapter, decimal-leading-zero) / "";
-  display: block;
-  margin-bottom: 0.5rem;
-  font-family: var(--font-display), monospace;
-  font-size: 0.56em;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--muted);
 }
 
 .handbook-prose h3 {
@@ -605,12 +585,6 @@ body {
 
 .problem-prose .handbook-prose h2:not(.chapter-heading) {
   margin-top: 1.75rem;
-}
-
-/* A problem statement is scanned, not read in chapters: keep the hairline,
-   drop the number. */
-.problem-prose .handbook-prose h2::before {
-  content: none;
 }
 
 .problem-prose .handbook-prose > :first-child {
@@ -1195,16 +1169,6 @@ body {
 
   Reveals stay collapsed on paper. Their content is conditionally rendered
   rather than hidden, so no stylesheet can expand it — and that is worth
-
-  /* the sheet of paper is the page itself; its frame and desk shadow are screen-only */
-  .reading-page {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: none !important;
-    box-shadow: none !important;
-  }
   keeping, because it is also what stops Ctrl+F leaking solutions in a
   solve-first course.
 */
@@ -1231,6 +1195,42 @@ body {
     border-color: #000 !important;
     color: #000 !important;
   }
+
+  /* the sheet of paper is the page itself; its frame and desk shadow are screen-only */
+  .reading-page {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/*
+  Elevation shadow — tokens defined in the root and dark-theme blocks above.
+
+  .shadow-elevation is the all-around form for a bordered card sitting in
+  normal page flow (module cards, pattern cards, quiz options, prev/next
+  links) — it floats, surrounded by page on every side, so the shadow
+  wraps it. .shadow-edge-* is the directional form for a panel that IS the
+  layout and only separates from content on one side — a sticky header
+  only needs a shadow below it, a left-docked drawer only needs one on its
+  right edge, a right-docked rail only needs one on its left. Casting a
+  shadow on an edge flush with the viewport (nothing there to receive it)
+  is why the all-around form is wrong for these.
+*/
+.shadow-elevation {
+  box-shadow: var(--shadow-elevation);
+}
+.shadow-edge-bottom {
+  box-shadow: var(--shadow-edge-bottom);
+}
+.shadow-edge-right {
+  box-shadow: var(--shadow-edge-right);
+}
+.shadow-edge-left {
+  box-shadow: var(--shadow-edge-left);
 }
 
 /*
@@ -1286,32 +1286,6 @@ body {
 }
 
 /*
-  Elevation shadow — tokens defined in the root and dark-theme blocks above.
-
-  .shadow-elevation is the all-around form for a bordered card sitting in
-  normal page flow (module cards, pattern cards, quiz options, prev/next
-  links) — it floats, surrounded by page on every side, so the shadow
-  wraps it. .shadow-edge-* is the directional form for a panel that IS the
-  layout and only separates from content on one side — a sticky header
-  only needs a shadow below it, a left-docked drawer only needs one on its
-  right edge, a right-docked rail only needs one on its left. Casting a
-  shadow on an edge flush with the viewport (nothing there to receive it)
-  is why the all-around form is wrong for these.
-*/
-.shadow-elevation {
-  box-shadow: var(--shadow-elevation);
-}
-.shadow-edge-bottom {
-  box-shadow: var(--shadow-edge-bottom);
-}
-.shadow-edge-right {
-  box-shadow: var(--shadow-edge-right);
-}
-.shadow-edge-left {
-  box-shadow: var(--shadow-edge-left);
-}
-
-/*
   Off-register overprint.
 
   Two inks laid fractionally out of alignment — a print artefact, not a
@@ -1326,4 +1300,145 @@ body {
   .press-overprint {
     transition: text-shadow var(--dur) var(--ease);
   }
+}
+
+/*
+  Module card art — one generated still per module, re-inked at build time into
+  a light and a dark file, both rendered and swapped here.
+
+  Why CSS and not a theme read: next-themes runs with attribute="class", so the
+  toggle puts .dark on <html>, but Tailwind's own dark: variant is NOT bound to
+  that class in this project (no @custom-variant is declared, and the codebase
+  uses zero dark: utilities). Reading the theme with useTheme() would also make
+  the server-rendered curriculum hub — all 24 cards — client-rendered and flash
+  the wrong art on load. The .dark descendant form is what the rest of the
+  theme already uses (see the Shiki block above).
+*/
+.module-art-dark {
+  display: none;
+}
+.dark .module-art-dark {
+  display: block;
+}
+.dark .module-art-light {
+  display: none;
+}
+
+/*
+  Module cards flip to reveal the description.
+
+  Front carries the art and the module's name; back carries the description.
+  BOTH faces stay in the DOM and neither is aria-hidden — the flip is purely
+  visual, so the description is still read by screen readers and still indexed.
+  (Hiding the back with display:none would have cost both.)
+
+  The faces share one grid cell rather than being absolutely positioned, so the
+  card sizes itself to the taller face and the grid keeps its rows even.
+
+  Focus flips it too: the card is a link, and a hover-only reveal would leave
+  the description unreachable by keyboard.
+*/
+.module-card {
+  perspective: 1200px;
+}
+
+.module-card-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform var(--dur) var(--ease);
+}
+
+.module-card-face {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  backface-visibility: hidden;
+}
+
+.module-card-back {
+  transform: rotateY(180deg);
+}
+
+.module-card:hover .module-card-inner,
+.module-card:focus-visible .module-card-inner {
+  transform: rotateY(180deg);
+}
+
+/*
+  A flip the pointer can't trigger would strand the description, so on touch
+  the faces simply stack in flow — the card reads as it did before the flip.
+*/
+@media (hover: none) {
+  .module-card-inner {
+    display: block;
+    transform: none;
+  }
+
+  .module-card-face {
+    backface-visibility: visible;
+  }
+
+  .module-card-back {
+    transform: none;
+    border-top: 1px solid var(--border);
+  }
+
+  /*
+    Stacked, the back sits directly under the front — so its repeat of the
+    number and title would print them twice on the same card.
+  */
+  .module-card-back-head {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .module-card-inner {
+    transition: none;
+  }
+}
+
+/*
+  Inverted plate — a panel that deliberately runs opposite to the page, the
+  same idea globals.css already applies to the code surface ("always a dark
+  editor surface in the light theme and always a light one in the dark
+  theme"). Used by the concept map and the module art, so both read as their
+  own instrument rather than as more page.
+
+  This is a SCOPE, not a component style: it remaps the semantic tokens, so
+  everything inside keeps consuming --elevated / --foreground / --border and
+  needs no knowledge of the inversion — exactly how familyCssVars() works.
+  --accent and --on-pop are deliberately NOT remapped: an accent fill carries
+  its own ink, so the root node stays legible on either plate.
+
+  Values mirror the opposite theme's own tokens (--press-ink #e6edf4 /
+  --press-ink-soft #9ca9b8 dark; #16202e / #56606e light), so the plate never
+  invents a palette.
+*/
+.plate-invert {
+  --background: #14202e;
+  /* Node cards sit ON the plate and must read as lifted. Measured against the
+     #14202e ground: the original #1a2736 was 1.09:1 and vanished; #223349 was
+     1.28:1, still weak; #304764 is 1.73:1 — a step you can actually see, with
+     ink at 8.04:1 on it, comfortably past AA. */
+  --elevated: #304764;
+  /* Leaves use --surface and must still be *visible*: on this plate a recessed
+     value (#0f1a26) sat at 1.07:1 and disappeared. #1f3145 reads at 1.24:1
+     against the plate while staying clearly quieter than a branch card
+     (1.40:1 between them); ink on it is 11.2:1. */
+  --surface: #1f3145;
+  --foreground: #e6edf4;
+  --muted: #9ca9b8;
+  --border: rgba(230, 237, 244, 0.22);
+}
+
+.dark .plate-invert {
+  --background: #e4e9f2;
+  --elevated: #ffffff;
+  --surface: #d8dde8;
+  --foreground: #16202e;
+  --muted: #56606e;
+  /* Matches the light plate's border weight: on paper the white card already
+     carries a brightness step, so the rule only has to define the edge. */
+  --border: rgba(22, 32, 46, 0.20);
 }

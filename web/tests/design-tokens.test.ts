@@ -810,7 +810,7 @@ describe("type system", () => {
     expect(coach).not.toMatch(/\[&_strong\]:font-semibold/);
   });
 
-  it("chapter headings are a hairline plus a decorative counter label", () => {
+  it("chapter headings are a hairline, with no counter label", () => {
     const css = readFileSync(GLOBALS, "utf8");
     // The quiz renders inside .handbook-prose in every problem's Quiz tab and
     // in the multi-quiz drill lessons, and its heading is an h2.chapter-heading
@@ -825,15 +825,12 @@ describe("type system", () => {
     expect(cssBlock(css, ".problem-prose .handbook-prose h2:not(.chapter-heading)")).toMatch(
       /margin-top:\s*1\.75rem/,
     );
-    const label = cssBlock(css, ".handbook-prose h2:not(.chapter-heading)::before");
-    expect(label).toMatch(/counter-increment:\s*chapter/);
-    // `/ ""` is CSS alt text: without it "// 01" joins the accessible name.
-    expect(label).toMatch(
-      /content:\s*"\/\/ " counter\(chapter, decimal-leading-zero\) \/ "";/,
-    );
-    expect(cssBlock(css, ".problem-prose .handbook-prose h2::before")).toMatch(
-      /content:\s*none/,
-    );
+    // The decorative "// 01" counter was removed on 2026-09-12. Assert it stays
+    // gone: the counter, its reset, and the problem-prose override that existed
+    // only to suppress it are all obsolete together.
+    expect(css).not.toMatch(/counter-increment:\s*chapter/);
+    expect(css).not.toMatch(/counter\(chapter/);
+    expect(css).not.toMatch(/counter-reset:\s*chapter/);
     expect(cssBlock(css, ".chapter-rule")).toMatch(
       /border-top:\s*1px solid var\(--rule-strong\)/,
     );
@@ -857,13 +854,7 @@ describe("type system", () => {
     }
   });
 
-  it("lesson numbering cannot restart mid-lesson", () => {
-    const css = readFileSync(GLOBALS, "utf8");
-    expect(cssBlock(css, ".handbook-prose")).toMatch(/counter-reset:\s*chapter/);
-    // Roadmap stage bodies nest a second .handbook-prose.
-    expect(cssBlock(css, ".handbook-prose .handbook-prose")).toMatch(
-      /counter-reset:\s*none/,
-    );
+  it("a lesson renders exactly one Markdown body", () => {
     for (const rel of [
       "components/course/LessonView.tsx",
       "app/courses/nextjs/[module]/[chapter]/[lesson]/page.tsx",

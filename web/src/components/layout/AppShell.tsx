@@ -38,6 +38,16 @@ export function isIdePath(pathname: string): boolean {
 }
 
 /**
+ * A module's concept map owns the viewport: the canvas is the page, so main
+ * becomes a non-scrolling flex column and the map takes the leftover height.
+ * Separate from isIdePath because it is not an IDE — it keeps the floating
+ * lessons button and the normal chrome.
+ */
+export function isConceptMapPath(pathname: string): boolean {
+  return /^\/courses\/dsa\/[^/]+\/concept-map\/?$/.test(pathname);
+}
+
+/**
  * The problems list also needs a viewport-locked main — its filter sidebar
  * and result list scroll internally, not the page, so a fixed height chrome
  * above them doesn't leave `main` scrolling to reveal blank space beneath a
@@ -112,7 +122,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // apply to it, so 0 rather than DSA's count.
   const totalProblemCount = isNextjs ? 0 : allProblemSlugs().length;
   const ideViewport = isIdePath(pathname);
-  const fillMain = ideViewport || isProblemsListPath(pathname);
+  const fillMain =
+    ideViewport || isProblemsListPath(pathname) || isConceptMapPath(pathname);
   // Every /courses/nextjs/* route 404s while the course is disabled (see
   // NEXTJS_COURSE.status), but the root layout still renders AppShell
   // around that 404 body — without this, a disabled course's full sidebar

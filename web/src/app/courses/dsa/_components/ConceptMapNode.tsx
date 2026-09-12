@@ -7,8 +7,9 @@ export interface ConceptMapNodeData extends Record<string, unknown> {
   isLeaf: boolean;
   isExpanded: boolean;
   childCount: number;
-  width: number;
-  textSize: "text-xs" | "text-sm";
+  /** Upper bound, not a fixed width — the card sizes to its label. */
+  maxWidth: number;
+  textSize: "text-xs" | "text-sm" | "text-base";
   circleSize: number;
   onToggle: () => void;
 }
@@ -21,24 +22,25 @@ export interface ConceptMapNodeData extends Record<string, unknown> {
  * full keyboard and screen-reader access.
  */
 export function ConceptMapNode({ data }: NodeProps & { data: ConceptMapNodeData }) {
-  const { label, isRoot, isLeaf, isExpanded, childCount, width, textSize, circleSize, onToggle } =
+  const { label, isRoot, isLeaf, isExpanded, childCount, maxWidth, textSize, circleSize, onToggle } =
     data;
   const hasChildren = !isLeaf;
 
   return (
-    <div className="flex items-center gap-1.5" style={{ width: width + circleSize * 2 }}>
+    // w-max: the row is as wide as the card it holds, not a fixed column.
+    <div className="flex w-max items-center gap-1.5">
       <Handle type="target" position={Position.Left} className="!pointer-events-none !opacity-0" />
       <div
         className={
           isRoot
-            ? `flex min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] bg-accent px-3 py-1.5 font-semibold text-on-pop ${textSize}`
+            ? `flex w-fit min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] bg-accent px-3.5 py-2 font-semibold text-on-pop ${textSize}`
             : isLeaf
-              ? `flex min-h-9 items-center rounded-[length:var(--radius-md)] border border-border/70 bg-surface/70 px-3 py-1.5 leading-snug text-muted ${textSize}`
-              : `flex min-h-9 items-center rounded-[length:var(--radius-md)] border border-border bg-elevated px-3 py-1.5 leading-snug font-medium text-foreground ${textSize}`
+              ? `flex w-fit min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] border border-border/70 bg-surface px-3.5 py-2 leading-snug text-foreground ${textSize}`
+              : `flex w-fit min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] border border-border bg-elevated px-3.5 py-2 leading-snug font-medium text-foreground ${textSize}`
         }
-        style={{ width }}
+        style={{ maxWidth }}
       >
-        <span className="line-clamp-2 min-w-0 flex-1 break-words">{label}</span>
+        <span className="line-clamp-2 break-words">{label}</span>
         {hasChildren && !isExpanded ? (
           <span
             className={

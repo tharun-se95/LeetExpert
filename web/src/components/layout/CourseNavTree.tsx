@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   CaretDown as ChevronDown,
   CaretRight,
-} from "@phosphor-icons/react";
+ TreeStructure } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import {
   buildCourseNav,
@@ -24,7 +24,7 @@ function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Module whose page or a lesson under it matches the current route. */
+/** Module whose page, lesson, or extra destination matches the current route. */
 function activeModuleSlug(
   stages: CourseNavStage[],
   pathname: string,
@@ -33,6 +33,12 @@ function activeModuleSlug(
     for (const navModule of stage.modules) {
       if (pathname === navModule.href) return navModule.slug;
       if (navModule.lessons.some((l) => isActivePath(pathname, l.href))) {
+        return navModule.slug;
+      }
+      // Extras must open the module too. Without this, visiting a module's
+      // concept map collapses its branch and the link the user just followed
+      // disappears from the tree.
+      if ((navModule.extras ?? []).some((e) => isActivePath(pathname, e.href))) {
         return navModule.slug;
       }
     }
@@ -170,6 +176,39 @@ function ModuleNode({
                   )}
                 >
                   <span className="min-w-0">{lesson.title}</span>
+                </Link>
+              </div>
+            );
+          })}
+          {/* Non-lesson destinations: no completion dot, and deliberately not
+              part of the x/y count above — they have no progress to track. */}
+          {(navModule.extras ?? []).map((extra) => {
+            const active = pathname === extra.href;
+            return (
+              <div key={extra.id} className="flex items-start gap-1">
+                <span
+                  className={cn(
+                    "inline-flex shrink-0 items-center justify-center",
+                    chevronBox,
+                  )}
+                >
+                  <TreeStructure
+                    weight="bold"
+                    className="h-3 w-3 text-muted"
+                    aria-hidden
+                  />
+                </span>
+                <Link
+                  href={extra.href}
+                  className={cn(
+                    "flex min-w-0 flex-1 items-center rounded-[length:var(--radius-xs)] px-2 text-[13px] leading-snug transition-colors",
+                    rowPad,
+                    active
+                      ? "bg-pop font-semibold text-on-pop"
+                      : "text-muted hover:bg-surface hover:text-foreground",
+                  )}
+                >
+                  <span className="min-w-0">{extra.title}</span>
                 </Link>
               </div>
             );

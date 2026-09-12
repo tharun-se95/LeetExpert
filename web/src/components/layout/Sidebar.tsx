@@ -102,7 +102,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         // sidebar-rail (globals.css): whole-panel wash of the topic's
         // primary colour, split by theme — see the comment there for why
         // light and dark can't share one strength.
-        "sidebar-rail print:hidden relative z-20 hidden h-full shrink-0 flex-col overflow-hidden lg:flex",
+        // z-45: above the sticky header (z-40) so the header's shadow-edge-bottom
+        // stops falling across the rail's top edge, and still below the search
+        // dialog and mobile sheet (z-50), which must cover everything.
+        "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col overflow-hidden lg:flex",
         // Width changes fire from two very different sources: the open/close
         // toggle (should glide) and the drag handle (should track the
         // pointer 1:1, or the panel visibly lags the cursor). Only animate

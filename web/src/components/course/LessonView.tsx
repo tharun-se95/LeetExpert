@@ -30,6 +30,13 @@ interface LessonViewProps {
   /** Injected after markdown (e.g. Practice problem list). */
   afterMarkdown?: ReactNode;
   /**
+   * Rendered on the desk BELOW the reading page, in its own panel — for
+   * content that follows the lesson rather than belonging to it. The quiz
+   * lives here: it is an exercise about the reading, not part of the reading,
+   * and setting it on the same sheet made it read as one more section.
+   */
+  afterPage?: ReactNode;
+  /**
    * Page-level JSON-LD. A slot rather than a computed value because only the
    * route knows its own path, and this component has two call sites (concept
    * and practice lessons) that would otherwise each need to wrap their return.
@@ -49,6 +56,7 @@ export function LessonView({
   headerVideo,
   infographic,
   afterMarkdown,
+  afterPage,
   jsonLd,
 }: LessonViewProps) {
   return (
@@ -90,17 +98,27 @@ export function LessonView({
           {infographic ? <div className="mt-10 print:hidden">{infographic}</div> : null}
           {afterMarkdown ? <div className="mt-2">{afterMarkdown}</div> : null}
         </div>
+        {afterPage ? (
+          // On the desk, NOT on a second sheet. Two reasons: design-tokens.test
+          // guards that only the reading is set on paper, and Quiz options
+          // already step down to a well when they sit on paper — on an elevated
+          // panel they would be elevated-on-elevated and disappear. Bare on the
+          // desk is also how the problem tab already renders the same quiz —
+          // there because ProblemLessonView has no page at all, so the variant
+          // never matches, not because that tab opted out of it.
+          <div className="mt-2">{afterPage}</div>
+        ) : null}
         <nav className="mt-10 flex items-stretch justify-between gap-4">
           {prev ? (
             <Link
               href={prev.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated shadow-elevation px-4 py-3 text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
+              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-sm transition hover:opacity-90"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent transition group-hover:bg-accent/15">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition group-hover:bg-on-pop/25">
                 <ArrowLeft weight="bold" className="h-4 w-4" />
               </span>
               <span className="min-w-0">
-                <span className="block text-xs text-muted">
+                <span className="block text-xs text-on-pop/70">
                   Previous{prev.module ? ` · ${prev.module}` : ""}
                 </span>
                 <span className="block truncate font-medium">{prev.title}</span>
@@ -112,15 +130,15 @@ export function LessonView({
           {next ? (
             <Link
               href={next.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated shadow-elevation px-4 py-3 text-right text-sm transition hover:border-accent/35 hover:bg-accent/[0.04]"
+              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-right text-sm transition hover:opacity-90"
             >
               <span className="min-w-0">
-                <span className="block text-xs text-muted">
+                <span className="block text-xs text-on-pop/70">
                   Next{next.module ? ` · ${next.module}` : ""}
                 </span>
                 <span className="block truncate font-medium">{next.title}</span>
               </span>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent transition group-hover:bg-accent/15">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition group-hover:bg-on-pop/25">
                 <ArrowRight weight="bold" className="h-4 w-4" />
               </span>
             </Link>

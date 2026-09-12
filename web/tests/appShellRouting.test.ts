@@ -3,6 +3,7 @@ import {
   isIdePath,
   isLandingPath,
   activeThemeFor,
+  isConceptMapPath,
 } from "../src/components/layout/AppShell";
 import { activeCourseSlugFor } from "../src/lib/courses/activeCourse";
 
@@ -90,5 +91,31 @@ describe("activeCourseSlugFor", () => {
 
   it("defaults to dsa on the catalog root", () => {
     expect(activeCourseSlugFor("/")).toBe("dsa");
+  });
+});
+
+describe("isConceptMapPath", () => {
+  it("matches a module's concept map page", () => {
+    expect(isConceptMapPath("/courses/dsa/binary-trees/concept-map")).toBe(true);
+  });
+
+  it("matches with a trailing slash", () => {
+    expect(isConceptMapPath("/courses/dsa/binary-trees/concept-map/")).toBe(true);
+  });
+
+  it("does not match the module page", () => {
+    expect(isConceptMapPath("/courses/dsa/binary-trees")).toBe(false);
+  });
+
+  it("does not match a lesson that merely starts the same way", () => {
+    expect(isConceptMapPath("/courses/dsa/binary-trees/concept-map-notes")).toBe(
+      false,
+    );
+  });
+
+  it("does not match a deeper route under it", () => {
+    expect(
+      isConceptMapPath("/courses/dsa/binary-trees/concept-map/extra"),
+    ).toBe(false);
   });
 });

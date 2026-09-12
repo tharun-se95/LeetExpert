@@ -105,8 +105,8 @@ The content is the product. Code exists to serve it.
   paper, so **body-size accent text uses `--mark`, never `--accent`**
   (`text-mark`) — `--mark` is never remapped by a family scope and stays AA
   steel in both themes (the wordmark uses it too). Chapter headings are a
-  1px `--rule-strong` hairline plus a decorative `// 01` counter label (CSS
-  alt text `/ ""` keeps it out of the accessible name); component sections
+  1px `--rule-strong` hairline (a decorative `// 01` counter label sat above
+  it until 2026-09-12, removed on request); component sections
   share it through `.chapter-rule` + `.chapter-heading`, never a copied bar.
   Heading text stays ink.
 - **Surfaces combine a paper ladder with soft elevation shadow.**

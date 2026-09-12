@@ -15,6 +15,7 @@ import {
   findProblemBySlug,
 } from "../src/lib/course/manifest";
 import { lessonHref, moduleHref, problemHref } from "../src/lib/course/nav";
+import { getConceptMap } from "../src/lib/course/conceptMaps/registry";
 
 const APP = join(__dirname, "..", "src", "app");
 const read = (...p: string[]) => readFileSync(join(APP, ...p), "utf8");
@@ -287,7 +288,18 @@ describe("every DSA content URL in the sitemap is backed by a real file", () => 
       .map((r) => /^\/courses\/dsa\/([^/]+)\/([^/]+)$/.exec(r))
       .filter((m): m is RegExpExecArray => m !== null)
       .filter(([, mod]) => mod !== "problems")
+      // The concept map has its own route and is backed by the registry, not
+      // by markdown — covered instead by tests/conceptMapCoverage.test.ts.
+      .filter(([, , lesson]) => lesson !== "concept-map")
       .filter(([, mod, lesson]) => !existsSync(lessonFile(mod, lesson)));
+    expect(missing.map((m) => m[0])).toEqual([]);
+  });
+
+  it("resolves a concept map for every concept-map route", () => {
+    const missing = indexableRoutes()
+      .map((r) => /^\/courses\/dsa\/([^/]+)\/concept-map$/.exec(r))
+      .filter((m): m is RegExpExecArray => m !== null)
+      .filter(([, mod]) => !getConceptMap(mod));
     expect(missing.map((m) => m[0])).toEqual([]);
   });
 

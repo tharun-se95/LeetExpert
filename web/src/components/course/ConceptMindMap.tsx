@@ -19,14 +19,38 @@ interface ConceptMindMapProps {
   root: MindMapNode;
   /** Announced to screen readers; the canvas itself is a visual/pointer surface. */
   label: string;
-  /** "lg" for a dedicated, full-width home (module page); "md" elsewhere. */
-  size?: "md" | "lg";
+  /** "xl" for the dedicated concept-map page, "lg" for a full-width home, "md" elsewhere. */
+  size?: "md" | "lg" | "xl";
+  /**
+   * Take the parent's height instead of the size preset's fixed pixel height —
+   * for the dedicated page, where the canvas should fill the viewport. The
+   * parent must have a definite height (a flex child with min-h-0).
+   */
+  fill?: boolean;
 }
 
 const SIZES = {
   md: { colWidth: 340, nodeWidth: 260, rowHeight: 72, circleR: 11, text: "text-xs" as const, viewport: 380 },
   lg: { colWidth: 400, nodeWidth: 300, rowHeight: 82, circleR: 13, text: "text-sm" as const, viewport: 540 },
+  // The concept map's own page has nothing else competing for height, so the
+  // canvas gets the room the graph actually wants instead of a panel's share.
+  xl: { colWidth: 460, nodeWidth: 400, rowHeight: 104, circleR: 16, text: "text-base" as const, viewport: 720 },
 } as const;
+
+/**
+ * The presets are `as const`, so their widths are literal types — fine while
+ * every layout came from a preset, wrong now that the dedicated page derives
+ * widths from the measured canvas. This is the shape the layout actually
+ * needs: the same fields, with the sizes as plain numbers.
+ */
+type Dims = {
+  colWidth: number;
+  nodeWidth: number;
+  rowHeight: number;
+  circleR: number;
+  text: "text-xs" | "text-sm" | "text-base";
+  viewport: number;
+};
 
 const nodeTypes = { concept: ConceptMapNode };
 
@@ -43,20 +67,63 @@ const CONTROLS_VARS = {
   "--xy-controls-button-color-hover": "var(--accent)",
 } as CSSProperties;
 
+/**
+ * Rough rendered width of a node, used only to place the NEXT column. Space
+ * Grotesk's average advance is ~0.49em (measured in tests/diagramTextFit),
+ * which at 14px ("text-sm") is ~6.9px per character; add the card's px-3
+ * padding, the collapsed-child badge, and the toggle circle's lane.
+ */
+function estimateNodeWidth(label: string, dims: Dims, hasBadge: boolean): number {
+  const perChar =
+    dims.text === "text-base" ? 7.9 : dims.text === "text-sm" ? 6.9 : 6.2;
+  const padding = 24;
+  const badge = hasBadge ? 30 : 0;
+  return Math.min(dims.nodeWidth, Math.ceil(label.length * perChar) + padding + badge);
+}
+
+/** Breathing room between a column's widest card and the next column. */
+const COLUMN_GAP = 56;
+
 function layoutTree(
   root: MindMapNode,
   expanded: Set<string>,
-  dims: (typeof SIZES)[keyof typeof SIZES],
+  dims: Dims,
   onToggle: (id: string) => void,
 ): { nodes: Node<ConceptMapNodeData>[]; edges: Edge[] } {
   const nodes: Node<ConceptMapNodeData>[] = [];
   const edges: Edge[] = [];
   let row = 0;
 
+  // Columns are PACKED, not gridded. A constant colWidth was sized for
+  // fixed-width cards; now that each card hugs its label, a short parent like
+  // "Binary Trees" (106px) left a ~300px hole before its children. Each level
+  // now starts one gap after the widest card in the level before it.
+  const widestByDepth = new Map<number, number>();
+  const measure = (node: MindMapNode, depth: number): void => {
+    const hasChildren = Boolean(node.children && node.children.length > 0);
+    const isExpanded = hasChildren && expanded.has(node.id);
+    const lane = hasChildren ? dims.circleR * 2 + 6 : 0;
+    const width =
+      estimateNodeWidth(node.label, dims, hasChildren && !isExpanded) + lane;
+    widestByDepth.set(depth, Math.max(widestByDepth.get(depth) ?? 0, width));
+    if (isExpanded) {
+      for (const child of node.children!) measure(child, depth + 1);
+    }
+  };
+  measure(root, 0);
+
+  const columnX: number[] = [0];
+  for (let depth = 1; depth <= widestByDepth.size; depth += 1) {
+    columnX[depth] =
+      columnX[depth - 1]! +
+      (widestByDepth.get(depth - 1) ?? dims.nodeWidth) +
+      COLUMN_GAP;
+  }
+
   function visit(node: MindMapNode, depth: number): number {
     const hasChildren = Boolean(node.children && node.children.length > 0);
     const isExpanded = hasChildren && expanded.has(node.id);
-    const x = depth * dims.colWidth;
+    const x = columnX[depth] ?? depth * dims.colWidth;
 
     let y: number;
     if (!isExpanded) {
@@ -91,7 +158,7 @@ function layoutTree(
         isLeaf: !hasChildren,
         isExpanded,
         childCount: node.children?.length ?? 0,
-        width: dims.nodeWidth,
+        maxWidth: dims.nodeWidth,
         textSize: dims.text,
         circleSize: dims.circleR * 2,
         onToggle: () => onToggle(node.id),
@@ -108,8 +175,12 @@ function layoutTree(
 /** Approximate rendered node height — up to 2 lines of wrapped label, `min-h-9` floor. */
 const NODE_HEIGHT = 56;
 
-function ConceptMindMapInner({ root, label, size = "md" }: ConceptMindMapProps) {
-  const dims = SIZES[size];
+function ConceptMindMapInner({ root, label, size = "md", fill = false }: ConceptMindMapProps) {
+  // nodeWidth is a CAP, not a width: each card hugs its own label (see
+  // ConceptMapNode) and only wraps when the text would exceed this. Keeping the
+  // cap at the preset stops a long label from running into the next column,
+  // whose x is still depth * colWidth.
+  const dims: Dims = SIZES[size];
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set([root.id]));
   const { fitBounds } = useReactFlow();
 
@@ -171,9 +242,13 @@ function ConceptMindMapInner({ root, label, size = "md" }: ConceptMindMapProps) 
 
   return (
     <div
-      className="overflow-hidden"
+      // A flex child, NOT h-full: the parent's height comes from flex, so its
+      // *specified* height is auto and a percentage child resolves to 0.
+      className={fill ? "min-h-0 flex-1 overflow-hidden" : "overflow-hidden"}
       style={{
-        height: dims.viewport,
+        // In fill mode height comes from the parent, so the preset's fixed
+        // pixel height must not also be set — it would win over h-full.
+        ...(fill ? null : { height: dims.viewport }),
         maskImage: EDGE_FADE_MASK,
         WebkitMaskImage: EDGE_FADE_MASK,
         maskComposite: "intersect",
