@@ -135,8 +135,16 @@ export function Sidebar({
       )}
     >
       {/*
-        The close button sits OUTSIDE the panel, in the page margin beside it:
-        no chrome row above the tree, so the nav starts at the top of the rail.
+        The close button sits OUTSIDE the panel, so no chrome row stands above
+        the tree and the nav starts at the top of the rail. It carries the
+        panel's own surface out with it — sidebar-rail, joined at the seam
+        (no left border, square left corners) and rounded on the outer edge,
+        so it reads as a tab on a notebook page rather than a chip floating in
+        the gutter. -right-9 against w-9 lands its left edge on the rail's
+        border line, covering it: the offset is measured from the padding box,
+        so anything wider opens a gap and anything narrower draws a seam
+        across the tab's base.
+
         It is the deliberate way out, and the only one on desktop while the
         drawer is open, since FloatingLessonsButton hides itself then — hover
         only opens; the pointer-out timer is a slow tidy-up, not the close
@@ -149,7 +157,10 @@ export function Sidebar({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-2 -right-10 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          // Hover changes the glyph and the outer edge, not the paper: the
+          // same language as the resize grip below, and a jump to --surface
+          // would sink a tab that is meant to read as part of the panel.
+          className="sidebar-rail shadow-edge-right absolute top-2 -right-9 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-r-[length:var(--radius-md)] border border-l-0 border-border text-muted transition-colors hover:border-accent/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           aria-label="Close lessons drawer"
         >
           <X className="h-4 w-4" weight="bold" />

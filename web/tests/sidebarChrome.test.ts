@@ -42,6 +42,31 @@ describe("Sidebar chrome", () => {
     expect(jsx).toMatch(/\{open \?[\s\S]*?aria-label="Close lessons drawer"/);
   });
 
+  it("reads as a tab torn from the panel, not a chip floating beside it", () => {
+    const close = jsx.match(
+      /<button[\s\S]*?aria-label="Close lessons drawer"[\s\S]*?<\/button>/,
+    )![0];
+    const cls = close.match(/className="([^"]*)"/)![1];
+    // Same paper as the panel, by the same class — not a re-authored colour.
+    expect(cls).toContain("sidebar-rail");
+    // Only the outer corners round; the seam side stays square and borderless
+    // so the tab joins the panel instead of sitting beside it.
+    expect(cls).toMatch(/rounded-r-/);
+    expect(cls).toContain("border-l-0");
+    // The panel's lifted edge carries on along the tab.
+    expect(cls).toContain("shadow-edge-right");
+  });
+
+  it("sits flush against the panel, over its border line", () => {
+    // The offset has to equal the tab's own width: one step less and a gap
+    // opens, one more and the rail's border-r draws a seam across its base.
+    const close = jsx.match(
+      /<button[\s\S]*?aria-label="Close lessons drawer"[\s\S]*?<\/button>/,
+    )![0];
+    const cls = close.match(/className="([^"]*)"/)![1];
+    expect(cls.match(/-right-(\d+)/)![1]).toBe(cls.match(/\bw-(\d+)/)![1]);
+  });
+
   it("puts the way out before the rows in the tab order", () => {
     // Absolute positioning frees source order from visual order, so the close
     // button leads: tabbing into the drawer should not cost 20 lesson rows to
