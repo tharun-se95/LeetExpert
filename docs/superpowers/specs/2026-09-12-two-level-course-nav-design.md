@@ -35,14 +35,7 @@ the reader has.
 
 No stage headings, no other module.
 
-**Baseline, and one tracked follow-up.** This is built on committed `main`.
-A concurrent session is adding non-lesson module destinations (`extras`, e.g.
-a per-module Concept map) to `CourseNavModule` and the nav; that work is
-uncommitted and is deliberately **not** copied into this branch. When it
-lands, level 2 must render those rows under the lessons (no completion dot,
-outside the `x/y` count) and `activeModuleSlug` must treat an extra's href as
-opening its module. Until then this nav has no extras support — an explicitly
-incomplete capability with the end condition "their nav work is committed".
+**Follow-up closed (2026-09-12).** This was first built on a baseline without module `extras`, because that work was another session's uncommitted change. It landed as `731c56e`; this branch was rebased onto it and level 2 now renders a module's extras (e.g. its Concept map) under the lessons — tree icon, no completion dot, outside the `x/y` count — and `activeModuleSlug` matches an extra's href so opening a concept map keeps its own module on screen. Both are pinned by tests that fail without them.
 
 ## 3. Which level is showing
 
