@@ -1,196 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import {
-  CaretDown as ChevronDown,
-  CaretRight,
- TreeStructure } from "@phosphor-icons/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { buildCourseNav, type CourseNavModule } from "@/lib/course/nav";
-import { activeModuleSlug } from "@/lib/course/navLevel";
+import { buildCourseNav } from "@/lib/course/nav";
+import { resolveNavView } from "@/lib/course/navLevel";
+import { CourseNavPanel } from "@/components/layout/CourseNavPanel";
 import { buildNextjsCourseNav } from "@/app/courses/nextjs/nav";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import { CURRICULUM } from "@/lib/landing/content";
 import { NEXTJS_COURSE } from "@/app/courses/nextjs/registry";
 
-function ModuleNode({
-  navModule,
-  pathname,
-  open,
-  onToggle,
-  compact,
-}: {
-  navModule: CourseNavModule;
-  pathname: string;
-  open: boolean;
-  onToggle: () => void;
-  /** Desktop rail uses denser rows; mobile sheet needs ≥44px taps. */
-  compact: boolean;
-}) {
-  const { visited } = useProgress();
-  const hasLessons = navModule.lessons.length > 0;
-  // Some courses (Next.js) give a module no overview page of its own —
-  // its href just points at its first lesson. That lesson row below
-  // already highlights itself, so treating the module row as "self
-  // active" too would double-highlight the same page.
-  const isAliasedToFirstLesson = navModule.lessons.some(
-    (l) => l.href === navModule.href,
-  );
-  const selfActive =
-    pathname === navModule.href && !isAliasedToFirstLesson;
-
-  const doneCount = navModule.lessons.filter((l) => visited.has(l.id)).length;
-  // Desktop: ~32px rows; mobile sheet: ≥44px taps.
-  const rowPad = compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5";
-  const chevronBox = compact ? "h-8 w-6" : "h-11 w-11";
-
-  return (
-    <div>
-      <div className="group flex items-center gap-1 rounded-[length:var(--radius-md)]">
-        {hasLessons ? (
-          <button
-            type="button"
-            onClick={onToggle}
-            className={cn(
-              "inline-flex shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] text-muted hover:bg-surface hover:text-foreground",
-              chevronBox,
-            )}
-            aria-expanded={open}
-            aria-label={open ? "Collapse module" : "Expand module"}
-          >
-            {open ? (
-              <ChevronDown className="h-3.5 w-3.5" />
-            ) : (
-              <CaretRight className="h-3.5 w-3.5" />
-            )}
-          </button>
-        ) : (
-          <span className={cn("inline-flex shrink-0", chevronBox)} />
-        )}
-        <Link
-          href={navModule.href}
-          className={cn(
-            "min-w-0 flex-1 truncate rounded-[length:var(--radius-xs)] px-2 text-[13px] transition-colors",
-            rowPad,
-            navModule.status === "coming-soon" && "text-muted/60",
-            selfActive
-              ? "bg-pop font-semibold text-on-pop"
-              : "text-foreground/80 hover:bg-surface hover:text-foreground",
-          )}
-        >
-          <span className="mr-1.5 tabular-nums text-[11px] text-muted">
-            {navModule.number}.
-          </span>
-          {navModule.shortTitle}
-          {navModule.status === "coming-soon" ? (
-            <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted/50">
-              soon
-            </span>
-          ) : hasLessons ? (
-            <span
-              className={cn(
-                "ml-1.5 font-mono text-[10px] tabular-nums",
-                selfActive
-                  ? "text-on-pop/70"
-                  : doneCount === navModule.lessons.length
-                    ? "text-mark"
-                    : "text-muted",
-              )}
-            >
-              {doneCount}/{navModule.lessons.length}
-            </span>
-          ) : null}
-        </Link>
-      </div>
-      {hasLessons && open ? (
-        <div
-          className={cn(
-            "border-l border-border",
-            compact
-              ? "ml-3.5 mt-1 space-y-0.5 pl-3"
-              : "ml-3.5 mt-1.5 space-y-1 pl-3",
-          )}
-        >
-          {navModule.lessons.map((lesson) => {
-            const active = pathname === lesson.href;
-            const isDone = visited.has(lesson.id);
-            return (
-              <div key={lesson.id} className="flex items-start gap-1">
-                <span
-                  className={cn(
-                    "inline-flex shrink-0 items-center justify-center",
-                    chevronBox,
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "h-2 w-2 rounded-[length:var(--radius-xs)] transition-colors",
-                      isDone
-                        ? "bg-accent"
-                        : "border border-border bg-transparent",
-                    )}
-                    title={isDone ? "Completed" : "Not completed"}
-                  />
-                </span>
-                <Link
-                  href={lesson.href}
-                  className={cn(
-                    "flex min-w-0 flex-1 items-center rounded-[length:var(--radius-xs)] px-2 text-[13px] leading-snug transition-colors",
-                    rowPad,
-                    active
-                      ? "bg-pop font-semibold text-on-pop"
-                      : "text-muted hover:bg-surface hover:text-foreground",
-                  )}
-                >
-                  <span className="min-w-0">{lesson.title}</span>
-                </Link>
-              </div>
-            );
-          })}
-          {/* Non-lesson destinations: no completion dot, and deliberately not
-              part of the x/y count above — they have no progress to track. */}
-          {(navModule.extras ?? []).map((extra) => {
-            const active = pathname === extra.href;
-            return (
-              <div key={extra.id} className="flex items-start gap-1">
-                <span
-                  className={cn(
-                    "inline-flex shrink-0 items-center justify-center",
-                    chevronBox,
-                  )}
-                >
-                  <TreeStructure
-                    weight="bold"
-                    className="h-3 w-3 text-muted"
-                    aria-hidden
-                  />
-                </span>
-                <Link
-                  href={extra.href}
-                  className={cn(
-                    "flex min-w-0 flex-1 items-center rounded-[length:var(--radius-xs)] px-2 text-[13px] leading-snug transition-colors",
-                    rowPad,
-                    active
-                      ? "bg-pop font-semibold text-on-pop"
-                      : "text-muted hover:bg-surface hover:text-foreground",
-                  )}
-                >
-                  <span className="min-w-0">{extra.title}</span>
-                </Link>
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
-    </div>
-  );
-}
+/** Matches --dur/--ease in globals.css, and the mobile sheet's own motion. */
+const SLIDE = {
+  duration: 0.22,
+  ease: [0.2, 0, 0, 1] as [number, number, number, number],
+};
+const SLIDE_PX = 24;
 
 /**
- * Shared course module/lesson tree for the desktop drawer and mobile sheet.
+ * Shared course nav for the desktop drawer and mobile sheet: a module list
+ * that drills into one module's lessons. The level is derived from the route
+ * (see lib/course/navLevel.ts); only the back override lives here.
  */
 export function CourseNavTree({
   compact = true,
@@ -205,61 +38,79 @@ export function CourseNavTree({
     () => (courseSlug === "nextjs" ? buildNextjsCourseNav() : buildCourseNav()),
     [courseSlug],
   );
-  const curriculumHref = courseSlug === "nextjs" ? NEXTJS_COURSE.href : CURRICULUM;
-  const [openModuleSlug, setOpenModuleSlug] = useState<string | null>(() =>
-    activeModuleSlug(nav, pathname),
+  const curriculumHref =
+    courseSlug === "nextjs" ? NEXTJS_COURSE.href : CURRICULUM;
+  const { visited } = useProgress();
+  const reduceMotion = useReducedMotion();
+
+  const [backToModules, setBackToModules] = useState(false);
+  // Following any row navigates, which is the reader's own answer to "which
+  // module am I in" — the override has served its purpose.
+  useEffect(() => {
+    setBackToModules(false);
+  }, [pathname]);
+
+  const view = resolveNavView({ stages: nav, pathname, backToModules });
+  const viewKey = view.level === "module" ? view.navModule.slug : "modules";
+
+  const scrollRef = useRef<HTMLElement | null>(null);
+  const allModulesRef = useRef<HTMLAnchorElement | null>(null);
+  const wantsFocus = useRef(false);
+
+  // A fresh level starts at its own top; keeping the old offset lands the
+  // reader mid-list in a list they have not seen.
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+    if (wantsFocus.current) {
+      wantsFocus.current = false;
+      allModulesRef.current?.focus();
+    }
+  }, [viewKey]);
+
+  const panel = (
+    <CourseNavPanel
+      nav={nav}
+      view={view}
+      pathname={pathname}
+      visited={visited}
+      compact={compact}
+      curriculumHref={curriculumHref}
+      allModulesRef={allModulesRef}
+      onBack={() => {
+        // The back button unmounts with the level, so move focus deliberately.
+        wantsFocus.current = true;
+        setBackToModules(true);
+      }}
+    />
   );
 
-  useEffect(() => {
-    const active = activeModuleSlug(nav, pathname);
-    if (active) setOpenModuleSlug(active);
-  }, [nav, pathname]);
-
   return (
-    <nav className={cn("flex-1 overflow-y-auto", className)} aria-label="Course">
-      <Link
-        href={curriculumHref}
-        className={cn(
-          "mb-2.5 block rounded-[length:var(--radius-xs)] px-2 text-[13px] font-medium transition-colors",
-          compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5",
-          pathname === curriculumHref
-            ? "bg-pop font-semibold text-on-pop"
-            : "text-foreground hover:bg-surface",
-        )}
-      >
-        All modules
-      </Link>
-      {nav.map((stage) => (
-        <div
-          key={stage.number}
-          className={cn(compact ? "mt-5 first:mt-3" : "mt-6 first:mt-4")}
-        >
-          <p
-            className={cn(
-              "border-b border-border px-2 font-display text-[11px] font-bold uppercase tracking-[0.1em] text-foreground/70",
-              compact ? "mb-2 pb-1.5" : "mb-3 pb-2",
-            )}
+    <nav
+      ref={scrollRef}
+      className={cn("flex-1 overflow-y-auto", className)}
+      aria-label="Course"
+    >
+      {reduceMotion ? (
+        panel
+      ) : (
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={viewKey}
+            initial={{
+              opacity: 0,
+              x: view.level === "module" ? SLIDE_PX : -SLIDE_PX,
+            }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{
+              opacity: 0,
+              x: view.level === "module" ? -SLIDE_PX : SLIDE_PX,
+            }}
+            transition={SLIDE}
           >
-            {stage.title}
-          </p>
-          <div className={cn(compact ? "space-y-1" : "space-y-1.5")}>
-            {stage.modules.map((m) => (
-              <ModuleNode
-                key={m.slug}
-                navModule={m}
-                pathname={pathname}
-                open={openModuleSlug === m.slug}
-                onToggle={() =>
-                  setOpenModuleSlug((prev) =>
-                    prev === m.slug ? null : m.slug,
-                  )
-                }
-                compact={compact}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
+            {panel}
+          </motion.div>
+        </AnimatePresence>
+      )}
     </nav>
   );
 }
