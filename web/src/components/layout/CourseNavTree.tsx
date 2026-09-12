@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -54,17 +54,27 @@ export function CourseNavTree({
   const viewKey = view.level === "module" ? view.navModule.slug : "modules";
 
   const scrollRef = useRef<HTMLElement | null>(null);
-  const allModulesRef = useRef<HTMLAnchorElement | null>(null);
   const wantsFocus = useRef(false);
+
+  /**
+   * Back unmounts its own button, so focus has to be placed deliberately —
+   * from a callback ref, which runs exactly when the row mounts. Neither an
+   * effect keyed on the level nor AnimatePresence's onExitComplete works
+   * here: with mode="wait" the incoming level has not mounted yet when
+   * either fires, so the element to focus does not exist (verified in the
+   * browser — focus stayed on <body>).
+   */
+  const allModulesRef = useCallback((el: HTMLAnchorElement | null) => {
+    if (el && wantsFocus.current) {
+      wantsFocus.current = false;
+      el.focus();
+    }
+  }, []);
 
   // A fresh level starts at its own top; keeping the old offset lands the
   // reader mid-list in a list they have not seen.
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
-    if (wantsFocus.current) {
-      wantsFocus.current = false;
-      allModulesRef.current?.focus();
-    }
   }, [viewKey]);
 
   const panel = (

@@ -29,6 +29,18 @@ describe("CourseNavTree wiring", () => {
     expect(tree).toContain("AnimatePresence");
   });
 
+  it("moves focus from a callback ref, not an effect", () => {
+    // mode="wait" mounts the incoming level only after the exit finishes, so
+    // an effect (or onExitComplete) fires while the row is still unmounted —
+    // both were tried and left focus on <body>.
+    expect(tree).toMatch(
+      /useCallback\(\(el: HTMLAnchorElement \| null\) => \{[\s\S]*?el\.focus\(\)/,
+    );
+    // The prop, not the word: the component's comment explains why it is
+    // the wrong hook here.
+    expect(tree).not.toMatch(/onExitComplete=/);
+  });
+
   it("keeps the call-site props", () => {
     expect(tree).toMatch(/compact = true/);
     expect(tree).toMatch(/className\?: string/);
