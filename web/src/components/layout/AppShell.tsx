@@ -104,11 +104,13 @@ export function activeThemeFor(pathname: string): FamilyId | null {
 }
 
 /**
- * Grace before a pointer-out closes the drawer. Long enough to cross the gap
- * between the rail and a lesson link without the panel snapping shut, short
- * enough that it does not feel stuck open.
+ * Grace before a pointer-out closes the drawer. Deliberately long enough to
+ * read as an auto-close rather than a snap: at ~200ms the panel vanished the
+ * instant the pointer crossed its edge, which felt like a glitch and punished
+ * any wobble on the way to a link. Re-entering cancels it, so the only cost of
+ * a longer wait is the panel lingering over the article for a beat.
  */
-const HOVER_CLOSE_MS = 220;
+const HOVER_CLOSE_MS = 700;
 /** Hover-driven open only where a pointer can actually hover. */
 const HOVER_MQ = "(hover: hover) and (pointer: fine)";
 

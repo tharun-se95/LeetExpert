@@ -36,8 +36,12 @@ describe("hover-driven drawer", () => {
     expect(shell).toMatch(/onPointerEnter=\{openOnHover\}/);
   });
 
-  it("closes on pointer-leave, after a grace delay", () => {
-    expect(shell).toContain("HOVER_CLOSE_MS");
+  it("closes on pointer-leave, after a grace delay long enough to read as auto-close", () => {
+    // Not a snap: a ~200ms grace felt like a glitch when the pointer merely
+    // clipped the panel's edge.
+    expect(shell).toMatch(/const HOVER_CLOSE_MS = (\d+);/);
+    const ms = Number(shell.match(/const HOVER_CLOSE_MS = (\d+);/)![1]);
+    expect(ms).toBeGreaterThanOrEqual(500);
     expect(shell).toMatch(/onPointerLeave=\{canHover \? closeAfterGrace : undefined\}/);
   });
 
