@@ -229,7 +229,9 @@ export function CourseNavPanel({
           </span>
         </button>
         <div className="border-b border-border px-2 pb-2">
-          <h2 className="font-display text-[13px] font-bold tracking-tight text-foreground">
+          {/* Sits between the 19px section label and the 13px rows, so the
+              hierarchy reads section > module > lesson. */}
+          <h2 className="font-display text-[15px] font-bold tracking-tight text-foreground">
             <span className="mr-1.5 tabular-nums text-[11px] text-muted">
               {navModule.number}.
             </span>

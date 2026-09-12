@@ -123,6 +123,12 @@ describe("CourseNavPanel level 2", () => {
     expect(back).not.toMatch(/style="[^"]*--accent:/);
   });
 
+  it("ranks the module title between the section label and the rows", () => {
+    const heading = html.match(/<h2[^>]*>[\s\S]*?<\/h2>/)![0];
+    expect(heading).toMatch(/text-\[15px\]/);
+    expect(heading).toContain("font-bold");
+  });
+
   it("marks the active lesson for assistive tech", () => {
     expect(html).toMatch(
       new RegExp(

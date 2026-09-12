@@ -7,6 +7,14 @@ import { CourseNavTree } from "@/components/layout/CourseNavTree";
 
 interface SidebarProps {
   open: boolean;
+  /**
+   * Touch devices cannot hover, so they keep an explicit close control; on
+   * hover-capable pointers the drawer closes itself when the pointer leaves.
+   */
+  showClose?: boolean;
+  onPointerEnter?: () => void;
+  onPointerLeave?: () => void;
+  onFocusCapture?: () => void;
   onClose: () => void;
 }
 
@@ -27,7 +35,14 @@ function clampWidth(px: number): number {
  * page already has the description, the editor, and the coach competing for
  * horizontal space, so a drawer nobody has open should cost none of it.
  */
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({
+  open,
+  onClose,
+  showClose = true,
+  onPointerEnter,
+  onPointerLeave,
+  onFocusCapture,
+}: SidebarProps) {
   // Always starts at the default so the client's first render matches the
   // server's — reading localStorage during init would hydrate a width the
   // server never rendered. The persisted width is applied right after
@@ -93,6 +108,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
   return (
     <aside
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+      onFocusCapture={onFocusCapture}
       id="lessons-sidebar"
       // Stays mounted so the width transition has something to collapse, and
       // inert while closed so the clipped tree leaves the tab order with it.
@@ -129,17 +147,27 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           FloatingLessonsButton hides itself while the drawer is open, so this
           is the only way to close it on desktop.
         */}
-        <div className="flex h-9 shrink-0 items-center justify-end px-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            aria-label="Close lessons drawer"
-          >
-            <CaretLeft className="h-4 w-4" weight="bold" />
-          </button>
-        </div>
-        <CourseNavTree compact className="px-5 pb-6" />
+        {/*
+          No title bar: the panel names where you are (Overview, or a section +
+          module header). The close control only renders where the pointer
+          cannot hover — elsewhere the drawer closes itself on pointer-leave.
+        */}
+        {showClose ? (
+          <div className="flex h-9 shrink-0 items-center justify-end px-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              aria-label="Close lessons drawer"
+            >
+              <CaretLeft className="h-4 w-4" weight="bold" />
+            </button>
+          </div>
+        ) : null}
+        <CourseNavTree
+          compact
+          className={cn("px-5 pb-6", showClose ? undefined : "pt-5")}
+        />
       </div>
       {/*
         Same grip-chip idiom as PanelSplit's drag handle: a hairline track

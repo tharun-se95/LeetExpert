@@ -10,16 +10,42 @@ const floating = readFileSync(
   join(__dirname, "..", "src", "components", "layout", "FloatingLessonsButton.tsx"),
   "utf8",
 );
+const shell = readFileSync(
+  join(__dirname, "..", "src", "components", "layout", "AppShell.tsx"),
+  "utf8",
+);
 
 describe("Sidebar chrome", () => {
   it("drops the 'Lessons' title bar — the panel names itself now", () => {
     expect(sidebar).not.toMatch(/>\s*Lessons\s*</);
   });
 
-  it("keeps a way to close the drawer on desktop", () => {
-    // FloatingLessonsButton hides itself while the drawer is open, so this is
-    // the only close affordance on >=lg. Losing it strands the drawer open.
+  it("keeps an explicit close where the pointer cannot hover", () => {
+    // Touch has no hover, and FloatingLessonsButton hides itself while the
+    // drawer is open — without this the drawer would be stuck open on a
+    // touchscreen.
+    expect(sidebar).toContain("showClose");
     expect(sidebar).toContain('aria-label="Close lessons drawer"');
     expect(floating).toContain("if (open) return null;");
+  });
+});
+
+describe("hover-driven drawer", () => {
+  it("opens from an edge strip, since a closed drawer is 0px wide", () => {
+    expect(shell).toContain('"(hover: hover) and (pointer: fine)"');
+    expect(shell).toMatch(/onPointerEnter=\{openOnHover\}/);
+  });
+
+  it("closes on pointer-leave, after a grace delay", () => {
+    expect(shell).toContain("HOVER_CLOSE_MS");
+    expect(shell).toMatch(/onPointerLeave=\{canHover \? closeAfterGrace : undefined\}/);
+  });
+
+  it("is dismissible from the keyboard (WCAG 1.4.13)", () => {
+    expect(shell).toMatch(/e\.key === "Escape"/);
+  });
+
+  it("does not persist a hover-driven drawer as a preference", () => {
+    expect(shell).toMatch(/canHover\) return;/);
   });
 });
