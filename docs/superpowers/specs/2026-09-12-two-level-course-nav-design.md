@@ -29,7 +29,9 @@ the reader has.
 
 ### Level 2 — one module
 
-1. A back row: `←  All modules`.
+1. A back row naming the section the module sits in: `←  Foundations`.
+   (Changed from a generic `All modules` on 2026-09-12, at the owner's
+   request.)
 2. A module header: number, full `title`, and progress `2/5`.
 3. The module's lessons, each with its completion dot, then its `extras`
    (e.g. Concept map) — tree icon, no dot, outside the `x/y` count.
@@ -102,8 +104,12 @@ state and markup, which is also why it has no render test today.
   active state is colour only.
 - The level-2 module header is an `<h2>`, and the `<nav aria-label="Course">`
   wrapper stays.
-- After pressing back, focus moves to the "All modules" link, so keyboard
-  focus isn't dropped to `<body>` when the back button unmounts.
+- The back row's visible text is the section name; its `aria-label` is
+  `Back to <section>`, which contains that text (WCAG 2.5.3, label in name).
+- After pressing back, focus moves to the row of the module just left — not
+  the top of the list — so keyboard focus isn't dropped to `<body>`, and the
+  browser scrolls that section into view. A generic jump to the top would
+  make the section-named back row a lie for any module below the fold.
 - Decorative carets and dots keep `aria-hidden`.
 - Mobile keeps its `min-h-11` rows (`compact={false}`); the back row and
   module header follow the same sizing switch.

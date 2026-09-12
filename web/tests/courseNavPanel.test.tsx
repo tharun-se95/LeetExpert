@@ -10,6 +10,7 @@ const other = modules.find(
   (m) => m.slug !== navModule.slug && m.lessons.length > 0,
 )!;
 const lesson = navModule.lessons[0]!;
+const stage = nav.find((s) => s.modules.some((m) => m.slug === navModule.slug))!;
 
 /** Titles carry `&` ("Recursive & Hierarchical"), which React escapes. */
 const esc = (s: string) =>
@@ -52,7 +53,14 @@ describe("CourseNavPanel level 1", () => {
 });
 
 describe("CourseNavPanel level 2", () => {
-  const html = render({ level: "module", navModule }, lesson.href);
+  const html = render(
+    {
+      level: "module",
+      navModule,
+      stage: { number: stage.number, title: stage.title },
+    },
+    lesson.href,
+  );
 
   it("shows only the open module's lessons and extras", () => {
     for (const l of navModule.lessons) expect(html).toContain(esc(l.title));
@@ -84,8 +92,15 @@ describe("CourseNavPanel level 2", () => {
     expect(html).toContain(`0/${navModule.lessons.length}`);
   });
 
-  it("offers a back control and names the module", () => {
-    expect(html).toMatch(/<button[^>]*>[\s\S]*?All modules[\s\S]*?<\/button>/);
+  it("labels the back row with the section, not a generic 'All modules'", () => {
+    expect(html).toMatch(
+      new RegExp(`<button[^>]*aria-label="Back to ${esc(stage.title)}"`),
+    );
+    // Label in name (WCAG 2.5.3): the visible text sits inside the aria-label.
+    expect(html).toContain(esc(stage.title));
+    expect(html).not.toMatch(
+      /<button[^>]*>[\s\S]*?All modules[\s\S]*?<\/button>/,
+    );
     expect(html).toContain(esc(navModule.title));
   });
 

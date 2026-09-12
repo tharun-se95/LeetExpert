@@ -19,8 +19,10 @@ describe("CourseNavTree wiring", () => {
     // The override is the only stored piece; a stored level would go stale
     // against the route.
     expect(tree).toMatch(/useState<boolean>\(false\)|useState\(false\)/);
+    // Both the override and the return-focus slug describe "where the reader
+    // just was"; a navigation answers that, so both are dropped together.
     expect(tree).toMatch(
-      /useEffect\(\(\) => \{\s*setBackToModules\(false\);?\s*\}, \[pathname\]\)/,
+      /useEffect\(\(\) => \{\s*setBackToModules\(false\);\s*setReturnSlug\(null\);\s*\}, \[pathname\]\)/,
     );
   });
 

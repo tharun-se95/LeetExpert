@@ -44,10 +44,12 @@ export function CourseNavTree({
   const reduceMotion = useReducedMotion();
 
   const [backToModules, setBackToModules] = useState(false);
+  const [returnSlug, setReturnSlug] = useState<string | null>(null);
   // Following any row navigates, which is the reader's own answer to "which
   // module am I in" — the override has served its purpose.
   useEffect(() => {
     setBackToModules(false);
+    setReturnSlug(null);
   }, [pathname]);
 
   const view = resolveNavView({ stages: nav, pathname, backToModules });
@@ -62,9 +64,10 @@ export function CourseNavTree({
    * effect keyed on the level nor AnimatePresence's onExitComplete works
    * here: with mode="wait" the incoming level has not mounted yet when
    * either fires, so the element to focus does not exist (verified in the
-   * browser — focus stayed on <body>).
+   * browser — focus stayed on <body>). Focusing the row also scrolls it into
+   * view, which is what makes the section-named back row truthful.
    */
-  const allModulesRef = useCallback((el: HTMLAnchorElement | null) => {
+  const returnRowRef = useCallback((el: HTMLAnchorElement | null) => {
     if (el && wantsFocus.current) {
       wantsFocus.current = false;
       el.focus();
@@ -74,6 +77,7 @@ export function CourseNavTree({
   // A fresh level starts at its own top; keeping the old offset lands the
   // reader mid-list in a list they have not seen.
   useEffect(() => {
+    if (wantsFocus.current) return;
     scrollRef.current?.scrollTo({ top: 0 });
   }, [viewKey]);
 
@@ -85,10 +89,12 @@ export function CourseNavTree({
       visited={visited}
       compact={compact}
       curriculumHref={curriculumHref}
-      allModulesRef={allModulesRef}
+      returnSlug={returnSlug}
+      returnRowRef={returnRowRef}
       onBack={() => {
         // The back button unmounts with the level, so move focus deliberately.
         wantsFocus.current = true;
+        setReturnSlug(view.level === "module" ? view.navModule.slug : null);
         setBackToModules(true);
       }}
     />

@@ -21,8 +21,13 @@ export interface CourseNavPanelProps {
   compact: boolean;
   curriculumHref: string;
   onBack: () => void;
-  /** Focus target after back, so the unmounting button doesn't drop focus. */
-  allModulesRef?: Ref<HTMLAnchorElement>;
+  /**
+   * The module the reader just came back from. Its row takes the focus ref, so
+   * returning lands on that row — in its own section, which is what the back
+   * row promised — instead of the top of a 24-module list.
+   */
+  returnSlug?: string | null;
+  returnRowRef?: Ref<HTMLAnchorElement>;
 }
 
 const rowPad = (compact: boolean) =>
@@ -34,11 +39,13 @@ function ModuleRow({
   pathname,
   visited,
   compact,
+  rowRef,
 }: {
   navModule: CourseNavModule;
   pathname: string;
   visited: Set<string>;
   compact: boolean;
+  rowRef?: Ref<HTMLAnchorElement>;
 }) {
   const doneCount = navModule.lessons.filter((l) => visited.has(l.id)).length;
   const hasLessons = navModule.lessons.length > 0;
@@ -46,6 +53,7 @@ function ModuleRow({
 
   return (
     <Link
+      ref={rowRef}
       href={navModule.href}
       aria-current={active ? "page" : undefined}
       className={cn(
@@ -197,7 +205,8 @@ export function CourseNavPanel({
   compact,
   curriculumHref,
   onBack,
-  allModulesRef,
+  returnSlug,
+  returnRowRef,
 }: CourseNavPanelProps) {
   if (view.level === "module") {
     const { navModule } = view;
@@ -207,13 +216,16 @@ export function CourseNavPanel({
         <button
           type="button"
           onClick={onBack}
+          // Visible text is the section name; the accessible name adds the
+          // verb and still contains it (WCAG 2.5.3, label in name).
+          aria-label={`Back to ${view.stage.title}`}
           className={cn(
             "mb-2.5 flex w-full items-center gap-1.5 rounded-[length:var(--radius-xs)] px-2 text-[13px] font-medium text-foreground transition-colors hover:bg-surface",
             rowPad(compact),
           )}
         >
           <CaretLeft aria-hidden className="h-3.5 w-3.5 shrink-0 text-muted" />
-          All modules
+          <span className="min-w-0 truncate">{view.stage.title}</span>
         </button>
         <div className="border-b border-border px-2 pb-2">
           <h2 className="font-display text-[13px] font-bold tracking-tight text-foreground">
@@ -256,7 +268,6 @@ export function CourseNavPanel({
   return (
     <div>
       <Link
-        ref={allModulesRef}
         href={curriculumHref}
         aria-current={pathname === curriculumHref ? "page" : undefined}
         className={cn(
@@ -290,6 +301,7 @@ export function CourseNavPanel({
                 pathname={pathname}
                 visited={visited}
                 compact={compact}
+                rowRef={m.slug === returnSlug ? returnRowRef : undefined}
               />
             ))}
           </div>

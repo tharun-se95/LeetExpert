@@ -3,7 +3,12 @@ import type { CourseNavModule, CourseNavStage } from "@/lib/course/nav";
 /** Which pane the course nav shows: every module, or one module's lessons. */
 export type NavView =
   | { level: "modules" }
-  | { level: "module"; navModule: CourseNavModule };
+  /** `stage` is what the level-2 back row is labelled with ("< Foundations"). */
+  | {
+      level: "module";
+      navModule: CourseNavModule;
+      stage: { number: number; title: string };
+    };
 
 function isActivePath(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -49,10 +54,15 @@ export function resolveNavView({
   if (backToModules) return { level: "modules" };
   const slug = activeModuleSlug(stages, pathname);
   if (!slug) return { level: "modules" };
-  const navModule = stages
-    .flatMap((stage) => stage.modules)
-    .find((m) => m.slug === slug);
+  const stage = stages.find((s) => s.modules.some((m) => m.slug === slug));
+  const navModule = stage?.modules.find((m) => m.slug === slug);
   // Nothing to show at level 2, so following the row just navigates.
-  if (!navModule || navModule.lessons.length === 0) return { level: "modules" };
-  return { level: "module", navModule };
+  if (!stage || !navModule || navModule.lessons.length === 0) {
+    return { level: "modules" };
+  }
+  return {
+    level: "module",
+    navModule,
+    stage: { number: stage.number, title: stage.title },
+  };
 }

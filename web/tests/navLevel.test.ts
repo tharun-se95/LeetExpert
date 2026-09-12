@@ -7,6 +7,12 @@ const modules = stages.flatMap((s) => s.modules);
 const withLessons = modules.find((m) => m.lessons.length > 0)!;
 const withExtras = modules.find((m) => (m.extras ?? []).length > 0)!;
 
+/** The section a module sits in — what the level-2 back row is labelled with. */
+const stageOf = (slug: string) => {
+  const stage = stages.find((s) => s.modules.some((m) => m.slug === slug))!;
+  return { number: stage.number, title: stage.title };
+};
+
 describe("activeModuleSlug", () => {
   it("matches a module page and a lesson under it", () => {
     expect(activeModuleSlug(stages, withLessons.href)).toBe(withLessons.slug);
@@ -35,13 +41,28 @@ describe("resolveNavView", () => {
       stages,
       pathname: withLessons.lessons[0]!.href,
     });
-    expect(view).toEqual({ level: "module", navModule: withLessons });
+    expect(view).toEqual({
+      level: "module",
+      navModule: withLessons,
+      stage: stageOf(withLessons.slug),
+    });
   });
 
   it("keeps the module open on one of its extras", () => {
     expect(
       resolveNavView({ stages, pathname: withExtras.extras![0]!.href }),
-    ).toEqual({ level: "module", navModule: withExtras });
+    ).toEqual({
+      level: "module",
+      navModule: withExtras,
+      stage: stageOf(withExtras.slug),
+    });
+  });
+
+  it("names the section the open module belongs to", () => {
+    // The back row reads "< Foundations", not a generic "All modules", so it
+    // has to carry the stage the module was reached through.
+    const view = resolveNavView({ stages, pathname: withLessons.href });
+    expect(view).toMatchObject({ stage: stageOf(withLessons.slug) });
   });
 
   it("shows the module list on the hub", () => {
@@ -68,7 +89,11 @@ describe("resolveNavView", () => {
     const aliasedStages = [{ number: 1, title: "Stage", modules: [aliased] }];
     expect(
       resolveNavView({ stages: aliasedStages, pathname: aliased.href }),
-    ).toEqual({ level: "module", navModule: aliased });
+    ).toEqual({
+      level: "module",
+      navModule: aliased,
+      stage: { number: 1, title: "Stage" },
+    });
   });
 
   it("never opens an empty level 2 for a module with no lessons", () => {

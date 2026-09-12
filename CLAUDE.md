@@ -111,7 +111,10 @@ The content is the product. Code exists to serve it.
   Heading text stays ink.
 - **The course nav is two levels, and the level is derived from the route.**
   Level 1 is stage headings + module rows; following a module row navigates
-  to it and drills into level 2, that module's lessons. `lib/course/navLevel.ts`
+  to it and drills into level 2, that module's lessons plus its extras. The
+  back row is labelled with the module's own section ("< Foundations") and
+  returns focus to that module's row, which scrolls its section back into
+  view — a generic jump to the top would make that label untrue. `lib/course/navLevel.ts`
   owns the resolution (`resolveNavView`) — the only stored state is the back
   override, which shows level 1 without navigating and is dropped on the next
   pathname change; a stored level would go stale against the URL. Markup
