@@ -7,11 +7,6 @@ import { CourseNavTree } from "@/components/layout/CourseNavTree";
 
 interface SidebarProps {
   open: boolean;
-  /**
-   * Touch devices cannot hover, so they keep an explicit close control; on
-   * hover-capable pointers the drawer closes itself when the pointer leaves.
-   */
-  showClose?: boolean;
   onPointerEnter?: () => void;
   onPointerLeave?: () => void;
   onFocusCapture?: () => void;
@@ -38,7 +33,6 @@ function clampWidth(px: number): number {
 export function Sidebar({
   open,
   onClose,
-  showClose = true,
   onPointerEnter,
   onPointerLeave,
   onFocusCapture,
@@ -143,32 +137,23 @@ export function Sidebar({
       */}
       <div className="flex h-full flex-col" style={{ width }}>
         {/*
-          No title bar: the panel already names where you are (Overview, or a
-          section + module header). What survives is the collapse control —
-          FloatingLessonsButton hides itself while the drawer is open, so this
-          is the only way to close it on desktop.
-        */}
-        {/*
           No title bar: the panel names where you are (Overview, or a section +
-          module header). The close control only renders where the pointer
-          cannot hover — elsewhere the drawer closes itself on pointer-leave.
+          module header). What sits here is the close button — the deliberate
+          way out, and the only one on desktop while the drawer is open, since
+          FloatingLessonsButton hides itself then. Hover only opens; the
+          pointer-out timer is a slow tidy-up, not the close affordance.
         */}
-        {showClose ? (
-          <div className="flex h-9 shrink-0 items-center justify-end px-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              aria-label="Close lessons drawer"
-            >
-              <CaretLeft className="h-4 w-4" weight="bold" />
-            </button>
-          </div>
-        ) : null}
-        <CourseNavTree
-          compact
-          className={cn("px-5 pb-6", showClose ? undefined : "pt-5")}
-        />
+        <div className="flex h-9 shrink-0 items-center justify-end px-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Close lessons drawer"
+          >
+            <CaretLeft className="h-4 w-4" weight="bold" />
+          </button>
+        </div>
+        <CourseNavTree compact className="px-5 pb-6" />
       </div>
       {/*
         Same grip-chip idiom as PanelSplit's drag handle: a hairline track

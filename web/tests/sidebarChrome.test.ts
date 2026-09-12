@@ -20,12 +20,11 @@ describe("Sidebar chrome", () => {
     expect(sidebar).not.toMatch(/>\s*Lessons\s*</);
   });
 
-  it("keeps an explicit close where the pointer cannot hover", () => {
-    // Touch has no hover, and FloatingLessonsButton hides itself while the
-    // drawer is open — without this the drawer would be stuck open on a
-    // touchscreen.
-    expect(sidebar).toContain("showClose");
+  it("always offers a close button, on every pointer type", () => {
+    // FloatingLessonsButton hides itself while the drawer is open, so this is
+    // the only close control on desktop — and touch has no hover at all.
     expect(sidebar).toContain('aria-label="Close lessons drawer"');
+    expect(sidebar).not.toContain("showClose");
     expect(floating).toContain("if (open) return null;");
   });
 });
@@ -39,9 +38,13 @@ describe("hover-driven drawer", () => {
   it("closes on pointer-leave, after a grace delay long enough to read as auto-close", () => {
     // Not a snap: a ~200ms grace felt like a glitch when the pointer merely
     // clipped the panel's edge.
-    expect(shell).toMatch(/const HOVER_CLOSE_MS = (\d+);/);
-    const ms = Number(shell.match(/const HOVER_CLOSE_MS = (\d+);/)![1]);
-    expect(ms).toBeGreaterThanOrEqual(500);
+    expect(shell).toMatch(/const HOVER_CLOSE_MS = [\d_]+;/);
+    const ms = Number(
+      shell.match(/const HOVER_CLOSE_MS = ([\d_]+);/)![1].replace(/_/g, ""),
+    );
+    // A slow tidy-up, not a reaction to the pointer: closing belongs to the
+    // close button.
+    expect(ms).toBeGreaterThanOrEqual(30_000);
     expect(shell).toMatch(/onPointerLeave=\{canHover \? closeAfterGrace : undefined\}/);
   });
 

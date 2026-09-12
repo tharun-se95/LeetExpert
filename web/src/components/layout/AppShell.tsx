@@ -104,13 +104,13 @@ export function activeThemeFor(pathname: string): FamilyId | null {
 }
 
 /**
- * Grace before a pointer-out closes the drawer. Deliberately long enough to
- * read as an auto-close rather than a snap: at ~200ms the panel vanished the
- * instant the pointer crossed its edge, which felt like a glitch and punished
- * any wobble on the way to a link. Re-entering cancels it, so the only cost of
- * a longer wait is the panel lingering over the article for a beat.
+ * The drawer stays put for a full minute after the pointer leaves. Hover is
+ * how it OPENS; closing is a slow tidy-up for a drawer the reader has plainly
+ * finished with, not a reaction to the pointer moving away — at sub-second
+ * delays it kept vanishing mid-read. The close button is the deliberate way
+ * out, and re-entering resets the minute.
  */
-const HOVER_CLOSE_MS = 700;
+const HOVER_CLOSE_MS = 60_000;
 /** Hover-driven open only where a pointer can actually hover. */
 const HOVER_MQ = "(hover: hover) and (pointer: fine)";
 
@@ -315,7 +315,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Sidebar
                   open={sidebarOpen}
                   onClose={() => setSidebarOpen(false)}
-                  showClose={!canHover}
                   onPointerEnter={canHover ? cancelHoverClose : undefined}
                   onPointerLeave={canHover ? closeAfterGrace : undefined}
                   onFocusCapture={canHover ? cancelHoverClose : undefined}
