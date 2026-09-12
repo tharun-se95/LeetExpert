@@ -41,6 +41,13 @@ describe("hover-driven drawer", () => {
     expect(shell).toMatch(/onPointerLeave=\{canHover \? closeAfterGrace : undefined\}/);
   });
 
+  it("closes by pointer position, not only by the panel's own leave event", () => {
+    // The drawer slides in under a stationary cursor, so pointerenter never
+    // fires on it and pointerleave never follows — it would hang open.
+    expect(shell).toContain('window.addEventListener("pointermove", onMove)');
+    expect(shell).toMatch(/clientX > rail\.getBoundingClientRect\(\)\.right/);
+  });
+
   it("is dismissible from the keyboard (WCAG 1.4.13)", () => {
     expect(shell).toMatch(/e\.key === "Escape"/);
   });

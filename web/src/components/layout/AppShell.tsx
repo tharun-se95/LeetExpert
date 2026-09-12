@@ -175,6 +175,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
   useEffect(() => cancelHoverClose, [cancelHoverClose]);
 
+  /**
+   * Closing cannot rely on the panel's own pointerleave: the drawer slides in
+   * *under* a stationary cursor, so the browser never fires pointerenter on
+   * it, and with no enter there is no leave either (seen in the browser — the
+   * drawer stayed open forever). Tracking the pointer against the rail's own
+   * edge closes it as soon as the pointer moves away, wherever it came from.
+   */
+  useEffect(() => {
+    if (!canHover || !sidebarOpen) return;
+    const onMove = (e: PointerEvent) => {
+      const rail = document.getElementById("lessons-sidebar");
+      if (!rail) return;
+      if (e.clientX > rail.getBoundingClientRect().right) closeAfterGrace();
+      else cancelHoverClose();
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [canHover, sidebarOpen, closeAfterGrace, cancelHoverClose]);
+
   // Dismissible without moving the pointer (WCAG 1.4.13): Esc closes whatever
   // hover opened, and is the keyboard user's way out too.
   useEffect(() => {
@@ -271,13 +290,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             Header, which now carries only search, progress and theme.
           */}
           {showCourseNav && !ideViewport ? <FloatingLessonsButton /> : null}
-          {/* The drawer is 0px wide when closed, so the open trigger is this
-              edge strip rather than the panel itself. */}
+          {/* The drawer sits off-screen when closed, so the open trigger is
+              this edge strip rather than the panel itself. 28px wide: a 12px
+              strip needed a deliberate aim at the very edge. */}
           {showCourseNav && !ideViewport && canHover && !sidebarOpen ? (
             <div
               aria-hidden
               onPointerEnter={openOnHover}
-              className="fixed top-14 bottom-0 left-0 z-30 hidden w-3 lg:block"
+              className="fixed top-14 bottom-0 left-0 z-30 hidden w-7 lg:block"
             />
           ) : null}
           <div className="flex h-dvh flex-col overflow-hidden">

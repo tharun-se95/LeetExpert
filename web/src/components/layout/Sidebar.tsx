@@ -112,10 +112,10 @@ export function Sidebar({
       onPointerLeave={onPointerLeave}
       onFocusCapture={onFocusCapture}
       id="lessons-sidebar"
-      // Stays mounted so the width transition has something to collapse, and
-      // inert while closed so the clipped tree leaves the tab order with it.
+      // Stays mounted so the slide has something to animate, and inert while
+      // closed so the off-screen tree leaves the tab order with it.
       inert={!open}
-      style={{ width: open ? width : 0 }}
+      style={{ width }}
       className={cn(
         // sidebar-rail (globals.css): whole-panel wash of the topic's
         // primary colour, split by theme — see the comment there for why
@@ -123,17 +123,19 @@ export function Sidebar({
         // z-45: above the sticky header (z-40) so the header's shadow-edge-bottom
         // stops falling across the rail's top edge, and still below the search
         // dialog and mobile sheet (z-50), which must cover everything.
-        "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col overflow-hidden lg:flex",
-        // Width changes fire from two very different sources: the open/close
-        // toggle (should glide) and the drag handle (should track the
-        // pointer 1:1, or the panel visibly lags the cursor). Only animate
-        // the former.
+        //
+        // Fixed, not in flow: the drawer overlays the article instead of
+        // pushing it, so opening on hover never reflows the text being read.
+        // top-14 clears the sticky header.
+        "sidebar-rail print:hidden fixed top-14 bottom-0 left-0 z-[45] hidden flex-col overflow-hidden lg:flex",
+        // Transform, not width: it composites on the GPU, so the slide stays
+        // smooth where animating width relayouts the whole column each frame.
+        // The drag handle must track the pointer 1:1, so it opts out.
         !dragging &&
-          "transition-[width] duration-[var(--dur)] ease-[var(--ease)]",
-        // box-shadow isn't clipped by the element's own overflow-hidden, so
-        // a w-0 closed drawer would still show a shadow sliver if this were
-        // unconditional.
-        open ? "border-r border-border shadow-edge-right" : "",
+          "transition-transform duration-[var(--dur)] ease-[var(--ease)] motion-reduce:transition-none",
+        open
+          ? "translate-x-0 border-r border-border shadow-edge-right"
+          : "-translate-x-full",
       )}
     >
       {/*
