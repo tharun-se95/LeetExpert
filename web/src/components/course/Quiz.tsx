@@ -235,11 +235,17 @@ export function Quiz({ source }: { source: string }) {
 
   return (
     <section className="my-8" aria-labelledby={headingId}>
-      <header className="chapter-rule mb-2 flex items-end justify-between gap-3">
+      {/*
+        Baseline, not items-end: the count is a <p> inside handbook-prose, so
+        `p { margin: 0.85rem 0 }` bottom-aligned its margin box, not its text,
+        and it rode 11.5px above the heading. !m-0 for the same reason as the
+        question row below.
+      */}
+      <header className="chapter-rule mb-2 flex items-baseline justify-between gap-3">
         <h2 id={headingId} className="chapter-heading">
           Check yourself
         </h2>
-        <p className="mb-1 shrink-0 font-mono text-[10px] tabular-nums text-muted">
+        <p className="!m-0 shrink-0 font-mono text-[10px] tabular-nums text-muted">
           {spec.questions.length}{" "}
           {spec.questions.length === 1 ? "question" : "questions"}
         </p>

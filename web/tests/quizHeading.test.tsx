@@ -30,6 +30,22 @@ describe("Quiz section heading", () => {
     expect(attrs).toMatch(/class="chapter-heading"/);
   });
 
+  it("sits the question count on the heading's baseline", () => {
+    // The header aligned by `items-end` while its count was a <p> inside
+    // .handbook-prose, whose unlayered `p { margin: 0.85rem 0 }` beat the
+    // count's mb-1: the margin box bottom-aligned, not the text, and the count
+    // rode 11.5px above the heading's baseline (measured 166.05 vs 177.55px).
+    // Same fix the question row below it already uses: baseline + !m-0.
+    const header = html.match(/<header class="([^"]*)"[^>]*><h2[^>]*>Check yourself<\/h2>/)?.[1];
+    expect(header).toBeDefined();
+    expect(header).toContain("items-baseline");
+    expect(header).not.toContain("items-end");
+    const count = html.match(/<\/h2><p class="([^"]*)"[^>]*>\d+(?:<!-- -->)?\s?(?:<!-- -->)?questions?<\/p>/)?.[1];
+    expect(count).toBeDefined();
+    expect(count).toContain("!m-0");
+    expect(count).not.toMatch(/\bmb-1\b/);
+  });
+
   it("labels its section, so the region is announced by its heading", () => {
     const id = html.match(/<h2[^>]*\sid="([^"]+)"[^>]*>Check yourself<\/h2>/)?.[1];
     expect(id).toBeDefined();
