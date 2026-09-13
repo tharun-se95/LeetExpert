@@ -199,7 +199,7 @@ The content is the product. Code exists to serve it.
   focus states, keyboard paths for every interaction, and `prefers-reduced-
   motion` honoured.
 - Performance is budgeted. Heavy dependencies load only where used; do not
-  make 191 lessons pay for a feature five of them need.
+  make 220 lessons pay for a feature five of them need.
 
 ## 6. Reporting
 
@@ -214,11 +214,19 @@ The content is the product. Code exists to serve it.
 
 | Path | What it is |
 | --- | --- |
-| `course/` | 191 lesson markdown files — the product |
-| `web/` | Next.js app that renders the course |
-| `video/` | Remotion video subproject (see `video/HANDOFF.md`) |
+| `courses/dsa/` | The product: 220 lesson markdown files in 24 modules, `<module>/<lesson>.md` (116 problem, 83 concept, 21 practice) |
+| `courses/nextjs/` | Next.js course, 62 lessons, `<module>/<chapter>/<lesson>.md` — disabled: `web/src/app/courses/nextjs/layout.tsx` 404s every route |
+| `web/` | Next.js app that renders the course; reads `courses/` from the repo root (`COURSE_ROOT` overrides) |
+| `video/` | Remotion video subproject (see `video/HANDOFF.md`) — legacy; new video work goes to `hyperframes/` |
 | `docs/superpowers/specs/` | Design specs; write one before large work |
-| `HANDOFF.md` | Current state, next task, and traps already paid for |
 | `web/tests/` | Content validation — runs in CI before build |
+| `hyperframes/` | HyperFrames visual system: seek-safe DSA primitives and explainer videos; one source for lesson art, social stills and video (see its README) |
+| `marketing/` | Instagram post packages; `LEDGER.md` is the append-only record the social-artist agent reads before and appends to after each post |
+| `seo/` | SEO strategy, keywords, technical audit and changelog |
+| `archive/handbook-v1/` | The retired v1 pattern handbook, kept for reference |
+| `scripts/` | v1 handbook Python scripts; they target a root `part-2-pattern-families/` that now lives in `archive/handbook-v1/`, so they do not run as-is |
+| `assets/` | v1 handbook-era Mermaid pattern diagrams and placeholder folders; unchanged since the initial commit and referenced by nothing |
+| `references/` | Reading list that informs the content — not part of the course |
+| `media-source/` | Git-ignored raw NotebookLM exports; the served copies live in `web/public/media/` |
 
 `web/AGENTS.md` carries Next.js-specific guidance and still applies.

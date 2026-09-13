@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { motion } from "motion/react";
 import type { ThemedToken } from "shiki";
 import { cn } from "@/lib/utils";
+import { LanguageMark } from "@/components/kit/languageMarks";
 import { tokenizeVizCode, type VizLang } from "@/lib/viz/highlightVizCode";
 import type { VizCode, VizLineRef } from "@/components/viz/types";
 
@@ -83,6 +84,7 @@ export function CodePanel({
               onClick={() => setLang(tab.lang)}
               className="code-tab"
             >
+              <LanguageMark language={tab.lang} />
               {tab.label}
             </button>
           ))}

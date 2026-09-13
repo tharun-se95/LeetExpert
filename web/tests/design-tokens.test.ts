@@ -31,7 +31,7 @@ const HEX_ALLOW = new Set([
   "lib/visual/familyTheme.ts", // per-family accent map for PatternLab
   "components/md/Mermaid.tsx", // Mermaid theme API wants resolved hex
   "components/sandbox/editorTheme.ts", // may mirror --tok-* literals
-  "components/sandbox/languageMarks.tsx", // brand colour, not design-system colour
+  "components/kit/languageMarks.tsx", // brand colour, not design-system colour
   "app/courses/dsa/registry.ts", // per-course accent hex, same pattern as familyTheme.ts
   "app/courses/nextjs/registry.ts", // per-course accent hex, same pattern as familyTheme.ts
   "app/layout.tsx", // viewport.themeColor — outside the CSS cascade, mirrors --press-olive/--press-blue
@@ -849,6 +849,28 @@ describe("type system", () => {
     expect(css).toMatch(/--press-rule-strong:\s*rgba\(22, 32, 46, 0\.18\)/);
     expect(css).toMatch(/--press-rule-strong:\s*rgba\(244, 244, 245, 0\.18\)/);
     expect(css).toMatch(/--rule-strong:\s*var\(--press-rule-strong\)/);
+  });
+
+  it("the heading that opens a prose body carries no hairline", () => {
+    // A hairline separates a section from the one before it. The first element
+    // of a prose body has nothing above it inside that body — the tab bar, the
+    // page's own padding or the title sits there instead — so the rule drew a
+    // divider under nothing (measured on the Problem, Solution and Quiz tabs
+    // and on the lesson reading page).
+    const css = readFileSync(GLOBALS, "utf8");
+    const selector =
+      ".handbook-prose > h2:first-child:not(.chapter-heading),\n.handbook-prose > :first-child > .chapter-rule:first-child";
+    const block = cssBlock(css, selector);
+    expect(block).toMatch(/border-top:\s*0/);
+    expect(block).toMatch(/padding-top:\s*0/);
+    expect(block).toMatch(/margin-top:\s*0/);
+    // It ties the problem pane's heading rule on specificity, so it must come
+    // after it — before, that rule won and the heading kept 22.75px on top.
+    expect(css.indexOf(`\n${selector} {`)).toBeGreaterThan(
+      css.indexOf("\n.problem-prose .handbook-prose h2:not(.chapter-heading) {"),
+    );
+    // One rule for every Markdown body, not a per-context first-child patch.
+    expect(css).not.toContain(".reading-page .handbook-prose > h2:first-child {");
   });
 
   it("component section headings share the class, not a copied accent bar", () => {

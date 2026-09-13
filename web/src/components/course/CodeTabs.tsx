@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CodeBody, CopyButton } from "@/components/md/CodeBlock";
+import { LanguageMark } from "@/components/kit/languageMarks";
 import type { TabBlock } from "@/lib/content/highlightBlocks";
 
 export function CodeTabs({ tabs }: { tabs: TabBlock[] }) {
@@ -27,6 +28,7 @@ export function CodeTabs({ tabs }: { tabs: TabBlock[] }) {
               onClick={() => setActive(i)}
               className="code-tab"
             >
+              <LanguageMark language={tab.language} />
               {tab.label}
             </button>
           ))}
