@@ -279,6 +279,41 @@ test 1 fails naming the surface and ratio, restore.
 - `/opengraph-image` and `/twitter-image` render the lamp on the scrim.
 - Generated PNG/ICO/apple/android icons inspected visually at true size.
 
+## Amendments during planning (2026-09-13)
+
+Found while reading the code to write the implementation plan. None changes
+what the owner sees; each corrects a detail the spec got wrong or left
+unimplementable.
+
+1. **No `--color-lamp` mapping.** It would have no consumers — `Lamp.tsx`
+   paints from `var()` directly — and would only generate `bg-lamp` /
+   `text-lamp` utilities that the scope guard exists to forbid.
+2. **Halo stop offsets unified to 33% / 69%** in both themes (was 34/70
+   light, 32/68 dark). SVG `offset` is an attribute, not a CSS property, so it
+   cannot take a theme variable; the shift is under one unit on the 64 grid.
+   The per-theme opacities remain tokens (`--lamp-halo-a|b|c`).
+3. **The boot script is the first child of `<body>`, not in `<head>`** —
+   the pattern `next-themes` uses. It still runs before the header markup is
+   parsed, so the no-flash guarantee holds, without hand-authoring `<head>`
+   in the root layout. The script string lives in
+   `components/brand/lampBoot.ts` so it can be unit-tested.
+4. **The flag is written before the attribute is set.** If storage can't be
+   written, the lamp stays statically lit instead of blooming on every load.
+5. **`data-lamp-boot` is removed when the first bloom ends.** Without this,
+   ending a hover would drop the replay animation, fall back to the boot
+   selector, and play the bloom again.
+6. **Lamp tokens go in the first `:root` and first `.dark` block.**
+   `globals.css` has later blocks of both, and the token suites slice
+   `:root`→`.dark` from the first occurrence.
+7. **`generate-icons.mjs` copies `mark.svg` → `icon.svg`** instead of relying
+   on a hand copy; the byte-identical test stays as the guard.
+8. **Home-screen tiles scale the lamp to 72%** so the halo clears iOS's
+   squircle mask.
+9. **The test file is `brandLamp.test.tsx`**, since it renders `<Lamp>` with
+   `renderToStaticMarkup`, and it gains boot-script tests and an OG-card
+   colour test. Contrast helpers move to `tests/helpers/contrast.ts`, shared
+   with `design-tokens.test.ts`.
+
 ## Rejected alternatives
 
 | Option | Why not |
