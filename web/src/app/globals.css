@@ -600,6 +600,27 @@ body {
   margin-top: 0;
 }
 
+/*
+  The hairline separates a section from the one before it. The element that
+  opens a prose body has nothing above it inside that body — the tab bar, the
+  reading page's own padding, or the title sits there instead — so it gets no
+  rule and none of the rule's spacing. One rule for every Markdown body
+  (problem tabs, reading pages, roadmap and callout bodies) rather than a
+  first-child patch per context: the reading page once had its own, which
+  reset only the margin (81px stacked above the first hairline against 45px at
+  the sides) and left the divider.
+
+  The quiz's heading is not the first child of the prose: its section is, with
+  the .chapter-rule header inside. Placed after the .problem-prose heading rule
+  on purpose — the h2 selector ties it on specificity, and the later rule wins.
+*/
+.handbook-prose > h2:first-child:not(.chapter-heading),
+.handbook-prose > :first-child > .chapter-rule:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 .handbook-prose ul,
 .handbook-prose ol {
   margin: 0.85rem 0;
@@ -1318,15 +1339,6 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 2.5rem var(--reading-page-pad);
-}
-
-/*
-  The page's padding is the top margin now. A lesson that opens on a chapter
-  would otherwise stack the h2's own margin on it — measured 81px above the
-  first hairline against 45px at the sides.
-*/
-.reading-page .handbook-prose > h2:first-child {
-  margin-top: 0;
 }
 
 /*

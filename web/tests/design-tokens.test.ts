@@ -851,6 +851,28 @@ describe("type system", () => {
     expect(css).toMatch(/--rule-strong:\s*var\(--press-rule-strong\)/);
   });
 
+  it("the heading that opens a prose body carries no hairline", () => {
+    // A hairline separates a section from the one before it. The first element
+    // of a prose body has nothing above it inside that body — the tab bar, the
+    // page's own padding or the title sits there instead — so the rule drew a
+    // divider under nothing (measured on the Problem, Solution and Quiz tabs
+    // and on the lesson reading page).
+    const css = readFileSync(GLOBALS, "utf8");
+    const selector =
+      ".handbook-prose > h2:first-child:not(.chapter-heading),\n.handbook-prose > :first-child > .chapter-rule:first-child";
+    const block = cssBlock(css, selector);
+    expect(block).toMatch(/border-top:\s*0/);
+    expect(block).toMatch(/padding-top:\s*0/);
+    expect(block).toMatch(/margin-top:\s*0/);
+    // It ties the problem pane's heading rule on specificity, so it must come
+    // after it — before, that rule won and the heading kept 22.75px on top.
+    expect(css.indexOf(`\n${selector} {`)).toBeGreaterThan(
+      css.indexOf("\n.problem-prose .handbook-prose h2:not(.chapter-heading) {"),
+    );
+    // One rule for every Markdown body, not a per-context first-child patch.
+    expect(css).not.toContain(".reading-page .handbook-prose > h2:first-child {");
+  });
+
   it("component section headings share the class, not a copied accent bar", () => {
     expect(
       FILES.filter((f) => f.body.includes("h-[3px] w-10")).map((f) => f.rel),
