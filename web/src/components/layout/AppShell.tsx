@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
@@ -103,6 +103,17 @@ export function activeThemeFor(pathname: string): FamilyId | null {
   return null;
 }
 
+/**
+ * The drawer stays put for a full minute after the pointer leaves. Hover is
+ * how it OPENS; closing is a slow tidy-up for a drawer the reader has plainly
+ * finished with, not a reaction to the pointer moving away — at sub-second
+ * delays it kept vanishing mid-read. The close button is the deliberate way
+ * out, and re-entering resets the minute.
+ */
+const HOVER_CLOSE_MS = 60_000;
+/** Hover-driven open only where a pointer can actually hover. */
+const HOVER_MQ = "(hover: hover) and (pointer: fine)";
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -132,6 +143,76 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     !isLandingPath(pathname) && (!isNextjs || NEXTJS_COURSE.status === "available");
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
+  // The drawer follows the pointer on hover-capable devices: an edge strip
+  // opens it, leaving it closes it. Touch has no hover, so those devices keep
+  // the explicit close button instead (see Sidebar's showClose).
+  const [canHover, setCanHover] = useState(false);
+  const hoverCloseTimer = useRef<number | null>(null);
+  const cancelHoverClose = useCallback(() => {
+    if (hoverCloseTimer.current !== null) {
+      window.clearTimeout(hoverCloseTimer.current);
+      hoverCloseTimer.current = null;
+    }
+  }, []);
+  const openOnHover = useCallback(() => {
+    cancelHoverClose();
+    setSidebarOpen(true);
+  }, [cancelHoverClose]);
+  const closeAfterGrace = useCallback(() => {
+    cancelHoverClose();
+    hoverCloseTimer.current = window.setTimeout(
+      () => setSidebarOpen(false),
+      HOVER_CLOSE_MS,
+    );
+  }, [cancelHoverClose]);
+
+  useEffect(() => {
+    const mq = window.matchMedia(HOVER_MQ);
+    const sync = () => setCanHover(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => {
+      mq.removeEventListener("change", sync);
+    };
+  }, []);
+  useEffect(() => cancelHoverClose, [cancelHoverClose]);
+
+  /**
+   * Closing cannot rely on the panel's own pointerleave: the drawer slides in
+   * *under* a stationary cursor, so the browser never fires pointerenter on
+   * it, and with no enter there is no leave either (seen in the browser — the
+   * drawer stayed open forever). Tracking the pointer against the rail's own
+   * edge closes it as soon as the pointer moves away, wherever it came from.
+   */
+  useEffect(() => {
+    if (!canHover || !sidebarOpen) return;
+    const onMove = (e: PointerEvent) => {
+      const rail = document.getElementById("lessons-sidebar");
+      if (!rail) return;
+      // The close button hangs past the rail's right edge on purpose, so the
+      // edge test alone reads "pointer left the drawer" while the pointer is
+      // on the drawer's own control. Hit-testing what is under the pointer
+      // covers that, and anything else the panel hangs outside itself later.
+      const onDrawer = e.target instanceof Node && rail.contains(e.target);
+      if (!onDrawer && e.clientX > rail.getBoundingClientRect().right)
+        closeAfterGrace();
+      else cancelHoverClose();
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [canHover, sidebarOpen, closeAfterGrace, cancelHoverClose]);
+
+  // Dismissible without moving the pointer (WCAG 1.4.13): Esc closes whatever
+  // hover opened, and is the keyboard user's way out too.
+  useEffect(() => {
+    if (!sidebarOpen || !isDesktop) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSidebarOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [sidebarOpen, isDesktop]);
+
   useEffect(() => {
     const mq = window.matchMedia(DESKTOP_MQ);
     const sync = () => {
@@ -148,6 +229,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // Desktop open/closed preference only — mobile sheet must not overwrite it.
   useEffect(() => {
     if (!showCourseNav || !isDesktop) return;
+    // Hover drives the drawer on a fine pointer, so it starts closed and the
+    // edge strip brings it in; a stored preference would fight that.
+    if (canHover) {
+      setSidebarOpen(false);
+      return;
+    }
     try {
       const raw = localStorage.getItem(SIDEBAR_KEY);
       if (raw === "0" || raw === "1") {
@@ -158,16 +245,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       /* ignore */
     }
     setSidebarOpen(true);
-  }, [showCourseNav, isDesktop]);
+  }, [showCourseNav, isDesktop, canHover]);
 
   useEffect(() => {
-    if (!showCourseNav || !isDesktop) return;
+    // A hover-driven drawer is transient state, not a preference — persisting
+    // it would rewrite the key on every pass of the pointer.
+    if (!showCourseNav || !isDesktop || canHover) return;
     try {
       localStorage.setItem(SIDEBAR_KEY, sidebarOpen ? "1" : "0");
     } catch {
       /* ignore */
     }
-  }, [sidebarOpen, showCourseNav, isDesktop]);
+  }, [sidebarOpen, showCourseNav, isDesktop, canHover]);
 
   // Close the mobile sheet after in-app navigation.
   useEffect(() => {
@@ -204,11 +293,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             />
           ) : null}
           {/*
-            The drawer opener lives here (lesson pages) or inline next to the
-            problem title (ProblemWorkspace's own header) — never in the app
-            Header, which now carries only search, progress and theme.
+            The drawer opener: one edge tab on every page with the course nav,
+            problem pages included (their header reserves its room) — never in
+            the app Header, which carries only search, progress and theme. The
+            hover edge strip below still skips the IDE, where the description
+            pane starts at that edge.
           */}
-          {showCourseNav && !ideViewport ? <FloatingLessonsButton /> : null}
+          {showCourseNav ? <FloatingLessonsButton /> : null}
+          {/* The drawer sits off-screen when closed, so the open trigger is
+              this edge strip rather than the panel itself. 28px wide: a 12px
+              strip needed a deliberate aim at the very edge. */}
+          {showCourseNav && !ideViewport && canHover && !sidebarOpen ? (
+            <div
+              aria-hidden
+              onPointerEnter={openOnHover}
+              className="fixed top-14 bottom-0 left-0 z-30 hidden w-7 lg:block"
+            />
+          ) : null}
           <div className="flex h-dvh flex-col overflow-hidden">
             <Header
               onOpenSearch={() => setSearchOpen(true)}
@@ -222,6 +323,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Sidebar
                   open={sidebarOpen}
                   onClose={() => setSidebarOpen(false)}
+                  onPointerEnter={canHover ? cancelHoverClose : undefined}
+                  onPointerLeave={canHover ? closeAfterGrace : undefined}
+                  onFocusCapture={canHover ? cancelHoverClose : undefined}
                 />
               ) : null}
               <main

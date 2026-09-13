@@ -1,12 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CaretLeft, DotsSixVertical } from "@phosphor-icons/react";
+import { DotsSixVertical, X } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { CourseNavTree } from "@/components/layout/CourseNavTree";
 
 interface SidebarProps {
   open: boolean;
+  onPointerEnter?: () => void;
+  onPointerLeave?: () => void;
+  onFocusCapture?: () => void;
   onClose: () => void;
 }
 
@@ -27,7 +30,13 @@ function clampWidth(px: number): number {
  * page already has the description, the editor, and the coach competing for
  * horizontal space, so a drawer nobody has open should cost none of it.
  */
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({
+  open,
+  onClose,
+  onPointerEnter,
+  onPointerLeave,
+  onFocusCapture,
+}: SidebarProps) {
   // Always starts at the default so the client's first render matches the
   // server's — reading localStorage during init would hydrate a width the
   // server never rendered. The persisted width is applied right after
@@ -93,6 +102,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
   return (
     <aside
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+      onFocusCapture={onFocusCapture}
       id="lessons-sidebar"
       // Stays mounted so the width transition has something to collapse, and
       // inert while closed so the clipped tree leaves the tab order with it.
@@ -105,38 +117,72 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         // z-45: above the sticky header (z-40) so the header's shadow-edge-bottom
         // stops falling across the rail's top edge, and still below the search
         // dialog and mobile sheet (z-50), which must cover everything.
-        "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col overflow-hidden lg:flex",
-        // Width changes fire from two very different sources: the open/close
-        // toggle (should glide) and the drag handle (should track the
-        // pointer 1:1, or the panel visibly lags the cursor). Only animate
-        // the former.
+        //
+        // In flow, not fixed: the drawer pushes the article aside rather than
+        // covering it. That means the open/close animation is a width change
+        // and so relayouts the column each frame — the cost of pushing; a
+        // transform slide can only be smooth because it moves nothing else.
+        // No overflow-hidden here: the close button hangs past the right
+        // edge, and the aside clipping its own overflow would cut it off.
+        // The inner wrapper does the clipping instead.
+        //
+        // clip-path keeps the edge shadow off the header: the rail sits above
+        // it (z-45), and a box-shadow's blur spreads upward too, across the
+        // rail's whole width onto the header's bottom edge. Clipped at top,
+        // bottom and left; 3rem open on the right — past the close tab and its
+        // focus ring, and past the shadow's own reach, which it keeps.
+        "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col lg:flex [clip-path:inset(0_-3rem_0_0)]",
+        // The drag handle must track the pointer 1:1, so it opts out.
         !dragging &&
-          "transition-[width] duration-[var(--dur)] ease-[var(--ease)]",
-        // box-shadow isn't clipped by the element's own overflow-hidden, so
-        // a w-0 closed drawer would still show a shadow sliver if this were
-        // unconditional.
+          "transition-[width] duration-[var(--dur-gentle)] ease-[var(--ease-gentle)] motion-reduce:transition-none",
+        // box-shadow isn't clipped by the element's own overflow-hidden, so a
+        // 0-width closed drawer would still show a shadow sliver.
         open ? "border-r border-border shadow-edge-right" : "",
       )}
     >
       {/*
-        Fixed inner width: the panel has to clip as it collapses rather than
-        reflow its contents down to nothing on the way.
+        The close button sits OUTSIDE the panel, so no chrome row stands above
+        the tree and the nav starts at the top of the rail. It is a tab on the
+        panel's own page: sidebar-rail paper, joined at the seam (no left
+        border, square left corners), rounded on the outer edge, and flared
+        into the sheet by .drawer-tab's fillets (globals.css — which also says
+        why it carries no shadow of its own). -right-9 against w-9 lands its
+        left edge on the rail's border line, covering it: the offset is
+        measured from the padding box, so anything wider opens a gap and
+        anything narrower draws a seam across the tab's base. top-4, not
+        less: the top fillet is --radius-md tall and would otherwise paint
+        over the header above the rail.
+
+        It is the deliberate way out, and the only one on desktop while the
+        drawer is open, since FloatingLessonsButton hides itself then — hover
+        only opens; the pointer-out timer is a slow tidy-up, not the close
+        affordance. Rendered only while open, or it would float over the
+        article with nothing to close. Still a descendant of the aside, so
+        pointer-leave and AppShell's rail.contains() hit test both treat it as
+        part of the drawer.
       */}
-      <div className="flex h-full flex-col" style={{ width }}>
-        <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
-          <span className="truncate text-sm font-semibold tracking-tight">
-            Lessons
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            aria-label="Close lessons drawer"
-          >
-            <CaretLeft className="h-4 w-4" weight="bold" />
-          </button>
+      {open ? (
+        <button
+          type="button"
+          onClick={onClose}
+          // Hover moves the glyph only. Not the paper — a jump to --surface
+          // would sink a tab meant to read as part of the panel — and not the
+          // border, which the fillets draw in --border and cannot follow.
+          className="sidebar-rail drawer-tab absolute top-4 -right-9 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-r-[length:var(--radius-md)] border border-l-0 border-border text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          aria-label="Close lessons drawer"
+        >
+          <X className="h-4 w-4" weight="bold" />
+        </button>
+      ) : null}
+      {/*
+        Takes the clipping the aside gave up, at exactly the animating width:
+        the fixed-width column inside has to clip as the panel collapses
+        rather than reflow its contents down to nothing on the way.
+      */}
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <div className="flex h-full flex-col" style={{ width }}>
+          <CourseNavTree compact className="px-5 pt-3 pb-6" />
         </div>
-        <CourseNavTree compact className="px-5 py-6" />
       </div>
       {/*
         Same grip-chip idiom as PanelSplit's drag handle: a hairline track

@@ -109,6 +109,42 @@ The content is the product. Code exists to serve it.
   it until 2026-09-12, removed on request); component sections
   share it through `.chapter-rule` + `.chapter-heading`, never a copied bar.
   Heading text stays ink.
+- **The course nav is two levels, and the level is derived from the route.**
+  Level 1 is stage headings + module rows; following a module row navigates
+  to it and drills into level 2, that module's lessons plus its extras. The
+  back row is labelled with the module's own section ("< Foundations") and
+  returns focus to that module's row, which scrolls its section back into
+  view — a generic jump to the top would make that label untrue. `lib/course/navLevel.ts`
+  owns the resolution (`resolveNavView`) — the only stored state is the back
+  override, which shows level 1 without navigating and is dropped on the next
+  pathname change; a stored level would go stale against the URL. Markup
+  lives in the props-only `CourseNavPanel` (rendered in
+  `courseNavPanel.test.tsx` without a router), and `CourseNavTree` keeps the
+  hooks, the cross-slide (`motion/react`, skipped under `useReducedMotion`)
+  and focus. Focus after back moves from a **callback ref**: under
+  `AnimatePresence mode="wait"` the incoming level has not mounted when an
+  effect or `onExitComplete` fires.
+- **The lessons drawer's tabs are part of its sheet.** The close tab hangs
+  off the open rail; the opener sits on the closed sheet's edge at the same
+  on-screen height (header `h-14` + the close tab's `top-4`). Both carry
+  `.sidebar-rail` paper and `.drawer-tab`'s concave fillets (`globals.css`),
+  and **no shadow of their own** — measured at 8x, a tab's shadow fell back
+  onto the sheet as a dark band beside the seam and outlined it as an object
+  stuck on; the sheet casts the shadow. `.sidebar-rail` paints one solid
+  `--rail-surface` token — `--elevated`, the app header's own paper, in both
+  themes with no per-theme override (owner request, 2026-09-13; the old steel
+  wash and a brief space-black dark variant are both gone) — because the
+  fillets need that colour as a gradient stop. Each fillet
+  overlaps the tab's border row by 1px (`bottom/top: 100%`, not `+1px`).
+  Problem pages use the same opener tab — no inline toggle in
+  `ProblemWorkspace`'s header — and that header reserves the tab's spot on
+  desktop (`lg:pl-12` so the back link clears it, `lg:py-3` so the band holds
+  the tab and both fillets) rather than the tab moving per page. The hover
+  edge strip stays off the IDE. The rail clips its own top, bottom and left
+  (`clip-path: inset(0 -3rem 0 0)`): it sits above the header (z-45), so its
+  edge shadow's blur otherwise spread up onto the header's bottom edge across
+  the rail's whole width; only the right stays open, for the shadow and the
+  close tab. Guarded in `sidebarChrome.test.ts`.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
   `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
   brightness ladder in BOTH themes — elevated brightest, surface deepest,

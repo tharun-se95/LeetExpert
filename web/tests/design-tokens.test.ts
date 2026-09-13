@@ -56,6 +56,18 @@ const FILES = walk(SRC).map((path) => ({
   body: readFileSync(path, "utf8"),
 }));
 
+/**
+ * Comments ship nothing, and prose uses words like "rounded" in their plain
+ * English sense — scanning raw bodies flagged a comment that merely described
+ * a component's corners. Checks whose pattern can match a bare word read this
+ * instead; checks that match a full utility spelling can keep using body.
+ */
+function stripComments(src: string): string {
+  return src
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+}
+
 const PALETTE_CLASS =
   /\b(?:text|bg|border|ring|from|to|via)-(?:emerald|red|green|blue|amber|yellow|orange|purple|pink|indigo|violet|sky|teal|cyan|rose|fuchsia|lime)-\d{2,3}\b/g;
 
@@ -760,7 +772,7 @@ describe("design tokens", () => {
     const hits: string[] = [];
     for (const f of FILES) {
       if (f.rel === "app/globals.css") continue;
-      const bad = (f.body.match(RADIUS_TOKEN) ?? []).filter(
+      const bad = (stripComments(f.body).match(RADIUS_TOKEN) ?? []).filter(
         (t) => !RADIUS_ALLOWED.test(t),
       );
       if (bad.length) hits.push(`${f.rel}: ${[...new Set(bad)].join(", ")}`);

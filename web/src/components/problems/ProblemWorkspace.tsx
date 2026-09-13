@@ -19,7 +19,6 @@ import {
   Code,
   CaretLeft,
   FileText,
-  List,
   PencilSimple,
   Question,
   Sparkle,
@@ -29,7 +28,6 @@ import { Markdown } from "@/components/md/Markdown";
 import { Sandbox } from "@/components/sandbox/Sandbox";
 import { PanelSplit } from "@/components/problems/PanelSplit";
 import { useProgress } from "@/components/providers/ProgressProvider";
-import { useSidebar } from "@/components/layout/SidebarContext";
 import { splitProblemTabs } from "@/lib/content/splitProblemTabs";
 import { lessonId } from "@/lib/course/nav";
 import { cn } from "@/lib/utils";
@@ -116,7 +114,6 @@ export function ProblemWorkspace({
   const [tab, setTab] = useState<WorkspaceTab>("description");
   const [wide, setWide] = useState(false);
   const tabsId = useId();
-  const { open: sidebarOpen, toggle: toggleSidebar } = useSidebar();
 
   useEffect(() => {
     const mq = window.matchMedia(IDE_WIDE_MQ);
@@ -179,7 +176,15 @@ export function ProblemWorkspace({
     // Panes scroll internally — no document scroll.
     <CoachProvider sandboxId={sandboxId} hintLabels={hintLabels}>
       <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-background">
-        <header className="flex shrink-0 items-center gap-2 border-b border-border bg-elevated px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2">
+        {/*
+          lg:pl-12 and lg:py-3 make room for the drawer tab, which hangs at the
+          same spot on every page (header h-14 + the rail's top-4) and so lands
+          in this band on desktop. Without the inset the open drawer's close
+          tab covered the back link; at py-2 the band was shorter than the tab
+          plus its fillets, and the bottom fillet overran border-b into the
+          description pane.
+        */}
+        <header className="flex shrink-0 items-center gap-2 border-b border-border bg-elevated px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2 lg:py-3 lg:pl-12">
           <Link
             href={backHref}
             className="inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-[length:var(--radius-md)] px-2 text-xs text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
@@ -190,34 +195,10 @@ export function ProblemWorkspace({
             </span>
           </Link>
           {/*
-            The lessons-drawer opener, inline next to the title it sits
-            beside — desktop only (lg:); mobile keeps the app Header's own
-            hamburger for the lessons sheet, so this isn't a second control
-            for the same job at that width.
-          */}
-          <button
-            type="button"
-            onClick={toggleSidebar}
-            aria-expanded={sidebarOpen}
-            aria-controls="lessons-sidebar"
-            aria-label={sidebarOpen ? "Close lessons drawer" : "Open lessons drawer"}
-            className={cn(
-              "hidden h-9 w-9 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] transition-colors lg:inline-flex",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-              sidebarOpen
-                ? "bg-surface text-foreground"
-                : "text-muted hover:bg-surface hover:text-foreground",
-            )}
-          >
-            <List className="h-4 w-4" weight="bold" aria-hidden />
-          </button>
-          {/*
-            Divides controls from content. This used to be a "/" sitting
-            BEFORE the drawer button, which read as a breadcrumb separator
-            pointing at a button — as if the toggle were a crumb in the
-            path. A rule after the controls says what is actually true:
-            everything left of it acts on the view, everything right of it
-            describes the problem.
+            Divides the way back from what this problem is: everything left
+            of it moves you, everything right of it describes the problem. It
+            used to follow an inline drawer toggle too; the drawer's opener is
+            now the edge tab every course page shares (FloatingLessonsButton).
           */}
           <span
             className="hidden h-6 w-px shrink-0 bg-border sm:block"
