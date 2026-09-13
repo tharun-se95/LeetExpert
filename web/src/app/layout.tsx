@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Space_Grotesk, Space_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
+import { LAMP_BOOT_SCRIPT } from "@/components/brand/lampBoot";
 import { SITE_ORIGIN } from "@/lib/seo/site";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationLd, websiteLd } from "@/lib/seo/jsonLd";
@@ -91,6 +92,10 @@ export default function RootLayout({
       className={`${display.variable} ${sans.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background font-sans text-foreground">
+        {/* Must stay the first thing in <body>: it has to run before the
+            header markup is parsed. See lampBoot.ts. <html> already has
+            suppressHydrationWarning for the attribute it may add. */}
+        <script dangerouslySetInnerHTML={{ __html: LAMP_BOOT_SCRIPT }} />
         {/* Site-wide entity graph. Both carry stable @ids so the per-page
             Course and LearningResource nodes can reference them instead of
             re-declaring a second, unlinked publisher. */}

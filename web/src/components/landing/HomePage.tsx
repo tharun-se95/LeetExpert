@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Lamp } from "@/components/brand/Lamp";
 import {
   ArrowRight,
   Books,
@@ -196,12 +197,7 @@ export default function HomePage() {
         <section className="grid items-center gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
           <div>
             <div className="flex items-center gap-2">
-              <span
-                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[length:var(--radius-sm)] bg-pop font-mono text-[11px] font-bold text-on-pop"
-                aria-hidden
-              >
-                {"</>"}
-              </span>
+              <Lamp size={24} />
               <p className="text-xs font-semibold tracking-[0.16em] text-accent uppercase">
                 Interactive DSA course
               </p>

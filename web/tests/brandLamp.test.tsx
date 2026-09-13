@@ -4,6 +4,7 @@ import { join, relative } from "node:path";
 import { contrastRatio } from "./helpers/contrast";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Lamp } from "@/components/brand/Lamp";
+import { LAMP_BOOT_KEY, LAMP_BOOT_SCRIPT } from "@/components/brand/lampBoot";
 
 /**
  * The brand lamp: one soft-glowing green dot is the whole logo, and the only
@@ -165,5 +166,87 @@ describe("lamp motion CSS", () => {
     expect(css).toMatch(
       /@media \(prefers-reduced-motion: reduce\) \{\s*\.lamp-core,\s*\.lamp-halo \{\s*animation: none !important;/,
     );
+  });
+});
+
+describe("lamp boot script", () => {
+  type BootStorage = Pick<Storage, "getItem" | "setItem">;
+
+  function memoryStorage(): BootStorage {
+    const map = new Map<string, string>();
+    return {
+      getItem: (key) => map.get(key) ?? null,
+      setItem: (key, value) => {
+        map.set(key, value);
+      },
+    };
+  }
+
+  /** Runs the real script string against a fake document and storage. */
+  function boot(storage: BootStorage): Record<string, string> {
+    const dataset: Record<string, string> = {};
+    const run = new Function("document", "sessionStorage", LAMP_BOOT_SCRIPT);
+    run({ documentElement: { dataset } }, storage);
+    return dataset;
+  }
+
+  it("blooms on the first page of a tab and not on later loads in that tab", () => {
+    const tab = memoryStorage();
+    expect("lampBoot" in boot(tab)).toBe(true);
+    expect(tab.getItem(LAMP_BOOT_KEY)).toBe("1");
+    expect("lampBoot" in boot(tab)).toBe(false);
+  });
+
+  it("blooms again in a new tab, because sessionStorage is per tab", () => {
+    boot(memoryStorage());
+    expect("lampBoot" in boot(memoryStorage())).toBe(true);
+  });
+
+  it("leaves the mark lit, never stuck dark, when storage throws", () => {
+    const denied: BootStorage = {
+      getItem: () => {
+        throw new Error("denied");
+      },
+      setItem: () => {
+        throw new Error("denied");
+      },
+    };
+    expect(() => boot(denied)).not.toThrow();
+    expect("lampBoot" in boot(denied)).toBe(false);
+  });
+
+  it("does not bloom when the tab can't remember it bloomed", () => {
+    // setItem failing (quota, privacy mode) would otherwise replay the bloom
+    // on every page load, which is exactly what once-per-tab rules out.
+    const readOnly: BootStorage = {
+      getItem: () => null,
+      setItem: () => {
+        throw new Error("quota");
+      },
+    };
+    expect("lampBoot" in boot(readOnly)).toBe(false);
+  });
+
+  it("runs in <body> before the app shell, so the header's first frame is already dark", () => {
+    const layout = readFileSync(join(SRC, "app", "layout.tsx"), "utf8");
+    const script = layout.indexOf("__html: LAMP_BOOT_SCRIPT");
+    expect(script).toBeGreaterThan(layout.indexOf("<body"));
+    expect(script).toBeLessThan(layout.indexOf("<AppShell>"));
+  });
+});
+
+describe("the lamp replaces the </> badge", () => {
+  const header = readFileSync(join(SRC, "components", "layout", "Header.tsx"), "utf8");
+  const home = readFileSync(join(SRC, "components", "landing", "HomePage.tsx"), "utf8");
+
+  it("the header draws a blooming lamp inside the replay link", () => {
+    expect(header).toContain("<Lamp size={26} bloom />");
+    expect(header).toMatch(/<Link href="\/" className="lamp-link /);
+    expect(header).not.toContain('{"</>"}');
+  });
+
+  it("the landing hero draws a static lamp", () => {
+    expect(home).toContain("<Lamp size={24} />");
+    expect(home).not.toContain('{"</>"}');
   });
 });

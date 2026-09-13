@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { List, MagnifyingGlass } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { Lamp } from "@/components/brand/Lamp";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
 import { COURSES } from "@/lib/courses/registry";
@@ -70,13 +71,8 @@ export function Header({
             <List className="h-5 w-5" weight="bold" aria-hidden />
           </button>
         ) : null}
-        <Link href="/" className="flex min-w-0 items-center gap-2">
-          <span
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop font-mono text-[13px] font-bold text-on-pop"
-            aria-hidden
-          >
-            {"</>"}
-          </span>
+        <Link href="/" className="lamp-link flex min-w-0 items-center gap-2">
+          <Lamp size={26} bloom />
           <span className="flex min-w-0 items-baseline gap-2">
             {/*
               When the lessons menu button is present, drop the wordmark below sm
