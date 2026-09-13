@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { contrastRatio } from "./helpers/contrast";
+import { renderToStaticMarkup } from "react-dom/server";
+import { Lamp } from "@/components/brand/Lamp";
 
 /**
  * The brand lamp: one soft-glowing green dot is the whole logo, and the only
@@ -95,5 +97,73 @@ describe("brand lamp tokens", () => {
       )
       .map((f) => f.rel);
     expect(leaks).toEqual([]);
+  });
+});
+
+describe("Lamp component", () => {
+  it("draws the r=30 halo and r=15 core on the 64 grid, hidden from assistive tech", () => {
+    const html = renderToStaticMarkup(<Lamp size={26} />);
+    expect(html).toMatch(/viewBox="0 0 64 64"/);
+    expect(html).toMatch(/width="26"/);
+    expect(html).toMatch(/height="26"/);
+    // Decorative: the logo link's own text ("leetExpert") names it.
+    expect(html).toMatch(/aria-hidden="true"/);
+    expect(html).toMatch(/<circle class="lamp-halo"[^>]*\sr="30"/);
+    expect(html).toMatch(/<circle class="lamp-core"[^>]*\sr="15"/);
+  });
+
+  it("paints only from tokens, never raw hex", () => {
+    const html = renderToStaticMarkup(<Lamp size={26} />);
+    expect(html).not.toMatch(/#[0-9a-fA-F]{6}\b/);
+    expect(html).toContain("var(--lamp)");
+    expect(html).toContain("var(--lamp-hi)");
+    expect(html).toContain("var(--lamp-lo)");
+    expect(html).toContain("var(--lamp-halo-a)");
+  });
+
+  it("gives every instance its own gradient ids, so the header and hero can share a page", () => {
+    // Duplicate SVG ids resolve to the first definition in the document, so
+    // a second lamp would silently paint with the first lamp's gradients.
+    const html = renderToStaticMarkup(
+      <>
+        <Lamp size={26} bloom />
+        <Lamp size={24} />
+      </>,
+    );
+    const ids = [...html.matchAll(/<radialGradient id="([^"]+)"/g)].map((m) => m[1]!);
+    expect(ids).toHaveLength(4);
+    expect(new Set(ids).size).toBe(4);
+    for (const id of ids) {
+      expect(id).toMatch(/^[a-zA-Z0-9_-]+$/);
+      expect(html).toContain(`url(#${id})`);
+    }
+  });
+
+  it("only a bloom lamp opts into the animation", () => {
+    expect(renderToStaticMarkup(<Lamp size={26} bloom />)).toMatch(/<svg[^>]*class="lamp lamp--bloom"/);
+    expect(renderToStaticMarkup(<Lamp size={24} />)).toMatch(/<svg[^>]*class="lamp"/);
+  });
+});
+
+describe("lamp motion CSS", () => {
+  it("boots with the strike keyframes and replays on hover and focus with separately named ones", () => {
+    // Re-applying the same animation-name does not restart an animation, so
+    // replay must use different keyframe names than the first-paint bloom.
+    expect(css).toMatch(/@keyframes lamp-core-strike \{/);
+    expect(css).toMatch(/@keyframes lamp-halo-strike \{/);
+    expect(css).toMatch(/@keyframes lamp-core-replay \{/);
+    expect(css).toMatch(/@keyframes lamp-halo-replay \{/);
+    expect(css).toMatch(/html\[data-lamp-boot\] \.lamp--bloom \.lamp-halo \{\s*animation: lamp-halo-strike 900ms/);
+    expect(css).toMatch(
+      /\.lamp-link:hover \.lamp--bloom \.lamp-halo,\s*\.lamp-link:focus-visible \.lamp--bloom \.lamp-halo \{\s*animation: lamp-halo-replay 900ms/,
+    );
+  });
+
+  it("reduced motion removes the lamp's animation explicitly", () => {
+    // Not left to the global clamp, which shortens animations to 0.01ms
+    // rather than removing them.
+    expect(css).toMatch(
+      /@media \(prefers-reduced-motion: reduce\) \{\s*\.lamp-core,\s*\.lamp-halo \{\s*animation: none !important;/,
+    );
   });
 });
