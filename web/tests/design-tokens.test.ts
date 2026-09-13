@@ -248,6 +248,39 @@ describe("design tokens", () => {
     expect(contrastRatio(onPop!, primary!)).toBeGreaterThanOrEqual(3);
   });
 
+  it("dark drawer is a space-black sheet: body inks AA on it, hover still lifts", () => {
+    // Owner request (2026-09-13): the lessons drawer in dark is "dark black
+    // like space" — below the page it sits beside, a deliberate exception to
+    // the paper ladder, separated by its border-r hairline. Its inks must
+    // still clear AA on it, and its rows' hover (bg-surface, remapped inside
+    // the rail) must stay a visible step — which --surface itself is not.
+    const css = readFileSync(GLOBALS, "utf8");
+    const dark = css.slice(css.indexOf(".dark"));
+    const space = firstHexVar(dark, "press-space");
+    const ink = firstHexVar(dark, "press-ink");
+    const muted = firstHexVar(dark, "press-ink-soft");
+    const paper = firstHexVar(dark, "press-paper");
+    const sunk = firstHexVar(dark, "press-paper-sunk");
+    expect(space && ink && muted && paper && sunk).toBeTruthy();
+    expect(contrastRatio(ink!, space!)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(muted!, space!)).toBeGreaterThanOrEqual(4.5);
+    // "Like space": darker than the page, not another lift above it.
+    expect(relativeLuminance(space!)).toBeLessThan(relativeLuminance(paper!));
+
+    const rail = cssBlock(css, ".dark .sidebar-rail");
+    expect(rail).toMatch(/--rail-surface:\s*var\(--press-space\)/);
+    const hoverName = rail.match(/--surface:\s*var\(--([a-z-]+)\)/)?.[1];
+    expect(hoverName, "the rail must remap --surface for its rows' hover").toBeTruthy();
+    const hover = firstHexVar(dark, hoverName!);
+    expect(hover).toBeTruthy();
+    // The smallest step this palette documents as perceptible is
+    // surface/paper; the hover lift must be at least that visible on space.
+    const perceptible = contrastRatio(paper!, sunk!);
+    expect(contrastRatio(hover!, space!)).toBeGreaterThan(perceptible);
+    // The unremapped token falls under that floor — the reason for the remap.
+    expect(contrastRatio(sunk!, space!)).toBeLessThan(perceptible);
+  });
+
   it("dark mode defines layered surfaces and soft borders", () => {
     const css = readFileSync(GLOBALS, "utf8");
     const dark = css.slice(css.indexOf(".dark"));

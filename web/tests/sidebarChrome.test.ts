@@ -115,7 +115,13 @@ describe("drawer tab idiom", () => {
     expect(rule(".sidebar-rail")).toMatch(/--rail-surface:\s*color-mix\(in srgb/);
     expect(rule(".sidebar-rail")).toMatch(/background-color:\s*var\(--rail-surface\)/);
     expect(rule(".sidebar-rail")).not.toMatch(/background-image/);
-    expect(rule(".dark .sidebar-rail")).toMatch(/--rail-surface:\s*color-mix\(in srgb/);
+    // Dark is a space-black sheet (owner request, 2026-09-13), not a lift
+    // of --elevated: a named ink, so its contrast is measured beside the
+    // token (design-tokens.test.ts) rather than implied by a mix.
+    expect(rule(".dark .sidebar-rail")).toMatch(/--rail-surface:\s*var\(--press-space\)/);
+    // Rows hover with bg-surface, and --surface (#0c0c0d) on space black is
+    // an invisible 1.035:1 step, so the rail lifts hover instead of sinking it.
+    expect(rule(".dark .sidebar-rail")).toMatch(/--surface:\s*var\(--elevated\)/);
   });
 
   it("flares into the sheet with concave fillets, drawn in the rail's own inks", () => {

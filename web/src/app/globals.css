@@ -195,6 +195,7 @@
     1.24 — visible steps. Muted #9ca9b8 ≥8:1 everywhere.
   */
   --press-paper-sunk: #0c0c0d; /* recessed — tests / muted, deepest */
+  --press-space: #060608; /* lessons drawer, dark only — ink 17.15:1, muted 8.47:1; 1.08:1 below --press-paper */
   --press-ink: #e6edf4; /* 17.1:1 — sheet Text Primary */
   --press-ink-soft: #9ca9b8; /* 8.19:1 — sheet Text Muted */
   --press-rule: rgba(244, 244, 245, 0.09); /* soft rule */
@@ -983,8 +984,20 @@ body {
   background-color: var(--rail-surface);
 }
 
+/*
+  Dark: a space-black sheet (owner request, 2026-09-13) — --press-space, below
+  the page rather than a lift above it. A deliberate exception to the paper
+  ladder: at 1.08:1 against --press-paper the brightness step alone barely
+  separates it, so the rail's border-r hairline does that job. No steel wash
+  here: 10% light steel would lift it straight back to grey. Rows hover with
+  bg-surface, and --surface (#0c0c0d) on space black is a 1.035:1 step nobody
+  can see, so inside the rail hover lifts to --elevated (1.34:1) instead of
+  sinking. The tabs inherit all of it through --rail-surface. Measured in
+  design-tokens.test.ts.
+*/
 .dark .sidebar-rail {
-  --rail-surface: color-mix(in srgb, var(--elevated) 90%, var(--family-accent, var(--accent)));
+  --rail-surface: var(--press-space);
+  --surface: var(--elevated);
 }
 
 /*
