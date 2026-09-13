@@ -315,3 +315,16 @@ describe("brand assets mirror the lamp tokens", () => {
     ).toBeGreaterThan(40);
   });
 });
+
+describe("OG card", () => {
+  it("draws the dark lamp in token colours, with the old plate gone", () => {
+    // Satori has no CSS custom properties, so the card carries hex — this
+    // keeps it in step with the tokens.
+    const og = readFileSync(join(SRC, "lib", "seo", "ogImage.tsx"), "utf8").toLowerCase();
+    for (const name of ["press-lamp", "press-lamp-hi", "press-lamp-lo"]) {
+      expect(og, `ogImage.tsx is missing --${name} (dark)`).toContain(hexVar(dark, name));
+    }
+    expect(og).toContain('r="15"');
+    expect(og).not.toContain("m22 16 l12 32 l22 48");
+  });
+});

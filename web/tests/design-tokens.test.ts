@@ -37,7 +37,7 @@ const HEX_ALLOW = new Set([
   "app/courses/nextjs/registry.ts", // per-course accent hex, same pattern as familyTheme.ts
   "app/layout.tsx", // viewport.themeColor — outside the CSS cascade, mirrors --press-olive/--press-blue
   "app/manifest.ts", // PWA manifest JSON — outside the CSS cascade, mirrors --press-blue/--press-paper
-  "lib/seo/ogImage.tsx", // next/og Satori render has no CSS custom properties; mirrors --press-blue/--press-olive/--press-paper
+  "lib/seo/ogImage.tsx", // next/og Satori render has no CSS custom properties; mirrors --press-* inks and the dark --press-lamp* tokens
 ]);
 
 function walk(dir: string): string[] {
