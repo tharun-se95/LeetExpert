@@ -140,7 +140,11 @@ The content is the product. Code exists to serve it.
   `ProblemWorkspace`'s header — and that header reserves the tab's spot on
   desktop (`lg:pl-12` so the back link clears it, `lg:py-3` so the band holds
   the tab and both fillets) rather than the tab moving per page. The hover
-  edge strip stays off the IDE. Guarded in `sidebarChrome.test.ts`.
+  edge strip stays off the IDE. The rail clips its own top, bottom and left
+  (`clip-path: inset(0 -3rem 0 0)`): it sits above the header (z-45), so its
+  edge shadow's blur otherwise spread up onto the header's bottom edge across
+  the rail's whole width; only the right stays open, for the shadow and the
+  close tab. Guarded in `sidebarChrome.test.ts`.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
   `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
   brightness ladder in BOTH themes — elevated brightest, surface deepest,

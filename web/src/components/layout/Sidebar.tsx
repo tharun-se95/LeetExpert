@@ -125,7 +125,13 @@ export function Sidebar({
         // No overflow-hidden here: the close button hangs past the right
         // edge, and the aside clipping its own overflow would cut it off.
         // The inner wrapper does the clipping instead.
-        "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col lg:flex",
+        //
+        // clip-path keeps the edge shadow off the header: the rail sits above
+        // it (z-45), and a box-shadow's blur spreads upward too, across the
+        // rail's whole width onto the header's bottom edge. Clipped at top,
+        // bottom and left; 3rem open on the right — past the close tab and its
+        // focus ring, and past the shadow's own reach, which it keeps.
+        "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col lg:flex [clip-path:inset(0_-3rem_0_0)]",
         // The drag handle must track the pointer 1:1, so it opts out.
         !dragging &&
           "transition-[width] duration-[var(--dur-gentle)] ease-[var(--ease-gentle)] motion-reduce:transition-none",

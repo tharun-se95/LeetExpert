@@ -83,6 +83,33 @@ describe("Sidebar chrome", () => {
     expect(jsx).toMatch(/style=\{\{ width \}\}>\s*<CourseNavTree/);
   });
 
+  it("keeps the rail's edge shadow off the header above it", () => {
+    // The rail sits above the header (z-45 over z-40), so its shadow cannot
+    // tuck under it, and a box-shadow's blur spreads vertically as well: a
+    // band of shade ran up across the rail's full width onto the header's
+    // bottom edge (measured 1.5px above the rail: header 255 -> 247 in light,
+    // 38 -> 32 in dark). With header and rail on one paper it read as a dirty
+    // seam. The aside clips to its own top, bottom and left; only the right
+    // stays open, where the shadow and the close tab belong.
+    const asideCls = sidebar.match(/"(sidebar-rail print:hidden[^"]*)"/)![1];
+    const clip = asideCls.match(/\[clip-path:inset\(([^)]*)\)\]/);
+    expect(clip, "the rail must clip its own shadow").toBeTruthy();
+    const [top, right, bottom, left] = clip![1].split("_");
+    expect([top, bottom, left]).toEqual(["0", "0", "0"]);
+    const rightRem = Number(right!.match(/^-(\d*\.?\d+)rem$/)?.[1] ?? NaN);
+    // Wider than the close tab hanging there plus its focus ring, or the clip
+    // would cut the tab off...
+    const tabRem = Number(classOf(jsx, "Close lessons drawer").match(/\bw-(\d+)\b/)![1]) / 4;
+    expect(rightRem).toBeGreaterThan(tabRem + 0.25);
+    // ...and wider than the shadow's own reach (offset + blur) in either
+    // theme, even at a 12px root, or the clip would cut the shadow it keeps.
+    const reach = [...globals.matchAll(/--shadow-edge-right:\s*(\d+)px\s+0\s+(\d+)px/g)].map(
+      (m) => Number(m[1]) + Number(m[2]),
+    );
+    expect(reach.length).toBeGreaterThanOrEqual(2);
+    expect(Math.max(...reach)).toBeLessThan(rightRem * 12);
+  });
+
   it("keeps the collapsing column clipped by an inner wrapper", () => {
     // The aside can no longer hide its overflow — that is what lets the close
     // button hang outside — so the clip moves to a wrapper that is exactly as
