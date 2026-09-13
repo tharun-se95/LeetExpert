@@ -162,8 +162,17 @@ The content is the product. Code exists to serve it.
   the page, and a sunk panel casting a shadow reads as floating, which
   fights the brightness step instead of reinforcing it.
 - **Contrast is measured, not eyeballed.** Body ink/muted must meet WCAG AA
-  (4.5:1). Status text inks are AA-darkened from sheet Success/Warning/Error
-  fills. Record ratios in comments beside tokens.
+  (4.5:1). Record ratios in comments beside tokens.
+- **Status and palette colour is generated, never hand-picked.** Eight hues
+  (`--hue-{name}-{1..4|ink}`) are derived from GitHub's contribution-graph
+  ramp by `web/src/lib/visual/palette.ts` (spec
+  `docs/superpowers/specs/2026-09-14-contribution-green-palette-design.md`);
+  `tests/palette.test.ts` fails if a hex in `globals.css` drifts from it.
+  Status colours map onto it — good green, bad red, warn orange, info blue,
+  insight yellow — with text in `-ink` (light: level 4's lightness at
+  near-max chroma), `*-surface` at level 1 and `*-line` for 3:1 rules. A
+  `*-line` sits only on `--elevated` or `--background`; light level 3 fails
+  on `--code` and `--surface`.
 - **Code colour has one source.** Shiki and CodeMirror must paint from the
   same palette definition. Two engines drifting apart is a visible defect.
 - Both themes are first-class. Dark is a designed translation, never an
