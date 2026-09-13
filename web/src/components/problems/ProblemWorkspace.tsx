@@ -514,63 +514,76 @@ function TabList({
   };
 
   return (
-    <div
-      role="tablist"
-      aria-label={label}
-      onKeyDown={onKeyDown}
-      className={cn(
-        "flex shrink-0 items-stretch overflow-x-auto border-b border-border",
-        className,
-      )}
-    >
-      {tabs.map((t, i) => {
-        const selected = active === t.id;
-        const TabIcon = TAB_ICON[t.id];
-        return (
-          <button
-            key={t.id}
-            ref={(el) => {
-              refs.current[i] = el;
-            }}
-            type="button"
-            role="tab"
-            id={`${tabsId}-tab-${t.id}`}
-            aria-selected={selected}
-            aria-controls={panelId}
-            tabIndex={selected ? 0 : -1}
-            onClick={() => onChange(t.id)}
-            className={cn(
-              // Underline indicator, not a filled pill: a bottom bar sitting
-              // exactly on the tablist's own border-b (after:-bottom-px)
-              // reads as "this tab owns the rule beneath it" — the modern
-              // convention (GitHub, Linear) — rather than a colour block.
-              "relative h-full min-w-11 touch-manipulation px-3.5 text-[0.75rem] font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
-              "after:absolute after:inset-x-2 after:-bottom-px after:h-[2px] after:rounded-full after:transition-colors after:duration-[var(--dur-fast)] after:content-['']",
-              selected
-                ? "text-foreground after:bg-pop"
-                : "text-muted after:bg-transparent hover:text-foreground hover:after:bg-border",
-            )}
-          >
-            <span className="inline-flex items-center gap-1.5">
-              {/*
+    // The rule lives on this wrapper, not on the scroller. overflow-x: auto
+    // silently makes overflow-y auto too, so an underline drawn 1px below the
+    // scroller to sit on its own border-b was 1px of vertical overflow: the bar
+    // scrolled by a pixel, showed a scrollbar on mobile, and clipped the tabs'
+    // focus outline.
+    <div className={cn("flex shrink-0 border-b border-border", className)}>
+      <div
+        role="tablist"
+        aria-label={label}
+        onKeyDown={onKeyDown}
+        // -mb-px stretches the scroller over the wrapper's rule, so each
+        // underline at bottom-0 still lands exactly on it; overflow-y-hidden
+        // pins the axis the browser would otherwise make scrollable. Horizontal
+        // scroll stays: six mobile tabs are 324px wide on a 320px screen.
+        className="-mb-px flex min-w-0 flex-1 items-stretch overflow-x-auto overflow-y-hidden"
+      >
+        {tabs.map((t, i) => {
+          const selected = active === t.id;
+          const TabIcon = TAB_ICON[t.id];
+          return (
+            <button
+              key={t.id}
+              ref={(el) => {
+                refs.current[i] = el;
+              }}
+              type="button"
+              role="tab"
+              id={`${tabsId}-tab-${t.id}`}
+              aria-selected={selected}
+              aria-controls={panelId}
+              tabIndex={selected ? 0 : -1}
+              onClick={() => onChange(t.id)}
+              className={cn(
+                // Underline indicator, not a filled pill: a bottom bar sitting
+                // exactly on the tab bar's rule (after:bottom-0 — the scroller
+                // extends over the wrapper's border-b) reads as "this tab owns
+                // the rule beneath it" — the modern convention (GitHub, Linear) —
+                // rather than a colour block. The focus ring is inset: an outline
+                // drawn outside the tab is clipped by the scroll box.
+                "relative h-full min-w-11 touch-manipulation px-3.5 text-[0.75rem] font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent",
+                "after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:rounded-full after:transition-colors after:duration-[var(--dur-fast)] after:content-['']",
+                selected
+                  ? "text-foreground after:bg-pop"
+                  : "text-muted after:bg-transparent hover:text-foreground hover:after:bg-border",
+              )}
+            >
+              <span className="inline-flex items-center gap-1.5">
+                {/*
                 weight stays at the app-wide bold default (IconContext,
                 ThemeProvider.tsx) when unselected — only the selected tab
                 steps up to fill, echoing the same rest/active weight bump
                 CoachThread's mark uses.
               */}
-              <TabIcon
-                className="h-3.5 w-3.5 shrink-0"
-                weight={selected ? "fill" : undefined}
-                aria-hidden
-              />
-              {t.label}
-              {badgeId === t.id && !selected ? (
-                <span className="h-1.5 w-1.5 rounded-full bg-pop" aria-hidden />
-              ) : null}
-            </span>
-          </button>
-        );
-      })}
+                <TabIcon
+                  className="h-3.5 w-3.5 shrink-0"
+                  weight={selected ? "fill" : undefined}
+                  aria-hidden
+                />
+                {t.label}
+                {badgeId === t.id && !selected ? (
+                  <span
+                    className="h-1.5 w-1.5 rounded-full bg-pop"
+                    aria-hidden
+                  />
+                ) : null}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
