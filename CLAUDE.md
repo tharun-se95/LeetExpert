@@ -134,7 +134,11 @@ The content is the product. Code exists to serve it.
   `--rail-surface` token (an srgb mix, identical to the old alpha wash)
   because the fillets need that colour as a gradient stop. Each fillet
   overlaps the tab's border row by 1px (`bottom/top: 100%`, not `+1px`).
-  Guarded in `sidebarChrome.test.ts`.
+  Problem pages use the same opener tab — no inline toggle in
+  `ProblemWorkspace`'s header — and that header reserves the tab's spot on
+  desktop (`lg:pl-12` so the back link clears it, `lg:py-3` so the band holds
+  the tab and both fillets) rather than the tab moving per page. The hover
+  edge strip stays off the IDE. Guarded in `sidebarChrome.test.ts`.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
   `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
   brightness ladder in BOTH themes — elevated brightest, surface deepest,

@@ -4,7 +4,7 @@ import { List } from "@phosphor-icons/react";
 import { useSidebar } from "@/components/layout/SidebarContext";
 
 /**
- * The lessons-drawer opener for desktop lesson pages — floats over the
+ * The lessons-drawer opener for desktop lesson and problem pages — floats over the
  * content instead of living in the header (moved out to make room there,
  * and because a page-scoped opener reads better sitting near the content
  * it opens onto rather than fixed chrome). Hidden while the drawer is
@@ -16,6 +16,8 @@ import { useSidebar } from "@/components/layout/SidebarContext";
  * paper, same size, same .drawer-tab fillets (globals.css), and at the same
  * height on screen (header h-14 + the close tab's top-4). Closing the drawer
  * leaves the tab where the eye already is, one sheet-width to the left.
+ * On problem pages that spot is inside ProblemWorkspace's header, which
+ * reserves it (lg:pl-12, lg:py-3) rather than this tab moving per page.
  */
 export function FloatingLessonsButton() {
   const { open, toggle } = useSidebar();

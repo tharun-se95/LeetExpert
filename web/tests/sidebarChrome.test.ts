@@ -9,6 +9,7 @@ const floating = read("components", "layout", "FloatingLessonsButton.tsx");
 const shell = read("components", "layout", "AppShell.tsx");
 const header = read("components", "layout", "Header.tsx");
 const globals = read("app", "globals.css");
+const workspace = read("components", "problems", "ProblemWorkspace.tsx");
 
 /** The className string of the first element carrying `aria-label`. */
 const classOf = (src: string, ariaLabel: string) => {
@@ -172,6 +173,54 @@ describe("drawer tab idiom", () => {
       floating.match(/className="[^"]*\btop-(\d+)\b/)![1],
     );
     expect(openerTop).toBe(headerH + closeTop);
+  });
+});
+
+describe("problem page drawer tab", () => {
+  /** The problem header's className, and the step values we reason in. */
+  const headerCls = () => workspace.match(/<header className="([^"]*)"/)![1];
+  const closeCls = () =>
+    classOf(sidebar.replace(/\{\/\*[\s\S]*?\*\/\}/g, ""), "Close lessons drawer");
+
+  it("uses the same opener tab as lesson pages, not an inline header toggle", () => {
+    // One opener idiom app-wide: the inline toggle beside the title was a
+    // second, differently shaped control for the same drawer — and with the
+    // drawer open it relabelled itself a second "Close lessons drawer".
+    expect(shell).toMatch(/\{showCourseNav \? <FloatingLessonsButton \/> : null\}/);
+    expect(workspace).not.toContain('aria-controls="lessons-sidebar"');
+    expect(workspace).not.toMatch(/toggleSidebar|useSidebar/);
+  });
+
+  it("still keeps the hover edge strip off the IDE", () => {
+    // The description pane starts at the left edge; a pointer resting there
+    // must not throw the drawer open over the problem.
+    expect(shell).toMatch(/showCourseNav && !ideViewport && canHover && !sidebarOpen/);
+  });
+
+  it("reserves the tab's room at the header's leading edge", () => {
+    // Measured before this: with the drawer open the close tab sat on top of
+    // the back link (x 319-353 vs 335-413) — the header started its content
+    // exactly where the tab hangs, in both drawer states.
+    const pl = Number(headerCls().match(/\blg:pl-(\d+)\b/)?.[1] ?? NaN);
+    const tabW = Number(closeCls().match(/\bw-(\d+)\b/)![1]);
+    expect(pl).toBeGreaterThan(tabW);
+  });
+
+  it("is tall enough on desktop to hold the tab and both fillets", () => {
+    // The tabs sit at the rail's top-4 on every page, which here lands them
+    // in the problem header's band. The bottom fillet ends --radius-md below
+    // the tab; at py-2 that overran the header's border-b into the
+    // description pane. Spacing steps are 4px at the root size.
+    const py = Number(headerCls().match(/\blg:py-(\d+)\b/)?.[1] ?? NaN);
+    const controlH = Number(
+      workspace.match(/href=\{backHref\}\s+className="[^"]*\bmin-h-(\d+)\b/)![1],
+    );
+    const tabTop = Number(closeCls().match(/\btop-(\d+)\b/)![1]);
+    const tabH = Number(closeCls().match(/\bh-(\d+)\b/)![1]);
+    const radius = Number(globals.match(/--radius-md:\s*(\d+)px/)![1]);
+    const filletBottom = (tabTop + tabH) * 4 + radius;
+    const bandInner = (2 * py + controlH) * 4 - 1; // less its 1px border-b
+    expect(filletBottom).toBeLessThanOrEqual(bandInner);
   });
 });
 

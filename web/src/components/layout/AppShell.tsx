@@ -293,11 +293,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             />
           ) : null}
           {/*
-            The drawer opener lives here (lesson pages) or inline next to the
-            problem title (ProblemWorkspace's own header) — never in the app
-            Header, which now carries only search, progress and theme.
+            The drawer opener: one edge tab on every page with the course nav,
+            problem pages included (their header reserves its room) — never in
+            the app Header, which carries only search, progress and theme. The
+            hover edge strip below still skips the IDE, where the description
+            pane starts at that edge.
           */}
-          {showCourseNav && !ideViewport ? <FloatingLessonsButton /> : null}
+          {showCourseNav ? <FloatingLessonsButton /> : null}
           {/* The drawer sits off-screen when closed, so the open trigger is
               this edge strip rather than the panel itself. 28px wide: a 12px
               strip needed a deliberate aim at the very edge. */}
