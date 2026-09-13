@@ -962,29 +962,20 @@ body {
 }
 
 /*
-  Lessons rail: a whole-panel wash of the topic's primary colour instead of
-  flat --elevated, same idea as .lab-stage's family-tinted backdrop. Split
-  by theme rather than reusing --family-wash's flat 12% everywhere — a
-  saturated colour read at the same alpha shows up far stronger against
-  white than against near-black, so a strength picked to look right in dark
-  reads as a garish solid pastel panel in light. Falls back to the
-  themeless steel --accent when no family/course scope is active, same as
-  every other --family-accent consumer.
+  Lessons rail: the app header's own paper, --elevated, in both themes (owner
+  request, 2026-09-13), so the header and the drawer read as one piece of
+  chrome. It used to carry a 4%/10% wash of the topic accent; that wash is
+  gone, and so is a brief space-black dark variant. No per-theme rule: the
+  token already flips with the theme exactly as the header's bg-elevated does.
 
-  One solid colour, --rail-surface, rather than a wash layered over
-  --elevated: the drawer tabs' fillets (.drawer-tab below) must paint this
-  exact colour as a gradient stop, which a background-image layer cannot be.
-  Mixing in srgb reproduces the old alpha composite exactly — a 4% overlay
-  blends in gamma-encoded space, which is what srgb mixes in. Defined on the
-  element, not :root, so a scoped --family-accent still resolves here.
+  Painted through --rail-surface rather than bg-elevated directly because the
+  drawer tabs' fillets (.drawer-tab below) must paint this exact colour as a
+  gradient stop. Rows inside keep hovering to --surface, a clear recess on
+  --elevated in both themes (elevated/surface is the ladder's widest step).
 */
 .sidebar-rail {
-  --rail-surface: color-mix(in srgb, var(--elevated) 96%, var(--family-accent, var(--accent)));
+  --rail-surface: var(--elevated);
   background-color: var(--rail-surface);
-}
-
-.dark .sidebar-rail {
-  --rail-surface: color-mix(in srgb, var(--elevated) 90%, var(--family-accent, var(--accent)));
 }
 
 /*

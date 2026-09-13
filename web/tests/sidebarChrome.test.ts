@@ -108,14 +108,18 @@ describe("drawer tab idiom", () => {
     return globals.slice(at, globals.indexOf("}", at));
   };
 
-  it("paints the rail from one solid surface token, in both themes", () => {
-    // A solid colour, not a wash layered over --elevated: the tab's fillets
-    // have to paint the exact same colour with a gradient of their own, and a
-    // background-image wash cannot be reused as a gradient stop.
-    expect(rule(".sidebar-rail")).toMatch(/--rail-surface:\s*color-mix\(in srgb/);
+  it("paints the rail in the app header's own paper, in both themes", () => {
+    // Owner request (2026-09-13): the drawer matches the header — the token
+    // the header's bg-* class names, no steel wash, and no per-theme override,
+    // so light and dark both follow whatever the header paints. One solid
+    // token also lets the tabs' fillets reuse it as a gradient stop.
+    const headerBg = header.match(/<header[^>]*className="[^"]*\bbg-([a-z-]+)\b/)![1];
+    expect(rule(".sidebar-rail")).toMatch(
+      new RegExp(`--rail-surface:\\s*var\\(--${headerBg}\\);`),
+    );
     expect(rule(".sidebar-rail")).toMatch(/background-color:\s*var\(--rail-surface\)/);
-    expect(rule(".sidebar-rail")).not.toMatch(/background-image/);
-    expect(rule(".dark .sidebar-rail")).toMatch(/--rail-surface:\s*color-mix\(in srgb/);
+    expect(rule(".sidebar-rail")).not.toMatch(/background-image|color-mix/);
+    expect(globals).not.toContain(".dark .sidebar-rail {");
   });
 
   it("flares into the sheet with concave fillets, drawn in the rail's own inks", () => {

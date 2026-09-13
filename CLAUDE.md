@@ -131,8 +131,10 @@ The content is the product. Code exists to serve it.
   and **no shadow of their own** — measured at 8x, a tab's shadow fell back
   onto the sheet as a dark band beside the seam and outlined it as an object
   stuck on; the sheet casts the shadow. `.sidebar-rail` paints one solid
-  `--rail-surface` token (an srgb mix, identical to the old alpha wash)
-  because the fillets need that colour as a gradient stop. Each fillet
+  `--rail-surface` token — `--elevated`, the app header's own paper, in both
+  themes with no per-theme override (owner request, 2026-09-13; the old steel
+  wash and a brief space-black dark variant are both gone) — because the
+  fillets need that colour as a gradient stop. Each fillet
   overlaps the tab's border row by 1px (`bottom/top: 100%`, not `+1px`).
   Problem pages use the same opener tab — no inline toggle in
   `ProblemWorkspace`'s header — and that header reserves the tab's spot on
