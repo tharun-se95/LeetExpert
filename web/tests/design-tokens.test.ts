@@ -31,7 +31,7 @@ const HEX_ALLOW = new Set([
   "lib/visual/familyTheme.ts", // per-family accent map for PatternLab
   "components/md/Mermaid.tsx", // Mermaid theme API wants resolved hex
   "components/sandbox/editorTheme.ts", // may mirror --tok-* literals
-  "components/sandbox/languageMarks.tsx", // brand colour, not design-system colour
+  "components/kit/languageMarks.tsx", // brand colour, not design-system colour
   "app/courses/dsa/registry.ts", // per-course accent hex, same pattern as familyTheme.ts
   "app/courses/nextjs/registry.ts", // per-course accent hex, same pattern as familyTheme.ts
   "app/layout.tsx", // viewport.themeColor — outside the CSS cascade, mirrors --press-olive/--press-blue

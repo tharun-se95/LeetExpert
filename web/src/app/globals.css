@@ -744,8 +744,8 @@ body {
 
 /*
   Stretch + flush, not centered: a tab strip that sits directly on
-  --code-editor (every .code-tab lives here; .editor-tab's active/hover
-  states do too) reads as part of the buffer only when the tabs touch the
+  --code-editor (every .code-tab lives here; .editor-tab's active state
+  does too) reads as part of the buffer only when the tabs touch the
   header's own top/bottom edges and each other, the way a real editor's
   tab bar does. This used to be .editor-tab-only (the "ide" IDE toolbar),
   with lesson code blocks kept on a centered, gapped, pill-tab layout —
@@ -765,12 +765,17 @@ body {
   .code-tab always sits on --code-editor (the language-fence header has no
   background of its own — see .code-surface), so its resting ink can
   already be --tok-name-based. .editor-tab's resting state sits on the ide
-  toolbar's --elevated instead (its own background is transparent until
-  hover/active pull in --code-editor), so it rests on --muted. Every other
-  rule is identical on purpose.
+  toolbar's --elevated instead (its own background is transparent until the
+  active state pulls in --code-editor), so it rests on --muted and hovers
+  on the toolbar's own terms. Layout — mark, label, mono type, gap — is
+  identical on purpose, so a language tab looks the same everywhere.
 */
 .code-tab {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
   border-radius: 0;
   border-top: 2px solid transparent;
   padding: 0.3rem 0.75rem;
@@ -806,16 +811,20 @@ body {
 */
 .editor-tab {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
   border-radius: 0;
   border-top: 2px solid transparent;
   padding: 0.3rem 0.75rem;
   font-size: 0.72rem;
   font-weight: 500;
   /* Sits on the TOOLBAR's own background (bg-elevated, transparent here),
-     which tracks the page theme normally — --muted is correct. Only
-     hover/active actually switch their background to --code-editor
-     (inverted from the page — see the comment on --code-editor in :root),
-     which is why only THOSE two rules switch their ink to --tok-name. */
+     which tracks the page theme normally — --muted is correct. Only the
+     active state switches its background to --code-editor (inverted from
+     the page — see the comment on --code-editor in :root), which is why only
+     that rule switches its ink to --tok-name. */
   color: var(--muted);
   background: transparent;
   transition:
@@ -823,9 +832,14 @@ body {
     background-color var(--dur-fast) var(--ease);
 }
 
+/* Hover is a slight recess into the toolbar, the way Reset beside it does
+   (hover:bg-code hover:text-foreground: --code sits just below --elevated in
+   both themes). It used to borrow --code-editor — the active tab's inverted
+   canvas, a dark block in light and a pale one in dark — so hovering read as
+   a second selected tab. */
 .editor-tab:hover {
-  color: var(--tok-name);
-  background: var(--code-editor);
+  color: var(--foreground);
+  background: var(--code);
 }
 
 .editor-tab[aria-pressed="true"],

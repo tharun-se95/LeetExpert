@@ -37,7 +37,7 @@ import { InsightPanel } from "@/components/insight/InsightPanel";
 import { resolveInsight } from "@/lib/insight/resolveInsight";
 import type { ExtractedComplexity } from "@/lib/insight/extractComplexity";
 import { useCoachOptional } from "@/components/coach/CoachProvider";
-import { JavaScriptMark, PythonMark } from "@/components/sandbox/languageMarks";
+import { LanguageMark } from "@/components/kit/languageMarks";
 
 const LANGS: SandboxLang[] = ["python", "javascript"];
 
@@ -251,12 +251,9 @@ function SandboxBody({
             }}
             aria-pressed={lang === l}
             data-active={lang === l ? "true" : "false"}
-            className={cn(
-              "inline-flex items-center gap-1.5 font-mono",
-              variant === "ide" ? "editor-tab" : "code-tab",
-            )}
+            className={variant === "ide" ? "editor-tab" : "code-tab"}
           >
-            {l === "python" ? <PythonMark /> : <JavaScriptMark />}
+            <LanguageMark language={l} />
             {LANG_LABEL[l]}
           </button>
         ))}
