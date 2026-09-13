@@ -56,6 +56,23 @@
   --press-green: #036f42; /* 4.60:1 on sunk — Success family */
   --press-red: #b91c1c; /* 4.77:1 on sunk — Error family */
   --press-amber: #92400e; /* 5.27:1 on sunk — Warning family */
+  /*
+    Brand lamp — the logo's green and nothing else (CLAUDE.md §4;
+    tests/brandLamp.test.tsx confines these to the mark). Deliberately not
+    --press-green: that ink means "correct", and grass sits only 1.18:1 from
+    it, so they stay separate tokens and are told apart by form — a glowing
+    dot in chrome vs a flat tick in content.
+    Non-text graphic, so the floor is 3:1 (WCAG 1.4.11):
+    5.32 elevated · 4.82 paper · 4.36 code · 3.91 sunk (binding).
+  */
+  --press-lamp: #2b7a3b;
+  --press-lamp-hi: #43a354; /* specular stop */
+  --press-lamp-lo: #1d5a29; /* shaded edge — 7.48 paper, 6.06 sunk */
+  /* Halo opacity at 0% / 33% / 69%. A glow can't outshine white, so on light
+     paper the halo is a pale wash; dark mode carries the real bloom. */
+  --lamp-halo-a: 0.45;
+  --lamp-halo-b: 0.2;
+  --lamp-halo-c: 0.06;
 
   /*
     Insight — "remember this," deliberately rare. Not Warning's amber
@@ -121,6 +138,10 @@
   --good-surface: var(--press-good-surface);
   --warn-surface: var(--press-warn-surface);
   --insight-surface: var(--press-insight-surface);
+
+  --lamp: var(--press-lamp);
+  --lamp-hi: var(--press-lamp-hi);
+  --lamp-lo: var(--press-lamp-lo);
 
   --tone-sky: #075985; /* info — 5.56:1 on sunk, AA deepest */
   --tone-rose: #e11d48;
@@ -206,6 +227,13 @@
   --press-green: #22d497; /* sheet Success */
   --press-red: #f15858; /* sheet Error — 4.51:1 on --elevated, the binding floor (brightest dark surface, not the paper) */
   --press-amber: #f59e0b; /* sheet Warning */
+  /* Brand lamp, dark — 3:1 floor: 8.89 elevated · 11.04 paper · 10.34 code · 11.53 surface */
+  --press-lamp: #5be07a;
+  --press-lamp-hi: #cfffd8;
+  --press-lamp-lo: #2fb455; /* shaded edge — 5.59 elevated */
+  --lamp-halo-a: 0.85;
+  --lamp-halo-b: 0.42;
+  --lamp-halo-c: 0.11;
   --press-insight: #facc15; /* 12.3:1 on dark paper — bright gold as text */
 
   /* Dark callout surfaces — saturated dark tints, not pastel. */
