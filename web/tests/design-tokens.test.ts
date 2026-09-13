@@ -120,6 +120,38 @@ function cssBlock(css: string, selector: string): string {
   return css.slice(open + 1, css.indexOf("}", open));
 }
 
+/** Body of the first `selector {` block, brace-matched so a nested rule cannot end it early. */
+function blockBody(css: string, selector: string): string {
+  const at = css.indexOf(`\n${selector} {`);
+  if (at === -1) return "";
+  const open = css.indexOf("{", at);
+  let depth = 0;
+  for (let i = open; i < css.length; i++) {
+    if (css[i] === "{") depth++;
+    else if (css[i] === "}" && --depth === 0) return css.slice(open + 1, i);
+  }
+  return "";
+}
+
+/**
+ * A custom property as the browser resolves it for one theme: the theme
+ * block's own definition wins over :root's, and `var(--x)` is followed
+ * through the same lookup — so dark `--good` (defined only in :root as
+ * `var(--hue-green-ink)`) lands on the dark `--hue-green-ink`. Throws when a
+ * name is undefined, so a renamed token fails loudly instead of measuring
+ * nothing.
+ */
+function resolveToken(root: string, theme: string | null, name: string): string {
+  const own = (body: string) =>
+    new RegExp(`(?:^|[;{\\s])--${name}:\\s*([^;]+);`)
+      .exec(stripComments(body))?.[1]
+      ?.trim();
+  const value = (theme !== null ? own(theme) : undefined) ?? own(root);
+  if (value === undefined) throw new Error(`--${name} is not defined`);
+  const ref = /^var\(--([\w-]+)\)$/.exec(value);
+  return ref ? resolveToken(root, theme, ref[1]!) : value;
+}
+
 describe("design tokens", () => {
   it("no Tailwind palette colour classes in components", () => {
     const hits: string[] = [];
@@ -303,24 +335,13 @@ describe("design tokens", () => {
   it("light text inks clear AA 4.5 on the deepest surface", () => {
     // The sandbox renders verdict rows (good/bad), insight values (info),
     // muted labels and mark accents directly on the darkest light tier
-    // (--press-paper-sunk). Every ink that can sit there must clear AA.
+    // (--surface). Every ink that can sit there must clear AA.
     const css = readFileSync(GLOBALS, "utf8");
-    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    const sunk = firstHexVar(root, "press-paper-sunk")!;
-    const inks: Record<string, string> = {
-      ink: firstHexVar(root, "press-ink")!,
-      muted: firstHexVar(root, "press-ink-soft")!,
-      good: firstHexVar(root, "press-green")!,
-      bad: firstHexVar(root, "press-red")!,
-      warn: firstHexVar(root, "press-amber")!,
-      insight: firstHexVar(root, "press-insight")!,
-      info: firstHexVar(root, "tone-sky")!,
-      mark: firstHexVar(root, "press-blue")!,
-    };
-    for (const [name, ink] of Object.entries(inks)) {
-      expect(contrastRatio(ink, sunk), `${name} vs sunk`).toBeGreaterThanOrEqual(
-        4.5,
-      );
+    const root = blockBody(css, ":root");
+    const token = (name: string) => resolveToken(root, null, name);
+    const sunk = token("surface");
+    for (const name of ["foreground", "muted", "good", "bad", "warn", "insight", "info", "mark"]) {
+      expect(contrastRatio(token(name), sunk), `${name} vs sunk`).toBeGreaterThanOrEqual(4.5);
     }
   });
 
@@ -388,22 +409,25 @@ describe("design tokens", () => {
   });
 
   it("Insight and Information roles are defined and AA-compliant", () => {
+    // Both are palette hues since 2026-09-14: insight is yellow, info is blue.
     const css = readFileSync(GLOBALS, "utf8");
-    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    const dark = css.slice(css.indexOf(".dark"));
-
-    const lightInsight = firstHexVar(root, "press-insight");
-    const darkInsight = firstHexVar(dark, "press-insight");
-    const lightPaper = firstHexVar(root, "press-paper");
-    const darkPaper = firstHexVar(dark, "press-paper");
-
-    expect(lightInsight).toBe("#854d0e");
-    expect(darkInsight).toBe("#facc15");
-    expect(contrastRatio(lightInsight!, lightPaper!)).toBeGreaterThanOrEqual(4.5);
-    expect(contrastRatio(darkInsight!, darkPaper!)).toBeGreaterThanOrEqual(4.5);
-
-    // --info aliases the existing (previously near-unused) --tone-sky token.
-    expect(root).toMatch(/--info:\s*var\(--tone-sky\)/);
+    const root = blockBody(css, ":root");
+    const dark = blockBody(css, ".dark");
+    expect(root).toMatch(/--insight:\s*var\(--hue-yellow-ink\)/);
+    expect(root).toMatch(/--info:\s*var\(--hue-blue-ink\)/);
+    const themes: [string, string | null][] = [
+      ["light", null],
+      ["dark", dark],
+    ];
+    for (const [theme, body] of themes) {
+      const token = (name: string) => resolveToken(root, body, name);
+      for (const role of ["insight", "info"]) {
+        expect(
+          contrastRatio(token(role), token("background")),
+          `${theme} ${role} on the page`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    }
     expect(css).toMatch(/--color-insight:\s*var\(--insight\)/);
     expect(css).toMatch(/--color-info:\s*var\(--info\)/);
   });
@@ -460,58 +484,37 @@ describe("design tokens", () => {
   });
 
   it("status inks (good/bad/warn/info/muted) clear AA text contrast on every surface, both themes", () => {
-    // These render as readable status text (\"1 of 5 tests passed\", sidebar
-    // labels), not decorative chrome, so the floor is the 4.5:1 text
-    // minimum — checked against every surface they can actually paint on,
-    // not just the one the original token comment happened to measure.
+    // These render as readable status text ("1 of 5 tests passed", difficulty
+    // badges), so the floor is 4.5:1 on every surface they can paint on.
+    // Lines only need 3:1, and only on the raised grounds (spec 2026-09-14
+    // §4.3): light level 3 fails on --code and --surface.
     const css = readFileSync(GLOBALS, "utf8");
-    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    const dark = css.slice(css.indexOf(".dark"));
-
-    const lightSurfaces = [
-      firstHexVar(root, "press-paper")!,
-      firstHexVar(root, "elevated")!,
-      firstHexVar(root, "code")!,
-      firstHexVar(root, "press-paper-sunk")!,
+    const root = blockBody(css, ":root");
+    const dark = blockBody(css, ".dark");
+    const themes: [string, string | null][] = [
+      ["light", null],
+      ["dark", dark],
     ];
-    const darkSurfaces = [
-      firstHexVar(dark, "press-paper")!,
-      firstHexVar(dark, "elevated")!,
-      firstHexVar(dark, "code")!,
-      firstHexVar(dark, "surface")!,
-    ];
-
-    const lightInks: Record<string, string> = {
-      muted: firstHexVar(root, "press-ink-soft")!,
-      good: firstHexVar(root, "press-green")!,
-      bad: firstHexVar(root, "press-red")!,
-      warn: firstHexVar(root, "press-amber")!,
-      info: firstHexVar(root, "tone-sky")!,
-    };
-    const darkInks: Record<string, string> = {
-      muted: firstHexVar(dark, "press-ink-soft")!,
-      good: firstHexVar(dark, "press-green")!,
-      bad: firstHexVar(dark, "press-red")!,
-      warn: firstHexVar(dark, "press-amber")!,
-      info: firstHexVar(dark, "tone-sky")!,
-    };
-
-    for (const [name, ink] of Object.entries(lightInks)) {
-      for (const surface of lightSurfaces) {
-        const ratio = contrastRatio(ink, surface);
-        expect(
-          ratio,
-          `light ${name} ${ink} on ${surface} is ${ratio.toFixed(2)}:1, needs >= 4.5:1`,
-        ).toBeGreaterThanOrEqual(4.5);
+    for (const [theme, body] of themes) {
+      const token = (name: string) => resolveToken(root, body, name);
+      const surfaces = ["background", "elevated", "code", "surface"];
+      for (const role of ["muted", "good", "bad", "warn", "info", "insight"]) {
+        for (const surface of surfaces) {
+          const ratio = contrastRatio(token(role), token(surface));
+          expect(
+            ratio,
+            `${theme} ${role} ${token(role)} on --${surface} is ${ratio.toFixed(2)}:1, needs >= 4.5:1`,
+          ).toBeGreaterThanOrEqual(4.5);
+        }
       }
-    }
-    for (const [name, ink] of Object.entries(darkInks)) {
-      for (const surface of darkSurfaces) {
-        const ratio = contrastRatio(ink, surface);
-        expect(
-          ratio,
-          `dark ${name} ${ink} on ${surface} is ${ratio.toFixed(2)}:1, needs >= 4.5:1`,
-        ).toBeGreaterThanOrEqual(4.5);
+      for (const role of ["good", "bad", "warn", "info", "insight"]) {
+        for (const ground of ["background", "elevated"]) {
+          const ratio = contrastRatio(token(`${role}-line`), token(ground));
+          expect(
+            ratio,
+            `${theme} ${role}-line on --${ground} is ${ratio.toFixed(2)}:1, needs >= 3:1`,
+          ).toBeGreaterThanOrEqual(3);
+        }
       }
     }
   });
@@ -637,36 +640,37 @@ describe("design tokens", () => {
     expect(body).toMatch(/text-\[0\.7rem\][^"]*uppercase/);
   });
 
-  it("Callout pastel surface tokens exist and are AA-compliant against their role ink", () => {
+  it("status surfaces and lines come from the palette and hold their role ink", () => {
     const css = readFileSync(GLOBALS, "utf8");
-    const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    const dark = css.slice(css.indexOf(".dark"));
-
-    const pairs: [role: string, ink: string][] = [
-      ["info", "tone-sky"],
-      ["good", "press-green"],
-      ["warn", "press-amber"],
-      ["insight", "press-insight"],
-    ];
-
-    for (const [role, inkVar] of pairs) {
-      const lightSurface = firstHexVar(root, `press-${role}-surface`);
-      const darkSurface = firstHexVar(dark, `press-${role}-surface`);
-      const lightInk = firstHexVar(root, inkVar);
-      const darkInk = firstHexVar(dark, inkVar);
-      expect(lightSurface, `light ${role} surface missing`).toBeTruthy();
-      expect(darkSurface, `dark ${role} surface missing`).toBeTruthy();
-      // Bold/large label + icon sitting on the surface — AA large-text floor.
-      expect(
-        contrastRatio(lightInk!, lightSurface!),
-        `light ${role} ink vs its own surface`,
-      ).toBeGreaterThanOrEqual(3);
-      expect(
-        contrastRatio(darkInk!, darkSurface!),
-        `dark ${role} ink vs its own surface`,
-      ).toBeGreaterThanOrEqual(3);
+    const root = blockBody(css, ":root");
+    const dark = blockBody(css, ".dark");
+    const hueOf: Record<string, string> = {
+      good: "green",
+      bad: "red",
+      warn: "orange",
+      info: "blue",
+      insight: "yellow",
+    };
+    for (const [role, hue] of Object.entries(hueOf)) {
+      expect(root).toMatch(new RegExp(`--${role}:\\s*var\\(--hue-${hue}-ink\\)`));
+      expect(root).toMatch(new RegExp(`--${role}-surface:\\s*var\\(--hue-${hue}-1\\)`));
+      expect(root).toMatch(new RegExp(`--${role}-line:\\s*var\\(--hue-${hue}-3\\)`));
+      expect(dark).toMatch(new RegExp(`--${role}-line:\\s*var\\(--hue-${hue}-4\\)`));
+      for (const body of [null, dark]) {
+        const token = (name: string) => resolveToken(root, body, name);
+        // Bold/large label + icon sitting on the surface — AA large-text floor.
+        expect(
+          contrastRatio(token(role), token(`${role}-surface`)),
+          `${body === null ? "light" : "dark"} ${role} ink vs its own surface`,
+        ).toBeGreaterThanOrEqual(3);
+      }
       expect(css).toMatch(new RegExp(`--color-${role}-surface:\\s*var\\(--${role}-surface\\)`));
+      expect(css).toMatch(new RegExp(`--color-${role}-line:\\s*var\\(--${role}-line\\)`));
     }
+    // The hand-tuned status inks are gone; the palette is the only source.
+    expect(css).not.toMatch(
+      /--press-(?:green|red|amber|insight)\b|--press-(?:info|good|warn|insight)-surface\b|--tone-sky\b/,
+    );
   });
 
   it("MarginNote, ComplexityStrip, InsightPanel use --info, not --mark", () => {
