@@ -29,6 +29,7 @@ const HEX_ALLOW = new Set([
   "app/globals.css", // tier-1 ink definitions
   "lib/content/codePalette.ts", // Shiki theme; mirrored by --tok-* in CSS
   "lib/visual/familyTheme.ts", // per-family accent map for PatternLab
+  "lib/visual/palette.ts", // GitHub's contribution ramps + light surfaces the palette is derived from; --hue-* in CSS is its output
   "components/md/Mermaid.tsx", // Mermaid theme API wants resolved hex
   "components/sandbox/editorTheme.ts", // may mirror --tok-* literals
   "components/kit/languageMarks.tsx", // brand colour, not design-system colour
