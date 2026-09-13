@@ -1,28 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="leetExpert">
   <title>leetExpert</title>
   <!--
-    Steel plate + white strokes — matches the site's monochrome Blueprint
-    palette (--accent/--mark = #1E293B light, #CBD5E1 dark; see
-    globals.css's --press-olive/--press-blue). Previously indigo (#5B5CEB),
-    which no longer exists anywhere in the live theme tokens.
-
-    Code brackets flank a checkmark: the brackets read as "code", the
-    checkmark as "solved" — the two things the course actually does. Strokes
-    are bold (6, was 3.2) and the path count is cut from five sub-paths to
-    three so the mark survives reduction to a 16x16 favicon; the previous
-    version's finer detail (inner chevron + drop stroke) disappeared into a
-    grey smear at that size.
+    The lamp favicon, and the source of src/app/icon.svg (scripts/
+    generate-icons.mjs copies it there; Next's icon.svg convention needs the
+    file under src/app/). Colours mirror the press-lamp tokens in
+    globals.css and tests/brandLamp.test.tsx fails if they drift. The theme
+    follows prefers-color-scheme, which is what browser tab chrome follows.
+    Spec: docs/superpowers/specs/2026-09-13-lamp-logo-design.md
   -->
-  <rect width="64" height="64" rx="14" fill="#1E293B" />
-  <g
-    fill="none"
-    stroke="#FFFFFF"
-    stroke-width="6"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <path d="M22 16 L12 32 L22 48" />
-    <path d="M42 16 L52 32 L42 48" />
-    <path d="M25 33 L30 40 L41 24" />
-  </g>
+  <style>
+    .lamp { stop-color: #2b7a3b; }
+    .hi { stop-color: #43a354; }
+    .lo { stop-color: #1d5a29; }
+    .a { stop-opacity: 0.45; }
+    .b { stop-opacity: 0.2; }
+    .c { stop-opacity: 0.06; }
+    @media (prefers-color-scheme: dark) {
+      .lamp { stop-color: #5be07a; }
+      .hi { stop-color: #cfffd8; }
+      .lo { stop-color: #2fb455; }
+      .a { stop-opacity: 0.85; }
+      .b { stop-opacity: 0.42; }
+      .c { stop-opacity: 0.11; }
+    }
+  </style>
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" class="lamp a" />
+      <stop offset="33%" class="lamp b" />
+      <stop offset="69%" class="lamp c" />
+      <stop offset="100%" class="lamp" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="core" cx="38%" cy="34%" r="70%">
+      <stop offset="0%" class="hi" />
+      <stop offset="45%" class="lamp" />
+      <stop offset="100%" class="lo" />
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#halo)" />
+  <circle cx="32" cy="32" r="15" fill="url(#core)" />
 </svg>

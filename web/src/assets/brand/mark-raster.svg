@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!--
+    Raster favicon source (favicon-16/32 PNGs and favicon.ico). A PNG can't
+    follow the theme, so this one image must hold up on any tab colour: the
+    #1d5a29 rim carries contrast on light tabs (6.29:1 on Chrome's light
+    tab), the bright core on dark tabs (7.12:1 on Chrome's dark tab).
+    Colours mirror the dark press-lamp tokens, with the light press-lamp-lo as rim.
+  -->
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#5be07a" stop-opacity="0.85" />
+      <stop offset="33%" stop-color="#5be07a" stop-opacity="0.42" />
+      <stop offset="69%" stop-color="#5be07a" stop-opacity="0.11" />
+      <stop offset="100%" stop-color="#5be07a" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="core" cx="38%" cy="34%" r="70%">
+      <stop offset="0%" stop-color="#cfffd8" />
+      <stop offset="45%" stop-color="#5be07a" />
+      <stop offset="100%" stop-color="#2fb455" />
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#halo)" />
+  <circle cx="32" cy="32" r="15" fill="url(#core)" stroke="#1d5a29" stroke-width="4" />
+</svg>

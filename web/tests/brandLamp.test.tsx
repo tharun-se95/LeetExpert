@@ -5,6 +5,7 @@ import { contrastRatio } from "./helpers/contrast";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Lamp } from "@/components/brand/Lamp";
 import { LAMP_BOOT_KEY, LAMP_BOOT_SCRIPT } from "@/components/brand/lampBoot";
+import sharp from "sharp";
 
 /**
  * The brand lamp: one soft-glowing green dot is the whole logo, and the only
@@ -248,5 +249,69 @@ describe("the lamp replaces the </> badge", () => {
   it("the landing hero draws a static lamp", () => {
     expect(home).toContain("<Lamp size={24} />");
     expect(home).not.toContain('{"</>"}');
+  });
+});
+
+describe("brand assets mirror the lamp tokens", () => {
+  const BRAND = join(SRC, "assets", "brand");
+  const svg = (name: string) => readFileSync(join(BRAND, name), "utf8");
+  const hexes = (text: string) =>
+    new Set([...text.matchAll(/#[0-9a-fA-F]{6}\b/g)].map((m) => m[0].toLowerCase()));
+
+  const light = {
+    lamp: hexVar(root, "press-lamp"),
+    hi: hexVar(root, "press-lamp-hi"),
+    lo: hexVar(root, "press-lamp-lo"),
+  };
+  const darkLamp = {
+    lamp: hexVar(dark, "press-lamp"),
+    hi: hexVar(dark, "press-lamp-hi"),
+    lo: hexVar(dark, "press-lamp-lo"),
+  };
+
+  it("src/app/icon.svg is byte-identical to mark.svg", () => {
+    // Next's icon.svg convention needs its own file under src/app/;
+    // generate-icons.mjs copies it, and this catches a hand edit to either.
+    const icon = readFileSync(join(SRC, "app", "icon.svg"));
+    expect(icon.equals(readFileSync(join(BRAND, "mark.svg")))).toBe(true);
+  });
+
+  it("mark.svg carries exactly the light and dark lamp colours", () => {
+    expect(hexes(svg("mark.svg"))).toEqual(
+      new Set([light.lamp, light.hi, light.lo, darkLamp.lamp, darkLamp.hi, darkLamp.lo]),
+    );
+  });
+
+  it("mark-raster.svg is the dark lamp with the light edge as its rim", () => {
+    expect(hexes(svg("mark-raster.svg"))).toEqual(
+      new Set([darkLamp.lamp, darkLamp.hi, darkLamp.lo, light.lo]),
+    );
+  });
+
+  it("both tiles are the dark lamp on dark paper", () => {
+    const tile = new Set([darkLamp.lamp, darkLamp.hi, darkLamp.lo, hexVar(dark, "press-paper")]);
+    expect(hexes(svg("mark-tile.svg"))).toEqual(tile);
+    expect(hexes(svg("mark-tile-rounded.svg"))).toEqual(tile);
+  });
+
+  it.each([
+    "public/favicon-32x32.png",
+    "src/app/apple-icon.png",
+    "public/android-chrome-192x192.png",
+  ])("%s was regenerated from the lamp", async (rel) => {
+    // Catches an SVG edited without rerunning generate-icons.mjs, which would
+    // keep shipping the old steel icons.
+    const { data, info } = await sharp(join(WEB, rel))
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const i =
+      (Math.floor(info.height / 2) * info.width + Math.floor(info.width / 2)) * info.channels;
+    const [r, g, b, a] = [data[i]!, data[i + 1]!, data[i + 2]!, data[i + 3]!];
+    expect(a, `${rel} centre alpha`).toBeGreaterThan(200);
+    expect(
+      g - Math.max(r, b),
+      `${rel} centre is rgb(${r}, ${g}, ${b}); rerun node scripts/generate-icons.mjs`,
+    ).toBeGreaterThan(40);
   });
 });

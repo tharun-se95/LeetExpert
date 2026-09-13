@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-// Rasterizes the brand mark (src/assets/brand/*.svg) into every favicon /
-// PWA / apple-touch-icon file the site references. Re-run this whenever
-// mark.svg or mark-square.svg change — nothing here should be hand-edited
-// downstream of the SVG source.
+// Builds every favicon / PWA / apple-touch-icon file from the brand lamp
+// sources in src/assets/brand/. Re-run whenever any mark*.svg changes —
+// nothing downstream should be hand-edited, and tests/brandLamp.test.tsx
+// fails if the outputs are stale.
 //
 // sharp is not a direct dependency of this project; it rides in transitively
 // as Next's own image-optimization engine (next -> sharp). That's fine for a
 // one-off/rerunnable build script like this one — we're not shipping it in
 // the runtime bundle — but if `npm ls sharp` ever comes back empty, install
 // it as a devDependency before rerunning.
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { copyFile, readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -60,15 +60,21 @@ function packIco(pngBuffers) {
 }
 
 async function main() {
-  const roundedSvg = await svgBuffer("mark.svg");
-  const squareSvg = await svgBuffer("mark-square.svg");
+  const rasterSvg = await svgBuffer("mark-raster.svg");
+  const tileSvg = await svgBuffer("mark-tile.svg");
+  const tileRoundedSvg = await svgBuffer("mark-tile-rounded.svg");
 
   await mkdir(publicDir, { recursive: true });
 
-  // Standard browser favicons (rounded plate).
-  const favicon16 = await toPng(roundedSvg, 16);
-  const favicon32 = await toPng(roundedSvg, 32);
-  const favicon48 = await toPng(roundedSvg, 48);
+  // icon.svg is served as-is (it follows the OS theme itself), so it is a
+  // copy rather than a render. Next's convention needs it under src/app/.
+  await copyFile(join(brandDir, "mark.svg"), join(appDir, "icon.svg"));
+
+  // Browser favicons for anything that doesn't take the SVG: one fixed
+  // image on an unknown tab colour, hence the rimmed variant.
+  const favicon16 = await toPng(rasterSvg, 16);
+  const favicon32 = await toPng(rasterSvg, 32);
+  const favicon48 = await toPng(rasterSvg, 48);
   await writeFile(join(publicDir, "favicon-16x16.png"), favicon16);
   await writeFile(join(publicDir, "favicon-32x32.png"), favicon32);
 
@@ -82,22 +88,21 @@ async function main() {
   ]);
   await writeFile(join(appDir, "favicon.ico"), ico);
 
-  // Apple touch icon (iOS home screen) — full-bleed square, no baked-in
-  // corner rounding; iOS masks it into a squircle itself.
-  const appleIcon = await toPng(squareSvg, 180);
-  await writeFile(join(appDir, "apple-icon.png"), appleIcon);
+  // Apple touch icon (iOS home screen) — opaque full-bleed dark tile; iOS
+  // masks it into a squircle itself.
+  await writeFile(join(appDir, "apple-icon.png"), await toPng(tileSvg, 180));
 
-  // Android / PWA manifest icons (rounded plate — Android already clips
-  // adaptive icons in `purpose: "any"` mode, so no extra safe-zone inset).
+  // Android / PWA manifest icons — the same dark tile with rounded corners.
   await writeFile(
     join(publicDir, "android-chrome-192x192.png"),
-    await toPng(roundedSvg, 192),
+    await toPng(tileRoundedSvg, 192),
   );
   await writeFile(
     join(publicDir, "android-chrome-512x512.png"),
-    await toPng(roundedSvg, 512),
+    await toPng(tileRoundedSvg, 512),
   );
 
+  console.log("Copied    src/app/icon.svg");
   console.log("Generated favicon-16x16.png, favicon-32x32.png,");
   console.log("       src/app/favicon.ico, src/app/apple-icon.png,");
   console.log("       android-chrome-192x192.png, android-chrome-512x512.png");
