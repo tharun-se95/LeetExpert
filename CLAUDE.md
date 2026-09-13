@@ -131,12 +131,8 @@ The content is the product. Code exists to serve it.
   and **no shadow of their own** — measured at 8x, a tab's shadow fell back
   onto the sheet as a dark band beside the seam and outlined it as an object
   stuck on; the sheet casts the shadow. `.sidebar-rail` paints one solid
-  `--rail-surface` token because the fillets need that colour as a gradient
-  stop — in light an srgb mix identical to the old alpha wash; in dark
-  `--press-space` (`#060608`), a space-black sheet below the page (owner
-  request, 2026-09-13), with `--surface` remapped to `--elevated` inside the
-  rail so row hover still lifts (the recess token is an invisible 1.035:1
-  step on black). Each fillet
+  `--rail-surface` token (an srgb mix, identical to the old alpha wash)
+  because the fillets need that colour as a gradient stop. Each fillet
   overlaps the tab's border row by 1px (`bottom/top: 100%`, not `+1px`).
   Problem pages use the same opener tab — no inline toggle in
   `ProblemWorkspace`'s header — and that header reserves the tab's spot on
@@ -155,10 +151,7 @@ The content is the product. Code exists to serve it.
   verdict rows and insight values on `--press-paper-sunk`, so that is the
   binding floor. A genuinely elevated surface (cards, the coach rail, the
   lessons drawer, the sticky header) ALSO carries a soft ambient shadow on
-  top of its brightness step — see the elevation-shadow rule below. One
-  deliberate exception: in dark, the lessons drawer is space black
-  (`--press-space`), below the page, separated by its border hairline —
-  measured in `design-tokens.test.ts`.
+  top of its brightness step — see the elevation-shadow rule below.
   Recessed surfaces (`--surface`, `--code`) carry no shadow: they sit below
   the page, and a sunk panel casting a shadow reads as floating, which
   fights the brightness step instead of reinforcing it.
