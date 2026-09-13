@@ -970,20 +970,90 @@ body {
   reads as a garish solid pastel panel in light. Falls back to the
   themeless steel --accent when no family/course scope is active, same as
   every other --family-accent consumer.
+
+  One solid colour, --rail-surface, rather than a wash layered over
+  --elevated: the drawer tabs' fillets (.drawer-tab below) must paint this
+  exact colour as a gradient stop, which a background-image layer cannot be.
+  Mixing in srgb reproduces the old alpha composite exactly — a 4% overlay
+  blends in gamma-encoded space, which is what srgb mixes in. Defined on the
+  element, not :root, so a scoped --family-accent still resolves here.
 */
 .sidebar-rail {
-  background-color: var(--elevated);
-  background-image: linear-gradient(
-    color-mix(in oklab, var(--family-accent, var(--accent)) 4%, transparent),
-    color-mix(in oklab, var(--family-accent, var(--accent)) 4%, transparent)
-  );
+  --rail-surface: color-mix(in srgb, var(--elevated) 96%, var(--family-accent, var(--accent)));
+  background-color: var(--rail-surface);
 }
 
 .dark .sidebar-rail {
-  background-image: linear-gradient(
-    color-mix(in oklab, var(--family-accent, var(--accent)) 10%, transparent),
-    color-mix(in oklab, var(--family-accent, var(--accent)) 10%, transparent)
-  );
+  --rail-surface: color-mix(in srgb, var(--elevated) 90%, var(--family-accent, var(--accent)));
+}
+
+/*
+  A lessons-drawer tab (the close tab on the open rail, the opener on the
+  closed one): paired with .sidebar-rail, square and borderless on its seam
+  side, rounded on the outer one. These fillets flare it into the sheet — a
+  concave curve from the sheet's edge into the tab's top and bottom borders
+  — instead of the square step where the rail's border-r stopped and the
+  tab's own borders began. Each is a --radius-md square whose curve is
+  centred on its outer corner: --rail-surface outside the circle, a 1px
+  --border ring on it, transparent inside. The ring sits over the fill, so it
+  composites onto the rail's colour exactly as the rail's own border-r does.
+
+  No shadow on the tab: its own shadow fell back onto the sheet as a dark
+  band beside the seam (measured 246 -> 243 in light), outlining it as an
+  object stuck on. The sheet casts the shadow; the tab is part of the sheet.
+  Each fillet overlaps the tab's own border row by 1px, which is why the
+  offsets are a bare 100%: an absolute child measures from the padding box,
+  inside the tab's 1px borders, so 100% puts the fillet's edge 1px INTO the
+  border row. That overlap does two jobs. It paints --rail-surface over the
+  stretch of the tab's straight top/bottom border that would otherwise cut
+  across the flare, and it puts the ring's centre-line (radius R - 0.5) on
+  the border row's centre-line at one end and on the rail's border column at
+  the other. "+1px" to clear the border looks right and is not: measured at
+  8x it left that straight segment in place and the curve landing a pixel
+  above the border it should meet.
+*/
+.drawer-tab::before,
+.drawer-tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: var(--radius-md);
+  height: var(--radius-md);
+  pointer-events: none;
+}
+
+.drawer-tab::before {
+  bottom: 100%;
+  background:
+    radial-gradient(
+      circle at 100% 0,
+      transparent calc(var(--radius-md) - 1.25px),
+      var(--border) calc(var(--radius-md) - 0.75px),
+      var(--border) calc(var(--radius-md) - 0.25px),
+      transparent calc(var(--radius-md) + 0.25px)
+    ),
+    radial-gradient(
+      circle at 100% 0,
+      transparent calc(var(--radius-md) - 1.25px),
+      var(--rail-surface) calc(var(--radius-md) - 0.75px)
+    );
+}
+
+.drawer-tab::after {
+  top: 100%;
+  background:
+    radial-gradient(
+      circle at 100% 100%,
+      transparent calc(var(--radius-md) - 1.25px),
+      var(--border) calc(var(--radius-md) - 0.75px),
+      var(--border) calc(var(--radius-md) - 0.25px),
+      transparent calc(var(--radius-md) + 0.25px)
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      transparent calc(var(--radius-md) - 1.25px),
+      var(--rail-surface) calc(var(--radius-md) - 0.75px)
+    );
 }
 
 .lab-stage {

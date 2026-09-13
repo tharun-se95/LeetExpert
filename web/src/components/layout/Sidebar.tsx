@@ -136,14 +136,16 @@ export function Sidebar({
     >
       {/*
         The close button sits OUTSIDE the panel, so no chrome row stands above
-        the tree and the nav starts at the top of the rail. It carries the
-        panel's own surface out with it — sidebar-rail, joined at the seam
-        (no left border, square left corners) and rounded on the outer edge,
-        so it reads as a tab on a notebook page rather than a chip floating in
-        the gutter. -right-9 against w-9 lands its left edge on the rail's
-        border line, covering it: the offset is measured from the padding box,
-        so anything wider opens a gap and anything narrower draws a seam
-        across the tab's base.
+        the tree and the nav starts at the top of the rail. It is a tab on the
+        panel's own page: sidebar-rail paper, joined at the seam (no left
+        border, square left corners), rounded on the outer edge, and flared
+        into the sheet by .drawer-tab's fillets (globals.css — which also says
+        why it carries no shadow of its own). -right-9 against w-9 lands its
+        left edge on the rail's border line, covering it: the offset is
+        measured from the padding box, so anything wider opens a gap and
+        anything narrower draws a seam across the tab's base. top-4, not
+        less: the top fillet is --radius-md tall and would otherwise paint
+        over the header above the rail.
 
         It is the deliberate way out, and the only one on desktop while the
         drawer is open, since FloatingLessonsButton hides itself then — hover
@@ -157,10 +159,10 @@ export function Sidebar({
         <button
           type="button"
           onClick={onClose}
-          // Hover changes the glyph and the outer edge, not the paper: the
-          // same language as the resize grip below, and a jump to --surface
-          // would sink a tab that is meant to read as part of the panel.
-          className="sidebar-rail shadow-edge-right absolute top-2 -right-9 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-r-[length:var(--radius-md)] border border-l-0 border-border text-muted transition-colors hover:border-accent/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          // Hover moves the glyph only. Not the paper — a jump to --surface
+          // would sink a tab meant to read as part of the panel — and not the
+          // border, which the fillets draw in --border and cannot follow.
+          className="sidebar-rail drawer-tab absolute top-4 -right-9 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-r-[length:var(--radius-md)] border border-l-0 border-border text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           aria-label="Close lessons drawer"
         >
           <X className="h-4 w-4" weight="bold" />

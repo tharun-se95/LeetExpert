@@ -2,18 +2,21 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const sidebar = readFileSync(
-  join(__dirname, "..", "src", "components", "layout", "Sidebar.tsx"),
-  "utf8",
-);
-const floating = readFileSync(
-  join(__dirname, "..", "src", "components", "layout", "FloatingLessonsButton.tsx"),
-  "utf8",
-);
-const shell = readFileSync(
-  join(__dirname, "..", "src", "components", "layout", "AppShell.tsx"),
-  "utf8",
-);
+const read = (...p: string[]) =>
+  readFileSync(join(__dirname, "..", "src", ...p), "utf8");
+const sidebar = read("components", "layout", "Sidebar.tsx");
+const floating = read("components", "layout", "FloatingLessonsButton.tsx");
+const shell = read("components", "layout", "AppShell.tsx");
+const header = read("components", "layout", "Header.tsx");
+const globals = read("app", "globals.css");
+
+/** The className string of the first element carrying `aria-label`. */
+const classOf = (src: string, ariaLabel: string) => {
+  const el = src.match(
+    new RegExp(`<button[\\s\\S]*?aria-label="${ariaLabel}"[\\s\\S]*?</button>`),
+  )![0];
+  return el.match(/className="([^"]*)"/)![1];
+};
 
 describe("Sidebar chrome", () => {
   /** Comments sit between JSX nodes here; ordering assertions read the tree. */
@@ -32,38 +35,36 @@ describe("Sidebar chrome", () => {
   });
 
   it("hangs the close button past the panel's edge, not above the rows", () => {
-    const close = jsx.match(
-      /<button[\s\S]*?aria-label="Close lessons drawer"[\s\S]*?<\/button>/,
-    )![0];
-    expect(close).toMatch(/absolute/);
+    const cls = classOf(jsx, "Close lessons drawer");
+    expect(cls).toMatch(/absolute/);
     // A negative right offset is what puts it outside the rail.
-    expect(close).toMatch(/-right-/);
+    expect(cls).toMatch(/-right-/);
     // It would otherwise sit over the article with the drawer shut.
     expect(jsx).toMatch(/\{open \?[\s\S]*?aria-label="Close lessons drawer"/);
   });
 
-  it("reads as a tab torn from the panel, not a chip floating beside it", () => {
-    const close = jsx.match(
-      /<button[\s\S]*?aria-label="Close lessons drawer"[\s\S]*?<\/button>/,
-    )![0];
-    const cls = close.match(/className="([^"]*)"/)![1];
-    // Same paper as the panel, by the same class — not a re-authored colour.
+  it("reads as a tab on the panel's own page, not a chip beside it", () => {
+    const cls = classOf(jsx, "Close lessons drawer");
+    // Same paper as the panel, by the same classes — not a re-authored colour.
     expect(cls).toContain("sidebar-rail");
+    expect(cls).toContain("drawer-tab");
     // Only the outer corners round; the seam side stays square and borderless
     // so the tab joins the panel instead of sitting beside it.
     expect(cls).toMatch(/rounded-r-/);
     expect(cls).toContain("border-l-0");
-    // The panel's lifted edge carries on along the tab.
-    expect(cls).toContain("shadow-edge-right");
+    // Measured at 8x: its own shadow fell back onto the panel as a dark band
+    // beside the seam (246 -> 243 in light), outlining it as a separate
+    // object. The tab is part of the sheet; the sheet casts the shadow.
+    expect(cls).not.toMatch(/shadow-/);
+    // The fillets draw their curve in --border and cannot follow a hover
+    // colour, so hover must not recolour the tab's own border either.
+    expect(cls).not.toMatch(/hover:border-/);
   });
 
   it("sits flush against the panel, over its border line", () => {
     // The offset has to equal the tab's own width: one step less and a gap
     // opens, one more and the rail's border-r draws a seam across its base.
-    const close = jsx.match(
-      /<button[\s\S]*?aria-label="Close lessons drawer"[\s\S]*?<\/button>/,
-    )![0];
-    const cls = close.match(/className="([^"]*)"/)![1];
+    const cls = classOf(jsx, "Close lessons drawer");
     expect(cls.match(/-right-(\d+)/)![1]).toBe(cls.match(/\bw-(\d+)/)![1]);
   });
 
@@ -88,6 +89,89 @@ describe("Sidebar chrome", () => {
     expect(jsx).toMatch(
       /overflow-hidden[^"]*">\s*<div className="flex h-full flex-col" style=\{\{ width \}\}/,
     );
+  });
+});
+
+describe("drawer tab idiom", () => {
+  /**
+   * A rule body from globals.css, by its exact selector. Skips a match that
+   * is the tail of a selector list (".a,\n.b {"), which would otherwise hand
+   * back the shared rule's body instead of the selector's own.
+   */
+  const rule = (selector: string) => {
+    let at = globals.indexOf(`${selector} {`);
+    while (at > 0 && globals.slice(at - 2, at) === ",\n") {
+      at = globals.indexOf(`${selector} {`, at + 1);
+    }
+    expect(at, `missing rule: ${selector}`).toBeGreaterThanOrEqual(0);
+    return globals.slice(at, globals.indexOf("}", at));
+  };
+
+  it("paints the rail from one solid surface token, in both themes", () => {
+    // A solid colour, not a wash layered over --elevated: the tab's fillets
+    // have to paint the exact same colour with a gradient of their own, and a
+    // background-image wash cannot be reused as a gradient stop.
+    expect(rule(".sidebar-rail")).toMatch(/--rail-surface:\s*color-mix\(in srgb/);
+    expect(rule(".sidebar-rail")).toMatch(/background-color:\s*var\(--rail-surface\)/);
+    expect(rule(".sidebar-rail")).not.toMatch(/background-image/);
+    expect(rule(".dark .sidebar-rail")).toMatch(/--rail-surface:\s*color-mix\(in srgb/);
+  });
+
+  it("flares into the sheet with concave fillets, drawn in the rail's own inks", () => {
+    // Without them the rail's border line ends in a square step where the
+    // tab's top and bottom borders begin.
+    for (const pseudo of [".drawer-tab::before", ".drawer-tab::after"]) {
+      const body = rule(pseudo);
+      expect(body).toContain("var(--rail-surface)");
+      expect(body).toContain("var(--border)");
+      expect(body).toMatch(/radial-gradient\(/);
+    }
+    expect(rule(".drawer-tab::before,\n.drawer-tab::after")).toMatch(
+      /pointer-events:\s*none/,
+    );
+  });
+
+  it("overlaps each fillet onto the tab's border row, not beside it", () => {
+    // An absolute child measures from the padding box, inside the tab's 1px
+    // borders, so a bare 100% lands the fillet 1px into the border row: that
+    // covers the straight border under the flare and meets the ring to the
+    // row's centre-line. "+1px" looks like the fix for the padding box and is
+    // the bug — measured at 8x it left a line across the flare and a 1px step.
+    expect(rule(".drawer-tab::before")).toMatch(/\bbottom:\s*100%;/);
+    expect(rule(".drawer-tab::after")).toMatch(/\btop:\s*100%;/);
+  });
+
+  it("makes the opener the same tab, on the closed sheet's edge", () => {
+    const cls = floating.match(/className="([^"]*)"/)![1];
+    for (const c of ["sidebar-rail", "drawer-tab", "border-l-0", "left-0"]) {
+      expect(cls).toContain(c);
+    }
+    expect(cls).toMatch(/rounded-r-/);
+    expect(cls).not.toMatch(/rounded-full|shadow-|hover:border-/);
+    // Same size as the close tab, so opening and closing read as one tab.
+    const close = classOf(sidebar.replace(/\{\/\*[\s\S]*?\*\/\}/g, ""), "Close lessons drawer");
+    expect(cls.match(/\bw-(\d+)/)![1]).toBe(close.match(/\bw-(\d+)/)![1]);
+    expect(cls.match(/\bh-(\d+)/)![1]).toBe(close.match(/\bh-(\d+)/)![1]);
+  });
+
+  it("holds the opener at the close tab's height on screen", () => {
+    // The close tab is absolute inside a rail that starts under the header;
+    // the opener is fixed to the viewport. Header height + the close tab's
+    // own offset is where it sits, so the tab does not jump on close.
+    // The <header> element's own height — Header.tsx sizes a logo and
+    // icons with h-* before it.
+    const headerH = Number(
+      header.match(/<header[^>]*className="[^"]*\bh-(\d+)\b/)![1],
+    );
+    const closeTop = Number(
+      classOf(sidebar.replace(/\{\/\*[\s\S]*?\*\/\}/g, ""), "Close lessons drawer").match(
+        /\btop-(\d+)\b/,
+      )![1],
+    );
+    const openerTop = Number(
+      floating.match(/className="[^"]*\btop-(\d+)\b/)![1],
+    );
+    expect(openerTop).toBe(headerH + closeTop);
   });
 });
 
@@ -117,10 +201,6 @@ describe("hover-driven drawer", () => {
   });
 
   it("pushes gently, on tokens rather than a one-off duration", () => {
-    const globals = readFileSync(
-      join(__dirname, "..", "src", "app", "globals.css"),
-      "utf8",
-    );
     expect(globals).toMatch(/--dur-gentle:/);
     expect(globals).toMatch(/--ease-gentle:/);
     expect(sidebar).toContain("duration-[var(--dur-gentle)]");

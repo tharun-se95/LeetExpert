@@ -124,6 +124,17 @@ The content is the product. Code exists to serve it.
   and focus. Focus after back moves from a **callback ref**: under
   `AnimatePresence mode="wait"` the incoming level has not mounted when an
   effect or `onExitComplete` fires.
+- **The lessons drawer's tabs are part of its sheet.** The close tab hangs
+  off the open rail; the opener sits on the closed sheet's edge at the same
+  on-screen height (header `h-14` + the close tab's `top-4`). Both carry
+  `.sidebar-rail` paper and `.drawer-tab`'s concave fillets (`globals.css`),
+  and **no shadow of their own** — measured at 8x, a tab's shadow fell back
+  onto the sheet as a dark band beside the seam and outlined it as an object
+  stuck on; the sheet casts the shadow. `.sidebar-rail` paints one solid
+  `--rail-surface` token (an srgb mix, identical to the old alpha wash)
+  because the fillets need that colour as a gradient stop. Each fillet
+  overlaps the tab's border row by 1px (`bottom/top: 100%`, not `+1px`).
+  Guarded in `sidebarChrome.test.ts`.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
   `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
   brightness ladder in BOTH themes — elevated brightest, surface deepest,
