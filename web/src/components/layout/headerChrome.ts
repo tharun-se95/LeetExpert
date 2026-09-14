@@ -5,8 +5,11 @@
  * Focus is the global :focus-visible outline: it is unlayered, so a ring
  * utility here would only sit under it, unseen.
  */
-export const LOGO_CHIP =
-  "flex h-9 w-9 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop font-mono text-sm font-bold text-on-pop";
+/**
+ * Rendered size of the brand lamp that ends the wordmark in both headers
+ * (components/brand/Lamp.tsx). One number, so the two marks cannot drift.
+ */
+export const LOGO_LAMP_SIZE = 26;
 
 export const WORDMARK = "truncate text-base font-semibold tracking-tight";
 

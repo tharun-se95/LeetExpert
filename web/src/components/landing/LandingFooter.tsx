@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { EnvelopeSimple, GithubLogo } from "@phosphor-icons/react/dist/ssr";
 import type { ComponentType } from "react";
+import { Lamp } from "@/components/brand/Lamp";
 import { FooterWordmark } from "@/components/landing/FooterWordmark";
+import { LOGO_LAMP_SIZE } from "@/components/layout/headerChrome";
 import { CURRICULUM, FIRST_LESSON, PRACTICE, TOPIC_CHIPS } from "@/lib/landing/content";
 import { CONNECT_LINKS, FOOTER_TAGLINE, type ConnectLink } from "@/lib/landing/footer";
 
@@ -34,16 +36,13 @@ export function LandingFooter({ year }: { year: number }) {
       <div className="grid gap-12 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.8fr)]">
         <div>
           <Link href="/" className="inline-flex items-center gap-2.5">
-            <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] bg-pop font-mono text-sm font-bold text-on-pop"
-              aria-hidden
-            >
-              {"</>"}
-            </span>
             <span className="text-base font-semibold tracking-tight">
               <span className="text-foreground">leet</span>
               <span className="text-mark">Expert</span>
             </span>
+            {/* The same mark as the headers, at their size. Static: the
+                landing header already blooms, and a page gets one bloom. */}
+            <Lamp size={LOGO_LAMP_SIZE} className="-ml-1" />
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{FOOTER_TAGLINE}</p>
         </div>

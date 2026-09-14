@@ -30,7 +30,7 @@ describe("app header", () => {
   it("shares its parts with the landing header, so the two cannot drift", () => {
     for (const file of [header, read("components", "landing", "LandingHeader.tsx")]) {
       expect(file).toMatch(/from "@\/components\/layout\/headerChrome"/);
-      for (const name of ["LOGO_CHIP", "WORDMARK", "NAV_LINK", "ROUND_CONTROL"]) {
+      for (const name of ["LOGO_LAMP_SIZE", "WORDMARK", "NAV_LINK", "ROUND_CONTROL"]) {
         expect(file).toContain(name);
       }
     }

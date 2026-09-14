@@ -86,11 +86,15 @@ The content is the product. Code exists to serve it.
   and silently break the theme.
 - **The brand lamp is the one non-steel ink in chrome.** The logo is a
   soft-glowing grass-green dot (`components/brand/Lamp.tsx`) painted from
-  `--lamp` / `--press-lamp*` in `globals.css`. It is a deliberate exception
+  `--lamp` / `--press-lamp*` in `globals.css`. It ends the wordmark —
+  `leetExpert ●`, the green signal last (owner, 2026-09-14) — in both the
+  app `Header` and `LandingHeader`, at the shared `LOGO_LAMP_SIZE`, inside
+  the home link's `.lamp-link` so hover and focus replay its bloom. Each page
+  renders one header, so one lamp blooms. It is a deliberate exception
   to the monochrome base and covers the mark only — never a button, focus,
-  status, or accent colour. It sits 1.18:1 from `--good` in light, so the
-  two are told apart by form (a glowing dot in chrome vs a flat tick in
-  content) and must stay separate tokens. `tests/brandLamp.test.tsx`
+  status, or accent colour. It sits 1.16:1 from `--good` in light (1.17:1
+  dark), so the two are told apart by form (a glowing dot in chrome vs a flat
+  tick in content) and must stay separate tokens. `tests/brandLamp.test.tsx`
   confines the tokens to the mark and keeps the static icons
   (`assets/brand/mark*.svg`, the generated PNG/ICO files, the OG card) in
   step with them: after changing a lamp token, update those and rerun
@@ -225,7 +229,7 @@ The content is the product. Code exists to serve it.
   letters rise once on first view, aria-hidden, settled under reduced motion)
   and a computed copyright year. It is the last snap stop (`snap-end`). The app
   `Header` shares its class sets with it through `layout/headerChrome.ts`
-  (logo chip, wordmark, nav link, round control) and keeps its own `h-14`,
+  (lamp size, wordmark, nav link, round control) and keeps its own `h-14`,
   which the drawer geometry above reads. The grain is its own rule below.
   Guarded in `landingHeader.test.tsx` and `appHeader.test.tsx`.
 - **The grain is the app's desk, on every route** (owner, 2026-09-14; spec

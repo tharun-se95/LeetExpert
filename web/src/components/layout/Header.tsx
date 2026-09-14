@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { List, MagnifyingGlass } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { Lamp } from "@/components/brand/Lamp";
 import {
-  LOGO_CHIP,
+  LOGO_LAMP_SIZE,
   NAV_LINK,
   NAV_LINK_ACTIVE,
   ROUND_CONTROL,
@@ -73,10 +74,7 @@ export function Header({
             <List className="h-5 w-5" weight="bold" aria-hidden />
           </button>
         ) : null}
-        <Link href="/" className="flex min-w-0 items-center gap-2.5">
-          <span className={LOGO_CHIP} aria-hidden>
-            {"</>"}
-          </span>
+        <Link href="/" className="lamp-link flex min-w-0 items-center gap-2.5">
           <span className="flex min-w-0 items-baseline gap-2">
             {/*
               When the lessons menu button is present, drop the wordmark below sm
@@ -88,6 +86,15 @@ export function Header({
               <span className="text-foreground">leet</span>
               <span className="text-mark">Expert</span>
             </span>
+            {/* The green signal ends the name. self-center: this row aligns
+                text baselines, which would stand an SVG on the baseline.
+                The negative margin takes back the halo's transparent edge,
+                only where the wordmark is actually beside it. */}
+            <Lamp
+              size={LOGO_LAMP_SIZE}
+              bloom
+              className={cn("self-center", showLessonsMenu ? "sm:-ml-1" : "-ml-1")}
+            />
             <span
               className="hidden h-3.5 w-px shrink-0 bg-border md:block"
               aria-hidden

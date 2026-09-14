@@ -123,7 +123,7 @@ describe("Lamp component", () => {
     expect(html).toContain("var(--lamp-halo-a)");
   });
 
-  it("gives every instance its own gradient ids, so the header and hero can share a page", () => {
+  it("gives every instance its own gradient ids, so two lamps can share a page", () => {
     // Duplicate SVG ids resolve to the first definition in the document, so
     // a second lamp would silently paint with the first lamp's gradients.
     const html = renderToStaticMarkup(
@@ -236,19 +236,46 @@ describe("lamp boot script", () => {
   });
 });
 
-describe("the lamp replaces the </> badge", () => {
-  const header = readFileSync(join(SRC, "components", "layout", "Header.tsx"), "utf8");
-  const home = readFileSync(join(SRC, "components", "landing", "HomePage.tsx"), "utf8");
+describe("the lamp ends the wordmark in both headers", () => {
+  // Owner, 2026-09-14: the green signal sits at the end of the name,
+  // "leetExpert ●". On / AppShell renders LandingHeader instead of Header,
+  // so each page has exactly one header and therefore one blooming lamp.
+  const headers = {
+    app: readFileSync(join(SRC, "components", "layout", "Header.tsx"), "utf8"),
+    landing: readFileSync(join(SRC, "components", "landing", "LandingHeader.tsx"), "utf8"),
+  };
 
-  it("the header draws a blooming lamp inside the replay link", () => {
-    expect(header).toContain("<Lamp size={26} bloom />");
-    expect(header).toMatch(/<Link href="\/" className="lamp-link /);
-    expect(header).not.toContain('{"</>"}');
+  it.each(Object.entries(headers))(
+    "%s header: a blooming lamp after the wordmark, inside the replay link",
+    (_name, src) => {
+      const home = src.match(/<Link\s+href="\/"\s+className="([^"]*)"\s*>([\s\S]*?)<\/Link>/);
+      expect(home, "home link").not.toBeNull();
+      const [, linkClass, body] = home!;
+      expect(linkClass.split(/\s+/)).toContain("lamp-link");
+      // Attributes may wrap onto their own lines, as JSX formatting does.
+      expect(body).toMatch(/<Lamp\s+size=\{LOGO_LAMP_SIZE\}\s+bloom\b/);
+      const wordmark = body.indexOf("WORDMARK");
+      expect(wordmark, "wordmark in the home link").toBeGreaterThan(-1);
+      expect(body.indexOf("<Lamp"), "lamp comes after the wordmark").toBeGreaterThan(wordmark);
+    },
+  );
+
+  it("the landing footer ends its wordmark with a static lamp, because the header already blooms on /", () => {
+    const footer = readFileSync(join(SRC, "components", "landing", "LandingFooter.tsx"), "utf8");
+    const home = footer.match(/<Link\s+href="\/"[^>]*>([\s\S]*?)<\/Link>/);
+    expect(home, "footer home link").not.toBeNull();
+    const lamp = home![1].match(/<Lamp\b[^>]*\/>/)?.[0];
+    expect(lamp, "lamp in the footer home link").toBeDefined();
+    expect(lamp).toMatch(/size=\{LOGO_LAMP_SIZE\}/);
+    expect(lamp, "only the header blooms").not.toMatch(/\bbloom\b/);
+    expect(home![1].indexOf("<Lamp")).toBeGreaterThan(home![1].indexOf("Expert"));
   });
 
-  it("the landing hero draws a static lamp", () => {
-    expect(home).toContain("<Lamp size={24} />");
-    expect(home).not.toContain('{"</>"}');
+  it("leaves no </> badge anywhere in the app", () => {
+    const badges = walk(SRC)
+      .filter((path) => readFileSync(path, "utf8").includes('{"</>"}'))
+      .map((path) => relative(SRC, path).replace(/\\/g, "/"));
+    expect(badges).toEqual([]);
   });
 });
 

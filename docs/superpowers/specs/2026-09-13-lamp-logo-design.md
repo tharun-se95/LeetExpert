@@ -33,7 +33,7 @@ why are recorded at the end.
 | --- | --- |
 | What the mark is | The dot **is** the whole logo |
 | Container | **Bare** — no plate, no bezel |
-| Position vs wordmark | **Leading** — `● leetExpert`, in the badge's slot |
+| Position vs wordmark | **Trailing** — `leetExpert ●` (was leading; changed by the owner on 2026-09-14, see the amendments) |
 | Motion | **Static**, plus one power-on bloom |
 | Bloom timing | **T1 lamp strike**, 900ms |
 | Bloom frequency | **Once per tab** |
@@ -42,7 +42,7 @@ why are recorded at the end.
 | Raster favicon | **F2** — bright core with dark rim |
 | Home-screen tiles | **T-D** — dark tile |
 | OG card | Lamp on the existing scrim, no plate |
-| Landing hero badge | Static lamp, no bloom |
+| Landing hero badge | Superseded — the landing rewrite removed the hero eyebrow; `LandingHeader` carries the lamp (see the amendments) |
 
 ## The mark
 
@@ -314,13 +314,40 @@ unimplementable.
    colour test. Contrast helpers move to `tests/helpers/contrast.ts`, shared
    with `design-tokens.test.ts`.
 
+## Amendments after implementation (2026-09-14)
+
+1. **The lamp ends the wordmark.** Owner, 2026-09-14: "lets have the green
+   signal in the end". Both headers now read `leetExpert ●` instead of
+   `● leetExpert`. Only the header lockup moves: favicons, home-screen tiles
+   and the OG card were always the dot alone, so the rejected option's cost
+   (a weaker standalone icon) does not apply. It also gives the mark the
+   reading the trailing option was first offered for: the signal sits where a
+   prompt's cursor sits.
+2. **`LandingHeader` carries the lamp, and it blooms.** `main` now renders
+   `LandingHeader` on `/` and skips the app `Header` there. Without a lamp on
+   `/`, the first visit would show the retired `</>` badge, and the boot flag
+   would stay set until the app `Header` first mounted, so the bloom would play
+   on the first navigation instead of on arrival. Each page renders exactly
+   one header, so each page has one blooming lamp.
+3. **The hero lamp is gone.** The landing rewrite removed the hero eyebrow it
+   replaced, and its test went with it. A repo-wide guard now fails on any
+   `{"</>"}` badge under `src/`.
+4. **`LOGO_CHIP` became `LOGO_LAMP_SIZE`** (26) in `layout/headerChrome.ts`,
+   so the two headers still share one mark definition; `appHeader.test.tsx`
+   checks for it.
+5. **Lamp vs `--good` re-measured** on the contribution green palette:
+   1.16:1 light (`--good #067123`), 1.17:1 dark (`#39d353`), was 1.18:1. Still
+   inseparable by luminance, so the form-and-place rule and the scope guard
+   stand unchanged. Every surface ratio is unchanged (surface tokens did not
+   move).
+
 ## Rejected alternatives
 
 | Option | Why not |
 | --- | --- |
 | Dot as a companion to the existing mark / wordmark lockup only | Owner chose the dot as the whole logo |
 | Steel plate / LED well / glow-flooded plate | Owner chose bare; plate variants were the more reduction-safe option and were shown as such |
-| Trailing dot (`leetExpert ●`) | Stronger product metaphor (a prompt cursor) but weaker as a standalone icon |
+| ~~Trailing dot (`leetExpert ●`)~~ | Rejected on 2026-09-13 as weaker as a standalone icon; **chosen by the owner on 2026-09-14**. The standalone icon is unaffected: favicons, tiles and the OG card are the dot alone |
 | Dot at the seam (`leet●Expert`) | No dot-alone form left for favicon/app icon |
 | Infinite breathe / heartbeat | Runs forever in a sticky header above reading on every lesson; a blink is the UI idiom for "needs attention" |
 | Reuse `--good` | Semantic collision with pass/correct states; zero-token saving not worth it |
