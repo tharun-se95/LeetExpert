@@ -139,7 +139,7 @@ in the browser at 320, 375, 640, 768 and 1024px (§6).
 - **`appHeader.test.ts`** (new):
   - `Header.tsx` and `LandingHeader.tsx` both import the `headerChrome` constants.
   - The app `<header>` carries `paper-grain` and `bg-background`, and no `shadow-edge-bottom` or `bg-elevated`.
-  - Rendered nav marks the active mode with `aria-current="page"` and `NAV_LINK_ACTIVE`, and the other link with neither.
+  - Rendered with `renderToStaticMarkup`, `next/navigation`'s `usePathname` and `useProgress` mocked (`vi.mock`), on `/courses/dsa/arrays` and on `/courses/dsa/problems`: the active mode's link carries `aria-current="page"` and `NAV_LINK_ACTIVE`, and the other link carries neither.
 - **`landingHeader.test.tsx`**: "paints the grain once" becomes an allowlist.
   - `paper-grain`: AppShell 1, Header 1, Sidebar 1.
   - `grain-layer`: Sidebar 1, FloatingLessonsButton 1, MobileLessonsSheet 1.
