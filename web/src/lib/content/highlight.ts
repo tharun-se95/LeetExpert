@@ -1,7 +1,7 @@
 import { createHighlighter, type Highlighter, type ThemeRegistrationRaw } from "shiki";
 import { PRESS_LIGHT, PRESS_DARK } from "@/lib/content/codePalette";
 
-const SUPPORTED_LANGS = [
+export const SUPPORTED_LANGS = [
   "typescript",
   "tsx",
   "javascript",
@@ -18,7 +18,7 @@ const SUPPORTED_LANGS = [
   as unhighlighted plain text everywhere in the app, since `lang` is
   compared by strict equality, not against Shiki's own internal aliases.
 */
-const LANG_ALIASES: Record<string, (typeof SUPPORTED_LANGS)[number]> = {
+export const LANG_ALIASES: Record<string, (typeof SUPPORTED_LANGS)[number]> = {
   ts: "typescript",
   js: "javascript",
   py: "python",

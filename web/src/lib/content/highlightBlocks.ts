@@ -25,7 +25,7 @@ const TAB_LABELS: Record<string, string> = {
   cpp: "C++",
 };
 
-const NON_CODE_LANGS = new Set([
+export const NON_CODE_LANGS = new Set([
   "mermaid",
   "quiz",
   "complexity",

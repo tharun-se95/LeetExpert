@@ -11,6 +11,8 @@ import { extractPracticeProblemsFence } from "../src/lib/content/parsePracticePr
 import { splitProblemTabs } from "../src/lib/content/splitProblemTabs";
 import { extractHints } from "../src/lib/coach/extractHints";
 import { MODULES } from "../src/lib/course/manifest";
+import { LANG_ALIASES, SUPPORTED_LANGS } from "../src/lib/content/highlight";
+import { NON_CODE_LANGS } from "../src/lib/content/highlightBlocks";
 
 /**
  * Content validation across every lesson.
@@ -726,6 +728,49 @@ describe("problem examples coverage", () => {
         bad.push(`${lesson.rel} — Examples still opens with \`\`\`text`);
       }
     }
+    expect(bad).toEqual([]);
+  });
+});
+
+/**
+ * Fences handled outside both language lists (spec 2026-09-13 §8.3): they
+ * are rendered by their own components, not highlighted and not listed as
+ * non-code.
+ */
+const STRUCTURAL_FENCES = new Set([
+  "tabs", // CodeTabs, via highlightBlocks' tabs branch
+  "reveal", // Reveal
+  "sandbox", // extractSandboxFence
+  "viz", // Viz registry
+]);
+
+/** Every fence language opened in `body` that nothing in the app renders. */
+function unknownFenceNames(body: string): string[] {
+  const known = (lang: string) =>
+    (SUPPORTED_LANGS as readonly string[]).includes(lang) ||
+    Object.prototype.hasOwnProperty.call(LANG_ALIASES, lang) ||
+    NON_CODE_LANGS.has(lang) ||
+    STRUCTURAL_FENCES.has(lang);
+  return [...body.matchAll(/^`{3,}([A-Za-z][\w-]*)/gm)]
+    .map((m) => m[1]!)
+    .filter((lang) => !known(lang));
+}
+
+const COURSES_DIR = join(__dirname, "..", "..", "courses");
+
+describe("fence languages", () => {
+  it("flags a mistyped callout fence", () => {
+    // Proves the guard can fail: without it, ```wran renders as a plain code block.
+    expect(unknownFenceNames("```wran\nMind the index.\n```")).toEqual(["wran"]);
+    expect(unknownFenceNames("```warn\nMind the index.\n```")).toEqual([]);
+  });
+
+  it("every fence in every course is one the app renders", () => {
+    const bad = walk(COURSES_DIR).flatMap((path) =>
+      unknownFenceNames(readFileSync(path, "utf8")).map(
+        (lang) => `${relative(COURSES_DIR, path)}: \`\`\`${lang}`,
+      ),
+    );
     expect(bad).toEqual([]);
   });
 });
