@@ -181,7 +181,9 @@ The content is the product. Code exists to serve it.
   `px-6 md:px-16` gutters shared by header and page so they keep one edge.
   Its nav stays Space Grotesk (16px, ink) — the reference's display-face nav
   was declined to keep the three-faces rule. **The page explains rather than
-  sells** (owner): why learn DSA when agents write code — a hero, one
+  sells** (owner): why learn DSA when agents write code — a hero (its headline
+  one sentence per line, `HERO.lines`, sized `lg:text-4xl xl:text-5xl` so the
+  longer line fits the text column — measured 14.675em), one
   argument screen (`WHY`: four numbered one-line points, problem-solving
   mindset first — four full chapters were cut the same day as too long a
   scroll to reach the point; do not expand it back into chapters), a line of manifest

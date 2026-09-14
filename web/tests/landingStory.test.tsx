@@ -3,6 +3,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { EvolvingStructure } from "@/components/landing/EvolvingStructure";
+import { LandingStory } from "@/components/landing/LandingStory";
 import { TypedText } from "@/components/landing/TypedText";
 import { pagingIntent } from "@/components/landing/useSectionPaging";
 import { activeSectionIndex } from "@/components/landing/useSectionReveal";
@@ -266,6 +267,27 @@ describe("snapping", () => {
     expect(pagingIntent({ ...base, sectionTop: -400, sectionBottom: 1000, deltaY: 100 })).toBe("down");
     expect(pagingIntent({ ...base, sectionTop: -400, sectionBottom: 1000, deltaY: -100 })).toBe("native");
     expect(pagingIntent({ ...base, sectionTop: 0, sectionBottom: 1400, deltaY: -100 })).toBe("up");
+  });
+
+  it("sets the headline one sentence per line, typed line by line", () => {
+    expect(HERO.lines).toEqual(["Agents write the code.", "You decide if it's right."]);
+    expect(HERO.title).toBe(HERO.lines.join(" "));
+    const html = renderToStaticMarkup(
+      <LandingStory counts={{ modules: 1, lessons: 1, problems: 1 }} topics={[]} />,
+    );
+    const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)![1]!;
+    const lines = [...h1.matchAll(/<span class="block text-balance"><span><span class="sr-only">([^<]*)<\/span>/g)].map((m) =>
+      m[1]!.replace(/&#x27;/g, "'"),
+    );
+    expect(lines).toEqual([...HERO.lines]);
+  });
+
+  it("sizes the headline so its longer line fits the column (measured: 14.675em)", () => {
+    const h1 = story.match(/<h1 className="([^"]+)"/)![1]!;
+    // lg:text-6xl (3.75rem) made the line 55rem in a 49rem column.
+    expect(h1).not.toMatch(/\btext-6xl\b/);
+    expect(h1).toMatch(/\blg:text-4xl\b/);
+    expect(h1).toMatch(/\bxl:text-5xl\b/);
   });
 
   it("keeps the inline mobile drawings clear of the sticky header", () => {

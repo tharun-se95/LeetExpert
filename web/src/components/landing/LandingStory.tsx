@@ -109,16 +109,28 @@ export function LandingStory({
 
 /** Not a snap stop itself: AppShell's grain wrapper is, so the first stop keeps the header in view. */
 function Hero({ topics, started }: { topics: readonly Topic[]; started: boolean }) {
-  const progress = useRevealProgress(started, typingDuration(HERO.title.length + HERO.lede.length));
-  const [title, lede] = segmentProgress([HERO.title.length, HERO.lede.length], progress);
+  const lengths = [...HERO.lines.map((line) => line.length), HERO.lede.length];
+  const progress = useRevealProgress(started, typingDuration(lengths.reduce((sum, n) => sum + n, 0)));
+  const parts = segmentProgress(lengths, progress);
 
   return (
     <section data-scroll-section className="flex min-h-[calc(100dvh-6rem)] flex-col justify-center py-16">
-      <h1 className="max-w-3xl font-display text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl lg:leading-[1.1]">
-        <TypedText text={HERO.title} progress={title ?? 0} />
+      {/*
+        One sentence per line. Sized so the longer line ("You decide if it's
+        right.", 14.675em in Space Mono) fits the text column without wrapping:
+        measured column 49rem from xl, ~39rem at lg beside the pinned drawing,
+        45rem+ single-column from sm. Below sm a sentence still wraps inside
+        its own line, but never across the full stop.
+      */}
+      <h1 className="max-w-3xl font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-4xl lg:leading-[1.1] xl:text-5xl">
+        {HERO.lines.map((line, i) => (
+          <span key={line} className="block text-balance">
+            <TypedText text={line} progress={parts[i] ?? 0} />
+          </span>
+        ))}
       </h1>
       <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted">
-        <TypedText text={HERO.lede} progress={lede ?? 0} />
+        <TypedText text={HERO.lede} progress={parts[HERO.lines.length] ?? 0} />
       </p>
       <ul className="mt-12 flex flex-wrap gap-x-5 gap-y-4">
         {topics.map(({ label, href }) => {

@@ -265,6 +265,14 @@ fundamentals) "a long scroll to make a point and to get to the point". This
   much"). `typedLength` reveals `round(progress × words)` whole words and cuts
   at a word's end, so no word is ever half-drawn; durations and the
   heading-then-body order are unchanged.
+- **Headline one sentence per line** (owner). As one wrapped string it broke
+  "Agents write the / code. You decide / if it's right." `HERO.lines` renders
+  each sentence as a block, typed in turn. Measured in Chromium: the longer
+  line is 14.675em; the text column is 49rem from `xl` (1280px+), ~39rem at
+  1024px beside the pinned drawing, 45rem+ single-column from `sm`. So the
+  heading is `text-4xl sm:text-5xl lg:text-4xl xl:text-5xl` (was
+  `lg:text-6xl`, 55rem). Below `sm` (325px column) a sentence still wraps
+  within its own line; fitting it would need ~20px type.
 - Hero lede replaced by the owner's wording: "Learning data structures and
   algorithms is for the part of the job that doesn't get automated." (the
   old lede's "seeing the shape of a problem, and knowing what a good answer
