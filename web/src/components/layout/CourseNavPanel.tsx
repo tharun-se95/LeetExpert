@@ -2,8 +2,9 @@
 
 import type { ReactNode, Ref } from "react";
 import Link from "next/link";
-import { CaretLeft, CaretRight, TreeStructure } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, TreeStructure, X } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { ROUND_CONTROL } from "@/components/layout/headerChrome";
 import type {
   CourseNavExtra,
   CourseNavLesson,
@@ -22,6 +23,12 @@ export interface CourseNavPanelProps {
   curriculumHref: string;
   onBack: () => void;
   /**
+   * The desktop drawer's close action. When set, the panel's top row is pinned
+   * and carries the close button. The mobile sheet has its own header with a
+   * close button, so it passes nothing and renders no pinned row.
+   */
+  onClose?: () => void;
+  /**
    * The module the reader just came back from. Its row takes the focus ref, so
    * returning lands on that row — in its own section, which is what the back
    * row promised — instead of the top of a 24-module list.
@@ -35,7 +42,13 @@ export interface CourseNavPanelProps {
  * That label's back caret hangs in the nav's own left padding rather than the
  * text flow — inline, it pushed the section ~20px right of every other row, so
  * the module title beneath read as the SAME level instead of one step in.
- * Rows themselves indent via their own pl-3 plus the guide-line segment.
+ *
+ * The lessons share this indent, so their guide line hangs from the module
+ * title's first letter — the same rule as level 1, where a stage's line sits
+ * under the stage label. With level 1's pl-2 instead, the line hung from the
+ * section label and lesson text landed on the module title (34.5px vs
+ * 35.75px), reading as siblings of the module rather than its children.
+ * Rows then indent via their own pl-3 plus the guide-line segment.
  */
 const INDENT_UNDER_CARET = "pl-6";
 
@@ -209,6 +222,31 @@ function ExtraRow({
 }
 
 /**
+ * The drawer's pinned header row (owner, 2026-09-14; it replaced the close tab
+ * that hung off the rail): the back row inside a module, then the close
+ * button. Sticky at the top of the drawer's scroller so the way out stays in
+ * reach while a 24-module list scrolls beneath, on grainy paper so those rows
+ * do not show through. pt-3 is the drawer's top padding, moved onto the row
+ * (Sidebar), or rows would scroll into a gap above it. No border-b: the module
+ * heading below carries the rule.
+ */
+function PinnedRow({ children, onClose }: { children?: ReactNode; onClose: () => void }) {
+  return (
+    <div className="sticky top-0 z-10 flex items-center justify-end gap-2 bg-background grain-paper pt-3 pb-1">
+      {children}
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close lessons drawer"
+        className={cn(ROUND_CONTROL, "h-8 w-8")}
+      >
+        <X className="h-4 w-4" weight="bold" />
+      </button>
+    </div>
+  );
+}
+
+/**
  * Props-only view for both nav levels — no hooks and no context, so it
  * renders under renderToStaticMarkup in tests without mocking the router.
  */
@@ -222,30 +260,36 @@ export function CourseNavPanel({
   onBack,
   returnSlug,
   returnRowRef,
+  onClose,
 }: CourseNavPanelProps) {
   if (view.level === "module") {
     const { navModule } = view;
     const doneCount = navModule.lessons.filter((l) => visited.has(l.id)).length;
+    const back = (
+      <button
+        type="button"
+        onClick={onBack}
+        // Visible text is the section name; the accessible name adds the
+        // verb and still contains it (WCAG 2.5.3, label in name).
+        aria-label={`Back to ${view.stage.title}`}
+        className={cn(
+          "relative flex items-center rounded-[length:var(--radius-xs)] px-2 py-1 text-foreground transition-colors hover:bg-surface",
+          // In the pinned row it shares the line with the close button.
+          onClose ? "min-w-0 flex-1" : "mb-1 w-full",
+        )}
+      >
+        <CaretLeft
+          aria-hidden
+          className="absolute top-1/2 left-[-16px] h-4 w-4 -translate-y-1/2 text-muted"
+        />
+        <span className="min-w-0 truncate text-[19px] leading-tight font-bold tracking-tight">
+          {view.stage.title}
+        </span>
+      </button>
+    );
     return (
       <div>
-        <button
-          type="button"
-          onClick={onBack}
-          // Visible text is the section name; the accessible name adds the
-          // verb and still contains it (WCAG 2.5.3, label in name).
-          aria-label={`Back to ${view.stage.title}`}
-          className={cn(
-            "relative mb-1 flex w-full items-center rounded-[length:var(--radius-xs)] px-2 py-1 text-foreground transition-colors hover:bg-surface",
-          )}
-        >
-          <CaretLeft
-            aria-hidden
-            className="absolute top-1/2 left-[-16px] h-4 w-4 -translate-y-1/2 text-muted"
-          />
-          <span className="min-w-0 truncate text-[19px] leading-tight font-bold tracking-tight">
-            {view.stage.title}
-          </span>
-        </button>
+        {onClose ? <PinnedRow onClose={onClose}>{back}</PinnedRow> : back}
         <div
           className={cn("border-b border-border pr-2 pb-2", INDENT_UNDER_CARET)}
         >
@@ -262,9 +306,7 @@ export function CourseNavPanel({
             ) : null}
           </h2>
         </div>
-        <div
-          className={cn("mt-2", "pl-2")}
-        >
+        <div className={cn("mt-2", INDENT_UNDER_CARET)}>
           {navModule.lessons.map((lesson) => (
             <LessonRow
               key={lesson.id}
@@ -291,6 +333,7 @@ export function CourseNavPanel({
 
   return (
     <div>
+      {onClose ? <PinnedRow onClose={onClose} /> : null}
       <Link
         href={curriculumHref}
         aria-current={pathname === curriculumHref ? "page" : undefined}

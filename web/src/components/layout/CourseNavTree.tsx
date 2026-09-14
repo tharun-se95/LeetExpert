@@ -23,14 +23,18 @@ const SLIDE_PX = 24;
 /**
  * Shared course nav for the desktop drawer and mobile sheet: a module list
  * that drills into one module's lessons. The level is derived from the route
- * (see lib/course/navLevel.ts); only the back override lives here.
+ * (see lib/course/navLevel.ts); only the back override lives here. The
+ * desktop drawer passes onClose for the panel's pinned header row; the mobile
+ * sheet, which has its own header, does not.
  */
 export function CourseNavTree({
   compact = true,
   className,
+  onClose,
 }: {
   compact?: boolean;
   className?: string;
+  onClose?: () => void;
 }) {
   const pathname = usePathname();
   const courseSlug = activeCourseSlugFor(pathname);
@@ -91,6 +95,7 @@ export function CourseNavTree({
       curriculumHref={curriculumHref}
       returnSlug={returnSlug}
       returnRowRef={returnRowRef}
+      onClose={onClose}
       onBack={() => {
         // The back button unmounts with the level, so move focus deliberately.
         wantsFocus.current = true;

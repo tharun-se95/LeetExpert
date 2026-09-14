@@ -101,7 +101,7 @@ export function MobileLessonsSheet({
             // sits exactly on the viewport edge — a border or shadow there
             // renders off-screen and is permanently invisible. Confirmed:
             // panel.getBoundingClientRect().right === window.innerWidth.
-            className="absolute inset-0 flex flex-col bg-elevated before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-accent"
+            className="absolute inset-0 flex flex-col bg-background grain-paper before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-accent"
             initial={reduceMotion ? false : { x: "-100%" }}
             animate={{ x: 0 }}
             exit={reduceMotion ? undefined : { x: "-100%" }}

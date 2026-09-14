@@ -93,7 +93,7 @@ The content is the product. Code exists to serve it.
   `AppShell.tsx` still resolves which family a route belongs to (tested in
   `appShellRouting.test.ts`), but only as a lookup for the specific
   components that legitimately want it: viz tracers (`VizPlayer`, `Diagram`,
-  `PatternLab`, `FamilySpotlight`) and curriculum-card identity (the course
+  `PatternLab`) and curriculum-card identity (the course
   hub and module-page cards in `app/courses/dsa/`), which call
   `familyCssVars(family)` themselves, scoped to their own element. Guarded
   by `design-tokens.test.ts`'s "AppShell resolves the route's family but
@@ -124,27 +124,116 @@ The content is the product. Code exists to serve it.
   and focus. Focus after back moves from a **callback ref**: under
   `AnimatePresence mode="wait"` the incoming level has not mounted when an
   effect or `onExitComplete` fires.
-- **The lessons drawer's tabs are part of its sheet.** The close tab hangs
-  off the open rail; the opener sits on the closed sheet's edge at the same
-  on-screen height (header `h-14` + the close tab's `top-4`). Both carry
-  `.sidebar-rail` paper and `.drawer-tab`'s concave fillets (`globals.css`),
-  and **no shadow of their own** — measured at 8x, a tab's shadow fell back
-  onto the sheet as a dark band beside the seam and outlined it as an object
-  stuck on; the sheet casts the shadow. `.sidebar-rail` paints one solid
-  `--rail-surface` token — `--elevated`, the app header's own paper, in both
-  themes with no per-theme override (owner request, 2026-09-13; the old steel
-  wash and a brief space-black dark variant are both gone) — because the
-  fillets need that colour as a gradient stop. Each fillet
-  overlaps the tab's border row by 1px (`bottom/top: 100%`, not `+1px`).
-  Problem pages use the same opener tab — no inline toggle in
-  `ProblemWorkspace`'s header — and that header reserves the tab's spot on
-  desktop (`lg:pl-12` so the back link clears it, `lg:py-3` so the band holds
-  the tab and both fillets) rather than the tab moving per page. The hover
-  edge strip stays off the IDE. The rail clips its own top, bottom and left
-  (`clip-path: inset(0 -3rem 0 0)`): it sits above the header (z-45), so its
-  edge shadow's blur otherwise spread up onto the header's bottom edge across
-  the rail's whole width; only the right stays open, for the shadow and the
-  close tab. Guarded in `sidebarChrome.test.ts`.
+- **The lessons drawer closes from its own header row and opens from a
+  floating button** (owner, 2026-09-14; spec
+  `docs/superpowers/specs/2026-09-14-drawer-header-and-floating-opener-design.md`;
+  it replaced the 2026-09-13 edge tabs and their concave fillets). The nav
+  panel's top row is pinned (`sticky top-0`, grainy paper so rows scrolling
+  beneath do not show through, no `border-b` — the module heading below
+  carries the rule): inside a module it is the back row ("‹ {stage}") with ✕
+  beside it, at the top level just ✕. `CourseNavPanel` renders it only when
+  given `onClose`; the desktop drawer passes it, the mobile sheet keeps its
+  own "Lessons ✕" header and passes nothing. The drawer's top padding moved
+  onto that row, so rows cannot scroll into a gap above it. The opener
+  (`FloatingLessonsButton`) is a round hairline control on grainy paper with
+  the card shadow, `fixed bottom-6 left-6` (the coach launcher's inset,
+  mirrored), z-40 above the hover edge strip, hidden while the drawer is open;
+  `next.config` moves Next's dev badge to bottom-right so it does not sit on
+  it. The problem page's sub-header reserves no room for a tab. `.sidebar-rail`
+  paints `--rail-surface` — `--background` with the desk grain, the app
+  header's own paper, in both themes (owner, 2026-09-13 "match the header").
+  The rail clips its own top, bottom and left (`clip-path: inset(0 -3rem 0
+  0)`): it sits above the header (z-45), so its edge shadow's blur otherwise
+  spread up onto the header's bottom edge; only the right stays open, for the
+  shadow and the resize grip, whose pill overhangs the edge (which is also why
+  AppShell's hover-close hit-tests `rail.contains`). Guarded in
+  `sidebarChrome.test.ts` and `courseNavPanel.test.tsx`.
+- **The landing page (`/`) has its own header and a scroll-typed story; no
+  other route does.** Owner direction 2026-09-14
+  (specs `docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md`
+  and `2026-09-14-landing-rewrite-agentic-ai-design.md`). On `/` AppShell
+  skips the sticky app `Header` and renders `LandingHeader` as the first thing
+  *inside* `<main>`, inside the app's one `.paper-grain` desk wrapper:
+  a `border-border` hairline, **sticky** (owner, 2026-09-14): clear over the
+  grain at the top, `bg-background/80 backdrop-blur-md shadow-edge-bottom`
+  once content scrolls under it — `scrolled` comes from an
+  IntersectionObserver on a sentinel at the page top (not a scroll listener),
+  and its height is the same either way so nothing jumps; content in a centred
+  `max-w-landing` column (`--container-landing: 88rem`, owner request) with
+  `px-6 md:px-16` gutters shared by header and page so they keep one edge.
+  Its nav stays Space Grotesk (16px, ink) — the reference's display-face nav
+  was declined to keep the three-faces rule. **The page explains rather than
+  sells** (owner): why learn DSA when agents write code — a hero, one
+  argument screen (`WHY`: four numbered one-line points, problem-solving
+  mindset first — four full chapters were cut the same day as too long a
+  scroll to reach the point; do not expand it back into chapters), a line of manifest
+  counts, pricing ("Start free. Pay as you learn." — per module, no prices on
+  the page), a heatmap feature section (kicker "Feature", heading "Heatmap",
+  with the owner's line "Earn credits for consistent heat." typed beneath the
+  body) and three questions. Its `HeatMap` is an **example year** and says
+  so — the in-app heatmap is not built yet, so the page must not imply it is
+  live beyond that label — seeded (`lib/landing/heat.ts`), ending on the render
+  date, its days-practised and streak numbers computed from the same counts;
+  it names no credit amounts because the rules aren't defined. Its colour is a
+  scoped `--heat-0..4` token ramp (GitHub's greens, contrast recorded beside
+  the tokens), squares fade in column by column on arrival via CSS, and
+  `landingHeat.test.tsx` rebuilds the calendar independently. No viz or code blocks, feature grids,
+  testimonials, banners or sticky CTA; do not add them back without asking.
+  Copy lives in `lib/landing/story.ts`, and every number in it is computed
+  (`pairCount`, `nestedSteps`), never typed in. The page
+  snaps section to section (`snap-y` on `<main>`, only on `/`, mandatory from
+  `lg`, where `useSectionPaging` turns one wheel gesture into one stop —
+  measured in Chrome, mandatory snapping pulled a 300px wheel scroll back to
+  the stop it left): scroll-scrubbed typing was tried first and replaced the same day
+  because re-rendering text and SVG on every scroll frame felt unsmooth. When
+  a section becomes active (`useActiveSection`: an IntersectionObserver on a
+  1% band across `<main>`'s middle — not a scroll listener, which never fired
+  for a page that returned already scrolled) its text types once, word by word (letter-by-letter was too busy; owner
+  2026-09-14), over a length-scaled duration
+  (`TypedText` + `useRevealProgress`); the `sr-only` copy is always complete; the visual layer starts
+  untyped on the server, because a hero rendered typed would flash blank on
+  hydration; a `<noscript>` rule reveals it; reduced motion shows it all. One
+  `EvolvingStructure` stays pinned beside the chapters and animates (motion,
+  0.9s; instant under reduced motion) array → hash table → BST → graph, one
+  stage per argument point as its title starts typing (`argumentStage`; each
+  point gets 1.1s, longer than the morph) — one element per edge, so tree edges stay put when
+  the tree becomes a graph; its layouts are derived from the values
+  (`lib/landing/structureLayouts.ts`) and rebuilt independently in
+  `landingStory.test.tsx`. `HomePage` stays a server component and passes
+  counts and topic links as props, so the course manifest never ships to the
+  landing client. The page ends in `LandingFooter` (landing only; lesson and
+  problem pages are viewport-locked): Course and Topics columns linking only
+  real routes (`landingFooter.test.tsx` resolves every href against page files
+  and the manifest), no legal links until those pages exist, a Connect column
+  rendered only when `lib/landing/footer.ts` `CONNECT_LINKS` holds a confirmed
+  public address — empty for now because the GitHub repo is private — an
+  oversized `FooterWordmark` (sized in container-query units to span its box,
+  letters rise once on first view, aria-hidden, settled under reduced motion)
+  and a computed copyright year. It is the last snap stop (`snap-end`). The app
+  `Header` shares its class sets with it through `layout/headerChrome.ts`
+  (logo chip, wordmark, nav link, round control) and keeps its own `h-14`,
+  which the drawer geometry above reads. The grain is its own rule below.
+  Guarded in `landingHeader.test.tsx` and `appHeader.test.tsx`.
+- **The grain is the app's desk, on every route** (owner, 2026-09-14; spec
+  `docs/superpowers/specs/2026-09-14-app-header-and-grain-design.md`). The tile
+  is `public/textures/grain.png`, generated by `scripts/make-grain.mjs`
+  (seeded; `paperGrain.test.ts` checks the committed pixels), drawn at 200px
+  with strength `--grain-opacity` per theme. Two paints, one strength:
+  `.paper-grain` (a `::before` at `z-index:-1` in an isolated element) on the
+  ONE transparent desk wrapper inside `<main>` — a second transparent layer
+  inside it would double the strength — and `.grain-paper` (the paper at
+  `1 − opacity` over the opaque tile, measured within 1/255 of `.paper-grain`,
+  `background-origin: border-box` so borders do not show the bare tile) on
+  opaque surfaces: the app header, the lessons drawer rail and its pinned header row, the
+  floating drawer opener and the mobile lessons sheet. `--grain-paper` names the surface's paper and
+  `--grain-veil` is declared on the elements that use it, never on `:root`.
+  The app header is a hairline on the desk like the landing header
+  (`bg-background`, no shadow); the problem page's root and sub-header are
+  transparent over the desk. The reading sheet, cards, code, the IDE and
+  dialogs stay solid and cover the grain. Every text ink clears AA at the
+  worst grain pixel (`grainContrast.test.ts`; floors 4.89:1 light, 4.75:1
+  dark) — re-measure if the opacity or a paper changes. Call sites are
+  allowlisted in `paperGrain.test.ts`.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
   `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
   brightness ladder in BOTH themes — elevated brightest, surface deepest,
@@ -156,7 +245,7 @@ The content is the product. Code exists to serve it.
   AA 4.5:1 on the deepest surface it can render on — the sandbox paints
   verdict rows and insight values on `--press-paper-sunk`, so that is the
   binding floor. A genuinely elevated surface (cards, the coach rail, the
-  lessons drawer, the sticky header) ALSO carries a soft ambient shadow on
+  lessons drawer) ALSO carries a soft ambient shadow on
   top of its brightness step — see the elevation-shadow rule below.
   Recessed surfaces (`--surface`, `--code`) carry no shadow: they sit below
   the page, and a sunk panel casting a shadow reads as floating, which
@@ -173,8 +262,9 @@ The content is the product. Code exists to serve it.
   (bordered cards in normal flow — module cards, pattern cards, quiz
   options, prev/next links) or a directional `.shadow-edge-bottom` /
   `.shadow-edge-right` / `.shadow-edge-left` (a panel that only separates
-  from content on one side — the sticky header, the docked lessons drawer,
-  the coach rail, the mobile lessons sheet). Tokens live in `globals.css`
+  from content on one side — the docked lessons drawer, the coach rail, the
+  mobile lessons sheet). The app header carries no shadow: it is a hairline on
+  the grain desk, like the landing header. Tokens live in `globals.css`
   (`--shadow-elevation`, `--shadow-edge-*`): light mode tints the shadow
   with `--press-ink` at low alpha so it reads as ink, not generic UI chrome;
   dark mode uses near-black, since a *light* ink at low alpha would lighten
