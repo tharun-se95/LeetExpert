@@ -155,6 +155,21 @@
   --warn-line: var(--hue-orange-3);
   --insight-line: var(--hue-yellow-3);
   --info-line: var(--hue-blue-3);
+  /*
+    Callout tints (spec 2026-09-13 §5, treatment B): palette level 1 mixed
+    into the card — 50% here, 70% in the dark theme. Measured on --elevated: steps
+    1.16–1.23 light, 1.16–1.28 dark (dark mistake 1.156, the tightest);
+    labels ≥ 5.15:1; body ≥ 9.97:1. Fallback A, the owner's declared
+    alternative: set these five to transparent. Tip's steel has no palette
+    hue, so light mixes --surface and dark a stand-in level 1.
+  */
+  --callout-tint-understanding: color-mix(in srgb, var(--hue-yellow-1) 50%, var(--elevated));
+  --callout-tint-mistake: color-mix(in srgb, var(--hue-red-1) 50%, var(--elevated));
+  --callout-tint-context: color-mix(in srgb, var(--hue-blue-1) 50%, var(--elevated));
+  --callout-tint-requirement: color-mix(in srgb, var(--hue-green-1) 50%, var(--elevated));
+  --callout-tint-advice: color-mix(in srgb, var(--surface) 50%, var(--elevated));
+  /* Tip's rule: 4.76:1 on --elevated, 4.10:1 on its own tint. */
+  --advice-line: #64748b;
 
   --tone-rose: #e11d48;
 
@@ -300,6 +315,15 @@
   --insight-line: var(--hue-yellow-4);
   --info-line: var(--hue-blue-4);
 
+  /* Callout tints, dark: the same mix at 70% (spec 2026-09-13 §5). */
+  --callout-tint-understanding: color-mix(in srgb, var(--hue-yellow-1) 70%, var(--elevated));
+  --callout-tint-mistake: color-mix(in srgb, var(--hue-red-1) 70%, var(--elevated));
+  --callout-tint-context: color-mix(in srgb, var(--hue-blue-1) 70%, var(--elevated));
+  --callout-tint-requirement: color-mix(in srgb, var(--hue-green-1) 70%, var(--elevated));
+  --callout-tint-advice: color-mix(in srgb, #3a3f48 70%, var(--elevated));
+  /* 7.93:1 on its own tint. */
+  --advice-line: #cbd5e1;
+
   --press-highlight: color-mix(in oklab, var(--press-olive) 22%, transparent);
   --press-halftone: rgba(244, 244, 245, 0.09);
   --grain-opacity: 0.067;
@@ -373,6 +397,13 @@
   --color-warn-line: var(--warn-line);
   --color-insight-line: var(--insight-line);
   --color-info-line: var(--info-line);
+  --color-callout-tint-understanding: var(--callout-tint-understanding);
+  --color-callout-tint-mistake: var(--callout-tint-mistake);
+  --color-callout-tint-context: var(--callout-tint-context);
+  --color-callout-tint-requirement: var(--callout-tint-requirement);
+  --color-callout-tint-advice: var(--callout-tint-advice);
+  --color-advice-line: var(--advice-line);
+  --color-rule-strong: var(--rule-strong);
   --color-tone-rose: var(--tone-rose);
   --color-mark: var(--mark);
   --color-pop: var(--pop);

@@ -673,6 +673,71 @@ describe("design tokens", () => {
     );
   });
 
+  it("callout tints (treatment B) clear their floors on the card, both themes", () => {
+    // Spec 2026-09-13 §5: every labelled callout carries a tint — palette
+    // level 1 mixed into --elevated. The tint is flattened onto the card it
+    // paints on before measuring. Fallback A sets these tokens to transparent,
+    // which this test would then fail by design (spec §8.2).
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = blockBody(css, ":root");
+    const dark = blockBody(css, ".dark");
+    const labelOf: Record<string, string> = {
+      understanding: "insight",
+      mistake: "bad",
+      context: "info",
+      requirement: "good",
+      advice: "mark",
+    };
+    const channels = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    const themes: [string, string | null][] = [
+      ["light", null],
+      ["dark", dark],
+    ];
+    for (const [theme, body] of themes) {
+      const token = (name: string) => resolveToken(root, body, name);
+      const card = token("elevated");
+      for (const [category, labelRole] of Object.entries(labelOf)) {
+        const name = `callout-tint-${category}`;
+        if (body !== null) {
+          expect(
+            new RegExp(`--${name}:`).test(stripComments(body)),
+            `.dark must redefine --${name} (70% mix)`,
+          ).toBe(true);
+        }
+        const m =
+          /^color-mix\(in srgb, (?:var\(--([\w-]+)\)|(#[0-9a-f]{6})) (\d+)%, var\(--elevated\)\)$/.exec(
+            token(name),
+          );
+        expect(m, `${theme} --${name} is a color-mix into --elevated`).not.toBeNull();
+        const source = m![1] ? token(m![1]) : m![2]!;
+        const share = Number(m![3]) / 100;
+        const bg = channels(card);
+        const tint =
+          "#" +
+          channels(source)
+            .map((c, i) => Math.round(c * share + bg[i]! * (1 - share)))
+            .map((c) => c.toString(16).padStart(2, "0"))
+            .join("");
+        const step = contrastRatio(tint, card);
+        expect(step, `${theme} ${category} tint ${tint} step off the card`).toBeGreaterThanOrEqual(1.15);
+        expect(step, `${theme} ${category} tint ${tint} step off the card`).toBeLessThanOrEqual(1.3);
+        expect(
+          contrastRatio(token(labelRole), tint),
+          `${theme} ${category} label (--${labelRole}) on ${tint}`,
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrastRatio(token("foreground"), tint),
+          `${theme} ${category} body on ${tint}`,
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(css).toMatch(new RegExp(`--color-${name}:\\s*var\\(--${name}\\)`));
+      }
+      // Tip's rule has no palette hue; it must still clear the 3:1 line floor on the card.
+      expect(contrastRatio(token("advice-line"), card), `${theme} advice-line on the card`).toBeGreaterThanOrEqual(3);
+    }
+    expect(css).toMatch(/--color-advice-line:\s*var\(--advice-line\)/);
+    expect(css).toMatch(/--color-rule-strong:\s*var\(--rule-strong\)/);
+  });
+
   it("MarginNote, ComplexityStrip, InsightPanel use --info, not --mark", () => {
     const marginNote = readFileSync(
       join(SRC, "components", "md", "MarginNote.tsx"),
