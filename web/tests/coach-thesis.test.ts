@@ -64,4 +64,36 @@ describe("extractThesis", () => {
     expect(thesis).not.toContain("def str_str");
     expect(thesis).not.toContain("substring-search");
   });
+
+  it("reads a Key idea fence that opens The insight instead of stopping at it", () => {
+    const explanation = [
+      "## The insight",
+      "",
+      "```key",
+      "Every subset is a leaf of the include/exclude tree.",
+      "```",
+      "",
+      "So the tree has 2^n leaves.",
+      "",
+      "```viz",
+      '{ "id": "subsets" }',
+      "```",
+    ].join("\n");
+    const thesis = extractThesis(explanation);
+    expect(thesis).toContain("include/exclude tree");
+    expect(thesis).toContain("2^n leaves");
+    expect(thesis).not.toContain("```");
+    expect(thesis).not.toContain('"id"');
+  });
+
+  it("prefers the first Key idea fence to a blockquote when there is no The insight heading", () => {
+    const explanation = [
+      "> A quoted formula, not the claim.",
+      "",
+      "```key",
+      "The window only ever grows or slides.",
+      "```",
+    ].join("\n");
+    expect(extractThesis(explanation)).toBe("The window only ever grows or slides.");
+  });
 });
