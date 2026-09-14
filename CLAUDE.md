@@ -231,8 +231,8 @@ The content is the product. Code exists to serve it.
   (`bg-background`, no shadow); the problem page's root and sub-header are
   transparent over the desk. The reading sheet, cards, code, the IDE and
   dialogs stay solid and cover the grain. Every text ink clears AA at the
-  worst grain pixel (`grainContrast.test.ts`; floors 4.89:1 light, 4.75:1
-  dark) — re-measure if the opacity or a paper changes. Call sites are
+  worst grain pixel (`grainContrast.test.ts`; floors 4.84:1 light on
+  `--good`, 6.65:1 dark on `--muted`, measured on the contribution-green palette) — re-measure if the opacity or a paper changes. Call sites are
   allowlisted in `paperGrain.test.ts`.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
   `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
