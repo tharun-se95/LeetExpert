@@ -1,7 +1,8 @@
 # Global code-language switch — design
 
 **Date:** 2026-09-14
-**Status:** approved in brainstorming, awaiting spec review
+**Status:** approved 2026-09-14; revised during planning (§3 pre-paint
+mechanism, §4 phone sizing) after checking Next 16.2 and measuring the header
 **Replaces:** the per-surface language tabs in lesson code blocks
 (`CodeTabs`), viz tracer code panels (`CodePanel`) and the sandbox editor
 (`Sandbox`).
@@ -35,12 +36,17 @@ page dynamic instead of static); TypeScript in the sandbox (a runner and
 - Persisted in `localStorage` under `dsa-code-lang`. Any other stored value,
   or storage that throws, resolves to `"python"`; the switch still works for
   the session in memory.
-- **First paint.** A `next/script` with `strategy="beforeInteractive"` in the
-  root layout copies the stored value onto `<html data-code-lang="…">` before
-  hydration (the same moment next-themes sets the theme class; `<html>`
-  already has `suppressHydrationWarning`). If the script never runs, no
-  attribute is set and Python shows — every CSS rule keys off an explicit
-  `js`, so "no attribute" and "python" render identically.
+- **First paint.** A plain inline `<script>`, the first child of `<body>` in
+  the root layout, copies the stored value onto `<html data-code-lang="…">`
+  while the HTML is still being parsed — before any code block below it is
+  painted. next-themes already uses this technique on these pages, and
+  `<html>` already has `suppressHydrationWarning`. **Not** `next/script`
+  `beforeInteractive`: in the Next 16.2 App Router that pushes the script onto
+  `self.__next_s`, and `appBootstrap` runs it only once the JS chunks have
+  loaded (`next/dist/client/app-bootstrap.js`) — after first paint, so a JS/TS
+  reader would see Python flash. If the script never runs, no attribute is
+  set and Python shows — every CSS rule keys off an explicit `js`, so "no
+  attribute" and "python" render identically.
 - **Store.** `src/lib/codeLang.ts` exports `useCodeLang(): [CodeLang, set]`,
   built on `useSyncExternalStore`: the snapshot reads the attribute, the server
   snapshot is `"python"`, `set` writes the attribute and storage and notifies
@@ -56,8 +62,16 @@ page dynamic instead of static); TypeScript in the sandbox (a runner and
   with its language mark. `role="radiogroup"` with an accessible name
   ("Code language"); options are `role="radio"` with `aria-checked`; arrow
   keys move and select; roving `tabIndex`; visible focus ring.
-- **< 640px:** one 44px button showing the current mark. Tapping toggles.
-  `aria-label` names the current language and the one it switches to.
+- **< 640px:** one button showing the current mark, the size of the theme
+  toggle beside it (`h-8 w-8`: 26px at the 13px root, above the 24px WCAG
+  2.5.8 target). Tapping toggles. `aria-label` names the current language and
+  the one it switches to.
+- **Phone header budget (measured at 320px, 13px root).** Today: left 71.5px
+  (84.2 with the wordmark), nav 130.8, right 66.6, gaps 6.5, padding 9.75.
+  Adding the toggle does not fit, so below 640px the side columns become
+  `auto` instead of equal `1fr` tracks, padding / gaps / nav link padding
+  tighten one step, and the wordmark hides below 360px on pages without the
+  lessons menu (it already hides below 640px on pages with it).
 - Shown wherever the Lessons / Practice nav shows (DSA pages and the landing
   page). Hidden on the Next.js course, which is TypeScript-only.
 
