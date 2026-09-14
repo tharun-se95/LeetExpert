@@ -706,6 +706,21 @@ describe("design tokens", () => {
     expect(body).toMatch(/isBooleanOutput/);
   });
 
+  it("ExamplesBlock's true/false pills hug their text instead of filling the grid column", () => {
+    const body = readFileSync(
+      join(SRC, "components", "md", "ExamplesBlock.tsx"),
+      "utf8",
+    );
+    // The pills are grid items, and grid items stretch to their column even
+    // when they are `inline-flex` — "true" measured 538px wide. The start
+    // alignment is the only thing keeping them content width.
+    const pills = [...body.matchAll(/className="([^"]*\bbg-(?:good|bad)\/10\b[^"]*)"/g)];
+    expect(pills).toHaveLength(2);
+    for (const [, cls] of pills) {
+      expect(cls).toMatch(/\bjustify-self-start\b/);
+    }
+  });
+
   it("prose anchor-link hover ink clears AA at normal-text size in both themes", () => {
     // Regression: --accent is documented (tier-1 comment above --press-lime) as
     // large/UI-only — at the base it is steel (fine anywhere), but inside a
