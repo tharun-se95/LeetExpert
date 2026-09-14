@@ -268,6 +268,12 @@ describe("snapping", () => {
     expect(pagingIntent({ ...base, sectionTop: 0, sectionBottom: 1400, deltaY: -100 })).toBe("up");
   });
 
+  it("keeps the inline mobile drawings clear of the sticky header", () => {
+    const inline = [...story.matchAll(/<EvolvingStructure[^>]*className="([^"]*\blg:hidden\b[^"]*)"/g)].map((m) => m[1]!);
+    expect(inline).toHaveLength(2);
+    for (const cls of inline) expect(cls).toMatch(/\bmt-8\b/);
+  });
+
   it("pages the wheel on the landing story and centres the pinned drawing in a viewport-tall box", () => {
     expect(story).toMatch(/useSectionPaging\(\);/);
     expect(story).toMatch(/className="sticky top-0 flex h-dvh items-center"/);

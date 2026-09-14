@@ -144,7 +144,10 @@ function Hero({ topics, started }: { topics: readonly Topic[]; started: boolean 
 function Argument({ parts }: { parts: readonly number[] }) {
   return (
     <section data-scroll-section className={STOP}>
-      <EvolvingStructure stage={argumentStage(parts)} className="mb-10 w-full max-w-[16rem] lg:hidden" />
+      {/* mt-8: the argument outgrows a phone screen, so it snaps with its top
+          at py-24 — 2px under the sticky header — and the drawing's top nodes
+          sat right against the hairline (measured 78px vs 76px at 375px). */}
+      <EvolvingStructure stage={argumentStage(parts)} className="mt-8 mb-10 w-full max-w-[16rem] lg:hidden" />
       <p className={KICKER}>{WHY.kicker}</p>
       <h2 className="mt-4 max-w-3xl font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl">
         <TypedText text={WHY.title} progress={parts[0] ?? 0} />
@@ -177,7 +180,7 @@ function StoryChapter({ chapter, started }: { chapter: Chapter; started: boolean
 
   return (
     <section data-scroll-section className={STOP}>
-      <EvolvingStructure stage={chapter.stage} className="mb-12 w-full max-w-sm lg:hidden" />
+      <EvolvingStructure stage={chapter.stage} className="mt-8 mb-12 w-full max-w-sm lg:hidden" />
       <p className={KICKER}>{chapter.kicker}</p>
       <h2 className="mt-4 max-w-3xl font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl">
         <TypedText text={chapter.title} progress={parts[0] ?? 0} />
