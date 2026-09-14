@@ -38,16 +38,21 @@ function flattenText(node: ReactNode): string {
   return "";
 }
 
-function detectCalloutType(children: ReactNode): {
-  type: "tip" | "warn" | "rocket" | "build" | "brain" | "default";
-} {
-  const text = flattenText(children);
-  if (text.includes("💡")) return { type: "tip" };
-  if (text.includes("⚠️")) return { type: "warn" };
-  if (text.includes("🚀")) return { type: "rocket" };
-  if (text.includes("🏗️")) return { type: "build" };
-  if (text.includes("🧠")) return { type: "brain" };
-  return { type: "default" };
+/** Fence languages that render as a labelled Callout (spec 2026-09-13 §3). */
+const CALLOUT_FENCES = [
+  "key",
+  "brain",
+  "warn",
+  "tip",
+  "goal",
+  "constraint",
+] as const satisfies readonly CalloutType[];
+
+function calloutFence(
+  className: string,
+): (typeof CALLOUT_FENCES)[number] | null {
+  const classes = className.split(/\s+/);
+  return CALLOUT_FENCES.find((t) => classes.includes(`language-${t}`)) ?? null;
 }
 
 export function Markdown({
@@ -110,19 +115,10 @@ export function Markdown({
           }
           return <ExamplesBlock rows={rows} />;
         }
-        if (
-          className.includes("language-tip") ||
-          className.includes("language-note") ||
-          className.includes("language-goal") ||
-          className.includes("language-constraint") ||
-          className.includes("language-warn") ||
-          className.includes("language-brain")
-        ) {
-          const lang = /language-(tip|note|goal|constraint|warn|brain)/.exec(
-            className,
-          )?.[1] as CalloutType | undefined;
+        const calloutType = calloutFence(className);
+        if (calloutType) {
           return (
-            <Callout type={lang ?? "note"}>
+            <Callout type={calloutType}>
               <Markdown
                 source={text()}
                 highlightedBlocks={highlightedBlocks}
@@ -202,8 +198,9 @@ export function Markdown({
       );
     },
     blockquote({ children }) {
-      const { type } = detectCalloutType(children);
-      return <Callout type={type}>{children}</Callout>;
+      // A plain `>` is a quotation or formula display; a claim is a ```key
+      // fence. Emoji no longer pick a type — no lesson used them.
+      return <Callout type="default">{children}</Callout>;
     },
     a({ href, children, className }) {
       // rehype-autolink-headings wraps every heading in an anchor carrying

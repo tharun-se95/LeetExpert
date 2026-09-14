@@ -615,29 +615,32 @@ describe("design tokens", () => {
     }
   });
 
-  it("Callout: constraint is Success-toned, goal/rocket/note are Information, brain is Insight", () => {
-    // Rule + label, not a filled box (revised 2026-08 — was a solid
-    // pastel/dark bg-*-surface fill on all 191 lessons' Goal/Constraint/Tip
-    // callouts, which was the loudest thing on every page it appeared on).
-    // The type still carries a colour, just as a left rule + small status
-    // label sitting on the page's own background, matching the coach
-    // diagnosis card's treatment — no fill, no bold non-uppercase heading.
-    const body = readFileSync(
-      join(SRC, "components", "md", "Callout.tsx"),
-      "utf8",
-    );
-    expect(body).toMatch(/constraint:\s*"border-l-good/);
-    expect(body).toMatch(/goal:\s*"border-l-info/);
-    expect(body).toMatch(/rocket:\s*"border-l-info/);
-    expect(body).toMatch(/note:\s*"border-l-info/);
-    expect(body).toMatch(/brain:\s*"border-l-insight/);
-    // tip = "Interview Tip" territory — Amber (teaching-caution), not Indigo.
-    expect(body).toMatch(/tip:\s*"border-l-warn/);
-    expect(body).not.toMatch(/tip:\s*"border-l-accent/);
-    // No solid surface fill left anywhere on the blockquote itself.
+  it("Callout: treatment B — tint, line and label per kind of message", () => {
+    // Spec 2026-09-13 §4–§6. Colour names the category: yellow understanding
+    // (key, brain), red a mistake (warn), blue context (goal), green a
+    // requirement (constraint), steel advice (tip). Every labelled type
+    // carries a tint, a 3px *-line rule and a label in its text colour; a
+    // plain blockquote stays an unlabelled rule.
+    const body = readFileSync(join(SRC, "components", "md", "Callout.tsx"), "utf8");
+    expect(body).toMatch(/key:\s*"border-l-insight-line bg-callout-tint-understanding"/);
+    expect(body).toMatch(/brain:\s*"border-l-insight-line bg-callout-tint-understanding"/);
+    expect(body).toMatch(/warn:\s*"border-l-bad-line bg-callout-tint-mistake"/);
+    expect(body).toMatch(/tip:\s*"border-l-advice-line bg-callout-tint-advice"/);
+    expect(body).toMatch(/goal:\s*"border-l-info-line bg-callout-tint-context"/);
+    expect(body).toMatch(/constraint:\s*"border-l-good-line bg-callout-tint-requirement"/);
+    expect(body).toMatch(/default:\s*"border-l-2 border-l-rule-strong"/);
+    expect(body).toMatch(/border-l-3/);
+    expect(body).not.toMatch(/\bborder-l-warn\b|\btext-warn\b/);
+    expect(body).not.toMatch(/\b(?:note|rocket|build):/);
+    // No pastel surface fill; tints are the backgrounds.
     expect(body).not.toMatch(/bg-\w+-surface/);
-    // Label is the small muted uppercase treatment, not the old bold heading.
-    expect(body).toMatch(/text-\[0\.7rem\][^"]*uppercase/);
+    // Body inherits the prose size: a fixed 0.95rem was 75–80% of reading
+    // prose and ~109% of problem-pane prose.
+    expect(body).not.toMatch(/text-\[0\.95rem\]/);
+    // Label: small bold uppercase in the category's text colour.
+    expect(body).toMatch(/text-\[0\.7rem\][^"]*font-bold[^"]*uppercase/);
+    // The copy button must appear on keyboard focus, not only on hover.
+    expect(body).toMatch(/group-hover:opacity-100[^"]*focus-visible:opacity-100/);
   });
 
   it("status surfaces and lines come from the palette and hold their role ink", () => {

@@ -36,11 +36,11 @@ const NON_CODE_LANGS = new Set([
   "examples",
   "scratchpad",
   "tip",
-  "note",
   "goal",
   "constraint",
   "warn",
   "brain",
+  "key",
   "text",
 ]);
 

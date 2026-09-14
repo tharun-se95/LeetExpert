@@ -5,23 +5,21 @@ import {
   Brain,
   Check,
   Copy,
-  Info,
+  Key,
   Lightbulb,
   ListChecks,
-  RocketLaunch,
+  Target,
   WarningCircle,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 export type CalloutType =
+  | "key"
+  | "brain"
+  | "warn"
   | "tip"
-  | "note"
   | "goal"
   | "constraint"
-  | "warn"
-  | "rocket"
-  | "build"
-  | "brain"
   | "default";
 
 interface CalloutProps {
@@ -31,63 +29,57 @@ interface CalloutProps {
   label?: string;
 }
 
-// A rule + label, not a filled box: the callout sits on the page's own
-// background, distinguished by a coloured left rule and a small status
-// label — the same treatment the coach's diagnosis card uses. A solid
-// pastel/dark fill on every Goal/Constraint/Tip in 191 lessons was the
-// loudest thing on the page; the colour still tells you the type, it just
-// no longer competes with the prose it's introducing.
-const TYPE_RULE: Record<CalloutType, string> = {
-  tip: "border-l-warn",
-  note: "border-l-info",
-  goal: "border-l-info",
-  constraint: "border-l-good",
-  warn: "border-l-warn",
-  rocket: "border-l-info",
-  build: "border-l-good",
-  brain: "border-l-insight",
-  default: "border-l-border",
+// Treatment B (spec 2026-09-13 §5). Colour names the *kind* of message and
+// the label names the exact type, so two types may share a colour. Every
+// labelled callout carries a tint (fallback A sets the tint tokens to
+// transparent — a token change, not a component change) and a *-line rule,
+// which clears 3:1 against the page beside it.
+const TYPE_STYLE: Record<CalloutType, string> = {
+  key: "border-l-insight-line bg-callout-tint-understanding",
+  brain: "border-l-insight-line bg-callout-tint-understanding",
+  warn: "border-l-bad-line bg-callout-tint-mistake",
+  tip: "border-l-advice-line bg-callout-tint-advice",
+  goal: "border-l-info-line bg-callout-tint-context",
+  constraint: "border-l-good-line bg-callout-tint-requirement",
+  // A plain `>` is a quotation or a formula display, not a claim: a visible
+  // rule, no tint, no label, so it is never mistaken for a Key idea.
+  default: "border-l-2 border-l-rule-strong",
 };
 
 const TYPE_LABELS: Partial<Record<CalloutType, string>> = {
+  key: "Key idea",
+  brain: "Mental model",
+  warn: "Watch out",
   tip: "Tip",
-  note: "Note",
   goal: "Goal",
   constraint: "Constraints",
-  warn: "Watch out",
-  brain: "Mental model",
-  build: "Build",
-  rocket: "Ship",
 };
 
-const TYPE_ICON_CLASS: Partial<Record<CalloutType, string>> = {
-  tip: "text-warn",
-  note: "text-info",
+/** Label and icon colour: the category's text colour, AA on its tint. */
+const TYPE_LABEL_CLASS: Partial<Record<CalloutType, string>> = {
+  key: "text-insight",
+  brain: "text-insight",
+  warn: "text-bad",
+  tip: "text-mark",
   goal: "text-info",
   constraint: "text-good",
-  warn: "text-warn",
-  brain: "text-insight",
-  build: "text-good",
-  rocket: "text-info",
 };
 
 function TypeIcon({ type }: { type: CalloutType }) {
-  const className = cn("h-3.5 w-3.5 shrink-0", TYPE_ICON_CLASS[type]);
+  const className = "h-3.5 w-3.5 shrink-0";
   switch (type) {
-    case "tip":
-      return <Lightbulb className={className} aria-hidden />;
-    case "note":
-    case "goal":
-    case "rocket":
-      return <Info className={className} aria-hidden />;
-    case "constraint":
-      return <ListChecks className={className} aria-hidden />;
-    case "warn":
-      return <WarningCircle className={className} aria-hidden />;
+    case "key":
+      return <Key className={className} aria-hidden />;
     case "brain":
       return <Brain className={className} aria-hidden />;
-    case "build":
-      return <RocketLaunch className={className} aria-hidden />;
+    case "warn":
+      return <WarningCircle className={className} aria-hidden />;
+    case "tip":
+      return <Lightbulb className={className} aria-hidden />;
+    case "goal":
+      return <Target className={className} aria-hidden />;
+    case "constraint":
+      return <ListChecks className={className} aria-hidden />;
     default:
       return null;
   }
@@ -114,26 +106,35 @@ export function Callout({
   }
 
   const resolvedLabel = label ?? TYPE_LABELS[type];
+  const labelled = type !== "default";
 
   return (
     <blockquote
       id={id}
       className={cn(
-        "group relative my-4 border-l-2 py-0.5 pr-8 pl-4 not-italic",
-        TYPE_RULE[type] ?? TYPE_RULE.default,
+        "group relative my-4 pr-8 pl-4 not-italic",
+        labelled
+          ? "border-l-3 py-2.5 rounded-r-[length:var(--radius-sm)]"
+          : "py-0.5",
+        TYPE_STYLE[type],
       )}
     >
       <button
         type="button"
         onClick={copyText}
-        className="absolute top-1 right-0 rounded-[length:var(--radius-md)] border border-transparent p-1.5 text-muted opacity-0 transition group-hover:opacity-100 hover:border-border hover:bg-surface hover:text-foreground"
+        className="absolute top-1 right-0 rounded-[length:var(--radius-md)] border border-transparent p-1.5 text-muted opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent hover:border-border hover:bg-surface hover:text-foreground"
         aria-label="Copy callout"
       >
         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       </button>
-      <div className="text-[0.95rem] leading-relaxed text-foreground/90 [&_p]:my-0">
+      <div className="leading-relaxed text-foreground/90 [&_p]:my-0">
         {resolvedLabel ? (
-          <p className="mb-1 !mt-0 flex items-center gap-1.5 text-[0.7rem] font-medium tracking-wide text-muted uppercase">
+          <p
+            className={cn(
+              "mb-1 !mt-0 flex items-center gap-1.5 text-[0.7rem] font-bold tracking-wide uppercase",
+              TYPE_LABEL_CLASS[type] ?? "text-muted",
+            )}
+          >
             <TypeIcon type={type} />
             {resolvedLabel}
           </p>
