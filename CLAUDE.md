@@ -84,6 +84,20 @@ The content is the product. Code exists to serve it.
 - **All colour goes through tokens.** No hardcoded Tailwind palette values
   (`emerald-500`, `red-400`) in components — they survive a palette change
   and silently break the theme.
+- **The brand lamp is the one non-steel ink in chrome.** The logo is a
+  soft-glowing grass-green dot (`components/brand/Lamp.tsx`) painted from
+  `--lamp` / `--press-lamp*` in `globals.css`. It is a deliberate exception
+  to the monochrome base and covers the mark only — never a button, focus,
+  status, or accent colour. It sits 1.18:1 from `--good` in light, so the
+  two are told apart by form (a glowing dot in chrome vs a flat tick in
+  content) and must stay separate tokens. `tests/brandLamp.test.tsx`
+  confines the tokens to the mark and keeps the static icons
+  (`assets/brand/mark*.svg`, the generated PNG/ICO files, the OG card) in
+  step with them: after changing a lamp token, update those and rerun
+  `node scripts/generate-icons.mjs`. Brand SVGs are parsed as strict XML
+  (`tests/brandSvgXml.test.ts`) because a favicon is loaded as XML — never
+  write `--` inside an SVG comment, which is how the old `icon.svg` shipped
+  malformed. Spec: `docs/superpowers/specs/2026-09-13-lamp-logo-design.md`.
 - **Primary is steel/indigo everywhere; family colour is scoped to content,
   never lifted to chrome.** This reverses the original design (below is what
   changed, kept for context): AppShell no longer applies `familyCssVars`/
