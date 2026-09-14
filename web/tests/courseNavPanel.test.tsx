@@ -66,6 +66,19 @@ describe("CourseNavPanel level 1", () => {
     expect(row).toContain("pl-3");
   });
 
+  it("hangs each module guide line from its stage label's first letter", () => {
+    // The rule level 2 must mirror (measured 22.75px for both).
+    const title = esc(nav[0]!.title);
+    const stagePad = html.match(
+      new RegExp(`<p class="[^"]*\\bpx-(\\d+)\\b[^"]*">${title}</p>`),
+    )?.[1];
+    const rowsPl = html.match(
+      new RegExp(`<p[^>]*>${title}</p><div class="[^"]*\\bpl-(\\d+)\\b`),
+    )?.[1];
+    expect(stagePad).toBeDefined();
+    expect(rowsPl).toBe(stagePad);
+  });
+
   it("names modules without a leading number", () => {
     // The stage headings already carry the curriculum's order.
     expect(html).not.toMatch(/tabular-nums[^"]*"[^>]*>\s*\d+\./);
@@ -152,8 +165,17 @@ describe("CourseNavPanel level 2", () => {
     const heading = html.match(/<div class="[^"]*border-b[^"]*"[^>]*>/)![0];
     // Deeper than a bare step: the section row above it starts after a caret.
     expect(heading).toContain("pl-6");
-    const rows = html.match(/<div class="mt-2[^"]*"/)![0];
-    expect(rows).toContain("pl-2");
+  });
+
+  it("hangs the lesson guide line from the module title's first letter", () => {
+    // Same rule as level 1, where the line sits under its stage label. The
+    // lessons used level 1's pl-2 while the module header is pl-6, so the line
+    // hung from the section label instead (measured 22.75px) and lesson text
+    // (34.5px) landed on the module title (35.75px): siblings, not children.
+    const headingPl = html.match(/<div class="[^"]*\bborder-b\b[^"]*\bpl-(\d+)\b/)?.[1];
+    const rowsPl = html.match(/<div class="mt-2[^"]*\bpl-(\d+)\b/)?.[1];
+    expect(headingPl).toBeDefined();
+    expect(rowsPl).toBe(headingPl);
   });
 
   it("ranks the module title between the section label and the rows", () => {
@@ -207,5 +229,73 @@ describe("CourseNavPanel level 2", () => {
         `aria-current="page"[^>]*href="${lesson.href}"|href="${lesson.href}"[^>]*aria-current="page"`,
       ),
     );
+  });
+});
+
+describe("CourseNavPanel header row", () => {
+  const renderWith = (
+    view: Parameters<typeof CourseNavPanel>[0]["view"],
+    pathname: string,
+    onClose?: () => void,
+  ) =>
+    renderToStaticMarkup(
+      <CourseNavPanel
+        nav={nav}
+        view={view}
+        pathname={pathname}
+        visited={new Set<string>()}
+        compact
+        curriculumHref="/courses/dsa"
+        onBack={() => {}}
+        onClose={onClose}
+      />,
+    );
+  const moduleView = {
+    level: "module" as const,
+    navModule,
+    stage: { number: stage.number, title: stage.title },
+  };
+  /** The pinned row: a sticky div whose last child is the close button. */
+  const pinnedRow = (html: string) =>
+    html.match(
+      /<div class="[^"]*\bsticky\b[^"]*">[\s\S]*?aria-label="Close lessons drawer"[\s\S]*?<\/button><\/div>/,
+    )?.[0];
+
+  it("puts the back row and the close button in one pinned row inside a module", () => {
+    const html = renderWith(moduleView, lesson.href, () => {});
+    const row = pinnedRow(html);
+    expect(row, "sticky header row").toBeDefined();
+    expect(row).toMatch(/\btop-0\b/);
+    expect(row).toMatch(new RegExp(`aria-label="Back to ${esc(stage.title)}"`));
+    expect(row!.indexOf("Back to")).toBeLessThan(row!.indexOf("Close lessons drawer"));
+    // The way out comes before the rows, so tabbing in does not cost a module's lessons.
+    expect(html.indexOf("Close lessons drawer")).toBeLessThan(html.indexOf(`href="${lesson.href}"`));
+  });
+
+  it("holds only the close button at the top level", () => {
+    const html = renderWith({ level: "modules" }, "/courses/dsa", () => {});
+    const row = pinnedRow(html);
+    expect(row, "sticky header row").toBeDefined();
+    expect(row).not.toContain("Back to");
+    expect(row!.match(/<button/g)).toHaveLength(1);
+    expect(html.indexOf("Close lessons drawer")).toBeLessThan(html.indexOf(">Overview<"));
+  });
+
+  it("paints the pinned row, so rows scrolling beneath it do not show through", () => {
+    const row = pinnedRow(renderWith({ level: "modules" }, "/courses/dsa", () => {}))!;
+    expect(row).toMatch(/\bbg-background\b/);
+    expect(row).toMatch(/\bgrain-paper\b/);
+    // No border-b: the module heading below is the first ruled div (see level 2).
+    expect(row.match(/<div class="([^"]*)"/)![1]).not.toMatch(/\bborder-b\b/);
+  });
+
+  it("renders no close button and no pinned row without onClose (the mobile sheet has its own)", () => {
+    for (const html of [
+      renderWith(moduleView, lesson.href),
+      renderWith({ level: "modules" }, "/courses/dsa"),
+    ]) {
+      expect(html).not.toContain("Close lessons drawer");
+      expect(html).not.toMatch(/\bsticky\b/);
+    }
   });
 });

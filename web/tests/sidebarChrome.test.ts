@@ -6,18 +6,13 @@ const read = (...p: string[]) =>
   readFileSync(join(__dirname, "..", "src", ...p), "utf8");
 const sidebar = read("components", "layout", "Sidebar.tsx");
 const floating = read("components", "layout", "FloatingLessonsButton.tsx");
+const tree = read("components", "layout", "CourseNavTree.tsx");
+const panel = read("components", "layout", "CourseNavPanel.tsx");
 const shell = read("components", "layout", "AppShell.tsx");
 const header = read("components", "layout", "Header.tsx");
 const globals = read("app", "globals.css");
 const workspace = read("components", "problems", "ProblemWorkspace.tsx");
 
-/** The className string of the first element carrying `aria-label`. */
-const classOf = (src: string, ariaLabel: string) => {
-  const el = src.match(
-    new RegExp(`<button[\\s\\S]*?aria-label="${ariaLabel}"[\\s\\S]*?</button>`),
-  )![0];
-  return el.match(/className="([^"]*)"/)![1];
-};
 
 describe("Sidebar chrome", () => {
   /** Comments sit between JSX nodes here; ordering assertions read the tree. */
@@ -28,54 +23,21 @@ describe("Sidebar chrome", () => {
   });
 
   it("always offers a close button, on every pointer type", () => {
-    // FloatingLessonsButton hides itself while the drawer is open, so this is
-    // the only close control on desktop — and touch has no hover at all.
-    expect(sidebar).toContain('aria-label="Close lessons drawer"');
-    expect(sidebar).not.toContain("showClose");
+    // FloatingLessonsButton hides itself while the drawer is open, so the
+    // drawer's own pinned header row is the only close control on desktop —
+    // and touch has no hover at all. Tab order and placement are rendered in
+    // courseNavPanel.test.tsx ("CourseNavPanel header row").
+    expect(jsx).toMatch(/<CourseNavTree[^>]*\bonClose=\{onClose\}/);
+    expect(tree).toMatch(/<CourseNavPanel[\s\S]*?\bonClose=\{onClose\}/);
+    expect(panel).toContain('aria-label="Close lessons drawer"');
     expect(floating).toContain("if (open) return null;");
   });
 
-  it("hangs the close button past the panel's edge, not above the rows", () => {
-    const cls = classOf(jsx, "Close lessons drawer");
-    expect(cls).toMatch(/absolute/);
-    // A negative right offset is what puts it outside the rail.
-    expect(cls).toMatch(/-right-/);
-    // It would otherwise sit over the article with the drawer shut.
-    expect(jsx).toMatch(/\{open \?[\s\S]*?aria-label="Close lessons drawer"/);
-  });
-
-  it("reads as a tab on the panel's own page, not a chip beside it", () => {
-    const cls = classOf(jsx, "Close lessons drawer");
-    // Same paper as the panel, by the same classes — not a re-authored colour.
-    expect(cls).toContain("sidebar-rail");
-    expect(cls).toContain("drawer-tab");
-    // Only the outer corners round; the seam side stays square and borderless
-    // so the tab joins the panel instead of sitting beside it.
-    expect(cls).toMatch(/rounded-r-/);
-    expect(cls).toContain("border-l-0");
-    // Measured at 8x: its own shadow fell back onto the panel as a dark band
-    // beside the seam (246 -> 243 in light), outlining it as a separate
-    // object. The tab is part of the sheet; the sheet casts the shadow.
-    expect(cls).not.toMatch(/shadow-/);
-    // The fillets draw their curve in --border and cannot follow a hover
-    // colour, so hover must not recolour the tab's own border either.
-    expect(cls).not.toMatch(/hover:border-/);
-  });
-
-  it("sits flush against the panel, over its border line", () => {
-    // The offset has to equal the tab's own width: one step less and a gap
-    // opens, one more and the rail's border-r draws a seam across its base.
-    const cls = classOf(jsx, "Close lessons drawer");
-    expect(cls.match(/-right-(\d+)/)![1]).toBe(cls.match(/\bw-(\d+)/)![1]);
-  });
-
-  it("puts the way out before the rows in the tab order", () => {
-    // Absolute positioning frees source order from visual order, so the close
-    // button leads: tabbing into the drawer should not cost 20 lesson rows to
-    // reach it. Esc is the other way out (see the hover-drawer tests).
-    expect(jsx.indexOf('aria-label="Close lessons drawer"')).toBeLessThan(
-      jsx.indexOf("<CourseNavTree"),
-    );
+  it("keeps the close button inside the drawer, not hanging off its edge", () => {
+    // The 2026-09-13 edge tab is gone (owner, 2026-09-14): no close control of
+    // the aside's own, and nothing offset past its right edge.
+    expect(sidebar).not.toContain('aria-label="Close lessons drawer"');
+    expect(sidebar).not.toMatch(/-right-\d/);
   });
 
   it("starts the nav at the top of the panel", () => {
@@ -97,12 +59,8 @@ describe("Sidebar chrome", () => {
     const [top, right, bottom, left] = clip![1].split("_");
     expect([top, bottom, left]).toEqual(["0", "0", "0"]);
     const rightRem = Number(right!.match(/^-(\d*\.?\d+)rem$/)?.[1] ?? NaN);
-    // Wider than the close tab hanging there plus its focus ring, or the clip
-    // would cut the tab off...
-    const tabRem = Number(classOf(jsx, "Close lessons drawer").match(/\bw-(\d+)\b/)![1]) / 4;
-    expect(rightRem).toBeGreaterThan(tabRem + 0.25);
-    // ...and wider than the shadow's own reach (offset + blur) in either
-    // theme, even at a 12px root, or the clip would cut the shadow it keeps.
+    // Wider than the shadow's own reach (offset + blur) in either theme, even
+    // at a 12px root, or the clip would cut the shadow it keeps.
     const reach = [...globals.matchAll(/--shadow-edge-right:\s*(\d+)px\s+0\s+(\d+)px/g)].map(
       (m) => Number(m[1]) + Number(m[2]),
     );
@@ -148,70 +106,34 @@ describe("drawer tab idiom", () => {
     expect(rule(".sidebar-rail")).not.toMatch(/background-image|color-mix/);
     expect(globals).not.toContain(".dark .sidebar-rail {");
   });
+});
 
-  it("flares into the sheet with concave fillets, drawn in the rail's own inks", () => {
-    // Without them the rail's border line ends in a square step where the
-    // tab's top and bottom borders begin.
-    for (const pseudo of [".drawer-tab::before", ".drawer-tab::after"]) {
-      const body = rule(pseudo);
-      expect(body).toContain("var(--rail-surface)");
-      expect(body).toContain("var(--border)");
-      expect(body).toMatch(/radial-gradient\(/);
+describe("floating opener", () => {
+  it("is a round floating button in the bottom-left corner, not a tab", () => {
+    const cls = floating.match(/className=\{cn\(ROUND_CONTROL, "([^"]*)"\)\}/)?.[1];
+    expect(cls, "opener classes").toBeDefined();
+    for (const c of ["fixed", "bottom-6", "left-6", "bg-background", "grain-paper", "shadow-elevation", "lg:flex"]) {
+      expect(cls!.split(" "), c).toContain(c);
     }
-    expect(rule(".drawer-tab::before,\n.drawer-tab::after")).toMatch(
-      /pointer-events:\s*none/,
-    );
+    expect(floating).toMatch(/import \{[^}]*\bROUND_CONTROL\b[^}]*\} from "@\/components\/layout\/headerChrome"/);
+    expect(floating).not.toMatch(/drawer-tab|sidebar-rail|rounded-r-|border-l-0/);
   });
 
-  it("overlaps each fillet onto the tab's border row, not beside it", () => {
-    // An absolute child measures from the padding box, inside the tab's 1px
-    // borders, so a bare 100% lands the fillet 1px into the border row: that
-    // covers the straight border under the flare and meets the ring to the
-    // row's centre-line. "+1px" looks like the fix for the padding box and is
-    // the bug — measured at 8x it left a line across the flare and a 1px step.
-    expect(rule(".drawer-tab::before")).toMatch(/\bbottom:\s*100%;/);
-    expect(rule(".drawer-tab::after")).toMatch(/\btop:\s*100%;/);
+  it("floats above the hover edge strip, so resting on it does not open the drawer", () => {
+    const opener = Number(floating.match(/\bz-(\d+)\b/)![1]);
+    const strip = Number(shell.match(/fixed top-14 bottom-0 left-0 z-(\d+)/)![1]);
+    expect(opener).toBeGreaterThan(strip);
   });
 
-  it("makes the opener the same tab, on the closed sheet's edge", () => {
-    const cls = floating.match(/className="([^"]*)"/)![1];
-    for (const c of ["sidebar-rail", "drawer-tab", "border-l-0", "left-0"]) {
-      expect(cls).toContain(c);
-    }
-    expect(cls).toMatch(/rounded-r-/);
-    expect(cls).not.toMatch(/rounded-full|shadow-|hover:border-/);
-    // Same size as the close tab, so opening and closing read as one tab.
-    const close = classOf(sidebar.replace(/\{\/\*[\s\S]*?\*\/\}/g, ""), "Close lessons drawer");
-    expect(cls.match(/\bw-(\d+)/)![1]).toBe(close.match(/\bw-(\d+)/)![1]);
-    expect(cls.match(/\bh-(\d+)/)![1]).toBe(close.match(/\bh-(\d+)/)![1]);
-  });
-
-  it("holds the opener at the close tab's height on screen", () => {
-    // The close tab is absolute inside a rail that starts under the header;
-    // the opener is fixed to the viewport. Header height + the close tab's
-    // own offset is where it sits, so the tab does not jump on close.
-    // The <header> element's own height — Header.tsx sizes a logo and
-    // icons with h-* before it.
-    const headerH = Number(
-      header.match(/<header[^>]*className="[^"]*\bh-(\d+)\b/)![1],
-    );
-    const closeTop = Number(
-      classOf(sidebar.replace(/\{\/\*[\s\S]*?\*\/\}/g, ""), "Close lessons drawer").match(
-        /\btop-(\d+)\b/,
-      )![1],
-    );
-    const openerTop = Number(
-      floating.match(/className="[^"]*\btop-(\d+)\b/)![1],
-    );
-    expect(openerTop).toBe(headerH + closeTop);
+  it("leaves no drawer tab styles behind", () => {
+    expect(globals).not.toContain(".drawer-tab");
+    for (const src of [sidebar, floating]) expect(src).not.toContain("drawer-tab");
   });
 });
 
-describe("problem page drawer tab", () => {
-  /** The problem header's className, and the step values we reason in. */
+describe("problem page drawer opener", () => {
+  /** The problem header's className. */
   const headerCls = () => workspace.match(/<header className="([^"]*)"/)![1];
-  const closeCls = () =>
-    classOf(sidebar.replace(/\{\/\*[\s\S]*?\*\/\}/g, ""), "Close lessons drawer");
 
   it("uses the same opener tab as lesson pages, not an inline header toggle", () => {
     // One opener idiom app-wide: the inline toggle beside the title was a
@@ -228,30 +150,11 @@ describe("problem page drawer tab", () => {
     expect(shell).toMatch(/showCourseNav && !ideViewport && canHover && !sidebarOpen/);
   });
 
-  it("reserves the tab's room at the header's leading edge", () => {
-    // Measured before this: with the drawer open the close tab sat on top of
-    // the back link (x 319-353 vs 335-413) — the header started its content
-    // exactly where the tab hangs, in both drawer states.
-    const pl = Number(headerCls().match(/\blg:pl-(\d+)\b/)?.[1] ?? NaN);
-    const tabW = Number(closeCls().match(/\bw-(\d+)\b/)![1]);
-    expect(pl).toBeGreaterThan(tabW);
-  });
-
-  it("is tall enough on desktop to hold the tab and both fillets", () => {
-    // The tabs sit at the rail's top-4 on every page, which here lands them
-    // in the problem header's band. The bottom fillet ends --radius-md below
-    // the tab; at py-2 that overran the header's border-b into the
-    // description pane. Spacing steps are 4px at the root size.
-    const py = Number(headerCls().match(/\blg:py-(\d+)\b/)?.[1] ?? NaN);
-    const controlH = Number(
-      workspace.match(/href=\{backHref\}\s+className="[^"]*\bmin-h-(\d+)\b/)![1],
-    );
-    const tabTop = Number(closeCls().match(/\btop-(\d+)\b/)![1]);
-    const tabH = Number(closeCls().match(/\bh-(\d+)\b/)![1]);
-    const radius = Number(globals.match(/--radius-md:\s*(\d+)px/)![1]);
-    const filletBottom = (tabTop + tabH) * 4 + radius;
-    const bandInner = (2 * py + controlH) * 4 - 1; // less its 1px border-b
-    expect(filletBottom).toBeLessThanOrEqual(bandInner);
+  it("reserves no room for a tab in the problem header", () => {
+    // The opener floats at the bottom-left now, so the band is back to its
+    // compact size and starts its content at its own padding.
+    expect(headerCls()).not.toMatch(/\blg:pl-\d+|\blg:py-\d+/);
+    expect(headerCls()).toContain("sm:py-2");
   });
 });
 
@@ -295,8 +198,8 @@ describe("hover-driven drawer", () => {
   });
 
   it("counts the drawer's own overhanging controls as still inside it", () => {
-    // The close button sits past the rail's right edge on purpose, so the x
-    // test alone would start the close timer while the pointer is on it.
+    // The resize grip's pill overhangs the rail's right edge, so the x test
+    // alone would start the close timer while the pointer is on it.
     expect(shell).toMatch(/rail\.contains\(/);
   });
 

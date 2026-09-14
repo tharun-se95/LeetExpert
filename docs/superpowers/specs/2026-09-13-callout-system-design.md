@@ -1,399 +1,237 @@
 # Callout system — eight callouts, one job each
 
-**Date:** 2026-09-13
-**Scope (spec A):** the callout *system* — `Callout.tsx`, the callout branches of
-`Markdown.tsx`, `highlightBlocks.ts`'s non-code fence list, `extractThesis.ts`,
-the callout tokens in `globals.css`, and the tests that guard them. Rewriting
-lesson content to use the system is **spec B** (separate; see §10).
-**Status:** proposed — design approved by the owner in brainstorming on
-2026-09-13. Implementation is **blocked** until a concurrent session commits its
-in-progress edits to `web/src/app/globals.css`, `ProblemWorkspace.tsx` and
-`web/tests/design-tokens.test.ts` (§10).
+**Date:** 2026-09-13 · **Revised:** 2026-09-14 (treatment B on the contribution
+green palette; supersedes the washes-on-two-types design)
+**Scope (spec 2 of 3):** the callout *system* — `Callout.tsx`, the callout branches
+of `Markdown.tsx`, `highlightBlocks.ts`'s non-code fence list, `extractThesis.ts`,
+the callout tint tokens in `globals.css`, and their tests. Colours come from spec 1,
+`2026-09-14-contribution-green-palette-design.md`, which must land first. Rewriting
+lesson content to use the system is a later content spec.
+**Status:** proposed — decisions made by the owner in brainstorming on 2026-09-13
+and 2026-09-14.
 
 ---
 
 ## 1. Why this exists
 
-The owner asked to add emoji to lessons for readability. That was declined on
-the design system's own terms (OS-rendered colour glyphs bypass tokens and both
-themes; screen readers announce them mid-sentence), and two alternatives were
-put forward: icons on section headings, and more callouts.
+The owner asked to add emoji to lessons for readability. That was declined on the
+design system's own terms (OS-rendered colour glyphs bypass tokens and both
+themes; screen readers announce them mid-sentence). Icons on section headings were
+dropped after measurement: problem lessons are already split into tabs that carry
+icons, and concept lessons' headings are unique. Callouts survived, but the audit
+showed the system could not carry more weight: types collided in colour, the most
+load-bearing one was the faintest, and light-mode callouts were dull.
 
-Heading icons were dropped after measurement: problem lessons are already split
-into Description / Explanation / Solution / Quiz tabs that carry icons
-(`ProblemWorkspace.tsx` `TAB_ICON`), so each tab shows only one or two of the
-shared headings; concept lessons' headings are unique (only "The template"
-repeats, 5×), so no fixed heading→icon map exists; concept lessons already have
-an "On this page" table of contents.
+## 2. Current state (measured 2026-09-13)
 
-Callouts survived, but auditing them showed the system itself cannot carry more
-weight yet: types collide in colour, the most load-bearing one is the faintest,
-and most types are used for the wrong job. This spec fixes the system so that
-spec B can use it.
+| Type | Authoring | Label | Ink today | Uses (DSA / Next.js) |
+| --- | --- | --- | --- | --- |
+| constraint | ` ```constraint ` | Constraints | `good` | 116 / 0 — required by `content.test.ts:706` |
+| tip | ` ```tip ` | Tip | `warn` | 3 / 9 |
+| goal | ` ```goal ` | Goal | `info` | 3 / 0 |
+| warn | ` ```warn ` | Watch out | `warn` | 0 / 40 |
+| brain | ` ```brain ` | Mental model | `insight` | 0 / 23 |
+| note / build / rocket | fence or emoji | — | — | 0 / 0 |
+| default | `> …` | — | 9% rule | 70 lessons, 295 lines |
+| aside | ` ```aside ` | — (`MarginNote`) | `info` | 1 / 0 |
+| hint | ` ````reveal Label ` | label | neutral | 313 / 54 |
 
-Every number below was measured — `getComputedStyle` on the running app, or
-computed from the hex tokens in `globals.css` — not estimated. One claim made
-during the audit was wrong and is corrected in §2.4.
-
----
-
-## 2. Current state (measured)
-
-### 2.1 Types, usage, colour
-
-| Type | Authoring | Label | Rule/icon ink | Icon | Uses (DSA / Next.js) |
-| --- | --- | --- | --- | --- | --- |
-| constraint | ` ```constraint ` | Constraints | `good` | ListChecks | 116 / 0 — required by `content.test.ts:706` |
-| tip | ` ```tip ` | Tip | `warn` | Lightbulb | 3 / 9 |
-| goal | ` ```goal ` | Goal | `info` | Info | 3 / 0 |
-| warn | ` ```warn ` | Watch out | `warn` | WarningCircle | 0 / 40 |
-| brain | ` ```brain ` | Mental model | `insight` | Brain | 0 / 23 |
-| note | ` ```note ` | Note | `info` | Info | 0 / 0 |
-| build | 🏗️ in a blockquote | Build | `good` | RocketLaunch | 0 / 0 |
-| rocket | 🚀 in a blockquote | Ship | `info` | Info | 0 / 0 |
-| default | `> …` | — | `border` (9% alpha) | — | 70 lessons, 295 lines / 0 |
-| aside | ` ```aside ` | — (`MarginNote`) | `info` | — | 1 / 0 |
-| hint | ` ````reveal Label ` | label | neutral | CaretRight | 313 / 54 — ≥1 per problem required by `content.test.ts:481` |
-
-The Next.js course is disabled (`web/src/app/courses/nextjs/layout.tsx` calls
-`notFound()`), so `warn` and `brain` currently render nowhere.
-
-### 2.2 Colours collide
-
-Ink tokens, with contrast on `--press-paper-sunk` (the deepest surface):
-
-| Role | Light | Dark |
-| --- | --- | --- |
-| `warn` (amber) | `#92400e` 5.21:1 | `#f59e0b` 9.10:1 |
-| `insight` (gold) | `#854d0e` 5.03:1 | `#facc15` 12.77:1 |
-| `bad` (red) | `#b91c1c` 4.75:1 | `#f15858` 5.84:1 |
-| `good` (green) | `#036f42` 4.60:1 | `#22d497` 10.18:1 |
-| `info` (sky) | `#075985` 5.56:1 | `#38bdf8` 9.13:1 |
-| `mark` (steel) | `#1e293b` 10.75:1 | `#cbd5e1` 13.17:1 |
-
-- **amber vs gold: ΔE76 = 13.0 in light, 25.7 in dark** — the closest pair in
-  both themes. On a 2px rule, light mode cannot separate them. Tip, Watch out
-  and Mental model therefore read as one colour.
-- goal, note and rocket share `info` *and* the Info icon; constraint and build
-  share `good`.
-- `design-tokens.test.ts:614` currently locks this mapping in, including
-  `tip: "border-l-warn"`.
-
-### 2.3 The most load-bearing callout is the faintest
-
-The plain blockquote carries each lesson's thesis — and the coach reads it:
-`extractThesis.ts:78` uses the first blockquote when a problem's Explanation has
-no "The insight" heading.
-
-- 23 problem lessons have no "The insight" heading; **22** fall back to a
-  blockquote; **1** (`prefix-sum/range-sum-2d-immutable.md`) has neither, so its
-  coach thesis is empty (spec B).
-- Of 93 "The insight" sections, **43** open with a blockquote.
-- It renders with no label and a `border` rule at 9% alpha — near-invisible in
-  dark.
-- Not every blockquote is a thesis: `math-for-dsa/modular-arithmetic.md:34-35`
-  uses `>` to display formulas.
-
-### 2.4 Type size (corrects an audit claim)
-
-Callout body is fixed at `text-[0.95rem]`; prose is `--prose-size`
-(`1.1875rem` = 19px desktop; `1.2rem` / `1.27rem` at the laptop steps, which
-shrink the root) and `0.875rem` inside `.problem-prose`.
-
-- Reading page: callout body is **80%** of the prose at the desktop size
-  (15.2px in 19px), and measured **75%** at the laptop step (12.35px in
-  16.51px, root 13px, on `the-call-stack-and-base-cases`).
-- Problem pane: callout body is **≈109%** of the prose around it (`0.95rem` in
-  `0.875rem`).
-- `MarginNote` is `0.92em` — 92% of its context everywhere.
-
-The audit first reported the aside as "10.5px, unreadable". That reading came
-from a zoomed viewport where the pane's own prose measured 11.4px; the aside is
-92% of its context, not tiny. Withdrawn. The real defect is the fixed-`rem`
-callout body, which is wrong in opposite directions on the two layouts.
-
-### 2.5 Other verified defects
-
-- **Copy button is invisible to keyboard users.** Focused via keyboard on
-  `/courses/dsa/problems/move-zeroes`: `document.activeElement` was the button,
-  computed `opacity` stayed `0`, and it carries no focus class
-  (`opacity-0 … group-hover:opacity-100` only). Violates CLAUDE.md §5 "visible
-  focus states".
-- **No test guards callout fence names.** A typo (` ```wran `) silently renders
-  as a code block. The `allowed` set at `content.test.ts:556` checks practice
-  slugs, not fence names. Violates CLAUDE.md §5 "a string id typo must fail CI".
-- **Dead code:** `note`, `build`, `rocket` have zero uses; `detectCalloutType`
-  (`Markdown.tsx:41`) matches emoji no lesson contains.
-
-### 2.6 Verified working — do not change
-
-`Reveal.tsx`: on `move-zeroes`, both hint bodies were absent from the DOM while
-closed (`aria-expanded="false"`, no sibling node), and present after opening.
-Ctrl+F cannot surface a hint. `extractHints.ts` reads only `reveal` fences.
-
----
+- Amber (`warn`) and gold (`insight`) are ΔE76 13.0 apart in light mode, so Tip,
+  Watch out and Mental model read as one colour.
+- The plain blockquote carries lesson theses and the coach reads it
+  (`extractThesis.ts:78`): 22 of 23 problems without "The insight" fall back to it;
+  43 of 93 "The insight" sections open with one. `modular-arithmetic.md` uses `>`
+  for formulas.
+- Callout body is a fixed `0.95rem`: 75–80% of reading prose, ~109% of problem-pane
+  prose.
+- The copy button stays at opacity 0 under keyboard focus.
+- No test guards fence names; a typo renders as a code block.
+- `Reveal.tsx` works: hint bodies are absent from the DOM while closed.
 
 ## 3. The set — eight callouts, one job each
 
 | Callout | Authoring | Job | Not for |
 | --- | --- | --- | --- |
-| **Key idea** | ` ```key ` (new) | The one claim a section concludes. At most one per `##` section. In problems, sits under "The insight". | Formulas, quotations, summaries of a paragraph just read |
-| **Mental model** | ` ```brain ` | A picture you reason *with*, naming what it predicts ("hydration is a matching process, so any divergence breaks it"). Spatial/structural lessons only. | Summaries — those are Key ideas |
-| **Watch out** | ` ```warn ` | One concrete mistake: its trigger (an input or situation) and its consequence. Code claims are executed in Python and JavaScript. | Emphasis ("this is foundational") |
-| **Tip** | ` ```tip ` | Optional practical help: a technique, a shortcut, how to test your answer. | "Try it first" nudges (Attempt-it-first prose), mistakes, claims |
-| **Goal** | ` ```goal ` | Exactly what to return, stated precisely. Problem Description only. | Strategy hints |
-| **Constraints** | ` ```constraint ` | Input bounds. Unchanged. | — |
-| **Aside** | ` ```aside ` | First-person author note, 1–2 sentences, never needed to follow the lesson. Unchanged. | Content the lesson depends on |
+| **Key idea** | ` ```key ` (new) | The one claim a section concludes. At most one per `##` section. | Formulas, quotations, summaries |
+| **Mental model** | ` ```brain ` | A picture you reason with, naming what it predicts. Spatial/structural lessons only. | Summaries |
+| **Watch out** | ` ```warn ` | One concrete mistake: trigger and consequence, executed in both languages. | Emphasis |
+| **Tip** | ` ```tip ` | Optional practical help. | "Try it first" nudges, mistakes, claims |
+| **Goal** | ` ```goal ` | Exactly what to return. Problem Description only. | Strategy hints |
+| **Constraints** | ` ```constraint ` | Input bounds. | — |
+| **Aside** | ` ```aside ` | First-person author note, 1–2 sentences. | Content the lesson depends on |
 | **Hint** | ` ````reveal Label ` | Staged help. Unchanged. | — |
 
-**Density rule (all types):** callouts are the exception. Never two adjacent;
-never one that restates the paragraph before it.
-
+Never two callouts adjacent; never one that restates the paragraph before it.
 Removed: `note`, `build`, `rocket`, and emoji detection.
 
-Spec A enforces the set (types, names, rendering). The *job* column is an
-authoring rule that tests cannot judge; spec B applies it and CLAUDE.md §3
-records it (§7).
+## 4. Colour = the kind of message
 
----
-
-## 4. Colour = the type of message
-
-Colour carries a *category*; the label and icon carry the exact type. Each
-colour means what it already means elsewhere in the app (red = wrong in the
-sandbox and quiz; green = satisfied; gold = the Insight panel).
-
-| Ink | Category | Callouts |
+| Category | Hue (spec 1) | Callouts |
 | --- | --- | --- |
-| `bad` red | a mistake | Watch out |
-| `insight` gold | understanding | Key idea, Mental model |
-| `info` sky | context | Goal, Aside (differs in form: margin text, no label) |
-| `good` green | a requirement | Constraints |
-| `mark` steel | practical advice | Tip |
-| neutral | hidden until opened | Hint |
+| understanding | yellow (`insight`) | Key idea, Mental model |
+| a mistake | red (`bad`) | Watch out |
+| context | blue (`info`) | Goal, Aside |
+| a requirement | green (`good`) | Constraints |
+| advice | steel (no hue) | Tip |
+| hidden until opened | neutral | Hint |
 
-`warn` amber is no longer used by any callout, which removes the ΔE 13
-collision outright.
+Icons (Phosphor `regular`, `aria-hidden`): Key idea `Key`, Mental model `Brain`,
+Watch out `WarningCircle`, Goal `Target`, Constraints `ListChecks`, Tip `Lightbulb`.
 
-Icons (Phosphor, `regular`): Key idea `Key`; Mental model `Brain`; Watch out
-`WarningCircle`; Goal `Target` (was `Info`); Constraints `ListChecks`; Tip
-`Lightbulb`. Icons stay `aria-hidden`; the label is the accessible name.
+## 5. Treatment B (owner decision), with A as the declared fallback
 
-**Rejected:**
-- *A new hue per type* — needs new tokens and puts 7–8 hues back in the reading
-  column, reversing the 2026-08-27 "carrier, not volume" decision and the
-  Blueprint monochrome base.
-- *Monochrome, label + icon only* — Watch out loses its signal; the reason for
-  this work.
-- *Tip in amber* (freed by Watch out moving to red) — indistinguishable from Key
-  idea's gold in light mode (ΔE 13). Mocked; confirmed by eye.
+Every labelled callout (not Aside, not Hint, not the plain blockquote) gets:
 
----
+- a **tint** background, `--callout-tint-{category}`;
+- a **3px left rule** in the category's `--{role}-line` (light level 3, dark level 4);
+- a **label and icon** in the category's text colour `--{role}` (bold, uppercase,
+  `0.7rem`), body text in ink.
 
-## 5. Two tinted callouts: Watch out and Tip
-
-Every callout keeps the 2px left rule + small uppercase muted label, on the
-page's own background (2026-08-27 §6.2). **Watch out and Tip additionally carry
-a wash**, so the two callouts meant to catch the eye are the only filled ones.
-
-**Parity rule:** Watch out's wash must stand off the ground by at least as much
-as Tip's — a mistake is never quieter than advice. (A Tip-only wash was mocked
-and rejected: it made Tip the loudest element on the page.)
+**Fallback A** is the same callout with no tint. Because the rule, label and body
+are identical between A and B, switching is a token change: set the five
+`--callout-tint-*` tokens to `transparent`. Nothing else in the component or tests
+changes except the tint test's expectations (§8.2).
 
 ### 5.1 Tokens
 
-Washes are **alpha tokens**, not solid hex. Both measured layouts paint callouts
-on `--elevated` (§5.2), so a hex would work today — but alpha is the existing
-idiom for status tints (`bg-bad/5`…`/15`, `bg-good/10` in `src/components`), and
-it stays correct if a callout renders on another ground (a quiz explanation, the
-coach panel) without a second token.
-
 ```css
-/* :root (light) */
---wash-bad: color-mix(in srgb, var(--bad) 9%, transparent);
---wash-tip: color-mix(in srgb, var(--surface) 50%, transparent);
-/* .dark */
---wash-bad: color-mix(in srgb, var(--bad) 12%, transparent);
---wash-tip: color-mix(in srgb, var(--surface) 50%, transparent);
+/* :root — level 1 mixed 50% into the card */
+--callout-tint-understanding: color-mix(in srgb, var(--hue-yellow-1) 50%, var(--elevated));
+--callout-tint-mistake:       color-mix(in srgb, var(--hue-red-1) 50%, var(--elevated));
+--callout-tint-context:       color-mix(in srgb, var(--hue-blue-1) 50%, var(--elevated));
+--callout-tint-requirement:   color-mix(in srgb, var(--hue-green-1) 50%, var(--elevated));
+--callout-tint-advice:        color-mix(in srgb, var(--surface) 50%, var(--elevated));
+--advice-line:                #64748b;
+/* .dark — the same mix at 70% */
+--callout-tint-understanding: color-mix(in srgb, var(--hue-yellow-1) 70%, var(--elevated));
+--callout-tint-mistake:       color-mix(in srgb, var(--hue-red-1) 70%, var(--elevated));
+--callout-tint-context:       color-mix(in srgb, var(--hue-blue-1) 70%, var(--elevated));
+--callout-tint-requirement:   color-mix(in srgb, var(--hue-green-1) 70%, var(--elevated));
+--callout-tint-advice:        color-mix(in srgb, #3a3f48 70%, var(--elevated));
+--advice-line:                #cbd5e1;
 /* @theme */
---color-wash-bad: var(--wash-bad);
---color-wash-tip: var(--wash-tip);
+--color-callout-tint-understanding: var(--callout-tint-understanding);
+--color-callout-tint-mistake:       var(--callout-tint-mistake);
+--color-callout-tint-context:       var(--callout-tint-context);
+--color-callout-tint-requirement:   var(--callout-tint-requirement);
+--color-callout-tint-advice:        var(--callout-tint-advice);
+--color-advice-line:                var(--advice-line);
+--color-rule-strong:                var(--rule-strong);
 ```
 
-Named `wash-*`, not `*-surface`: the existing `--{info,good,warn,insight}-surface`
-tokens are solid pastels with their own test (`design-tokens.test.ts:639`), and
-reusing the suffix for an alpha token would make that test's `firstHexVar`
-assumption silently wrong.
+Tip's steel has no palette hue: light uses `--surface`; dark uses a stand-in level
+1, `#3a3f48`, chosen to sit on the same step as the hue tints. Its rule is
+`--advice-line` (light `#64748b` = 4.10:1 on its tint, dark `#cbd5e1` = 7.93:1),
+and its label is `--mark`. Mixing into `--elevated` (not a literal) keeps a tint
+right if `--elevated` changes.
 
 ### 5.2 Measured
 
-Problem pane (`--elevated`: light `#ffffff`, dark `#26262a`), live mock:
+On `--elevated` (light `#ffffff`, dark `#26262a`), where both layouts paint
+callouts:
 
-| Theme | Tip wash step | Watch out wash step | Label (muted) on Tip / Watch out | Body on Watch out | Red icon on its wash | Steel icon on Tip wash |
-| --- | --- | --- | --- | --- | --- | --- |
-| light (bad 9%) | 1.16 | 1.16 | 5.49 / 5.48 | 14.10 | 5.56 | 12.59 |
-| dark (bad 12%) | 1.16 | 1.16 | 7.34 / 5.46 | 11.05 | 3.90 | 11.82 |
+| Category | Light tint · off card · label · body · rule on tint | Dark tint · off card · label/rule · body |
+| --- | --- | --- |
+| understanding | `#f5e9ba` · 1.22 · 5.40 · 13.47 · **2.91** | `#3c330d` · 1.20 · 5.89 · 10.64 |
+| mistake | `#ffe1de` · 1.23 · 5.89 · 13.34 · 3.09 | `#4a2727` · 1.16 · 5.76 · 11.04 |
+| context | `#dbebff` · 1.21 · 5.53 · 13.54 · **2.94** | `#20344e` · 1.19 · 5.94 · 10.70 |
+| requirement | `#cdf4d3` · 1.20 · 5.15 · 13.65 · **2.76** | `#153b29` · 1.21 · 6.28 · 10.53 |
+| advice | `#eceef3` · 1.16 · 12.60 · 14.13 · 4.10 | `#34383f` · 1.28 · 7.93 · 9.97 |
 
-Reading page (`/courses/dsa/recursion-backtracking/the-call-stack-and-base-cases`),
-measured live in both themes: the reading column also paints **`--elevated`**
-behind callouts (light `#ffffff`, dark `#26262a`), not `--background`, so every
-ratio is identical to the table above (washes: light Tip `#eceef4`, Watch out
-`#f9ebeb`; dark Tip `#19191c`, Watch out `#3e2c30`).
+**Known compromise (light):** understanding, context and requirement rules fall
+under 3:1 against their own tint (2.76–2.94). They clear 3:1 against the page
+beside them (spec 1 §4.3: 3.32–3.56 on `--elevated`), and the tint itself marks the
+callout's shape, so the rule is reinforcement, not the only boundary. The owner saw
+and accepted this on the preview.
 
-`--background` as a defensive ground, computed from tokens (light `#f1f4f9`):
-Tip step 1.11, Watch out step 1.16, label 5.22 / 4.98 — parity and floors hold.
-Dark `--background` is left to the §8 test, which resolves tokens from source: a
-hand-written resolver used during the audit misread the `.dark` block, and its
-dark numbers were discarded.
-
-Floors: body and label ≥ 4.5:1 (AA text); icon ≥ 3:1 (UI graphic); Watch out
-step ≥ Tip step on every ground.
-
-**Rejected — strong washes** (Tip at 100% `--surface`, red 18% light / 20%
-dark): label fell to 4.67:1 in light, and even red 20% could not match Tip's
-step in dark (1.29 vs 1.30). It would be the heaviest fill in the reading column
-and reintroduce the chromatic box that 2026-08-27 §6.2 removed.
-
----
+**Flag for review — Watch out is no longer the strongest tint in dark.** The
+2026-09-13 design required Watch out to stand off the card at least as much as Tip.
+With a tint on every type, dark Tip (1.28) now out-steps dark Watch out (1.16) —
+the owner-approved 70% setting. This spec replaces that rule with: *every tint
+steps 1.15–1.30 off the card in both themes; Watch out's distinction comes from its
+hue (the only red callout), not its strength.* If the owner wants the old rule,
+the dark advice tint must drop below 70%.
 
 ## 6. Component changes
 
 ### 6.1 `Callout.tsx`
 
-- `CalloutType` becomes `"key" | "brain" | "warn" | "tip" | "goal" | "constraint" | "default"`.
-- Rule/icon inks per §4; labels: `key` "Key idea", `brain` "Mental model",
-  `warn` "Watch out", `tip` "Tip", `goal` "Goal", `constraint` "Constraints".
-- `warn` adds `bg-wash-bad`, `tip` adds `bg-wash-tip`, each with the vertical
-  padding and right-side radius the mock used so text does not touch the wash
-  edge. No other type gets a background.
-- Body size: `text-[0.95rem]` → `1em` (inherit), so callouts match the prose on
-  both layouts (§2.4).
-- `default` (plain `>`) rule: `border-l-border` → `border-l-rule-strong`, so a
-  quotation or formula display is visible without claiming to be a Key idea.
-  No label. `--rule-strong` exists (`globals.css:87`) but has no `@theme`
-  mapping, so add `--color-rule-strong: var(--rule-strong);` to `@theme inline`
-  — without it the class is never generated and the rule silently disappears.
-- Copy button: add `focus-visible:opacity-100` plus the app's focus idiom
-  (`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`,
-  the most-used focus classes in `src/components`), so keyboard users can see
-  what they have focused.
+- `CalloutType` = `"key" | "brain" | "warn" | "tip" | "goal" | "constraint" | "default"`.
+- Per type: tint `bg-callout-tint-{category}`, rule `border-l-{role}-line`, label
+  and icon `text-{role}`. Tip: `bg-callout-tint-advice`, `border-l-advice-line`,
+  `text-mark`.
+- Rule `border-l-3` (Tailwind v4's numeric border width, not an arbitrary value);
+  padding `py-2.5 pl-4 pr-8`; right radius `var(--radius-sm)`.
+- Body inherits the prose size (was `text-[0.95rem]`).
+- `default` (plain `>`): no tint, no label, `border-l-2` in `--rule-strong`
+  (add `--color-rule-strong` to `@theme`).
+- Copy button: `focus-visible:opacity-100 focus-visible:outline-none
+  focus-visible:ring-2 focus-visible:ring-accent`.
 
 ### 6.2 `Markdown.tsx`
 
-- Fenced branch accepts `key | brain | warn | tip | goal | constraint`; drop
-  `note`.
-- Delete `detectCalloutType`; `blockquote` always renders `type="default"`.
+Fence branch accepts `key | brain | warn | tip | goal | constraint` through a typed
+list (no cast); `note` removed; `detectCalloutType` deleted; `blockquote` always
+renders `type="default"`.
 
 ### 6.3 `highlightBlocks.ts`
 
-- `NON_CODE_LANGS`: add `key`, remove `note`. Without this a `key` fence is
-  sent to Shiki as a code language.
+`NON_CODE_LANGS`: add `key`, remove `note`; export it.
 
-### 6.4 `extractThesis.ts` — the coach must read Key ideas
+### 6.4 `extractThesis.ts`
 
-Today, inside "The insight", collection **stops at the first `code` node** — a
-` ```key ` fence is a `code` node, so a Key idea opening the section would yield
-an empty thesis.
-
-New order:
-1. "The insight" section: collect prose as today, but a `code` node with
-   `lang === "key"` contributes its body as prose instead of ending collection.
-   Any other `code` node still ends it.
-2. No "The insight" heading: the first `key` fence in the Explanation.
-3. Otherwise the first blockquote (unchanged, so the 22 fallback lessons keep
-   working before spec B migrates them).
-4. Otherwise empty.
-
-`seo/description.ts` already skips fences and `>` lines, so Key idea text stays
-out of meta descriptions exactly as blockquotes do today.
+Inside "The insight", a `key` fence contributes its body as prose instead of ending
+collection; any other fence still ends it. Without the heading: first `key` fence,
+then first blockquote, else empty.
 
 ### 6.5 Not changed
 
-`Reveal.tsx`, `MarginNote.tsx` (aside keeps `0.92em` and `info`),
+`Reveal.tsx`, `MarginNote.tsx` (Aside keeps `0.92em` and `--info`),
 `extractHints.ts`, `splitProblemTabs.ts`.
-
-### 6.6 Next.js course
-
-`warn`, `brain` and `tip` keep their names, so its 72 uses need no migration;
-they pick up the new colours. The course stays disabled.
-
----
 
 ## 7. Documentation
 
-CLAUDE.md §4 gains a callout rule: the eight types, "colour = the type of
-message", washes only on Watch out and Tip with the parity rule, and "callout
-body inherits prose size". CLAUDE.md §3 gains the job column of §3 and the
-density rule, so content authors and agents apply it.
-
----
+CLAUDE.md §3: the job column and density rule. CLAUDE.md §4: colour names the kind
+of message; every labelled callout carries a `--callout-tint-*` (fallback A: set
+them transparent); rules use `*-line` and sit on `--elevated`/`--background` only;
+body inherits prose size.
 
 ## 8. Tests
 
-Each new or changed test must be shown to fail first (introduce the fault,
-watch it fail, restore) per CLAUDE.md §2.
+Each new or changed test is shown failing first (CLAUDE.md §2).
 
-1. **`design-tokens.test.ts:614`** — rewrite to the §4 mapping: `key` and
-   `brain` → `border-l-insight`; `warn` → `border-l-bad` + `bg-wash-bad`; `tip`
-   → `border-l-mark` + `bg-wash-tip`; `goal` → `border-l-info`; `constraint` →
-   `border-l-good`; no `border-l-warn` anywhere in `Callout.tsx`; no
-   `note|rocket|build` keys; body carries no fixed `rem` size.
-2. **New — wash tokens clear their floors on both grounds, both themes.**
-   Resolve `--bad`, `--surface`, `--muted`, `--foreground`, `--mark`,
-   `--background`, `--elevated` from `globals.css`; composite each wash over
-   each ground; assert label and body ≥ 4.5, icon ≥ 3, and
-   step(Watch out) ≥ step(Tip). Record the ratios in comments beside the tokens
-   (CLAUDE.md §4 "contrast is measured").
-3. **New — every lesson fence language is known** (`content.test.ts`): each
-   fence opener in `courses/**/*.md` must be a Shiki language or alias
-   (`SUPPORTED_LANGS` / `LANG_ALIASES` in `highlight.ts`), a member of
-   `NON_CODE_LANGS` (`highlightBlocks.ts`), or one of the four fences handled
-   outside both lists: `tabs` and `reveal` (`Markdown.tsx`), `sandbox`
-   (`extractSandboxFence.ts`), `viz` (`Markdown.tsx`). All three lists are
-   module-private today; export them so the test derives the set rather than
-   re-typing it. All 25 fence names used in lessons today are covered (7
-   languages/aliases, 14 non-code fences, the 4 above), so the test starts
-   green. Prove it can fail with a lesson copy containing ` ```wran `.
-4. **`coach-thesis.test.ts`** — add: Key idea fence opening "The insight" is
-   the thesis; `key` fence used when no heading; blockquote fallback still
-   works; a non-`key` code fence still ends collection.
-5. **Render test** (new `tests/callout.test.tsx`, `renderToStaticMarkup` from
-   `react-dom/server` as in `codeTabs.test.tsx` and `courseNavPanel.test.tsx`) —
-   ` ```key ` renders a `Callout` labelled "Key idea"; `>` renders unlabelled; an
-   emoji blockquote no longer changes type; `note` is no longer a callout.
-6. **Copy button** — class carries `focus-visible:opacity-100`.
+1. **`design-tokens.test.ts`, callout mapping** — each type's tint, line and text
+   classes per §6.1; no `border-l-warn`/`text-warn`; no `note|rocket|build`; no
+   fixed `0.95rem`; copy button carries `focus-visible:opacity-100`.
+2. **New — callout tints.** Resolve each `--callout-tint-*` per theme through its
+   `color-mix` (composited over `--elevated`), then assert: label ≥ 4.5, body
+   ≥ 4.5, icon ≥ 3, tint step off the card in 1.15–1.30, and every tint token is
+   defined in `:root` and `.dark` and mapped in `@theme`. Under fallback A the
+   step assertion is replaced by "tint is transparent".
+3. **New — fence names** (`content.test.ts`): every fence language in `courses/**`
+   is a Shiki language or alias, a `NON_CODE_LANGS` member, or `tabs`/`reveal`/
+   `sandbox`/`viz`; proven with ` ```wran `.
+4. **`coach-thesis.test.ts`** — `key` fence opening "The insight" is the thesis;
+   `key` fence preferred over a blockquote without the heading.
+5. **New `tests/callout.test.tsx`** (`renderToStaticMarkup`) — each fence renders
+   its label; `>` and legacy emoji blockquotes render unlabelled; `note` is not a
+   callout.
 
 ## 9. Verification
 
-`tsc --noEmit`, `eslint`, `npm test`, `npm run build` (after stopping any dev
-server using `web/.next`), then the browser: a problem pane
-(`valid-palindrome`: Goal, Constraints, Tip) and a reading page
-(`the-call-stack-and-base-cases`: blockquote), both themes; keyboard-focus the
-copy button; confirm the coach thesis for one lesson of each §6.4 path.
-
----
+`tsc --noEmit`, `eslint`, `npm test`, `npm run build`; then the browser on
+`valid-palindrome` (Goal, Constraints, Tip) and `the-call-stack-and-base-cases`
+(blockquote), both themes, with a temporary Key idea / Watch out / Mental model
+fence that is reverted; keyboard-focus the copy button; confirm computed tint and
+rule colours match §5.2.
 
 ## 10. Out of scope
 
-**Spec B — content pass** (depends on A):
-- Audit the 70 blockquote lessons: true theses → ` ```key `; formula/quotation
-  displays stay `>`.
-- Watch outs for the 46 buried trap mentions in DSA lessons ("off-by-one" ×25,
-  "the trap" ×9, "classic bug" ×6, "pitfall" ×2, four single phrasings; at
-  least 34 lessons), each trigger and consequence executed in both languages.
-- Re-sort existing Tips (3 DSA "try it first" nudges → prose) and Next.js
-  `brain`/`warn`/`tip` uses per §3's job column.
-- Decide Goal: roll out to all 116 problems or retire.
-- Give `range-sum-2d-immutable` a thesis.
+- **Content pass:** migrate thesis blockquotes to ` ```key `; Watch outs for the 46
+  buried trap mentions; re-sort existing Tips and Next.js `brain`/`warn`/`tip`;
+  decide Goal's rollout; give `range-sum-2d-immutable` a thesis.
+- **Palette tokens and status colours** — spec 1. **Family colours** — spec 3.
 
-**Elsewhere:**
-- `--warn-surface` and `--insight-surface` are unused by components
-  (`--info-surface`/`--good-surface` are used by `HomePage.tsx` and
-  `CoachPanel.tsx`).
-- CLAUDE.md repo map names an empty `course/` — filed as a separate task.
-- Observed, not investigated: the code editor pane renders light in dark theme
-  and dark in light theme.
-
-**Sequencing:** a concurrent session has uncommitted edits to `globals.css`,
-`ProblemWorkspace.tsx` and `design-tokens.test.ts`. Implementation of this spec
-touches two of those files and must start from their committed state.
+**Sequencing:** spec 1 lands first (this spec reads `--hue-*`, `--{role}-line` and
+the new status colours). The implementation plan written on 2026-09-14 against the
+superseded design is obsolete and will be rewritten.

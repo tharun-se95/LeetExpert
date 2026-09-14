@@ -10,16 +10,19 @@ function isBooleanOutput(output: string): "true" | "false" | null {
 
 function OutputValue({ output }: { output: string }) {
   const bool = isBooleanOutput(output);
+  // The pills are grid items, and a grid item stretches to its column
+  // whatever its own `display` says, so `justify-self-start` is what holds
+  // them to content width.
   if (bool === "true") {
     return (
-      <span className="inline-flex rounded-[length:var(--radius-xs)] border border-good/40 bg-good/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-good">
+      <span className="inline-flex justify-self-start rounded-[length:var(--radius-xs)] border border-good/40 bg-good/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-good">
         {output.trim()}
       </span>
     );
   }
   if (bool === "false") {
     return (
-      <span className="inline-flex rounded-[length:var(--radius-xs)] border border-bad/40 bg-bad/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-bad">
+      <span className="inline-flex justify-self-start rounded-[length:var(--radius-xs)] border border-bad/40 bg-bad/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-bad">
         {output.trim()}
       </span>
     );

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
+import { LandingHeader } from "@/components/landing/LandingHeader";
 import { MobileLessonsSheet } from "@/components/layout/MobileLessonsSheet";
 import { SearchDialog } from "@/components/layout/SearchDialog";
 import { PageEnter } from "@/components/layout/PageEnter";
@@ -78,7 +79,7 @@ export function isLandingPath(pathname: string): boolean {
  * scoped to the specific components that still legitimately want it — the
  * viz tracers and curriculum-card identity that already call
  * `familyCssVars`/`singleAccentCssVars` themselves, directly on their own
- * element (`FamilySpotlight`, `VizPlayer`, `PatternLab`, `Diagram`, the
+ * element (`VizPlayer`, `PatternLab`, `Diagram`, the
  * course-hub and module-page cards). `activeThemeFor` stays, tested and
  * exported, for exactly that use — a scoped component on a lesson page
  * that needs to know "which family is this page's content in" without the
@@ -139,8 +140,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // NEXTJS_COURSE.status), but the root layout still renders AppShell
   // around that 404 body — without this, a disabled course's full sidebar
   // and progress chrome would render around content that isn't there.
+  const landing = isLandingPath(pathname);
   const showCourseNav =
-    !isLandingPath(pathname) && (!isNextjs || NEXTJS_COURSE.status === "available");
+    !landing && (!isNextjs || NEXTJS_COURSE.status === "available");
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
   // The drawer follows the pointer on hover-capable devices: an edge strip
@@ -189,10 +191,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const onMove = (e: PointerEvent) => {
       const rail = document.getElementById("lessons-sidebar");
       if (!rail) return;
-      // The close button hangs past the rail's right edge on purpose, so the
-      // edge test alone reads "pointer left the drawer" while the pointer is
-      // on the drawer's own control. Hit-testing what is under the pointer
-      // covers that, and anything else the panel hangs outside itself later.
+      // The resize grip's pill overhangs the rail's right edge, so the edge
+      // test alone reads "pointer left the drawer" while the pointer is on the
+      // drawer's own control. Hit-testing what is under the pointer covers it.
       const onDrawer = e.target instanceof Node && rail.contains(e.target);
       if (!onDrawer && e.clientX > rail.getBoundingClientRect().right)
         closeAfterGrace();
@@ -274,6 +275,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // The landing header is sticky and gains a translucent paper once content
+  // scrolls beneath it. A sentinel at the page top, observed against <main>,
+  // rather than a scroll listener: a landing page restored mid-scroll fires no
+  // scroll event (measured 2026-09-14), which would leave the header clear
+  // over text.
+  const landingTop = useRef<HTMLDivElement>(null);
+  const [landingScrolled, setLandingScrolled] = useState(false);
+  useEffect(() => {
+    const sentinel = landingTop.current;
+    if (!landing || !sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setLandingScrolled(!(entry?.isIntersecting ?? true)),
+      { root: sentinel.closest("main") },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [landing]);
+
   return (
     <ProgressProvider
       courseSlug={courseSlug}
@@ -293,11 +312,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             />
           ) : null}
           {/*
-            The drawer opener: one edge tab on every page with the course nav,
-            problem pages included (their header reserves its room) — never in
-            the app Header, which carries only search, progress and theme. The
-            hover edge strip below still skips the IDE, where the description
-            pane starts at that edge.
+            The drawer opener: one round floating button, bottom-left, on every
+            page with the course nav, problem pages included — never in the app
+            Header, which carries only search, progress and theme. The hover
+            edge strip below still skips the IDE, where the description pane
+            starts at that edge.
           */}
           {showCourseNav ? <FloatingLessonsButton /> : null}
           {/* The drawer sits off-screen when closed, so the open trigger is
@@ -311,13 +330,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             />
           ) : null}
           <div className="flex h-dvh flex-col overflow-hidden">
-            <Header
-              onOpenSearch={() => setSearchOpen(true)}
-              showLessonsMenu={showCourseNav}
-              lessonsMenuOpen={mobileNavOpen}
-              onToggleLessonsMenu={() => setMobileNavOpen((v) => !v)}
-              showProgress={showCourseNav}
-            />
+            {/* The landing page renders its own header inside <main> below. */}
+            {landing ? null : (
+              <Header
+                onOpenSearch={() => setSearchOpen(true)}
+                showLessonsMenu={showCourseNav}
+                lessonsMenuOpen={mobileNavOpen}
+                onToggleLessonsMenu={() => setMobileNavOpen((v) => !v)}
+                showProgress={showCourseNav}
+              />
+            )}
             <div className="flex min-h-0 flex-1">
               {showCourseNav ? (
                 <Sidebar
@@ -328,15 +350,59 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   onFocusCapture={canHover ? cancelHoverClose : undefined}
                 />
               ) : null}
+              {/*
+                relative: <main> is the only scroller inside an h-dvh,
+                overflow-hidden shell, so it must also be the containing block
+                for anything positioned inside a page. Without it, an absolute
+                element with no positioned ancestor — the Cheatsheet table's
+                sr-only <caption> — resolved against the initial containing
+                block, escaped the shell's clip and made the document scrollable
+                (577px on the Strings practice page): Page Down dragged the whole
+                shell up over blank background.
+              */}
               <main
                 className={cn(
-                  "min-w-0 flex-1",
+                  "relative min-w-0 flex-1",
                   fillMain
                     ? "flex min-h-0 flex-col overflow-hidden"
                     : "overflow-y-auto",
+                  // The landing page moves section to section; every other page
+                  // scrolls freely. Proximity below lg so a section taller than
+                  // a phone screen can still be read end to end.
+                  landing && "snap-y snap-proximity lg:snap-mandatory",
                 )}
               >
-                <PageEnter fill={fillMain}>{children}</PageEnter>
+                {/*
+                  The app's desk: the page grain, inside the scroller so it
+                  moves with the content, once per page — a second transparent
+                  grain layer inside it would double the strength. The app
+                  Header and the drawer sit outside <main> and paint their own
+                  over opaque paper (.grain-paper). On / the landing header
+                  lives in here, above the page and outside PageEnter so it
+                  does not replay the page's rise.
+                */}
+                <div
+                  className={cn(
+                    "paper-grain relative",
+                    fillMain ? "flex min-h-0 flex-1 flex-col" : "min-h-full",
+                    landing && "snap-start",
+                  )}
+                >
+                  {landing ? (
+                    <>
+                      <div
+                        ref={landingTop}
+                        aria-hidden
+                        className="pointer-events-none absolute inset-x-0 top-0 h-px"
+                      />
+                      <LandingHeader
+                        onOpenSearch={() => setSearchOpen(true)}
+                        scrolled={landingScrolled}
+                      />
+                    </>
+                  ) : null}
+                  <PageEnter fill={fillMain}>{children}</PageEnter>
+                </div>
               </main>
             </div>
           </div>

@@ -175,16 +175,14 @@ export function ProblemWorkspace({
     // Fills AppShell's main pane (`overflow-hidden` on /problems/[slug]).
     // Panes scroll internally — no document scroll.
     <CoachProvider sandboxId={sandboxId} hintLabels={hintLabels}>
-      <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-background">
+      <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
         {/*
-          lg:pl-12 and lg:py-3 make room for the drawer tab, which hangs at the
-          same spot on every page (header h-14 + the rail's top-4) and so lands
-          in this band on desktop. Without the inset the open drawer's close
-          tab covered the back link; at py-2 the band was shorter than the tab
-          plus its fillets, and the bottom fillet overran border-b into the
-          description pane.
+          No paper of its own, like the root above: both are transparent over
+          the app's grain desk, so the app header, this band and the drawer
+          read as one sheet. A solid band here read as a second surface under
+          the grainy header. The IDE below stays solid.
         */}
-        <header className="flex shrink-0 items-center gap-2 border-b border-border bg-elevated px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2 lg:py-3 lg:pl-12">
+        <header className="flex shrink-0 items-center gap-2 border-b border-border px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2">
           <Link
             href={backHref}
             className="inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-[length:var(--radius-md)] px-2 text-xs text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
@@ -198,7 +196,8 @@ export function ProblemWorkspace({
             Divides the way back from what this problem is: everything left
             of it moves you, everything right of it describes the problem. It
             used to follow an inline drawer toggle too; the drawer's opener is
-            now the edge tab every course page shares (FloatingLessonsButton).
+            now the floating button every course page shares
+            (FloatingLessonsButton).
           */}
           <span
             className="hidden h-6 w-px shrink-0 bg-border sm:block"
