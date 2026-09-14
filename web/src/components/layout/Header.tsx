@@ -80,21 +80,30 @@ export function Header({
               When the lessons menu button is present, drop the wordmark below sm
               so left + centered modes + right icons fit ~375px without overlap.
             */}
-            <span
-              className={cn(WORDMARK, showLessonsMenu && "max-sm:hidden")}
-            >
-              <span className="text-foreground">leet</span>
-              <span className="text-mark">Expert</span>
+            {/*
+              The green signal ends the name, centred on the wordmark in a
+              group of its own. The row aligns baselines so the wordmark and
+              the fixed-size course label stay level; in that row the text sits
+              at the top of a line the 26px lamp makes taller, so a lamp
+              centred on the row landed (26 − line height) / 2 low. The group
+              reports the wordmark's baseline to the row, so the label still
+              lines up with it. tests/appHeaderLampAlign.test.tsx guards this.
+            */}
+            <span className="flex min-w-0 items-center gap-2">
+              <span
+                className={cn(WORDMARK, showLessonsMenu && "max-sm:hidden")}
+              >
+                <span className="text-foreground">leet</span>
+                <span className="text-mark">Expert</span>
+              </span>
+              {/* The negative margin takes back the halo's transparent edge,
+                  only where the wordmark is actually beside it. */}
+              <Lamp
+                size={LOGO_LAMP_SIZE}
+                bloom
+                className={showLessonsMenu ? "sm:-ml-1" : "-ml-1"}
+              />
             </span>
-            {/* The green signal ends the name. self-center: this row aligns
-                text baselines, which would stand an SVG on the baseline.
-                The negative margin takes back the halo's transparent edge,
-                only where the wordmark is actually beside it. */}
-            <Lamp
-              size={LOGO_LAMP_SIZE}
-              bloom
-              className={cn("self-center", showLessonsMenu ? "sm:-ml-1" : "-ml-1")}
-            />
             <span
               className="hidden h-3.5 w-px shrink-0 bg-border md:block"
               aria-hidden
