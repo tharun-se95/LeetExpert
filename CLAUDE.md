@@ -84,6 +84,24 @@ The content is the product. Code exists to serve it.
 - **All colour goes through tokens.** No hardcoded Tailwind palette values
   (`emerald-500`, `red-400`) in components — they survive a palette change
   and silently break the theme.
+- **The brand lamp is the one non-steel ink in chrome.** The logo is a
+  soft-glowing grass-green dot (`components/brand/Lamp.tsx`) painted from
+  `--lamp` / `--press-lamp*` in `globals.css`. It ends the wordmark —
+  `leetExpert ●`, the green signal last (owner, 2026-09-14) — in both the
+  app `Header` and `LandingHeader`, at the shared `LOGO_LAMP_SIZE`, inside
+  the home link's `.lamp-link` so hover and focus replay its bloom. Each page
+  renders one header, so one lamp blooms. It is a deliberate exception
+  to the monochrome base and covers the mark only — never a button, focus,
+  status, or accent colour. It sits 1.16:1 from `--good` in light (1.17:1
+  dark), so the two are told apart by form (a glowing dot in chrome vs a flat
+  tick in content) and must stay separate tokens. `tests/brandLamp.test.tsx`
+  confines the tokens to the mark and keeps the static icons
+  (`assets/brand/mark*.svg`, the generated PNG/ICO files, the OG card) in
+  step with them: after changing a lamp token, update those and rerun
+  `node scripts/generate-icons.mjs`. Brand SVGs are parsed as strict XML
+  (`tests/brandSvgXml.test.ts`) because a favicon is loaded as XML — never
+  write `--` inside an SVG comment, which is how the old `icon.svg` shipped
+  malformed. Spec: `docs/superpowers/specs/2026-09-13-lamp-logo-design.md`.
 - **Primary is steel/indigo everywhere; family colour is scoped to content,
   never lifted to chrome.** This reverses the original design (below is what
   changed, kept for context): AppShell no longer applies `familyCssVars`/
@@ -128,8 +146,10 @@ The content is the product. Code exists to serve it.
   floating button** (owner, 2026-09-14; spec
   `docs/superpowers/specs/2026-09-14-drawer-header-and-floating-opener-design.md`;
   it replaced the 2026-09-13 edge tabs and their concave fillets). The nav
-  panel's top row is pinned (`sticky top-0`, grainy paper so rows scrolling
-  beneath do not show through, no `border-b` — the module heading below
+  panel's top row is pinned (`sticky top-0`): grainy paper like the rail at
+  rest and `TRANSLUCENT_PAPER` once rows scroll under it (`CourseNavTree` observes
+  a sentinel against the nav, not scroll events — translucent at rest it read as
+  a lighter strip), with no shadow and no `border-b` (the module heading below
   carries the rule): inside a module it is the back row ("‹ {stage}") with ✕
   beside it, at the top level just ✕. `CourseNavPanel` renders it only when
   given `onClose`; the desktop drawer passes it, the mobile sheet keeps its
@@ -152,18 +172,21 @@ The content is the product. Code exists to serve it.
   other route does.** Owner direction 2026-09-14
   (specs `docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md`
   and `2026-09-14-landing-rewrite-agentic-ai-design.md`). On `/` AppShell
-  skips the sticky app `Header` and renders `LandingHeader` as the first thing
+  skips the app `Header` and renders `LandingHeader` as the first thing
   *inside* `<main>`, inside the app's one `.paper-grain` desk wrapper:
   a `border-border` hairline, **sticky** (owner, 2026-09-14): clear over the
-  grain at the top, `bg-background/80 backdrop-blur-md shadow-edge-bottom`
-  once content scrolls under it — `scrolled` comes from an
+  grain at the top, `TRANSLUCENT_PAPER` (`bg-background/90 backdrop-blur-md`,
+  owner 2026-09-15 — at 80% muted text fell to 3.85:1 over a dark block) plus
+  `shadow-edge-bottom` once content scrolls under it — `scrolled` comes from an
   IntersectionObserver on a sentinel at the page top (not a scroll listener),
   and its height is the same either way so nothing jumps; content in a centred
   `max-w-landing` column (`--container-landing: 88rem`, owner request) with
   `px-6 md:px-16` gutters shared by header and page so they keep one edge.
   Its nav stays Space Grotesk (16px, ink) — the reference's display-face nav
   was declined to keep the three-faces rule. **The page explains rather than
-  sells** (owner): why learn DSA when agents write code — a hero, one
+  sells** (owner): why learn DSA when agents write code — a hero (its headline
+  one sentence per line, `HERO.lines`, sized `lg:text-4xl xl:text-5xl` so the
+  longer line fits the text column — measured 14.675em), one
   argument screen (`WHY`: four numbered one-line points, problem-solving
   mindset first — four full chapters were cut the same day as too long a
   scroll to reach the point; do not expand it back into chapters), a line of manifest
@@ -211,7 +234,7 @@ The content is the product. Code exists to serve it.
   letters rise once on first view, aria-hidden, settled under reduced motion)
   and a computed copyright year. It is the last snap stop (`snap-end`). The app
   `Header` shares its class sets with it through `layout/headerChrome.ts`
-  (logo chip, wordmark, nav link, round control) and keeps its own `h-14`,
+  (lamp size, wordmark, nav link, round control) and keeps its own `h-14`,
   which the drawer geometry above reads. The grain is its own rule below.
   Guarded in `landingHeader.test.tsx` and `appHeader.test.tsx`.
 - **The grain is the app's desk, on every route** (owner, 2026-09-14; spec
@@ -224,12 +247,18 @@ The content is the product. Code exists to serve it.
   inside it would double the strength — and `.grain-paper` (the paper at
   `1 − opacity` over the opaque tile, measured within 1/255 of `.paper-grain`,
   `background-origin: border-box` so borders do not show the bare tile) on
-  opaque surfaces: the app header, the lessons drawer rail and its pinned header row, the
-  floating drawer opener and the mobile lessons sheet. `--grain-paper` names the surface's paper and
+  opaque surfaces: the lessons drawer rail and its pinned row at rest, the
+  floating drawer opener, the mobile lessons sheet and the problem page's two `--elevated` panes (AA holds
+  there too; the `--surface` hover fills stay solid — muted fell to 4.05:1). `--grain-paper` names the surface's paper and
   `--grain-veil` is declared on the elements that use it, never on `:root`.
-  The app header is a hairline on the desk like the landing header
-  (`bg-background`, no shadow); the problem page's root and sub-header are
-  transparent over the desk. The reading sheet, cards, code, the IDE and
+  The app header overlays the page (spec
+  `docs/superpowers/specs/2026-09-15-translucent-chrome-and-pane-grain-design.md`):
+  `absolute top-0 h-14`, `TRANSLUCENT_PAPER` with `shadow-edge-bottom`. Lesson
+  and module pages scroll under it — the desk wrapper's `pt-14` starts them
+  below it, the rail starts below it (`mt-14`), and scroll offsets moved 3.5rem
+  (TOC `top-38`, headings `scroll-mt-38`) — and `grainContrast.test.ts` keeps
+  its muted text AA over a code block passing beneath. The problem page's root
+  and sub-header are transparent over the desk. The reading sheet, cards, code, the IDE and
   dialogs stay solid and cover the grain. Every text ink clears AA at the
   worst grain pixel (`grainContrast.test.ts`; floors 4.84:1 light on
   `--good`, 6.65:1 dark on `--muted`, measured on the contribution-green palette) — re-measure if the opacity or a paper changes. Call sites are
@@ -272,8 +301,8 @@ The content is the product. Code exists to serve it.
   options, prev/next links) or a directional `.shadow-edge-bottom` /
   `.shadow-edge-right` / `.shadow-edge-left` (a panel that only separates
   from content on one side — the docked lessons drawer, the coach rail, the
-  mobile lessons sheet). The app header carries no shadow: it is a hairline on
-  the grain desk, like the landing header. Tokens live in `globals.css`
+  mobile lessons sheet, and the app header, whose shadow falls on the page
+  scrolling under it). Tokens live in `globals.css`
   (`--shadow-elevation`, `--shadow-edge-*`): light mode tints the shadow
   with `--press-ink` at low alpha so it reads as ink, not generic UI chrome;
   dark mode uses near-black, since a *light* ink at low alpha would lighten

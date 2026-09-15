@@ -28,10 +28,16 @@ export function spellCount(n: number): string {
 }
 
 // --- copy ---------------------------------------------------------------
+/**
+ * One sentence per line (owner, 2026-09-14): wrapped as one string it broke
+ * "…the / code. You decide / if it's right." Judgment, not "agents can't solve
+ * problems": the contrast has to be true for readers who use agents daily.
+ */
+const HERO_LINES = ["Agents write the code.", "You decide if it's right."] as const;
+
 export const HERO = {
-  // Judgment, not "agents can't solve problems": the contrast has to be true
-  // for readers who use agents daily, and it's what the Judgment chapter argues.
-  title: "Agents write the code. You decide if it's right.",
+  lines: HERO_LINES,
+  title: HERO_LINES.join(" "),
   // Owner's wording (2026-09-14).
   lede: "Learning data structures and algorithms is for the part of the job that doesn't get automated.",
 } as const;

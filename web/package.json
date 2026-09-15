@@ -61,6 +61,7 @@
     "fontkit": "2.0.4",
     "jiti": "^2.7.0",
     "jsdom": "^30.0.1",
+    "sharp": "0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10"

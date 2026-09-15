@@ -115,7 +115,7 @@ export function Sidebar({
       className={cn(
         // .sidebar-rail + .grain-paper (globals.css): the app header's grainy
         // paper. --grain-paper tells the grain veil that paper is the rail's.
-        // z-45: above the sticky header (z-40) so the header's shadow-edge-bottom
+        // z-45: above the overlaying header (z-40) so the header's shadow-edge-bottom
         // stops falling across the rail's top edge, and still below the search
         // dialog and mobile sheet (z-50), which must cover everything.
         //
@@ -132,7 +132,10 @@ export function Sidebar({
         // rail's whole width onto the header's bottom edge. Clipped at top,
         // bottom and left; 3rem open on the right — past the grip's pill and
         // its focus ring, and past the shadow's own reach, which it keeps.
-        "sidebar-rail print:hidden relative z-[45] hidden h-full shrink-0 flex-col lg:flex [clip-path:inset(0_-3rem_0_0)] grain-paper [--grain-paper:var(--rail-surface)]",
+        // mt-14, not h-full: the app header overlays the page, so the rail starts
+        // below it (the flex row stretches it to the rest of the height) and its
+        // pinned close row is never under the header.
+        "sidebar-rail print:hidden relative z-[45] hidden mt-14 shrink-0 flex-col lg:flex [clip-path:inset(0_-3rem_0_0)] grain-paper [--grain-paper:var(--rail-surface)]",
         // The drag handle must track the pointer 1:1, so it opts out.
         !dragging &&
           "transition-[width] duration-[var(--dur-gentle)] ease-[var(--ease-gentle)] motion-reduce:transition-none",

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { LandingHeader } from "@/components/landing/LandingHeader";
+import { TRANSLUCENT_PAPER } from "@/components/layout/headerChrome";
 
 const src = join(__dirname, "..", "src");
 const read = (...p: string[]) => readFileSync(join(src, ...p), "utf8");
@@ -48,8 +49,11 @@ describe("LandingHeader", () => {
     expect(headerTag).not.toMatch(/\bbackdrop-/);
 
     const scrolled = renderToStaticMarkup(<LandingHeader onOpenSearch={() => {}} scrolled />).match(/<header[^>]*>/)![0];
-    expect(scrolled).toMatch(/\bbg-background\/80\b/);
-    expect(scrolled).toMatch(/\bbackdrop-blur-md\b/);
+    // The shared translucent paper (headerChrome.ts), 90% like the app chrome:
+    // at 80% muted text fell to 3.85:1 over a dark block passing beneath.
+    for (const c of TRANSLUCENT_PAPER.split(" ")) expect(scrolled, c).toContain(c);
+    expect(scrolled).not.toMatch(/\bbg-background\/80\b/);
+    expect(read("components", "landing", "LandingHeader.tsx")).toMatch(/\bTRANSLUCENT_PAPER\b/);
     // The shared edge-shadow token, as the app's sticky header uses (CLAUDE.md §4).
     expect(scrolled).toMatch(/\bshadow-edge-bottom\b/);
     // Same padding either way, so nothing below jumps when it changes.

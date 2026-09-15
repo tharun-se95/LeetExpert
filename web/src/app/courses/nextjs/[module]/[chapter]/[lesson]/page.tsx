@@ -164,7 +164,7 @@ export default async function NextjsLessonPage({ params }: PageProps) {
       </article>
 
       <aside className="hidden lg:block">
-        <div className="sticky top-20">
+        <div className="sticky top-34">
           <TableOfContents items={loaded.toc} />
         </div>
       </aside>

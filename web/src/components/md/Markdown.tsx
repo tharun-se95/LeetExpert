@@ -263,7 +263,7 @@ export function Markdown({
   };
 
   return (
-    <div className="handbook-prose prose-headings:scroll-mt-24">
+    <div className="handbook-prose prose-headings:scroll-mt-38">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkHighlight]}
         rehypePlugins={[

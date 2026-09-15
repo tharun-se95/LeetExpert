@@ -85,10 +85,10 @@ export function CoachPanel({
       {variant === "floating" ? (
         <header className="flex shrink-0 items-start gap-2.5 border-b border-border px-3 py-2.5">
           {/*
-            A solid mark rather than an accent-tinted glyph: the same
-            bg-pop/text-on-pop pair the wordmark uses, which is a designed
-            couple. An accent-coloured icon here would sit on --elevated,
-            the lightest dark surface, where accentUi does not clear 3:1.
+            A solid mark rather than an accent-tinted glyph: the steel
+            bg-pop/text-on-pop pair, which is a designed couple. An
+            accent-coloured icon here would sit on --elevated, the lightest
+            dark surface, where accentUi does not clear 3:1.
           */}
           <span
             aria-hidden

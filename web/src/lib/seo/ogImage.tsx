@@ -68,31 +68,27 @@ export async function renderOgImage() {
               marginBottom: 28,
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                width: 56,
-                height: 56,
-                borderRadius: 12,
-                background: "#FFFFFF",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg width="34" height="34" viewBox="0 0 64 64">
-                <g
-                  fill="none"
-                  stroke="#1E293B"
-                  strokeWidth={7}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M22 16 L12 32 L22 48" />
-                  <path d="M42 16 L52 32 L42 48" />
-                  <path d="M25 33 L30 40 L41 24" />
-                </g>
-              </svg>
-            </div>
+            {/* The lamp in its dark-theme colours, straight on the steel
+                scrim (#5be07a vs the scrim colour #16202e is 9.68:1).
+                Mirrors the dark press-lamp tokens; checked by
+                tests/brandLamp.test.tsx. */}
+            <svg width="56" height="56" viewBox="0 0 64 64">
+              <defs>
+                <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#5be07a" stopOpacity={0.85} />
+                  <stop offset="33%" stopColor="#5be07a" stopOpacity={0.42} />
+                  <stop offset="69%" stopColor="#5be07a" stopOpacity={0.11} />
+                  <stop offset="100%" stopColor="#5be07a" stopOpacity={0} />
+                </radialGradient>
+                <radialGradient id="core" cx="38%" cy="34%" r="70%">
+                  <stop offset="0%" stopColor="#cfffd8" />
+                  <stop offset="45%" stopColor="#5be07a" />
+                  <stop offset="100%" stopColor="#2fb455" />
+                </radialGradient>
+              </defs>
+              <circle cx="32" cy="32" r="30" fill="url(#halo)" />
+              <circle cx="32" cy="32" r="15" fill="url(#core)" />
+            </svg>
             <div
               style={{
                 display: "flex",

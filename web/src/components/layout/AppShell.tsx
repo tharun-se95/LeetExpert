@@ -329,8 +329,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="fixed top-14 bottom-0 left-0 z-30 hidden w-7 lg:block"
             />
           ) : null}
-          <div className="flex h-dvh flex-col overflow-hidden">
-            {/* The landing page renders its own header inside <main> below. */}
+          <div className="relative flex h-dvh flex-col overflow-hidden">
+            {/*
+              The app header overlays the page (absolute, translucent with blur;
+              spec 2026-09-15): the page scrolls up under it, so it is the
+              positioning context here and the desk wrapper below starts its
+              content 3.5rem down. The landing page renders its own header
+              inside <main> instead.
+            */}
             {landing ? null : (
               <Header
                 onOpenSearch={() => setSearchOpen(true)}
@@ -376,8 +382,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   The app's desk: the page grain, inside the scroller so it
                   moves with the content, once per page — a second transparent
                   grain layer inside it would double the strength. The app
-                  Header and the drawer sit outside <main> and paint their own
-                  over opaque paper (.grain-paper). On / the landing header
+                  Header overlays it translucently and the drawer paints its own
+                  grain beside it, both outside <main>; pt-14 starts the page
+                  below the header it scrolls under. On / the landing header
                   lives in here, above the page and outside PageEnter so it
                   does not replay the page's rise.
                 */}
@@ -386,6 +393,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     "paper-grain relative",
                     fillMain ? "flex min-h-0 flex-1 flex-col" : "min-h-full",
                     landing && "snap-start",
+                    !landing && "pt-14",
                   )}
                 >
                   {landing ? (

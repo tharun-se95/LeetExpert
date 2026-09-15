@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { LOGO_CHIP, NAV_LINK, ROUND_CONTROL, WORDMARK } from "@/components/layout/headerChrome";
+import { Lamp } from "@/components/brand/Lamp";
+import { LOGO_LAMP_SIZE, NAV_LINK, ROUND_CONTROL, WORDMARK, TRANSLUCENT_PAPER } from "@/components/layout/headerChrome";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -42,7 +43,7 @@ export function LandingHeader({
         // at rest; once content passes beneath, a translucent paper keeps the
         // nav legible over it. The height never changes, so nothing below jumps.
         "print:hidden sticky top-0 z-30 border-b border-border py-6 transition-[background-color,box-shadow] duration-300",
-        scrolled && "bg-background/80 shadow-edge-bottom backdrop-blur-md",
+        scrolled && cn(TRANSLUCENT_PAPER, "shadow-edge-bottom"),
       )}
     >
       {/* Same centred container as HomePage (max-w-landing, px-6 md:px-16),
@@ -50,17 +51,19 @@ export function LandingHeader({
       <div className="mx-auto grid h-11 max-w-landing grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-6 md:h-10 md:px-16">
         <Link
           href="/"
-          className="flex min-w-0 items-center gap-2.5 justify-self-start rounded-[length:var(--radius-md)]"
+          className="lamp-link flex min-w-0 items-center gap-2.5 justify-self-start rounded-[length:var(--radius-md)]"
         >
-          <span className={LOGO_CHIP} aria-hidden>
-            {"</>"}
-          </span>
-          {/* sr-only below sm, not hidden: the chip is aria-hidden, so this
+          {/* sr-only below sm, not hidden: the lamp is aria-hidden, so this
               text is the link's only accessible name at every width. */}
           <span className={cn(WORDMARK, "max-sm:sr-only")}>
             <span className="text-foreground">leet</span>
             <span className="text-mark">Expert</span>
           </span>
+          {/* The green signal ends the name. / renders no app Header, so this
+              is the lamp a first visit sees and it carries the bloom.
+              sm:-ml-1 takes back the halo's transparent edge only where the
+              wordmark is visible beside it. */}
+          <Lamp size={LOGO_LAMP_SIZE} bloom className="sm:-ml-1" />
         </Link>
 
         <nav

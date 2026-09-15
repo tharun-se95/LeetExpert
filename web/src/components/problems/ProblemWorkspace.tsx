@@ -180,7 +180,7 @@ export function ProblemWorkspace({
           No paper of its own, like the root above: both are transparent over
           the app's grain desk, so the app header, this band and the drawer
           read as one sheet. A solid band here read as a second surface under
-          the grainy header. The IDE below stays solid.
+          the header. The IDE below stays solid.
         */}
         <header className="flex shrink-0 items-center gap-2 border-b border-border px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2">
           <Link
@@ -332,7 +332,7 @@ function MobileWorkspace({
   }, [mobileCoachTick, onTabChange]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-elevated">
+    <div className="flex min-h-0 flex-1 flex-col bg-elevated grain-paper [--grain-paper:var(--elevated)]">
       <TabList
         tabs={MOBILE_TABS}
         active={tab}
@@ -406,7 +406,7 @@ function LeftPane({
   const panelId = `${tabsId}-panel`;
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-elevated">
+    <div className="flex h-full min-h-0 flex-col bg-elevated grain-paper [--grain-paper:var(--elevated)]">
       <TabList
         tabs={CONTENT_TABS}
         active={tab}

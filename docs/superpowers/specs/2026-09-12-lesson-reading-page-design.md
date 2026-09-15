@@ -2,9 +2,11 @@
 
 **Date:** 2026-09-12
 **Scope:** DSA concept and practice lessons (`web/src/components/course/LessonView.tsx`).
-**Out of scope, tracked follow-up:** the Next.js course lesson page
+**Out of scope:** the Next.js course lesson page
 (`app/courses/nextjs/[module]/[chapter]/[lesson]/page.tsx`) has its own layout
-and does not use `LessonView`; it keeps today's layout until a separate pass.
+and does not use `LessonView`. It was listed here as a follow-up; the Next.js
+course has since been disabled (`app/courses/nextjs/layout.tsx` 404s every
+route), so there is nothing to follow up until that course is re-enabled.
 
 ## Problem
 
@@ -22,8 +24,9 @@ page").
 ### Layout
 
 - One centred column holds, top to bottom: breadcrumb/eyebrow/title/meta,
-  the interactive stage (if any), the reading page, prev/next. The column and
-  the table of contents are centred as a group.
+  the interactive stage (if any), the reading page, prev/next. The "On this
+  page" contents rail beside it was disabled on DSA lessons at the owner's
+  request (2026-09-12), so the column centres on its own.
 - **On the desk:** header, stage, prev/next. The stage stays a lifted card.
 - **On the page (`.reading-page`):** markdown body, infographic, and the
   `afterMarkdown` slot (practice list + cheatsheet), plus any quiz authored as
@@ -80,8 +83,19 @@ well in the page instead of a lift off it.
   fullscreen dialog — not portaled, so the shadow scope rule excludes
   `[role="dialog"]`), `lib/course/problemDifficulty.ts` (only the problems-hub
   filter chip; reached via a sibling export `PracticeProblemsList` imports).
-- A lesson that opens on a chapter drops that first `h2`'s top margin inside
-  the page — otherwise 81px sat above the first hairline against 45px sides.
+- The heading that opens the page carries no hairline and none of the
+  hairline's spacing. This is not a reading-page rule:
+  `.handbook-prose > h2:first-child:not(.chapter-heading)` (and the quiz's
+  opening `.chapter-rule`) drop `border-top`, `padding-top` and `margin-top`
+  for every prose body — problem tabs, reading pages, roadmap and callout
+  bodies. Commit `8c9ec9d`, guarded by "the heading that opens a prose body
+  carries no hairline". It replaced this spec's original patch,
+  `.reading-page .handbook-prose > h2:first-child { margin-top: 0 }`, which
+  fixed the stacked gap (81px above the first hairline against 45px sides)
+  but still drew that hairline under the page's top edge, a divider with
+  nothing above it. Measured after, at 1440px: first heading 0 margin,
+  padding and border, 39px below the page edge; later headings keep their
+  1px rule.
 - Unaffected: table headers (`bg-surface`), code blocks (`bg-code-editor`),
   callouts (role surfaces), `.viz-stage` (transparent gradient), inline
   VizPlayer (stacks; the 34rem split is fullscreen-only). `ConceptMindMap`

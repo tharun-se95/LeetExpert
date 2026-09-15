@@ -52,15 +52,44 @@ describe("text over the desk grain", () => {
     ["light", light],
     ["dark", dark],
   ] as const) {
-    it(`clears AA at the worst grain pixel in ${theme}`, () => {
-      const paper = rgb(resolve(t, "background"));
+    it(`clears AA at the worst grain pixel on the desk and the problem panes in ${theme}`, () => {
       const opacity = Number(resolve(t, "grain-opacity"));
       expect(opacity).toBeGreaterThan(0);
-      for (const ink of ["foreground", "muted", "mark", "accent", "good", "bad", "warn", "info"]) {
-        const colour = rgb(resolve(t, ink));
-        const grey = luminance(colour) < luminance(paper) ? 0 : 255;
-        const worst = paper.map((p) => p * (1 - opacity) + grey * opacity);
-        expect(contrast(colour, worst), `${theme} --${ink}`).toBeGreaterThanOrEqual(4.5);
+      // --background is the desk; --elevated is the problem panes' grain paper.
+      for (const surface of ["background", "elevated"]) {
+        const paper = rgb(resolve(t, surface));
+        for (const ink of ["foreground", "muted", "mark", "accent", "good", "bad", "warn", "info"]) {
+          const colour = rgb(resolve(t, ink));
+          const grey = luminance(colour) < luminance(paper) ? 0 : 255;
+          const worst = paper.map((p) => p * (1 - opacity) + grey * opacity);
+          expect(contrast(colour, worst), `${theme} --${ink} on --${surface}`).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    });
+  }
+});
+
+describe("text over the translucent chrome", () => {
+  // TRANSLUCENT_PAPER (headerChrome.ts) is page paper at an opacity over
+  // whatever scrolls beneath. The darkest real content is a code block
+  // (--code-editor); --elevated and the page itself bound it on the other side.
+  const chrome = readFileSync(join(__dirname, "..", "src", "components", "layout", "headerChrome.ts"), "utf8");
+  const percent = chrome.match(/TRANSLUCENT_PAPER\s*=\s*"bg-background\/(\d+) /)?.[1];
+
+  for (const [theme, t] of [
+    ["light", light],
+    ["dark", dark],
+  ] as const) {
+    it(`keeps header text AA over any content beneath in ${theme}`, () => {
+      expect(percent, "TRANSLUCENT_PAPER opacity").toBeDefined();
+      const alpha = Number(percent) / 100;
+      const paper = rgb(resolve(t, "background"));
+      for (const under of ["code-editor", "elevated", "background"]) {
+        const beneath = rgb(resolve(t, under));
+        const mix = paper.map((p, i) => alpha * p + (1 - alpha) * beneath[i]);
+        for (const ink of ["foreground", "muted"]) {
+          expect(contrast(rgb(resolve(t, ink)), mix), `${theme} --${ink} over --${under}`).toBeGreaterThanOrEqual(4.5);
+        }
       }
     });
   }
