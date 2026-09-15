@@ -174,7 +174,7 @@
   --info-line: var(--hue-blue-3);
   /*
     Callout tints (spec 2026-09-13 §5, treatment B): palette level 1 mixed
-    into the card — 50% here, 70% in the dark theme. Measured on --elevated: steps
+    into the card — 50% here, 70% in the dark theme. Measured on the card (--elevated), steps
     1.16–1.23 light, 1.16–1.28 dark (dark mistake 1.156, the tightest);
     labels ≥ 5.15:1; body ≥ 9.97:1. Fallback A, the owner's declared
     alternative: set these five to transparent. Tip's steel has no palette

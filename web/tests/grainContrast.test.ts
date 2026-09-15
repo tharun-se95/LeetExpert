@@ -9,7 +9,12 @@ import { join } from "node:path";
  * clear AA against the worst pixel: the one pushed toward the ink itself.
  * Recomputed from the tokens so a stronger grain or a new paper fails here.
  */
-const css = readFileSync(join(__dirname, "..", "src", "app", "globals.css"), "utf8");
+// Comments are stripped first: a comment that happens to read `--token: …;`
+// would otherwise redefine that token here, since the last match wins.
+const css = readFileSync(join(__dirname, "..", "src", "app", "globals.css"), "utf8").replace(
+  /\/\*[\s\S]*?\*\//g,
+  "",
+);
 const split = css.indexOf("\n.dark {");
 const tokens = (block: string) =>
   Object.fromEntries(
