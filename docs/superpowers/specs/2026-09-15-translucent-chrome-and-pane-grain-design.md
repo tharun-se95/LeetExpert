@@ -88,3 +88,20 @@ Gate: tsc, lint, vitest, build.
 - **Landing bullet:** 80% becomes `TRANSLUCENT_PAPER` (90%).
 - **Grain bullet:** remove the app header and pinned row from the `.grain-paper` list and add the problem panes. The app header sentence becomes "overlays the page, translucent 90% with blur and the edge shadow".
 - **Shadow bullet:** "The app header carries no shadow" becomes "the app header's edge shadow falls on the page scrolling under it".
+
+---
+
+## 7. Amendment (owner, 2026-09-15): the drawer row at rest
+
+**Found in browser verification:** with nothing scrolled under it, the translucent pinned row read as a lighter strip against the rail. Flat 90% paper is lighter than the rail's grainy paper.
+
+**Decision:** follow the landing header's pattern.
+- **At rest,** the row is grainy paper like the rail: `bg-background grain-paper`, inheriting the rail's `--grain-paper`.
+- **Once rows scroll under it,** the row is `TRANSLUCENT_PAPER`. There is still no shadow and no `border-b`.
+- **`CourseNavTree`** learns `scrolled` from a 1px sentinel at the top of the nav, observed with `IntersectionObserver({ root: nav })`. It does not use a scroll listener, because a drawer restored mid-scroll fires no scroll event.
+  - It observes only when `onClose` is set. The mobile sheet has no pinned row.
+  - It passes `scrolled` to `CourseNavPanel`, whose new `scrolled?: boolean` prop defaults to false.
+
+**Tests:**
+- `courseNavPanel.test.tsx`: the row is grainy paper at rest and translucent when `scrolled`. `CourseNavTree` uses an `IntersectionObserver` rooted at the nav and no scroll listener.
+- `paperGrain.test.ts`: the allowlist counts `CourseNavPanel` 1 again.
