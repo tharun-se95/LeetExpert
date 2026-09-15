@@ -6,8 +6,10 @@ the status colours (`--good`, `--bad`, `--warn`, `--info`, `--insight`) and thei
 `*-surface` fills moved onto it, a checked-in generator, and the tests that guard
 both. Callouts are spec 2 (`2026-09-13-callout-system-design.md`, revised the same
 day); family colours are spec 3 (not yet written).
-**Status:** proposed — every decision below was made by the owner in brainstorming
-on 2026-09-14. Preview: "Contribution Green Palette" artifact.
+**Status:** implemented 2026-09-14 (merged as b87f88c). Amended 2026-09-15: lines
+are generated grain-safe and sit only on `--elevated` (§4.3), an owner decision
+after the problem panes gained paper grain. Every decision below was made by the
+owner in brainstorming. Preview: "Contribution Green Palette" artifact.
 
 ---
 
@@ -74,7 +76,8 @@ display limit, not a tuning choice.
 
 For each hue *h* and level *n*, `--hue-h-n` is defined in `:root` with the light
 value and redefined in `.dark` with the dark value; `--hue-h-ink` likewise holds
-the light text colour and the dark level 4. They replace `--press-green`,
+the light text colour and the dark level 4, and `--hue-h-line` the colour for
+3:1 lines (§4.3). They replace `--press-green`,
 `--press-red`, `--press-amber`, `--press-insight` and `--tone-sky` as the source of
 status colour. Primitives are not mapped into `@theme` in this spec: components
 keep using semantic names, and spec 3 exposes what families need.
@@ -93,18 +96,35 @@ component change.
 | `--info` | blue | `#055bb1` | `#7ab5ff` |
 | `--insight` | yellow | `#6e5c05` | `#d1af00` |
 | `--{role}-surface` | same hue | level 1 | level 1 |
-| `--{role}-line` (new) | same hue | level 3 | level 4 |
+| `--{role}-line` (new) | same hue | `--hue-h-line`: level 3, darkened only where grain requires (§4.3) | `--hue-h-line`: level 4 |
 
 `--{role}-line` is for rules, borders and strokes that must clear the 3:1 non-text
 floor. It is mapped into `@theme` as `--color-{role}-line`.
 
 ### 4.3 Where lines may sit
 
-Light level 3 clears 3:1 on `--elevated` (3.32–3.86) and `--background`
-(3.01–3.50) but **not** on `--code` (2.72–3.17) or `--surface` (2.44–2.84). A
-`*-line` token is only for content on `--elevated` or `--background`; on a
-recessed surface use the text colour. Both callout layouts measured on
-2026-09-13 paint on `--elevated`.
+Light level 3 clears 3:1 on flat `--elevated` (3.32–3.86) and `--background`
+(3.01–3.50) but **not** on `--code` (2.72–3.17) or `--surface` (2.44–2.84).
+
+**Amended 2026-09-15.** The problem panes became `--elevated` with paper grain
+(`2026-09-15-translucent-chrome-and-pane-grain-design.md`). A line is weakest at
+the worst grain pixel — the paper pushed toward black (toward white in dark) by
+`--grain-opacity` (0.067) — and there light level 3 green fell to 2.86:1, under
+the floor, on every problem page's Constraints callout. So `--hue-h-line` is
+generated (`lineColour` in `palette.ts`):
+
+- **Light:** level 3, with OKLCH lightness lowered in 0.002 steps at the same hue
+  and chroma (gamut-mapped), only until it clears 3:1 at the worst grain pixel on
+  `--elevated`. Today two hues change: green `#30a14e` → `#2b9d4a` (3.00:1 on
+  grain, 3.49:1 flat) and cyan `#009ba2` → `#00989f` (3.02:1). The other six keep
+  level 3 (3.05–3.33:1 on grain).
+- **Dark:** level 4, which clears 5.43:1 or more at the worst grain pixel.
+
+A `*-line` sits **only on `--elevated`**, with or without grain. The grainy desk
+(`--background`) would need every hue darkened, and no line lives there: the only
+consumer is the callout, which paints on `--elevated`. On a recessed surface use
+the text colour. The owner chose this over drawing callout rules in the label
+colour, to keep the approved brighter rules.
 
 ## 5. Measured
 
@@ -120,7 +140,8 @@ elevated, code, sunk; dark: the same four):
 | insight | 4.83 | 7.07 | 4.41 / 5.41 |
 
 Floors: text ≥ 4.5:1 on every surface; text on its own `*-surface` ≥ 3:1 (the
-existing test's large-text floor); lines ≥ 3:1 on `--elevated` and `--background`.
+existing test's large-text floor); lines ≥ 3:1 at the worst grain pixel on
+`--elevated` (§4.3).
 `good` has the least margin (4.55).
 
 ### 5.1 What learners will notice
@@ -137,9 +158,13 @@ existing test's large-text floor); lines ≥ 3:1 on `--elevated` and `--backgrou
 ## 6. Generator and tests
 
 - **Create `web/src/lib/visual/palette.ts`** — exports the GitHub anchors, the hue
-  angles, `ramp(hue, theme): string[]` (levels 1–4) and `textInk(hue, theme)`,
-  implementing §2 with OKLCH ↔ sRGB conversion and gamut mapping. It has no React
-  or DOM imports.
+  angles, `ramp(hue, theme): string[]` (levels 1–4), `textInk(hue, theme)` and
+  `lineColour(hue, theme)` (§4.3), implementing §2 with OKLCH ↔ sRGB conversion
+  and gamut mapping. It mirrors the light card (`--elevated`) and
+  `--grain-opacity`, and a test checks both mirrors against `globals.css`. It has
+  no React or DOM imports.
+- **`grainContrast.test.ts`** (amended 2026-09-15): every `*-line` and
+  `--advice-line` clears 3:1 at the worst grain pixel on `--elevated`, both themes.
 - **Create `web/tests/palette.test.ts`:**
   1. `ramp` at the green's hue returns GitHub's eight colours exactly.
   2. Every `--hue-h-n` and `--hue-h-ink` in `globals.css` (`:root` and `.dark`)
@@ -161,7 +186,7 @@ existing test's large-text floor); lines ≥ 3:1 on `--elevated` and `--backgrou
 CLAUDE.md §4: replace "Status text inks are AA-darkened from sheet
 Success/Warning/Error fills" with the palette rule (derived from GitHub's
 contribution ramp; `palette.ts` is the source; light text at max in-gamut chroma;
-lines only on elevated or background).
+lines generated grain-safe and only on `--elevated`, amended 2026-09-15).
 
 ## 8. Out of scope
 

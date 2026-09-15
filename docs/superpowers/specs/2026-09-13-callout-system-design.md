@@ -1,14 +1,15 @@
 # Callout system — eight callouts, one job each
 
 **Date:** 2026-09-13 · **Revised:** 2026-09-14 (treatment B on the contribution
-green palette; supersedes the washes-on-two-types design)
+green palette; supersedes the washes-on-two-types design) · **Amended:** 2026-09-15
+(rules on the grainy problem panes, §5.3)
 **Scope (spec 2 of 3):** the callout *system* — `Callout.tsx`, the callout branches
 of `Markdown.tsx`, `highlightBlocks.ts`'s non-code fence list, `extractThesis.ts`,
 the callout tint tokens in `globals.css`, and their tests. Colours come from spec 1,
 `2026-09-14-contribution-green-palette-design.md`, which must land first. Rewriting
 lesson content to use the system is a later content spec.
-**Status:** proposed — decisions made by the owner in brainstorming on 2026-09-13
-and 2026-09-14.
+**Status:** implementation in progress on branch `callout-b` — decisions made by the
+owner in brainstorming on 2026-09-13, 2026-09-14 and 2026-09-15.
 
 ---
 
@@ -83,7 +84,9 @@ Watch out `WarningCircle`, Goal `Target`, Constraints `ListChecks`, Tip `Lightbu
 Every labelled callout (not Aside, not Hint, not the plain blockquote) gets:
 
 - a **tint** background, `--callout-tint-{category}`;
-- a **3px left rule** in the category's `--{role}-line` (light level 3, dark level 4);
+- a **3px left rule** in the category's `--{role}-line` — spec 1's generated,
+  grain-safe line: light level 3, darkened only where grain requires; dark level 4
+  (§5.3);
 - a **label and icon** in the category's text colour `--{role}` (bold, uppercase,
   `0.7rem`), body text in ink.
 
@@ -152,6 +155,33 @@ steps 1.15–1.30 off the card in both themes; Watch out's distinction comes fro
 hue (the only red callout), not its strength.* If the owner wants the old rule,
 the dark advice tint must drop below 70%.
 
+### 5.3 On the grainy problem panes (amended 2026-09-15)
+
+Since 01b778b the problem page's panes are `--elevated` with paper grain, and the
+Goal, Constraints and Tip callouts render there. Tints are opaque mixes, so they
+cover the grain; labels and body keep §5.2's ratios. Rules sit beside grainy
+paper, so their 3:1 floor is taken at the worst grain pixel: the paper pushed
+toward black (toward white in dark) by `--grain-opacity`, 0.067. Measured on the
+merged tokens:
+
+| Category | Light rule · flat · worst grain | Dark rule · worst grain |
+| --- | --- | --- |
+| understanding | `#a18600` · 3.54 · 3.05 | `#d1af00` · 5.76 |
+| mistake | `#d75b56` · 3.80 · 3.28 | `#ff8b83` · 5.43 |
+| context | `#3d89e4` · 3.56 · 3.07 | `#7ab5ff` · 5.79 |
+| requirement | `#2b9d4a` · 3.49 · 3.00 (was `#30a14e` · 3.32 · **2.86**) | `#39d353` · 6.22 |
+| advice | `#64748b` · 4.76 · 4.10 | `#cbd5e1` · 8.28 |
+
+Before this amendment light Constraints fell to 2.86:1 on every problem page. The
+owner chose generated grain-safe lines (spec 1 §4.3) over drawing rules in the
+label colour, keeping the approved brighter rules; only green changes, by an
+imperceptible 0.012 of OKLCH lightness. The margins stay thin (3.00–3.07), which is
+why the floor is asserted in `grainContrast.test.ts`, not just recorded here.
+
+The plain blockquote's `--rule-strong` hairline measures 1.44:1 flat and 1.43:1 on
+grain in light (1.74 / 1.71 dark). It separates a quotation from prose; it is not a
+boundary a reader must find, and carries no 3:1 floor.
+
 ## 6. Component changes
 
 ### 6.1 `Callout.tsx`
@@ -193,8 +223,8 @@ then first blockquote, else empty.
 
 CLAUDE.md §3: the job column and density rule. CLAUDE.md §4: colour names the kind
 of message; every labelled callout carries a `--callout-tint-*` (fallback A: set
-them transparent); rules use `*-line` and sit on `--elevated`/`--background` only;
-body inherits prose size.
+them transparent); rules use spec 1's grain-safe `*-line` and sit on `--elevated`
+only; body inherits prose size.
 
 ## 8. Tests
 
@@ -216,6 +246,14 @@ Each new or changed test is shown failing first (CLAUDE.md §2).
 5. **New `tests/callout.test.tsx`** (`renderToStaticMarkup`) — each fence renders
    its label; `>` and legacy emoji blockquotes render unlabelled; `note` is not a
    callout.
+6. **`grainContrast.test.ts`** (amended 2026-09-15) — every `*-line` and
+   `--advice-line` clears 3:1 at the worst grain pixel on `--elevated`, both
+   themes. Its token parser now strips CSS comments: this spec's own tint comment,
+   "Measured on --elevated: steps …;", once read as a declaration and redefined
+   light `--elevated` there, failing both light tests.
+7. **`palette.test.ts`** — `lineColour` clears 3:1 at the worst grain pixel,
+   keeps level 3 when it already does and darkens minimally when it does not, uses
+   level 4 in dark, and its mirrored card and grain strength match `globals.css`.
 
 ## 9. Verification
 
@@ -223,7 +261,7 @@ Each new or changed test is shown failing first (CLAUDE.md §2).
 `valid-palindrome` (Goal, Constraints, Tip) and `the-call-stack-and-base-cases`
 (blockquote), both themes, with a temporary Key idea / Watch out / Mental model
 fence that is reverted; keyboard-focus the copy button; confirm computed tint and
-rule colours match §5.2.
+rule colours match §5.2 on the reading sheet and §5.3 on the grainy problem pane.
 
 ## 10. Out of scope
 
@@ -233,5 +271,4 @@ rule colours match §5.2.
 - **Palette tokens and status colours** — spec 1. **Family colours** — spec 3.
 
 **Sequencing:** spec 1 lands first (this spec reads `--hue-*`, `--{role}-line` and
-the new status colours). The implementation plan written on 2026-09-14 against the
-superseded design is obsolete and will be rewritten.
+the new status colours). Plan: `docs/superpowers/plans/2026-09-14-callout-system-b.md`.
