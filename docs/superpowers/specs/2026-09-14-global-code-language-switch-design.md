@@ -2,7 +2,10 @@
 
 **Date:** 2026-09-14
 **Status:** approved 2026-09-14; revised during planning (§3 pre-paint
-mechanism, §4 phone sizing) after checking Next 16.2 and measuring the header
+mechanism, §4 phone sizing). Revised again 2026-09-15 after the header was
+restyled (lamp logo, full-ink underlined nav, round hairline controls,
+translucent overlay): §4's switch look and phone placement, re-measured, and
+§3's script placement after the lamp's own boot script.
 **Replaces:** the per-surface language tabs in lesson code blocks
 (`CodeTabs`), viz tracer code panels (`CodePanel`) and the sandbox editor
 (`Sandbox`).
@@ -36,8 +39,8 @@ page dynamic instead of static); TypeScript in the sandbox (a runner and
 - Persisted in `localStorage` under `dsa-code-lang`. Any other stored value,
   or storage that throws, resolves to `"python"`; the switch still works for
   the session in memory.
-- **First paint.** A plain inline `<script>`, the first child of `<body>` in
-  the root layout, copies the stored value onto `<html data-code-lang="…">`
+- **First paint.** A plain inline `<script>` at the top of `<body>` in the root
+  layout, right after the lamp logo's boot script (which must stay first), copies the stored value onto `<html data-code-lang="…">`
   while the HTML is still being parsed — before any code block below it is
   painted. next-themes already uses this technique on these pages, and
   `<html>` already has `suppressHydrationWarning`. **Not** `next/script`
@@ -56,24 +59,37 @@ page dynamic instead of static); TypeScript in the sandbox (a runner and
 
 ## 4. The header switch
 
-- Component: `src/components/layout/CodeLangSwitch.tsx`, rendered by
-  `Header.tsx` inside the "Product modes" nav after Practice.
-- **≥ 640px:** a two-option segmented control, "Python | JS/TS", each option
-  with its language mark. `role="radiogroup"` with an accessible name
-  ("Code language"); options are `role="radio"` with `aria-checked`; arrow
-  keys move and select; roving `tabIndex`; visible focus ring.
-- **< 640px:** one button showing the current mark, the size of the theme
-  toggle beside it (`h-8 w-8`: 26px at the 13px root, above the 24px WCAG
-  2.5.8 target). Tapping toggles. `aria-label` names the current language and
-  the one it switches to.
-- **Phone header budget (measured at 320px, 13px root).** Today: left 71.5px
-  (84.2 with the wordmark), nav 130.8, right 66.6, gaps 6.5, padding 9.75.
-  Adding the toggle does not fit, so below 640px the side columns become
-  `auto` instead of equal `1fr` tracks, padding / gaps / nav link padding
-  tighten one step, and the wordmark hides below 360px on pages without the
-  lessons menu (it already hides below 640px on pages with it).
-- Shown wherever the Lessons / Practice nav shows (DSA pages and the landing
-  page). Hidden on the Next.js course, which is TypeScript-only.
+Revised 2026-09-15 for the restyled header (owner chose both options below).
+
+- **Components** (`src/components/layout/CodeLangSwitch.tsx`):
+  - `CodeLangSwitch`: the ≥ 640px pill.
+  - `CodeLangToggle`: the < 640px button.
+  - Each has a props-only view (`CodeLangSwitchView`, `CodeLangToggleView`) for render tests.
+  - Both are rendered by the app `Header` and by `LandingHeader`, and hidden on the Next.js course, which is TypeScript-only.
+- **≥ 640px, a round hairline pill after Practice** in the "Product modes" nav.
+  - One `rounded-full border border-border` pill, `h-10` like search, split in two: "Py Python | JS JS/TS", each option with its language mark.
+  - The chosen side is `bg-surface` with ink text; the other is `text-muted` and turns ink on hover.
+  - `role="radiogroup"` named "Code language"; options are `role="radio"` with `aria-checked`, arrow and Home/End keys move and select, roving `tabIndex`.
+  - Focus is the global `:focus-visible` outline (no ring utilities; see `headerChrome.ts`).
+- **< 640px, a round toggle beside search**: `ROUND_CONTROL` at `h-11 w-11` (the search and theme toggles' size), first in the right-hand cluster, showing the current language's mark. Tapping switches. Its `aria-label` names the current language and the one it switches to.
+- **Phone header budget** (measured 2026-09-15 by injecting the toggle into the live header, 13px root):
+
+  | Width | Lesson / problem page | Landing page |
+  | --- | --- | --- |
+  | 375px | fits unchanged, 1px spare | overflows 12px |
+  | 360px | overflows 6.5px | overflows 19.5px |
+  | 320px | overflows 26.5px | overflows 39.5px |
+
+  So below `sm` both headers tighten:
+  - side columns `grid-cols-[auto_minmax(0,1fr)_auto]` instead of equal `1fr` tracks (the nav centres in the middle track);
+  - grid gap `gap-1.5`;
+  - right cluster `gap-1`;
+  - nav gap `gap-4`.
+
+  The app header's padding steps to `px-2`. With all of that, every page measured fits at 320px with ≥ 4.4px spare.
+
+  The landing header keeps its `px-6` page gutter, so its lamp stays on the hero's edge. Computed at 320px, that leaves 15px spare; the Task 6 browser check confirms it, and falls back to `px-2` only if it fails.
+- From `sm` up, both headers keep today's classes.
 
 ## 5. Surfaces
 

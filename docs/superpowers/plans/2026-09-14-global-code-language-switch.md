@@ -4,7 +4,7 @@
 
 **Goal:** One Python | JS/TS switch in the header replaces the per-surface language tabs in lesson code blocks, viz code panels and the sandbox.
 
-**Architecture:** A plain inline script, first in `<body>`, copies the stored choice onto `<html data-code-lang>` while the HTML parses. Lesson code blocks server-render both languages and CSS hides the unchosen one, so pages stay static with no flash. Interactive surfaces (viz panels, the sandbox, the switch itself) read one `useSyncExternalStore` store in `src/lib/codeLang.ts`.
+**Architecture:** A plain inline script, at the top of `<body>`, after the lamp's boot script, copies the stored choice onto `<html data-code-lang>` while the HTML parses. Lesson code blocks server-render both languages and CSS hides the unchosen one, so pages stay static with no flash. Interactive surfaces (viz panels, the sandbox, the switch itself) read one `useSyncExternalStore` store in `src/lib/codeLang.ts`.
 
 **Tech Stack:** Next.js 16.2.10 App Router (Turbopack), React 19.2, Tailwind v4, Vitest 4 (node by default; jsdom per file via `// @vitest-environment jsdom`), Playwright MCP for browser checks.
 
@@ -19,7 +19,7 @@
 - The pre-paint script is a plain inline `<script>` in the root layout, **never** `next/script` `beforeInteractive`. In this Next version the App Router queues `beforeInteractive` in `self.__next_s` and `appBootstrap` runs it after the JS chunks load (`node_modules/next/dist/client/app-bootstrap.js:54`), which is after first paint.
 - Pages stay statically generated: no cookies, headers or other request data in any page or layout.
 - The switch shows wherever Lessons / Practice shows; it is hidden on the Next.js course branch of `Header`.
-- Phone toggle `h-8 w-8` (26px at the 13px root, ≥ 24px target); visible `focus-visible` ring on every control.
+- Header controls (owner, 2026-09-15): ≥ 640px a round hairline pill after Practice (`rounded-full border border-border h-10`, chosen side `bg-surface` + ink); < 640px a `ROUND_CONTROL` toggle at `h-11 w-11` first in the right cluster. Focus is the global `:focus-visible` outline — no ring utilities.
 - Labels on `.code-surface` headers use `--tok-name` ink: that header sits on `--code-editor`, whose brightness is inverted from the page, so `--muted` is wrong there.
 - All colour through tokens; the only hex allowed is brand colour in `src/components/kit/languageMarks.tsx`.
 - Comments explain why, not what. Match surrounding conventions. Do not run Prettier (not a project dependency; it reformats unrelated lines).
@@ -222,10 +222,10 @@ describe("the pre-paint script", () => {
     ).toBe(0);
   });
 
-  it("runs while the HTML parses, first in <body>, not from Next's bootstrap", () => {
+  it("runs while the HTML parses, right after the lamp's boot script, not from Next's bootstrap", () => {
     const layout = readFileSync(join(__dirname, "..", "src", "app", "layout.tsx"), "utf8");
     expect(layout).toMatch(
-      /<body className="[^"]*">\s*\{\/\*[\s\S]*?\*\/\}\s*<script\s+id="code-lang-init"\s+dangerouslySetInnerHTML=\{\{ __html: CODE_LANG_INIT_SCRIPT \}\}\s*\/>/,
+      /<script dangerouslySetInnerHTML=\{\{ __html: LAMP_BOOT_SCRIPT \}\} \/>\s*\{\/\*[\s\S]*?\*\/\}\s*<script\s+id="code-lang-init"\s+dangerouslySetInnerHTML=\{\{ __html: CODE_LANG_INIT_SCRIPT \}\}\s*\/>/,
     );
     expect(layout).not.toContain("beforeInteractive");
   });
@@ -349,20 +349,20 @@ import { CODE_LANG_INIT_SCRIPT } from "@/lib/codeLangScript";
 and replace
 
 ```tsx
-      <body className="min-h-full bg-background font-sans text-foreground">
+        <script dangerouslySetInnerHTML={{ __html: LAMP_BOOT_SCRIPT }} />
         {/* Site-wide entity graph.
 ```
 
 with
 
 ```tsx
-      <body className="min-h-full bg-background font-sans text-foreground">
+        <script dangerouslySetInnerHTML={{ __html: LAMP_BOOT_SCRIPT }} />
         {/* Sets <html data-code-lang> from storage while the HTML still
             parses, so the lesson code blocks below paint in the learner's
-            language. Deliberately not next/script beforeInteractive: the
-            App Router queues that and runs it from Next's bootstrap once the
-            JS chunks load, after first paint. next-themes' own script works
-            the same way as this one. */}
+            language. After the lamp's boot script, which must stay first.
+            Deliberately not next/script beforeInteractive: the App Router
+            queues that and runs it from Next's bootstrap once the JS chunks
+            load, after first paint. */}
         <script
           id="code-lang-init"
           dangerouslySetInnerHTML={{ __html: CODE_LANG_INIT_SCRIPT }}
@@ -1039,78 +1039,96 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 ---
 
-### Task 6: The header switch
+### Task 6: The header switch (revised 2026-09-15 for the restyled header)
 
 **Files:**
 - Create: `web/src/components/layout/CodeLangSwitch.tsx`
-- Modify: `web/src/components/layout/Header.tsx:50-59, 81-89, 126`
+- Modify: `web/src/components/layout/Header.tsx` (`<header>` grid, `<nav>`, right cluster), `web/src/components/landing/LandingHeader.tsx` (container grid, `<nav>`, right cluster)
 - Test: `web/tests/codeLangSurfaces.test.tsx` (append)
 
 **Interfaces:**
-- Consumes: `CodeLang`, `useCodeLang` (Task 1); `LanguageMark` from `web/src/components/kit/languageMarks.tsx`; `cn` from `web/src/lib/utils.ts`.
-- Produces: `CodeLangSwitchView({ value, onChange }: { value: CodeLang; onChange: (next: CodeLang) => void })` (props-only, testable) and `CodeLangSwitch()` (wired to the store).
+- Consumes: `CodeLang`, `useCodeLang` (Task 1); `LanguageMark`; `ROUND_CONTROL` from `layout/headerChrome.ts`; `cn`.
+- Produces:
+  - `CodeLangSwitchView({ value, onChange }: { value: CodeLang; onChange: (next: CodeLang) => void })`
+  - `CodeLangToggleView({ value, onChange })` with the same props
+  - `CodeLangSwitch()` and `CodeLangToggle()`, wired to the store.
 
-- [ ] **Step 1: Write the failing tests**
-
-Add `import { CodeLangSwitchView } from "@/components/layout/CodeLangSwitch";` at the top of `web/tests/codeLangSurfaces.test.tsx`, then append:
+- [ ] **Step 1: Write the failing tests.** Add `import { CodeLangSwitchView, CodeLangToggleView } from "@/components/layout/CodeLangSwitch";` to the top of `web/tests/codeLangSurfaces.test.tsx`, then append:
 
 ```tsx
-describe("header code-language switch", () => {
-  const render = (value: "python" | "js") =>
+describe("header code-language controls", () => {
+  const pill = (value: "python" | "js") =>
     renderToStaticMarkup(<CodeLangSwitchView value={value} onChange={() => {}} />);
+  const toggle = (value: "python" | "js") =>
+    renderToStaticMarkup(<CodeLangToggleView value={value} onChange={() => {}} />);
 
-  it("is a named radio group with both choices", () => {
-    const html = render("python");
-    expect(html).toMatch(/role="radiogroup"[^>]*aria-label="Code language"/);
+  it("is a named radio group with both choices, as one round hairline pill", () => {
+    const html = pill("python");
+    const group = html.match(/<div[^>]*role="radiogroup"[^>]*>/)![0];
+    expect(group).toContain('aria-label="Code language"');
+    for (const c of ["rounded-full", "border", "border-border", "h-10", "hidden", "sm:inline-flex"]) {
+      expect(group).toMatch(new RegExp(`\\b${c.replace(":", "\\:")}(?=[\\s"])`));
+    }
     expect(html.match(/role="radio"/g)).toHaveLength(2);
     expect(html).toContain(">Python</button>");
     expect(html).toContain(">JS/TS</button>");
+    expect(html).not.toMatch(/focus-visible:ring/);
   });
 
-  it("marks the chosen option and gives it the only tab stop", () => {
-    const html = render("js");
-    expect(html).toMatch(/role="radio" aria-checked="false" tabindex="-1"[^>]*>[\s\S]*?Python<\/button>/);
-    expect(html).toMatch(/role="radio" aria-checked="true" tabindex="0"[^>]*>[\s\S]*?JS\/TS<\/button>/);
+  it("marks the chosen option, gives it the only tab stop, and fills only that side", () => {
+    const html = pill("js");
+    const python = html.match(/<button[^>]*>[\s\S]*?Python<\/button>/)![0];
+    const js = html.match(/<button[^>]*>[\s\S]*?JS\/TS<\/button>/)![0];
+    expect(python).toMatch(/aria-checked="false"[^>]*tabindex="-1"/);
+    expect(js).toMatch(/aria-checked="true"[^>]*tabindex="0"/);
+    expect(js).toMatch(/\bbg-surface\b/);
+    expect(python).not.toMatch(/\bbg-surface\b/);
   });
 
-  it("offers phones one toggle that names the current and next language", () => {
-    expect(render("python")).toContain('aria-label="Code language: Python. Switch to JS/TS"');
-    expect(render("js")).toContain('aria-label="Code language: JS/TS. Switch to Python"');
+  it("offers phones one round toggle that names the current and next language", () => {
+    const btn = toggle("python").match(/<button[^>]*>/)![0];
+    expect(btn).toContain('aria-label="Code language: Python. Switch to JS/TS"');
+    for (const c of ["rounded-full", "h-11", "w-11", "sm:hidden"]) expect(btn).toContain(c);
+    expect(toggle("js")).toContain('aria-label="Code language: JS/TS. Switch to Python"');
   });
 
-  it("sits after Practice, once, and not on the Next.js course", () => {
+  it("puts the pill after Practice and the toggle before search, in both headers, never on the Next.js course", () => {
     const header = read("components", "layout", "Header.tsx");
-    const curriculum = header.indexOf("Curriculum");
-    const practice = header.indexOf("Practice\n            </Link>");
-    const switchAt = header.indexOf("<CodeLangSwitch />");
-    expect(curriculum).toBeGreaterThan(0);
-    expect(practice).toBeGreaterThan(curriculum);
-    expect(switchAt).toBeGreaterThan(practice);
-    expect(header.indexOf("<CodeLangSwitch />", switchAt + 1)).toBe(-1);
+    const practice = header.indexOf("Practice\n");
+    expect(header.indexOf("<CodeLangSwitch />")).toBeGreaterThan(practice);
+    expect(header.indexOf("<CodeLangToggle />")).toBeLessThan(header.indexOf('aria-label="Search lessons and problems"'));
+    expect(header).toMatch(/\{showCodeLang \? <CodeLangSwitch \/> : null\}/);
+    expect(header).toMatch(/\{showCodeLang \? <CodeLangToggle \/> : null\}/);
+    const landing = read("components", "landing", "LandingHeader.tsx");
+    expect(landing.indexOf("<CodeLangSwitch />")).toBeGreaterThan(landing.indexOf("NAV.map"));
+    expect(landing.indexOf("<CodeLangToggle />")).toBeLessThan(landing.indexOf('aria-label="Search lessons and problems"'));
   });
 
-  it("keeps the phone header inside 320px", () => {
-    const header = read("components", "layout", "Header.tsx");
-    expect(header).toContain("grid-cols-[auto_minmax(0,1fr)_auto]");
-    expect(header).toContain('showLessonsMenu ? "max-sm:hidden" : "max-[359px]:hidden"');
+  it("tightens both headers below sm so the toggle fits a 320px phone", () => {
+    // Measured 2026-09-15 by injecting the toggle into the live header: without
+    // these, a lesson header overflowed 26.5px at 320px and the landing 39.5px.
+    const header = read("components", "layout", "Header.tsx").match(/<header className="([^"]*)"/)![1];
+    for (const c of ["grid-cols-[auto_minmax(0,1fr)_auto]", "sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]", "gap-1.5", "px-2", "sm:px-4"]) {
+      expect(header.split(/\s+/), c).toContain(c);
+    }
+    const landing = read("components", "landing", "LandingHeader.tsx").match(/className="(mx-auto grid[^"]*)"/)![1];
+    for (const c of ["grid-cols-[auto_minmax(0,1fr)_auto]", "sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]", "gap-1.5", "sm:gap-3", "px-6"]) {
+      expect(landing.split(/\s+/), c).toContain(c);
+    }
   });
 });
 ```
 
-- [ ] **Step 2: Run to verify they fail**
+- [ ] **Step 2: Run to verify they fail.** Run `npx vitest run tests/codeLangSurfaces.test.tsx -t "header code-language controls"`. Expected: FAIL, because `@/components/layout/CodeLangSwitch` does not resolve.
 
-Run: `npx vitest run tests/codeLangSurfaces.test.tsx -t "header code-language switch"`
-Expected: FAIL — cannot resolve `@/components/layout/CodeLangSwitch`.
-
-- [ ] **Step 3: Implement the switch**
-
-Create `web/src/components/layout/CodeLangSwitch.tsx`:
+- [ ] **Step 3: Implement the controls.** Create `web/src/components/layout/CodeLangSwitch.tsx`:
 
 ```tsx
 "use client";
 
 import { useRef, type KeyboardEvent } from "react";
 import { LanguageMark } from "@/components/kit/languageMarks";
+import { ROUND_CONTROL } from "@/components/layout/headerChrome";
 import { useCodeLang, type CodeLang } from "@/lib/codeLang";
 import { cn } from "@/lib/utils";
 
@@ -1120,9 +1138,11 @@ const OPTIONS: { value: CodeLang; label: string; mark: string }[] = [
 ];
 
 /**
- * Props-only view, so it renders in tests without the store. At ≥ 640px a
- * two-option radio group; below, one toggle the size of the theme toggle
- * (26px) — the phone header has room for that and no more (see Header).
+ * The header's code-language pill (≥ 640px): one round hairline pill, like
+ * search and the theme toggle beside it, split between the two languages. The
+ * chosen side takes the header's hover fill (--surface) and ink; the other
+ * stays muted. Focus is the global :focus-visible outline (headerChrome.ts).
+ * Props-only so it renders in tests without the store.
  */
 export function CodeLangSwitchView({
   value,
@@ -1133,8 +1153,6 @@ export function CodeLangSwitchView({
 }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const index = value === "js" ? 1 : 0;
-  const current = OPTIONS[index];
-  const other = OPTIONS[1 - index];
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     let next: number;
@@ -1150,48 +1168,62 @@ export function CodeLangSwitchView({
   };
 
   return (
-    <>
-      <div
-        role="radiogroup"
-        aria-label="Code language"
-        onKeyDown={onKeyDown}
-        className="hidden items-center gap-0.5 rounded-[length:var(--radius-md)] border border-border p-0.5 sm:inline-flex"
-      >
-        {OPTIONS.map((option, i) => {
-          const checked = i === index;
-          return (
-            <button
-              key={option.value}
-              ref={(el) => {
-                refs.current[i] = el;
-              }}
-              type="button"
-              role="radio"
-              aria-checked={checked}
-              tabIndex={checked ? 0 : -1}
-              onClick={() => onChange(option.value)}
-              className={cn(
-                "inline-flex min-h-8 items-center gap-1.5 rounded-[length:var(--radius-xs)] px-2 text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                checked
-                  ? "bg-pop font-semibold text-on-pop"
-                  : "text-muted hover:bg-surface hover:text-foreground",
-              )}
-            >
-              <LanguageMark language={option.mark} />
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
-      <button
-        type="button"
-        onClick={() => onChange(other.value)}
-        aria-label={`Code language: ${current.label}. Switch to ${other.label}`}
-        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-border text-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:hidden"
-      >
-        <LanguageMark language={current.mark} />
-      </button>
-    </>
+    <div
+      role="radiogroup"
+      aria-label="Code language"
+      onKeyDown={onKeyDown}
+      className="hidden h-10 items-center gap-0.5 rounded-full border border-border p-0.5 sm:inline-flex"
+    >
+      {OPTIONS.map((option, i) => {
+        const checked = i === index;
+        return (
+          <button
+            key={option.value}
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
+            type="button"
+            role="radio"
+            aria-checked={checked}
+            tabIndex={checked ? 0 : -1}
+            onClick={() => onChange(option.value)}
+            className={cn(
+              "inline-flex h-full items-center gap-1.5 rounded-full px-3 text-sm transition-colors",
+              checked ? "bg-surface font-medium text-foreground" : "text-muted hover:text-foreground",
+            )}
+          >
+            <LanguageMark language={option.mark} />
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * The phone toggle (< 640px): the nav row has no room for the pill (measured
+ * 2026-09-15), so one round control beside search shows the current mark and
+ * switches on tap.
+ */
+export function CodeLangToggleView({
+  value,
+  onChange,
+}: {
+  value: CodeLang;
+  onChange: (next: CodeLang) => void;
+}) {
+  const current = OPTIONS[value === "js" ? 1 : 0];
+  const other = OPTIONS[value === "js" ? 0 : 1];
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(other.value)}
+      aria-label={`Code language: ${current.label}. Switch to ${other.label}`}
+      className={cn(ROUND_CONTROL, "h-11 w-11 sm:hidden")}
+    >
+      <LanguageMark language={current.mark} />
+    </button>
   );
 }
 
@@ -1199,137 +1231,51 @@ export function CodeLangSwitch() {
   const [value, setValue] = useCodeLang();
   return <CodeLangSwitchView value={value} onChange={setValue} />;
 }
-```
 
-- [ ] **Step 4: Wire it into the header, with the phone layout budget**
-
-In `web/src/components/layout/Header.tsx`:
-
-1. Add `import { CodeLangSwitch } from "@/components/layout/CodeLangSwitch";` beside the other `@/components` imports.
-2. In `modeLinkClass`, replace `px-2 py-1.5` with `px-1.5 py-1.5 sm:px-2`.
-3. Replace
-
-```tsx
-    <header className="print:hidden shadow-edge-bottom sticky top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-elevated px-3 sm:gap-3 sm:px-4">
-```
-
-with
-
-```tsx
-    {/*
-      Phone budget, measured at 320px (13px root): left 71.5px (84.2 with the
-      wordmark), nav 130.8 plus the 27.6px language toggle, right 66.6. Equal
-      1fr side tracks need twice the wider side and overflow, so below sm the
-      sides are auto and the nav centres in the middle track (off true centre
-      by half the side difference, ~2.5px). Padding, gaps and nav link padding
-      tighten one step and the wordmark hides below 360px, leaving the widest
-      row ~313px of 320. From sm up the equal tracks truly centre the nav.
-    */}
-    <header className="print:hidden shadow-edge-bottom sticky top-0 z-40 grid h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 border-b border-border bg-elevated px-2 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-3 sm:px-4">
-```
-
-The comment sits inside the `return (` parentheses before `<header>`. JSX needs a single root there, so if the compiler rejects the comment in that position, move it to a `//` comment directly above `return (`.
-
-4. Replace
-
-```tsx
-            {/*
-              When the lessons menu button is present, drop the wordmark below sm
-              so left + centered modes + right icons fit ~375px without overlap.
-            */}
-            <span
-              className={cn(
-                "truncate text-sm font-semibold tracking-tight",
-                showLessonsMenu && "max-sm:hidden",
-              )}
-            >
-```
-
-with
-
-```tsx
-            {/*
-              The lessons menu button takes the wordmark's room below sm; pages
-              without it keep the wordmark down to 360px. Below that the row
-              holds the language toggle only without it (see the header budget).
-            */}
-            <span
-              className={cn(
-                "truncate text-sm font-semibold tracking-tight",
-                showLessonsMenu ? "max-sm:hidden" : "max-[359px]:hidden",
-              )}
-            >
-```
-
-5. Directly after the Practice link's `</Link>` (inside the DSA fragment, before `</>`), add:
-
-```tsx
-            <CodeLangSwitch />
-```
-
-- [ ] **Step 5: Run the tests, typecheck, lint**
-
-Run: `npx vitest run tests/codeLangSurfaces.test.tsx && npx tsc --noEmit && npx eslint src/components/layout/CodeLangSwitch.tsx src/components/layout/Header.tsx`
-Expected: PASS; no tsc output; eslint 0 problems.
-
-- [ ] **Step 6: Browser check — layout at every width, both page kinds**
-
-Run with Playwright `browser_run_code_unsafe`:
-
-```js
-async (page) => {
-  const browser = page.context().browser();
-  const out = [];
-  for (const path of ["/", "/courses/dsa/arrays/dynamic-arrays", "/courses/dsa/problems/valid-anagram"]) {
-    for (const width of [320, 360, 375, 640, 768, 1024]) {
-      const phone = width < 640;
-      const ctx = await browser.newContext({ viewport: { width, height: 800 }, isMobile: phone, hasTouch: phone });
-      const p = await ctx.newPage();
-      const warnings = [];
-      p.on("console", (m) => { if (/script/i.test(m.text())) warnings.push(m.text().slice(0, 160)); });
-      await p.goto(`http://localhost:3005${path}`);
-      await p.waitForTimeout(2500);
-      out.push(await p.evaluate(({ width, path, warnings }) => {
-        const header = document.querySelector("body header");
-        const [left, nav, right] = [...header.children].filter((el) => el.tagName !== "TEMPLATE");
-        const r = (e) => e.getBoundingClientRect();
-        const toggle = nav.querySelector('button[aria-label^="Code language:"]');
-        const group = nav.querySelector('[role="radiogroup"]');
-        return {
-          path, width,
-          overlapLeftNav: r(left).right > r(nav).left + 0.5,
-          overlapNavRight: r(nav).right > r(right).left + 0.5,
-          headerOverflows: header.scrollWidth > width,
-          toggleVisible: !!toggle && r(toggle).width > 0,
-          toggleSize: toggle ? [r(toggle).width, r(toggle).height] : null,
-          groupVisible: !!group && r(group).width > 0,
-          warnings,
-        };
-      }, { width, path, warnings }));
-      await ctx.close();
-    }
-  }
-  return out;
+export function CodeLangToggle() {
+  const [value, setValue] = useCodeLang();
+  return <CodeLangToggleView value={value} onChange={setValue} />;
 }
 ```
 
-Expected results:
-- No overlap and no overflow at every width on every path.
-- `toggleVisible` is true only below 640, with `toggleSize` about `[26, 26]`.
-- `groupVisible` is true at 640 and up.
-- `warnings` is empty (no React "script tag" warning from the inline script).
+- [ ] **Step 4: Wire the app header.** In `web/src/components/layout/Header.tsx`:
+  1. Add `import { CodeLangSwitch, CodeLangToggle } from "@/components/layout/CodeLangSwitch";`.
+  2. After `nextjsCurriculumActive`, add:
+     ```tsx
+       // The Next.js course is TypeScript-only: no language to choose there.
+       const showCodeLang = !(courseSlug === "nextjs" && routeCourse?.status === "available");
+     ```
+  3. In the `<header>` class, change `grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2` to `grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5`, change `px-3 sm:gap-3 sm:px-4` to `px-2 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-3 sm:px-4`, and add this comment above `return (`:
+     ```tsx
+       // Below sm the right cluster also holds the code-language toggle. Measured
+       // 2026-09-15 (13px root): with equal 1fr side tracks a lesson header
+       // overflowed 26.5px at 320px, so the sides size to their content, the
+       // nav centres in the middle track, and gaps and padding step down once.
+     ```
+  4. In the nav, change `gap-5 justify-self-center sm:gap-8` to `gap-4 justify-self-center sm:gap-8`, and add `{showCodeLang ? <CodeLangSwitch /> : null}` as the nav's last child, after the DSA/Curriculum branch.
+  5. In the right cluster, change `gap-1.5 justify-self-end sm:gap-2 md:gap-3` to `gap-1 justify-self-end sm:gap-2 md:gap-3`, and add `{showCodeLang ? <CodeLangToggle /> : null}` as its first child, before the search button.
 
-Then, in the Browser pane:
-1. Click each option and confirm that lesson blocks (`/courses/dsa/arrays/dynamic-arrays`), a viz panel (`/courses/dsa/prefix-sum/prefix-sum-basics`) and a sandbox (`/courses/dsa/problems/valid-anagram`) update live without a reload.
-2. On the sandbox, start a run and switch language while it runs. The run should stop and the results clear.
-3. Operate the radio group with Tab plus arrow keys. There should be a visible ring, and the selection should follow focus.
-4. Check both themes.
+- [ ] **Step 5: Wire the landing header.** In `web/src/components/landing/LandingHeader.tsx`:
+  1. Add the same import.
+  2. Container: change `grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-6` to `grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 px-6 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-3`. Keep `px-6`: it is the hero's gutter, and 320px has 15px spare by arithmetic, which Step 7 confirms.
+  3. Nav: change `gap-5` to `gap-4`, and add `<CodeLangSwitch />` after `{NAV.map(...)}`.
+  4. Right cluster: change `gap-2` to `gap-1`, and add `<CodeLangToggle />` as its first child.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 6: Run the tests, typecheck, lint.** Run `npx vitest run tests/codeLangSurfaces.test.tsx tests/appHeader.test.tsx tests/landingHeader.test.tsx tests/sidebarChrome.test.ts && npx tsc --noEmit && npx eslint src/components/layout/CodeLangSwitch.tsx src/components/layout/Header.tsx src/components/landing/LandingHeader.tsx`. Expected: PASS; no tsc output; eslint 0 problems.
+
+- [ ] **Step 7: Browser check.** Use Playwright against the worktree's dev server on port 3005.
+  - **Every page and width:** `/`, `/courses/dsa/arrays/dynamic-arrays` and `/courses/dsa/problems/valid-anagram`, at 320, 360, 375, 640, 768 and 1024px. For each, read the header's grid children and check:
+    - the left column's right edge ≤ the nav's left edge + 0.5, and the nav's right edge ≤ the right column's left edge + 0.5;
+    - no control is clipped past the viewport;
+    - the pill is visible from 640px, and the toggle only below.
+  - **If `/` fails at 320px with `px-6`:** change the landing container to `px-2 sm:px-6`, update the Step 1 test's `px-6` expectation to `px-2` and `sm:px-6`, and record the measurement in the spec.
+  - **Keyboard and live update:** Tab to the pill, use arrow keys, and confirm the global focus outline is visible. Switching updates a lesson's code blocks, a viz panel and a sandbox live. Check both themes.
+
+- [ ] **Step 8: Commit.**
 
 ```bash
-git add web/src/components/layout/CodeLangSwitch.tsx web/src/components/layout/Header.tsx web/tests/codeLangSurfaces.test.tsx
-git commit -m "feat(code-lang): global language switch in the header
+git add web/src/components/layout/CodeLangSwitch.tsx web/src/components/layout/Header.tsx web/src/components/landing/LandingHeader.tsx web/tests/codeLangSurfaces.test.tsx
+git commit -m "feat(code-lang): global language switch in both headers
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ```
@@ -1355,7 +1301,7 @@ In `CLAUDE.md` §4, after the "lessons drawer's tabs" bullet, add:
   (`CodeLangSwitch`) picks `python` or `js`; `js` means TypeScript where code
   is read (lesson blocks, viz panels) and JavaScript where it runs (the
   sandbox). No surface owns language tabs. `lib/codeLang.ts` is the store. A
-  plain inline script first in `<body>` (`lib/codeLangScript.ts`) sets
+  plain inline script at the top of `<body>`, after the lamp's boot script (`lib/codeLangScript.ts`) sets
   `<html data-code-lang>` from `localStorage` (`dsa-code-lang`) while the page
   parses — never `next/script` `beforeInteractive`, which the App Router runs
   from its bootstrap after first paint. Lesson code blocks server-render both
