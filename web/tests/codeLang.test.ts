@@ -128,6 +128,7 @@ describe("the pre-paint script", () => {
     expect(layout).toMatch(
       /<script dangerouslySetInnerHTML=\{\{ __html: LAMP_BOOT_SCRIPT \}\} \/>\s*\{\/\*[\s\S]*?\*\/\}\s*<script\s+id="code-lang-init"\s+dangerouslySetInnerHTML=\{\{ __html: CODE_LANG_INIT_SCRIPT \}\}\s*\/>/,
     );
-    expect(layout).not.toContain("beforeInteractive");
+    // Usage, not the word: the layout's own comment explains why it is not used.
+    expect(layout).not.toMatch(/strategy=["'{]\s*["']?beforeInteractive/);
   });
 });
