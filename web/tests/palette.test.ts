@@ -3,9 +3,12 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   GITHUB_RAMPS,
+  GRAIN_OPACITY,
   HUE_NAMES,
   LIGHT_TEXT_SURFACES,
+  LINE_SURFACE,
   contrastRatio,
+  lineColour,
   paletteCssDeclarations,
   ramp,
   textInk,
@@ -63,10 +66,49 @@ describe("palette tokens in globals.css", () => {
     for (const [selector, theme] of blocks) {
       const body = blockBody(css, selector);
       expect(body, `${selector} block not found`).not.toBe("");
-      const declared = [...body.matchAll(/--hue-[a-z]+-(?:[1-4]|ink):\s*#[0-9a-f]{6};/g)].map(
+      const declared = [...body.matchAll(/--hue-[a-z]+-(?:[1-4]|ink|line):\s*#[0-9a-f]{6};/g)].map(
         (m) => m[0].replace(/:\s*/, ": "),
       );
       expect(declared, `${selector} --hue tokens`).toEqual(paletteCssDeclarations(theme));
+    }
+  });
+});
+
+describe("grain-safe line colours", () => {
+  const worstGrainPixel = () =>
+    "#" +
+    [1, 3, 5]
+      .map((i) => Math.round(parseInt(LINE_SURFACE.slice(i, i + 2), 16) * (1 - GRAIN_OPACITY)))
+      .map((c) => c.toString(16).padStart(2, "0"))
+      .join("");
+
+  it("mirrors the light card and the grain strength from globals.css", () => {
+    // palette.ts cannot read CSS, so it keeps copies; this keeps them honest.
+    const css = readFileSync(join(__dirname, "..", "src", "app", "globals.css"), "utf8").replace(
+      /\/\*[\s\S]*?\*\//g,
+      "",
+    );
+    expect(css.match(/--elevated:\s*(#[0-9a-f]{6});/)?.[1]).toBe(LINE_SURFACE);
+    expect(Number(css.match(/--grain-opacity:\s*([\d.]+);/)?.[1])).toBe(GRAIN_OPACITY);
+  });
+
+  it("gives every hue a light line that clears 3:1 at the worst grain pixel, darkening level 3 only when needed", () => {
+    const worst = worstGrainPixel();
+    for (const hue of HUE_NAMES) {
+      const level3 = ramp(hue, "light")[2];
+      const line = lineColour(hue, "light");
+      expect(contrastRatio(line, worst), `${hue} ${line} on ${worst}`).toBeGreaterThanOrEqual(3);
+      if (contrastRatio(level3, worst) >= 3) {
+        expect(line, `${hue} keeps level 3 when it already clears`).toBe(level3);
+      } else {
+        expect(contrastRatio(line, worst), `${hue} darkened only as far as needed`).toBeLessThan(3.1);
+      }
+    }
+  });
+
+  it("uses level 4 as the dark line", () => {
+    for (const hue of HUE_NAMES) {
+      expect(lineColour(hue, "dark")).toBe(ramp(hue, "dark")[3]);
     }
   });
 });

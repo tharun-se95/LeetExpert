@@ -635,8 +635,10 @@ describe("design tokens", () => {
     for (const [role, hue] of Object.entries(hueOf)) {
       expect(root).toMatch(new RegExp(`--${role}:\\s*var\\(--hue-${hue}-ink\\)`));
       expect(root).toMatch(new RegExp(`--${role}-surface:\\s*var\\(--hue-${hue}-1\\)`));
-      expect(root).toMatch(new RegExp(`--${role}-line:\\s*var\\(--hue-${hue}-3\\)`));
-      expect(dark).toMatch(new RegExp(`--${role}-line:\\s*var\\(--hue-${hue}-4\\)`));
+      // Lines are generated grain-safe per theme (palette spec §4.3), so the
+      // semantic token names one primitive and .dark does not override it.
+      expect(root).toMatch(new RegExp(`--${role}-line:\\s*var\\(--hue-${hue}-line\\)`));
+      expect(stripComments(dark)).not.toMatch(new RegExp(`--${role}-line:`));
       for (const body of [null, dark]) {
         const token = (name: string) => resolveToken(root, body, name);
         // Bold/large label + icon sitting on the surface — AA large-text floor.

@@ -99,3 +99,24 @@ describe("text over the translucent chrome", () => {
     });
   }
 });
+
+describe("lines over the pane grain", () => {
+  // Callout rules and every other *-line sit on --elevated, which carries grain
+  // on the problem panes. A stroke only needs 3:1, but at the worst grain pixel
+  // (palette spec §4.3, amended 2026-09-15): level 3 green fell to 2.86:1 there.
+  for (const [theme, t] of [
+    ["light", light],
+    ["dark", dark],
+  ] as const) {
+    it(`every line clears 3:1 at the worst grain pixel on --elevated in ${theme}`, () => {
+      const opacity = Number(resolve(t, "grain-opacity"));
+      const paper = rgb(resolve(t, "elevated"));
+      for (const line of ["good-line", "bad-line", "warn-line", "info-line", "insight-line", "advice-line"]) {
+        const colour = rgb(resolve(t, line));
+        const grey = luminance(colour) < luminance(paper) ? 0 : 255;
+        const worst = paper.map((p) => p * (1 - opacity) + grey * opacity);
+        expect(contrast(colour, worst), `${theme} --${line} on grainy --elevated`).toBeGreaterThanOrEqual(3);
+      }
+    });
+  }
+});
