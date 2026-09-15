@@ -3,6 +3,7 @@ import { JetBrains_Mono, Space_Grotesk, Space_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import { LAMP_BOOT_SCRIPT } from "@/components/brand/lampBoot";
+import { CODE_LANG_INIT_SCRIPT } from "@/lib/codeLangScript";
 import { SITE_ORIGIN } from "@/lib/seo/site";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationLd, websiteLd } from "@/lib/seo/jsonLd";
@@ -96,6 +97,16 @@ export default function RootLayout({
             header markup is parsed. See lampBoot.ts. <html> already has
             suppressHydrationWarning for the attribute it may add. */}
         <script dangerouslySetInnerHTML={{ __html: LAMP_BOOT_SCRIPT }} />
+        {/* Sets <html data-code-lang> from storage while the HTML still
+            parses, so the lesson code blocks below paint in the learner's
+            language. After the lamp's boot script, which must stay first.
+            Deliberately not next/script beforeInteractive: the App Router
+            queues that and runs it from Next's bootstrap once the JS chunks
+            load, after first paint. */}
+        <script
+          id="code-lang-init"
+          dangerouslySetInnerHTML={{ __html: CODE_LANG_INIT_SCRIPT }}
+        />
         {/* Site-wide entity graph. Both carry stable @ids so the per-page
             Course and LearningResource nodes can reference them instead of
             re-declaring a second, unlinked publisher. */}
