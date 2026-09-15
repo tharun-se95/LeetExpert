@@ -67,4 +67,18 @@ describe("app header", () => {
     expect(toggle).toMatch(/\brounded-full\b/);
     expect(toggle).not.toMatch(/\bh-8\b/);
   });
+
+  it("keeps a link name at every width — the wordmark is sr-only below sm, never removed", () => {
+    // With the lessons menu present the wordmark gives up its room below sm so
+    // the header fits a phone. The lamp beside it is aria-hidden, so the
+    // wordmark is the home link's only accessible name: it has to leave the
+    // layout (sr-only) without leaving the accessibility tree (hidden).
+    pathname = "/courses/dsa/arrays";
+    const html = renderToStaticMarkup(<Header onOpenSearch={() => {}} showLessonsMenu showProgress />);
+    const home = html.match(/<a[^>]*href="\/"[^>]*>[\s\S]*?<\/a>/)?.[0];
+    expect(home, "home link").toBeDefined();
+    expect(home).toMatch(/leet[\s\S]*Expert/);
+    expect(home).toMatch(/max-sm:sr-only/);
+    expect(home).not.toMatch(/max-sm:hidden/);
+  });
 });

@@ -77,8 +77,10 @@ export function Header({
         <Link href="/" className="lamp-link flex min-w-0 items-center gap-2.5">
           <span className="flex min-w-0 items-baseline gap-2">
             {/*
-              When the lessons menu button is present, drop the wordmark below sm
-              so left + centered modes + right icons fit ~375px without overlap.
+              When the lessons menu button is present, the wordmark gives up its
+              room below sm so left + centered modes + right icons fit ~375px
+              without overlap. sr-only, not hidden: the lamp is aria-hidden, so
+              this text is the link's only accessible name at every width.
             */}
             {/*
               The green signal ends the name, centred on the wordmark in a
@@ -91,7 +93,7 @@ export function Header({
             */}
             <span className="flex min-w-0 items-center gap-2">
               <span
-                className={cn(WORDMARK, showLessonsMenu && "max-sm:hidden")}
+                className={cn(WORDMARK, showLessonsMenu && "max-sm:sr-only")}
               >
                 <span className="text-foreground">leet</span>
                 <span className="text-mark">Expert</span>
