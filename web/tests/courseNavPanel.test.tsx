@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { buildCourseNav } from "@/lib/course/nav";
 import { CourseNavPanel } from "@/components/layout/CourseNavPanel";
+import { TRANSLUCENT_PAPER } from "@/components/layout/headerChrome";
 
 const nav = buildCourseNav();
 const modules = nav.flatMap((s) => s.modules);
@@ -237,6 +240,7 @@ describe("CourseNavPanel header row", () => {
     view: Parameters<typeof CourseNavPanel>[0]["view"],
     pathname: string,
     onClose?: () => void,
+    scrolled?: boolean,
   ) =>
     renderToStaticMarkup(
       <CourseNavPanel
@@ -248,6 +252,7 @@ describe("CourseNavPanel header row", () => {
         curriculumHref="/courses/dsa"
         onBack={() => {}}
         onClose={onClose}
+        scrolled={scrolled}
       />,
     );
   const moduleView = {
@@ -281,12 +286,38 @@ describe("CourseNavPanel header row", () => {
     expect(html.indexOf("Close lessons drawer")).toBeLessThan(html.indexOf(">Overview<"));
   });
 
-  it("paints the pinned row, so rows scrolling beneath it do not show through", () => {
-    const row = pinnedRow(renderWith({ level: "modules" }, "/courses/dsa", () => {}))!;
-    expect(row).toMatch(/\bbg-background\b/);
-    expect(row).toMatch(/\bgrain-paper\b/);
-    // No border-b: the module heading below is the first ruled div (see level 2).
-    expect(row.match(/<div class="([^"]*)"/)![1]).not.toMatch(/\bborder-b\b/);
+  /** The pinned row's classes, from a level-1 render. */
+  const rowClasses = (scrolled?: boolean) =>
+    pinnedRow(renderWith({ level: "modules" }, "/courses/dsa", () => {}, scrolled))!
+      .match(/<div class="([^"]*)"/)![1]
+      .split(/\s+/);
+
+  it("keeps the pinned row grainy paper at rest, like the rail behind it", () => {
+    // Translucent at rest, flat 90% paper read as a lighter strip against the
+    // rail's grain (owner, 2026-09-15).
+    const cls = rowClasses();
+    expect(cls).toContain("grain-paper");
+    expect(cls).toContain("bg-background");
+    expect(cls.join(" ")).not.toMatch(/\bbackdrop-|\bbg-background\/|\bshadow-|\bborder-b\b/);
+  });
+
+  it("turns the pinned row translucent once rows scroll under it", () => {
+    const cls = rowClasses(true);
+    for (const c of TRANSLUCENT_PAPER.split(" ")) expect(cls, c).toContain(c);
+    expect(cls).not.toContain("grain-paper");
+    // No shadow (owner, 2026-09-15) and no border-b: the module heading below
+    // is the first ruled div (see level 2).
+    expect(cls.join(" ")).not.toMatch(/\bshadow-|\bborder-b\b/);
+  });
+
+  it("learns 'scrolled' from a sentinel observed against the nav, not a scroll listener", () => {
+    // A drawer restored mid-scroll fires no scroll event, so a listener would
+    // leave the row grainy over rows it is covering.
+    const tree = readFileSync(join(__dirname, "..", "src", "components", "layout", "CourseNavTree.tsx"), "utf8");
+    expect(tree).toMatch(/new IntersectionObserver\(/);
+    expect(tree).toMatch(/root: scrollRef\.current/);
+    expect(tree).not.toMatch(/addEventListener\("scroll"/);
+    expect(tree).toMatch(/scrolled=\{scrolled\}/);
   });
 
   it("renders no close button and no pinned row without onClose (the mobile sheet has its own)", () => {

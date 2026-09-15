@@ -42,7 +42,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
   return (
     <nav
       aria-label="On this page"
-      className="print:hidden sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-[length:var(--radius-md)] bg-surface/50 p-3"
+      className="print:hidden sticky top-38 max-h-[calc(100vh-10.5rem)] overflow-y-auto rounded-[length:var(--radius-md)] bg-surface/50 p-3"
       style={{ maskImage: EDGE_FADE_MASK, WebkitMaskImage: EDGE_FADE_MASK }}
     >
       <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted">

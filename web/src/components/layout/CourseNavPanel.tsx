@@ -4,7 +4,7 @@ import type { ReactNode, Ref } from "react";
 import Link from "next/link";
 import { CaretLeft, CaretRight, TreeStructure, X } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { ROUND_CONTROL } from "@/components/layout/headerChrome";
+import { ROUND_CONTROL, TRANSLUCENT_PAPER } from "@/components/layout/headerChrome";
 import type {
   CourseNavExtra,
   CourseNavLesson,
@@ -28,6 +28,12 @@ export interface CourseNavPanelProps {
    * close button, so it passes nothing and renders no pinned row.
    */
   onClose?: () => void;
+  /**
+   * Rows are scrolling under the pinned row (CourseNavTree observes it). At
+   * rest the row is grainy paper like the rail; translucent there, it read as a
+   * lighter strip.
+   */
+  scrolled?: boolean;
   /**
    * The module the reader just came back from. Its row takes the focus ref, so
    * returning lands on that row — in its own section, which is what the back
@@ -225,14 +231,29 @@ function ExtraRow({
  * The drawer's pinned header row (owner, 2026-09-14; it replaced the close tab
  * that hung off the rail): the back row inside a module, then the close
  * button. Sticky at the top of the drawer's scroller so the way out stays in
- * reach while a 24-module list scrolls beneath, on grainy paper so those rows
- * do not show through. pt-3 is the drawer's top padding, moved onto the row
+ * reach while a 24-module list scrolls beneath. Grainy paper like the rail at
+ * rest; translucent paper that blurs the rows once they scroll under it
+ * (TRANSLUCENT_PAPER, owner 2026-09-15) — flat 90% paper at rest read as a
+ * lighter strip against the rail's grain. No shadow. pt-3 is the drawer's top padding, moved onto the row
  * (Sidebar), or rows would scroll into a gap above it. No border-b: the module
  * heading below carries the rule.
  */
-function PinnedRow({ children, onClose }: { children?: ReactNode; onClose: () => void }) {
+function PinnedRow({
+  children,
+  onClose,
+  scrolled = false,
+}: {
+  children?: ReactNode;
+  onClose: () => void;
+  scrolled?: boolean;
+}) {
   return (
-    <div className="sticky top-0 z-10 flex items-center justify-end gap-2 bg-background grain-paper pt-3 pb-1">
+    <div
+      className={cn(
+        "sticky top-0 z-10 flex items-center justify-end gap-2 pt-3 pb-1",
+        scrolled ? TRANSLUCENT_PAPER : "bg-background grain-paper",
+      )}
+    >
       {children}
       <button
         type="button"
@@ -261,6 +282,7 @@ export function CourseNavPanel({
   returnSlug,
   returnRowRef,
   onClose,
+  scrolled = false,
 }: CourseNavPanelProps) {
   if (view.level === "module") {
     const { navModule } = view;
@@ -289,7 +311,7 @@ export function CourseNavPanel({
     );
     return (
       <div>
-        {onClose ? <PinnedRow onClose={onClose}>{back}</PinnedRow> : back}
+        {onClose ? <PinnedRow onClose={onClose} scrolled={scrolled}>{back}</PinnedRow> : back}
         <div
           className={cn("border-b border-border pr-2 pb-2", INDENT_UNDER_CARET)}
         >
@@ -333,7 +355,7 @@ export function CourseNavPanel({
 
   return (
     <div>
-      {onClose ? <PinnedRow onClose={onClose} /> : null}
+      {onClose ? <PinnedRow onClose={onClose} scrolled={scrolled} /> : null}
       <Link
         href={curriculumHref}
         aria-current={pathname === curriculumHref ? "page" : undefined}

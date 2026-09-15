@@ -60,7 +60,7 @@ export function Header({
   const modeLinkClass = (active: boolean) => cn(NAV_LINK, active && NAV_LINK_ACTIVE);
 
   return (
-    <header className="print:hidden grain-paper sticky top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-background px-3 sm:gap-3 sm:px-4">
+    <header className="print:hidden absolute inset-x-0 top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-background/90 backdrop-blur-md shadow-edge-bottom px-3 sm:gap-3 sm:px-4">
       <div className="flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
         {showLessonsMenu && onToggleLessonsMenu ? (
           <button

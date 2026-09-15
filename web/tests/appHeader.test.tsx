@@ -12,7 +12,7 @@ vi.mock("@/components/providers/ProgressProvider", () => ({
 }));
 
 import { Header } from "@/components/layout/Header";
-import { NAV_LINK_ACTIVE } from "@/components/layout/headerChrome";
+import { NAV_LINK_ACTIVE, TRANSLUCENT_PAPER } from "@/components/layout/headerChrome";
 
 const read = (...p: string[]) => readFileSync(join(__dirname, "..", "src", ...p), "utf8");
 const header = read("components", "layout", "Header.tsx");
@@ -36,10 +36,24 @@ describe("app header", () => {
     }
   });
 
-  it("is a hairline on the grainy desk, not a lifted bar", () => {
+  it("overlays the page as translucent paper with the edge shadow", () => {
+    // Lesson and module pages scroll under it (spec 2026-09-15): the page grain
+    // shows through, blurred. 90% keeps muted text AA over a dark code block
+    // passing beneath (grainContrast.test.ts); an opaque grain layer could not.
     const cls = header.match(/<header[^>]*className="([^"]*)"/)![1].split(/\s+/);
-    for (const c of ["grain-paper", "bg-background", "border-b", "h-14"]) expect(cls).toContain(c);
-    expect(cls.join(" ")).not.toMatch(/\bshadow-|\bbg-elevated\b/);
+    for (const c of ["absolute", "top-0", "h-14", "border-b", "shadow-edge-bottom", ...TRANSLUCENT_PAPER.split(" ")]) {
+      expect(cls, c).toContain(c);
+    }
+    expect(cls).not.toContain("grain-paper");
+    expect(cls).not.toContain("sticky");
+  });
+
+  it("moves scroll-relative offsets below the overlaying header", () => {
+    // The page scroller now starts under the 3.5rem header, so anything placed
+    // from its top shifts down by that much or hides behind the header.
+    expect(read("components", "md", "TableOfContents.tsx")).toMatch(/sticky top-38 max-h-\[calc\(100vh-10\.5rem\)\]/);
+    expect(read("components", "md", "Markdown.tsx")).toContain("prose-headings:scroll-mt-38");
+    expect(read("app", "courses", "nextjs", "[module]", "[chapter]", "[lesson]", "page.tsx")).toContain('className="sticky top-34"');
   });
 
   it("marks the active mode for assistive tech and with a steady underline", () => {

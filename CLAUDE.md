@@ -146,8 +146,10 @@ The content is the product. Code exists to serve it.
   floating button** (owner, 2026-09-14; spec
   `docs/superpowers/specs/2026-09-14-drawer-header-and-floating-opener-design.md`;
   it replaced the 2026-09-13 edge tabs and their concave fillets). The nav
-  panel's top row is pinned (`sticky top-0`, grainy paper so rows scrolling
-  beneath do not show through, no `border-b` — the module heading below
+  panel's top row is pinned (`sticky top-0`): grainy paper like the rail at
+  rest and `TRANSLUCENT_PAPER` once rows scroll under it (`CourseNavTree` observes
+  a sentinel against the nav, not scroll events — translucent at rest it read as
+  a lighter strip), with no shadow and no `border-b` (the module heading below
   carries the rule): inside a module it is the back row ("‹ {stage}") with ✕
   beside it, at the top level just ✕. `CourseNavPanel` renders it only when
   given `onClose`; the desktop drawer passes it, the mobile sheet keeps its
@@ -170,11 +172,12 @@ The content is the product. Code exists to serve it.
   other route does.** Owner direction 2026-09-14
   (specs `docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md`
   and `2026-09-14-landing-rewrite-agentic-ai-design.md`). On `/` AppShell
-  skips the sticky app `Header` and renders `LandingHeader` as the first thing
+  skips the app `Header` and renders `LandingHeader` as the first thing
   *inside* `<main>`, inside the app's one `.paper-grain` desk wrapper:
   a `border-border` hairline, **sticky** (owner, 2026-09-14): clear over the
-  grain at the top, `bg-background/80 backdrop-blur-md shadow-edge-bottom`
-  once content scrolls under it — `scrolled` comes from an
+  grain at the top, `TRANSLUCENT_PAPER` (`bg-background/90 backdrop-blur-md`,
+  owner 2026-09-15 — at 80% muted text fell to 3.85:1 over a dark block) plus
+  `shadow-edge-bottom` once content scrolls under it — `scrolled` comes from an
   IntersectionObserver on a sentinel at the page top (not a scroll listener),
   and its height is the same either way so nothing jumps; content in a centred
   `max-w-landing` column (`--container-landing: 88rem`, owner request) with
@@ -244,12 +247,18 @@ The content is the product. Code exists to serve it.
   inside it would double the strength — and `.grain-paper` (the paper at
   `1 − opacity` over the opaque tile, measured within 1/255 of `.paper-grain`,
   `background-origin: border-box` so borders do not show the bare tile) on
-  opaque surfaces: the app header, the lessons drawer rail and its pinned header row, the
-  floating drawer opener and the mobile lessons sheet. `--grain-paper` names the surface's paper and
+  opaque surfaces: the lessons drawer rail and its pinned row at rest, the
+  floating drawer opener, the mobile lessons sheet and the problem page's two `--elevated` panes (AA holds
+  there too; the `--surface` hover fills stay solid — muted fell to 4.05:1). `--grain-paper` names the surface's paper and
   `--grain-veil` is declared on the elements that use it, never on `:root`.
-  The app header is a hairline on the desk like the landing header
-  (`bg-background`, no shadow); the problem page's root and sub-header are
-  transparent over the desk. The reading sheet, cards, code, the IDE and
+  The app header overlays the page (spec
+  `docs/superpowers/specs/2026-09-15-translucent-chrome-and-pane-grain-design.md`):
+  `absolute top-0 h-14`, `TRANSLUCENT_PAPER` with `shadow-edge-bottom`. Lesson
+  and module pages scroll under it — the desk wrapper's `pt-14` starts them
+  below it, the rail starts below it (`mt-14`), and scroll offsets moved 3.5rem
+  (TOC `top-38`, headings `scroll-mt-38`) — and `grainContrast.test.ts` keeps
+  its muted text AA over a code block passing beneath. The problem page's root
+  and sub-header are transparent over the desk. The reading sheet, cards, code, the IDE and
   dialogs stay solid and cover the grain. Every text ink clears AA at the
   worst grain pixel (`grainContrast.test.ts`; floors 4.84:1 light on
   `--good`, 6.65:1 dark on `--muted`, measured on the contribution-green palette) — re-measure if the opacity or a paper changes. Call sites are
@@ -292,8 +301,8 @@ The content is the product. Code exists to serve it.
   options, prev/next links) or a directional `.shadow-edge-bottom` /
   `.shadow-edge-right` / `.shadow-edge-left` (a panel that only separates
   from content on one side — the docked lessons drawer, the coach rail, the
-  mobile lessons sheet). The app header carries no shadow: it is a hairline on
-  the grain desk, like the landing header. Tokens live in `globals.css`
+  mobile lessons sheet, and the app header, whose shadow falls on the page
+  scrolling under it). Tokens live in `globals.css`
   (`--shadow-elevation`, `--shadow-edge-*`): light mode tints the shadow
   with `--press-ink` at low alpha so it reads as ink, not generic UI chrome;
   dark mode uses near-black, since a *light* ink at low alpha would lighten

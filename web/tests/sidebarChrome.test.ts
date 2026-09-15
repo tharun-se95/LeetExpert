@@ -211,3 +211,18 @@ describe("hover-driven drawer", () => {
     expect(shell).toMatch(/canHover\) return;/);
   });
 });
+
+describe("header overlay", () => {
+  it("starts the rail below the overlaying header", () => {
+    // The app header is absolute over the page (spec 2026-09-15). The rail must
+    // not slide under it, or its pinned close row would be covered.
+    const asideCls = sidebar.match(/"(sidebar-rail print:hidden[^"]*)"/)![1].split(/\s+/);
+    expect(asideCls).toContain("mt-14");
+    expect(asideCls).not.toContain("h-full");
+  });
+
+  it("lets pages scroll under the header", () => {
+    expect(shell).toContain('className="relative flex h-dvh flex-col overflow-hidden"');
+    expect(shell).toContain('!landing && "pt-14"');
+  });
+});

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Lamp } from "@/components/brand/Lamp";
-import { LOGO_LAMP_SIZE, NAV_LINK, ROUND_CONTROL, WORDMARK } from "@/components/layout/headerChrome";
+import { LOGO_LAMP_SIZE, NAV_LINK, ROUND_CONTROL, WORDMARK, TRANSLUCENT_PAPER } from "@/components/layout/headerChrome";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -43,7 +43,7 @@ export function LandingHeader({
         // at rest; once content passes beneath, a translucent paper keeps the
         // nav legible over it. The height never changes, so nothing below jumps.
         "print:hidden sticky top-0 z-30 border-b border-border py-6 transition-[background-color,box-shadow] duration-300",
-        scrolled && "bg-background/80 shadow-edge-bottom backdrop-blur-md",
+        scrolled && cn(TRANSLUCENT_PAPER, "shadow-edge-bottom"),
       )}
     >
       {/* Same centred container as HomePage (max-w-landing, px-6 md:px-16),

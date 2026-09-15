@@ -123,12 +123,19 @@ describe("where the grain goes", () => {
         .filter(([, n]) => n > 0),
     );
     expect(uses).toEqual({
-      "components/layout/Header.tsx": 1,
       "components/layout/Sidebar.tsx": 1,
       "components/layout/CourseNavPanel.tsx": 1,
       "components/layout/FloatingLessonsButton.tsx": 1,
       "components/layout/MobileLessonsSheet.tsx": 1,
+      "components/problems/ProblemWorkspace.tsx": 2,
     });
+  });
+
+  it("tells the problem panes their paper is --elevated", () => {
+    // Grain on --elevated stays AA (grainContrast.test.ts); the hover fills on
+    // --surface do not get it — muted text there fell to 4.05:1 in light.
+    const workspace = files["components/problems/ProblemWorkspace.tsx"];
+    expect(workspace.match(/bg-elevated grain-paper \[--grain-paper:var\(--elevated\)\]/g)).toHaveLength(2);
   });
 
   it("tells the drawer rail its paper is the rail's", () => {

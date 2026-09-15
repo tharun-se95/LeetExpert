@@ -63,6 +63,27 @@ export function CourseNavTree({
   const wantsFocus = useRef(false);
 
   /**
+   * The drawer's pinned row stays grainy paper until rows scroll under it —
+   * translucent at rest, it read as a lighter strip against the rail. A sentinel
+   * at the top of the nav, observed against the nav, rather than a scroll
+   * listener: a drawer restored mid-scroll fires no scroll event. Only the
+   * desktop drawer has the row (onClose), so only it observes.
+   */
+  const topRef = useRef<HTMLDivElement | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const pinned = Boolean(onClose);
+  useEffect(() => {
+    const sentinel = topRef.current;
+    if (!pinned || !sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setScrolled(!(entry?.isIntersecting ?? true)),
+      { root: scrollRef.current },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [pinned]);
+
+  /**
    * Back unmounts its own button, so focus has to be placed deliberately —
    * from a callback ref, which runs exactly when the row mounts. Neither an
    * effect keyed on the level nor AnimatePresence's onExitComplete works
@@ -96,6 +117,7 @@ export function CourseNavTree({
       returnSlug={returnSlug}
       returnRowRef={returnRowRef}
       onClose={onClose}
+      scrolled={scrolled}
       onBack={() => {
         // The back button unmounts with the level, so move focus deliberately.
         wantsFocus.current = true;
@@ -111,6 +133,8 @@ export function CourseNavTree({
       className={cn("flex-1 overflow-y-auto", className)}
       aria-label="Course"
     >
+      {/* 1px tall and pulled back by -mb-px, so the list does not move. */}
+      {pinned ? <div ref={topRef} aria-hidden className="-mb-px h-px" /> : null}
       {reduceMotion ? (
         panel
       ) : (
