@@ -1167,6 +1167,22 @@ html:not([data-code-lang="js"]) [data-code-lang-panel="js"] {
 }
 
 /*
+  The language a code surface is showing (lesson blocks, viz panels). The
+  header sits on --code-editor, whose brightness is inverted from the page,
+  so the ink is --tok-name — the old active language tab's ink — never
+  --muted. The hide rules above outrank this display on specificity.
+*/
+.code-lang-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--tok-name);
+}
+
+/*
   Stretch + flush, not centered: a tab strip that sits directly on
   --code-editor (every .code-tab lives here; .editor-tab's active state
   does too) reads as part of the buffer only when the tabs touch the

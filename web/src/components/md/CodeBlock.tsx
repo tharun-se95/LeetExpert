@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Copy } from "@phosphor-icons/react";
+import type { CodeLang } from "@/lib/codeLang";
 
 export function CopyButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
@@ -32,14 +33,26 @@ export function CopyButton({ code }: { code: string }) {
   );
 }
 
-export function CodeBody({ code, html }: { code: string; html: string | null }) {
+export function CodeBody({
+  code,
+  html,
+  panel,
+}: {
+  code: string;
+  html: string | null;
+  /** Marks this body as one language of a tabs block (see globals.css). */
+  panel?: CodeLang;
+}) {
   return html ? (
     <div
+      data-code-lang-panel={panel}
       className="code-body [&_code]:font-mono [&_pre]:m-0 [&_pre]:bg-transparent [&_pre]:p-0"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   ) : (
-    <pre className="code-body px-4 font-mono whitespace-pre-wrap">{code}</pre>
+    <pre data-code-lang-panel={panel} className="code-body px-4 font-mono whitespace-pre-wrap">
+      {code}
+    </pre>
   );
 }
 

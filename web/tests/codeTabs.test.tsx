@@ -3,7 +3,6 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { LanguageMark } from "@/components/kit/languageMarks";
-import { CodeTabs } from "@/components/course/CodeTabs";
 
 const read = (...p: string[]) =>
   readFileSync(join(__dirname, "..", "src", ...p), "utf8");
@@ -36,27 +35,6 @@ describe("language marks", () => {
 });
 
 describe("code tabs match the editor's language tabs", () => {
-  it("lesson code blocks show each tab's mark beside its label", () => {
-    const html = renderToStaticMarkup(
-      <CodeTabs
-        tabs={[
-          { language: "python", label: "Python", code: "x = 1", html: null },
-          {
-            language: "typescript",
-            label: "TypeScript",
-            code: "let x = 1",
-            html: null,
-          },
-        ]}
-      />,
-    );
-    const buttons =
-      html.match(/<button[^>]*role="tab"[\s\S]*?<\/button>/g) ?? [];
-    expect(buttons).toHaveLength(2);
-    expect(buttons[0]).toMatch(/>Py<\/span>Python/);
-    expect(buttons[1]).toMatch(/>TS<\/span>TypeScript/);
-  });
-
   it("viz code panels and the sandbox editor render the same marks", () => {
     for (const rel of [
       ["components", "viz", "CodePanel.tsx"],

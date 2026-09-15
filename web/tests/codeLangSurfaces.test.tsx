@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { renderToStaticMarkup } from "react-dom/server";
+import { CodeTabs } from "@/components/course/CodeTabs";
 
 const read = (...p: string[]) => readFileSync(join(__dirname, "..", "src", ...p), "utf8");
 const globals = read("app", "globals.css");
@@ -38,5 +40,39 @@ describe("tabs fences", () => {
     }
     expect(blocks).toBeGreaterThan(0);
     expect(offenders).toEqual([]);
+  });
+});
+
+describe("lesson code blocks", () => {
+  const html = renderToStaticMarkup(
+    <CodeTabs
+      tabs={[
+        { language: "python", label: "Python", code: "x = 1", html: null },
+        { language: "typescript", label: "TypeScript", code: "let x = 1", html: null },
+      ]}
+    />,
+  );
+
+  it("have no language tabs", () => {
+    expect(html).not.toContain('role="tablist"');
+    expect(html).not.toContain('role="tab"');
+  });
+
+  it("render both languages as panels the hide rules can target", () => {
+    expect(html).toMatch(/<pre data-code-lang-panel="python" class="code-body[^"]*">x = 1<\/pre>/);
+    expect(html).toMatch(/<pre data-code-lang-panel="js" class="code-body[^"]*">let x = 1<\/pre>/);
+  });
+
+  it("label each panel with its mark and name, hidden with it", () => {
+    expect(html).toMatch(
+      /<span data-code-lang-panel="python" class="code-lang-label"><span aria-hidden="true"[^>]*>Py<\/span>Python<\/span>/,
+    );
+    expect(html).toMatch(
+      /<span data-code-lang-panel="js" class="code-lang-label"><span aria-hidden="true"[^>]*>TS<\/span>TypeScript<\/span>/,
+    );
+  });
+
+  it("ink the label for the inverted code canvas, not the page", () => {
+    expect(globals).toMatch(/\n\.code-lang-label \{[^}]*color: var\(--tok-name\);/);
   });
 });
