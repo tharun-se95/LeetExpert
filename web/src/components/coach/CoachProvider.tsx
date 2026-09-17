@@ -19,9 +19,15 @@ export type ThreadItem =
   | { id: string; kind: "user"; content: string }
   | { id: string; kind: "assistant"; content: string };
 
+/** "column" when the workspace can hold the coach beside the editor (IdeWithCoach decides). */
+export type CoachLayout = "floating" | "column";
+
 interface CoachContextValue {
   sandboxId: string;
   hintLabels: string[];
+  layout: CoachLayout;
+  setLayout: (layout: CoachLayout) => void;
+  /** The coach is visible in the current layout: the floating panel is open, or the column is expanded. */
   open: boolean;
   setOpen: (open: boolean) => void;
   /** Closes the panel AND returns focus to the launcher. */
@@ -70,6 +76,8 @@ interface CoachContextValue {
 const CoachContext = createContext<CoachContextValue | null>(null);
 
 const RAIL_KEY = "dsa:coach:rail-open";
+/** The column's own state: it defaults to open, where the floating panel defaults to closed. */
+const COLUMN_KEY = "dsa:coach:column-open";
 
 /** Below lg the coach is a tab, not a floating panel, so the open path differs. */
 function isDesktopViewport(): boolean {
@@ -120,7 +128,10 @@ export function CoachProvider({
   hintLabels: string[];
   children: ReactNode;
 }) {
-  const [open, setOpenState] = useState(false);
+  const [layout, setLayout] = useState<CoachLayout>("floating");
+  const [floatingOpen, setFloatingOpen] = useState(false);
+  const [columnOpen, setColumnOpen] = useState(true);
+  const open = layout === "column" ? columnOpen : floatingOpen;
   const [unread, setUnread] = useState(false);
   const [thread, setThread] = useState<ThreadItem[]>([]);
   const [diagnosis, setDiagnosis] = useState<Diagnosis | null>(null);
@@ -186,7 +197,8 @@ export function CoachProvider({
 
   useEffect(() => {
     try {
-      setOpenState(window.localStorage.getItem(RAIL_KEY) === "1");
+      setFloatingOpen(window.localStorage.getItem(RAIL_KEY) === "1");
+      setColumnOpen(window.localStorage.getItem(COLUMN_KEY) !== "0");
     } catch {
       /* private mode */
     }
@@ -227,18 +239,22 @@ export function CoachProvider({
 
   const clearUnread = useCallback(() => setUnread(false), []);
 
-  const setOpen = useCallback((next: boolean) => {
-    setOpenState(next);
-    if (next) setUnread(false);
-    try {
-      // The stored key keeps its original "rail" name on purpose: the string
-      // is persisted in real learners' browsers, so renaming it for tidiness
-      // would silently discard everyone's open/closed preference.
-      window.localStorage.setItem(RAIL_KEY, next ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const setOpen = useCallback(
+    (next: boolean) => {
+      const column = layout === "column";
+      (column ? setColumnOpen : setFloatingOpen)(next);
+      if (next) setUnread(false);
+      try {
+        // RAIL_KEY keeps its original "rail" name on purpose: the string is
+        // persisted in real learners' browsers, so renaming it for tidiness
+        // would silently discard everyone's open/closed preference.
+        window.localStorage.setItem(column ? COLUMN_KEY : RAIL_KEY, next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+    },
+    [layout],
+  );
 
   const closeCoach = useCallback(() => {
     setOpen(false);
@@ -304,7 +320,11 @@ export function CoachProvider({
       });
       if (failed && !openedThisSession.current) {
         openedThisSession.current = true;
+        // Only the floating panel opens itself. The column never expands on a
+        // run: that resized the editor under the learner, which is why the
+        // old rail was retired (spec 2026-09-17-coach-column-design.md).
         if (
+          layout === "floating" &&
           typeof window !== "undefined" &&
           window.matchMedia("(min-width: 1024px)").matches
         ) {
@@ -313,7 +333,7 @@ export function CoachProvider({
       }
       if (failed && !open) setUnread(true);
     },
-    [hintLabels.length, persistThread, open, setOpen],
+    [hintLabels.length, persistThread, open, setOpen, layout],
   );
 
   const setSource = useCallback((lang: SandboxLang, code: string) => {
@@ -447,6 +467,8 @@ export function CoachProvider({
     () => ({
       sandboxId,
       hintLabels,
+      layout,
+      setLayout,
       open,
       setOpen,
       closeCoach,
@@ -475,6 +497,8 @@ export function CoachProvider({
     [
       sandboxId,
       hintLabels,
+      layout,
+      setLayout,
       open,
       setOpen,
       closeCoach,
