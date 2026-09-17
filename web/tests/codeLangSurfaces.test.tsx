@@ -76,3 +76,15 @@ describe("lesson code blocks", () => {
     expect(globals).toMatch(/\n\.code-lang-label \{[^}]*color: var\(--tok-name\);/);
   });
 });
+
+describe("viz code panels", () => {
+  const panel = read("components", "viz", "CodePanel.tsx");
+
+  it("read the global language instead of owning tabs", () => {
+    expect(panel).not.toContain('role="tablist"');
+    expect(panel).not.toMatch(/useState<VizLang>/);
+    expect(panel).toMatch(/const \[codeLang\] = useCodeLang\(\);/);
+    expect(panel).toMatch(/const lang = readingLangFor\(codeLang\);/);
+    expect(panel).toContain('className="code-lang-label"');
+  });
+});
