@@ -1134,6 +1134,6 @@ describe("problem workspace prose", () => {
     );
     const workspace = readFileSync(join(SRC, "components", "problems", "ProblemWorkspace.tsx"), "utf8");
     expect(workspace).toContain('primaryClassName="problem-description-pane"');
-    expect(workspace).toContain('className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5"');
+    expect(workspace).toContain('className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 lg:pb-21"');
   });
 });
