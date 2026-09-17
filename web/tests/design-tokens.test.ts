@@ -1048,6 +1048,8 @@ describe("lesson reading page", () => {
     const NOT_IN_PAGE_FLOW: Record<string, number> = {
       // Its fullscreen dialog, floating over a scrim.
       "components/md/Mermaid.tsx": 2,
+      // The language menu, portalled to <body> above the page, not in it.
+      "components/code/CodeLangMenu.tsx": 1,
       // Only in difficultyFilterChipClass (problems hub filter panel); the walk
       // arrives because PracticeProblemsList imports a sibling export.
       "lib/course/problemDifficulty.ts": 1,
