@@ -220,7 +220,7 @@ export function CodeLangMenuView<T extends CodeLangId>({
                       tabIndex={-1}
                       onClick={() => pick(id)}
                       className={cn(
-                        "flex min-h-11 w-full items-center gap-2 px-3 text-left text-sm transition-colors hover:bg-surface md:min-h-9",
+                        "code-lang-option flex min-h-11 w-full items-center gap-2 px-3 text-left text-sm transition-colors hover:bg-surface md:min-h-9",
                         checked ? "font-medium text-foreground" : "text-muted hover:text-foreground",
                       )}
                     >

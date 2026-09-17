@@ -70,6 +70,32 @@ describe("the picker trigger", () => {
   });
 });
 
+describe("the picker's focus ring", () => {
+  const globals = readFileSync(join(__dirname, "..", "src", "app", "globals.css"), "utf8");
+  const rule = (selector: string) => {
+    const at = globals.indexOf(`\n${selector} {`);
+    expect(at, `missing rule: ${selector}`).toBeGreaterThanOrEqual(0);
+    return globals.slice(at, globals.indexOf("}", at));
+  };
+
+  it("draws inside the trigger, which fills its toolbar's height, keeping its radius", () => {
+    // The global ring sits 2px outside and squares corners to 2px: on a
+    // trigger as tall as its toolbar it spilled over the page and the editor.
+    const ring = rule(".code-lang-label:focus-visible");
+    expect(ring).toMatch(/outline-offset:\s*-2px/);
+    expect(ring).toMatch(/border-radius:\s*var\(--radius-sm\)/);
+    // --accent is steel, near-invisible on the inverted code canvas.
+    expect(ring).toMatch(/outline-color:\s*var\(--tok-keyword\)/);
+    expect(rule('.code-lang-label[data-tone="paper"]:focus-visible')).toMatch(/outline-color:\s*var\(--accent\)/);
+  });
+
+  it("draws inside menu items, which the menu clips at its sides", () => {
+    const menu = readFileSync(join(__dirname, "..", "src", "components", "code", "CodeLangMenu.tsx"), "utf8");
+    expect(menu).toMatch(/role="menuitemradio"[\s\S]*?"code-lang-option /);
+    expect(rule(".code-lang-option:focus-visible")).toMatch(/outline-offset:\s*-2px/);
+  });
+});
+
 describe("the picker menu", () => {
   it("opens from the keyboard on the shown language, moves with wrap, and picks", () => {
     const onPick = vi.fn();

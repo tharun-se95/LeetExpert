@@ -1182,6 +1182,29 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 }
 
 /*
+  The picker's focus ring is drawn inside it. The global ring sits 2px
+  outside and squares corners to 2px; the sandbox trigger is as tall as its
+  toolbar, so that ring spilled over the page above and the editor below,
+  and menu items fill a menu that clips its sides. On the code canvas the
+  ring takes --tok-keyword: --accent is steel, near-invisible on a well whose
+  brightness is inverted from the page (the sandbox result tabs do the same).
+*/
+.code-lang-label:focus-visible {
+  outline-offset: -2px;
+  outline-color: var(--tok-keyword);
+  border-radius: var(--radius-sm);
+}
+
+.code-lang-label[data-tone="paper"]:focus-visible {
+  outline-color: var(--accent);
+}
+
+.code-lang-option:focus-visible {
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
+
+/*
   @uiw/react-codemirror wraps the editor in its own theme div that carries no
   height. The IDE layout passes height="100%" to .cm-editor, which then has an
   auto-height containing block and collapses to the content — leaving a dead
