@@ -62,6 +62,15 @@ The content is the product. Code exists to serve it.
   reasoning that produces it. If a step is non-obvious, show why it holds.
 - **Quiz distractors must be plausible and specific.** A wrong option that is
   obviously wrong teaches nothing.
+- **Callouts are the exception, and each has one job** (spec
+  `docs/superpowers/specs/2026-09-13-callout-system-design.md` §3). Key idea
+  (` ```key `) is the one claim a section concludes; Mental model (`brain`)
+  is a picture you reason with, never a summary; Watch out (`warn`) is one
+  concrete mistake with its trigger and consequence, executed in both
+  languages; Tip is optional practical help; Goal is exactly what to return;
+  Aside is a short first-person note. A plain `>` is a quotation or formula
+  display, not a claim. Never two callouts adjacent, never one that restates
+  the paragraph before it.
 - **Never leak solutions.** Reveal content is conditionally rendered so
   Ctrl+F cannot surface it. Do not "optimise" that away.
 
@@ -282,15 +291,28 @@ The content is the product. Code exists to serve it.
 - **Contrast is measured, not eyeballed.** Body ink/muted must meet WCAG AA
   (4.5:1). Record ratios in comments beside tokens.
 - **Status and palette colour is generated, never hand-picked.** Eight hues
-  (`--hue-{name}-{1..4|ink}`) are derived from GitHub's contribution-graph
+  (`--hue-{name}-{1..4|ink|line}`) are derived from GitHub's contribution-graph
   ramp by `web/src/lib/visual/palette.ts` (spec
   `docs/superpowers/specs/2026-09-14-contribution-green-palette-design.md`);
   `tests/palette.test.ts` fails if a hex in `globals.css` drifts from it.
   Status colours map onto it — good green, bad red, warn orange, info blue,
   insight yellow — with text in `-ink` (light: level 4's lightness at
   near-max chroma), `*-surface` at level 1 and `*-line` for 3:1 rules. A
-  `*-line` sits only on `--elevated` or `--background`; light level 3 fails
-  on `--code` and `--surface`.
+  `*-line` is generated grain-safe (`lineColour`: light level 3, darkened
+  only until it clears 3:1 at the worst grain pixel on `--elevated`; dark
+  level 4) and sits **only on `--elevated`**, grainy or flat — light level 3
+  fails on `--code` and `--surface`, and the grainy desk would need every hue
+  darkened. `grainContrast.test.ts` holds every line to that floor.
+- **Callout colour names the kind of message; the label names the type.**
+  Yellow = understanding (Key idea, Mental model), red = a mistake (Watch
+  out), blue = context (Goal, Aside), green = a requirement (Constraints),
+  steel = advice (Tip). Every labelled callout carries a tint
+  (`--callout-tint-*`: palette level 1 mixed into `--elevated`, 50% light /
+  70% dark), a 3px grain-safe `*-line` rule and a label in its text colour; the owner's
+  declared fallback is treatment A — set the five tint tokens to
+  `transparent`. Callout body inherits the prose size. Guarded in
+  `design-tokens.test.ts` ("callout tints…", "Callout: treatment B…") and
+  `tests/callout.test.tsx`.
 - **Code colour has one source.** Shiki and CodeMirror must paint from the
   same palette definition. Two engines drifting apart is a visible defect.
 - Both themes are first-class. Dark is a designed translation, never an
