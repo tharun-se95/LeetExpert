@@ -61,13 +61,12 @@ describe("lesson code blocks", () => {
     expect(html).toMatch(/<pre data-code-lang-panel="typescript" class="code-body[^"]*">let x = 1<\/pre>/);
   });
 
-  it("label each panel with its mark and name, hidden with it", () => {
-    expect(html).toMatch(
-      /<span data-code-lang-panel="python" class="code-lang-label"><span aria-hidden="true"[^>]*>Py<\/span>Python<\/span>/,
-    );
-    expect(html).toMatch(
-      /<span data-code-lang-panel="typescript" class="code-lang-label"><span aria-hidden="true"[^>]*>TS<\/span>TypeScript<\/span>/,
-    );
+  it("pick the language from a menu in the header, labelled for first paint", () => {
+    const header = html.slice(0, html.indexOf("<pre"));
+    expect(header).toContain('aria-haspopup="menu"');
+    expect(header).toContain('data-code-lang-has="python typescript"');
+    expect(header).toMatch(/<span data-code-lang-panel="python" class="inline-flex items-center gap-1\.5">/);
+    expect(header).toMatch(/<span data-code-lang-panel="typescript" class="inline-flex items-center gap-1\.5">/);
   });
 
   it("ink the label for the inverted code canvas, not the page", () => {
@@ -83,7 +82,7 @@ describe("viz code panels", () => {
     expect(panel).not.toMatch(/useState<VizLang>/);
     expect(panel).toMatch(/const \[codeLang\] = useCodeLang\(\);/);
     expect(panel).toMatch(/const lang = resolveCodeLang\(codeLang, VIZ_LANGS\);/);
-    expect(panel).toContain('className="code-lang-label"');
+    expect(panel).toContain("<CodeLangMenu available={VIZ_LANGS} />");
   });
 });
 
@@ -95,6 +94,7 @@ describe("sandbox", () => {
     expect(sandbox).not.toMatch(/useState<SandboxLang>/);
     expect(sandbox).toMatch(/const \[codeLang\] = useCodeLang\(\);/);
     expect(sandbox).toMatch(/const lang = resolveCodeLang\(codeLang, LANGS\);/);
+    expect(sandbox).toContain('<CodeLangMenu available={LANGS} cssLabels tone="paper" />');
   });
 
   it("cancels an in-flight run when the language changes, like the old tab did", () => {

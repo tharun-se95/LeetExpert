@@ -1,7 +1,7 @@
 "use client";
 
 import { CodeBody, CopyButton } from "@/components/md/CodeBlock";
-import { LanguageMark } from "@/components/kit/languageMarks";
+import { CodeLangMenu } from "@/components/code/CodeLangMenu";
 import { useCodeLang } from "@/lib/codeLang";
 import { isCodeLangId, resolveCodeLang, type CodeLangId } from "@/lib/codeLanguages";
 import type { TabBlock } from "@/lib/content/highlightBlocks";
@@ -28,14 +28,7 @@ export function CodeTabs({ tabs }: { tabs: TabBlock[] }) {
   return (
     <div className="code-surface group my-5" data-code-lang-has={available.join(" ")}>
       <div className="code-surface-header">
-        <span className="inline-flex items-center">
-          {panels.map((tab) => (
-            <span key={tab.language} data-code-lang-panel={tab.language} className="code-lang-label">
-              <LanguageMark language={tab.language} />
-              {tab.label}
-            </span>
-          ))}
-        </span>
+        <CodeLangMenu available={available} cssLabels />
         <CopyButton code={visible.code} />
       </div>
       {panels.map((tab) => (

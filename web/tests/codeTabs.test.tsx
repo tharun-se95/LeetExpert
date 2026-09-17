@@ -28,16 +28,16 @@ describe("language marks", () => {
 });
 
 describe("every code surface uses the same marks", () => {
-  it("viz code panels and the sandbox editor render the same marks", () => {
+  it("lesson blocks, viz code panels and the sandbox all pick through the one menu", () => {
     for (const rel of [
+      ["components", "course", "CodeTabs.tsx"],
       ["components", "viz", "CodePanel.tsx"],
       ["components", "sandbox", "Sandbox.tsx"],
     ]) {
-      const src = read(...rel);
-      expect(src, rel.join("/")).toContain(
-        'from "@/components/kit/languageMarks"',
-      );
-      expect(src, rel.join("/")).toMatch(/<LanguageMark language=\{/);
+      expect(read(...rel), rel.join("/")).toContain('from "@/components/code/CodeLangMenu"');
     }
+    const menu = read("components", "code", "CodeLangMenu.tsx");
+    expect(menu).toContain('from "@/components/kit/languageMarks"');
+    expect(menu).toMatch(/<LanguageMark language=\{/);
   });
 });

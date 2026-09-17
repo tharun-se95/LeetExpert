@@ -4,16 +4,11 @@ import { useEffect, useId, useRef, useState } from "react";
 import { motion } from "motion/react";
 import type { ThemedToken } from "shiki";
 import { cn } from "@/lib/utils";
-import { LanguageMark } from "@/components/kit/languageMarks";
+import { CodeLangMenu } from "@/components/code/CodeLangMenu";
 import { tokenizeVizCode, type VizLang } from "@/lib/viz/highlightVizCode";
 import { useCodeLang } from "@/lib/codeLang";
 import { resolveCodeLang } from "@/lib/codeLanguages";
 import type { VizCode, VizLineRef } from "@/components/viz/types";
-
-const LABEL: Record<VizLang, string> = {
-  python: "Python",
-  typescript: "TypeScript",
-};
 
 const VIZ_LANGS: VizLang[] = ["python", "typescript"];
 
@@ -37,7 +32,7 @@ export function CodePanel({
   /** No extra border when the parent player is already framed. */
   flush?: boolean;
 }) {
-  // The language is chosen once in the header, not per panel.
+  // One preference for every surface, picked from any of their menus.
   const [codeLang] = useCodeLang();
   const lang = resolveCodeLang(codeLang, VIZ_LANGS);
   const [tokens, setTokens] = useState<Partial<Record<VizLang, ThemedToken[][]>>>({});
@@ -79,10 +74,7 @@ export function CodePanel({
   return (
     <div className={cn("code-surface", flush && "border-0")}>
       <div className="code-surface-header">
-        <span className="code-lang-label">
-          <LanguageMark language={lang} />
-          {LABEL[lang]}
-        </span>
+        <CodeLangMenu available={VIZ_LANGS} />
       </div>
       <div
         ref={scrollRef}

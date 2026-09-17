@@ -37,7 +37,7 @@ import { InsightPanel } from "@/components/insight/InsightPanel";
 import { resolveInsight } from "@/lib/insight/resolveInsight";
 import type { ExtractedComplexity } from "@/lib/insight/extractComplexity";
 import { useCoachOptional } from "@/components/coach/CoachProvider";
-import { LanguageMark } from "@/components/kit/languageMarks";
+import { CodeLangMenu } from "@/components/code/CodeLangMenu";
 import { useCodeLang } from "@/lib/codeLang";
 import { resolveCodeLang } from "@/lib/codeLanguages";
 
@@ -119,7 +119,7 @@ function SandboxBody({
   extractedComplexity: ExtractedComplexity | null;
   embedded?: boolean;
 }) {
-  // The header's global switch picks the language (lib/codeLang.ts).
+  // One preference for every surface, picked from any of their menus.
   const [codeLang] = useCodeLang();
   const lang = resolveCodeLang(codeLang, LANGS);
   const [drafts, setDrafts] = useState<Record<SandboxLang, string>>({
@@ -237,14 +237,11 @@ function SandboxBody({
       ) : null}
 
       {/*
-        The header's global switch picks the language; this only says which
-        one the editor holds, so nobody runs code wondering. It sits on the
-        toolbar's own paper, not the code canvas, so --muted is the right ink.
+        Names the language the editor holds and picks it. Labelled for first
+        paint (the editor itself mounts on the client), on the toolbar's own
+        paper rather than the code canvas.
       */}
-      <span className="inline-flex items-center gap-1.5 font-mono text-[0.72rem] font-semibold text-muted">
-        <LanguageMark language={lang} />
-        {LANG_LABEL[lang]}
-      </span>
+      <CodeLangMenu available={LANGS} cssLabels tone="paper" />
 
       {/*
         Full toolbar height (self-stretch on the wrapper, no fixed h-11 on the
