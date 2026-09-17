@@ -34,7 +34,7 @@ answers both:
 
 | Question | Decision |
 | --- | --- |
-| When | When the problem workspace (description + IDE, the measured row, not the viewport) can hold the description at its cap, an editor of at least `--ide-editor-min` (40rem) and a coach of at least `--coach-column-min` (20rem), plus the two handles. Otherwise the floating launcher and panel, unchanged. |
+| When | When the problem workspace (description + IDE, the measured row, not the viewport) can hold the description at its cap, an editor of at least 80 code columns plus its gutter (`--ide-editor-columns: 86`, at the code size) and a coach of at least `--coach-column-min` (20rem), plus the two handles, judged at the browser's default text size (§4). Otherwise the floating launcher and panel, unchanged. |
 | Open/close | Always there, collapsible. Expanded by default; collapses to a strip; the choice is remembered. |
 | Width | A drag handle between editor and coach, bounded by both minimums; the width is remembered in rem. Default `--coach-column-width` (26rem, the floating panel's width). |
 | A failing run | Never expands a collapsed column. It sets the unread dot on the strip. |
@@ -75,18 +75,38 @@ out of scope here.
 
 `coachColumnFits` in `lib/coach/coachColumn.ts`, a pure function:
 
-    workspace >= descriptionCap + editorMin + coachMin + 2 × handle
+    workspace >= descriptionCap·k + editorMin + coachMin + 2·handle·k
 
-- `descriptionCap` is read from the description pane's computed `max-width`,
-  so it follows the prose cap if that changes.
-- `editorMin` and `coachMin` are the `--ide-editor-min` and `--coach-column-min`
-  tokens, resolved against the root font size.
-- The handle width comes from the rendered handle.
+The terms:
 
-At the 15px root that is 542 + 600 + 300 + 7.5 ≈ 1450px of workspace. A
-ResizeObserver on the workspace row re-evaluates it, so opening the drawer or
-resizing the window switches mode live. The coach's own width is not in the
-row being measured, so the switch cannot feed back into itself.
+- `k = defaultRoot / currentRoot`.
+- `editorMin` is 86 code columns at the code size (JetBrains Mono advances
+  0.6em, measured) plus its 2rem line padding.
+- `coachMin` is 20rem.
+- The rem parts are all taken at the browser's default text size
+  (`font-size: medium`).
+
+**Revised during the browser check (2026-09-17).** Two inversions shaped
+this. The app steps its root down on smaller screens (15px up to 1600px wide,
+13px up to 1400px) while code type holds its size:
+
+- **A 40rem editor floor** let a 1280px screen fit a column that 1440px did
+  not. The floor is now counted in code columns.
+- **Judging the fit at the current root** let 1600px fit a column that
+  1608px, one root step up, did not. The fit is now judged at the default
+  text size, where the need is one stable width. The default is never below
+  the current root, so a column that fits there also fits as rendered.
+
+`coachColumn.test.ts` sweeps every width from 1024 to 2560 through the real
+steps parsed from `globals.css` and requires that a wider screen never lacks a
+column a narrower one has.
+
+At a 16px default this needs about 1640px of workspace: a 1680px or wider
+screen with the drawer closed, or a 1920px screen with it closed. With the
+drawer open (320px), a 1920×1080 screen floats. A ResizeObserver on the
+workspace row re-evaluates, so opening the drawer or resizing switches the
+mode live. The coach's own width is not in that row, so the switch cannot
+feed back into itself.
 
 ## 5. State (`CoachProvider`)
 
@@ -129,13 +149,13 @@ row being measured, so the switch cannot feed back into itself.
 ## 7. Tokens
 
 In `:root`, beside `--problem-prose-scale`:
-- `--ide-editor-min: 40rem`
+- `--ide-editor-columns: 86` (80 code columns plus a 6-column line-number gutter)
 - `--coach-column-min: 20rem`
 - `--coach-column-width: 26rem`
 
 `.coach-column` carries `min-width: var(--coach-column-min)`. `.ide-editor-pane`
-carries `min-width: var(--ide-editor-min)`, applied only in column mode, where
-the threshold guarantees it fits.
+carries `min-width: calc(var(--code-size) * 0.6 * var(--ide-editor-columns) + 2rem)`,
+applied only in column mode, where the threshold guarantees it fits.
 
 ## 8. Tests (each seen failing before it passes)
 

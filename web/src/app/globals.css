@@ -501,8 +501,11 @@ html {
     The coach column (spec 2026-09-17-coach-column-design.md): the editor's and
     the coach's minimum widths decide whether the workspace can hold the column
     at all (lib/coach/coachColumn.ts); it opens at the floating panel's width.
+    The editor's floor is 80 code columns plus a 6-column line-number gutter,
+    counted at the code size: code type holds its size as the root steps down,
+    so a rem floor shrank on smaller screens and inverted the threshold.
   */
-  --ide-editor-min: 40rem;
+  --ide-editor-columns: 86;
   --coach-column-min: 20rem;
   --coach-column-width: 26rem;
 }
@@ -1031,7 +1034,7 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   row is narrower than its opening width.
 */
 .ide-editor-pane {
-  min-width: var(--ide-editor-min);
+  min-width: calc(var(--code-size) * 0.6 * var(--ide-editor-columns) + 2rem);
 }
 
 .coach-column {

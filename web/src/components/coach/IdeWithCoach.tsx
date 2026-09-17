@@ -26,16 +26,27 @@ export function IdeWithCoach({ sandbox }: { sandbox: ReactNode }) {
   useLayoutEffect(() => {
     const workspace = rootRef.current?.closest<HTMLElement>("[data-problem-workspace]");
     if (!workspace) return;
+    // The browser's default text size (font-size: medium), which the app's
+    // root equals on its roomiest layout. Read once: it changes only in the
+    // browser's own settings, which reload the page.
+    const probe = document.createElement("div");
+    probe.style.fontSize = "medium";
+    document.body.append(probe);
+    const defaultRootPx = parseFloat(getComputedStyle(probe).fontSize);
+    probe.remove();
     const measure = () => {
       const rootStyle = getComputedStyle(document.documentElement);
-      const rootPx = parseFloat(rootStyle.fontSize) || 16;
+      const rootPx = parseFloat(rootStyle.fontSize);
       const description = workspace.querySelector<HTMLElement>(".problem-description-pane");
       const handle = workspace.querySelector<HTMLElement>("[data-split-handle]");
       const fits = coachColumnFits({
         workspace: workspace.getBoundingClientRect().width,
+        rootPx,
+        defaultRootPx,
         descriptionCap: description ? parseFloat(getComputedStyle(description).maxWidth) : NaN,
-        editorMin: lengthToPx(rootStyle.getPropertyValue("--ide-editor-min"), rootPx),
-        coachMin: lengthToPx(rootStyle.getPropertyValue("--coach-column-min"), rootPx),
+        codeSize: lengthToPx(rootStyle.getPropertyValue("--code-size"), rootPx),
+        editorColumns: Number(rootStyle.getPropertyValue("--ide-editor-columns")),
+        coachMinRem: lengthToPx(rootStyle.getPropertyValue("--coach-column-min"), 1),
         handle: handle?.getBoundingClientRect().width ?? NaN,
       });
       setLayout(fits ? "column" : "floating");
