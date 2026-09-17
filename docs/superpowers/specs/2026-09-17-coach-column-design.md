@@ -62,7 +62,8 @@ out of scope here.
   panes carry none). Its header is the coach mark and title, with a
   "Collapse problem coach" button (`aria-expanded="true"`) where the floating
   panel has ✕.
-- **Collapsed strip:** `w-11` (2.75rem), same paper, `border-l border-border`,
+- **Collapsed strip:** `w-12` (3rem, so its left hairline never squeezes the 44px
+  button inside), same paper, `border-l border-border`,
   no handle (a fixed strip has nothing to resize). At its top, a 44px button
   with the coach mark, "Expand problem coach", `aria-expanded="false"`, and the
   unread dot plus "New diagnosis" for screen readers when unread.
