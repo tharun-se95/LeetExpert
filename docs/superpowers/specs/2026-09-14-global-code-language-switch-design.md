@@ -63,8 +63,8 @@ or three languages and crowds phone widths).
 ## 3. The preference
 
 - **Registry** (`src/lib/codeLanguages.ts`, hook-free so the server layout can
-  import it): `CODE_LANGUAGES`, in menu order, each `{ id, label }`:
-  Python, JavaScript, TypeScript.
+  import it): `CODE_LANG_IDS` in menu order (`python`, `javascript`,
+  `typescript`) and `CODE_LANG_LABEL` for their names.
 - **Fallback order.** `codeLangChain(id)` is the preferred id, then its
   nearest relatives (`javascript` ↔ `typescript`: TypeScript without its types
   is JavaScript), then every other registry language in registry order. So
@@ -80,10 +80,11 @@ or three languages and crowds phone widths).
   after first paint. With no attribute, surfaces resolve as `python`.
 - **CSS resolution.** The same registry generates the rules
   (`codeLangCss()`), served as an inline `<style>` next to the script:
-  - Every element carrying `data-code-lang-panel` is hidden by default.
-  - For each preference P and each language L in P's chain, one rule shows L's
-    panels inside a `[data-code-lang-has~="L"]` block that has none of the
-    languages before L in the chain.
+  - For each preference P, a panel for language L is hidden inside a block
+    whose `data-code-lang-has` names a language earlier than L in P's chain.
+    What remains visible is the first language in the chain that the block
+    has. Nothing is hidden by default, so a panel outside a named block always
+    shows rather than vanishing.
   - `~=` attribute matching needs no `:has()`, so it works in every browser
     the app supports.
 - **Store.** `useCodeLang(): [CodeLangId, set]` on `useSyncExternalStore`: the
@@ -110,7 +111,10 @@ or three languages and crowds phone widths).
     the trigger. Code surfaces clip their overflow, so an in-place popover
     would be cut off.
   - It closes on Escape (focus returns to the trigger), on a pick, a pointer
-    down outside, Tab, scroll or resize.
+    down outside, or Tab. On scroll or resize it follows its trigger and closes
+    only once the trigger is off screen: the page scrolls smoothly, so closing
+    on any scroll shut a menu opened mid-scroll the moment it appeared
+    (found in the browser check).
 - **Keyboard:** Enter, Space or ArrowDown on the trigger opens the menu with
   focus on the checked item. ArrowUp/ArrowDown move with wrap-around,
   Home/End jump, and Enter/Space pick.
@@ -130,8 +134,9 @@ or three languages and crowds phone widths).
 
 - Both languages render server-side as panels, inside a block carrying
   `data-code-lang-has="python typescript"`.
-- The header holds the picker (CSS-labelled) and Copy. Copy reads the
-  preference at click time and copies the resolved language's code.
+- The header holds the picker (CSS-labelled) and Copy. Copy follows the
+  store's resolution, which matches the attribute once hydrated, so it copies
+  the language on screen.
 - The content test still requires every `tabs` block to be exactly `python`
   and `typescript`.
 

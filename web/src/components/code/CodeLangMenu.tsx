@@ -62,12 +62,14 @@ export function CodeLangMenuView<T extends CodeLangId>({
 
   // Placed under the trigger, flipped above it or pulled inside the viewport
   // when there is no room. Written to the element, not state: it is measured
-  // after the menu mounts, and nothing else renders from it.
-  useLayoutEffect(() => {
+  // after the menu mounts, and nothing else renders from it. Returns false once
+  // the trigger has left the screen.
+  const place = () => {
     const trigger = triggerRef.current;
     const menu = menuRef.current;
-    if (!open || !trigger || !menu) return;
+    if (!trigger || !menu) return false;
     const rect = trigger.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return false;
     const margin = 8;
     const gap = 4;
     const left = Math.max(margin, Math.min(rect.left, window.innerWidth - margin - menu.offsetWidth));
@@ -79,13 +81,19 @@ export function CodeLangMenuView<T extends CodeLangId>({
     menu.style.top = `${top}px`;
     menu.style.left = `${left}px`;
     menu.style.visibility = "visible";
-  }, [open]);
+    return true;
+  };
+
+  useLayoutEffect(() => {
+    if (open) place();
+  });
 
   useEffect(() => {
     if (open) itemRefs.current[active]?.focus({ preventScroll: true });
   }, [open, active]);
 
-  // A fixed menu would drift from its trigger on scroll or resize, so it closes.
+  // The page scrolls smoothly, so a click can land mid-scroll: the menu follows
+  // its trigger rather than closing, and closes once the trigger is off screen.
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (event: Event) => {
@@ -95,14 +103,16 @@ export function CodeLangMenuView<T extends CodeLangId>({
       }
       setOpen(false);
     };
-    const dismiss = () => setOpen(false);
+    const follow = () => {
+      if (!place()) setOpen(false);
+    };
     document.addEventListener("pointerdown", onPointerDown, true);
-    window.addEventListener("scroll", dismiss, true);
-    window.addEventListener("resize", dismiss);
+    window.addEventListener("scroll", follow, true);
+    window.addEventListener("resize", follow);
     return () => {
       document.removeEventListener("pointerdown", onPointerDown, true);
-      window.removeEventListener("scroll", dismiss, true);
-      window.removeEventListener("resize", dismiss);
+      window.removeEventListener("scroll", follow, true);
+      window.removeEventListener("resize", follow);
     };
   }, [open]);
 

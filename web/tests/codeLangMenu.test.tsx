@@ -114,6 +114,29 @@ describe("the picker menu", () => {
     expect(document.body.querySelector('[role="menu"]')).toBeNull();
   });
 
+  it("follows its trigger while the page scrolls, and closes once the trigger leaves the screen", () => {
+    // The page scrolls smoothly, so a click during a scroll used to open and
+    // instantly close the menu.
+    const host = mount(<CodeLangMenuView available={["python", "javascript"]} preferred="python" onPick={() => {}} />);
+    const button = trigger(host);
+    let top = 300;
+    button.getBoundingClientRect = () => new DOMRect(40, top, 120, 28);
+    act(() => button.click());
+    const panel = () => must(document.body.querySelector<HTMLElement>('[role="menu"]'), "menu").parentElement;
+    expect(panel()?.style.top).toBe("332px");
+    top = 200;
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
+    expect(document.body.querySelector('[role="menu"]')).not.toBeNull();
+    expect(panel()?.style.top).toBe("232px");
+    top = -40;
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
+    expect(document.body.querySelector('[role="menu"]')).toBeNull();
+  });
+
   it("says when the preferred language is not on this surface", () => {
     const host = mount(
       <CodeLangMenuView available={["python", "javascript"]} preferred="typescript" onPick={() => {}} />,
