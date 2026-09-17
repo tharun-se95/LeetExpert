@@ -270,25 +270,29 @@ export function ProblemWorkspace({
           /*
           Desktop: description pane + Sandbox side-by-side. Unchanged from the
           prior IDE shell — do not stack Code into the left tablist here.
+          The row is marked so the coach can read its width to choose column
+          or floating (IdeWithCoach).
         */
-          <PanelSplit
-            orientation="horizontal"
-            initialPrimary={0.5}
-            minPrimary={0.28}
-            maxPrimary={0.58}
-            primaryClassName="problem-description-pane"
-            primary={
-              <LeftPane
-                tab={contentTab}
-                onTabChange={setTab}
-                source={tabSource}
-                highlightedBlocks={lesson.highlightedBlocks}
-                highlightedTabs={lesson.highlightedTabs}
-                tabsId={tabsId}
-              />
-            }
-            secondary={<IdeWithCoach sandbox={sandbox} />}
-          />
+          <div data-problem-workspace className="flex min-h-0 min-w-0 flex-1">
+            <PanelSplit
+              orientation="horizontal"
+              initialPrimary={0.5}
+              minPrimary={0.28}
+              maxPrimary={0.58}
+              primaryClassName="problem-description-pane"
+              primary={
+                <LeftPane
+                  tab={contentTab}
+                  onTabChange={setTab}
+                  source={tabSource}
+                  highlightedBlocks={lesson.highlightedBlocks}
+                  highlightedTabs={lesson.highlightedTabs}
+                  tabsId={tabsId}
+                />
+              }
+              secondary={<IdeWithCoach sandbox={sandbox} />}
+            />
+          </div>
         ) : (
           <MobileWorkspace
             tab={tab}

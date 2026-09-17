@@ -26,3 +26,33 @@ describe("coach floating overlay", () => {
     expect(body).not.toMatch(/shadow-edge-/);
   });
 });
+
+describe("coach column", () => {
+  const read = (...p: string[]) => readFileSync(join(SRC, ...p), "utf8");
+
+  it("keeps the sandbox as the split's primary in every layout, and floats only in floating layout", () => {
+    const ide = read("components", "coach", "IdeWithCoach.tsx");
+    expect(ide).toMatch(/primary=\{sandbox\}/);
+    expect(ide).toContain('sizedPane="secondary"');
+    expect(ide).toContain('storageKey="dsa:coach:column-width"');
+    expect(ide).toMatch(/\{column \? null : <CoachOverlay \/>\}/);
+    expect(ide).toMatch(/coachColumnFits\(/);
+    expect(ide).toContain('closest<HTMLElement>("[data-problem-workspace]")');
+    expect(read("components", "problems", "ProblemWorkspace.tsx")).toMatch(/<div data-problem-workspace /);
+  });
+
+  it("collapses from the column header and expands from the strip, naming the state", () => {
+    const panel = read("components", "coach", "CoachPanel.tsx");
+    expect(panel).toMatch(/aria-label="Collapse problem coach"\s+aria-expanded=\{true\}/);
+    const strip = read("components", "coach", "CoachStrip.tsx");
+    expect(strip).toMatch(/aria-label="Expand problem coach"\s+aria-expanded=\{false\}/);
+    expect(strip).toContain("registerLauncherEl(ref.current)");
+    expect(strip).toContain("New diagnosis");
+  });
+
+  it("is layout, not a popover: no dialog role and no Escape in the column", () => {
+    const panel = read("components", "coach", "CoachPanel.tsx");
+    expect(panel).toMatch(/role=\{variant === "floating" \? "dialog" : variant === "column" \? "complementary" : undefined\}/);
+    expect(panel).toMatch(/e\.key === "Escape" && variant === "floating"/);
+  });
+});
