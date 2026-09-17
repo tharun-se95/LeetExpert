@@ -4,14 +4,13 @@ import { useEffect, useId, useRef, useState } from "react";
 import { motion } from "motion/react";
 import type { ThemedToken } from "shiki";
 import { cn } from "@/lib/utils";
-import { LanguageMark } from "@/components/kit/languageMarks";
+import { CodeLangMenu } from "@/components/code/CodeLangMenu";
 import { tokenizeVizCode, type VizLang } from "@/lib/viz/highlightVizCode";
+import { useCodeLang } from "@/lib/codeLang";
+import { resolveCodeLang } from "@/lib/codeLanguages";
 import type { VizCode, VizLineRef } from "@/components/viz/types";
 
-const TABS: { lang: VizLang; label: string }[] = [
-  { lang: "python", label: "Python" },
-  { lang: "typescript", label: "TypeScript" },
-];
+const VIZ_LANGS: VizLang[] = ["python", "typescript"];
 
 /**
  * Trace code pane — same brand Shiki palette and code-surface chrome as
@@ -33,7 +32,9 @@ export function CodePanel({
   /** No extra border when the parent player is already framed. */
   flush?: boolean;
 }) {
-  const [lang, setLang] = useState<VizLang>("python");
+  // One preference for every surface, picked from any of their menus.
+  const [codeLang] = useCodeLang();
+  const lang = resolveCodeLang(codeLang, VIZ_LANGS);
   const [tokens, setTokens] = useState<Partial<Record<VizLang, ThemedToken[][]>>>({});
   const highlightId = useId();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -73,22 +74,7 @@ export function CodePanel({
   return (
     <div className={cn("code-surface", flush && "border-0")}>
       <div className="code-surface-header">
-        <div className="code-surface-tabs" role="tablist" aria-label="Language">
-          {TABS.map((tab) => (
-            <button
-              key={tab.lang}
-              type="button"
-              role="tab"
-              aria-selected={lang === tab.lang}
-              data-active={lang === tab.lang ? "true" : "false"}
-              onClick={() => setLang(tab.lang)}
-              className="code-tab"
-            >
-              <LanguageMark language={tab.lang} />
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <CodeLangMenu available={VIZ_LANGS} />
       </div>
       <div
         ref={scrollRef}

@@ -177,6 +177,32 @@ The content is the product. Code exists to serve it.
   shadow and the resize grip, whose pill overhangs the edge (which is also why
   AppShell's hover-close hit-tests `rail.contains`). Guarded in
   `sidebarChrome.test.ts` and `courseNavPanel.test.tsx`.
+- **Code language is one preference, picked where the code is** (owner,
+  2026-09-17; spec `docs/superpowers/specs/2026-09-14-global-code-language-switch-design.md`).
+  Every code surface — lesson code blocks (`CodeTabs`), viz code panels
+  (`CodePanel`) and the sandbox toolbar — carries `CodeLangMenu`, a menu button
+  naming the language shown; picking on any surface changes all of them, in
+  every tab. There is no language control in the app or landing header (it was
+  withdrawn: far from its effect, present on pages with no code, read as
+  navigation, and a two-sided pill cannot hold a third language). The
+  preference is a real language id from the hook-free registry
+  `lib/codeLanguages.ts` (`python`, `javascript`, `typescript`); a surface that
+  lacks it shows the nearest it has (`javascript` ↔ `typescript`, then registry
+  order), its label names what is shown, and the menu says the preference is not
+  available there. `lib/codeLang.ts` is the store. A plain inline script after
+  the lamp's boot script sets `<html data-code-lang>` while the page parses —
+  never `next/script` `beforeInteractive`, which runs after first paint — and an
+  inline `<style id="code-lang-rules">` generated from the registry resolves
+  server-rendered blocks (`data-code-lang-has` / `data-code-lang-panel`) before
+  paint, so pages stay static and never flash. The layout imports only hook-free
+  modules: reaching `useSyncExternalStore` from it 500'd every route, and
+  neither `tsc` nor vitest can see that boundary. The menu is portalled to
+  `<body>` because code surfaces clip overflow, and it keeps the picked block in
+  place while blocks above it change height. Adding a language means a registry
+  entry plus its content, runner and reference solutions (§2) — never list one
+  first. Every `tabs` fence carries exactly `python` and `typescript` (content
+  test). Guarded in `codeLang.test.ts`, `codeLangMenu.test.tsx` and
+  `codeLangSurfaces.test.tsx`.
 - **The landing page (`/`) has its own header and a scroll-typed story; no
   other route does.** Owner direction 2026-09-14
   (specs `docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md`

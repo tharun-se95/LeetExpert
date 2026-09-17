@@ -119,6 +119,21 @@ describe("floating opener", () => {
     expect(floating).not.toMatch(/drawer-tab|sidebar-rail|rounded-r-|border-l-0/);
   });
 
+  it("never covers the end of the problem description: the pane scrolls its text clear of it", () => {
+    // The description pane runs to the viewport's bottom-left corner, under
+    // the opener. Its scroll area ends in bottom padding covering the opener's
+    // inset plus its height, plus a 1rem gap (Tailwind spacing units), from lg,
+    // where the opener shows.
+    const cls = floating.match(/className=\{cn\(ROUND_CONTROL, "([^"]*)"\)\}/)?.[1] ?? "";
+    const units = (prefix: string) => Number(cls.match(new RegExp(`(?:^| )${prefix}-(\\d+)(?: |$)`))?.[1]);
+    const covered = units("bottom") + units("h");
+    expect(covered).toBeGreaterThan(0);
+    // The desktop pane; the phone layout's panel sits below lg, where the opener is hidden.
+    const panel = workspace.match(/function LeftPane[\s\S]*?role="tabpanel"[\s\S]*?className="([^"]*)"/)?.[1] ?? "";
+    const padding = Number(panel.match(/(?:^| )lg:pb-(\d+)(?: |$)/)?.[1]);
+    expect(padding, panel).toBe(covered + 4);
+  });
+
   it("floats above the hover edge strip, so resting on it does not open the drawer", () => {
     const opener = Number(floating.match(/\bz-(\d+)\b/)![1]);
     const strip = Number(shell.match(/fixed top-14 bottom-0 left-0 z-(\d+)/)![1]);

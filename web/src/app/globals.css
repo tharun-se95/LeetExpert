@@ -142,7 +142,7 @@
     its own fixed instrument regardless of which theme the surrounding page
     is in, the way a terminal or IDE panel often does). --tok-* below is
     swapped the same way. Never used for anything but the code surface —
-    see `.code-surface`, `.editor-tab`, and every `bg-code-editor` site.
+    see `.code-surface` and every `bg-code-editor` site.
   */
   --code-editor: #14202e;
   /* Hairline gutter border + active-line tint, tuned for THIS (dark) bg —
@@ -490,6 +490,13 @@ html {
   */
   --reading-measure: 54rem;
   --reading-page-pad: 4rem;
+  /*
+    The problem workspace's prose size as a unitless ratio of 1rem, so the
+    description pane can cap itself at the prose measure: ch scales with
+    font-size in one face, so 60ch at this size is 60ch * scale at the pane's
+    own 1rem.
+  */
+  --problem-prose-scale: 0.875;
 }
 
 /*
@@ -996,10 +1003,31 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   Problem workspace panes (Description/Explanation/Solution): compact
   rhythm, default reading size — a problem statement is scanned, not read
   the way a lesson is, so it doesn't get the lesson's upsized 19px prose.
+
+  The pane opens at half the workspace, and wide screens made lines too long
+  to track: measured 2026-09-17 in Chrome, an average character here is
+  0.742ch, so the pane ran 112 characters a line at 1280px and 199 at 2560px.
+  60ch holds it at 80, WCAG 1.4.8's ceiling, and scales with the prose size.
+  Left-aligned, so the text stays under the pane's tabs.
 */
 .problem-prose .handbook-prose {
-  font-size: 0.875rem;
+  max-width: 60ch;
+  font-size: calc(var(--problem-prose-scale) * 1rem);
   line-height: 1.5;
+}
+
+/*
+  The description pane stops growing at the prose measure plus the tab
+  panel's sm:px-5 padding, so on a wide screen the spare width goes to the
+  editor instead of sitting empty beside 80-character lines. The floor is 45
+  characters (45/80 of 60ch), the low end of a comfortable measure: the split's
+  own 28% floor passes the cap from about 1936px wide and locked the pane.
+  PanelSplit reads both limits to bound its drag at the same edges. Classic
+  (non-overlay) scrollbars take their width from inside, wrapping a line early.
+*/
+.problem-description-pane {
+  max-width: calc(60ch * var(--problem-prose-scale) + 2 * 1.25rem);
+  min-width: calc(33.75ch * var(--problem-prose-scale) + 2 * 1.25rem);
 }
 
 .problem-prose .handbook-prose h2:not(.chapter-heading) {
@@ -1153,115 +1181,55 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 }
 
 /*
-  Stretch + flush, not centered: a tab strip that sits directly on
-  --code-editor (every .code-tab lives here; .editor-tab's active state
-  does too) reads as part of the buffer only when the tabs touch the
-  header's own top/bottom edges and each other, the way a real editor's
-  tab bar does. This used to be .editor-tab-only (the "ide" IDE toolbar),
-  with lesson code blocks kept on a centered, gapped, pill-tab layout —
-  now both look the same; see .code-tab below.
+  The language a code surface is showing (lesson blocks, viz panels). The
+  header sits on --code-editor, whose brightness is inverted from the page,
+  so the ink is --tok-name — the old active language tab's ink — never
+  --muted. The generated resolution rules (lib/codeLanguages.ts) outrank this
+  display on specificity.
 */
-.code-surface-tabs {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-}
-
-/*
-  Flush tab shape shared with .editor-tab (below) — a top accent rule on
-  the active tab, no pill, background matches the code canvas it names.
-  Kept as a separate class rather than folded into .editor-tab because the
-  two differ in exactly one place: DEFAULT (unpressed, unhovered) ink.
-  .code-tab always sits on --code-editor (the language-fence header has no
-  background of its own — see .code-surface), so its resting ink can
-  already be --tok-name-based. .editor-tab's resting state sits on the ide
-  toolbar's --elevated instead (its own background is transparent until the
-  active state pulls in --code-editor), so it rests on --muted and hovers
-  on the toolbar's own terms. Layout — mark, label, mono type, gap — is
-  identical on purpose, so a language tab looks the same everywhere.
-*/
-.code-tab {
-  position: relative;
+.code-lang-label {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   font-family: var(--font-mono), ui-monospace, monospace;
-  border-radius: 0;
-  border-top: 2px solid transparent;
-  padding: 0.3rem 0.75rem;
   font-size: 0.72rem;
-  font-weight: 500;
-  background: transparent;
-  /* --tok-name, not --muted — see the class comment above. */
-  color: color-mix(in oklab, var(--tok-name) 65%, transparent);
-  transition:
-    color var(--dur-fast) var(--ease),
-    background-color var(--dur-fast) var(--ease);
-}
-
-.code-tab:hover {
-  color: var(--tok-name);
-}
-
-.code-tab[aria-pressed="true"],
-.code-tab[data-active="true"] {
-  /* --tok-keyword rather than --accent: a family/site accent isn't
-     guaranteed visible against a well whose brightness doesn't track the
-     page theme (same reasoning as editorTheme.ts's caret). */
-  border-top-color: var(--tok-keyword);
-  background: var(--code-editor);
-  color: var(--tok-name);
   font-weight: 600;
+  color: var(--tok-name);
 }
 
 /*
-  Same flush shape as .code-tab (see its comment for why they're still two
-  classes, not one) — this is the "ide" toolbar's variant, whose resting
-  state sits on --elevated rather than --code-editor.
+  The sandbox toolbar's picker sits on the page's own paper (--elevated), not
+  the inverted code canvas, so it takes the page's muted ink.
 */
-.editor-tab {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  border-radius: 0;
-  border-top: 2px solid transparent;
-  padding: 0.3rem 0.75rem;
-  font-size: 0.72rem;
-  font-weight: 500;
-  /* Sits on the TOOLBAR's own background (bg-elevated, transparent here),
-     which tracks the page theme normally — --muted is correct. Only the
-     active state switches its background to --code-editor (inverted from
-     the page — see the comment on --code-editor in :root), which is why only
-     that rule switches its ink to --tok-name. */
+.code-lang-label[data-tone="paper"] {
   color: var(--muted);
-  background: transparent;
-  transition:
-    color var(--dur-fast) var(--ease),
-    background-color var(--dur-fast) var(--ease);
 }
 
-/* Hover is a slight recess into the toolbar, the way Reset beside it does
-   (hover:bg-code hover:text-foreground: --code sits just below --elevated in
-   both themes). It used to borrow --code-editor — the active tab's inverted
-   canvas, a dark block in light and a pale one in dark — so hovering read as
-   a second selected tab. */
-.editor-tab:hover {
+.code-lang-label[data-tone="paper"]:hover {
   color: var(--foreground);
-  background: var(--code);
 }
 
-.editor-tab[aria-pressed="true"],
-.editor-tab[data-active="true"] {
-  /* --tok-keyword rather than --accent: a family/site accent isn't
-     guaranteed visible against a well whose brightness doesn't track the
-     page theme, the same reason the CodeMirror caret uses it (see
-     editorTheme.ts). */
-  border-top-color: var(--tok-keyword);
-  background: var(--code-editor);
-  color: var(--tok-name);
-  font-weight: 600;
+/*
+  The picker's focus ring is drawn inside it. The global ring sits 2px
+  outside and squares corners to 2px; the sandbox trigger is as tall as its
+  toolbar, so that ring spilled over the page above and the editor below,
+  and menu items fill a menu that clips its sides. On the code canvas the
+  ring takes --tok-keyword: --accent is steel, near-invisible on a well whose
+  brightness is inverted from the page (the sandbox result tabs do the same).
+*/
+.code-lang-label:focus-visible {
+  outline-offset: -2px;
+  outline-color: var(--tok-keyword);
+  border-radius: var(--radius-sm);
+}
+
+.code-lang-label[data-tone="paper"]:focus-visible {
+  outline-color: var(--accent);
+}
+
+.code-lang-option:focus-visible {
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
 }
 
 /*

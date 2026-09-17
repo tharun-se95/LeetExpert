@@ -1,7 +1,7 @@
 /**
- * Small per-language identity marks for every code tab: the sandbox editor's
- * language tabs, lesson code blocks, and viz code panels all render them, so a
- * language reads the same wherever its code appears.
+ * Small per-language identity marks: the code-language picker, the
+ * sandbox toolbar, lesson code blocks and viz code panels all render them, so
+ * a language reads the same wherever its code appears.
  *
  * Phosphor (this app's whole icon set) is a generic UI icon library — it
  * has no Python or JavaScript logo, and hand-approximating either brand's

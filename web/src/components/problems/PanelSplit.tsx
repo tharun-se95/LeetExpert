@@ -22,6 +22,7 @@ export function PanelSplit({
   minPrimary = 0.25,
   maxPrimary = 0.75,
   className,
+  primaryClassName,
   resizeLabel,
 }: {
   orientation: "horizontal" | "vertical";
@@ -31,21 +32,39 @@ export function PanelSplit({
   minPrimary?: number;
   maxPrimary?: number;
   className?: string;
+  /** Classes for the primary pane; a CSS max- or min-width there also bounds the drag. */
+  primaryClassName?: string;
   resizeLabel?: string;
 }) {
   const [primaryFrac, setPrimaryFrac] = useState(initialPrimary);
   const containerRef = useRef<HTMLDivElement>(null);
+  const primaryRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
 
   const onPointerMove = useCallback(
     (e: PointerEvent) => {
       if (!dragging.current || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const raw =
-        orientation === "horizontal"
-          ? (e.clientX - rect.left) / rect.width
-          : (e.clientY - rect.top) / rect.height;
-      setPrimaryFrac(Math.min(maxPrimary, Math.max(minPrimary, raw)));
+      const horizontal = orientation === "horizontal";
+      const raw = horizontal
+        ? (e.clientX - rect.left) / rect.width
+        : (e.clientY - rect.top) / rect.height;
+      // A CSS size limit on the pane bounds the drag too. Past a max-width the
+      // pane stops growing while the stored fraction would not, so the handle
+      // would run on with nothing following it. A min-width is a floor that
+      // holds on any screen, so it relaxes the fractional one: on a wide
+      // screen that fraction can exceed the cap and lock the pane in place.
+      const size = horizontal ? rect.width : rect.height;
+      const style = primaryRef.current ? getComputedStyle(primaryRef.current) : null;
+      const px = (value: string | undefined) => {
+        const n = parseFloat(value ?? "");
+        return Number.isFinite(n) && size > 0 ? n / size : null;
+      };
+      const cap = px(horizontal ? style?.maxWidth : style?.maxHeight);
+      const floor = px(horizontal ? style?.minWidth : style?.minHeight);
+      const max = cap === null ? maxPrimary : Math.min(maxPrimary, cap);
+      const min = Math.min(floor === null ? minPrimary : Math.min(minPrimary, floor), max);
+      setPrimaryFrac(Math.min(max, Math.max(min, raw)));
     },
     [orientation, minPrimary, maxPrimary],
   );
@@ -92,7 +111,8 @@ export function PanelSplit({
       )}
     >
       <div
-        className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden"
+        ref={primaryRef}
+        className={cn("flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden", primaryClassName)}
         style={primaryStyle}
       >
         {primary}

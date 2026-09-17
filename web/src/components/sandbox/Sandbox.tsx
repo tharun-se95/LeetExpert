@@ -37,7 +37,9 @@ import { InsightPanel } from "@/components/insight/InsightPanel";
 import { resolveInsight } from "@/lib/insight/resolveInsight";
 import type { ExtractedComplexity } from "@/lib/insight/extractComplexity";
 import { useCoachOptional } from "@/components/coach/CoachProvider";
-import { LanguageMark } from "@/components/kit/languageMarks";
+import { CodeLangMenu } from "@/components/code/CodeLangMenu";
+import { useCodeLang } from "@/lib/codeLang";
+import { resolveCodeLang } from "@/lib/codeLanguages";
 
 const LANGS: SandboxLang[] = ["python", "javascript"];
 
@@ -117,12 +119,23 @@ function SandboxBody({
   extractedComplexity: ExtractedComplexity | null;
   embedded?: boolean;
 }) {
-  const [lang, setLang] = useState<SandboxLang>("python");
+  // One preference for every surface, picked from any of their menus.
+  const [codeLang] = useCodeLang();
+  const lang = resolveCodeLang(codeLang, LANGS);
   const [drafts, setDrafts] = useState<Record<SandboxLang, string>>({
     python: spec.starter.python,
     javascript: spec.starter.javascript,
   });
   const { state, run, reset } = useRunner(spec);
+  // A switch mid-run cancels the run and clears results for the old
+  // language, exactly as the per-sandbox tab used to. Drafts are stored per
+  // language, so nothing typed is lost.
+  const shownLang = useRef(lang);
+  useEffect(() => {
+    if (shownLang.current === lang) return;
+    shownLang.current = lang;
+    reset();
+  }, [lang, reset]);
   const coach = useCoachOptional();
   const lastRunSig = useRef("");
 
@@ -224,53 +237,21 @@ function SandboxBody({
       ) : null}
 
       {/*
-        `-mb-px` pulls the strip over the toolbar's bottom border so the
-        active tab's top-accent rule meets the editor with no line between
-        them — the tab reads as the top edge of the buffer rather than a
-        control above it. `-ml-3` cancels the toolbar's own left px-3 for
-        the ide variant only: a real editor's tab bar starts flush at the
-        window edge, and the container's padding — correct for centering
-        the card variant's tabs — reads as dead margin in front of a bar
-        that's otherwise full-bleed chrome. Both variants share the same
-        flush tab styling (.code-tab === .editor-tab's look, see globals.css)
-        now; only these edge margins are ide-specific.
+        Names the language the editor holds and picks it. Labelled for first
+        paint (the editor itself mounts on the client), on the toolbar's own
+        paper rather than the code canvas.
       */}
-      <div
-        className={cn(
-          "code-surface-tabs inline-flex",
-          variant === "ide" && "-mb-px -ml-3",
-        )}
-      >
-        {LANGS.map((l) => (
-          <button
-            key={l}
-            type="button"
-            onClick={() => {
-              setLang(l);
-              reset();
-            }}
-            aria-pressed={lang === l}
-            data-active={lang === l ? "true" : "false"}
-            className={variant === "ide" ? "editor-tab" : "code-tab"}
-          >
-            <LanguageMark language={l} />
-            {LANG_LABEL[l]}
-          </button>
-        ))}
-      </div>
+      <CodeLangMenu available={LANGS} cssLabels tone="paper" />
 
       {/*
-        Mirrors the tab strip's own flush treatment: full toolbar height
-        (self-stretch on the wrapper, no fixed h-11 on the buttons) and
-        -mr-3 to reach the bar's true right edge, the same way -ml-3 does
-        for the tabs on the left. Reset and Run used to float as separate
-        soft-cornered pills at a slightly shorter height than the bar
-        itself — the one part of this toolbar that read as bolted-on UI
-        rather than chrome, next to a tab strip that was already flush and
-        full-height. Square corners here are not an oversight: a
-        soft-cornered pill flush against the bar's straight top/bottom
-        edges would notch its own corners against them, which is what
-        "resize it properly" was actually pointing at more than the
+        Full toolbar height (self-stretch on the wrapper, no fixed h-11 on the
+        buttons) and -mr-3 to reach the bar's true right edge. Reset and Run
+        used to float as separate soft-cornered pills at a slightly shorter
+        height than the bar itself — the one part of this toolbar that read
+        as bolted-on UI rather than chrome. Square corners here are not an
+        oversight: a soft-cornered pill flush against the bar's straight
+        top/bottom edges would notch its own corners against them, which is
+        what "resize it properly" was actually pointing at more than the
         literal button dimensions.
       */}
       <div
@@ -565,7 +546,7 @@ function IdeWorkspace({
         spaces is a bug rather than a style nit, and the editor silently
         switches indentUnit with the language.
       */}
-      <div className="flex shrink-0 items-center gap-3 border-t border-code-editor-border bg-code-editor px-3 py-1 font-mono text-[0.65rem] text-[color:var(--tok-comment)]">
+      <div className="flex shrink-0 items-center gap-3 bg-code-editor px-3 py-1 font-mono text-[0.65rem] text-[color:var(--tok-comment)]">
         <span className="tabular-nums">
           Ln {cursor.line}, Col {cursor.col}
         </span>
@@ -582,7 +563,7 @@ function IdeWorkspace({
     // Console are all reading/reasoning about the code you just wrote, not
     // page chrome, so they share the code well's (theme-inverted) surface
     // and --tok-* ink rather than page tokens, which don't have guaranteed
-    // contrast against it (same reasoning as .editor-tab in globals.css).
+    // contrast against it (same reasoning as .code-lang-label in globals.css).
     <div className="flex h-full min-h-0 flex-col bg-code-editor">
       {statusBanner}
       <div
@@ -770,7 +751,7 @@ function ResultsRail({
                 // --tok-keyword/--tok-name, not --pop/--foreground: a
                 // family/site accent isn't guaranteed visible against a well
                 // whose brightness doesn't track the page theme (same
-                // reasoning as .code-tab/.editor-tab in globals.css).
+                // reasoning as the CodeMirror caret in editorTheme.ts).
                 selected
                   ? "text-[color:var(--tok-name)] after:bg-[var(--tok-keyword)]"
                   : "text-[color:var(--tok-comment)] after:bg-transparent hover:text-[color:var(--tok-name)] hover:after:bg-code-editor-border",
@@ -901,7 +882,7 @@ function IdeTestcases({
                 // ring-[--tok-keyword], not ring-pop: a family/site accent
                 // isn't guaranteed visible against a well whose brightness
                 // doesn't track the page theme (same reasoning as the
-                // .code-tab/.editor-tab active state in globals.css).
+                // CodeMirror caret in editorTheme.ts).
                 active === i
                   ? "ring-2 ring-inset ring-[color:var(--tok-keyword)]"
                   : "",

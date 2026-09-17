@@ -1,41 +1,39 @@
 "use client";
 
-import { useState } from "react";
 import { CodeBody, CopyButton } from "@/components/md/CodeBlock";
-import { LanguageMark } from "@/components/kit/languageMarks";
+import { CodeLangMenu } from "@/components/code/CodeLangMenu";
+import { useCodeLang } from "@/lib/codeLang";
+import { isCodeLangId, resolveCodeLang, type CodeLangId } from "@/lib/codeLanguages";
 import type { TabBlock } from "@/lib/content/highlightBlocks";
 
-export function CodeTabs({ tabs }: { tabs: TabBlock[] }) {
-  const [active, setActive] = useState(0);
+type LangTab = TabBlock & { language: CodeLangId };
 
-  if (tabs.length === 0) {
+/**
+ * A lesson's code in several languages. Every language renders on the server;
+ * the block names them in data-code-lang-has and generated CSS shows the one
+ * the learner's preference resolves to before paint, so a static page never
+ * flashes the wrong language. Copy follows the store, which agrees with the
+ * attribute once hydrated.
+ */
+export function CodeTabs({ tabs }: { tabs: TabBlock[] }) {
+  const [preferred] = useCodeLang();
+  const panels = tabs.filter((tab): tab is LangTab => isCodeLangId(tab.language));
+  if (panels.length === 0) {
     return null;
   }
-
-  const current = tabs[Math.min(active, tabs.length - 1)];
+  const available = panels.map((tab) => tab.language);
+  const shown = resolveCodeLang(preferred, available);
+  const visible = panels.find((tab) => tab.language === shown) ?? panels[0];
 
   return (
-    <div className="code-surface group my-5">
+    <div className="code-surface group my-5" data-code-lang-has={available.join(" ")}>
       <div className="code-surface-header">
-        <div className="code-surface-tabs" role="tablist" aria-label="Language">
-          {tabs.map((tab, i) => (
-            <button
-              key={tab.language}
-              type="button"
-              role="tab"
-              aria-selected={i === active}
-              data-active={i === active ? "true" : "false"}
-              onClick={() => setActive(i)}
-              className="code-tab"
-            >
-              <LanguageMark language={tab.language} />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        <CopyButton code={current.code} />
+        <CodeLangMenu available={available} cssLabels />
+        <CopyButton code={visible.code} />
       </div>
-      <CodeBody code={current.code} html={current.html} />
+      {panels.map((tab) => (
+        <CodeBody key={tab.language} code={tab.code} html={tab.html} panel={tab.language} />
+      ))}
     </div>
   );
 }

@@ -273,9 +273,10 @@ export function ProblemWorkspace({
         */
           <PanelSplit
             orientation="horizontal"
-            initialPrimary={0.3}
+            initialPrimary={0.5}
             minPrimary={0.28}
             maxPrimary={0.58}
+            primaryClassName="problem-description-pane"
             primary={
               <LeftPane
                 tab={contentTab}
@@ -420,7 +421,10 @@ function LeftPane({
         role="tabpanel"
         id={panelId}
         aria-labelledby={`${tabsId}-tab-${tab}`}
-        className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5"
+        // The pane runs to the viewport's bottom-left corner, where the
+        // lessons-drawer opener floats from lg: the bottom padding lets the
+        // last lines scroll clear of it (bottom-6 + h-11, plus a 1rem gap).
+        className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 lg:pb-21"
       >
         <ContentBody
           tab={tab}

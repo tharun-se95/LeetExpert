@@ -1048,6 +1048,8 @@ describe("lesson reading page", () => {
     const NOT_IN_PAGE_FLOW: Record<string, number> = {
       // Its fullscreen dialog, floating over a scrim.
       "components/md/Mermaid.tsx": 2,
+      // The language menu, portalled to <body> above the page, not in it.
+      "components/code/CodeLangMenu.tsx": 1,
       // Only in difficultyFilterChipClass (problems hub filter panel); the walk
       // arrives because PracticeProblemsList imports a sibling export.
       "lib/course/problemDifficulty.ts": 1,
@@ -1103,5 +1105,35 @@ describe("lesson reading page", () => {
       });
     }
     expect(hits).toEqual([]);
+  });
+});
+
+describe("problem workspace prose", () => {
+  it("holds a readable measure however wide the description pane gets", () => {
+    // Measured 2026-09-17 in Chrome on Move Zeroes: an average character is
+    // 0.742ch in this face and size, and the pane at an even split ran 112
+    // characters a line at 1280px, 148 at 1920 and 199 at 2560. 60ch is 80
+    // characters, WCAG 1.4.8's ceiling; ch scales with the prose size.
+    const css = readFileSync(GLOBALS, "utf8");
+    const prose = cssBlock(css, ".problem-prose .handbook-prose");
+    expect(prose).toMatch(/max-width:\s*60ch/);
+    expect(prose).toMatch(/font-size:\s*calc\(var\(--problem-prose-scale\) \* 1rem\)/);
+  });
+
+  it("caps the description pane at that measure, so wide screens give the room to the editor", () => {
+    // 60ch in the prose's size, measured from the pane's own 1rem ch, plus the
+    // tab panel's sm:px-5 padding on both sides.
+    const css = readFileSync(GLOBALS, "utf8");
+    expect(cssBlock(css, ".problem-description-pane")).toMatch(
+      /max-width:\s*calc\(60ch \* var\(--problem-prose-scale\) \+ 2 \* 1\.25rem\)/,
+    );
+    // A floor at 45 characters (45/80 of 60ch), the low end of a comfortable
+    // measure: the split's 28% floor exceeds the cap from ~1936px and locked it.
+    expect(cssBlock(css, ".problem-description-pane")).toMatch(
+      /min-width:\s*calc\(33\.75ch \* var\(--problem-prose-scale\) \+ 2 \* 1\.25rem\)/,
+    );
+    const workspace = readFileSync(join(SRC, "components", "problems", "ProblemWorkspace.tsx"), "utf8");
+    expect(workspace).toContain('primaryClassName="problem-description-pane"');
+    expect(workspace).toContain('className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 lg:pb-21"');
   });
 });
