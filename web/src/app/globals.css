@@ -996,8 +996,15 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   Problem workspace panes (Description/Explanation/Solution): compact
   rhythm, default reading size — a problem statement is scanned, not read
   the way a lesson is, so it doesn't get the lesson's upsized 19px prose.
+
+  The pane opens at half the workspace, and wide screens made lines too long
+  to track: measured 2026-09-17 in Chrome, an average character here is
+  0.742ch, so the pane ran 112 characters a line at 1280px and 199 at 2560px.
+  60ch holds it at 80, WCAG 1.4.8's ceiling, and scales with the prose size.
+  Left-aligned, so the text stays under the pane's tabs.
 */
 .problem-prose .handbook-prose {
+  max-width: 60ch;
   font-size: 0.875rem;
   line-height: 1.5;
 }

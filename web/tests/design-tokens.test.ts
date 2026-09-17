@@ -1107,3 +1107,14 @@ describe("lesson reading page", () => {
     expect(hits).toEqual([]);
   });
 });
+
+describe("problem workspace prose", () => {
+  it("holds a readable measure however wide the description pane gets", () => {
+    // Measured 2026-09-17 in Chrome on Move Zeroes: an average character is
+    // 0.742ch in this face and size, and the pane at an even split ran 112
+    // characters a line at 1280px, 148 at 1920 and 199 at 2560. 60ch is 80
+    // characters, WCAG 1.4.8's ceiling; ch scales with the prose size.
+    const css = readFileSync(GLOBALS, "utf8");
+    expect(cssBlock(css, ".problem-prose .handbook-prose")).toMatch(/max-width:\s*60ch/);
+  });
+});
