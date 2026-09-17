@@ -131,4 +131,17 @@ describe("the pre-paint script", () => {
     // Usage, not the word: the layout's own comment explains why it is not used.
     expect(layout).not.toMatch(/strategy=["'{]\s*["']?beforeInteractive/);
   });
+
+  it("imports nothing that uses React hooks, since the server layout imports it", () => {
+    // tsc and these tests cannot see Next's server/client boundary: when this
+    // module reached codeLang.ts (useSyncExternalStore), every route 500'd.
+    const src = join(__dirname, "..", "src");
+    const script = readFileSync(join(src, "lib", "codeLangScript.ts"), "utf8");
+    const imports = [...script.matchAll(/from "@\/([^"]+)"/g)].map((m) => m[1]);
+    expect(imports.length).toBeGreaterThan(0);
+    for (const path of imports) {
+      const imported = readFileSync(join(src, `${path}.ts`), "utf8");
+      expect(imported, path).not.toMatch(/from "react"/);
+    }
+  });
 });

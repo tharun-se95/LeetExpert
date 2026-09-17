@@ -1,6 +1,9 @@
 import { useSyncExternalStore } from "react";
 import type { SandboxLang } from "@/components/sandbox/types";
 import type { VizLang } from "@/lib/viz/highlightVizCode";
+import { CODE_LANG_ATTRIBUTE, CODE_LANG_STORAGE_KEY } from "@/lib/codeLangKeys";
+
+export { CODE_LANG_ATTRIBUTE, CODE_LANG_STORAGE_KEY };
 
 /**
  * The learner's code language, chosen once in the header.
@@ -14,9 +17,6 @@ import type { VizLang } from "@/lib/viz/highlightVizCode";
  * Spec: docs/superpowers/specs/2026-09-14-global-code-language-switch-design.md
  */
 export type CodeLang = "python" | "js";
-
-export const CODE_LANG_STORAGE_KEY = "dsa-code-lang";
-export const CODE_LANG_ATTRIBUTE = "data-code-lang";
 
 export function parseCodeLang(value: unknown): CodeLang {
   return value === "js" ? "js" : "python";

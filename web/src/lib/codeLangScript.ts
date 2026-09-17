@@ -1,4 +1,4 @@
-import { CODE_LANG_ATTRIBUTE, CODE_LANG_STORAGE_KEY } from "@/lib/codeLang";
+import { CODE_LANG_ATTRIBUTE, CODE_LANG_STORAGE_KEY } from "@/lib/codeLangKeys";
 
 /**
  * Rendered as a plain inline <script> at the top of <body>, right after the
