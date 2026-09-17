@@ -3,6 +3,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CodeTabs } from "@/components/course/CodeTabs";
+import { CodeLangSwitchView, CodeLangToggleView } from "@/components/layout/CodeLangSwitch";
 
 const read = (...p: string[]) => readFileSync(join(__dirname, "..", "src", ...p), "utf8");
 const globals = read("app", "globals.css");
@@ -112,5 +113,67 @@ describe("dead tab styles", () => {
       expect(globals).not.toContain(`\n${cls} {`);
     }
     expect(globals).not.toContain("`.editor-tab`");
+  });
+});
+
+describe("header code-language controls", () => {
+  const pill = (value: "python" | "js") =>
+    renderToStaticMarkup(<CodeLangSwitchView value={value} onChange={() => {}} />);
+  const toggle = (value: "python" | "js") =>
+    renderToStaticMarkup(<CodeLangToggleView value={value} onChange={() => {}} />);
+
+  it("is a named radio group with both choices, as one round hairline pill", () => {
+    const html = pill("python");
+    const group = html.match(/<div[^>]*role="radiogroup"[^>]*>/)![0];
+    expect(group).toContain('aria-label="Code language"');
+    for (const c of ["rounded-full", "border", "border-border", "h-10", "hidden", "sm:inline-flex"]) {
+      expect(group).toMatch(new RegExp(`\\b${c.replace(":", "\\:")}(?=[\\s"])`));
+    }
+    expect(html.match(/role="radio"/g)).toHaveLength(2);
+    expect(html).toContain(">Python</button>");
+    expect(html).toContain(">JS/TS</button>");
+    expect(html).not.toMatch(/focus-visible:ring/);
+  });
+
+  it("marks the chosen option, gives it the only tab stop, and fills only that side", () => {
+    const html = pill("js");
+    const python = html.match(/<button[^>]*>[\s\S]*?Python<\/button>/)![0];
+    const js = html.match(/<button[^>]*>[\s\S]*?JS\/TS<\/button>/)![0];
+    expect(python).toMatch(/aria-checked="false"[^>]*tabindex="-1"/);
+    expect(js).toMatch(/aria-checked="true"[^>]*tabindex="0"/);
+    expect(js).toMatch(/\bbg-surface\b/);
+    expect(python).not.toMatch(/\bbg-surface\b/);
+  });
+
+  it("offers phones one round toggle that names the current and next language", () => {
+    const btn = toggle("python").match(/<button[^>]*>/)![0];
+    expect(btn).toContain('aria-label="Code language: Python. Switch to JS/TS"');
+    for (const c of ["rounded-full", "h-11", "w-11", "sm:hidden"]) expect(btn).toContain(c);
+    expect(toggle("js")).toContain('aria-label="Code language: JS/TS. Switch to Python"');
+  });
+
+  it("puts the pill after Practice and the toggle before search, in both headers, never on the Next.js course", () => {
+    const header = read("components", "layout", "Header.tsx");
+    const practice = header.indexOf("Practice\n");
+    expect(header.indexOf("<CodeLangSwitch />")).toBeGreaterThan(practice);
+    expect(header.indexOf("<CodeLangToggle />")).toBeLessThan(header.indexOf('aria-label="Search lessons and problems"'));
+    expect(header).toMatch(/\{showCodeLang \? <CodeLangSwitch \/> : null\}/);
+    expect(header).toMatch(/\{showCodeLang \? <CodeLangToggle \/> : null\}/);
+    const landing = read("components", "landing", "LandingHeader.tsx");
+    expect(landing.indexOf("<CodeLangSwitch />")).toBeGreaterThan(landing.indexOf("NAV.map"));
+    expect(landing.indexOf("<CodeLangToggle />")).toBeLessThan(landing.indexOf('aria-label="Search lessons and problems"'));
+  });
+
+  it("tightens both headers below sm so the toggle fits a 320px phone", () => {
+    // Measured 2026-09-15 by injecting the toggle into the live header: without
+    // these, a lesson header overflowed 26.5px at 320px and the landing 39.5px.
+    const header = read("components", "layout", "Header.tsx").match(/<header className="([^"]*)"/)![1];
+    for (const c of ["grid-cols-[auto_minmax(0,1fr)_auto]", "sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]", "gap-1.5", "px-2", "sm:px-4"]) {
+      expect(header.split(/\s+/), c).toContain(c);
+    }
+    const landing = read("components", "landing", "LandingHeader.tsx").match(/className="(mx-auto grid[^"]*)"/)![1];
+    for (const c of ["grid-cols-[auto_minmax(0,1fr)_auto]", "sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]", "gap-1.5", "sm:gap-3", "px-6"]) {
+      expect(landing.split(/\s+/), c).toContain(c);
+    }
   });
 });

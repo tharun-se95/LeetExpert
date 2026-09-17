@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { CodeLangSwitch, CodeLangToggle } from "@/components/layout/CodeLangSwitch";
 import { Lamp } from "@/components/brand/Lamp";
 import { LOGO_LAMP_SIZE, NAV_LINK, ROUND_CONTROL, WORDMARK, TRANSLUCENT_PAPER } from "@/components/layout/headerChrome";
 import { cn } from "@/lib/utils";
@@ -48,7 +49,7 @@ export function LandingHeader({
     >
       {/* Same centred container as HomePage (max-w-landing, px-6 md:px-16),
           so the logo's left edge sits on the hero heading's left edge. */}
-      <div className="mx-auto grid h-11 max-w-landing grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-6 md:h-10 md:px-16">
+      <div className="mx-auto grid h-11 max-w-landing grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 px-6 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-3 md:h-10 md:px-16">
         <Link
           href="/"
           className="lamp-link flex min-w-0 items-center gap-2.5 justify-self-start rounded-[length:var(--radius-md)]"
@@ -68,7 +69,7 @@ export function LandingHeader({
 
         <nav
           aria-label="Product modes"
-          className="flex items-center gap-5 justify-self-center sm:gap-8"
+          className="flex items-center gap-4 justify-self-center sm:gap-8"
         >
           {NAV.map(({ href, label }) => (
             <Link
@@ -79,9 +80,11 @@ export function LandingHeader({
               {label}
             </Link>
           ))}
+          <CodeLangSwitch />
         </nav>
 
-        <div className="flex items-center justify-end gap-2 justify-self-end sm:gap-3">
+        <div className="flex items-center justify-end gap-1 justify-self-end sm:gap-3">
+          <CodeLangToggle />
           {/* h-11 below md matches Header.tsx's touch target; the pill takes
               over from md, where there is room for the label and ⌘K. */}
           <button
