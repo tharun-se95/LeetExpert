@@ -7,7 +7,7 @@ import { mapMarkersToDisplay } from "@/lib/insight/parseCaseMemory";
 // Sits on --code-editor (see InsightPanel), so markers read from --tok-*
 // rather than the page's --accent/--mark/--good/--warn, which aren't
 // guaranteed visible against a well whose brightness doesn't track the
-// page theme (same reasoning as .code-tab/.editor-tab in globals.css).
+// page theme (same reasoning as .code-lang-label in globals.css).
 const MARKER_COLOR: Record<string, string> = {
   left: "var(--tok-keyword)",
   right: "var(--tok-keyword)",

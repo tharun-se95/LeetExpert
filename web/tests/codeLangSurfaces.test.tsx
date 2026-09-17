@@ -88,3 +88,29 @@ describe("viz code panels", () => {
     expect(panel).toContain('className="code-lang-label"');
   });
 });
+
+describe("sandbox", () => {
+  const sandbox = read("components", "sandbox", "Sandbox.tsx");
+
+  it("runs the global language instead of owning tabs", () => {
+    expect(sandbox).not.toMatch(/setLang\(/);
+    expect(sandbox).not.toMatch(/useState<SandboxLang>/);
+    expect(sandbox).toMatch(/const \[codeLang\] = useCodeLang\(\);/);
+    expect(sandbox).toMatch(/const lang = sandboxLangFor\(codeLang\);/);
+  });
+
+  it("cancels an in-flight run when the language changes, like the old tab did", () => {
+    expect(sandbox).toMatch(
+      /if \(shownLang\.current === lang\) return;\s*shownLang\.current = lang;\s*reset\(\);/,
+    );
+  });
+});
+
+describe("dead tab styles", () => {
+  it("are gone once no surface renders language tabs", () => {
+    for (const cls of [".code-surface-tabs", ".code-tab", ".editor-tab"]) {
+      expect(globals).not.toContain(`\n${cls} {`);
+    }
+    expect(globals).not.toContain("`.editor-tab`");
+  });
+});
