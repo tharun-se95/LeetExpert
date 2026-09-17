@@ -124,7 +124,6 @@ describe("where the grain goes", () => {
     );
     expect(uses).toEqual({
       "components/coach/CoachPanel.tsx": 1,
-      "components/coach/CoachStrip.tsx": 1,
       "components/layout/Sidebar.tsx": 1,
       "components/layout/CourseNavPanel.tsx": 1,
       "components/layout/FloatingLessonsButton.tsx": 1,

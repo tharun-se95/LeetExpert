@@ -86,14 +86,13 @@ describe("PanelSplit with a secondary-sized pane", () => {
     return { host, render: (ui: ReactElement) => act(() => created.render(ui)) };
   }
 
-  it("keeps the primary mounted when the secondary appears, disappears or stops resizing", () => {
+  it("keeps the primary mounted when the secondary appears or disappears", () => {
     // The sandbox is the primary: a remount would wipe its run results.
     const { host, render } = mountSplit();
-    const split = (secondary: ReactNode, resizable = true) => (
+    const split = (secondary: ReactNode) => (
       <PanelSplit
         orientation="horizontal"
         sizedPane="secondary"
-        resizable={resizable}
         primary={<Counter />}
         secondary={secondary}
       />
@@ -105,8 +104,6 @@ describe("PanelSplit with a secondary-sized pane", () => {
     act(() => counter.click());
     render(split(<p>coach</p>));
     expect(host.querySelector("[data-split-handle]")).not.toBeNull();
-    render(split(<p>strip</p>, false));
-    expect(host.querySelector("[data-split-handle]")).toBeNull();
     render(split(null));
     expect(host.querySelector("[data-counter]")).toBe(counter);
     expect(counter.textContent).toBe("1");

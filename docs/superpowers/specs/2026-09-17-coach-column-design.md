@@ -27,17 +27,17 @@ answers both:
   run never expands it.
 - **It read as a bolted-on utility**, opened from a small text button in the
   sandbox toolbar. The column is a first-class pane with the coach's own mark
-  and header, in the IDE's own pane language, and it collapses to a strip
-  that still carries the mark and the unread dot.
+  and header, in the IDE's own pane language; collapsed, it hands back to the
+  same launcher (and unread dot) the floating coach uses.
 
 ## 2. Decisions (owner, 2026-09-17)
 
 | Question | Decision |
 | --- | --- |
 | When | When the problem workspace (description + IDE, the measured row, not the viewport) can hold the description at its cap, an editor of at least 80 code columns plus its gutter (`--ide-editor-columns: 86`, at the code size) and a coach of at least `--coach-column-min` (20rem), plus the two handles, judged at the browser's default text size (§4). Otherwise the floating launcher and panel, unchanged. |
-| Open/close | Always there, collapsible. Expanded by default; collapses to a strip; the choice is remembered. |
+| Open/close | Always there, collapsible. Expanded by default; the choice is remembered. Collapsed, the column leaves the layout (the editor takes the full width) and the coach's floating launcher, with its unread dot, brings it back. |
 | Width | A drag handle between editor and coach, bounded by both minimums; the width is remembered in rem. Default `--coach-column-width` (26rem, the floating panel's width). |
-| A failing run | Never expands a collapsed column. It sets the unread dot on the strip. |
+| A failing run | Never expands a collapsed column. It sets the unread dot on the launcher. |
 | Escape | Does nothing in column mode: the column is layout, not a popover. |
 
 Why workspace width: the lessons drawer docks in flow on problem pages and
@@ -46,7 +46,7 @@ room than a 1600px screen with it closed.
 
 **Correction recorded during spec:** the design review mentioned a
 "X failed — Coach has a diagnosis / Open coach" banner. It no longer exists
-in the code (nothing renders `CoachFailBanner`). In column mode the strip's
+in the code (nothing renders `CoachFailBanner`). In column mode the launcher's
 unread dot is the only signal on a collapsed column. Bringing a banner back is
 out of scope here.
 
@@ -62,14 +62,14 @@ out of scope here.
   panes carry none). Its header is the coach mark and title, with a
   "Collapse problem coach" button (`aria-expanded="true"`) where the floating
   panel has ✕.
-- **Collapsed strip:** `w-12` (3rem, so its left hairline never squeezes the 44px
-  button inside), same paper, `border-l border-border`,
-  no handle (a fixed strip has nothing to resize). At its top, a 44px button
-  with the coach mark, "Expand problem coach", `aria-expanded="false"`, and the
-  unread dot plus "New diagnosis" for screen readers when unread.
-- Focus: expanding from the strip focuses the composer, as an explicit open
-  does today; collapsing returns focus to the strip button (the provider's
-  existing close-focus path, with the strip registered as the launcher).
+- **Collapsed:** the column leaves the layout and the editor takes the full
+  width. The coach's floating launcher (bottom-right, with its unread dot)
+  expands it again. A 3rem strip holding the mark at the right edge was built
+  first and withdrawn the same day (owner, 2026-09-17: "it doesn't look
+  good").
+- Focus: expanding from the launcher focuses the composer, as an explicit open
+  does today; collapsing returns focus to the launcher (the provider's existing
+  close-focus path).
 
 ## 4. Threshold
 
@@ -126,8 +126,6 @@ feed back into itself.
     handle;
   - `sizedPane: "primary" | "secondary"` (default `"primary"`, today's
     behaviour);
-  - `resizable` (default `true`): `false` renders no handle and applies no
-    size;
   - `storageKey`: persists a secondary size in rem and restores it.
 
   A secondary-sized drag is bounded by the secondary's CSS min/max width and
@@ -138,13 +136,13 @@ feed back into itself.
 - **`IdeWithCoach`:**
   - measures the workspace row (`data-problem-workspace`, added by
     `ProblemWorkspace`) and reports the layout;
-  - renders `PanelSplit` with the sandbox as primary, and the column, the
-    strip or nothing as secondary;
-  - renders `CoachOverlay` only in floating layout.
+  - renders `PanelSplit` with the sandbox as primary, and the expanded column
+    or nothing as secondary;
+  - renders `CoachOverlay` unless the column is expanded, so a closed coach in
+    either layout shows the launcher.
 - **`CoachPanel`:** variant `"column"`, with a header whose collapse control
   replaces ✕. It registers its composer for focus like the floating variant.
   It takes no dialog role and handles no Escape.
-- **`CoachStrip`** (new): the collapsed strip button, registered as the launcher.
 
 ## 7. Tokens
 
@@ -171,8 +169,9 @@ applied only in column mode, where the threshold guarantees it fits.
      opens a collapsed column nor stays unread on an open one;
    - collapse and expand persist;
    - floating layout still auto-opens on the first failure.
-4. `coach-ui.test.ts`: the floating overlay only renders in floating layout;
-   the strip and column controls carry their labels and `aria-expanded`.
+4. `coach-ui.test.ts`: the overlay renders unless the column is expanded, no
+   strip component exists, and the collapse control carries its label and
+   `aria-expanded`.
 
 Browser verification:
 - Widths 1280, 1600 and 1920, drawer open and closed; mode matches the

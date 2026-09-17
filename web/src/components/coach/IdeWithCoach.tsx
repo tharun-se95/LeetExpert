@@ -6,12 +6,13 @@ import { coachColumnFits, lengthToPx } from "@/lib/coach/coachColumn";
 import { CoachOverlay } from "./CoachOverlay";
 import { CoachPanel } from "./CoachPanel";
 import { useCoach } from "./CoachProvider";
-import { CoachStrip } from "./CoachStrip";
 
 /**
  * The sandbox with its coach. On a workspace wide enough to hold it
- * (lib/coach/coachColumn.ts) the coach is a column beside the editor,
- * collapsible to a strip; otherwise it floats over the IDE. The sandbox is
+ * (lib/coach/coachColumn.ts) the coach is a column beside the editor. Collapsed,
+ * it leaves the layout and the floating launcher brings it back (a strip at the
+ * edge was tried and withdrawn, owner 2026-09-17); on a narrower workspace the
+ * coach floats over the IDE as before. The sandbox is
  * PanelSplit's primary in every layout, so switching never remounts it and
  * wipes run results.
  * Spec: docs/superpowers/specs/2026-09-17-coach-column-design.md
@@ -65,14 +66,14 @@ export function IdeWithCoach({ sandbox }: { sandbox: ReactNode }) {
         orientation="horizontal"
         sizedPane="secondary"
         storageKey="dsa:coach:column-width"
-        resizable={column && open}
         resizeLabel="Resize editor and coach"
         primary={sandbox}
-        primaryClassName={column ? "ide-editor-pane" : undefined}
-        secondary={column ? open ? <CoachPanel variant="column" /> : <CoachStrip /> : null}
-        secondaryClassName={column && open ? "coach-column" : undefined}
+        primaryClassName={column && open ? "ide-editor-pane" : undefined}
+        secondary={column && open ? <CoachPanel variant="column" /> : null}
+        secondaryClassName="coach-column"
       />
-      {column ? null : <CoachOverlay />}
+      {/* Closed in either layout, this is the launcher; open, the floating panel. */}
+      {column && open ? null : <CoachOverlay />}
     </div>
   );
 }

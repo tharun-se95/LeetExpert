@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -35,19 +35,18 @@ describe("coach column", () => {
     expect(ide).toMatch(/primary=\{sandbox\}/);
     expect(ide).toContain('sizedPane="secondary"');
     expect(ide).toContain('storageKey="dsa:coach:column-width"');
-    expect(ide).toMatch(/\{column \? null : <CoachOverlay \/>\}/);
+    // Collapsed, the column leaves the layout and the floating launcher brings it back.
+    expect(ide).toMatch(/\{column && open \? null : <CoachOverlay \/>\}/);
+    expect(ide).toMatch(/secondary=\{column && open \? <CoachPanel variant="column" \/> : null\}/);
+    expect(existsSync(join(SRC, "components", "coach", "CoachStrip.tsx"))).toBe(false);
     expect(ide).toMatch(/coachColumnFits\(/);
     expect(ide).toContain('closest<HTMLElement>("[data-problem-workspace]")');
     expect(read("components", "problems", "ProblemWorkspace.tsx")).toMatch(/<div data-problem-workspace /);
   });
 
-  it("collapses from the column header and expands from the strip, naming the state", () => {
+  it("collapses from the column header, naming the state", () => {
     const panel = read("components", "coach", "CoachPanel.tsx");
     expect(panel).toMatch(/aria-label="Collapse problem coach"\s+aria-expanded=\{true\}/);
-    const strip = read("components", "coach", "CoachStrip.tsx");
-    expect(strip).toMatch(/aria-label="Expand problem coach"\s+aria-expanded=\{false\}/);
-    expect(strip).toContain("registerLauncherEl(ref.current)");
-    expect(strip).toContain("New diagnosis");
   });
 
   it("is layout, not a popover: no dialog role and no Escape in the column", () => {

@@ -34,7 +34,7 @@ function readStoredRem(key: string | undefined): number | null {
  * instead (optionally remembered), and the primary takes the rest.
  *
  * The primary is always the first child, in every mode: a secondary that
- * comes, goes or stops resizing never remounts it. The problem workspace's
+ * comes or goes never remounts it. The problem workspace's
  * sandbox lives there, and a remount would wipe its run results.
  */
 export function PanelSplit({
@@ -48,7 +48,6 @@ export function PanelSplit({
   primaryClassName,
   secondaryClassName,
   sizedPane = "primary",
-  resizable = true,
   storageKey,
   resizeLabel,
 }: {
@@ -66,8 +65,6 @@ export function PanelSplit({
   secondaryClassName?: string;
   /** Which pane the handle sizes. */
   sizedPane?: "primary" | "secondary";
-  /** false: no handle and no applied size, for a fixed secondary such as a collapsed strip. */
-  resizable?: boolean;
   /** Remembers the secondary's size in rem (sizedPane="secondary" only). */
   storageKey?: string;
   resizeLabel?: string;
@@ -183,7 +180,7 @@ export function PanelSplit({
         : { height: `${primaryFrac * 100}%` }
       : undefined;
   const secondaryStyle =
-    sizesSecondary && resizable && secondaryRem !== null
+    sizesSecondary && secondaryRem !== null
       ? horizontal
         ? { width: `${secondaryRem}rem` }
         : { height: `${secondaryRem}rem` }
@@ -220,7 +217,7 @@ export function PanelSplit({
         "this splits, and it moves" — that's the grip chip below, which is
         the one thing here that departs from a plain line, on purpose.
       */}
-      {hasSecondary && resizable ? (
+      {hasSecondary ? (
         <button
           ref={handleRef}
           type="button"
