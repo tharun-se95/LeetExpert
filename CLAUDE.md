@@ -177,6 +177,26 @@ The content is the product. Code exists to serve it.
   shadow and the resize grip, whose pill overhangs the edge (which is also why
   AppShell's hover-close hit-tests `rail.contains`). Guarded in
   `sidebarChrome.test.ts` and `courseNavPanel.test.tsx`.
+- **Code language is one global choice.** The header's switch
+  (`CodeLangSwitch`: a round hairline pill after Practice from `sm`, a round
+  toggle beside search below it; hidden on the TypeScript-only Next.js course)
+  picks `python` or `js`; `js` means TypeScript where code is read (lesson
+  blocks, viz panels) and JavaScript where it runs (the sandbox). No surface
+  owns language tabs. `lib/codeLang.ts` is the store. A plain inline script at
+  the top of `<body>`, after the lamp's boot script (`lib/codeLangScript.ts`),
+  sets `<html data-code-lang>` from `localStorage` (`dsa-code-lang`) while the
+  page parses — never `next/script` `beforeInteractive`, which the App Router
+  runs from its bootstrap after first paint. The server layout imports that
+  script, so its keys live in the hook-free `lib/codeLangKeys.ts`: reaching
+  `codeLang.ts` (`useSyncExternalStore`) from the layout 500'd every route, and
+  neither `tsc` nor vitest can see that boundary. Lesson code blocks
+  server-render both languages with `data-code-lang-panel` and CSS hides the
+  other one, so pages stay static and never flash. Hide rules key off an
+  explicit `js`, so no attribute reads as Python. A switch mid-run cancels the
+  sandbox run; drafts are kept per language. Every `tabs` fence must carry
+  exactly `python` and `typescript` (content test). Guarded in
+  `codeLang.test.ts` and `codeLangSurfaces.test.tsx`; spec
+  `docs/superpowers/specs/2026-09-14-global-code-language-switch-design.md`.
 - **The landing page (`/`) has its own header and a scroll-typed story; no
   other route does.** Owner direction 2026-09-14
   (specs `docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md`
