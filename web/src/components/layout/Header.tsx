@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { List, MagnifyingGlass } from "@phosphor-icons/react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { CodeLangSwitch, CodeLangToggle } from "@/components/layout/CodeLangSwitch";
 import { Lamp } from "@/components/brand/Lamp";
 import {
   LOGO_LAMP_SIZE,
@@ -55,19 +54,13 @@ export function Header({
       !pathname.startsWith("/courses/dsa/problems"));
   const practiceActive = pathname.startsWith("/courses/dsa/problems");
   const nextjsCurriculumActive = pathname.startsWith("/courses/nextjs");
-  // The Next.js course is TypeScript-only: no language to choose there.
-  const showCodeLang = !(courseSlug === "nextjs" && routeCourse?.status === "available");
 
   // The landing header's nav: full ink, no pill. The current mode carries a
   // steady underline and aria-current rather than a filled chip.
   const modeLinkClass = (active: boolean) => cn(NAV_LINK, active && NAV_LINK_ACTIVE);
 
-  // Below sm the right cluster also holds the code-language toggle. Measured
-  // 2026-09-15 (13px root): with equal 1fr side tracks a lesson header
-  // overflowed 26.5px at 320px, so the sides size to their content, the
-  // nav centres in the middle track, and gaps and padding step down once.
   return (
-    <header className="print:hidden absolute inset-x-0 top-0 z-40 grid h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 border-b border-border bg-background/90 backdrop-blur-md shadow-edge-bottom px-2 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-3 sm:px-4">
+    <header className="print:hidden absolute inset-x-0 top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-background/90 backdrop-blur-md shadow-edge-bottom px-3 sm:gap-3 sm:px-4">
       <div className="flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
         {showLessonsMenu && onToggleLessonsMenu ? (
           <button
@@ -125,7 +118,7 @@ export function Header({
       </div>
 
       <nav
-        className="flex shrink-0 items-center gap-4 justify-self-center sm:gap-8"
+        className="flex shrink-0 items-center gap-5 justify-self-center sm:gap-8"
         aria-label="Product modes"
       >
         {courseSlug === "nextjs" && routeCourse?.status === "available" ? (
@@ -154,11 +147,9 @@ export function Header({
             </Link>
           </>
         )}
-        {showCodeLang ? <CodeLangSwitch /> : null}
       </nav>
 
-      <div className="flex min-w-0 items-center justify-end gap-1 justify-self-end sm:gap-2 md:gap-3">
-        {showCodeLang ? <CodeLangToggle /> : null}
+      <div className="flex min-w-0 items-center justify-end gap-1.5 justify-self-end sm:gap-2 md:gap-3">
         {/*
           Icon-only below md: the Search+⌘K pill was the main collision with
           centered Lessons/Practice in the 640–768px band (1fr_auto_1fr).

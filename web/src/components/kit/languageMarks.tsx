@@ -1,5 +1,5 @@
 /**
- * Small per-language identity marks: the header's code-language switch, the
+ * Small per-language identity marks: the code-language picker, the
  * sandbox toolbar, lesson code blocks and viz code panels all render them, so
  * a language reads the same wherever its code appears.
  *
