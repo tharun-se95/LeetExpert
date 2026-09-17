@@ -32,7 +32,7 @@ export function PanelSplit({
   minPrimary?: number;
   maxPrimary?: number;
   className?: string;
-  /** Classes for the primary pane; a CSS max-width there also bounds the drag. */
+  /** Classes for the primary pane; a CSS max- or min-width there also bounds the drag. */
   primaryClassName?: string;
   resizeLabel?: string;
 }) {
@@ -49,19 +49,22 @@ export function PanelSplit({
       const raw = horizontal
         ? (e.clientX - rect.left) / rect.width
         : (e.clientY - rect.top) / rect.height;
-      // A CSS cap on the pane stops it growing while the stored fraction
-      // would not: the handle would keep moving with nothing following it,
-      // then need dragging back through a dead zone.
-      const cap = primaryRef.current
-        ? parseFloat(
-            horizontal
-              ? getComputedStyle(primaryRef.current).maxWidth
-              : getComputedStyle(primaryRef.current).maxHeight,
-          )
-        : NaN;
+      // A CSS size limit on the pane bounds the drag too. Past a max-width the
+      // pane stops growing while the stored fraction would not, so the handle
+      // would run on with nothing following it. A min-width is a floor that
+      // holds on any screen, so it relaxes the fractional one: on a wide
+      // screen that fraction can exceed the cap and lock the pane in place.
       const size = horizontal ? rect.width : rect.height;
-      const max = Number.isFinite(cap) && size > 0 ? Math.min(maxPrimary, cap / size) : maxPrimary;
-      setPrimaryFrac(Math.min(max, Math.max(minPrimary, raw)));
+      const style = primaryRef.current ? getComputedStyle(primaryRef.current) : null;
+      const px = (value: string | undefined) => {
+        const n = parseFloat(value ?? "");
+        return Number.isFinite(n) && size > 0 ? n / size : null;
+      };
+      const cap = px(horizontal ? style?.maxWidth : style?.maxHeight);
+      const floor = px(horizontal ? style?.minWidth : style?.minHeight);
+      const max = cap === null ? maxPrimary : Math.min(maxPrimary, cap);
+      const min = Math.min(floor === null ? minPrimary : Math.min(minPrimary, floor), max);
+      setPrimaryFrac(Math.min(max, Math.max(min, raw)));
     },
     [orientation, minPrimary, maxPrimary],
   );

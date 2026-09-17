@@ -1019,12 +1019,15 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 /*
   The description pane stops growing at the prose measure plus the tab
   panel's sm:px-5 padding, so on a wide screen the spare width goes to the
-  editor instead of sitting empty beside 80-character lines. PanelSplit reads
-  this max-width to stop its drag at the same edge. Classic (non-overlay)
-  scrollbars take their width from inside it, wrapping a line or so early.
+  editor instead of sitting empty beside 80-character lines. The floor is 45
+  characters (45/80 of 60ch), the low end of a comfortable measure: the split's
+  own 28% floor passes the cap from about 1936px wide and locked the pane.
+  PanelSplit reads both limits to bound its drag at the same edges. Classic
+  (non-overlay) scrollbars take their width from inside, wrapping a line early.
 */
 .problem-description-pane {
   max-width: calc(60ch * var(--problem-prose-scale) + 2 * 1.25rem);
+  min-width: calc(33.75ch * var(--problem-prose-scale) + 2 * 1.25rem);
 }
 
 .problem-prose .handbook-prose h2:not(.chapter-heading) {

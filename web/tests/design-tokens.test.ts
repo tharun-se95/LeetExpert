@@ -1127,6 +1127,11 @@ describe("problem workspace prose", () => {
     expect(cssBlock(css, ".problem-description-pane")).toMatch(
       /max-width:\s*calc\(60ch \* var\(--problem-prose-scale\) \+ 2 \* 1\.25rem\)/,
     );
+    // A floor at 45 characters (45/80 of 60ch), the low end of a comfortable
+    // measure: the split's 28% floor exceeds the cap from ~1936px and locked it.
+    expect(cssBlock(css, ".problem-description-pane")).toMatch(
+      /min-width:\s*calc\(33\.75ch \* var\(--problem-prose-scale\) \+ 2 \* 1\.25rem\)/,
+    );
     const workspace = readFileSync(join(SRC, "components", "problems", "ProblemWorkspace.tsx"), "utf8");
     expect(workspace).toContain('primaryClassName="problem-description-pane"');
     expect(workspace).toContain('className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5"');

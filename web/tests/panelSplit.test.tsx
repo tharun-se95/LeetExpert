@@ -15,9 +15,9 @@ afterEach(() => {
 });
 
 describe("PanelSplit", () => {
-  it("stops the drag at the primary pane's CSS max-width, so the handle never runs past the pane", () => {
+  it("bounds the drag by the primary pane's CSS max-width and min-width, so the handle never runs past the pane", () => {
     const style = document.createElement("style");
-    style.textContent = ".capped { max-width: 400px; }";
+    style.textContent = ".capped { max-width: 400px; min-width: 150px; }";
     document.head.append(style);
     const host = document.createElement("div");
     document.body.append(host);
@@ -55,6 +55,13 @@ describe("PanelSplit", () => {
       window.dispatchEvent(Object.assign(new Event("pointermove"), { clientX: 300, clientY: 10 }));
     });
     expect(primary.style.width).toBe("30%");
+    // minPrimary is 25% (250px) by default; the pane's own 150px min-width is
+    // the lower floor, so the drag may go below the fraction. On a wide screen
+    // a fractional floor can exceed the cap and lock the pane in place.
+    act(() => {
+      window.dispatchEvent(Object.assign(new Event("pointermove"), { clientX: 100, clientY: 10 }));
+    });
+    expect(primary.style.width).toBe("15%");
     act(() => {
       window.dispatchEvent(new Event("pointerup"));
     });
