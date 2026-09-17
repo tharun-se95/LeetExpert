@@ -2,6 +2,7 @@ import { load as loadYaml } from "js-yaml";
 import { getModule } from "@/lib/course/manifest";
 import { problemHref } from "@/lib/course/nav";
 import { getProblemDifficulty } from "@/lib/course/problemDifficulty";
+import { liftFence } from "@/lib/content/liftFence";
 
 export interface PracticeBrief {
   slug: string;
@@ -54,12 +55,7 @@ export function extractPracticeProblemsFence(markdown: string): {
   const m = FENCE.exec(markdown);
   if (!m) return { body: markdown, authored: null };
   const authored = parsePracticeProblemsYaml(m[2]);
-  const body = (
-    markdown.slice(0, m.index) + markdown.slice(m.index + m[0].length)
-  )
-    .replace(/\n{3,}/g, "\n\n")
-    .trimEnd()
-    .concat("\n");
+  const body = liftFence(markdown, m.index, m.index + m[0].length);
   return { body, authored };
 }
 
