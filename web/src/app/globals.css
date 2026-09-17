@@ -497,6 +497,14 @@ html {
     own 1rem.
   */
   --problem-prose-scale: 0.875;
+  /*
+    The coach column (spec 2026-09-17-coach-column-design.md): the editor's and
+    the coach's minimum widths decide whether the workspace can hold the column
+    at all (lib/coach/coachColumn.ts); it opens at the floating panel's width.
+  */
+  --ide-editor-min: 40rem;
+  --coach-column-min: 20rem;
+  --coach-column-width: 26rem;
 }
 
 /*
@@ -1014,6 +1022,21 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   max-width: 60ch;
   font-size: calc(var(--problem-prose-scale) * 1rem);
   line-height: 1.5;
+}
+
+/*
+  Coach column panes. The editor's floor is applied only in column mode, where
+  the threshold guarantees the row can hold it. PanelSplit reads both floors to
+  bound the editor/coach drag, and the coach may shrink to its floor when the
+  row is narrower than its opening width.
+*/
+.ide-editor-pane {
+  min-width: var(--ide-editor-min);
+}
+
+.coach-column {
+  width: var(--coach-column-width);
+  min-width: var(--coach-column-min);
 }
 
 /*
