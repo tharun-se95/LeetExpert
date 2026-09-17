@@ -1,165 +1,196 @@
-# Global code-language switch — design
+# Code language: one preference, picked where the code is — design
 
 **Date:** 2026-09-14
-**Status:** approved 2026-09-14; revised during planning (§3 pre-paint
-mechanism, §4 phone sizing). Revised again 2026-09-15 after the header was
-restyled (lamp logo, full-ink underlined nav, round hairline controls,
-translucent overlay): §4's switch look and phone placement, re-measured, and
-§3's script placement after the lamp's own boot script.
+**Status:** approved 2026-09-14; revised during planning (pre-paint mechanism)
+and 2026-09-15 (restyled header). **Revised 2026-09-17** (owner): the header
+switch is withdrawn. The language is picked from a menu on each code surface,
+and the preference names real languages instead of "JS/TS", so more languages
+can be added. §2–§5 and §7 are rewritten; the header pill and phone toggle
+built on 2026-09-15 are removed.
 **Replaces:** the per-surface language tabs in lesson code blocks
 (`CodeTabs`), viz tracer code panels (`CodePanel`) and the sandbox editor
-(`Sandbox`).
+(`Sandbox`); then the 2026-09-15 header switch.
 
 ---
 
 ## 1. Why
 
-Every code surface carries its own Python / TypeScript or Python / JavaScript
-tabs, each defaulting to Python. A learner who works in JavaScript re-picks
-their language on every block, every tracer and every problem. The choice is
-really a property of the learner, so it belongs in one place.
+Every code surface carried its own Python / TypeScript or Python / JavaScript
+tabs, each defaulting to Python. A learner who works in JavaScript re-picked
+their language on every block, every tracer and every problem. The choice is a
+property of the learner, so it is stored once.
 
-## 2. Decisions (owner, 2026-09-14)
+**Why the 2026-09-17 revision.** The first build put the choice in the app
+header. An owner review with fresh eyes found:
+
+- It sat far from what it changes. People link a control to its effect when
+  the two are together, and a learner who notices the wrong language is
+  looking at the code, not the header.
+- It appeared on pages with no code (course hub, problem list, landing).
+- Inside the "Product modes" nav it read as a third destination beside
+  Lessons and Practice, and a screen reader announced it as navigation.
+- A two-sided pill cannot hold a third language.
+- "JS/TS" named no real language: the header said JS/TS while the editor
+  said JavaScript.
+
+Coding platforms (LeetCode, HackerRank, CodeSignal) put the language picker on
+the editor, and multi-language docs (Stripe, Docusaurus tabs with a shared
+group) put it on each code block, synced. This design follows both.
+
+## 2. Decisions
 
 | Question | Decision |
 | --- | --- |
-| What the switch offers | **Python** or **JS/TS**. JS/TS shows TypeScript in reading surfaces (lesson blocks, viz panels) and JavaScript in the sandbox, which runs JavaScript. No content or runner changes. |
-| Where it lives | The header, right after **Practice** in the centred nav. |
-| Phones (< 640px) | A compact single toggle in the header showing the current language mark. |
-| How the choice reaches surfaces | A pre-paint attribute plus CSS for server-rendered code blocks; one shared store for interactive surfaces. Pages stay statically generated. |
+| What is stored | One language id from a registry: `python`, `javascript` or `typescript`. |
+| Where it is picked | A menu in the header of every code surface: lesson code blocks, viz code panels and the sandbox toolbar. Nothing in the app or landing header. |
+| What a surface shows | Its own languages. If it lacks the preferred one it shows the nearest it has, by a fixed fallback order, and its label names what is actually shown. |
+| Syncing | Picking on any surface changes every surface, in every open tab. |
+| More languages | Add a registry entry. The menu is a list, so it has room; a surface lists only the languages it has. |
+| How the choice reaches surfaces | Unchanged: a pre-paint attribute plus CSS for server-rendered blocks, one store for interactive surfaces. Pages stay static. |
 
-Rejected, with reasons: a React context alone (every JS/TS reader sees Python
-first, then a visible swap); a cookie read on the server (makes every lesson
-page dynamic instead of static); TypeScript in the sandbox (a runner and
-116-problem content project first); JavaScript in lessons (rewrites 278 blocks).
+Rejected: keeping the header switch (reasons above); one page-level control in
+the lesson header (it scrolls away, so block four of a long lesson has no
+control in reach); a segmented control per block (it does not scale past two
+or three languages and crowds phone widths).
+
+**Not in this revision** (tracked as follow-ups, not built):
+- A first-run "Which language do you practise in?" prompt. The pickers are
+  enough to choose; the prompt needs its own design.
+- New languages. The registry takes them, but each needs content (278 `tabs`
+  blocks), a runner and reference solutions in that runtime (CLAUDE.md §2)
+  before it is listed.
 
 ## 3. The preference
 
-- Values: `"python"` | `"js"`. Default `"python"` — today's default everywhere.
-- Persisted in `localStorage` under `dsa-code-lang`. Any other stored value,
-  or storage that throws, resolves to `"python"`; the switch still works for
-  the session in memory.
-- **First paint.** A plain inline `<script>` at the top of `<body>` in the root
-  layout, right after the lamp logo's boot script (which must stay first), copies the stored value onto `<html data-code-lang="…">`
-  while the HTML is still being parsed — before any code block below it is
-  painted. next-themes already uses this technique on these pages, and
-  `<html>` already has `suppressHydrationWarning`. **Not** `next/script`
-  `beforeInteractive`: in the Next 16.2 App Router that pushes the script onto
-  `self.__next_s`, and `appBootstrap` runs it only once the JS chunks have
-  loaded (`next/dist/client/app-bootstrap.js`) — after first paint, so a JS/TS
-  reader would see Python flash. If the script never runs, no attribute is
-  set and Python shows — every CSS rule keys off an explicit `js`, so "no
-  attribute" and "python" render identically.
-- **Store.** `src/lib/codeLang.ts` exports `useCodeLang(): [CodeLang, set]`,
-  built on `useSyncExternalStore`: the snapshot reads the attribute, the server
-  snapshot is `"python"`, `set` writes the attribute and storage and notifies
-  subscribers, and a `storage` event listener keeps other tabs in step. Pure
-  helpers (`parseCodeLang`, `sandboxLangFor`, `readingLangFor`) carry the
-  mapping so it is tested once.
+- **Registry** (`src/lib/codeLanguages.ts`, hook-free so the server layout can
+  import it): `CODE_LANGUAGES`, in menu order, each `{ id, label }`:
+  Python, JavaScript, TypeScript.
+- **Fallback order.** `codeLangChain(id)` is the preferred id, then its
+  nearest relatives (`javascript` ↔ `typescript`: TypeScript without its types
+  is JavaScript), then every other registry language in registry order. So
+  the chain always ends in a language every surface has.
+- `resolveCodeLang(preference, available)` returns the first id in the chain
+  that the surface has. `parseCodeLang` accepts only registry ids; anything
+  else is `python`.
+- Persisted in `localStorage` under `dsa-code-lang`. Storage that throws
+  still switches for the session.
+- **First paint.** A plain inline `<script>` right after the lamp's boot
+  script copies a valid stored id onto `<html data-code-lang>` while the HTML
+  parses — never `next/script` `beforeInteractive`, which the App Router runs
+  after first paint. With no attribute, surfaces resolve as `python`.
+- **CSS resolution.** The same registry generates the rules
+  (`codeLangCss()`), served as an inline `<style>` next to the script:
+  - Every element carrying `data-code-lang-panel` is hidden by default.
+  - For each preference P and each language L in P's chain, one rule shows L's
+    panels inside a `[data-code-lang-has~="L"]` block that has none of the
+    languages before L in the chain.
+  - `~=` attribute matching needs no `:has()`, so it works in every browser
+    the app supports.
+- **Store.** `useCodeLang(): [CodeLangId, set]` on `useSyncExternalStore`: the
+  snapshot reads the attribute, the server snapshot is `python`, `set` writes
+  the attribute and storage and notifies, and a `storage` listener follows
+  other tabs.
 
-## 4. The header switch
+## 4. The picker (`src/components/code/CodeLangMenu.tsx`)
 
-Revised 2026-09-15 for the restyled header (owner chose both options below).
-
-- **Components** (`src/components/layout/CodeLangSwitch.tsx`):
-  - `CodeLangSwitch`: the ≥ 640px pill.
-  - `CodeLangToggle`: the < 640px button.
-  - Each has a props-only view (`CodeLangSwitchView`, `CodeLangToggleView`) for render tests.
-  - Both are rendered by the app `Header` and by `LandingHeader`, and hidden on the Next.js course, which is TypeScript-only.
-- **≥ 640px, a round hairline pill after Practice** in the "Product modes" nav.
-  - One `rounded-full border border-border` pill, `h-10` like search, split in two: "Py Python | JS JS/TS", each option with its language mark.
-  - The chosen side is `bg-surface` with ink text; the other is `text-muted` and turns ink on hover.
-  - `role="radiogroup"` named "Code language"; options are `role="radio"` with `aria-checked`, arrow and Home/End keys move and select, roving `tabIndex`.
-  - Focus is the global `:focus-visible` outline (no ring utilities; see `headerChrome.ts`).
-- **< 640px, a round toggle beside search**: `ROUND_CONTROL` at `h-11 w-11` (the search and theme toggles' size), first in the right-hand cluster, showing the current language's mark. Tapping switches. Its `aria-label` names the current language and the one it switches to.
-- **Phone header budget** (measured 2026-09-15 by injecting the toggle into the live header, 13px root):
-
-  | Width | Lesson / problem page | Landing page |
-  | --- | --- | --- |
-  | 375px | fits unchanged, 1px spare | overflows 12px |
-  | 360px | overflows 6.5px | overflows 19.5px |
-  | 320px | overflows 26.5px | overflows 39.5px |
-
-  So below `sm` both headers tighten:
-  - side columns `grid-cols-[auto_minmax(0,1fr)_auto]` instead of equal `1fr` tracks (the nav centres in the middle track);
-  - grid gap `gap-1.5`;
-  - right cluster `gap-1`;
-  - nav gap `gap-4`.
-
-  The app header's padding steps to `px-2`. With all of that, every page measured fits at 320px with ≥ 4.4px spare.
-
-  The landing header keeps its `px-6` page gutter, so its lamp stays on the hero's edge. Computed at 320px, that leaves 15px spare; the Task 6 browser check confirms it, and falls back to `px-2` only if it fails.
-- From `sm` up, both headers keep today's classes.
+- **Trigger:** a compact button in the surface header, showing the mark and
+  name of the language the surface is showing, plus a caret.
+  - On server-rendered surfaces the trigger holds one label per available
+    language as `data-code-lang-panel` spans, so the right one is visible at
+    first paint.
+  - Its accessible name is "Code language: {shown}", built from a `sr-only`
+    prefix plus the visible label, so it is right before hydration too.
+  - It uses the `.code-lang-label` ink (`--tok-name` on the code canvas;
+    `--muted` on the sandbox toolbar's paper).
+- **Menu:** `role="menu"` of `menuitemradio`s, one per language the surface
+  has, with the shown one `aria-checked`.
+  - If the preference is not among them, a muted line inside the menu says so:
+    "TypeScript isn't available here — showing JavaScript".
+  - The menu renders into a portal on `document.body`, `position: fixed` under
+    the trigger. Code surfaces clip their overflow, so an in-place popover
+    would be cut off.
+  - It closes on Escape (focus returns to the trigger), on a pick, a pointer
+    down outside, Tab, scroll or resize.
+- **Keyboard:** Enter, Space or ArrowDown on the trigger opens the menu with
+  focus on the checked item. ArrowUp/ArrowDown move with wrap-around,
+  Home/End jump, and Enter/Space pick.
+- **Picking** sets the preference to that id.
+  - **Scroll anchor:** the picker's top edge is measured before the change and
+    the nearest scrolling ancestor is scrolled by the difference afterwards,
+    so the block you picked in stays under the pointer while blocks above it
+    change height.
+- **Look:** the menu is `bg-elevated` with a `border-border` hairline,
+  `shadow-elevation` and the radius token. Items are `min-h-11` touch targets
+  with the language mark; the checked item carries a tick and ink text,
+  the others muted. Focus uses the global `:focus-visible` outline.
 
 ## 5. Surfaces
 
 ### 5.1 Lesson code blocks (`CodeTabs`, 278 `tabs` fences)
 
-- No tab row. Both languages render server-side as panels carrying
-  `data-code-lang-panel="python" | "js"`; CSS in `globals.css` shows only the
-  chosen one:
-  - `html[data-code-lang="js"] [data-code-lang-panel="python"] { display: none }`
-  - `html:not([data-code-lang="js"]) [data-code-lang-panel="js"] { display: none }`
-- The header shows a non-interactive language mark and name for each panel
-  (hidden by the same rule), plus Copy. Copy reads the store at click time and
-  copies the visible language's code.
-- `display: none` keeps the hidden language out of the accessibility tree and
-  out of find-in-page.
-- A content test requires every `tabs` block to carry exactly `python` and
-  `typescript` (all 278 do today), so a missing language fails CI instead of
-  needing a silent runtime fallback.
+- Both languages render server-side as panels, inside a block carrying
+  `data-code-lang-has="python typescript"`.
+- The header holds the picker (CSS-labelled) and Copy. Copy reads the
+  preference at click time and copies the resolved language's code.
+- The content test still requires every `tabs` block to be exactly `python`
+  and `typescript`.
 
 ### 5.2 Viz tracer code panels (`CodePanel`)
 
-- No tabs. Reads `useCodeLang()` and shows `code.python` or `code.typescript`
-  (both are required by `VizCode`); per-language line highlighting and
-  auto-scroll are unchanged.
-- Tokens are computed on the client already, so a JS/TS reader may see the
-  panel settle to TypeScript just after hydration. Accepted: the panel is
-  interactive and below the fold.
+- Available: `python`, `typescript`. The picker and the code both follow
+  `resolveCodeLang(useCodeLang())`. Tokens are computed on the client, so a
+  non-Python reader may see the panel settle just after hydration — accepted,
+  as before (interactive, below the fold). Here the trigger label comes from
+  the store, so it never disagrees with the code beneath it.
 
 ### 5.3 Sandbox (problem workspace, inline lesson sandboxes, landing demo)
 
-- No language tabs. The toolbar shows the current language as a
-  non-interactive label (mark + "Python" / "JavaScript").
-- The editor language is `sandboxLangFor(useCodeLang())`. Changing it keeps
-  both drafts (already stored per language under `draftKey(id, lang)`) and
-  calls the runner's `reset()`, which cancels an in-flight run and clears
-  results — exactly what the old tab click did. No code is ever lost.
-- The coach already follows the editor through `setSource`.
+- Available: `python`, `javascript`. The toolbar's static label becomes the
+  picker (CSS-labelled; the editor itself mounts on the client).
+- Changing the resolved language keeps both drafts and calls `reset()`, which
+  cancels an in-flight run — unchanged from the first design.
 
-### 5.4 Out of scope
+### 5.4 Headers
 
-- The Next.js course's TSX scratchpad (`ScratchpadEditor`): one language, no pair.
-- Single-language code fences (`CodeBlock`): unchanged.
+- `Header` and `LandingHeader` return to their pre-switch markup, including
+  the phone spacing that was tightened only to fit the toggle.
+
+### 5.5 Out of scope
+
+- The Next.js course's TSX scratchpad (`ScratchpadEditor`): one language.
+- Single-language code fences (`CodeBlock`): nothing to pick.
 
 ## 6. Accessibility
 
-- The switch is keyboard-operable with a visible focus state; the phone
-  toggle announces current and next language.
-- Hidden languages are `display: none`, so assistive tech reads only the
-  chosen language.
-- `prefers-reduced-motion`: the switch has no motion beyond colour transitions.
+- The picker is a menu button with full keyboard support and a visible focus
+  state; its name states the language shown.
+- Hidden languages are `display: none`, out of the accessibility tree and
+  find-in-page.
+- No motion beyond colour transitions.
 
 ## 7. Tests (each seen failing before it passes)
 
-1. `codeLang.test.ts` — `parseCodeLang` (valid, invalid, missing), the
-   mappings, `set` writing attribute + storage, storage that throws, and a
-   `storage` event updating subscribers.
-2. The pre-paint script is executed (not string-matched) against fake
-   `document` / `localStorage`: sets `js`, ignores junk, survives a throwing
-   storage.
-3. `CodeLangSwitch` render test — radiogroup name, both radios, `aria-checked`
-   follows the value, phone toggle label.
-4. `CodeTabs` render test — no `tablist`, both panels with
-   `data-code-lang-panel`, labels present.
-5. CSS guard — the two hide rules exist and key off explicit `js`.
-6. Content test — every `tabs` block is exactly python + typescript.
-7. Source guards — `CodePanel` and `Sandbox` render no language tab buttons
-   and read `useCodeLang`.
+1. `codeLang.test.ts` — registry parsing, fallback chains, `resolveCodeLang`,
+   the store (attribute, storage, throwing storage, other tabs), the executed
+   pre-paint script (valid ids only), and the hook-free import guard.
+2. **CSS resolution, executed:** the generated rules are loaded into jsdom,
+   and for every preference × every block availability, exactly the resolved
+   panel is displayed.
+3. `CodeLangMenu` — the trigger's accessible name and panel labels, menu roles
+   and `aria-checked`, the "not available" note, keyboard open/move/pick/close.
+4. `CodeTabs` — picker in the header, both panels, `data-code-lang-has`.
+5. Source guards — `CodePanel` and `Sandbox` render the picker and resolve
+   through the registry; the headers contain no language control.
+6. Content — every `tabs` block is exactly python + typescript.
 
-Browser verification (both themes): the desktop and 375px headers; switching
-updates lesson blocks, a viz panel and a sandbox live; a reload with JS/TS
-stored shows TypeScript at first paint with no flash (Playwright, storage set
-before navigation); a second tab follows; keyboard operation of the switch.
-`tsc`, `eslint`, `npm test` and `npm run build` must pass.
+Browser verification (both themes, desktop and 375px):
+- A lesson, a problem page and the landing demo each show the picker, with the
+  menu drawn over the code surface and not clipped.
+- Picking TypeScript in a lesson block updates every block, the viz panel,
+  and the sandbox, which shows JavaScript with the note.
+- The picked block stays in place on screen.
+- With a non-Python preference stored and all JavaScript blocked, the first
+  paint shows the right code and labels.
+- A second tab follows the change.
+- The picker works by keyboard alone.
+- `tsc`, `eslint`, `npm test` and `npm run build` pass.
