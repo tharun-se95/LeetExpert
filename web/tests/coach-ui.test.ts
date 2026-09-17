@@ -36,7 +36,8 @@ describe("coach column", () => {
     expect(ide).toContain('sizedPane="secondary"');
     expect(ide).toContain('storageKey="dsa:coach:column-width"');
     // Collapsed, the column leaves the layout and the floating launcher brings it back.
-    expect(ide).toMatch(/\{column && open \? null : <CoachOverlay \/>\}/);
+    expect(ide).toMatch(/\n\s*<CoachOverlay \/>\n/);
+    expect(read("components", "coach", "CoachOverlay.tsx")).toContain('const panelOpen = open && layout === "floating";');
     expect(ide).toMatch(/secondary=\{column && open \? <CoachPanel variant="column" \/> : null\}/);
     expect(existsSync(join(SRC, "components", "coach", "CoachStrip.tsx"))).toBe(false);
     expect(ide).toMatch(/coachColumnFits\(/);

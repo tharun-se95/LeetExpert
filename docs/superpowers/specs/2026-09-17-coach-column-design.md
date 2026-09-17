@@ -138,8 +138,10 @@ feed back into itself.
     `ProblemWorkspace`) and reports the layout;
   - renders `PanelSplit` with the sandbox as primary, and the expanded column
     or nothing as secondary;
-  - renders `CoachOverlay` unless the column is expanded, so a closed coach in
-    either layout shows the launcher.
+  - always renders `CoachOverlay`, which shows the launcher whenever the coach
+    is closed and the floating panel only in floating layout. It is never
+    unmounted by a layout change: mounted fresh on a collapse, its launcher did
+    not exist yet when focus returned to it (found in the browser check).
 - **`CoachPanel`:** variant `"column"`, with a header whose collapse control
   replaces ✕. It registers its composer for focus like the floating variant.
   It takes no dialog role and handles no Escape.

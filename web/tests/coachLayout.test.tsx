@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { act, useEffect } from "react";
+import { act, useEffect, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { CoachProvider, useCoach } from "@/components/coach/CoachProvider";
+import { IdeWithCoach } from "@/components/coach/IdeWithCoach";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -24,7 +25,7 @@ function current(): Coach {
   return coach;
 }
 
-function mount() {
+function mount(extra: ReactNode = null) {
   const host = document.createElement("div");
   document.body.append(host);
   const created = createRoot(host);
@@ -33,6 +34,7 @@ function mount() {
     created.render(
       <CoachProvider sandboxId="layout-test" hintLabels={[]}>
         <Probe />
+        {extra}
       </CoachProvider>,
     ),
   );
@@ -44,6 +46,13 @@ const fail = () =>
 beforeEach(() => {
   localStorage.clear();
   vi.stubGlobal("fetch", vi.fn(() => Promise.resolve({ json: () => Promise.resolve({ configured: false }) })));
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe() {}
+      disconnect() {}
+    },
+  );
   vi.stubGlobal("matchMedia", (query: string) => ({
     matches: true,
     media: query,
@@ -94,5 +103,23 @@ describe("coach layout", () => {
     expect(current().open).toBe(false);
     fail();
     expect(current().open).toBe(true);
+  });
+
+  it("returns focus to the launcher when the column collapses, so the keyboard is not stranded", () => {
+    // The floating overlay renders only once mounted; mounted fresh on a
+    // collapse, its launcher did not exist yet when focus was returned to it.
+    mount(
+      <div data-problem-workspace>
+        <IdeWithCoach sandbox={<p>editor</p>} />
+      </div>,
+    );
+    act(() => current().setLayout("column"));
+    const collapse = document.querySelector<HTMLButtonElement>('[aria-label="Collapse problem coach"]');
+    if (!collapse) throw new Error("column not rendered");
+    act(() => collapse.click());
+    const launcher = document.querySelector('[aria-label="Open problem coach"]');
+    expect(launcher).not.toBeNull();
+    expect(document.activeElement).toBe(launcher);
+    expect(document.querySelector('[role="dialog"][aria-label="Problem coach"]')).toBeNull();
   });
 });

@@ -18,9 +18,15 @@ import { CoachPanel } from "./CoachPanel";
  * is "read the coach's note, then click into the editor to act on it", and a
  * widget that dismissed itself on precisely that click would defeat its own
  * purpose. Escape and the close button are the only dismissals.
+ *
+ * Rendered in both layouts and never unmounted by a layout change: in column
+ * layout it shows only the launcher, while the column is collapsed. Mounted
+ * fresh on a collapse, it rendered nothing until its mount flag flipped, so the
+ * launcher did not exist yet when focus was returned to it.
  */
 export function CoachOverlay() {
-  const { open } = useCoach();
+  const { open, layout } = useCoach();
+  const panelOpen = open && layout === "floating";
   const reduceMotion = useReducedMotion();
   // createPortal needs a real document, which the server render has not got.
   const [mounted, setMounted] = useState(false);
@@ -32,7 +38,7 @@ export function CoachOverlay() {
     <>
       {open ? null : <CoachLauncher />}
       <AnimatePresence>
-        {open ? (
+        {panelOpen ? (
           <motion.div
             key="coach-panel"
             // bottom-20 clears the editor status bar and the results rail

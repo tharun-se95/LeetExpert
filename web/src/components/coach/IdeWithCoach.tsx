@@ -72,8 +72,11 @@ export function IdeWithCoach({ sandbox }: { sandbox: ReactNode }) {
         secondary={column && open ? <CoachPanel variant="column" /> : null}
         secondaryClassName="coach-column"
       />
-      {/* Closed in either layout, this is the launcher; open, the floating panel. */}
-      {column && open ? null : <CoachOverlay />}
+      {/*
+        Always mounted: it shows the launcher whenever the coach is closed and
+        the floating panel only in floating layout (CoachOverlay).
+      */}
+      <CoachOverlay />
     </div>
   );
 }
