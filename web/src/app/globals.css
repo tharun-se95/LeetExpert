@@ -1170,6 +1170,18 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 }
 
 /*
+  The sandbox toolbar's picker sits on the page's own paper (--elevated), not
+  the inverted code canvas, so it takes the page's muted ink.
+*/
+.code-lang-label[data-tone="paper"] {
+  color: var(--muted);
+}
+
+.code-lang-label[data-tone="paper"]:hover {
+  color: var(--foreground);
+}
+
+/*
   @uiw/react-codemirror wraps the editor in its own theme div that carries no
   height. The IDE layout passes height="100%" to .cm-editor, which then has an
   auto-height containing block and collapses to the content — leaving a dead
