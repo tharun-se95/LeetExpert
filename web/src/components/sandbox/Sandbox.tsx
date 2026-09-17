@@ -546,7 +546,7 @@ function IdeWorkspace({
         spaces is a bug rather than a style nit, and the editor silently
         switches indentUnit with the language.
       */}
-      <div className="flex shrink-0 items-center gap-3 border-t border-code-editor-border bg-code-editor px-3 py-1 font-mono text-[0.65rem] text-[color:var(--tok-comment)]">
+      <div className="flex shrink-0 items-center gap-3 bg-code-editor px-3 py-1 font-mono text-[0.65rem] text-[color:var(--tok-comment)]">
         <span className="tabular-nums">
           Ln {cursor.line}, Col {cursor.col}
         </span>
