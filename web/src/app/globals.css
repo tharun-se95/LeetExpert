@@ -490,6 +490,13 @@ html {
   */
   --reading-measure: 54rem;
   --reading-page-pad: 4rem;
+  /*
+    The problem workspace's prose size as a unitless ratio of 1rem, so the
+    description pane can cap itself at the prose measure: ch scales with
+    font-size in one face, so 60ch at this size is 60ch * scale at the pane's
+    own 1rem.
+  */
+  --problem-prose-scale: 0.875;
 }
 
 /*
@@ -1005,8 +1012,19 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 */
 .problem-prose .handbook-prose {
   max-width: 60ch;
-  font-size: 0.875rem;
+  font-size: calc(var(--problem-prose-scale) * 1rem);
   line-height: 1.5;
+}
+
+/*
+  The description pane stops growing at the prose measure plus the tab
+  panel's sm:px-5 padding, so on a wide screen the spare width goes to the
+  editor instead of sitting empty beside 80-character lines. PanelSplit reads
+  this max-width to stop its drag at the same edge. Classic (non-overlay)
+  scrollbars take their width from inside it, wrapping a line or so early.
+*/
+.problem-description-pane {
+  max-width: calc(60ch * var(--problem-prose-scale) + 2 * 1.25rem);
 }
 
 .problem-prose .handbook-prose h2:not(.chapter-heading) {

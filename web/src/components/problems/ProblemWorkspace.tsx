@@ -276,6 +276,7 @@ export function ProblemWorkspace({
             initialPrimary={0.5}
             minPrimary={0.28}
             maxPrimary={0.58}
+            primaryClassName="problem-description-pane"
             primary={
               <LeftPane
                 tab={contentTab}

@@ -22,6 +22,7 @@ export function PanelSplit({
   minPrimary = 0.25,
   maxPrimary = 0.75,
   className,
+  primaryClassName,
   resizeLabel,
 }: {
   orientation: "horizontal" | "vertical";
@@ -31,21 +32,36 @@ export function PanelSplit({
   minPrimary?: number;
   maxPrimary?: number;
   className?: string;
+  /** Classes for the primary pane; a CSS max-width there also bounds the drag. */
+  primaryClassName?: string;
   resizeLabel?: string;
 }) {
   const [primaryFrac, setPrimaryFrac] = useState(initialPrimary);
   const containerRef = useRef<HTMLDivElement>(null);
+  const primaryRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
 
   const onPointerMove = useCallback(
     (e: PointerEvent) => {
       if (!dragging.current || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const raw =
-        orientation === "horizontal"
-          ? (e.clientX - rect.left) / rect.width
-          : (e.clientY - rect.top) / rect.height;
-      setPrimaryFrac(Math.min(maxPrimary, Math.max(minPrimary, raw)));
+      const horizontal = orientation === "horizontal";
+      const raw = horizontal
+        ? (e.clientX - rect.left) / rect.width
+        : (e.clientY - rect.top) / rect.height;
+      // A CSS cap on the pane stops it growing while the stored fraction
+      // would not: the handle would keep moving with nothing following it,
+      // then need dragging back through a dead zone.
+      const cap = primaryRef.current
+        ? parseFloat(
+            horizontal
+              ? getComputedStyle(primaryRef.current).maxWidth
+              : getComputedStyle(primaryRef.current).maxHeight,
+          )
+        : NaN;
+      const size = horizontal ? rect.width : rect.height;
+      const max = Number.isFinite(cap) && size > 0 ? Math.min(maxPrimary, cap / size) : maxPrimary;
+      setPrimaryFrac(Math.min(max, Math.max(minPrimary, raw)));
     },
     [orientation, minPrimary, maxPrimary],
   );
@@ -92,7 +108,8 @@ export function PanelSplit({
       )}
     >
       <div
-        className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden"
+        ref={primaryRef}
+        className={cn("flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden", primaryClassName)}
         style={primaryStyle}
       >
         {primary}

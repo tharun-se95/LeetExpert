@@ -1115,6 +1115,20 @@ describe("problem workspace prose", () => {
     // characters a line at 1280px, 148 at 1920 and 199 at 2560. 60ch is 80
     // characters, WCAG 1.4.8's ceiling; ch scales with the prose size.
     const css = readFileSync(GLOBALS, "utf8");
-    expect(cssBlock(css, ".problem-prose .handbook-prose")).toMatch(/max-width:\s*60ch/);
+    const prose = cssBlock(css, ".problem-prose .handbook-prose");
+    expect(prose).toMatch(/max-width:\s*60ch/);
+    expect(prose).toMatch(/font-size:\s*calc\(var\(--problem-prose-scale\) \* 1rem\)/);
+  });
+
+  it("caps the description pane at that measure, so wide screens give the room to the editor", () => {
+    // 60ch in the prose's size, measured from the pane's own 1rem ch, plus the
+    // tab panel's sm:px-5 padding on both sides.
+    const css = readFileSync(GLOBALS, "utf8");
+    expect(cssBlock(css, ".problem-description-pane")).toMatch(
+      /max-width:\s*calc\(60ch \* var\(--problem-prose-scale\) \+ 2 \* 1\.25rem\)/,
+    );
+    const workspace = readFileSync(join(SRC, "components", "problems", "ProblemWorkspace.tsx"), "utf8");
+    expect(workspace).toContain('primaryClassName="problem-description-pane"');
+    expect(workspace).toContain('className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5"');
   });
 });
