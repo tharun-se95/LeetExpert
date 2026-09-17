@@ -6,13 +6,16 @@ import type { ThemedToken } from "shiki";
 import { cn } from "@/lib/utils";
 import { LanguageMark } from "@/components/kit/languageMarks";
 import { tokenizeVizCode, type VizLang } from "@/lib/viz/highlightVizCode";
-import { readingLangFor, useCodeLang } from "@/lib/codeLang";
+import { useCodeLang } from "@/lib/codeLang";
+import { resolveCodeLang } from "@/lib/codeLanguages";
 import type { VizCode, VizLineRef } from "@/components/viz/types";
 
 const LABEL: Record<VizLang, string> = {
   python: "Python",
   typescript: "TypeScript",
 };
+
+const VIZ_LANGS: VizLang[] = ["python", "typescript"];
 
 /**
  * Trace code pane — same brand Shiki palette and code-surface chrome as
@@ -36,7 +39,7 @@ export function CodePanel({
 }) {
   // The language is chosen once in the header, not per panel.
   const [codeLang] = useCodeLang();
-  const lang = readingLangFor(codeLang);
+  const lang = resolveCodeLang(codeLang, VIZ_LANGS);
   const [tokens, setTokens] = useState<Partial<Record<VizLang, ThemedToken[][]>>>({});
   const highlightId = useId();
   const scrollRef = useRef<HTMLDivElement>(null);

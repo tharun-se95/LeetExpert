@@ -2,32 +2,35 @@
 
 import { CodeBody, CopyButton } from "@/components/md/CodeBlock";
 import { LanguageMark } from "@/components/kit/languageMarks";
-import { codeLangForFence, useCodeLang } from "@/lib/codeLang";
+import { useCodeLang } from "@/lib/codeLang";
+import { isCodeLangId, resolveCodeLang, type CodeLangId } from "@/lib/codeLanguages";
 import type { TabBlock } from "@/lib/content/highlightBlocks";
 
+type LangTab = TabBlock & { language: CodeLangId };
+
 /**
- * A lesson's code in both languages. The header's global switch picks the
- * language; both panels render on the server and CSS shows one before paint
- * (globals.css), so a static page never flashes the wrong language. Copy
- * follows the store, which agrees with the attribute once hydrated.
+ * A lesson's code in several languages. Every language renders on the server;
+ * the block names them in data-code-lang-has and generated CSS shows the one
+ * the learner's preference resolves to before paint, so a static page never
+ * flashes the wrong language. Copy follows the store, which agrees with the
+ * attribute once hydrated.
  */
 export function CodeTabs({ tabs }: { tabs: TabBlock[] }) {
-  const [lang] = useCodeLang();
-  if (tabs.length === 0) {
+  const [preferred] = useCodeLang();
+  const panels = tabs.filter((tab): tab is LangTab => isCodeLangId(tab.language));
+  if (panels.length === 0) {
     return null;
   }
-  const visible = tabs.find((tab) => codeLangForFence(tab.language) === lang) ?? tabs[0];
+  const available = panels.map((tab) => tab.language);
+  const shown = resolveCodeLang(preferred, available);
+  const visible = panels.find((tab) => tab.language === shown) ?? panels[0];
 
   return (
-    <div className="code-surface group my-5">
+    <div className="code-surface group my-5" data-code-lang-has={available.join(" ")}>
       <div className="code-surface-header">
         <span className="inline-flex items-center">
-          {tabs.map((tab) => (
-            <span
-              key={tab.language}
-              data-code-lang-panel={codeLangForFence(tab.language) ?? undefined}
-              className="code-lang-label"
-            >
+          {panels.map((tab) => (
+            <span key={tab.language} data-code-lang-panel={tab.language} className="code-lang-label">
               <LanguageMark language={tab.language} />
               {tab.label}
             </span>
@@ -35,13 +38,8 @@ export function CodeTabs({ tabs }: { tabs: TabBlock[] }) {
         </span>
         <CopyButton code={visible.code} />
       </div>
-      {tabs.map((tab) => (
-        <CodeBody
-          key={tab.language}
-          code={tab.code}
-          html={tab.html}
-          panel={codeLangForFence(tab.language) ?? undefined}
-        />
+      {panels.map((tab) => (
+        <CodeBody key={tab.language} code={tab.code} html={tab.html} panel={tab.language} />
       ))}
     </div>
   );

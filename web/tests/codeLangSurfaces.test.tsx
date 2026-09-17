@@ -15,12 +15,9 @@ function markdownFiles(dir: string): string[] {
   });
 }
 
-describe("panel hide rules", () => {
-  it("hide the unchosen language, keyed off an explicit js", () => {
-    // No attribute (script blocked, first visit) must render as Python.
-    expect(globals).toContain(
-      'html[data-code-lang="js"] [data-code-lang-panel="python"],\nhtml:not([data-code-lang="js"]) [data-code-lang-panel="js"] {\n  display: none;\n}',
-    );
+describe("panel resolution", () => {
+  it("lives in the generated rules (lib/codeLanguages.ts), never hand-written CSS", () => {
+    expect(globals).not.toContain("[data-code-lang-panel");
   });
 });
 
@@ -58,9 +55,10 @@ describe("lesson code blocks", () => {
     expect(html).not.toContain('role="tab"');
   });
 
-  it("render both languages as panels the hide rules can target", () => {
+  it("render both languages as panels inside a block that names them", () => {
+    expect(html).toMatch(/<div class="code-surface group my-5" data-code-lang-has="python typescript">/);
     expect(html).toMatch(/<pre data-code-lang-panel="python" class="code-body[^"]*">x = 1<\/pre>/);
-    expect(html).toMatch(/<pre data-code-lang-panel="js" class="code-body[^"]*">let x = 1<\/pre>/);
+    expect(html).toMatch(/<pre data-code-lang-panel="typescript" class="code-body[^"]*">let x = 1<\/pre>/);
   });
 
   it("label each panel with its mark and name, hidden with it", () => {
@@ -68,7 +66,7 @@ describe("lesson code blocks", () => {
       /<span data-code-lang-panel="python" class="code-lang-label"><span aria-hidden="true"[^>]*>Py<\/span>Python<\/span>/,
     );
     expect(html).toMatch(
-      /<span data-code-lang-panel="js" class="code-lang-label"><span aria-hidden="true"[^>]*>TS<\/span>TypeScript<\/span>/,
+      /<span data-code-lang-panel="typescript" class="code-lang-label"><span aria-hidden="true"[^>]*>TS<\/span>TypeScript<\/span>/,
     );
   });
 
@@ -84,7 +82,7 @@ describe("viz code panels", () => {
     expect(panel).not.toContain('role="tablist"');
     expect(panel).not.toMatch(/useState<VizLang>/);
     expect(panel).toMatch(/const \[codeLang\] = useCodeLang\(\);/);
-    expect(panel).toMatch(/const lang = readingLangFor\(codeLang\);/);
+    expect(panel).toMatch(/const lang = resolveCodeLang\(codeLang, VIZ_LANGS\);/);
     expect(panel).toContain('className="code-lang-label"');
   });
 });
@@ -96,7 +94,7 @@ describe("sandbox", () => {
     expect(sandbox).not.toMatch(/setLang\(/);
     expect(sandbox).not.toMatch(/useState<SandboxLang>/);
     expect(sandbox).toMatch(/const \[codeLang\] = useCodeLang\(\);/);
-    expect(sandbox).toMatch(/const lang = sandboxLangFor\(codeLang\);/);
+    expect(sandbox).toMatch(/const lang = resolveCodeLang\(codeLang, LANGS\);/);
   });
 
   it("cancels an in-flight run when the language changes, like the old tab did", () => {

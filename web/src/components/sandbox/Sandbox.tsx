@@ -38,7 +38,8 @@ import { resolveInsight } from "@/lib/insight/resolveInsight";
 import type { ExtractedComplexity } from "@/lib/insight/extractComplexity";
 import { useCoachOptional } from "@/components/coach/CoachProvider";
 import { LanguageMark } from "@/components/kit/languageMarks";
-import { sandboxLangFor, useCodeLang } from "@/lib/codeLang";
+import { useCodeLang } from "@/lib/codeLang";
+import { resolveCodeLang } from "@/lib/codeLanguages";
 
 const LANGS: SandboxLang[] = ["python", "javascript"];
 
@@ -120,7 +121,7 @@ function SandboxBody({
 }) {
   // The header's global switch picks the language (lib/codeLang.ts).
   const [codeLang] = useCodeLang();
-  const lang = sandboxLangFor(codeLang);
+  const lang = resolveCodeLang(codeLang, LANGS);
   const [drafts, setDrafts] = useState<Record<SandboxLang, string>>({
     python: spec.starter.python,
     javascript: spec.starter.javascript,

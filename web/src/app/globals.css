@@ -1153,24 +1153,11 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 }
 
 /*
-  Global code language (lib/codeLang.ts). Lesson code blocks server-render
-  both languages; an inline script sets <html data-code-lang> while the page
-  parses and these rules hide the other one before first paint, so statically
-  generated pages never flash. Both rules key off an explicit "js": with no
-  attribute — a first visit, or a blocked script — Python shows, the same as
-  choosing it. display:none also keeps the hidden language out of
-  find-in-page and the accessibility tree.
-*/
-html[data-code-lang="js"] [data-code-lang-panel="python"],
-html:not([data-code-lang="js"]) [data-code-lang-panel="js"] {
-  display: none;
-}
-
-/*
   The language a code surface is showing (lesson blocks, viz panels). The
   header sits on --code-editor, whose brightness is inverted from the page,
   so the ink is --tok-name — the old active language tab's ink — never
-  --muted. The hide rules above outrank this display on specificity.
+  --muted. The generated resolution rules (lib/codeLanguages.ts) outrank this
+  display on specificity.
 */
 .code-lang-label {
   display: inline-flex;
