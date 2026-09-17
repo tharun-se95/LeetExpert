@@ -65,8 +65,14 @@ describe("lifting a fence out of a lesson", () => {
       // The same normalisation the loader applies before highlighting.
       const raw = readFileSync(file, "utf8").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
       const markdown = matter(raw).content.trim();
+      const bodies = [extractQuizFence(markdown).body, extractPracticeProblemsFence(markdown).body].filter(
+        (body) => body !== markdown,
+      );
+      // Most lessons lift nothing; parsing only the ones that changed keeps
+      // this well inside the timeout when the whole suite shares the CPU.
+      if (bodies.length === 0) continue;
       const before = new Set(fences(markdown));
-      for (const { body } of [extractQuizFence(markdown), extractPracticeProblemsFence(markdown)]) {
+      for (const body of bodies) {
         for (const fence of fences(body)) {
           if (!before.has(fence)) offenders.push(`${file.slice(COURSE_ROOT.length + 1)}: ${fence.slice(0, 40)}`);
         }
