@@ -1,3 +1,5 @@
+import { liftFence } from "@/lib/content/liftFence";
+
 const FENCE = /^(`{3,8})quiz[^\n]*\n([\s\S]*?)^\1\s*$/gm;
 
 /**
@@ -16,11 +18,6 @@ export function extractQuizFence(markdown: string): {
   if (matches.length !== 1) return { body: markdown, quizSource: null };
   const m = matches[0]!;
   const quizSource = m[2]!;
-  const body = (
-    markdown.slice(0, m.index) + markdown.slice(m.index + m[0].length)
-  )
-    .replace(/\n{3,}/g, "\n\n")
-    .trimEnd()
-    .concat("\n");
+  const body = liftFence(markdown, m.index, m.index + m[0].length);
   return { body, quizSource };
 }
