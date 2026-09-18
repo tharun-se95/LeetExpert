@@ -18,6 +18,14 @@ export interface SyncBridgeValue {
    * queue as soon as it is set, and the queue flushes on a timer: setting it
    * while the merge "ask" dialog is open would send this device's marks to
    * the account before the learner has chosen "discard".
+   *
+   * Marks made before the runtime registers (VisitTracker fires on mount,
+   * ahead of the dynamic chunk) are written to storage but not enqueued, and
+   * a repeat visit is skipped once the runtime exists because storage already
+   * holds it. They are not lost only because the "resume" flow queues every
+   * local mark the server lacks (`pullMarks` with `uploadLocalOnly`). Any
+   * other registration path must do the same, and a mark made after
+   * `queue.dispose()` is likewise recovered only by the next sign-in flow.
    */
   runtime: SyncRuntime | null;
   /**
@@ -50,10 +58,16 @@ const Ctx = createContext<SyncBridgeValue>(SIGNED_OUT);
  * imports, so signed-out visitors download none of the sync code: the
  * signed-in runtime arrives later in a dynamic chunk and registers here.
  *
- * A 401 during a marks flush surfaces from the queue as status
- * "unauthorized", while the flow's own calls throw TransportError(0) for it
- * (as for offline); code that must tell session expiry from a dropped
- * connection reads `runtime.queue.status()`, not the error.
+ * Telling an expired session (401) from a dropped connection depends on the
+ * path, because the transport reports them differently:
+ * - Flow calls that hit the API directly (getMarks, and the putDraft calls in
+ *   beginSignIn/completeMerge) throw TransportError carrying the real status,
+ *   so `err.status === 401` works. No runtime is registered yet at that point,
+ *   so there is no queue status to read.
+ * - Marks sent through a queue flush collapse to TransportError(0) in
+ *   uploadAnonymous ("still pending after the flush"), for 401 and offline
+ *   alike; only `queue.status() === "unauthorized"` tells them apart, and only
+ *   for a queue you hold. After registration the queue is the signal.
  */
 export function SyncBridgeProvider({ authEnabled, children }: { authEnabled: boolean; children: React.ReactNode }) {
   const [runtime, setRuntime] = useState<SyncRuntime | null>(null);

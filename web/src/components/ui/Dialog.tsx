@@ -4,7 +4,13 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
-const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE =
+  'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+// jsdom has no layout, so visibility is judged from attributes, not geometry.
+function focusables(panel: HTMLElement): HTMLElement[] {
+  return [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => !el.closest("[hidden], [inert]"));
+}
 
 /**
  * The SearchDialog surface plus the two things a confirm dialog needs that
@@ -25,35 +31,62 @@ export function Dialog({
 }) {
   const panel = useRef<HTMLDivElement>(null);
   const opener = useRef<HTMLElement | null>(null);
+  // Read through a ref so a parent's inline onClose does not re-subscribe the
+  // listener (and re-run the focus effect) on every render.
+  const close = useRef(onClose);
+  useEffect(() => {
+    close.current = onClose;
+  });
 
   useEffect(() => {
     if (!open) return;
     opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    panel.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+    // A text-only dialog has nothing to focus; without the panel as a fallback
+    // focus would stay on the opener behind the backdrop.
+    const el = panel.current;
+    if (el) (focusables(el)[0] ?? el).focus();
     return () => opener.current?.focus();
   }, [open]);
 
-  if (!open) return null;
+  // On the document, not the panel: clicking plain text moves focus to body,
+  // and a panel-level handler would then never see Tab or Escape.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        close.current();
+        return;
+      }
+      const el = panel.current;
+      if (e.key !== "Tab" || !el) return;
+      const items = focusables(el);
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (!first || !last) {
+        e.preventDefault();
+        el.focus();
+        return;
+      }
+      const active = document.activeElement;
+      // Outside the panel, or on the panel itself (focused by a click on
+      // text): the browser's own next stop would be behind the modal.
+      if (!(active instanceof Node) || !el.contains(active) || active === el) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      } else if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      e.preventDefault();
-      onClose();
-      return;
-    }
-    if (e.key !== "Tab" || !panel.current) return;
-    const items = [...panel.current.querySelectorAll<HTMLElement>(FOCUSABLE)];
-    const first = items[0];
-    const last = items[items.length - 1];
-    if (!first || !last) return;
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
-  };
+  if (!open) return null;
 
   return createPortal(
     <div
@@ -67,9 +100,9 @@ export function Dialog({
         role="dialog"
         aria-modal="true"
         aria-label={label}
-        onKeyDown={onKeyDown}
+        tabIndex={-1}
         className={cn(
-          "w-full max-w-md rounded-[length:var(--radius-lg)] border border-border bg-elevated p-6 shadow-elevation",
+          "w-full max-w-md rounded-[length:var(--radius-lg)] border border-border bg-elevated p-6 shadow-elevation focus-visible:outline-none!",
           className,
         )}
       >

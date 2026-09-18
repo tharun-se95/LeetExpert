@@ -58,9 +58,37 @@ describe("owner cases", () => {
     writeOwner(localStorage, "u1");
     localStorage.setItem(visitedKey("dsa"), JSON.stringify(["a/local"]));
     const t = transport({ ...EMPTY, visited: ["a/server"] });
-    expect(await beginSignIn(deps(t), prepareDevice(localStorage, "u1"))).toEqual({ kind: "ready" });
+    expect(await beginSignIn(tracked(t), prepareDevice(localStorage, "u1"))).toEqual({ kind: "ready" });
     expect([...readSet(visitedKey("dsa"))].sort()).toEqual(["a/local", "a/server"]);
+    // Queued for the queue's own debounce, not sent inside the flow.
     expect(t.postMarks).not.toHaveBeenCalled();
+  });
+
+  it("resume queues a local mark the server lacks (made before the runtime registered)", async () => {
+    writeOwner(localStorage, "u1");
+    localStorage.setItem(visitedKey("dsa"), JSON.stringify(["a/local", "a/both"]));
+    localStorage.setItem(solvedKey("dsa"), JSON.stringify(["p/solved"]));
+    const t = transport({ ...EMPTY, visited: ["a/both", "a/server"], solved: [] });
+    const d = tracked(t);
+    await beginSignIn(d, prepareDevice(localStorage, "u1"));
+    expect(d.queue.pendingCount()).toBe(2);
+    await d.queue.flush();
+    const sent = vi.mocked(t.postMarks).mock.calls.flatMap(([, marks]) => marks);
+    expect(sent).toHaveLength(2);
+    expect(sent).toEqual(expect.arrayContaining([
+      { kind: "visited", id: "a/local" },
+      { kind: "solved", id: "p/solved" },
+    ]));
+  });
+
+  it("resume queues nothing when the server already has every local mark", async () => {
+    writeOwner(localStorage, "u1");
+    localStorage.setItem(visitedKey("dsa"), JSON.stringify(["a/one"]));
+    localStorage.setItem(solvedKey("dsa"), JSON.stringify(["p/one"]));
+    const t = transport({ ...EMPTY, visited: ["a/one", "a/two"], solved: ["p/one"] });
+    const d = tracked(t);
+    await beginSignIn(d, prepareDevice(localStorage, "u1"));
+    expect(d.queue.pendingCount()).toBe(0);
   });
 });
 

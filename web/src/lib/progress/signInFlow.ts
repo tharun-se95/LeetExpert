@@ -29,15 +29,30 @@ export function prepareDevice(storage: Storage, userId: string): OwnerAction {
   return action;
 }
 
-export async function pullMarks(deps: FlowDeps): Promise<void> {
+export async function pullMarks(deps: FlowDeps, opts: { uploadLocalOnly?: boolean } = {}): Promise<void> {
   const server = await deps.transport.getMarks(deps.course);
-  writeSet(visitedKey(deps.course), new Set(unionIds(readSet(visitedKey(deps.course)), server.visited)));
-  writeSet(solvedKey(deps.course), new Set(unionIds(readSet(solvedKey(deps.course)), server.solved)));
+  const local = { visited: readSet(visitedKey(deps.course)), solved: readSet(solvedKey(deps.course)) };
+  if (opts.uploadLocalOnly) {
+    // Marks made while no runtime was registered (VisitTracker fires on mount,
+    // before the chunk loads) were written to storage but never enqueued, and
+    // once the runtime exists they read as already-seen. Only the ids the
+    // server lacks are queued, so a load does not re-upload the whole set.
+    // The queue's own debounce sends them: flushing here would make a dropped
+    // connection fail sign-in instead of leaving the marks pending.
+    const has = { visited: new Set(server.visited), solved: new Set(server.solved) };
+    for (const kind of ["visited", "solved"] as const) {
+      for (const id of local[kind]) {
+        if (!has[kind].has(id)) deps.queue.enqueueMark({ course: deps.course, kind, id });
+      }
+    }
+  }
+  writeSet(visitedKey(deps.course), new Set(unionIds(local.visited, server.visited)));
+  writeSet(solvedKey(deps.course), new Set(unionIds(local.solved, server.solved)));
 }
 
 export async function beginSignIn(deps: FlowDeps, action: OwnerAction): Promise<SignInResult> {
   if (action === "resume") {
-    await pullMarks(deps);
+    await pullMarks(deps, { uploadLocalOnly: true });
     return { kind: "ready" };
   }
   // "merge", or "replace" (whose data prepareDevice already cleared).
