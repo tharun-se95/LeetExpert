@@ -24,6 +24,9 @@ vi.mock("next/navigation", () => ({
 
 const { SignInButtons } = await import("@/app/sign-in/SignInButtons");
 const { default: SignInPage } = await import("@/app/sign-in/page");
+// Warm the chunk SyncHint loads on demand: its first import is slower than the
+// 20 ms the mounts below allow.
+await import("@/components/auth/SignedOutLine");
 const { SyncHint } = await import("@/components/auth/SyncHint");
 const { SyncBridgeProvider } = await import("@/components/providers/SyncBridge");
 
@@ -62,8 +65,9 @@ describe("safeNext (spec §5.1)", () => {
     ["/courses/dsa/arrays", "/courses/dsa/arrays"],
     ["/courses/dsa?x=1#y", "/courses/dsa?x=1#y"],
     ["/courses/dsa/problems/two-sum?tab=notes", "/courses/dsa/problems/two-sum?tab=notes"],
-    // A percent-encoded slash deeper in a path is ordinary, not a host.
-    ["/courses/a%2Fb", "/courses/a%2Fb"],
+    // Percent-encoding that is not a path separator is ordinary.
+    ["/courses/a%20b", "/courses/a%20b"],
+    ["/courses/dsa?next=a%2Fb#c%5Cd", "/courses/dsa?next=a%2Fb#c%5Cd"],
     // Only the whole segment is the page; a sibling path is fine.
     ["/sign-in-help", "/sign-in-help"],
     // The parser's output is what is returned, so dot segments are gone.
@@ -82,6 +86,12 @@ describe("safeNext (spec §5.1)", () => {
     ["/%5cevil.example", DEFAULT_NEXT],
     ["/%2F%2Fevil.example", DEFAULT_NEXT],
     ["/%2f/evil.example", DEFAULT_NEXT],
+    // Better Auth answers 403 INVALID_CALLBACK_URL to an encoded separator
+    // anywhere in the path, in either case, so it is not passed on.
+    ["/courses/a%2Fb", DEFAULT_NEXT],
+    ["/courses/a%2fb", DEFAULT_NEXT],
+    ["/courses/a%5Cb", DEFAULT_NEXT],
+    ["/courses/a%5cb", DEFAULT_NEXT],
     [`/${TAB}/evil.example`, DEFAULT_NEXT],
     [`/${LF}/evil.example`, DEFAULT_NEXT],
     [`/${CR}/evil.example`, DEFAULT_NEXT],
@@ -102,6 +112,10 @@ describe("safeNext (spec §5.1)", () => {
     ["/sign-in/", DEFAULT_NEXT],
     ["/a/../sign-in", DEFAULT_NEXT],
     ["/courses/../sign-in?x=1", DEFAULT_NEXT],
+    // The router decodes these to the same page.
+    ["/%73ign-in", DEFAULT_NEXT],
+    ["/sign%2Din", DEFAULT_NEXT],
+    ["/%73ign-in/x", DEFAULT_NEXT],
   ])("%j → %j", (raw, expected) => {
     expect(safeNext(raw)).toBe(expected);
   });
@@ -286,25 +300,38 @@ describe("SignInPage", () => {
 });
 
 describe("SyncHint", () => {
-  it("shows only to signed-out visitors where auth is configured", () => {
+  // The hint is a next/dynamic chunk (it holds the auth client), which
+  // resolves on a later tick than the render that asks for it.
+  async function mountHint(authEnabled: boolean) {
+    const host = document.createElement("div");
+    document.body.append(host);
+    root = createRoot(host);
+    await act(async () => {
+      root!.render(<SyncBridgeProvider authEnabled={authEnabled}><SyncHint /></SyncBridgeProvider>);
+      await new Promise((r) => setTimeout(r, 20));
+    });
+    return host;
+  }
+
+  it("shows only to signed-out visitors where auth is configured", async () => {
     session = { data: null, isPending: false };
-    const shown = mount(<SyncBridgeProvider authEnabled><SyncHint /></SyncBridgeProvider>);
+    const shown = await mountHint(true);
     expect(shown.textContent).toContain("Progress is saved on this device.");
     expect(shown.querySelector("a")?.getAttribute("href")).toBe("/sign-in?next=%2Fcourses%2Fdsa");
     act(() => root!.unmount());
-    expect(mount(<SyncBridgeProvider authEnabled={false}><SyncHint /></SyncBridgeProvider>).textContent).toBe("");
+    expect((await mountHint(false)).textContent).toBe("");
     act(() => root!.unmount());
     session = { data: { user: { id: "u1" } }, isPending: false };
-    expect(mount(<SyncBridgeProvider authEnabled><SyncHint /></SyncBridgeProvider>).textContent).toBe("");
+    expect((await mountHint(true)).textContent).toBe("");
   });
 
-  it("stays blank while the session loads, so a signed-in learner never sees it flash", () => {
+  it("stays blank while the session loads, so a signed-in learner never sees it flash", async () => {
     session = { data: null, isPending: true };
-    expect(mount(<SyncBridgeProvider authEnabled><SyncHint /></SyncBridgeProvider>).textContent).toBe("");
+    expect((await mountHint(true)).textContent).toBe("");
   });
 
-  it("does not read the session at all when auth is not configured", () => {
-    mount(<SyncBridgeProvider authEnabled={false}><SyncHint /></SyncBridgeProvider>);
+  it("does not read the session at all when auth is not configured", async () => {
+    await mountHint(false);
     expect(useSession).not.toHaveBeenCalled();
   });
 });

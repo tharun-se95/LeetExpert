@@ -140,6 +140,8 @@ describe("merge flow (spec §7)", () => {
     await completeMerge(d, "add");
     expect(readLocalDraft(localStorage, "two-sum", "python")?.code).toBe("mine");
     expect(d.queue.stash("two-sum", "python")?.code).toBe("theirs");
+    // Another device's copy: not marked as the learner's own.
+    expect(d.queue.stash("two-sum", "python")?.displaced).toBeUndefined();
   });
 
   it("a legacy draft loses to the server copy and is stashed, not lost", async () => {
@@ -148,7 +150,8 @@ describe("merge flow (spec §7)", () => {
     const d = deps(transport(EMPTY, { putDraft: vi.fn(async (): Promise<PutOutcome> => ({ kind: "conflict", server })) }));
     await completeMerge(d, "add");
     expect(readLocalDraft(localStorage, "two-sum", "python")?.code).toBe("theirs");
-    expect(d.queue.stash("two-sum", "python")?.code).toBe("legacy");
+    // The learner's own draft, set aside: marked so the stash row does not call it another device's.
+    expect(d.queue.stash("two-sum", "python")).toMatchObject({ code: "legacy", displaced: true });
   });
 
   it("offline mid-merge: throws and does not take ownership, so it reruns", async () => {

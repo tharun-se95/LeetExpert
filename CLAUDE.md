@@ -373,10 +373,28 @@ The content is the product. Code exists to serve it.
   card in production.
 - **Accounts are optional and progress is local-first** (spec
   `docs/superpowers/specs/2026-09-18-accounts-and-progress-sync-design.md`).
-  Signed out, the app is exactly the localStorage app: it reaches the sync
-  runtime only through the `SyncBridge` context, which holds no runtime until
-  someone signs in, and that runtime (`SyncProvider`) is a `next/dynamic`
-  chunk loaded by `AccountRuntime` once a session exists. Sign-in is on only when all seven variables in
+  Signed out, the app is exactly the localStorage app. What every page ships
+  for accounts is three small `next/dynamic` shells (`AccountControl`,
+  `AccountRuntime`, `SyncHint`) and the `SyncBridge` context, which holds no
+  runtime until someone signs in. Everything that needs the session sits
+  behind those shells in chunks fetched only when `authEnabled` is true: the
+  auth client, the account menu and its dialogs (`SessionControl`, with
+  `Dialog`, `signOutDevice`, `localStore` and `sandboxIds.generated.json`),
+  `SessionSync` and `SignedOutLine`; the sync runtime (`SyncProvider`) is a
+  further chunk that `SessionSync` loads only once a session exists. With
+  auth on, every visitor fetches the auth client and control chunks after
+  hydration (something has to ask who is signed in) but only a signed-in one
+  fetches the runtime. Measured 2026-09-19 on a build with no auth variables:
+  none of that is in the initial `<script>` list of a lesson page, whose
+  shared JS fell from 1,825,183 to 1,771,480 B raw (531,154 to 511,917 B
+  gzip) when the auth client (33.5 KB raw, 12.2 KB gzip) left it.
+  `tests/authChunkBoundary.test.ts` walks the static imports of the three
+  shells and fails if the auth client or any of those modules enters them;
+  the built HTML is the final check. Not deferred: the 116 problem pages
+  still carry `useDraftSync` and `merge.ts` (about 3.6 KB minified, 1.6 KB
+  gzip, with the `localStore` code the sandbox needs anyway) because
+  `Sandbox` imports the hook statically; without a runtime it does nothing.
+  Sign-in is on only when all seven variables in
   `web/.env.example` are set, and `authEnabled` is read while pages are
   prerendered, so changing them needs a rebuild. Pages never read the
   session on the server — a lesson that turns dynamic is a defect; compare
@@ -396,7 +414,11 @@ The content is the product. Code exists to serve it.
   404 whatever `NODE_ENV` does, so the check could not fail).
   Guarded in the `progressMerge`, `progressStore`, `progressApi`,
   `syncQueue`, `signInFlow`, `progressLocalStore` and `testLogin` tests, and
-  by `e2e/sync.e2e.mjs`, which needs a Neon development database.
+  by `e2e/sync.e2e.mjs`, which needs a Neon development database. That
+  script has NOT yet been run against a real Neon database or real OAuth: it
+  passed (11 of 11, twice) only against a local Neon-compatible HTTP emulator
+  over in-memory PGlite, and neither it nor `e2e/test-login-prod.e2e.mjs`
+  runs in any CI.
 - Accessibility is not optional: real `aria-label`s on diagrams, visible
   focus states, keyboard paths for every interaction, and `prefers-reduced-
   motion` honoured.

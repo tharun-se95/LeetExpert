@@ -124,7 +124,9 @@ async function uploadAnonymous(deps: FlowDeps): Promise<void> {
     queue.setBaseRev(sandboxId, lang, server.rev);
     const resolution = resolveOnMount(draft, true, server, baseRev);
     if (resolution === "server-wins-stash-local") {
-      queue.setStash(sandboxId, lang, draft);
+      // displaced: this is the learner's own draft, not another device's, and
+      // the stash row words the two differently.
+      queue.setStash(sandboxId, lang, { ...draft, displaced: true });
       if (server.deleted) removeLocalDraft(storage, sandboxId, lang);
       else writeLocalDraft(storage, sandboxId, lang, server.code, server.updatedAt);
     } else if (resolution === "local-wins-stash-server") {

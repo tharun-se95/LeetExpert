@@ -8,6 +8,7 @@ import { DraftStashRow } from "@/components/sandbox/DraftStashRow";
 import type { PutOutcome, Transport } from "@/lib/progress/api";
 import { draftKey, readLocalDraft, writeLocalDraft } from "@/lib/progress/localStore";
 import { LEGACY_UPDATED_AT } from "@/lib/progress/merge";
+import { completeMerge } from "@/lib/progress/signInFlow";
 import { SyncQueue } from "@/lib/progress/syncQueue";
 import type { ServerDrafts } from "@/lib/progress/types";
 
@@ -509,6 +510,34 @@ describe("DraftStashRow", () => {
     act(() => [...host.querySelectorAll("button")].find((b) => b.textContent === "Compare")!.click());
     expect(document.querySelector('[role="dialog"]')?.textContent).toContain("Previous version");
     expect(document.querySelector('[role="dialog"]')?.textContent).not.toContain("Other device");
+  });
+
+  it("a draft the sign-in merge set aside is worded as the learner's own, not another device's", async () => {
+    localStorage.setItem("dsa:sandbox:two-sum:python", "legacy");
+    const server = { code: "theirs", updatedAt: EARLY, rev: 4, deleted: false };
+    const transport: Transport = {
+      getMarks: vi.fn(async () => ({ visited: [], solved: [], hasDrafts: true })),
+      postMarks: vi.fn(async () => 204),
+      getDrafts: vi.fn(async () => ({})),
+      putDraft: vi.fn(async (): Promise<PutOutcome> => ({ kind: "conflict", server })),
+    };
+    const queue = new SyncQueue({ storage: localStorage, userId: "u1", transport });
+    try {
+      await completeMerge(
+        { storage: localStorage, userId: "u1", course: "dsa", transport, queue, isKnownSandbox: (id) => id === "two-sum" },
+        "add",
+      );
+      const stash = queue.stash("two-sum", "python");
+      expect(stash).not.toBeNull();
+      const host = document.createElement("div");
+      document.body.append(host);
+      root = createRoot(host);
+      act(() => root!.render(<DraftStashRow stash={stash!} current="theirs" lang="python" onUse={vi.fn()} onDismiss={vi.fn()} />));
+      expect(host.textContent).toContain("Your previous version of this draft was replaced");
+      expect(host.textContent).not.toContain("another device");
+    } finally {
+      queue.dispose();
+    }
   });
 
   it("Escape closes Compare without choosing either copy", () => {

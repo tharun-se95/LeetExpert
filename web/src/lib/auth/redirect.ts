@@ -33,8 +33,13 @@ export function safeNext(raw: unknown): string {
   }
   if (url.origin !== PROBE_ORIGIN) return DEFAULT_NEXT;
 
-  // An encoded slash or backslash at the very start decodes to a host
-  // boundary in servers that decode before redirecting.
+  // Better Auth refuses a callback URL whose path holds an encoded separator
+  // (403 INVALID_CALLBACK_URL), so returning one would only break the sign-in
+  // it is meant to resume. It also covers the start of the path: an encoded
+  // slash there decodes to a host boundary in servers that decode before
+  // redirecting.
+  if (/%2f|%5c/i.test(url.pathname)) return DEFAULT_NEXT;
+
   let decoded: string;
   try {
     decoded = decodeURIComponent(url.pathname);
@@ -44,7 +49,10 @@ export function safeNext(raw: unknown): string {
   if (decoded.startsWith("//") || decoded.startsWith("/\\") || url.pathname.startsWith("//")) return DEFAULT_NEXT;
 
   // Signing in from the sign-in page would bring the learner straight back.
-  if (url.pathname === SIGN_IN_PATH || url.pathname.startsWith(`${SIGN_IN_PATH}/`)) return DEFAULT_NEXT;
+  // The decoded path too: the router decodes "/%73ign-in" to the same page.
+  for (const path of [url.pathname, decoded]) {
+    if (path === SIGN_IN_PATH || path.startsWith(`${SIGN_IN_PATH}/`)) return DEFAULT_NEXT;
+  }
 
   return `${url.pathname}${url.search}${url.hash}`;
 }

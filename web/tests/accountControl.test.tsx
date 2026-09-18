@@ -8,9 +8,12 @@ import type { Transport } from "@/lib/progress/api";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-type SessionState = { data: { user: { id: string; name: string; email: string; image: string | null } } | null; isPending: boolean };
+type SessionState = {
+  data: { user: { id: string; name: string; email: string; image: string | null }; session: { id: string } } | null;
+  isPending: boolean;
+};
 let session: SessionState = { data: null, isPending: false };
-const ADA: SessionState = { data: { user: { id: "u1", name: "Ada Lovelace", email: "ada@example.com", image: null } }, isPending: false };
+const ADA: SessionState = { data: { user: { id: "u1", name: "Ada Lovelace", email: "ada@example.com", image: null }, session: { id: "s1" } }, isPending: false };
 
 type Outcome = { data: null; error: { status: number } | null };
 const signOut = vi.fn(async (): Promise<Outcome> => ({ data: null, error: null }));
@@ -26,6 +29,9 @@ vi.mock("next/navigation", () => ({ usePathname: () => "/courses/dsa/arrays/intr
 const reload = vi.fn();
 vi.mock("@/lib/progress/reloadPage", () => ({ reloadPage: () => reload() }));
 
+// Warm the session chunk: its first import transforms the account menu and its
+// dialogs, which takes longer than the 20 ms the mounts below give a dynamic import.
+await import("@/components/auth/SessionControl");
 const { AccountControl } = await import("@/components/auth/AccountControl");
 const { SyncBridgeProvider, useSyncBridge } = await import("@/components/providers/SyncBridge");
 const { SyncQueue } = await import("@/lib/progress/syncQueue");
@@ -58,11 +64,16 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-function mount(authEnabled: boolean) {
+// The session control is its own chunk (next/dynamic), which resolves on a
+// later tick than the render that asks for it.
+async function mount(authEnabled: boolean) {
   const host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
-  act(() => root!.render(<SyncBridgeProvider authEnabled={authEnabled}><Probe /><AccountControl /></SyncBridgeProvider>));
+  await act(async () => {
+    root!.render(<SyncBridgeProvider authEnabled={authEnabled}><Probe /><AccountControl /></SyncBridgeProvider>);
+    await new Promise((r) => setTimeout(r, 20));
+  });
   return host;
 }
 
@@ -94,28 +105,28 @@ async function click(el: Element) {
 }
 
 describe("AccountControl", () => {
-  it("renders nothing when auth is not configured", () => {
+  it("renders nothing when auth is not configured", async () => {
     session = { data: null, isPending: false };
-    expect(mount(false).innerHTML).toBe("");
+    expect((await mount(false)).innerHTML).toBe("");
   });
 
-  it("reserves the avatar's space while the session loads", () => {
+  it("reserves the avatar's space while the session loads", async () => {
     session = { data: null, isPending: true };
-    const host = mount(true);
+    const host = await mount(true);
     expect(host.querySelector("[data-account-placeholder]")).not.toBeNull();
   });
 
-  it("signed out: a Sign in link that returns to this page", () => {
+  it("signed out: a Sign in link that returns to this page", async () => {
     session = { data: null, isPending: false };
-    const links = [...mount(true).querySelectorAll("a")];
+    const links = [...(await mount(true)).querySelectorAll("a")];
     expect(links.length).toBeGreaterThan(0);
     for (const a of links) {
       expect(a.getAttribute("href")).toBe("/sign-in?next=%2Fcourses%2Fdsa%2Farrays%2Fintro");
     }
   });
 
-  it("signed in: an avatar button that opens the account menu", () => {
-    const host = mount(true);
+  it("signed in: an avatar button that opens the account menu", async () => {
+    const host = await mount(true);
     const button = host.querySelector("button")!;
     expect(button.getAttribute("aria-label")).toBe("Account menu, signed in as Ada Lovelace");
     expect(button.textContent).toContain("AL");
@@ -128,21 +139,21 @@ describe("AccountControl", () => {
 });
 
 describe("the sync status in the menu", () => {
-  it("does not claim 'Synced' before a runtime exists", () => {
-    const host = mount(true);
+  it("does not claim 'Synced' before a runtime exists", async () => {
+    const host = await mount(true);
     openMenu(host);
     expect(statusLine()).toBe("Connecting…");
     expect(warningDot(host)).toBeNull();
   });
 
-  it("keeps the plain label while nothing needs attention", () => {
-    const host = mount(true);
+  it("keeps the plain label while nothing needs attention", async () => {
+    const host = await mount(true);
     registerQueue();
     expect(host.querySelector("button")!.getAttribute("aria-label")).toBe("Account menu, signed in as Ada Lovelace");
   });
 
-  it("with a runtime, reads the queue", () => {
-    const host = mount(true);
+  it("with a runtime, reads the queue", async () => {
+    const host = await mount(true);
     registerQueue();
     openMenu(host);
     expect(statusLine()).toBe("Synced");
@@ -153,8 +164,8 @@ describe("the sync status in the menu", () => {
     ["failed", "Not syncing: something went wrong"],
     ["expired", "Not syncing: your session expired"],
     ["paused", "Not syncing: choose whether to add"],
-  ] as const)("shows a fatal %s state with the warning dot", (issue, text) => {
-    const host = mount(true);
+  ] as const)("shows a fatal %s state with the warning dot", async (issue, text) => {
+    const host = await mount(true);
     act(() => bridge!.setIssue(issue));
     openMenu(host);
     expect(statusLine()).toContain(text);
@@ -166,16 +177,16 @@ describe("the sync status in the menu", () => {
     );
   });
 
-  it("offline while sign-in retries: says so without an alarm", () => {
-    const host = mount(true);
+  it("offline while sign-in retries: says so without an alarm", async () => {
+    const host = await mount(true);
     act(() => bridge!.setIssue("offline"));
     openMenu(host);
     expect(statusLine()).toBe("Offline, will retry");
     expect(warningDot(host)).toBeNull();
   });
 
-  it("follows the issue as it changes", () => {
-    const host = mount(true);
+  it("follows the issue as it changes", async () => {
+    const host = await mount(true);
     act(() => bridge!.setIssue("failed"));
     openMenu(host);
     act(() => bridge!.setIssue(null));
@@ -186,7 +197,7 @@ describe("the sync status in the menu", () => {
 
 describe("Sign out", () => {
   it("with a runtime: ends the session, clears the device, stops the sync flow, reloads", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     localStorage.setItem("course-progress:dsa", '["a/b"]');
     registerQueue();
     const abort = vi.fn();
@@ -200,7 +211,7 @@ describe("Sign out", () => {
   });
 
   it("everywhere: revokes every session first", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     registerQueue();
     openMenu(host);
     await click(item("Sign out everywhere"));
@@ -211,18 +222,29 @@ describe("Sign out", () => {
   it("a dead network is a failed sign-out, not a successful one: the device is cleared and the sign-out stays pending", async () => {
     // better-auth resolves with `error` rather than throwing.
     signOut.mockResolvedValueOnce({ data: null, error: { status: 0 } });
-    const host = mount(true);
+    const host = await mount(true);
     localStorage.setItem("course-progress:dsa", '["a/b"]');
     registerQueue();
     openMenu(host);
     await click(item("Sign out"));
     expect(localStorage.getItem("course-progress:dsa")).toBeNull();
-    expect(localStorage.getItem(SIGNOUT_PENDING_KEY)).toBe("1");
+    // Names this session, so a later one is not signed out by it.
+    expect(JSON.parse(localStorage.getItem(SIGNOUT_PENDING_KEY)!)).toEqual({ session: "s1", user: "u1", everywhere: false });
+  });
+
+  it("everywhere, offline: the pending sign-out remembers to revoke every session on retry", async () => {
+    revokeSessions.mockResolvedValueOnce({ data: null, error: null });
+    signOut.mockResolvedValueOnce({ data: null, error: { status: 0 } });
+    const host = await mount(true);
+    registerQueue();
+    openMenu(host);
+    await click(item("Sign out everywhere"));
+    expect(JSON.parse(localStorage.getItem(SIGNOUT_PENDING_KEY)!)).toEqual({ session: "s1", user: "u1", everywhere: true });
   });
 
   it("a 401 means the session was already gone: signed out, nothing pending", async () => {
     signOut.mockResolvedValueOnce({ data: null, error: { status: 401 } });
-    const host = mount(true);
+    const host = await mount(true);
     registerQueue();
     openMenu(host);
     await click(item("Sign out"));
@@ -230,7 +252,7 @@ describe("Sign out", () => {
   });
 
   it("changes that cannot sync in 3 s: tells the learner, and does not reload over the notice", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     localStorage.setItem("course-progress:dsa", '["a/b"]');
     const queue = registerQueue(vi.fn(() => new Promise<number>(() => {})));
     queue.enqueueMark({ course: "dsa", kind: "visited", id: "a/b" });
@@ -250,7 +272,7 @@ describe("Sign out that cannot finish", () => {
   const items = () => [...document.querySelectorAll('[role="menuitem"]')] as HTMLButtonElement[];
 
   it("a step that throws re-enables the menu and says so, instead of leaving it stuck", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     registerQueue();
     act(() => bridge!.registerAbort(() => { throw new Error("boom"); }));
     openMenu(host);
@@ -267,7 +289,7 @@ describe("Sign out that cannot finish", () => {
 
   it("a BroadcastChannel that throws does not stop the sign-out", async () => {
     vi.stubGlobal("BroadcastChannel", class { constructor() { throw new Error("unavailable"); } });
-    const host = mount(true);
+    const host = await mount(true);
     localStorage.setItem("course-progress:dsa", '["a/b"]');
     registerQueue();
     openMenu(host);
@@ -279,13 +301,14 @@ describe("Sign out that cannot finish", () => {
 
   it("does not need a chunk fetched at click time: the sandbox id list is imported statically", () => {
     // A dynamic import() rejects on a dead network when the chunk is not cached.
-    const src = readFileSync(join(__dirname, "..", "src/components/auth/AccountControl.tsx"), "utf8");
+    // The menu is already inside the session chunk, so its own imports are static.
+    const src = readFileSync(join(__dirname, "..", "src/components/auth/SessionControl.tsx"), "utf8");
     expect(src).not.toMatch(/import\(\s*["'`]/);
   });
 
   it("delete: a step that throws after the server accepted says the account is gone, and re-enables the menu", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 204 })));
-    const host = mount(true);
+    const host = await mount(true);
     act(() => bridge!.registerAbort(() => { throw new Error("boom"); }));
     openMenu(host);
     act(() => item("Delete account").click());
@@ -307,7 +330,7 @@ describe("Sign out with progress that was never added to the account", () => {
   }
 
   it("asks first: nothing is signed out or cleared, and the sync flow is left running", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     seedUnmerged();
     const abort = vi.fn();
     act(() => bridge!.registerAbort(abort));
@@ -324,7 +347,7 @@ describe("Sign out with progress that was never added to the account", () => {
   });
 
   it("Cancel keeps the progress and the session", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     seedUnmerged();
     openMenu(host);
     await click(item("Sign out"));
@@ -335,7 +358,7 @@ describe("Sign out with progress that was never added to the account", () => {
   });
 
   it("Reload and review it: reloads so the merge prompt returns, keeping the progress", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     seedUnmerged();
     openMenu(host);
     await click(item("Sign out"));
@@ -346,7 +369,7 @@ describe("Sign out with progress that was never added to the account", () => {
   });
 
   it("Sign out and delete it: only then is the progress cleared", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     seedUnmerged();
     openMenu(host);
     await click(item("Sign out"));
@@ -358,7 +381,7 @@ describe("Sign out with progress that was never added to the account", () => {
   });
 
   it("'everywhere' survives the confirmation", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     seedUnmerged();
     openMenu(host);
     await click(item("Sign out everywhere"));
@@ -368,7 +391,7 @@ describe("Sign out with progress that was never added to the account", () => {
   });
 
   it("the landing page's local-only sandbox draft is not progress to protect", async () => {
-    const host = mount(true);
+    const host = await mount(true);
     localStorage.setItem("dsa:sandbox:landing-find-pair:python", "x");
     openMenu(host);
     await click(item("Sign out"));
@@ -377,11 +400,19 @@ describe("Sign out with progress that was never added to the account", () => {
   });
 });
 
+function typeDelete() {
+  const input = dialog()!.querySelector("input")!;
+  act(() => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "delete");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+}
+
 describe("Delete account", () => {
   it("needs the word typed, erases the device without the unmerged-progress question, and reloads", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 204 }));
     vi.stubGlobal("fetch", fetchMock);
-    const host = mount(true);
+    const host = await mount(true);
     localStorage.setItem("course-progress:dsa", '["a/b"]');
     const abort = vi.fn();
     act(() => bridge!.registerAbort(abort));
@@ -404,7 +435,7 @@ describe("Delete account", () => {
 
   it("a failed deletion erases nothing and says so", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 500 })));
-    const host = mount(true);
+    const host = await mount(true);
     localStorage.setItem("course-progress:dsa", '["a/b"]');
     openMenu(host);
     act(() => item("Delete account").click());
@@ -420,8 +451,34 @@ describe("Delete account", () => {
     expect(reload).not.toHaveBeenCalled();
   });
 
-  it("a reopened dialog does not arrive with the word already typed", () => {
-    const host = mount(true);
+  it("disposes the sync queue: its retry timer must not outlive the account", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 204 })));
+    const host = await mount(true);
+    const queue = registerQueue();
+    const dispose = vi.spyOn(queue, "dispose");
+    openMenu(host);
+    act(() => item("Delete account").click());
+    typeDelete();
+    await click(dialogButton("Delete account"));
+    expect(dispose).toHaveBeenCalled();
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it.each([
+    ["Cancel", () => dialogButton("Cancel").click()],
+    ["Escape", () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }))],
+  ])("%s on the dialog returns focus to the account button, not <body>", async (_name, dismiss) => {
+    const host = await mount(true);
+    openMenu(host);
+    act(() => item("Delete account").click());
+    expect(dialog()!.contains(document.activeElement)).toBe(true);
+    act(() => { dismiss(); });
+    expect(dialog()).toBeNull();
+    expect(document.activeElement).toBe(host.querySelector("button"));
+  });
+
+  it("a reopened dialog does not arrive with the word already typed", async () => {
+    const host = await mount(true);
     openMenu(host);
     act(() => item("Delete account").click());
     const input = dialog()!.querySelector("input")!;

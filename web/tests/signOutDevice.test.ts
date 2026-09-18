@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SIGNOUT_PENDING_KEY, signOutDevice, syncWarning } from "../src/lib/auth/signOutDevice";
+import {
+  SIGNOUT_PENDING_KEY, pendingSignOutApplies, readPendingSignOut, signOutDevice, syncWarning,
+} from "../src/lib/auth/signOutDevice";
 import { SyncQueue } from "../src/lib/progress/syncQueue";
 import type { Transport } from "../src/lib/progress/api";
 
@@ -78,14 +80,69 @@ describe("signOutDevice (spec §5.4)", () => {
     vi.useRealTimers();
   });
 
-  it("offline: clears the device and leaves the sign-out pending for the next load", async () => {
-    const q = queueWith(vi.fn(async () => 204));
-    await signOutDevice({
-      queue: q, storage: localStorage, broadcast: vi.fn(),
-      endSession: async () => { throw new Error("offline"); },
+  describe("offline: clears the device and leaves the sign-out pending for the next load", () => {
+    const offline = async (over: Partial<Parameters<typeof signOutDevice>[0]> = {}) => {
+      await signOutDevice({
+        queue: queueWith(vi.fn(async () => 204)), storage: localStorage, broadcast: vi.fn(),
+        endSession: async () => { throw new Error("offline"); },
+        ...over,
+      });
+    };
+
+    it("names the session it was for", async () => {
+      await offline({ session: { sessionId: "s1", userId: "u1" }, everywhere: true });
+      expect(localStorage.getItem("course-progress:dsa")).toBeNull();
+      expect(readPendingSignOut(localStorage)).toEqual({ session: "s1", user: "u1", everywhere: true });
     });
-    expect(localStorage.getItem("course-progress:dsa")).toBeNull();
-    expect(localStorage.getItem(SIGNOUT_PENDING_KEY)).toBe("1");
+
+    it("falls back to the device's owner, read before the clear removes it", async () => {
+      localStorage.setItem("sync:owner", "u9");
+      await offline();
+      expect(localStorage.getItem("sync:owner")).toBeNull();
+      expect(readPendingSignOut(localStorage)).toEqual({ session: null, user: "u9", everywhere: false });
+    });
+
+    it("with no identity at all, records that none was known", async () => {
+      await offline();
+      expect(readPendingSignOut(localStorage)).toEqual({ session: null, user: null, everywhere: false });
+    });
+  });
+
+  it("a sign-out that finished leaves nothing pending", async () => {
+    await signOutDevice({
+      queue: queueWith(vi.fn(async () => 204)), storage: localStorage, broadcast: vi.fn(),
+      endSession: async () => {}, session: { sessionId: "s1", userId: "u1" },
+    });
+    expect(localStorage.getItem(SIGNOUT_PENDING_KEY)).toBeNull();
+  });
+});
+
+describe("the pending sign-out flag", () => {
+  const now = { sessionId: "s2", userId: "u1" };
+
+  it("applies to the session it names, and to no other, even for the same account", () => {
+    expect(pendingSignOutApplies({ session: "s2", user: "u1", everywhere: false }, now)).toBe(true);
+    expect(pendingSignOutApplies({ session: "s1", user: "u1", everywhere: false }, now)).toBe(false);
+  });
+
+  it("without a session id, falls back to the account", () => {
+    expect(pendingSignOutApplies({ session: null, user: "u1", everywhere: false }, now)).toBe(true);
+    expect(pendingSignOutApplies({ session: null, user: "u2", everywhere: false }, now)).toBe(false);
+  });
+
+  it("naming nobody applies to whoever is signed in, as the old flag did", () => {
+    expect(pendingSignOutApplies({ session: null, user: null, everywhere: false }, now)).toBe(true);
+  });
+
+  it("reads the legacy value '1' (and anything unreadable) as naming nobody, so it is still finished", () => {
+    for (const raw of ["1", "not json", "{}", '{"session":1,"user":null,"everywhere":false}', "null"]) {
+      localStorage.setItem(SIGNOUT_PENDING_KEY, raw);
+      expect(readPendingSignOut(localStorage), raw).toEqual({ session: null, user: null, everywhere: false });
+    }
+  });
+
+  it("is absent when nothing is pending", () => {
+    expect(readPendingSignOut(localStorage)).toBeNull();
   });
 });
 
