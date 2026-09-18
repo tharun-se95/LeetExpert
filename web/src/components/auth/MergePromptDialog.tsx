@@ -37,6 +37,7 @@ export function MergePromptDialog({
             {plural(summary.solved, "problem solved", "problems solved")} ·{" "}
             {plural(summary.drafts, "draft", "drafts")}
           </p>
+          <p className="mt-2 text-sm text-muted">Nothing syncs from this device until you choose.</p>
           {error ? (
             <p role="alert" className="mt-3 text-sm text-bad">
               {error}

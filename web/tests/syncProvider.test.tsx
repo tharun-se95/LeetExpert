@@ -122,6 +122,9 @@ describe("SyncProvider", () => {
     server = { visited: ["z/z"], solved: [], hasDrafts: false };
     await mount();
     expect(dialog()!.textContent).toContain("1 lesson visited");
+    // Dismissal leaves no runtime for the rest of the page's life, so the
+    // dialog has to say what not choosing costs.
+    expect(dialog()!.textContent).toContain("Nothing syncs from this device until you choose.");
     await act(async () => button("Add to my account").click());
     expect(fake.postMarks).toHaveBeenCalled();
     expect(localStorage.getItem("sync:owner")).toBe("u1");
@@ -264,6 +267,83 @@ describe("SyncProvider", () => {
     // The enqueued mark stays on disk for the same learner's next sign-in.
     const record = JSON.parse(localStorage.getItem("sync:v1:u1")!) as { marks: { id: string }[] };
     expect(record.marks.map((m) => m.id)).toEqual(["arrays/intro"]);
+  });
+
+  it("a mark made while the first-sign-in flow runs is queued once the runtime registers", async () => {
+    vi.useFakeTimers();
+    // Written after beginSignIn read storage for its summary: it is in
+    // storage but nothing enqueued it, and ProgressProvider skips it later
+    // because storage already has the id.
+    vi.mocked(fake.getMarks).mockImplementationOnce(async () => {
+      localStorage.setItem("course-progress:dsa", JSON.stringify(["late/mark"]));
+      return server;
+    });
+    await mount();
+    expect(bridge!.runtime).not.toBeNull();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2500);
+    });
+    expect(fake.postMarks).toHaveBeenCalledWith("dsa", [{ kind: "visited", id: "late/mark" }], undefined);
+  });
+
+  it("the same holds when the mark is made during Add to my account", async () => {
+    vi.useFakeTimers();
+    seedLocal();
+    server = { visited: ["z/z"], solved: [], hasDrafts: false };
+    await mount();
+    vi.mocked(fake.postMarks).mockImplementationOnce(async () => {
+      localStorage.setItem("course-progress:dsa", JSON.stringify(["arrays/intro", "late/mark"]));
+      return 204;
+    });
+    await act(async () => button("Add to my account").click());
+    expect(bridge!.runtime).not.toBeNull();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2500);
+    });
+    const sent = vi.mocked(fake.postMarks).mock.calls.flatMap(([, marks]) => marks.map((m) => m.id));
+    expect(sent).toContain("late/mark");
+  });
+
+  it("a returning learner's resume flow does not pull a second time", async () => {
+    localStorage.setItem("sync:owner", "u1");
+    await mount();
+    expect(fake.getMarks).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["a 403", () => new TransportError(403)],
+    ["an unparseable response", () => new Error("bad body")],
+  ])("%s at sign-in is not retried: it stops, with no runtime", async (_name, make) => {
+    vi.useFakeTimers();
+    vi.mocked(fake.getMarks).mockRejectedValue(make());
+    await mount();
+    await act(async () => window.dispatchEvent(new Event("online")));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(120_000);
+    });
+    expect(fake.getMarks).toHaveBeenCalledTimes(1);
+    expect(bridge!.runtime).toBeNull();
+    expect(localStorage.getItem("sync:owner")).toBeNull();
+  });
+
+  it("a 5xx at sign-in is retried like a dropped connection", async () => {
+    vi.useFakeTimers();
+    vi.mocked(fake.getMarks).mockRejectedValueOnce(new TransportError(502));
+    await mount();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2000);
+    });
+    expect(bridge!.runtime).not.toBeNull();
+  });
+
+  it("a non-retryable failure during Add says so in the dialog instead of the offline message", async () => {
+    seedLocal();
+    server = { visited: ["z/z"], solved: [], hasDrafts: false };
+    await mount();
+    vi.mocked(fake.getMarks).mockRejectedValueOnce(new TransportError(403));
+    await act(async () => button("Add to my account").click());
+    expect(dialog()!.textContent).toContain("Reload the page");
+    expect(dialog()!.textContent).not.toContain("Check your connection");
   });
 
   it("flushes with keepalive when the tab is hidden", async () => {

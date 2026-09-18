@@ -7,12 +7,20 @@ import { useSyncBridge } from "@/components/providers/SyncBridge";
 import { httpTransport, TransportError } from "@/lib/progress/api";
 import type { AnonymousSummary } from "@/lib/progress/localStore";
 import { reloadPage } from "@/lib/progress/reloadPage";
-import { beginSignIn, completeMerge, prepareDevice, type FlowDeps } from "@/lib/progress/signInFlow";
+import { beginSignIn, completeMerge, prepareDevice, pullMarks, type FlowDeps } from "@/lib/progress/signInFlow";
 import { BACKOFF_MAX_MS, BACKOFF_START_MS, SyncQueue } from "@/lib/progress/syncQueue";
 import { AUTH_CHANNEL, SYNCED_COURSE } from "@/lib/progress/types";
 
 const KNOWN = new Set<string>(sandboxIds);
 const OFFLINE_MESSAGE = "Couldn't reach the server. Check your connection and try again.";
+const UNEXPECTED_MESSAGE = "Couldn't add your progress because of an unexpected error. Reload the page to try again.";
+
+// A dropped connection (0), a server fault (5xx) and a rate limit (429) pass
+// on their own. Anything else (a 403, a malformed body) would fail the same
+// way every time, so retrying it forever only hides the problem.
+function isTransient(err: unknown): boolean {
+  return err instanceof TransportError && (err.status === 0 || err.status === 429 || err.status >= 500);
+}
 
 type Choose = (choice: "add" | "discard") => Promise<void>;
 
@@ -31,9 +39,12 @@ export default function SyncProvider({ userId }: { userId: string }) {
 
   useEffect(() => {
     const storage = window.localStorage;
-    // Once per mount: on "replace" this clears the other learner's data, and a
-    // second call would then find no owner and answer "merge" for a device
-    // that was just replaced.
+    // Runs on every effect run, not once per page: on "replace" it clears the
+    // other learner's data, so in dev StrictMode's second run finds no owner
+    // and answers "merge". That is harmless (beginSignIn treats "merge" and
+    // "replace" alike, and the data is already cleared), so this is not
+    // memoized: a module-level cache keyed by userId would go stale across a
+    // real sign-out and sign-in in the same page.
     const action = prepareDevice(storage, userId);
 
     let flow: FlowDeps;
@@ -42,9 +53,10 @@ export default function SyncProvider({ userId }: { userId: string }) {
     let running = false;
     // The flow got an answer (ready or ask). Only a failed flow retries.
     let settled = false;
-    // The session is gone: retrying only earns another 401. The learner's
+    // No more automatic attempts: the session is gone (retrying only earns
+    // another 401) or the failure is not one a retry can fix. The learner's
     // data stays on disk and the next sign-in's flow picks it up.
-    let expired = false;
+    let halted = false;
     let registered = false;
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
     let backoff = BACKOFF_START_MS;
@@ -86,22 +98,31 @@ export default function SyncProvider({ userId }: { userId: string }) {
     // happens only once the flow says "ready" (or a merge choice completed):
     // registered during the prompt, a queued mark could reach the account
     // before "Don't add" was possible.
-    const register = () => {
+    //
+    // After a merge or first sign-in, marks made while the flow ran are in
+    // storage but were never enqueued, and ProgressProvider skips ids storage
+    // already has. One uploadLocalOnly pull queues the ones the server lacks
+    // (the resume path already did exactly this inside beginSignIn). A failure
+    // is swallowed: the next load's resume flow covers it.
+    const register = (catchUp: boolean) => {
       registered = true;
       setRuntime({ userId, queue: flow.queue, transport: httpTransport });
       void flow.queue.flush();
+      if (catchUp) void bumpAfter(pullMarks(flow, { uploadLocalOnly: true })).catch(() => {});
     };
 
     // Tells an expired session from a dropped connection. Flow calls that hit
     // the API directly carry the real status; a queue flush inside the flow
     // collapses 401 and offline alike to TransportError(0), so the queue's
     // own status is the signal there. Read before the queue is disposed.
-    const failed = (err: unknown): "expired" | "offline" => {
+    const failed = (err: unknown): "expired" | "offline" | "fatal" => {
       const unauthorized = err instanceof TransportError && err.status === 401;
-      const kind = unauthorized || (live && flow.queue.status() === "unauthorized") ? "expired" : "offline";
+      const kind = unauthorized || (live && flow.queue.status() === "unauthorized")
+        ? "expired"
+        : isTransient(err) ? "offline" : "fatal";
       // Any thrown flow error leaves no runtime to serve, so the queue goes.
       drop();
-      if (kind === "expired") expired = true;
+      if (kind !== "offline") halted = true;
       return kind;
     };
 
@@ -115,7 +136,7 @@ export default function SyncProvider({ userId }: { userId: string }) {
     };
 
     async function start(): Promise<void> {
-      if (cancelled || expired || settled || running) return;
+      if (cancelled || halted || settled || running) return;
       running = true;
       build();
       try {
@@ -123,11 +144,15 @@ export default function SyncProvider({ userId }: { userId: string }) {
         if (cancelled) return;
         settled = true;
         if (result.kind === "ask") setAsk(result.summary);
-        else register();
+        else register(action !== "resume");
       } catch (err) {
         if (cancelled) return;
         // Offline leaves sync:owner unwritten, so the flow reruns.
-        if (failed(err) === "offline") scheduleRetry();
+        const kind = failed(err);
+        if (kind === "offline") scheduleRetry();
+        // No prompt is open at sign-in, so there is nowhere in the UI to say
+        // it; the console is the only place a fatal one shows.
+        else if (kind === "fatal") console.error("[sync] sign-in failed and will not be retried", err);
       } finally {
         running = false;
       }
@@ -143,11 +168,12 @@ export default function SyncProvider({ userId }: { userId: string }) {
         await bumpAfter(completeMerge(flow, choice));
         if (cancelled) return;
         setAsk(null);
-        register();
+        register(true);
       } catch (err) {
         if (cancelled) return;
-        if (failed(err) === "expired") setAsk(null);
-        else setError(OFFLINE_MESSAGE);
+        const kind = failed(err);
+        if (kind === "expired") setAsk(null);
+        else setError(kind === "offline" ? OFFLINE_MESSAGE : UNEXPECTED_MESSAGE);
       } finally {
         running = false;
         if (!cancelled) setBusy(false);
@@ -161,7 +187,7 @@ export default function SyncProvider({ userId }: { userId: string }) {
       if (registered && document.visibilityState === "hidden") void flow.queue.flush({ keepalive: true });
     };
     const onOnline = () => {
-      if (expired) return;
+      if (halted) return;
       if (!settled) {
         if (retryTimer) clearTimeout(retryTimer);
         retryTimer = null;
