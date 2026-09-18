@@ -371,6 +371,32 @@ The content is the product. Code exists to serve it.
 - Registry-addressed content (`viz`, `diagram`, `sandbox` ids) must be
   validated by tests — a string id typo must fail CI, not render an error
   card in production.
+- **Accounts are optional and progress is local-first** (spec
+  `docs/superpowers/specs/2026-09-18-accounts-and-progress-sync-design.md`).
+  Signed out, the app is exactly the localStorage app: it reaches the sync
+  runtime only through the `SyncBridge` context, which holds no runtime until
+  someone signs in, and that runtime (`SyncProvider`) is a `next/dynamic`
+  chunk loaded by `AccountRuntime` once a session exists. Sign-in is on only when all seven variables in
+  `web/.env.example` are set, and `authEnabled` is read while pages are
+  prerendered, so changing them needs a rebuild. Pages never read the
+  session on the server — a lesson that turns dynamic is a defect; compare
+  the `next build` route table against the previous one. The API takes the
+  user id only from the session, read with the cookie cache disabled so
+  revocation stops writes at once. Marks are an insert-only set; drafts carry
+  a server `rev`, and on a conflict the client stashes the losing copy rather
+  than overwriting or discarding it. Sign-out clears every synced key,
+  including the legacy `dsa-course-*` keys, or the migration revives them.
+  Only visited, solved and problem-sandbox drafts sync; adding a kind means
+  a merge rule and tests first. Merge rules live in the pure
+  `lib/progress/merge.ts`; SQL guarantees are tested on PGlite with the real
+  migrations. Browser tests sign in through `POST /api/test-login`, which
+  answers only outside a production build and with `AUTH_TEST_LOGIN=1`, and
+  is a 404 otherwise; `e2e/test-login-prod.e2e.mjs` checks that against a
+  real `next build` with the auth variables set (without them the route is a
+  404 whatever `NODE_ENV` does, so the check could not fail).
+  Guarded in the `progressMerge`, `progressStore`, `progressApi`,
+  `syncQueue`, `signInFlow`, `progressLocalStore` and `testLogin` tests, and
+  by `e2e/sync.e2e.mjs`, which needs a Neon development database.
 - Accessibility is not optional: real `aria-label`s on diagrams, visible
   focus states, keyboard paths for every interaction, and `prefers-reduced-
   motion` honoured.
@@ -396,6 +422,7 @@ The content is the product. Code exists to serve it.
 | `video/` | Remotion video subproject (see `video/HANDOFF.md`) — legacy; new video work goes to `hyperframes/` |
 | `docs/superpowers/specs/` | Design specs; write one before large work |
 | `web/tests/` | Content validation — runs in CI before build |
+| `web/drizzle/` | Generated Postgres migrations (drizzle-kit); applied by `npm run db:migrate` as a deploy step, never at request time |
 | `hyperframes/` | HyperFrames visual system: seek-safe DSA primitives and explainer videos; one source for lesson art, social stills and video (see its README) |
 | `marketing/` | Instagram post packages; `LEDGER.md` is the append-only record the social-artist agent reads before and appends to after each post |
 | `seo/` | SEO strategy, keywords, technical audit and changelog |

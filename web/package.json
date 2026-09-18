@@ -11,7 +11,9 @@
     "prebuild": "node scripts/copy-pyodide.mjs && node scripts/build-search-index.mjs && node scripts/build-coach-corpus.mjs",
     "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "e2e:sync": "node e2e/sync.e2e.mjs",
+    "e2e:test-login-prod": "node e2e/test-login-prod.e2e.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.39",
@@ -68,6 +70,7 @@
     "fontkit": "2.0.4",
     "jiti": "^2.7.0",
     "jsdom": "^30.0.1",
+    "playwright-core": "^1.63.0",
     "sharp": "0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5",
