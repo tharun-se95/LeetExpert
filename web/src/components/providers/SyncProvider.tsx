@@ -31,7 +31,7 @@ type Choose = (choice: "add" | "discard") => Promise<void>;
  * cleanup disposes the old queue and its state starts clean.
  */
 export default function SyncProvider({ userId }: { userId: string }) {
-  const { setRuntime, bumpMarks } = useSyncBridge();
+  const { setRuntime, bumpMarks, setIssue, registerAbort } = useSyncBridge();
   const [ask, setAsk] = useState<AnonymousSummary | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +68,7 @@ export default function SyncProvider({ userId }: { userId: string }) {
       flow = {
         storage, userId, course: SYNCED_COURSE, transport: httpTransport, queue,
         isKnownSandbox: (id) => KNOWN.has(id),
+        isCancelled: () => cancelled,
       };
       live = true;
     };
@@ -80,6 +81,7 @@ export default function SyncProvider({ userId }: { userId: string }) {
       drop();
       registered = false;
       setRuntime(null);
+      setIssue(null);
     };
 
     // beginSignIn and completeMerge end in pullMarks, which only writes
@@ -106,6 +108,7 @@ export default function SyncProvider({ userId }: { userId: string }) {
     // is swallowed: the next load's resume flow covers it.
     const register = (catchUp: boolean) => {
       registered = true;
+      setIssue(null);
       setRuntime({ userId, queue: flow.queue, transport: httpTransport });
       void flow.queue.flush();
       if (catchUp) void bumpAfter(pullMarks(flow, { uploadLocalOnly: true })).catch(() => {});
@@ -143,15 +146,19 @@ export default function SyncProvider({ userId }: { userId: string }) {
         const result = await bumpAfter(beginSignIn(flow, action));
         if (cancelled) return;
         settled = true;
-        if (result.kind === "ask") setAsk(result.summary);
-        else register(action !== "resume");
+        if (result.kind === "ask") {
+          // Says why nothing syncs while the prompt is open, and after it is dismissed.
+          setIssue("paused");
+          setAsk(result.summary);
+        } else register(action !== "resume");
       } catch (err) {
         if (cancelled) return;
         // Offline leaves sync:owner unwritten, so the flow reruns.
         const kind = failed(err);
+        // No prompt is open at sign-in, so the account menu is where a failure
+        // shows (it reads this through the bridge).
+        setIssue(kind === "offline" ? "offline" : kind === "expired" ? "expired" : "failed");
         if (kind === "offline") scheduleRetry();
-        // No prompt is open at sign-in, so there is nowhere in the UI to say
-        // it; the console is the only place a fatal one shows.
         else if (kind === "fatal") console.error("[sync] sign-in failed and will not be retried", err);
       } finally {
         running = false;
@@ -168,12 +175,16 @@ export default function SyncProvider({ userId }: { userId: string }) {
         await bumpAfter(completeMerge(flow, choice));
         if (cancelled) return;
         setAsk(null);
+        // A manual retry that worked ends a halt an earlier fatal error set.
+        halted = false;
         register(true);
       } catch (err) {
         if (cancelled) return;
         const kind = failed(err);
-        if (kind === "expired") setAsk(null);
-        else setError(kind === "offline" ? OFFLINE_MESSAGE : UNEXPECTED_MESSAGE);
+        if (kind === "expired") {
+          setAsk(null);
+          setIssue("expired");
+        } else setError(kind === "offline" ? OFFLINE_MESSAGE : UNEXPECTED_MESSAGE);
       } finally {
         running = false;
         if (!cancelled) setBusy(false);
@@ -184,10 +195,10 @@ export default function SyncProvider({ userId }: { userId: string }) {
     void start();
 
     const onHide = () => {
-      if (registered && document.visibilityState === "hidden") void flow.queue.flush({ keepalive: true });
+      if (!cancelled && registered && document.visibilityState === "hidden") void flow.queue.flush({ keepalive: true });
     };
     const onOnline = () => {
-      if (halted) return;
+      if (halted || cancelled) return;
       if (!settled) {
         if (retryTimer) clearTimeout(retryTimer);
         retryTimer = null;
@@ -198,7 +209,7 @@ export default function SyncProvider({ userId }: { userId: string }) {
       }
     };
 
-    const channel = typeof BroadcastChannel === "undefined" ? null : new BroadcastChannel(AUTH_CHANNEL);
+    let channel = typeof BroadcastChannel === "undefined" ? null : new BroadcastChannel(AUTH_CHANNEL);
     if (channel) {
       // Another tab signed out and cleared storage; this tab's in-memory state
       // is the last learner's, and a reload is the one reset that covers all
@@ -212,16 +223,32 @@ export default function SyncProvider({ userId }: { userId: string }) {
     document.addEventListener("visibilitychange", onHide);
     window.addEventListener("online", onOnline);
 
+    // Sign-out from this tab: stop the flow before the device is cleared. The
+    // runtime's queue is left for signOutDevice, which still flushes it; a
+    // queue the flow built but never registered is nobody else's to dispose.
+    // The channel goes too: BroadcastChannel delivers to other instances in
+    // the same page, so this tab would otherwise reload on its own "signed-out"
+    // and take the account menu's notice with it.
+    registerAbort(() => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+      retryTimer = null;
+      if (!registered) drop();
+      channel?.close();
+      channel = null;
+    });
+
     return () => {
       cancelled = true;
       if (retryTimer) clearTimeout(retryTimer);
       document.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("online", onOnline);
       channel?.close();
+      registerAbort(null);
       chooseRef.current = null;
       stop();
     };
-  }, [userId, setRuntime, bumpMarks]);
+  }, [userId, setRuntime, bumpMarks, setIssue, registerAbort]);
 
   return (
     <MergePromptDialog

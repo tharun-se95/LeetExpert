@@ -414,4 +414,129 @@ describe("SyncProvider", () => {
     expect(JSON.parse(localStorage.getItem("course-progress:dsa")!)).toEqual(["z/z"]);
     expect(dialog()).toBeNull();
   });
+
+  describe("the account menu's view of sync (bridge issue)", () => {
+    it("says nothing is wrong while syncing", async () => {
+      await mount();
+      expect(bridge!.runtime).not.toBeNull();
+      expect(bridge!.issue).toBeNull();
+    });
+
+    it("paused while the merge prompt is open, and it stays after Esc", async () => {
+      seedLocal();
+      server = { visited: ["z/z"], solved: [], hasDrafts: false };
+      await mount();
+      expect(bridge!.issue).toBe("paused");
+      await press("Escape");
+      expect(bridge!.issue).toBe("paused");
+    });
+
+    it("clears once the learner chooses", async () => {
+      seedLocal();
+      server = { visited: ["z/z"], solved: [], hasDrafts: false };
+      await mount();
+      await act(async () => button("Add to my account").click());
+      expect(bridge!.issue).toBeNull();
+    });
+
+    it("failed: an error a retry cannot fix, which the console alone used to carry", async () => {
+      vi.spyOn(console, "error").mockImplementation(() => {});
+      vi.mocked(fake.getMarks).mockRejectedValue(new TransportError(403));
+      await mount();
+      expect(bridge!.runtime).toBeNull();
+      expect(bridge!.issue).toBe("failed");
+    });
+
+    it("expired: a 401", async () => {
+      vi.mocked(fake.getMarks).mockRejectedValue(new TransportError(401));
+      await mount();
+      expect(bridge!.issue).toBe("expired");
+    });
+
+    it("offline while the flow retries, then clear once it gets through", async () => {
+      vi.mocked(fake.getMarks).mockRejectedValueOnce(new TransportError(0));
+      await mount();
+      expect(bridge!.issue).toBe("offline");
+      await act(async () => window.dispatchEvent(new Event("online")));
+      expect(bridge!.runtime).not.toBeNull();
+      expect(bridge!.issue).toBeNull();
+    });
+  });
+
+  describe("sign-out from this tab (abortSync)", () => {
+    it("a pull that answers after the abort writes no marks and no owner, and registers nothing", async () => {
+      let answer!: (s: MarksSnapshot) => void;
+      // One deferred answer for every getMarks, so the pull inside finish() ends too.
+      const pending = new Promise<MarksSnapshot>((resolve) => (answer = resolve));
+      vi.mocked(fake.getMarks).mockImplementation(() => pending);
+      await mount();
+      act(() => bridge!.abortSync());
+      // What signOutDevice does next: the device is emptied.
+      localStorage.clear();
+      await act(async () => answer({ visited: ["z/z"], solved: [], hasDrafts: false }));
+      expect(localStorage.getItem("sync:owner")).toBeNull();
+      expect(localStorage.getItem("course-progress:dsa")).toBeNull();
+      expect(bridge!.runtime).toBeNull();
+    });
+
+    it("a queue the flow built but never registered is disposed by the abort", async () => {
+      vi.mocked(fake.getMarks).mockImplementation(() => new Promise<MarksSnapshot>(() => {}));
+      await mount();
+      const dispose = vi.spyOn(SyncQueue.prototype, "dispose");
+      act(() => bridge!.abortSync());
+      expect(dispose).toHaveBeenCalledTimes(1);
+    });
+
+    it("the registered runtime's queue is left for signOutDevice, which still has to flush it", async () => {
+      await mount();
+      const dispose = vi.spyOn(SyncQueue.prototype, "dispose");
+      act(() => bridge!.abortSync());
+      expect(dispose).not.toHaveBeenCalled();
+      expect(bridge!.runtime).not.toBeNull();
+    });
+
+    it("no retry fires after the abort", async () => {
+      vi.useFakeTimers();
+      vi.mocked(fake.getMarks).mockRejectedValue(new TransportError(0));
+      await mount();
+      act(() => bridge!.abortSync());
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(120_000);
+      });
+      expect(fake.getMarks).toHaveBeenCalledTimes(1);
+    });
+
+    it("this tab does not reload on its own 'signed-out' broadcast, which would erase the menu's notice", async () => {
+      await mount();
+      act(() => bridge!.abortSync());
+      const mine = new BroadcastChannel(AUTH_CHANNEL);
+      await act(async () => {
+        mine.postMessage("signed-out");
+        await new Promise((r) => setTimeout(r, 20));
+      });
+      mine.close();
+      expect(reload).not.toHaveBeenCalled();
+    });
+  });
+
+  it("a manual retry that works ends the halt a fatal error set, so a reconnect retries the queue again", async () => {
+    seedLocal();
+    server = { visited: ["z/z"], solved: [], hasDrafts: false };
+    await mount();
+    vi.mocked(fake.getMarks).mockRejectedValueOnce(new TransportError(403));
+    await act(async () => button("Add to my account").click());
+    expect(dialog()!.textContent).toContain("Reload the page");
+    await act(async () => button("Add to my account").click());
+    expect(bridge!.runtime).not.toBeNull();
+
+    // Go offline with a pending write, then reconnect: onOnline must call retryNow.
+    vi.mocked(fake.postMarks).mockRejectedValueOnce(new TransportError(0));
+    const queue = bridge!.runtime!.queue;
+    queue.enqueueMark({ course: "dsa", kind: "visited", id: "late/one" });
+    await act(async () => queue.flush());
+    expect(queue.status()).toBe("offline");
+    vi.mocked(fake.postMarks).mockClear();
+    await act(async () => window.dispatchEvent(new Event("online")));
+    expect(fake.postMarks).toHaveBeenCalled();
+  });
 });

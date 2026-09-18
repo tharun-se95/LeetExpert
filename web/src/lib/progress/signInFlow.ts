@@ -14,6 +14,12 @@ export interface FlowDeps {
   transport: Transport;
   queue: SyncQueue;
   isKnownSandbox: (id: string) => boolean;
+  /**
+   * Sign-out empties the device while a request may still be in flight.
+   * Checked after every await that precedes a storage write, so a late answer
+   * cannot write marks, drafts or sync:owner back into the emptied device.
+   */
+  isCancelled?: () => boolean;
 }
 
 export type SignInResult = { kind: "ready" } | { kind: "ask"; summary: AnonymousSummary };
@@ -31,6 +37,7 @@ export function prepareDevice(storage: Storage, userId: string): OwnerAction {
 
 export async function pullMarks(deps: FlowDeps, opts: { uploadLocalOnly?: boolean } = {}): Promise<void> {
   const server = await deps.transport.getMarks(deps.course);
+  if (deps.isCancelled?.()) return;
   const local = { visited: readSet(visitedKey(deps.course)), solved: readSet(solvedKey(deps.course)) };
   if (opts.uploadLocalOnly) {
     // Marks made while no runtime was registered (VisitTracker fires on mount,
@@ -79,6 +86,7 @@ export async function completeMerge(deps: FlowDeps, choice: "add" | "discard"): 
 /** sync:owner is the commit marker, so it is written only after everything else. */
 async function finish(deps: FlowDeps): Promise<void> {
   await pullMarks(deps);
+  if (deps.isCancelled?.()) return;
   writeOwner(deps.storage, deps.userId);
 }
 
@@ -87,6 +95,7 @@ async function uploadAnonymous(deps: FlowDeps): Promise<void> {
   for (const id of readSet(visitedKey(course))) queue.enqueueMark({ course, kind: "visited", id });
   for (const id of readSet(solvedKey(course))) queue.enqueueMark({ course, kind: "solved", id });
   await queue.flush();
+  if (deps.isCancelled?.()) return;
   if (queue.pendingCount() > 0) throw new TransportError(0);
 
   for (const { sandboxId, lang, draft } of listLocalDrafts(storage, deps.isKnownSandbox)) {
@@ -105,6 +114,7 @@ async function uploadAnonymous(deps: FlowDeps): Promise<void> {
       // how SyncQueue.run forwards its own optional `opts` through).
       undefined,
     );
+    if (deps.isCancelled?.()) return;
     if (out.kind === "error") throw new TransportError(out.status);
     if (out.kind === "ok") {
       queue.setBaseRev(sandboxId, lang, out.rev);

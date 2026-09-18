@@ -7,7 +7,12 @@ import { createRoot, type Root } from "react-dom/client";
 
 let session: { user: { id: string } } | null = null;
 const useSession = vi.fn(() => ({ data: session }));
-vi.mock("@/lib/auth/client", () => ({ authClient: { useSession: () => useSession() } }));
+const signOut = vi.fn(async (): Promise<{ error: { status: number } | null }> => ({ error: null }));
+vi.mock("@/lib/auth/client", () => ({
+  authClient: { useSession: () => useSession(), signOut: () => signOut(), revokeSessions: vi.fn() },
+}));
+const reload = vi.fn();
+vi.mock("@/lib/progress/reloadPage", () => ({ reloadPage: () => reload() }));
 
 const mounted = vi.fn();
 const unmounted = vi.fn();
@@ -36,6 +41,7 @@ afterEach(() => {
   root = null;
   vi.clearAllMocks();
   session = null;
+  localStorage.clear();
 });
 
 async function render(authEnabled: boolean) {
@@ -81,5 +87,34 @@ describe("AccountRuntime", () => {
     session = null;
     await render(true);
     expect(unmounted).toHaveBeenCalledWith("u1");
+  });
+
+  describe("an offline sign-out left pending (spec deviation 6)", () => {
+    it("finishes it before sync can start, then reloads", async () => {
+      localStorage.setItem("signout-pending", "1");
+      session = { user: { id: "u1" } };
+      await render(true);
+      expect(mounted).not.toHaveBeenCalled();
+      expect(signOut).toHaveBeenCalledOnce();
+      expect(localStorage.getItem("signout-pending")).toBeNull();
+      expect(reload).toHaveBeenCalledOnce();
+    });
+
+    it("still offline: sync stays off and the flag stays for the next load", async () => {
+      localStorage.setItem("signout-pending", "1");
+      signOut.mockResolvedValueOnce({ error: { status: 0 } });
+      session = { user: { id: "u1" } };
+      await render(true);
+      expect(mounted).not.toHaveBeenCalled();
+      expect(localStorage.getItem("signout-pending")).toBe("1");
+      expect(reload).not.toHaveBeenCalled();
+    });
+
+    it("with no flag, signing in does not sign out", async () => {
+      session = { user: { id: "u1" } };
+      await render(true);
+      expect(signOut).not.toHaveBeenCalled();
+      expect(mounted).toHaveBeenCalledWith("u1");
+    });
   });
 });

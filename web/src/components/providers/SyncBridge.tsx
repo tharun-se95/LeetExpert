@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import type { Transport } from "@/lib/progress/api";
 import type { SyncQueue } from "@/lib/progress/syncQueue";
 
@@ -9,6 +9,14 @@ export interface SyncRuntime {
   queue: SyncQueue;
   transport: Transport;
 }
+
+/**
+ * Why a signed-in learner is not syncing while no runtime is registered
+ * (with one, the queue's own status says it). "paused": the merge prompt was
+ * dismissed. "offline": the sign-in flow is retrying. "expired": the session
+ * is gone. "failed": an error a retry cannot fix.
+ */
+export type SyncIssue = "paused" | "offline" | "expired" | "failed";
 
 export interface SyncBridgeValue {
   authEnabled: boolean;
@@ -41,6 +49,16 @@ export interface SyncBridgeValue {
    */
   marksEpoch: number;
   bumpMarks(): void;
+  /** Read by the account menu; written only by the sync runtime. */
+  issue: SyncIssue | null;
+  setIssue(issue: SyncIssue | null): void;
+  /**
+   * Sign-out stops the sign-in flow through this. A ref, not state: the
+   * runtime is not registered yet in exactly the case that matters (a flow
+   * still running), and registering a handle must not re-render anything.
+   */
+  registerAbort(abort: (() => void) | null): void;
+  abortSync(): void;
 }
 
 const SIGNED_OUT: SyncBridgeValue = {
@@ -49,6 +67,10 @@ const SIGNED_OUT: SyncBridgeValue = {
   setRuntime: () => {},
   marksEpoch: 0,
   bumpMarks: () => {},
+  issue: null,
+  setIssue: () => {},
+  registerAbort: () => {},
+  abortSync: () => {},
 };
 
 const Ctx = createContext<SyncBridgeValue>(SIGNED_OUT);
@@ -73,9 +95,15 @@ export function SyncBridgeProvider({ authEnabled, children }: { authEnabled: boo
   const [runtime, setRuntime] = useState<SyncRuntime | null>(null);
   const [marksEpoch, setEpoch] = useState(0);
   const bumpMarks = useCallback(() => setEpoch((n) => n + 1), []);
+  const [issue, setIssue] = useState<SyncIssue | null>(null);
+  const abortRef = useRef<(() => void) | null>(null);
+  const registerAbort = useCallback((abort: (() => void) | null) => {
+    abortRef.current = abort;
+  }, []);
+  const abortSync = useCallback(() => abortRef.current?.(), []);
   const value = useMemo(
-    () => ({ authEnabled, runtime, setRuntime, marksEpoch, bumpMarks }),
-    [authEnabled, runtime, marksEpoch, bumpMarks],
+    () => ({ authEnabled, runtime, setRuntime, marksEpoch, bumpMarks, issue, setIssue, registerAbort, abortSync }),
+    [authEnabled, runtime, marksEpoch, bumpMarks, issue, registerAbort, abortSync],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

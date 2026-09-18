@@ -182,3 +182,69 @@ describe("merge flow (spec §7)", () => {
     expect(readOwner(localStorage)).toBe("u1");
   });
 });
+
+describe("a flow that sign-out has cancelled", () => {
+  // Sign-out clears the device while a request is in flight; whatever the
+  // request then returns must not be written into the emptied storage.
+  function cancelledDuringPull(over: Partial<Transport> = {}) {
+    let cancelled = false;
+    let answer!: (s: MarksSnapshot) => void;
+    // One deferred answer for every getMarks, so the pull inside finish() ends too.
+    const pending = new Promise<MarksSnapshot>((resolve) => (answer = resolve));
+    const t = transport(EMPTY, { getMarks: vi.fn(() => pending), ...over });
+    const d = { ...tracked(t), isCancelled: () => cancelled };
+    return { d, t, cancelAndAnswer: (s: MarksSnapshot) => { cancelled = true; answer(s); } };
+  }
+
+  it("does not write the pulled marks or sync:owner (first sign-in)", async () => {
+    const { d, cancelAndAnswer } = cancelledDuringPull();
+    const running = beginSignIn(d, "merge");
+    cancelAndAnswer({ ...EMPTY, visited: ["z/z"] });
+    await running;
+    expect(readSet(visitedKey("dsa")).size).toBe(0);
+    expect(readOwner(localStorage)).toBeNull();
+  });
+
+  it("does not write the pulled marks (resume)", async () => {
+    writeOwner(localStorage, "u1");
+    const { d, cancelAndAnswer } = cancelledDuringPull();
+    const running = beginSignIn(d, "resume");
+    cancelAndAnswer({ ...EMPTY, visited: ["z/z"] });
+    await running;
+    expect(readSet(visitedKey("dsa")).size).toBe(0);
+  });
+
+  it("does not claim the device when the pull inside finish() lands after the cancel", async () => {
+    const t = transport(EMPTY);
+    let cancelled = false;
+    let calls = 0;
+    let answer!: (s: MarksSnapshot) => void;
+    vi.mocked(t.getMarks).mockImplementation(() =>
+      ++calls === 1 ? Promise.resolve(EMPTY) : new Promise<MarksSnapshot>((resolve) => (answer = resolve)));
+    const d = { ...tracked(t), isCancelled: () => cancelled };
+    const running = beginSignIn(d, "merge");
+    await vi.waitFor(() => expect(calls).toBe(2));
+    cancelled = true;
+    answer(EMPTY);
+    await running;
+    expect(readOwner(localStorage)).toBeNull();
+  });
+
+  it("does not put a stashed conflict back into the cleared drafts", async () => {
+    seedAnonymous();
+    let cancelled = false;
+    let release!: (o: PutOutcome) => void;
+    const t = transport({ ...EMPTY, visited: ["z/z"] }, {
+      putDraft: vi.fn(() => new Promise<PutOutcome>((resolve) => (release = resolve))),
+    });
+    const d = { ...tracked(t), isCancelled: () => cancelled };
+    const running = completeMerge(d, "add");
+    await vi.waitFor(() => expect(t.putDraft).toHaveBeenCalled());
+    cancelled = true;
+    localStorage.clear();
+    release({ kind: "conflict", server: { code: "theirs", updatedAt: "2026-09-18T12:00:00.000Z", deleted: false, rev: 4 } });
+    await running;
+    expect(readLocalDraft(localStorage, "two-sum", "python")).toBeNull();
+    expect(readOwner(localStorage)).toBeNull();
+  });
+});

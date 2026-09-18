@@ -1,11 +1,8 @@
 "use client";
 
 import { Dialog } from "@/components/ui/Dialog";
+import { summaryLine } from "@/components/auth/summaryLine";
 import type { AnonymousSummary } from "@/lib/progress/localStore";
-
-function plural(n: number, one: string, many: string): string {
-  return `${n} ${n === 1 ? one : many}`;
-}
 
 /**
  * Esc, the backdrop and "Decide later" all call `onDismiss`, which is not a
@@ -33,9 +30,7 @@ export function MergePromptDialog({
         <>
           <h2 className="font-display text-lg font-bold">This device has progress from before you signed in.</h2>
           <p className="mt-3 text-sm text-muted">
-            {plural(summary.visited, "lesson visited", "lessons visited")} ·{" "}
-            {plural(summary.solved, "problem solved", "problems solved")} ·{" "}
-            {plural(summary.drafts, "draft", "drafts")}
+            {summaryLine(summary)}
           </p>
           <p className="mt-2 text-sm text-muted">Nothing syncs from this device until you choose.</p>
           {error ? (
