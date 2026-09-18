@@ -1,5 +1,5 @@
 import { readSet, solvedKey, visitedKey } from "@/components/providers/progressStorage";
-import type { DraftLang, LocalDraft, Mark, Stash } from "./types";
+import type { DraftLang, LocalDraft, Mark, MarkKind, Stash } from "./types";
 
 const DRAFT_PREFIX = "dsa:sandbox:";
 const DRAFT_KEY = /^dsa:sandbox:(.+):(python|javascript)$/;
@@ -101,12 +101,79 @@ function syncRecordKey(userId: string): string {
   return `sync:v1:${userId}`;
 }
 
+/**
+ * Hand-written guards, not zod: this module loads on every problem page via
+ * Sandbox, and zod (used elsewhere for the API request schemas) must stay
+ * out of that bundle. A corrupt or attacker-editable localStorage value
+ * must never reach `JSON.parse`'s result typed as `SyncRecord` unchecked
+ * (CLAUDE.md §5 — no unchecked casts), so every field is verified before use.
+ */
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+
+function isMarkKind(v: unknown): v is MarkKind {
+  return v === "visited" || v === "solved";
+}
+
+function isMark(v: unknown): v is Mark {
+  return isRecord(v) && typeof v.course === "string" && isMarkKind(v.kind) && typeof v.id === "string";
+}
+
+function isPendingDraft(v: unknown): v is PendingDraft {
+  return isRecord(v) && typeof v.code === "string" && typeof v.updatedAt === "string" && typeof v.deleted === "boolean";
+}
+
+function isStash(v: unknown): v is Stash {
+  return (
+    isRecord(v) &&
+    typeof v.code === "string" &&
+    (v.updatedAt === null || typeof v.updatedAt === "string") &&
+    typeof v.deleted === "boolean"
+  );
+}
+
+function isFiniteNumber(v: unknown): v is number {
+  return typeof v === "number" && Number.isFinite(v);
+}
+
+/** A record whose every value passes `test` — used for `drafts`/`baseRevs`/`stashes`. */
+function isRecordOf<T>(v: unknown, test: (item: unknown) => item is T): v is Record<string, T> {
+  return isRecord(v) && Object.values(v).every(test);
+}
+
+/**
+ * Validates an already-parsed JSON value field by field. A missing field
+ * defaults to `emptySyncRecord()`'s value; a present-but-wrong-shaped field
+ * fails the whole record, so a merge queue is never built on a partially
+ * trusted read — the same field could otherwise sync a `baseRev` string
+ * where a number is assumed downstream.
+ */
+function parseSyncRecord(value: unknown): SyncRecord | null {
+  if (!isRecord(value)) return null;
+  const empty = emptySyncRecord();
+
+  const marks = value.marks === undefined ? empty.marks : Array.isArray(value.marks) && value.marks.every(isMark) ? value.marks : null;
+  if (marks === null) return null;
+
+  const drafts = value.drafts === undefined ? empty.drafts : isRecordOf(value.drafts, isPendingDraft) ? value.drafts : null;
+  if (drafts === null) return null;
+
+  const baseRevs = value.baseRevs === undefined ? empty.baseRevs : isRecordOf(value.baseRevs, isFiniteNumber) ? value.baseRevs : null;
+  if (baseRevs === null) return null;
+
+  const stashes = value.stashes === undefined ? empty.stashes : isRecordOf(value.stashes, isStash) ? value.stashes : null;
+  if (stashes === null) return null;
+
+  return { marks, drafts, baseRevs, stashes };
+}
+
 export function readSyncRecord(s: Storage, userId: string): SyncRecord {
   return attempt(() => {
     const raw = s.getItem(syncRecordKey(userId));
     if (!raw) return emptySyncRecord();
-    const parsed = JSON.parse(raw) as Partial<SyncRecord>;
-    return { ...emptySyncRecord(), ...parsed };
+    const parsed: unknown = JSON.parse(raw);
+    return parseSyncRecord(parsed) ?? emptySyncRecord();
   }, emptySyncRecord());
 }
 

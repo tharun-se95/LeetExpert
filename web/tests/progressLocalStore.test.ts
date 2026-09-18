@@ -84,4 +84,15 @@ describe("sync record", () => {
     localStorage.setItem("sync:v1:u3", "{not json");
     expect(readSyncRecord(localStorage, "u3")).toEqual(emptySyncRecord());
   });
+
+  it("falls back to the empty record when a field's shape is wrong, but loads a valid partial record", () => {
+    localStorage.setItem("sync:v1:u4", JSON.stringify({ marks: "oops" }));
+    expect(readSyncRecord(localStorage, "u4")).toEqual(emptySyncRecord());
+
+    localStorage.setItem("sync:v1:u5", JSON.stringify({ baseRevs: { "a:python": "3" } }));
+    expect(readSyncRecord(localStorage, "u5")).toEqual(emptySyncRecord());
+
+    localStorage.setItem("sync:v1:u6", JSON.stringify({ baseRevs: { "a:python": 3 } }));
+    expect(readSyncRecord(localStorage, "u6")).toEqual({ ...emptySyncRecord(), baseRevs: { "a:python": 3 } });
+  });
 });
