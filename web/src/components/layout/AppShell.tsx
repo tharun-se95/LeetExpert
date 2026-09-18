@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { AccountRuntime } from "@/components/auth/AccountRuntime";
 import { Header } from "@/components/layout/Header";
 import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
 import { LandingHeader } from "@/components/landing/LandingHeader";
@@ -304,6 +305,7 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
     >
       <>
         <VisitTracker />
+        <AccountRuntime />
         <ScrollbarAutoHide />
         <SidebarProvider open={sidebarOpen} toggle={toggleSidebar}>
           <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
