@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi, type Mocked } from "vitest";
 import type { PutOutcome, Transport } from "../src/lib/progress/api";
-import { SyncQueue } from "../src/lib/progress/syncQueue";
+import { BACKOFF_START_MS, SyncQueue } from "../src/lib/progress/syncQueue";
 import type { ServerDraft } from "../src/lib/progress/types";
 
 const AT = "2026-09-18T10:00:00.000Z";
@@ -169,5 +169,183 @@ describe("flushWithin", () => {
     const done = q.flushWithin(3000);
     await vi.advanceTimersByTimeAsync(3000);
     expect(await done).toBe(false);
+  });
+
+  it("clears its own timer once the flush finishes first", async () => {
+    // A plain in-memory Storage, not `localStorage`: jsdom schedules its own
+    // internal timer on every `setItem` (for the cross-tab storage event),
+    // which would show up in `vi.getTimerCount()` and swamp the one timer
+    // this test actually cares about.
+    const memory = new Map<string, string>();
+    const storage: Storage = {
+      getItem: (k) => memory.get(k) ?? null,
+      setItem: (k, v) => { memory.set(k, v); },
+      removeItem: (k) => { memory.delete(k); },
+      clear: () => memory.clear(),
+      key: (i) => Array.from(memory.keys())[i] ?? null,
+      get length() { return memory.size; },
+    };
+    const q = new SyncQueue({ storage, userId: "u1", transport: fakeTransport() });
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "a/b" });
+    const done = q.flushWithin(5000);
+    // The flush itself resolves on a microtask (no timer involved) since the
+    // mocked postMarks needs no real delay; only flushWithin's own race
+    // timeout is a live timer, and it must be cleared once that race is won.
+    expect(await done).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+// Review round 1: four "Important" bugs the plan's code shipped with,
+// reproduced by an independent reviewer against a scratch harness before
+// this file's tests were extended. Kept alongside the originals rather than
+// as a separate file so a future change to this module can't pass one suite
+// while quietly regressing the other.
+describe("review round 1", () => {
+  it("a debounce that fires mid-flight does not swallow the follow-up run (lost flush)", async () => {
+    // PUT #1 resolves on its own 2 s fake-timer delay. A second edit lands
+    // 1.6 s in (still mid-flight) and arms a 1.5 s follow-up timer, due at
+    // t=3100 — *before* PUT #1's timer fires at t=3500. Before the fix, that
+    // follow-up's `flush()` call at t=3100 is swallowed by the single-flight
+    // guard (a run is already in progress) and, because it also nulls out
+    // `this.timer` on the way in, nothing is left to pick v2 up once PUT #1
+    // finally resolves at t=3500 with a mismatched identity: the queue is
+    // stuck reporting "syncing" with v2 never sent.
+    const putDraft = vi
+      .fn<Transport["putDraft"]>()
+      .mockImplementationOnce(() => new Promise<PutOutcome>((r) => setTimeout(() => r({ kind: "ok", rev: 1 }), 2000)))
+      .mockResolvedValueOnce({ kind: "ok", rev: 2 });
+    const q = queue(fakeTransport({ putDraft }));
+    q.enqueueDraft("s", "python", { code: "v1", updatedAt: AT, deleted: false });
+    await vi.advanceTimersByTimeAsync(1500); // debounce fires; PUT #1 starts (resolves at t=3500)
+    await vi.advanceTimersByTimeAsync(100); // t=1600
+    q.enqueueDraft("s", "python", { code: "v2", updatedAt: AT, deleted: false }); // follow-up timer due at t=3100
+    await vi.advanceTimersByTimeAsync(600000); // give every scheduled step all the time it needs
+
+    expect(putDraft).toHaveBeenCalledTimes(2);
+    expect(putDraft.mock.calls[1]![1].code).toBe("v2");
+    expect(q.pendingCount()).toBe(0);
+    expect(q.status()).toBe("synced");
+  });
+
+  it("enqueuing while offline does not reset the backoff timer to a fresh debounce", async () => {
+    const postMarks = vi.fn<Transport["postMarks"]>(async () => 503);
+    const q = queue(fakeTransport({ postMarks }));
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "a/0" });
+    await vi.advanceTimersByTimeAsync(2000); // first attempt fails -> offline, retry armed for t=4000
+    expect(postMarks).toHaveBeenCalledTimes(1);
+    expect(q.status()).toBe("offline");
+
+    await vi.advanceTimersByTimeAsync(1000); // t=3000
+    // If this enqueue's debounce touched the timer, the retry would move to
+    // t=3000+2000=5000 instead of firing at the backoff's own t=4000.
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "a/1" });
+    await vi.advanceTimersByTimeAsync(999); // t=3999
+    expect(postMarks).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1); // t=4000: the backoff timer fires on schedule
+    expect(postMarks).toHaveBeenCalledTimes(2);
+    expect(q.pendingCount()).toBe(2);
+  });
+
+  it("dispose stops an in-flight run: no further writes or requests once it resolves", async () => {
+    let release: (n: number) => void = () => {};
+    const postMarks = vi.fn<Transport["postMarks"]>(() => new Promise<number>((r) => { release = r; }));
+    const putDraft = vi.fn<Transport["putDraft"]>(async () => ({ kind: "ok", rev: 1 }));
+    const q = queue(fakeTransport({ postMarks, putDraft }));
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "a/b" });
+    q.enqueueDraft("two-sum", "python", { code: "secret", updatedAt: AT, deleted: false });
+    const flushing = q.flush();
+
+    q.dispose();
+    localStorage.clear();
+    release(204); // the hung request finally resolves after dispose
+    await flushing;
+
+    expect(postMarks).toHaveBeenCalledTimes(1);
+    expect(putDraft).not.toHaveBeenCalled(); // run() must not have reached the draft loop
+    expect(localStorage.getItem("sync:v1:u1")).toBeNull(); // no write after dispose
+  });
+
+  it("a thrown transport error is a network failure, not a crash", async () => {
+    const putDraft = vi
+      .fn<Transport["putDraft"]>()
+      .mockRejectedValueOnce(new Error("body read failed"))
+      .mockResolvedValueOnce({ kind: "ok", rev: 1 });
+    const q = queue(fakeTransport({ putDraft }));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    q.enqueueDraft("two-sum", "python", { code: "v1", updatedAt: AT, deleted: false });
+
+    await expect(q.flush()).resolves.toBeUndefined(); // must not reject
+    expect(q.status()).toBe("offline");
+    expect(q.hasPendingDraft("two-sum", "python")).toBe(true);
+
+    await vi.advanceTimersByTimeAsync(BACKOFF_START_MS); // the scheduled retry
+    expect(putDraft).toHaveBeenCalledTimes(2);
+    expect(q.pendingCount()).toBe(0);
+  });
+
+  it("flushWithin resolves false rather than rejecting when the transport throws", async () => {
+    const putDraft = vi.fn<Transport["putDraft"]>().mockRejectedValue(new Error("body read failed"));
+    const q = queue(fakeTransport({ putDraft }));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    q.enqueueDraft("two-sum", "python", { code: "v1", updatedAt: AT, deleted: false });
+
+    await expect(q.flushWithin(3000)).resolves.toBe(false);
+  });
+
+  it("a 400 on a draft only drops it if no newer edit arrived during the request", async () => {
+    let release: (v: PutOutcome) => void = () => {};
+    const putDraft = vi.fn<Transport["putDraft"]>().mockImplementationOnce(
+      () => new Promise((r) => { release = r; }),
+    );
+    const q = queue(fakeTransport({ putDraft }));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    q.enqueueDraft("two-sum", "python", { code: "v1", updatedAt: AT, deleted: false });
+    const flushing = q.flush();
+    q.enqueueDraft("two-sum", "python", { code: "v2", updatedAt: AT, deleted: false });
+    release({ kind: "error", status: 400 });
+    await flushing;
+
+    expect(q.hasPendingDraft("two-sum", "python")).toBe(true);
+  });
+
+  it("a 400 on a batch isolates the rejected mark instead of dropping the whole batch", async () => {
+    const postMarks = vi.fn<Transport["postMarks"]>(async (_course, marks) =>
+      marks.some((m) => m.id === "bad") ? 400 : 204,
+    );
+    const q = queue(fakeTransport({ postMarks }));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "good-1" });
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "bad" });
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "good-2" });
+
+    await q.flush();
+
+    expect(q.pendingCount()).toBe(0); // both good marks sent, "bad" dropped
+    const singletonBadCalls = postMarks.mock.calls.filter(
+      (c) => c[1].length === 1 && c[1][0]!.id === "bad",
+    );
+    expect(singletonBadCalls).toHaveLength(1); // "bad" was isolated to its own request
+    const sentIds = postMarks.mock.calls.flatMap((c) => c[1].map((m) => m.id));
+    expect(sentIds).toContain("good-1");
+    expect(sentIds).toContain("good-2");
+  });
+
+  it("a keepalive flush during an in-flight run re-sends what's left once it settles", async () => {
+    const postMarks = vi
+      .fn<Transport["postMarks"]>()
+      .mockResolvedValueOnce(503)
+      .mockResolvedValueOnce(204);
+    const q = queue(fakeTransport({ postMarks }));
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "a/1" });
+
+    const first = q.flush();
+    const second = q.flush({ keepalive: true });
+    await first;
+    await second;
+
+    expect(postMarks).toHaveBeenCalledTimes(2);
+    expect(postMarks.mock.calls[1]).toEqual(["dsa", [{ kind: "visited", id: "a/1" }], { keepalive: true }]);
+    expect(q.pendingCount()).toBe(0);
   });
 });

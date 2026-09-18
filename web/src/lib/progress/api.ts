@@ -68,8 +68,15 @@ export const httpTransport: Transport = {
   async putDraft(sandboxId, body, opts) {
     const res = await send(`/api/progress/drafts/${encodeURIComponent(sandboxId)}`, jsonInit("PUT", body, opts));
     if (!res) return { kind: "error", status: 0 };
-    if (res.status === 200) return { kind: "ok", rev: putOk.parse(await res.json()).rev };
-    if (res.status === 409) return { kind: "conflict", server: conflict.parse(await res.json()).server };
+    try {
+      if (res.status === 200) return { kind: "ok", rev: putOk.parse(await res.json()).rev };
+      if (res.status === 409) return { kind: "conflict", server: conflict.parse(await res.json()).server };
+    } catch {
+      // A failed body read or a malformed response body is the same problem
+      // as a dropped connection from the queue's point of view: retry later,
+      // don't treat the draft as sent.
+      return { kind: "error", status: 0 };
+    }
     return { kind: "error", status: res.status };
   },
 };
