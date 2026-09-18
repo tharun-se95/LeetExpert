@@ -1,0 +1,121 @@
+// @vitest-environment jsdom
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { PutOutcome, Transport } from "../src/lib/progress/api";
+import { SyncQueue } from "../src/lib/progress/syncQueue";
+import {
+  beginSignIn, completeMerge, prepareDevice, type FlowDeps,
+} from "../src/lib/progress/signInFlow";
+import { readLocalDraft, readOwner, writeLocalDraft, writeOwner } from "../src/lib/progress/localStore";
+import { readSet, solvedKey, visitedKey } from "../src/components/providers/progressStorage";
+import type { MarksSnapshot } from "../src/lib/progress/types";
+
+const EMPTY: MarksSnapshot = { visited: [], solved: [], hasDrafts: false };
+
+function transport(server: MarksSnapshot, over: Partial<Transport> = {}): Transport {
+  return {
+    getMarks: vi.fn(async () => server),
+    postMarks: vi.fn(async () => 204),
+    getDrafts: vi.fn(async () => ({})),
+    putDraft: vi.fn(async (): Promise<PutOutcome> => ({ kind: "ok", rev: 1 })),
+    ...over,
+  };
+}
+
+function deps(t: Transport, userId = "u1"): FlowDeps {
+  const queue = new SyncQueue({ storage: localStorage, userId, transport: t });
+  return { storage: localStorage, userId, course: "dsa", transport: t, queue, isKnownSandbox: (id) => id === "two-sum" };
+}
+
+function seedAnonymous() {
+  localStorage.setItem(visitedKey("dsa"), JSON.stringify(["arrays/intro"]));
+  localStorage.setItem(solvedKey("dsa"), JSON.stringify(["hash-tables/two-sum"]));
+  writeLocalDraft(localStorage, "two-sum", "python", "mine", "2026-09-18T11:00:00.000Z");
+}
+
+beforeEach(() => localStorage.clear());
+
+describe("owner cases", () => {
+  it("replace clears the other account's data before anything else", () => {
+    writeOwner(localStorage, "u2");
+    seedAnonymous();
+    expect(prepareDevice(localStorage, "u1")).toBe("replace");
+    expect(readSet(visitedKey("dsa")).size).toBe(0);
+    expect(readOwner(localStorage)).toBeNull();
+  });
+
+  it("resume pulls and unions without uploading", async () => {
+    writeOwner(localStorage, "u1");
+    localStorage.setItem(visitedKey("dsa"), JSON.stringify(["a/local"]));
+    const t = transport({ ...EMPTY, visited: ["a/server"] });
+    expect(await beginSignIn(deps(t), prepareDevice(localStorage, "u1"))).toEqual({ kind: "ready" });
+    expect([...readSet(visitedKey("dsa"))].sort()).toEqual(["a/local", "a/server"]);
+    expect(t.postMarks).not.toHaveBeenCalled();
+  });
+});
+
+describe("merge flow (spec §7)", () => {
+  it("empty device: pull only and take ownership", async () => {
+    const t = transport({ ...EMPTY, solved: ["x/y"] });
+    expect(await beginSignIn(deps(t), "merge")).toEqual({ kind: "ready" });
+    expect([...readSet(solvedKey("dsa"))]).toEqual(["x/y"]);
+    expect(readOwner(localStorage)).toBe("u1");
+  });
+
+  it("empty account: merges silently", async () => {
+    seedAnonymous();
+    const t = transport(EMPTY);
+    expect(await beginSignIn(deps(t), "merge")).toEqual({ kind: "ready" });
+    expect(t.postMarks).toHaveBeenCalled();
+    expect(t.putDraft).toHaveBeenCalledWith(
+      "two-sum",
+      { lang: "python", code: "mine", updatedAt: "2026-09-18T11:00:00.000Z", deleted: false, baseRev: 0 },
+      undefined,
+    );
+    expect(readOwner(localStorage)).toBe("u1");
+  });
+
+  it("existing account: asks, with counts from the local sets", async () => {
+    seedAnonymous();
+    const result = await beginSignIn(deps(transport({ ...EMPTY, visited: ["z/z"] })), "merge");
+    expect(result).toEqual({ kind: "ask", summary: { visited: 1, solved: 1, drafts: 1 } });
+    expect(readOwner(localStorage)).toBeNull();
+  });
+
+  it("Don't add: clears the anonymous data, then pulls", async () => {
+    seedAnonymous();
+    const t = transport({ ...EMPTY, visited: ["z/z"] });
+    await completeMerge(deps(t), "discard");
+    expect([...readSet(visitedKey("dsa"))]).toEqual(["z/z"]);
+    expect(readLocalDraft(localStorage, "two-sum", "python")).toBeNull();
+    expect(t.postMarks).not.toHaveBeenCalled();
+    expect(readOwner(localStorage)).toBe("u1");
+  });
+
+  it("a conflicting draft: the newer copy stays, the other is stashed", async () => {
+    seedAnonymous();
+    const older = { code: "theirs", updatedAt: "2026-09-18T09:00:00.000Z", rev: 4, deleted: false };
+    const putDraft = vi.fn<Transport["putDraft"]>()
+      .mockResolvedValueOnce({ kind: "conflict", server: older })
+      .mockResolvedValue({ kind: "ok", rev: 5 });
+    const d = deps(transport(EMPTY, { putDraft }));
+    await completeMerge(d, "add");
+    expect(readLocalDraft(localStorage, "two-sum", "python")?.code).toBe("mine");
+    expect(d.queue.stash("two-sum", "python")?.code).toBe("theirs");
+  });
+
+  it("a legacy draft loses to the server copy and is stashed, not lost", async () => {
+    localStorage.setItem("dsa:sandbox:two-sum:python", "legacy");
+    const server = { code: "theirs", updatedAt: "2026-09-18T09:00:00.000Z", rev: 4, deleted: false };
+    const d = deps(transport(EMPTY, { putDraft: vi.fn(async (): Promise<PutOutcome> => ({ kind: "conflict", server })) }));
+    await completeMerge(d, "add");
+    expect(readLocalDraft(localStorage, "two-sum", "python")?.code).toBe("theirs");
+    expect(d.queue.stash("two-sum", "python")?.code).toBe("legacy");
+  });
+
+  it("offline mid-merge: throws and does not take ownership, so it reruns", async () => {
+    seedAnonymous();
+    const t = transport(EMPTY, { postMarks: vi.fn(async () => 0) });
+    await expect(completeMerge(deps(t), "add")).rejects.toThrow();
+    expect(readOwner(localStorage)).toBeNull();
+  });
+});
