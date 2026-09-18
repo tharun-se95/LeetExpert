@@ -58,6 +58,9 @@ export async function signOutDevice(deps: SignOutDeps): Promise<{ unsynced: bool
   } catch {
     ended = false;
   }
+  // A mark can be enqueued after the flush finished (the session call takes a
+  // network round trip); the clear below drops it, so the learner must be told.
+  const leftBehind = deps.queue ? deps.queue.pendingCount() > 0 : false;
   deps.queue?.dispose();
   clearSyncedData(deps.storage);
   if (!ended) {
@@ -69,7 +72,7 @@ export async function signOutDevice(deps: SignOutDeps): Promise<{ unsynced: bool
   }
   // Last, so a tab that reloads on this message finds an empty device.
   deps.broadcast("signed-out");
-  return { unsynced: !flushed };
+  return { unsynced: !flushed || leftBehind };
 }
 
 export function syncWarning(status: SyncStatus, offlineSince: number | null, pending: number, now: number): boolean {

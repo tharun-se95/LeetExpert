@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { UserCircle } from "@phosphor-icons/react";
+import sandboxIds from "@/lib/sandbox/sandboxIds.generated.json";
 import { DeleteAccountDialog } from "@/components/auth/DeleteAccountDialog";
 import { UnmergedSignOutDialog } from "@/components/auth/UnmergedSignOutDialog";
 import { NAV_LINK, ROUND_CONTROL } from "@/components/layout/headerChrome";
@@ -66,11 +67,21 @@ function useQueueState(runtime: SyncRuntime | null) {
   return state;
 }
 
+// Sandboxes that never sync (the landing page's) are not progress to warn about.
+// Imported statically: a click-time import() of this list rejects on a dead
+// network when its chunk is not cached, and sign-out must work offline (spec 5.4).
+const KNOWN_SANDBOXES = new Set<string>(sandboxIds);
+
 function broadcastSignedOut(): void {
-  if (typeof BroadcastChannel === "undefined") return;
-  const channel = new BroadcastChannel(AUTH_CHANNEL);
-  channel.postMessage("signed-out");
-  channel.close();
+  try {
+    if (typeof BroadcastChannel === "undefined") return;
+    const channel = new BroadcastChannel(AUTH_CHANNEL);
+    channel.postMessage("signed-out");
+    channel.close();
+  } catch {
+    // Other tabs then keep a session this device already ended; that is
+    // worth less than a sign-out that stops half way.
+  }
 }
 
 export function AccountControl() {
@@ -144,56 +155,70 @@ function AccountMenu({ user }: { user: { name: string; email: string; image?: st
   const signOut = async (everywhere: boolean, discardUnmerged = false) => {
     setBusy(true);
     everywhereRef.current = everywhere;
-    // Sandboxes that never sync (the landing page's) are not progress to warn about.
-    const { default: ids } = await import("@/lib/sandbox/sandboxIds.generated.json");
-    const known = new Set<string>(ids);
-    const { unsynced, blocked } = await signOutDevice({
-      queue: runtime?.queue ?? null,
-      storage: window.localStorage,
-      broadcast: broadcastSignedOut,
-      abort: abortSync,
-      isKnownSandbox: (id) => known.has(id),
-      discardUnmerged,
-      endSession: () => endSession(everywhere),
-    });
-    if (blocked) {
-      // The dialog hands focus back to whatever had it when it opened.
+    try {
+      const { unsynced, blocked } = await signOutDevice({
+        queue: runtime?.queue ?? null,
+        storage: window.localStorage,
+        broadcast: broadcastSignedOut,
+        abort: abortSync,
+        isKnownSandbox: (id) => KNOWN_SANDBOXES.has(id),
+        discardUnmerged,
+        endSession: () => endSession(everywhere),
+      });
+      if (blocked) {
+        // The dialog hands focus back to whatever had it when it opened.
+        setBusy(false);
+        trigger.current?.focus();
+        setOpen(false);
+        setUnmerged(blocked);
+        return;
+      }
+      setUnmerged(null);
+      if (unsynced) {
+        // The notice lives in the menu, so keep it open until they read it.
+        // busy stays on: the session is over and the items would do nothing.
+        setNotice({ text: "Some recent changes hadn't synced and were not saved.", reload: true });
+        setOpen(true);
+      } else reloadPage();
+    } catch {
+      // Nothing here may leave the menu disabled with no word said: the
+      // learner can try again, or reload.
       setBusy(false);
-      trigger.current?.focus();
-      setOpen(false);
-      setUnmerged(blocked);
-      return;
-    }
-    setUnmerged(null);
-    if (unsynced) {
-      // The notice lives in the menu, so keep it open until they read it.
-      // busy stays on: the session is over and the items would do nothing.
-      setNotice({ text: "Some recent changes hadn't synced and were not saved.", reload: true });
+      setUnmerged(null);
+      setNotice({ text: "Signing out did not finish. Try again, or reload the page.", reload: false });
       setOpen(true);
-    } else reloadPage();
+    }
   };
 
   const deleteAccount = async () => {
     setBusy(true);
-    const res = await fetch("/api/account", { method: "DELETE", credentials: "same-origin" }).catch(() => null);
-    if (!res || res.status !== 204) {
+    try {
+      const res = await fetch("/api/account", { method: "DELETE", credentials: "same-origin" }).catch(() => null);
+      if (!res || res.status !== 204) {
+        setBusy(false);
+        setNotice({ text: "Your account could not be deleted. Nothing was erased; try again when you're online.", reload: false });
+        setDeleting(false);
+        setOpen(true);
+        return;
+      }
+      // The server data is gone, so there is nothing to flush, and whatever this
+      // device holds was just erased on purpose, so there is nothing to ask.
+      await signOutDevice({
+        queue: null,
+        storage: window.localStorage,
+        broadcast: broadcastSignedOut,
+        abort: abortSync,
+        discardUnmerged: true,
+        endSession: () => endSession(false),
+      });
+      reloadPage();
+    } catch {
+      // Only signOutDevice can land here, after the server accepted the deletion.
       setBusy(false);
-      setNotice({ text: "Your account could not be deleted. Nothing was erased; try again when you're online.", reload: false });
       setDeleting(false);
+      setNotice({ text: "Your account was deleted, but this device could not finish signing out. Reload the page.", reload: true });
       setOpen(true);
-      return;
     }
-    // The server data is gone, so there is nothing to flush, and whatever this
-    // device holds was just erased on purpose, so there is nothing to ask.
-    await signOutDevice({
-      queue: null,
-      storage: window.localStorage,
-      broadcast: broadcastSignedOut,
-      abort: abortSync,
-      discardUnmerged: true,
-      endSession: () => endSession(false),
-    });
-    reloadPage();
   };
 
   const onMenuKeyDown = (e: React.KeyboardEvent) => {
@@ -220,7 +245,9 @@ function AccountMenu({ user }: { user: { name: string; email: string; image?: st
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label={`Account menu, signed in as ${user.name}`}
+        // The name is the button's label, so a child's text would be ignored:
+        // the warning has to be in the label itself to be announced.
+        aria-label={`Account menu, signed in as ${user.name}${status.warn ? ", sync needs attention" : ""}`}
         onClick={() => (open ? close() : setOpen(true))}
         className={cn(ROUND_CONTROL, CONTROL_SIZE, "relative overflow-visible text-xs font-medium text-foreground")}
       >
@@ -231,7 +258,6 @@ function AccountMenu({ user }: { user: { name: string; email: string; image?: st
           <span className="flex h-full w-full items-center justify-center rounded-full bg-surface">{initials(user.name)}</span>
         )}
         {status.warn ? <span data-sync-warning aria-hidden className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background bg-warn" /> : null}
-        {status.warn ? <span className="sr-only">, sync needs attention</span> : null}
       </button>
       {open
         ? createPortal(

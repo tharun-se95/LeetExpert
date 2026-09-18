@@ -135,6 +135,12 @@ describe("the sync status in the menu", () => {
     expect(warningDot(host)).toBeNull();
   });
 
+  it("keeps the plain label while nothing needs attention", () => {
+    const host = mount(true);
+    registerQueue();
+    expect(host.querySelector("button")!.getAttribute("aria-label")).toBe("Account menu, signed in as Ada Lovelace");
+  });
+
   it("with a runtime, reads the queue", () => {
     const host = mount(true);
     registerQueue();
@@ -153,7 +159,11 @@ describe("the sync status in the menu", () => {
     openMenu(host);
     expect(statusLine()).toContain(text);
     expect(warningDot(host)).not.toBeNull();
-    expect(host.textContent).toContain("sync needs attention");
+    // The label replaces the button's content for assistive tech, so a child's
+    // sr-only text would never be read.
+    expect(host.querySelector("button")!.getAttribute("aria-label")).toBe(
+      "Account menu, signed in as Ada Lovelace, sync needs attention",
+    );
   });
 
   it("offline while sign-in retries: says so without an alarm", () => {
@@ -233,6 +243,60 @@ describe("Sign out", () => {
     expect(document.querySelector('[role="alert"]')!.textContent).toContain("hadn't synced");
     expect(reload).not.toHaveBeenCalled();
     expect(localStorage.getItem("course-progress:dsa")).toBeNull();
+  });
+});
+
+describe("Sign out that cannot finish", () => {
+  const items = () => [...document.querySelectorAll('[role="menuitem"]')] as HTMLButtonElement[];
+
+  it("a step that throws re-enables the menu and says so, instead of leaving it stuck", async () => {
+    const host = mount(true);
+    registerQueue();
+    act(() => bridge!.registerAbort(() => { throw new Error("boom"); }));
+    openMenu(host);
+    await click(item("Sign out"));
+    expect(document.querySelector('[role="alert"]')!.textContent).toContain("did not finish");
+    expect(items().filter((i) => i.tagName === "BUTTON").every((i) => !i.disabled)).toBe(true);
+    expect(reload).not.toHaveBeenCalled();
+    // And it can be tried again.
+    act(() => bridge!.registerAbort(null));
+    await click(item("Sign out"));
+    expect(signOut).toHaveBeenCalledOnce();
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("a BroadcastChannel that throws does not stop the sign-out", async () => {
+    vi.stubGlobal("BroadcastChannel", class { constructor() { throw new Error("unavailable"); } });
+    const host = mount(true);
+    localStorage.setItem("course-progress:dsa", '["a/b"]');
+    registerQueue();
+    openMenu(host);
+    await click(item("Sign out"));
+    expect(signOut).toHaveBeenCalledOnce();
+    expect(localStorage.getItem("course-progress:dsa")).toBeNull();
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("does not need a chunk fetched at click time: the sandbox id list is imported statically", () => {
+    // A dynamic import() rejects on a dead network when the chunk is not cached.
+    const src = readFileSync(join(__dirname, "..", "src/components/auth/AccountControl.tsx"), "utf8");
+    expect(src).not.toMatch(/import\(\s*["'`]/);
+  });
+
+  it("delete: a step that throws after the server accepted says the account is gone, and re-enables the menu", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 204 })));
+    const host = mount(true);
+    act(() => bridge!.registerAbort(() => { throw new Error("boom"); }));
+    openMenu(host);
+    act(() => item("Delete account").click());
+    const input = dialog()!.querySelector("input")!;
+    act(() => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "delete");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await click(dialogButton("Delete account"));
+    expect(document.querySelector('[role="alert"]')!.textContent).toContain("Your account was deleted");
+    expect(items().filter((i) => i.tagName === "BUTTON").every((i) => !i.disabled)).toBe(true);
   });
 });
 

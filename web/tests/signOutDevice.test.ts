@@ -57,6 +57,17 @@ describe("signOutDevice (spec §5.4)", () => {
     expect(order).toEqual(["flush", "abort:intact", "end"]);
   });
 
+  it("reports a mark enqueued after the flush finished, since the clear drops it", async () => {
+    const q = queueWith(vi.fn(async () => 204));
+    const result = await signOutDevice({
+      queue: q, storage: localStorage, broadcast: vi.fn(),
+      // The session call is a network round trip; the learner can still click.
+      endSession: async () => { q.enqueueMark({ course: "dsa", kind: "visited", id: "late/mark" }); },
+    });
+    expect(result).toEqual({ unsynced: true });
+    expect(localStorage.getItem("course-progress:dsa")).toBeNull();
+  });
+
   it("reports unsynced writes when the 3 s cap runs out, and still signs out", async () => {
     vi.useFakeTimers();
     const q = queueWith(vi.fn(() => new Promise<number>(() => {})));
