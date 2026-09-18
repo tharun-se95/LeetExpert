@@ -1,7 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { NothingWhenFailed, authChunk } from "@/components/auth/lazyAuthChunk";
 import { authClient } from "@/lib/auth/client";
 import { endSession } from "@/lib/auth/endSession";
 import {
@@ -13,7 +13,9 @@ import {
 } from "@/lib/auth/signOutDevice";
 import { reloadPage } from "@/lib/progress/reloadPage";
 
-const SyncProvider = dynamic(() => import("@/components/providers/SyncProvider"), { ssr: false });
+const SyncProvider = authChunk(() => import("@/components/providers/SyncProvider").then((m) => m.default), {
+  failed: NothingWhenFailed,
+});
 
 function removePendingSignOut(): void {
   try {

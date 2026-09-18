@@ -374,26 +374,36 @@ The content is the product. Code exists to serve it.
 - **Accounts are optional and progress is local-first** (spec
   `docs/superpowers/specs/2026-09-18-accounts-and-progress-sync-design.md`).
   Signed out, the app is exactly the localStorage app. What every page ships
-  for accounts is three small `next/dynamic` shells (`AccountControl`,
-  `AccountRuntime`, `SyncHint`) and the `SyncBridge` context, which holds no
-  runtime until someone signs in. Everything that needs the session sits
-  behind those shells in chunks fetched only when `authEnabled` is true: the
-  auth client, the account menu and its dialogs (`SessionControl`, with
-  `Dialog`, `signOutDevice`, `localStore` and `sandboxIds.generated.json`),
-  `SessionSync` and `SignedOutLine`; the sync runtime (`SyncProvider`) is a
-  further chunk that `SessionSync` loads only once a session exists. With
-  auth on, every visitor fetches the auth client and control chunks after
-  hydration (something has to ask who is signed in) but only a signed-in one
-  fetches the runtime. Measured 2026-09-19 on a build with no auth variables:
-  none of that is in the initial `<script>` list of a lesson page, whose
-  shared JS fell from 1,825,183 to 1,771,480 B raw (531,154 to 511,917 B
-  gzip) when the auth client (33.5 KB raw, 12.2 KB gzip) left it.
-  `tests/authChunkBoundary.test.ts` walks the static imports of the three
-  shells and fails if the auth client or any of those modules enters them;
-  the built HTML is the final check. Not deferred: the 116 problem pages
-  still carry `useDraftSync` and `merge.ts` (about 3.6 KB minified, 1.6 KB
-  gzip, with the `localStore` code the sandbox needs anyway) because
-  `Sandbox` imports the hook statically; without a runtime it does nothing.
+  for accounts is three plain client components (`AccountControl`,
+  `AccountRuntime`, `SyncHint`), each rendering a `next/dynamic` chunk through
+  `authChunk`, and the `SyncBridge` context, which holds no runtime until
+  someone signs in. Everything that needs the session sits behind them in
+  chunks fetched only when `authEnabled` is true: the auth client, the account
+  menu and its dialogs (`SessionControl`, with `Dialog`, `signOutDevice`,
+  `localStore` and `sandboxIds.generated.json`), `SessionSync` and
+  `SignedOutLine`; the sync runtime (`SyncProvider`) is a further chunk that
+  `SessionSync` loads only once a session exists. With auth on, every visitor
+  fetches the auth client and control chunks after hydration (something has
+  to ask who is signed in) but only a signed-in one fetches the runtime.
+  Measured 2026-09-19 on a build with no auth variables: none of that is in
+  the initial `<script>` list of a lesson page, whose shared JS fell from
+  1,825,183 to 1,771,480 B raw (531,154 to 511,917 B gzip). That is more than
+  the auth client's own chunk (33.5 KB raw, 12.2 KB gzip) because the menu,
+  dialogs and sign-out code left the shared chunks too and the rest was
+  repacked. A chunk that fails to load (offline, an ad blocker, a deploy that
+  removed its hash) degrades to no control and no sync, never an error page:
+  React.lazy throws a rejected import during render and the app has no error
+  boundary, so `authChunk` catches it, and every auth loader must go through
+  it. `tests/authChunkBoundary.test.ts` checks the static imports of the
+  three components, the root layout and both headers (no auth client or
+  session module), that only the sign-in page and the lazily loaded session
+  modules import the client at all, and that the three loaders use
+  `authChunk`; `authChunkFailure*.test.tsx` reject each chunk and check the
+  page still renders. The built HTML is the final check. Not deferred: the
+  116 problem pages still carry `useDraftSync` and `merge.ts` (about 3.6 KB
+  minified, 1.6 KB gzip, with the `localStore` code the sandbox needs anyway)
+  because `Sandbox` imports the hook statically; without a runtime it does
+  nothing.
   Sign-in is on only when all seven variables in
   `web/.env.example` are set, and `authEnabled` is read while pages are
   prerendered, so changing them needs a rebuild. Pages never read the

@@ -41,7 +41,9 @@ function isPendingSignOut(v: unknown): v is PendingSignOut {
  * The plain "1" a build of this branch wrote before the flag carried an
  * identity, and anything unreadable, name no session: they are still finished
  * (a plain sign-out), as they always were, rather than left as a live session
- * on a device that was cleared.
+ * on a device that was cleared. Such a flag signs out whichever session
+ * appears next, once, and is removed when that succeeds: a safe fallback, and
+ * only reachable for values this unreleased branch itself wrote.
  */
 export function readPendingSignOut(storage: Storage): PendingSignOut | null {
   let raw: string | null;

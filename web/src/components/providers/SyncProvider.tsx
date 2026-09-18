@@ -25,9 +25,9 @@ function isTransient(err: unknown): boolean {
 type Choose = (choice: "add" | "discard") => Promise<void>;
 
 /**
- * Loaded only once a session exists (next/dynamic in AccountRuntime), so
+ * Loaded only once a session exists (next/dynamic in SessionSync), so
  * signed-out visitors never download the queue, the merge rules or zod.
- * AccountRuntime keys it by user id, so a user change remounts it: its
+ * SessionSync keys it by user id, so a user change remounts it: its
  * cleanup disposes the old queue and its state starts clean.
  */
 export default function SyncProvider({ userId }: { userId: string }) {
