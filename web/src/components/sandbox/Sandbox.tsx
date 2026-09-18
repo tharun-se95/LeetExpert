@@ -40,6 +40,7 @@ import { useCoachOptional } from "@/components/coach/CoachProvider";
 import { CodeLangMenu } from "@/components/code/CodeLangMenu";
 import { useCodeLang } from "@/lib/codeLang";
 import { resolveCodeLang } from "@/lib/codeLanguages";
+import { draftKey, removeLocalDraft, writeLocalDraft } from "@/lib/progress/localStore";
 
 const LANGS: SandboxLang[] = ["python", "javascript"];
 
@@ -57,10 +58,6 @@ const CodeEditor = dynamic(
     ),
   },
 );
-
-function draftKey(id: string, lang: SandboxLang): string {
-  return `dsa:sandbox:${id}:${lang}`;
-}
 
 function ErrorCard({ message }: { message: string }) {
   return (
@@ -155,22 +152,14 @@ function SandboxBody({
   const setDraft = useCallback(
     (next: string) => {
       setDrafts((current) => ({ ...current, [lang]: next }));
-      try {
-        window.localStorage.setItem(draftKey(spec.id, lang), next);
-      } catch {
-        // Private mode or a full quota — losing the draft is survivable.
-      }
+      writeLocalDraft(window.localStorage, spec.id, lang, next, new Date().toISOString());
     },
     [lang, spec.id],
   );
 
   const restoreStarter = useCallback(() => {
     setDrafts((current) => ({ ...current, [lang]: spec.starter[lang] }));
-    try {
-      window.localStorage.removeItem(draftKey(spec.id, lang));
-    } catch {
-      /* nothing to clean up */
-    }
+    removeLocalDraft(window.localStorage, spec.id, lang);
     reset();
   }, [lang, reset, spec.id, spec.starter]);
 
