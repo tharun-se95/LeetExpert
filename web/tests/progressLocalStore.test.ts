@@ -95,4 +95,18 @@ describe("sync record", () => {
     localStorage.setItem("sync:v1:u6", JSON.stringify({ baseRevs: { "a:python": 3 } }));
     expect(readSyncRecord(localStorage, "u6")).toEqual({ ...emptySyncRecord(), baseRevs: { "a:python": 3 } });
   });
+
+  it("round-trips a displaced stash, and rejects a malformed displaced flag", () => {
+    const record = {
+      ...emptySyncRecord(),
+      stashes: { "a:python": { code: "mine", updatedAt: null, deleted: false, displaced: true as const } },
+    };
+    writeSyncRecord(localStorage, "u7", record);
+    expect(readSyncRecord(localStorage, "u7")).toEqual(record);
+    localStorage.setItem(
+      "sync:v1:u8",
+      JSON.stringify({ stashes: { "a:python": { code: "x", updatedAt: null, deleted: false, displaced: "yes" } } }),
+    );
+    expect(readSyncRecord(localStorage, "u8")).toEqual(emptySyncRecord());
+  });
 });

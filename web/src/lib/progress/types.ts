@@ -7,7 +7,13 @@ export interface ServerDraft { code: string; updatedAt: string; rev: number; del
 export type ServerDrafts = Partial<Record<DraftLang, ServerDraft>>;
 export interface MarksSnapshot { visited: string[]; solved: string[]; hasDrafts: boolean }
 /** A version kept aside so a conflict never drops code. */
-export interface Stash { code: string; updatedAt: string | null; deleted: boolean }
+export interface Stash {
+  code: string;
+  updatedAt: string | null;
+  deleted: boolean;
+  /** This device's own version, set aside when another one replaced it in the editor. */
+  displaced?: true;
+}
 export interface LocalDraft { code: string; updatedAt: string | null; deleted: boolean }
 /** Lives here, not in schemas.ts, so the client queue does not pull zod and the registries. */
 export const MARK_BATCH_MAX = 500;

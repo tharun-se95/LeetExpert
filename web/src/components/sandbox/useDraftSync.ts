@@ -42,6 +42,12 @@ function effectiveLocal(stored: LocalDraft | null, pending: PendingDraft | null)
   return pendingAt > storedAt ? pending : stored;
 }
 
+interface Remembered {
+  code: string;
+  at: string;
+  deleted: boolean;
+}
+
 export function useDraftSync({
   sandboxId,
   enabled,
@@ -51,8 +57,11 @@ export function useDraftSync({
   enabled: boolean;
   applyRemote: (lang: DraftLang, code: string | null) => void;
 }): DraftSyncApi {
-  const { runtime } = useSyncBridge();
+  const { runtime, authEnabled } = useSyncBridge();
   const active = enabled ? runtime : null;
+  // Only a sandbox that syncs, in an app that can sign in, has anything to
+  // carry over; everything else stays exactly as it was before sync existed.
+  const remember = enabled && authEnabled;
   const [state, setStashes] = useState<Stashes>(NO_STASHES);
 
   // The callbacks below read the runtime through this ref, not a closure: a
@@ -65,6 +74,13 @@ export function useDraftSync({
       activeRef.current = null;
     };
   }, [active]);
+
+  // The latest edit per language typed while no runtime was registered. The
+  // runtime arrives after the page (dynamic chunk, then the sign-in flow), and
+  // an edit in that gap is neither queued nor "dirty": a moved server would
+  // silently overwrite it, an unmoved one would never receive it. A ref, so
+  // remembering causes no render; it dies with the component.
+  const unsynced = useRef<Partial<Record<DraftLang, Remembered>>>({});
 
   // The pull below must not re-run because the caller's applyRemote changed
   // identity; it applies through the latest one.
@@ -95,6 +111,20 @@ export function useDraftSync({
     const { queue, transport } = active;
     const storage = window.localStorage;
     let cancelled = false;
+
+    // Hand the gap's edits to the queue first, so the pull sees them as
+    // pending and resolves them like any other edit. Only what storage still
+    // holds: a learner who chose "discard" (or a "replace" that cleared the
+    // device) must not have this page re-upload what they threw away.
+    const carried = unsynced.current;
+    unsynced.current = {};
+    for (const lang of DRAFT_LANGS) {
+      const edit = carried[lang];
+      if (!edit) continue;
+      const stored = readLocalDraft(storage, sandboxId, lang);
+      const stillHeld = edit.deleted ? stored === null : stored?.code === edit.code && stored.updatedAt === edit.at;
+      if (stillHeld) queue.enqueueDraft(sandboxId, lang, { code: edit.code, updatedAt: edit.at, deleted: edit.deleted });
+    }
 
     const takeServer = (lang: DraftLang, server: ServerDraft) => {
       if (server.deleted) removeLocalDraft(storage, sandboxId, lang);
@@ -147,7 +177,7 @@ export function useDraftSync({
           } else {
             // Stash before taking the server copy: this is the only place the
             // learner's version survives.
-            if (local) queue.setStash(sandboxId, lang, local);
+            if (local) queue.setStash(sandboxId, lang, { ...local, displaced: true });
             takeServer(lang, remote);
             // Left queued, the older draft would flush with the fresh baseRev
             // and overwrite the copy that just won.
@@ -165,16 +195,21 @@ export function useDraftSync({
 
   const recordEdit = useCallback(
     (lang: DraftLang, code: string, at: string) => {
-      activeRef.current?.queue.enqueueDraft(sandboxId, lang, { code, updatedAt: at, deleted: false });
+      const live = activeRef.current;
+      if (live) live.queue.enqueueDraft(sandboxId, lang, { code, updatedAt: at, deleted: false });
+      else if (remember) unsynced.current[lang] = { code, at, deleted: false };
     },
-    [sandboxId],
+    [sandboxId, remember],
   );
 
   const recordReset = useCallback(
     (lang: DraftLang) => {
-      activeRef.current?.queue.enqueueDraft(sandboxId, lang, { code: "", updatedAt: new Date().toISOString(), deleted: true });
+      const at = new Date().toISOString();
+      const live = activeRef.current;
+      if (live) live.queue.enqueueDraft(sandboxId, lang, { code: "", updatedAt: at, deleted: true });
+      else if (remember) unsynced.current[lang] = { code: "", at, deleted: true };
     },
-    [sandboxId],
+    [sandboxId, remember],
   );
 
   const takeStash = useCallback(
@@ -184,7 +219,12 @@ export function useDraftSync({
       if (!runtimeNow || !stash) return null;
       // The displaced code becomes the stash, so "Use that version" is
       // reversible until the learner dismisses it.
-      runtimeNow.queue.setStash(sandboxId, lang, { code: current, updatedAt: new Date().toISOString(), deleted: false });
+      runtimeNow.queue.setStash(sandboxId, lang, {
+        code: current,
+        updatedAt: new Date().toISOString(),
+        deleted: false,
+        displaced: true,
+      });
       return stash;
     },
     [sandboxId],

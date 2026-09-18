@@ -30,7 +30,10 @@ export function resolveOnMount(
   server: ServerDraft | null,
   baseRev: number,
 ): MountResolution {
-  if (!server || server.rev === baseRev) return "keep-local";
+  // A rev below baseRev is a stale answer, not a change: the GET was served
+  // from before a PUT this device has since had accepted, and taking it would
+  // replace the draft that PUT just saved.
+  if (!server || server.rev <= baseRev) return "keep-local";
   if (!local || !localDirty) return "take-server";
   if (sameContent(local, server)) return "adopt-rev";
   const localAt = Date.parse(local.updatedAt ?? LEGACY_UPDATED_AT);

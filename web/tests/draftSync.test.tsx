@@ -93,6 +93,7 @@ describe("useDraftSync on mount (spec §6.3)", () => {
     await mount(runtime);
     expect(applied).toEqual([]);
     expect(api!.stashes.python?.code).toBe("server");
+    expect(api!.stashes.python?.displaced).toBeUndefined();
     expect(queue.baseRev("two-sum", "python")).toBe(2);
     expect(queue.hasPendingDraft("two-sum", "python")).toBe(true);
   });
@@ -105,6 +106,8 @@ describe("useDraftSync on mount (spec §6.3)", () => {
     await mount(runtime);
     expect(applied).toEqual([["python", "server"]]);
     expect(api!.stashes.python?.code).toBe("mine");
+    // It is this device's own copy, not "another device's".
+    expect(api!.stashes.python?.displaced).toBe(true);
   });
 
   it("server newer: the older queued draft is dropped so it cannot flush over the server copy", async () => {
@@ -181,6 +184,172 @@ describe("useDraftSync on mount (spec §6.3)", () => {
     expect(applied).toEqual([]);
     expect(readLocalDraft(localStorage, "two-sum", "python")?.code).toBe("typed meanwhile");
     expect(api!.stashes.python?.code).toBe("server");
+  });
+});
+
+/** A promise the test settles by hand, to pin the order two requests are answered in. */
+function deferred<T>() {
+  let resolve: (v: T) => void = () => {};
+  const promise = new Promise<T>((r) => (resolve = r));
+  return { promise, resolve };
+}
+
+describe("the pull racing the flush SyncProvider starts on registration", () => {
+  it("a 409 answered after the pull discarded the queued draft leaves the learner's copy in the stash", async () => {
+    writeLocalDraft(localStorage, "two-sum", "python", "mine", EARLY);
+    const put1 = deferred<PutOutcome>();
+    const { runtime, queue, transport } = runtimeWith({ python: { code: "server", updatedAt: LATE, rev: 2, deleted: false } });
+    transport.putDraft = vi.fn(() => put1.promise);
+    queue.setBaseRev("two-sum", "python", 1);
+    queue.enqueueDraft("two-sum", "python", { code: "mine", updatedAt: EARLY, deleted: false });
+    const flushing = queue.flush();
+    await mount(runtime);
+    expect(applied).toEqual([["python", "server"]]);
+    expect(api!.stashes.python?.code).toBe("mine");
+
+    put1.resolve({ kind: "conflict", server: { code: "server", updatedAt: LATE, rev: 2, deleted: false } });
+    await act(async () => flushing);
+    expect(api!.stashes.python?.code).toBe("mine");
+    expect(queue.hasPendingDraft("two-sum", "python")).toBe(false);
+    expect(transport.putDraft).toHaveBeenCalledTimes(1);
+  });
+
+  it("a pull answered from a state older than a PUT that has since succeeded does not replace the saved draft", async () => {
+    writeLocalDraft(localStorage, "two-sum", "python", "mine", LATE);
+    const get = deferred<ServerDrafts>();
+    const put1 = deferred<PutOutcome>();
+    const put2 = deferred<PutOutcome>();
+    const { runtime, queue, transport } = runtimeWith(() => get.promise);
+    transport.putDraft = vi.fn().mockReturnValueOnce(put1.promise).mockReturnValueOnce(put2.promise);
+    queue.setBaseRev("two-sum", "python", 1);
+    queue.enqueueDraft("two-sum", "python", { code: "mine", updatedAt: LATE, deleted: false });
+    const flushing = queue.flush();
+    await mount(runtime);
+
+    put1.resolve({ kind: "conflict", server: { code: "theirs", updatedAt: EARLY, rev: 2, deleted: false } });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    put2.resolve({ kind: "ok", rev: 3 });
+    await act(async () => flushing);
+    expect(queue.baseRev("two-sum", "python")).toBe(3);
+
+    // The GET was answered from before the second PUT: rev 2, older than baseRev.
+    await act(async () => get.resolve({ python: { code: "theirs", updatedAt: EARLY, rev: 2, deleted: false } }));
+    expect(applied).toEqual([]);
+    expect(readLocalDraft(localStorage, "two-sum", "python")?.code).toBe("mine");
+    expect(queue.baseRev("two-sum", "python")).toBe(3);
+  });
+});
+
+describe("edits typed before the runtime registers", () => {
+  const TYPED = "2026-09-18T12:00:00.000Z";
+
+  function typeBeforeRegistration(code = "typed early", at = TYPED) {
+    writeLocalDraft(localStorage, "two-sum", "python", code, at);
+    act(() => api!.recordEdit("python", code, at));
+  }
+
+  it("a returning learner's edit is uploaded once the runtime is live, when the server did not move", async () => {
+    const { runtime, queue, transport } = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 1, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1);
+    await mount(null);
+    typeBeforeRegistration();
+    await act(async () => setRuntimeRef!(runtime));
+    expect(applied).toEqual([]);
+    expect(queue.pendingDraft("two-sum", "python")).toMatchObject({ code: "typed early", updatedAt: TYPED });
+    await act(async () => queue.flush());
+    expect(transport.putDraft).toHaveBeenCalledWith("two-sum", expect.objectContaining({ code: "typed early", baseRev: 1 }), undefined);
+  });
+
+  it("when the server moved and is older, the edit stays and the server copy is stashed", async () => {
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 2, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1);
+    await mount(null);
+    typeBeforeRegistration();
+    await act(async () => setRuntimeRef!(runtime));
+    expect(applied).toEqual([]);
+    expect(readLocalDraft(localStorage, "two-sum", "python")?.code).toBe("typed early");
+    expect(api!.stashes.python?.code).toBe("server");
+  });
+
+  it("when the server moved and is newer, the server copy goes in and the edit is stashed, never overwritten", async () => {
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: "2026-09-18T13:00:00.000Z", rev: 2, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1);
+    await mount(null);
+    typeBeforeRegistration();
+    await act(async () => setRuntimeRef!(runtime));
+    expect(applied).toEqual([["python", "server"]]);
+    expect(api!.stashes.python?.code).toBe("typed early");
+  });
+
+  it("a reset made before registration is carried over as a tombstone", async () => {
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 2, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1);
+    await mount(null);
+    act(() => api!.recordReset("python"));
+    await act(async () => setRuntimeRef!(runtime));
+    expect(queue.pendingDraft("two-sum", "python")).toMatchObject({ deleted: true });
+  });
+
+  it("is not uploaded if the device data was cleared meanwhile (the learner chose to discard it)", async () => {
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 1, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1);
+    await mount(null);
+    typeBeforeRegistration();
+    localStorage.removeItem(draftKey("two-sum", "python"));
+    localStorage.removeItem(`${draftKey("two-sum", "python")}:at`);
+    await act(async () => setRuntimeRef!(runtime));
+    expect(queue.hasPendingDraft("two-sum", "python")).toBe(false);
+  });
+
+  it("is forgotten on unmount, and never reaches a queue that a later mount uses", async () => {
+    await mount(null);
+    typeBeforeRegistration();
+    act(() => root!.unmount());
+    root = null;
+    // Already in step with the server, so only a remembered edit could be queued.
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 1, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1);
+    await mount(runtime);
+    expect(queue.hasPendingDraft("two-sum", "python")).toBe(false);
+  });
+
+  it("is not remembered for a runtime that was disposed, only handed to the next one if storage still holds it", async () => {
+    const first = runtimeWith({});
+    await mount(first.runtime);
+    first.queue.dispose();
+    await act(async () => setRuntimeRef!(null));
+    const disposedEnqueue = vi.spyOn(first.queue, "enqueueDraft");
+    typeBeforeRegistration();
+    const second = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 1, deleted: false } }, "u2");
+    second.queue.setBaseRev("two-sum", "python", 1);
+    await act(async () => setRuntimeRef!(second.runtime));
+    expect(disposedEnqueue).not.toHaveBeenCalled();
+    expect(second.queue.pendingDraft("two-sum", "python")).toMatchObject({ code: "typed early" });
+  });
+
+  it("is handed over once: a later runtime does not receive an edit the earlier one already took", async () => {
+    const synced = { python: { code: "server", updatedAt: EARLY, rev: 1, deleted: false } } as const;
+    const first = runtimeWith(synced);
+    first.queue.setBaseRev("two-sum", "python", 1);
+    const second = runtimeWith(synced, "u2");
+    second.queue.setBaseRev("two-sum", "python", 1);
+    await mount(null);
+    typeBeforeRegistration();
+    await act(async () => setRuntimeRef!(first.runtime));
+    expect(first.queue.hasPendingDraft("two-sum", "python")).toBe(true);
+    await act(async () => setRuntimeRef!(second.runtime));
+    expect(second.queue.hasPendingDraft("two-sum", "python")).toBe(false);
+  });
+
+  it("stays inert when the caller did not opt in: nothing is remembered or uploaded", async () => {
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 1, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1);
+    await mount(null, false);
+    typeBeforeRegistration();
+    await act(async () => setRuntimeRef!(runtime));
+    expect(queue.hasPendingDraft("two-sum", "python")).toBe(false);
   });
 });
 
@@ -283,6 +452,7 @@ describe("edits and stashes", () => {
     });
     expect(taken?.code).toBe("other");
     expect(api!.stashes.python?.code).toBe("on screen");
+    expect(api!.stashes.python?.displaced).toBe(true);
     act(() => api!.dismiss("python"));
     expect(api!.stashes.python).toBeUndefined();
   });
@@ -317,6 +487,28 @@ describe("DraftStashRow", () => {
     expect(onDismiss).toHaveBeenCalledOnce();
     act(() => button("Compare").click());
     expect(document.querySelector('[role="dialog"]')?.getAttribute("aria-label")).toBe("Compare draft versions");
+  });
+
+  it("says so when the stash is this device's own displaced version", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    root = createRoot(host);
+    act(() =>
+      root!.render(
+        <DraftStashRow
+          stash={{ code: "mine", updatedAt: EARLY, deleted: false, displaced: true }}
+          current="server"
+          lang="python"
+          onUse={vi.fn()}
+          onDismiss={vi.fn()}
+        />,
+      ),
+    );
+    expect(host.textContent).toContain("Your previous version of this draft was replaced");
+    expect(host.textContent).not.toContain("another device");
+    act(() => [...host.querySelectorAll("button")].find((b) => b.textContent === "Compare")!.click());
+    expect(document.querySelector('[role="dialog"]')?.textContent).toContain("Previous version");
+    expect(document.querySelector('[role="dialog"]')?.textContent).not.toContain("Other device");
   });
 
   it("Escape closes Compare without choosing either copy", () => {

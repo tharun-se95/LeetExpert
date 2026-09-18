@@ -306,6 +306,12 @@ export class SyncQueue {
           break;
         }
         if (out.kind === "conflict") {
+          // The slot changed while this request was out: the sandbox's pull
+          // discarded the draft (server copy taken) or a newer edit replaced
+          // it. The 409 describes a draft that is gone, so stashing its server
+          // copy would overwrite the learner's own stash with what the editor
+          // already shows. Re-read the slot instead (a newer edit is re-sent).
+          if (this.record.drafts[slot] !== pending) continue;
           this.record.baseRevs[slot] = out.server.rev;
           if (resolveOn409(pending, out.server) === "adopt-rev") {
             if (this.record.drafts[slot] === pending) delete this.record.drafts[slot];

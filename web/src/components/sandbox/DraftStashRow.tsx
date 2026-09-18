@@ -45,9 +45,16 @@ export function DraftStashRow({
   onDismiss: () => void;
 }) {
   const [comparing, setComparing] = useState(false);
+  // A stash is either the other device's copy or this device's own, set aside
+  // when the other device's replaced it; the wording must say which.
+  const own = stash.displaced === true;
   return (
     <div role="status" className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-border bg-elevated px-4 py-2">
-      <p className="text-sm text-info">A different version of this draft was saved on another device.</p>
+      <p className="text-sm text-info">
+        {own
+          ? "Your previous version of this draft was replaced by a newer one and is kept here."
+          : "A different version of this draft was saved on another device."}
+      </p>
       <div className="flex gap-4">
         <button type="button" className={ROW_BUTTON} onClick={() => setComparing(true)}>
           Compare
@@ -69,8 +76,8 @@ export function DraftStashRow({
         <div className="grid gap-4 md:grid-cols-2">
           <ComparePane title="This editor" label="Code in this editor" code={current} lang={lang} />
           <ComparePane
-            title="Other device"
-            label="Code from the other device"
+            title={own ? "Previous version" : "Other device"}
+            label={own ? "Code from the previous version" : "Code from the other device"}
             code={stash.deleted ? "" : stash.code}
             lang={lang}
           />

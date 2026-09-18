@@ -25,6 +25,13 @@ describe("resolveOnMount (spec §6.3)", () => {
   it("server unchanged since baseRev: keep local", () => {
     expect(resolveOnMount(local(), true, server({ rev: 3 }), 3)).toBe("keep-local");
   });
+  it("a server copy older than baseRev is a stale answer: keep local, whether or not local is dirty", () => {
+    // The GET can be answered from a state older than a PUT this device has
+    // since had accepted; taking it would replace the freshly saved draft.
+    expect(resolveOnMount(local(), false, server({ rev: 2 }), 3)).toBe("keep-local");
+    expect(resolveOnMount(local(), true, server({ rev: 2 }), 3)).toBe("keep-local");
+    expect(resolveOnMount(null, false, server({ rev: 2 }), 3)).toBe("keep-local");
+  });
   it("server changed, local clean: take server", () => {
     expect(resolveOnMount(local(), false, server(), 2)).toBe("take-server");
     expect(resolveOnMount(null, false, server(), 0)).toBe("take-server");

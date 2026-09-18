@@ -129,7 +129,8 @@ function isStash(v: unknown): v is Stash {
     isRecord(v) &&
     typeof v.code === "string" &&
     (v.updatedAt === null || typeof v.updatedAt === "string") &&
-    typeof v.deleted === "boolean"
+    typeof v.deleted === "boolean" &&
+    (v.displaced === undefined || v.displaced === true)
   );
 }
 

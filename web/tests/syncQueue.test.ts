@@ -440,3 +440,26 @@ describe("discardDraft", () => {
     q.dispose();
   });
 });
+
+describe("a draft response that arrives after its slot was discarded", () => {
+  it("writes no stash and no rev, and does not re-send", async () => {
+    // The sandbox's pull can resolve while the first PUT is unanswered, take
+    // the server copy and discard the queued draft; the 409 then describes a
+    // draft that no longer exists.
+    let answer: (o: PutOutcome) => void = () => {};
+    const t = fakeTransport({ putDraft: vi.fn(() => new Promise<PutOutcome>((r) => (answer = r))) });
+    const q = queue(t);
+    q.setBaseRev("two-sum", "python", 1);
+    q.enqueueDraft("two-sum", "python", { code: "mine", updatedAt: AT, deleted: false });
+    const flushing = q.flush();
+    q.setBaseRev("two-sum", "python", 2);
+    q.discardDraft("two-sum", "python");
+    answer({ kind: "conflict", server: { code: "theirs", updatedAt: AT, rev: 2, deleted: false } });
+    await flushing;
+    expect(q.stash("two-sum", "python")).toBeNull();
+    expect(q.baseRev("two-sum", "python")).toBe(2);
+    expect(t.putDraft).toHaveBeenCalledTimes(1);
+    expect(q.hasPendingDraft("two-sum", "python")).toBe(false);
+    q.dispose();
+  });
+});
