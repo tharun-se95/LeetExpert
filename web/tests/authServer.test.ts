@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { convertSetCookieToCookie } from "better-auth/test";
 import { createTestDb } from "./helpers/testDb";
 import { createAuth, sessionUserId } from "../src/lib/auth/createAuth";
 import { isAuthConfigured, readAuthEnv, type AuthEnv } from "../src/lib/auth/env";
@@ -51,9 +52,22 @@ describe("sessions against real Postgres", () => {
     const test = (await auth.$context).test;
     const saved = await test.saveUser(test.createUser({ email: "b@example.com", emailVerified: true }));
     const { headers } = await test.login({ userId: saved.id });
+
+    // A real first request populates the 5-minute session_data cache cookie
+    // (this is what a browser would send back on every request after).
+    // Without a cache cookie in play, disabling the cache is a no-op and the
+    // test can't tell a fixed sessionUserId from a broken one — so build the
+    // merged headers a browser would actually hold, and prove they hold it.
+    const { headers: responseHeaders } = await auth.api.getSession({ headers, returnHeaders: true });
+    const merged = new Headers(headers);
+    const setCookie = responseHeaders.get("set-cookie");
+    if (setCookie) merged.append("set-cookie", setCookie);
+    convertSetCookieToCookie(merged);
+    expect(merged.get("cookie")).toContain("session_data");
+
     await auth.api.revokeSessions({ headers });
     // The cookie cache would still vouch for this cookie for 5 minutes;
     // sessionUserId must bypass it.
-    expect(await sessionUserId(auth, headers)).toBeNull();
+    expect(await sessionUserId(auth, merged)).toBeNull();
   });
 });
