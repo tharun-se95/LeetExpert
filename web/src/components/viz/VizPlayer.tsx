@@ -166,9 +166,6 @@ export function VizPlayer<S>({
               : "my-6 w-full",
         )}
       >
-        {!expanded && !embedded ? (
-          <div className="poster-roof shrink-0" aria-hidden />
-        ) : null}
         <div
           className={cn(
             "flex w-full flex-col",

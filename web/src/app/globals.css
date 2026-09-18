@@ -1448,11 +1448,6 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   border-left: 3px solid var(--family-accent, var(--accent));
 }
 
-.poster-roof {
-  height: 6px;
-  background: var(--family-accent, var(--accent));
-}
-
 /* Viz player stage — a family wash: a radial gradient from --family-accent,
    no box line, no motif grid, so the tracer floats on the family colour. */
 .viz-stage {
