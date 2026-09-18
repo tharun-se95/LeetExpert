@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
 import { CaretLineRight, Sparkle, X, Trash } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useCoach } from "./CoachProvider";
 import { CoachThread } from "./CoachThread";
 import { CoachComposer } from "./CoachComposer";
-
-const PRIVACY_KEY = "dsa:coach:privacy-seen";
 
 export function CoachPanel({
   variant = "floating",
@@ -20,15 +18,6 @@ export function CoachPanel({
   const { closeCoach, clearThread, clearUnread, registerComposerEl, thread } =
     useCoach();
   const composerRef = useRef<HTMLDivElement>(null);
-  const [privacySeen, setPrivacySeen] = useState(true);
-
-  useEffect(() => {
-    try {
-      setPrivacySeen(window.localStorage.getItem(PRIVACY_KEY) === "1");
-    } catch {
-      setPrivacySeen(true);
-    }
-  }, []);
 
   // Floating and column (desktop) variants: no focus call here at all. It would fire on
   // EVERY open, including reportRun's automatic first-failure one, which is
@@ -57,15 +46,6 @@ export function CoachPanel({
       e.stopPropagation();
       closeCoach();
     }
-  };
-
-  const acknowledgePrivacy = () => {
-    try {
-      window.localStorage.setItem(PRIVACY_KEY, "1");
-    } catch {
-      /* ignore */
-    }
-    setPrivacySeen(true);
   };
 
   return (
@@ -128,19 +108,6 @@ export function CoachPanel({
             </button>
           )}
         </header>
-      ) : null}
-      {!privacySeen ? (
-        <p className="shrink-0 border-b border-border bg-info-surface px-3 py-1.5 text-xs text-info">
-          Sending a message sends your code and this problem’s hints to our model
-          provider. Diagnosis stays local until you ask.
-          <button
-            type="button"
-            onClick={acknowledgePrivacy}
-            className="ml-1 underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            Got it
-          </button>
-        </p>
       ) : null}
       {/*
         flex flex-col, not just a bare block: CoachThread sizes itself with
