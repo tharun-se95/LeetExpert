@@ -1,35 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { Sparkle, X, Trash } from "@phosphor-icons/react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
+import { CaretLineRight, Sparkle, X, Trash } from "@phosphor-icons/react";
+import { cn } from "@/lib/utils";
 import { useCoach } from "./CoachProvider";
 import { CoachThread } from "./CoachThread";
 import { CoachComposer } from "./CoachComposer";
-
-const PRIVACY_KEY = "dsa:coach:privacy-seen";
 
 export function CoachPanel({
   variant = "floating",
   active = true,
 }: {
-  variant?: "floating" | "page";
+  variant?: "floating" | "page" | "column";
   /** False while the mobile tab is hidden so we do not steal Code focus. */
   active?: boolean;
 }) {
   const { closeCoach, clearThread, clearUnread, registerComposerEl, thread } =
     useCoach();
   const composerRef = useRef<HTMLDivElement>(null);
-  const [privacySeen, setPrivacySeen] = useState(true);
 
-  useEffect(() => {
-    try {
-      setPrivacySeen(window.localStorage.getItem(PRIVACY_KEY) === "1");
-    } catch {
-      setPrivacySeen(true);
-    }
-  }, []);
-
-  // Floating (desktop) variant: no focus call here at all. It would fire on
+  // Floating and column (desktop) variants: no focus call here at all. It would fire on
   // EVERY open, including reportRun's automatic first-failure one, which is
   // exactly the focus-steal this was rewritten to stop — the provider's own
   // effect (keyed on an explicit-open counter) owns that decision instead;
@@ -38,7 +28,7 @@ export function CoachPanel({
   // Page (mobile) variant: unaffected. Becoming active there already IS an
   // explicit tab switch, so it keeps focusing unconditionally, same as before.
   useEffect(() => {
-    if (variant !== "floating") return;
+    if (variant === "page") return;
     registerComposerEl(composerRef.current);
     return () => registerComposerEl(null);
   }, [variant, registerComposerEl]);
@@ -58,15 +48,6 @@ export function CoachPanel({
     }
   };
 
-  const acknowledgePrivacy = () => {
-    try {
-      window.localStorage.setItem(PRIVACY_KEY, "1");
-    } catch {
-      /* ignore */
-    }
-    setPrivacySeen(true);
-  };
-
   return (
     <section
       aria-label="Problem coach"
@@ -74,15 +55,20 @@ export function CoachPanel({
       // whole point of floating over the workspace is that the editor stays
       // usable while the coach is open. The mobile variant takes no role —
       // ProblemWorkspace already supplies role="tabpanel" on its wrapper.
-      role={variant === "floating" ? "dialog" : undefined}
+      role={variant === "floating" ? "dialog" : variant === "column" ? "complementary" : undefined}
       onKeyDown={onKeyDown}
       // No border, radius, or shadow here: CoachOverlay owns the floating
       // surface's own chrome, and the page (mobile) variant fills its tab.
       // relative: both the clear-thread button and the composer below are
       // positioned against this panel, not document flow.
-      className="relative flex h-full min-h-0 flex-col bg-elevated"
+      className={cn(
+        "relative flex h-full min-h-0 flex-col",
+        // The column is a flush workspace pane, so it takes the description
+        // pane's grainy --elevated paper (AA holds there, grainContrast.test).
+        variant === "column" ? "grain-paper [--grain-paper:var(--elevated)]" : "bg-elevated",
+      )}
     >
-      {variant === "floating" ? (
+      {variant !== "page" ? (
         <header className="flex shrink-0 items-start gap-2.5 border-b border-border px-3 py-2.5">
           {/*
             A solid mark rather than an accent-tinted glyph: the steel
@@ -101,28 +87,27 @@ export function CoachPanel({
               Coach
             </h2>
           </span>
-          <button
-            type="button"
-            aria-label="Close problem coach"
-            onClick={closeCoach}
-            className="-mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            <X size={16} weight="bold" />
-          </button>
+          {variant === "column" ? (
+            <button
+              type="button"
+              aria-label="Collapse problem coach"
+              aria-expanded={true}
+              onClick={closeCoach}
+              className="-mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <CaretLineRight size={16} weight="bold" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              aria-label="Close problem coach"
+              onClick={closeCoach}
+              className="-mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] text-muted hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <X size={16} weight="bold" />
+            </button>
+          )}
         </header>
-      ) : null}
-      {!privacySeen ? (
-        <p className="shrink-0 border-b border-border bg-info-surface px-3 py-1.5 text-xs text-info">
-          Sending a message sends your code and this problem’s hints to our model
-          provider. Diagnosis stays local until you ask.
-          <button
-            type="button"
-            onClick={acknowledgePrivacy}
-            className="ml-1 underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            Got it
-          </button>
-        </p>
       ) : null}
       {/*
         flex flex-col, not just a bare block: CoachThread sizes itself with
