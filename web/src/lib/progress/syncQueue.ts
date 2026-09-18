@@ -55,6 +55,22 @@ export class SyncQueue {
     return draftSlot(sandboxId, lang) in this.record.drafts;
   }
 
+  /** The newest edit not yet on the server; a reset shows up here as a tombstone, though storage holds nothing. */
+  pendingDraft(sandboxId: string, lang: DraftLang): PendingDraft | null {
+    return this.record.drafts[draftSlot(sandboxId, lang)] ?? null;
+  }
+
+  /**
+   * Drops the queued write for a slot. Used when the server's copy was put in
+   * the editor over this device's older one: left queued, the older draft
+   * would flush with the fresh baseRev and overwrite the copy that just won.
+   */
+  discardDraft(sandboxId: string, lang: DraftLang): void {
+    if (!this.hasPendingDraft(sandboxId, lang)) return;
+    delete this.record.drafts[draftSlot(sandboxId, lang)];
+    this.persist();
+  }
+
   baseRev(sandboxId: string, lang: DraftLang): number {
     return this.record.baseRevs[draftSlot(sandboxId, lang)] ?? 0;
   }

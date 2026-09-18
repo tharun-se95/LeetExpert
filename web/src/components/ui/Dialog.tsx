@@ -5,8 +5,10 @@ import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 const FOCUSABLE =
-  'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"]), [contenteditable]:not([contenteditable="false"])';
 
+// contenteditable is listed because a code editor (CodeMirror) is one, and a
+// trap that cannot see it would keep keyboard users out of a read-only view.
 // jsdom has no layout, so visibility is judged from attributes, not geometry.
 function focusables(panel: HTMLElement): HTMLElement[] {
   return [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => !el.closest("[hidden], [inert]"));

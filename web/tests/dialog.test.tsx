@@ -129,4 +129,25 @@ describe("Dialog", () => {
     expect(tab.defaultPrevented).toBe(true);
     expect(document.activeElement).toBe(real);
   });
+
+  it("counts a contenteditable region as a stop, so an editor inside is reachable", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    root = createRoot(host);
+    act(() =>
+      root!.render(
+        <Dialog open onClose={vi.fn()} label="With editor">
+          <div contentEditable suppressContentEditableWarning>code</div>
+          <div contentEditable="false">not a stop</div>
+          <button type="button">Close</button>
+        </Dialog>,
+      ),
+    );
+    const editor = document.querySelector<HTMLElement>('[contenteditable="true"]')!;
+    expect(document.activeElement).toBe(editor);
+    const close = document.querySelector<HTMLButtonElement>("button")!;
+    close.focus();
+    act(() => close.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true })));
+    expect(document.activeElement).toBe(editor);
+  });
 });

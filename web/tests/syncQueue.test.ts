@@ -402,3 +402,41 @@ describe("reset", () => {
     expect(readSyncRecord(localStorage, "u1").marks).toHaveLength(1);
   });
 });
+
+describe("pendingDraft", () => {
+  it("returns the queued edit, a queued reset as a tombstone, and null when nothing is queued", () => {
+    const q = queue(fakeTransport());
+    expect(q.pendingDraft("two-sum", "python")).toBeNull();
+    q.enqueueDraft("two-sum", "python", { code: "x", updatedAt: AT, deleted: false });
+    expect(q.pendingDraft("two-sum", "python")).toEqual({ code: "x", updatedAt: AT, deleted: false });
+    q.enqueueDraft("two-sum", "python", { code: "", updatedAt: AT, deleted: true });
+    expect(q.pendingDraft("two-sum", "python")).toMatchObject({ deleted: true });
+    expect(q.pendingDraft("two-sum", "javascript")).toBeNull();
+    q.dispose();
+  });
+});
+
+describe("discardDraft", () => {
+  it("removes one slot's queued write, persists, and cancels nothing else", async () => {
+    const t = fakeTransport();
+    const q = queue(t);
+    q.enqueueDraft("two-sum", "python", { code: "old", updatedAt: AT, deleted: false });
+    q.enqueueDraft("two-sum", "javascript", { code: "keep", updatedAt: AT, deleted: false });
+    q.discardDraft("two-sum", "python");
+    expect(q.hasPendingDraft("two-sum", "python")).toBe(false);
+    expect(readSyncRecord(localStorage, "u1").drafts).not.toHaveProperty("two-sum:python");
+    await q.flush();
+    expect(t.putDraft).toHaveBeenCalledTimes(1);
+    expect(t.putDraft.mock.calls[0]![1]).toMatchObject({ lang: "javascript", code: "keep" });
+    q.dispose();
+  });
+
+  it("is a no-op for a slot with nothing queued", () => {
+    const q = queue(fakeTransport());
+    const notified = vi.fn();
+    q.subscribe(notified);
+    q.discardDraft("two-sum", "python");
+    expect(notified).not.toHaveBeenCalled();
+    q.dispose();
+  });
+});

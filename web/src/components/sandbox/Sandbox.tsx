@@ -41,6 +41,8 @@ import { CodeLangMenu } from "@/components/code/CodeLangMenu";
 import { useCodeLang } from "@/lib/codeLang";
 import { resolveCodeLang } from "@/lib/codeLanguages";
 import { draftKey, removeLocalDraft, writeLocalDraft } from "@/lib/progress/localStore";
+import { useDraftSync } from "@/components/sandbox/useDraftSync";
+import { DraftStashRow } from "@/components/sandbox/DraftStashRow";
 
 const LANGS: SandboxLang[] = ["python", "javascript"];
 
@@ -74,6 +76,7 @@ export function Sandbox({
   moduleSlug,
   extractedComplexity = null,
   embedded = false,
+  syncDraft = false,
 }: {
   source: string;
   onSolved?: () => void;
@@ -86,6 +89,8 @@ export function Sandbox({
    *  for a caller that's already inside its own surface (same convention
    *  as `Viz`'s `embedded` prop). */
   embedded?: boolean;
+  /** Problem sandboxes only: their ids are in the sync registry; the landing sandbox's is not. */
+  syncDraft?: boolean;
 }) {
   const spec = useMemo(() => parseSandboxSpec(source), [source]);
   if (!spec) return <ErrorCard message="Invalid sandbox block." />;
@@ -97,6 +102,7 @@ export function Sandbox({
       moduleSlug={moduleSlug}
       extractedComplexity={extractedComplexity}
       embedded={embedded}
+      syncDraft={syncDraft}
     />
   );
 }
@@ -108,6 +114,7 @@ function SandboxBody({
   moduleSlug,
   extractedComplexity,
   embedded = false,
+  syncDraft,
 }: {
   spec: SandboxSpec;
   onSolved?: () => void;
@@ -115,6 +122,7 @@ function SandboxBody({
   moduleSlug?: string;
   extractedComplexity: ExtractedComplexity | null;
   embedded?: boolean;
+  syncDraft: boolean;
 }) {
   // One preference for every surface, picked from any of their menus.
   const [codeLang] = useCodeLang();
@@ -123,6 +131,13 @@ function SandboxBody({
     python: spec.starter.python,
     javascript: spec.starter.javascript,
   });
+  const applyRemote = useCallback(
+    (l: SandboxLang, code: string | null) =>
+      setDrafts((current) => ({ ...current, [l]: code ?? spec.starter[l] })),
+    [spec.starter],
+  );
+  const sync = useDraftSync({ sandboxId: spec.id, enabled: syncDraft, applyRemote });
+  const { recordEdit, recordReset } = sync;
   const { state, run, reset } = useRunner(spec);
   // A switch mid-run cancels the run and clears results for the old
   // language, exactly as the per-sandbox tab used to. Drafts are stored per
@@ -152,16 +167,39 @@ function SandboxBody({
   const setDraft = useCallback(
     (next: string) => {
       setDrafts((current) => ({ ...current, [lang]: next }));
-      writeLocalDraft(window.localStorage, spec.id, lang, next, new Date().toISOString());
+      // One timestamp for storage and the queue, so a later pull compares the
+      // same instant the learner typed at.
+      const at = new Date().toISOString();
+      writeLocalDraft(window.localStorage, spec.id, lang, next, at);
+      recordEdit(lang, next, at);
     },
-    [lang, spec.id],
+    [lang, spec.id, recordEdit],
   );
 
   const restoreStarter = useCallback(() => {
     setDrafts((current) => ({ ...current, [lang]: spec.starter[lang] }));
     removeLocalDraft(window.localStorage, spec.id, lang);
+    recordReset(lang);
     reset();
-  }, [lang, reset, spec.id, spec.starter]);
+  }, [lang, reset, spec.id, spec.starter, recordReset]);
+
+  const stash = sync.stashes[lang];
+  const stashRow = stash ? (
+    <DraftStashRow
+      stash={stash}
+      current={drafts[lang]}
+      lang={lang}
+      onUse={() => {
+        const taken = sync.takeStash(lang, drafts[lang]);
+        if (!taken) return;
+        // A tombstone means the other copy was a reset: honour it as one
+        // rather than saving the starter as if the learner had typed it.
+        if (taken.deleted) restoreStarter();
+        else setDraft(taken.code);
+      }}
+      onDismiss={() => sync.dismiss(lang)}
+    />
+  ) : null;
 
   const busy = state.status === "running" || state.status === "booting";
   const results = state.status === "done" ? state.results : null;
@@ -316,6 +354,7 @@ function SandboxBody({
         drafts={drafts}
         lang={lang}
         setDraft={setDraft}
+        stashRow={stashRow}
         spec={spec}
         results={results}
         passed={passed}
@@ -340,6 +379,8 @@ function SandboxBody({
       )}
     >
       {toolbar}
+
+      {stashRow}
 
       <div className="border-y border-code-editor-border bg-code-editor">
         <div className="code-body p-0">
@@ -413,6 +454,7 @@ function IdeWorkspace({
   drafts,
   lang,
   setDraft,
+  stashRow,
   spec,
   results,
   passed,
@@ -428,6 +470,7 @@ function IdeWorkspace({
   drafts: Record<SandboxLang, string>;
   lang: SandboxLang;
   setDraft: (next: string) => void;
+  stashRow: ReactNode;
   spec: SandboxSpec;
   results: CaseResult[] | null;
   passed: number;
@@ -519,6 +562,7 @@ function IdeWorkspace({
 
   const editor = (
     <div className="flex h-full min-h-0 flex-col bg-code-editor">
+      {stashRow}
       <div className="code-body min-h-0 flex-1 overflow-hidden p-0">
         <CodeEditor
           value={drafts[lang]}
