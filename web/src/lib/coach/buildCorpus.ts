@@ -88,3 +88,19 @@ export function writeCoachCorpus(courseRoot = resolveCourseRoot()): string {
   writeFileSync(out, `${JSON.stringify(corpus, null, 2)}\n`);
   return out;
 }
+
+/**
+ * The sandbox ids sync may store drafts under. Generated from the same
+ * corpus walk, because sandbox ids are not always problem slugs
+ * (`find-min-rotated` belongs to `find-minimum-in-rotated-sorted-array`).
+ */
+export function sandboxIdsOutputPath(): string {
+  return join(dirname(fileURLToPath(import.meta.url)), "..", "sandbox", "sandboxIds.generated.json");
+}
+
+export function writeSandboxIds(courseRoot = resolveCourseRoot()): string {
+  const out = sandboxIdsOutputPath();
+  const ids = Object.keys(buildCorpus(courseRoot)).sort();
+  writeFileSync(out, `${JSON.stringify(ids, null, 2)}\n`);
+  return out;
+}

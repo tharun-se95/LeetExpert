@@ -21,11 +21,12 @@ if (!existsSync(COURSE)) {
 }
 
 const jiti = createJiti(import.meta.url);
-const { buildCorpus, writeCoachCorpus } = await jiti.import(
+const { buildCorpus, writeCoachCorpus, writeSandboxIds } = await jiti.import(
   "../src/lib/coach/buildCorpus.ts",
 );
 
 const out = writeCoachCorpus();
+const idsOut = writeSandboxIds();
 console.log(
-  `[coach-corpus] ${Object.keys(buildCorpus()).length} problems → ${out}`,
+  `[coach-corpus] ${Object.keys(buildCorpus()).length} problems → ${out}; ids → ${idsOut}`,
 );
