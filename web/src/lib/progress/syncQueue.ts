@@ -1,5 +1,5 @@
 import type { PutOutcome, SendOpts, Transport } from "./api";
-import { draftSlot, readSyncRecord, writeSyncRecord, type PendingDraft, type SyncRecord } from "./localStore";
+import { draftSlot, emptySyncRecord, readSyncRecord, writeSyncRecord, type PendingDraft, type SyncRecord } from "./localStore";
 import { resolveOn409 } from "./merge";
 import { MARK_BATCH_MAX, type DraftLang, type Mark, type Stash } from "./types";
 
@@ -129,6 +129,29 @@ export class SyncQueue {
     // is one more real timer than a page that's already navigating needs.
     clearTimeout(timer!);
     return result;
+  }
+
+  /**
+   * Forgets everything this queue holds. The learner declined to add this
+   * device's progress, so the in-memory copy (read once, at construction)
+   * must go too: clearing only storage would leave it to be re-persisted and
+   * re-sent on the next flush. Revs and stashes go with it, since they describe
+   * the same discarded local drafts and a queue built after clearSyncedData
+   * would start without them; a stale rev is safe anyway, because a lower
+   * baseRev only earns a 409 that the conflict path already resolves.
+   */
+  reset(): void {
+    if (this.disposed) return;
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = null;
+    this.record = emptySyncRecord();
+    // "unauthorized" is about the session, not the queue's contents, so it stays.
+    if (this.current === "offline") {
+      this.backoff = BACKOFF_START_MS;
+      this.offlineAt = null;
+      this.setStatus("synced");
+    }
+    this.persist();
   }
 
   dispose(): void {

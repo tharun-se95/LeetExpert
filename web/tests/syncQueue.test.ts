@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi, type Mocked } from "vitest";
 import type { PutOutcome, Transport } from "../src/lib/progress/api";
+import { emptySyncRecord, readSyncRecord } from "../src/lib/progress/localStore";
 import { BACKOFF_START_MS, SyncQueue } from "../src/lib/progress/syncQueue";
 import type { ServerDraft } from "../src/lib/progress/types";
 
@@ -347,5 +348,57 @@ describe("review round 1", () => {
     expect(postMarks).toHaveBeenCalledTimes(2);
     expect(postMarks.mock.calls[1]).toEqual(["dsa", [{ kind: "visited", id: "a/1" }], { keepalive: true }]);
     expect(q.pendingCount()).toBe(0);
+  });
+});
+
+describe("reset", () => {
+  it("drops pending marks, drafts, revs and stashes, cancels the armed timer and persists the empty record", async () => {
+    const t = fakeTransport();
+    const q = queue(t);
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "a/b" });
+    q.enqueueDraft("two-sum", "python", { code: "x", updatedAt: AT, deleted: false });
+    q.setBaseRev("two-sum", "python", 3);
+    q.setStash("two-sum", "python", { code: "old", updatedAt: AT, deleted: false });
+    const notified = vi.fn();
+    q.subscribe(notified);
+
+    q.reset();
+
+    expect(notified).toHaveBeenCalled();
+    expect(q.pendingCount()).toBe(0);
+    expect(q.hasPendingDraft("two-sum", "python")).toBe(false);
+    expect(q.baseRev("two-sum", "python")).toBe(0);
+    expect(q.stash("two-sum", "python")).toBeNull();
+    await vi.advanceTimersByTimeAsync(60000);
+    expect(t.postMarks).not.toHaveBeenCalled();
+    expect(t.putDraft).not.toHaveBeenCalled();
+    expect(readSyncRecord(localStorage, "u1")).toEqual(emptySyncRecord());
+    q.dispose();
+  });
+
+  it("returns an offline queue to synced, and leaves an unauthorized one unauthorized", async () => {
+    const offline = queue(fakeTransport({ postMarks: vi.fn(async () => 503) }));
+    offline.enqueueMark({ course: "dsa", kind: "visited", id: "a/b" });
+    await offline.flush();
+    expect(offline.status()).toBe("offline");
+    offline.reset();
+    expect(offline.status()).toBe("synced");
+    expect(offline.offlineSince()).toBeNull();
+    offline.dispose();
+
+    const unauth = queue(fakeTransport({ postMarks: vi.fn(async () => 401) }), "u2");
+    unauth.enqueueMark({ course: "dsa", kind: "visited", id: "a/b" });
+    await unauth.flush();
+    unauth.reset();
+    expect(unauth.status()).toBe("unauthorized");
+    unauth.dispose();
+  });
+
+  it("writes nothing once disposed", () => {
+    const q = queue(fakeTransport());
+    q.enqueueMark({ course: "dsa", kind: "visited", id: "a/b" });
+    q.dispose();
+    q.reset();
+    expect(readSyncRecord(localStorage, "u1").marks).toHaveLength(1);
   });
 });

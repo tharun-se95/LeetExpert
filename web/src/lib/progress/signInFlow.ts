@@ -52,7 +52,12 @@ export async function beginSignIn(deps: FlowDeps, action: OwnerAction): Promise<
 
 export async function completeMerge(deps: FlowDeps, choice: "add" | "discard"): Promise<void> {
   if (choice === "add") await uploadAnonymous(deps);
-  else clearSyncedData(deps.storage);
+  else {
+    // The queue outlives this call and holds the anonymous writes in memory;
+    // clearing storage alone would let it re-send them on its next flush.
+    deps.queue.reset();
+    clearSyncedData(deps.storage);
+  }
   await finish(deps);
 }
 

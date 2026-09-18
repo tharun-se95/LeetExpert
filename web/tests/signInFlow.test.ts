@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { PutOutcome, Transport } from "../src/lib/progress/api";
 import { SyncQueue } from "../src/lib/progress/syncQueue";
 import {
   beginSignIn, completeMerge, prepareDevice, type FlowDeps,
 } from "../src/lib/progress/signInFlow";
-import { readLocalDraft, readOwner, writeLocalDraft, writeOwner } from "../src/lib/progress/localStore";
+import { emptySyncRecord, readLocalDraft, readOwner, readSyncRecord, writeLocalDraft, writeOwner } from "../src/lib/progress/localStore";
 import { readSet, solvedKey, visitedKey } from "../src/components/providers/progressStorage";
 import type { MarksSnapshot } from "../src/lib/progress/types";
 
@@ -32,7 +32,18 @@ function seedAnonymous() {
   writeLocalDraft(localStorage, "two-sum", "python", "mine", "2026-09-18T11:00:00.000Z");
 }
 
+// Every queue a test builds is disposed: an offline flush arms a real backoff timer.
+const queues: SyncQueue[] = [];
+function tracked(t: Transport, userId = "u1"): FlowDeps {
+  const d = deps(t, userId);
+  queues.push(d.queue);
+  return d;
+}
+
 beforeEach(() => localStorage.clear());
+afterEach(() => {
+  for (const q of queues.splice(0)) q.dispose();
+});
 
 describe("owner cases", () => {
   it("replace clears the other account's data before anything else", () => {
@@ -117,5 +128,29 @@ describe("merge flow (spec §7)", () => {
     const t = transport(EMPTY, { postMarks: vi.fn(async () => 0) });
     await expect(completeMerge(deps(t), "add")).rejects.toThrow();
     expect(readOwner(localStorage)).toBeNull();
+  });
+
+  it("Don't add after a failed Add: the reloaded queue drops the anonymous writes it inherited", async () => {
+    seedAnonymous();
+    // First attempt: "Add" enqueues every mark, the flush fails, owner stays unwritten.
+    const offline = tracked(transport(EMPTY, { postMarks: vi.fn(async () => 0) }));
+    await expect(completeMerge(offline, "add")).rejects.toThrow();
+    expect(readSyncRecord(localStorage, "u1").marks.length).toBeGreaterThan(0);
+    offline.queue.dispose();
+
+    // Reload: the persisted queue is read back, the server is now non-empty, so the learner is asked.
+    const t = transport({ ...EMPTY, visited: ["z/z"] });
+    const d = tracked(t);
+    d.queue.enqueueDraft("two-sum", "python", { code: "mine", updatedAt: "2026-09-18T11:00:00.000Z", deleted: false });
+    expect(d.queue.pendingCount()).toBeGreaterThan(0);
+    expect((await beginSignIn(d, "merge")).kind).toBe("ask");
+
+    await completeMerge(d, "discard");
+    await d.queue.flush();
+    expect(t.postMarks).not.toHaveBeenCalled();
+    expect(t.putDraft).not.toHaveBeenCalled();
+    expect(d.queue.pendingCount()).toBe(0);
+    expect(readSyncRecord(localStorage, "u1")).toEqual(emptySyncRecord());
+    expect(readOwner(localStorage)).toBe("u1");
   });
 });
