@@ -13,3 +13,6 @@ export interface LocalDraft { code: string; updatedAt: string | null; deleted: b
 export const MARK_BATCH_MAX = 500;
 /** BroadcastChannel name; here so the header can post to it without importing the sync chunk. */
 export const AUTH_CHANNEL = "leetexpert-auth";
+
+/** The only course that syncs; the Next.js course is disabled. */
+export const SYNCED_COURSE = "dsa";
