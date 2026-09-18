@@ -151,3 +151,9 @@ geometric, not pictorial:
   (state transition/gold — the contrast-risk case) — confirm active-cell
   text is readable, motif is visible but not distracting, poster-roof and
   code-panel highlight match the family color.
+
+---
+
+**2026-09-18 (owner):** the `.poster-roof` strip above the viz player was
+removed — the player carries no accent bar now. The family wash on `.lab-stage`
+and `.viz-stage` is unchanged.
