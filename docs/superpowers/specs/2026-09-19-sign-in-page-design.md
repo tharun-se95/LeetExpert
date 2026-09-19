@@ -52,8 +52,9 @@ signing in gives them, and the page looks unfinished next to the landing page.
 `SignInStory` steps `stage` 0, 1, 2, 3 once on arrival, `STAGE_MS = 1100` apart
 (the landing hero's cadence, longer than the 0.9 s morph), and rests on the graph.
 Not a loop: on a page where the learner is choosing a provider, motion that never
-stops competes with the buttons. `prefers-reduced-motion` renders the graph
-immediately with no timers. The SVG keeps its own per-stage `aria-label`
+stops competes with the buttons. `prefers-reduced-motion` shows the graph
+with no timers, set in the first client effect: server render and first client
+render both show the array, so the jump is not a hydration mismatch. The SVG keeps its own per-stage `aria-label`
 (`describeStage`) and there is no visible caption under it, so the accessible name
 is not read twice.
 
