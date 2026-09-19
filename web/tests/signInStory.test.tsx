@@ -49,10 +49,15 @@ describe("SignInStory", () => {
     expect(label()).toBe(describeStage(3));
   });
 
-  it("rests on the graph: it does not loop", () => {
+  it("rests on the graph: it does not loop, and its timer is cleared once it arrives", () => {
+    const clearIntervalSpy = vi.spyOn(window, "clearInterval");
     mount();
     act(() => void vi.advanceTimersByTime(STAGE_MS * 12));
     expect(label()).toBe(describeStage(3));
+    // EvolvingStructure clamps its stage, so a timer that kept counting past the
+    // graph would show the same label: the label alone cannot tell "rested" from
+    // "leaked". The clear must have happened before any unmount.
+    expect(clearIntervalSpy).toHaveBeenCalled();
   });
 
   it("goes straight to the graph, with no timer, under reduced motion", () => {
