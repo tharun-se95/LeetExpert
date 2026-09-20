@@ -144,8 +144,20 @@ export function useDraftSync({
           const pending = queue.pendingDraft(sandboxId, lang);
           const local = effectiveLocal(readLocalDraft(storage, sandboxId, lang), pending);
           const baseRev = queue.baseRev(sandboxId, lang);
-          // Never synced from this device (baseRev 0) counts as a local change.
-          const dirty = pending !== null || (baseRev === 0 && local !== null);
+          // A queued edit is dirty; so is a stored draft this device has no
+          // record of having synced. The second half is what catches an edit
+          // typed while no runtime was registered and then carried across an
+          // unmount by storage alone: `unsynced` above dies with the
+          // component, so nothing is queued, and judging by `baseRev` alone
+          // would call it clean and let `take-server` replace it unstashed.
+          // No sync point and no timestamp both mean "cannot prove it is in
+          // step" — the safe reading is dirty.
+          const syncedAt = queue.syncedAt(sandboxId, lang);
+          const localAt = local?.updatedAt ?? null;
+          const dirty =
+            pending !== null ||
+            (local !== null &&
+              (baseRev === 0 || syncedAt === null || localAt === null || Date.parse(localAt) > Date.parse(syncedAt)));
           if (!remote) {
             if (dirty && local && !pending) {
               queue.enqueueDraft(sandboxId, lang, {
@@ -157,8 +169,20 @@ export function useDraftSync({
             continue;
           }
           const resolution = resolveOnMount(local, dirty, remote, baseRev);
-          if (resolution === "keep-local") continue;
-          queue.setBaseRev(sandboxId, lang, remote.rev);
+          if (resolution === "keep-local") {
+            // The server has not moved past this device, so nothing here
+            // conflicts — but an edit recovered from storage still has to
+            // reach the server, or it stays on this device forever.
+            if (dirty && local && !pending) {
+              queue.enqueueDraft(sandboxId, lang, {
+                code: local.code,
+                updatedAt: local.updatedAt ?? LEGACY_UPDATED_AT,
+                deleted: local.deleted,
+              });
+            }
+            continue;
+          }
+          queue.setBaseRev(sandboxId, lang, remote.rev, remote.updatedAt);
           if (resolution === "take-server") {
             takeServer(lang, remote);
           } else if (resolution === "adopt-rev") {

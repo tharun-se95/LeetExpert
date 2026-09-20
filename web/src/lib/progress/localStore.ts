@@ -90,10 +90,19 @@ export interface SyncRecord {
   drafts: Record<string, PendingDraft>;
   baseRevs: Record<string, number>;
   stashes: Record<string, Stash>;
+  /**
+   * Per slot, the `updatedAt` of the content `baseRevs` names. A draft in
+   * storage stamped later than this was edited after the last sync, which is
+   * the only way to recognise an edit typed while no runtime was registered:
+   * it was never queued, and the hook's in-memory note of it dies with the
+   * component. Without it such a draft reads as clean and a moved server
+   * silently replaces it.
+   */
+  syncedAt: Record<string, string>;
 }
 
 export function emptySyncRecord(): SyncRecord {
-  return { marks: [], drafts: {}, baseRevs: {}, stashes: {} };
+  return { marks: [], drafts: {}, baseRevs: {}, stashes: {}, syncedAt: {} };
 }
 
 // Keyed by user so one account's queue can never be sent under another's session.
@@ -138,6 +147,10 @@ function isFiniteNumber(v: unknown): v is number {
   return typeof v === "number" && Number.isFinite(v);
 }
 
+function isString(v: unknown): v is string {
+  return typeof v === "string";
+}
+
 /** A record whose every value passes `test` — used for `drafts`/`baseRevs`/`stashes`. */
 function isRecordOf<T>(v: unknown, test: (item: unknown) => item is T): v is Record<string, T> {
   return isRecord(v) && Object.values(v).every(test);
@@ -166,7 +179,12 @@ function parseSyncRecord(value: unknown): SyncRecord | null {
   const stashes = value.stashes === undefined ? empty.stashes : isRecordOf(value.stashes, isStash) ? value.stashes : null;
   if (stashes === null) return null;
 
-  return { marks, drafts, baseRevs, stashes };
+  // Absent in records written before this field existed: those slots then read
+  // as "no known sync", which makes a stored draft dirty — the safe direction.
+  const syncedAt = value.syncedAt === undefined ? empty.syncedAt : isRecordOf(value.syncedAt, isString) ? value.syncedAt : null;
+  if (syncedAt === null) return null;
+
+  return { marks, drafts, baseRevs, stashes, syncedAt };
 }
 
 export function readSyncRecord(s: Storage, userId: string): SyncRecord {

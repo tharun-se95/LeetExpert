@@ -304,16 +304,33 @@ describe("edits typed before the runtime registers", () => {
     expect(queue.hasPendingDraft("two-sum", "python")).toBe(false);
   });
 
-  it("is forgotten on unmount, and never reaches a queue that a later mount uses", async () => {
+  it("is forgotten on unmount: with storage cleared too, nothing reaches a later mount's queue", async () => {
     await mount(null);
     typeBeforeRegistration();
     act(() => root!.unmount());
     root = null;
-    // Already in step with the server, so only a remembered edit could be queued.
+    // The learner discarded it (or a "replace" cleared the device), so the
+    // only trace left would be the in-memory note the unmount dropped.
+    localStorage.removeItem(draftKey("two-sum", "python"));
     const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 1, deleted: false } });
-    queue.setBaseRev("two-sum", "python", 1);
+    queue.setBaseRev("two-sum", "python", 1, EARLY);
     await mount(runtime);
     expect(queue.hasPendingDraft("two-sum", "python")).toBe(false);
+  });
+
+  it("survives an unmount through storage: a later mount recognises it and queues it", async () => {
+    await mount(null);
+    typeBeforeRegistration();
+    act(() => root!.unmount());
+    root = null;
+    // The in-memory note is gone, but storage still holds the edit. It is
+    // stamped after this slot's sync point, so it is a local change — before,
+    // `dirty` read only the queue and called it clean, and the edit was
+    // stranded here forever (and replaced outright once the server moved).
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 1, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1, EARLY);
+    await mount(runtime);
+    expect(queue.pendingDraft("two-sum", "python")).toMatchObject({ code: "typed early", updatedAt: TYPED });
   });
 
   it("is not remembered for a runtime that was disposed, only handed to the next one if storage still holds it", async () => {
@@ -340,6 +357,10 @@ describe("edits typed before the runtime registers", () => {
     typeBeforeRegistration();
     await act(async () => setRuntimeRef!(first.runtime));
     expect(first.queue.hasPendingDraft("two-sum", "python")).toBe(true);
+    // Clear storage so only the in-memory note could still feed the second
+    // runtime: this is about the handover, not about storage recovery, which
+    // the test above covers.
+    localStorage.removeItem(draftKey("two-sum", "python"));
     await act(async () => setRuntimeRef!(second.runtime));
     expect(second.queue.hasPendingDraft("two-sum", "python")).toBe(false);
   });
@@ -551,5 +572,46 @@ describe("DraftStashRow", () => {
     expect(onUse).not.toHaveBeenCalled();
     expect(onDismiss).not.toHaveBeenCalled();
     expect(host.textContent).toContain("A different version of this draft");
+  });
+});
+
+describe("a draft edited with no runtime registered (regression)", () => {
+  const TYPED = "2026-09-18T12:00:00.000Z";
+  const LATEST = "2026-09-18T13:00:00.000Z";
+
+  // The edit is typed while no runtime is registered and then carried only by
+  // storage across the unmount that drops the hook's in-memory note. Judging
+  // it by the queue alone called it clean, and a moved server replaced it with
+  // no stash: silent, unrecoverable loss of the learner's own code.
+  it("is not replaced by an older server copy, and the server copy is stashed instead", async () => {
+    writeLocalDraft(localStorage, "two-sum", "python", "my unsaved work", TYPED);
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: EARLY, rev: 2, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1, EARLY);
+    await mount(runtime);
+    expect(applied).toEqual([]);
+    expect(readLocalDraft(localStorage, "two-sum", "python")?.code).toBe("my unsaved work");
+    expect(api!.stashes.python?.code).toBe("server");
+    expect(queue.pendingDraft("two-sum", "python")).toMatchObject({ code: "my unsaved work" });
+  });
+
+  it("is stashed, not dropped, when the server copy is newer and wins the editor", async () => {
+    writeLocalDraft(localStorage, "two-sum", "python", "my unsaved work", TYPED);
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: LATEST, rev: 2, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1, EARLY);
+    await mount(runtime);
+    expect(applied).toEqual([["python", "server"]]);
+    expect(api!.stashes.python).toMatchObject({ code: "my unsaved work", displaced: true });
+  });
+
+  it("still counts as clean when it is exactly what was last synced", async () => {
+    // Same timestamp as the sync point: nothing was typed since, so the
+    // server's newer copy is taken without a spurious stash or upload.
+    writeLocalDraft(localStorage, "two-sum", "python", "old", EARLY);
+    const { runtime, queue } = runtimeWith({ python: { code: "server", updatedAt: LATE, rev: 2, deleted: false } });
+    queue.setBaseRev("two-sum", "python", 1, EARLY);
+    await mount(runtime);
+    expect(applied).toEqual([["python", "server"]]);
+    expect(api!.stashes.python).toBeUndefined();
+    expect(queue.hasPendingDraft("two-sum", "python")).toBe(false);
   });
 });

@@ -117,11 +117,12 @@ async function uploadAnonymous(deps: FlowDeps): Promise<void> {
     if (deps.isCancelled?.()) return;
     if (out.kind === "error") throw new TransportError(out.status);
     if (out.kind === "ok") {
-      queue.setBaseRev(sandboxId, lang, out.rev);
+      // The server took this exact draft, so it is the sync point.
+      queue.setBaseRev(sandboxId, lang, out.rev, draft.updatedAt ?? LEGACY_UPDATED_AT);
       continue;
     }
     const server = out.server;
-    queue.setBaseRev(sandboxId, lang, server.rev);
+    queue.setBaseRev(sandboxId, lang, server.rev, server.updatedAt);
     const resolution = resolveOnMount(draft, true, server, baseRev);
     if (resolution === "server-wins-stash-local") {
       // displaced: this is the learner's own draft, not another device's, and

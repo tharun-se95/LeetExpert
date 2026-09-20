@@ -463,3 +463,102 @@ describe("a draft response that arrives after its slot was discarded", () => {
     q.dispose();
   });
 });
+
+describe("two tabs over the one storage key (regression)", () => {
+  // Every tab of an account builds its own queue over `sync:v1:<user>`.
+  // Persisting a whole in-memory record erased whatever the other tab had
+  // queued since this one loaded; a reload then lost that work entirely.
+  it("a mark in one tab keeps the draft the other tab queued", () => {
+    const a = queue(fakeTransport());
+    const b = queue(fakeTransport());
+    a.enqueueDraft("two-sum", "python", { code: "tab A work", updatedAt: AT, deleted: false });
+    b.enqueueMark({ course: "dsa", kind: "visited", id: "arrays/two-sum" });
+
+    const stored = readSyncRecord(localStorage, "u1");
+    expect(stored.drafts["two-sum:python"]).toMatchObject({ code: "tab A work" });
+    expect(stored.marks).toEqual([{ course: "dsa", kind: "visited", id: "arrays/two-sum" }]);
+    a.dispose();
+    b.dispose();
+  });
+
+  it("a draft in one tab keeps the draft the other tab queued for a different slot", () => {
+    const a = queue(fakeTransport());
+    const b = queue(fakeTransport());
+    a.enqueueDraft("two-sum", "python", { code: "tab A work", updatedAt: AT, deleted: false });
+    b.enqueueDraft("move-zeroes", "javascript", { code: "tab B work", updatedAt: AT, deleted: false });
+
+    const stored = readSyncRecord(localStorage, "u1");
+    expect(stored.drafts["two-sum:python"]).toMatchObject({ code: "tab A work" });
+    expect(stored.drafts["move-zeroes:javascript"]).toMatchObject({ code: "tab B work" });
+    a.dispose();
+    b.dispose();
+  });
+
+  it("keeps a stash the other tab set, and still lets its owner clear its own", () => {
+    const a = queue(fakeTransport());
+    const b = queue(fakeTransport());
+    a.setStash("two-sum", "python", { code: "kept aside", updatedAt: AT, deleted: false });
+    b.setStash("move-zeroes", "python", { code: "b aside", updatedAt: AT, deleted: false });
+    expect(Object.keys(readSyncRecord(localStorage, "u1").stashes).sort()).toEqual(["move-zeroes:python", "two-sum:python"]);
+
+    // Dismissing one must delete it rather than have the merge revive it.
+    a.setStash("two-sum", "python", null);
+    const stored = readSyncRecord(localStorage, "u1");
+    expect(stored.stashes["two-sum:python"]).toBeUndefined();
+    expect(stored.stashes["move-zeroes:python"]).toMatchObject({ code: "b aside" });
+    a.dispose();
+    b.dispose();
+  });
+});
+
+describe("a 409 while a displaced stash is held (regression)", () => {
+  it("keeps the learner's own displaced copy instead of replacing it with the server's", async () => {
+    // "Use that version" puts the displaced editor copy in the stash, and that
+    // is the only copy of it anywhere. The server copy a 409 carries is still
+    // on the server, so overwriting the stash with it loses the one that is
+    // not — and the stash row promises the swap is reversible.
+    const t = fakeTransport({
+      putDraft: vi.fn(async (): Promise<PutOutcome> => ({ kind: "conflict", server: { code: "theirs", updatedAt: AT, rev: 7, deleted: false } })),
+    });
+    const q = queue(t);
+    q.setBaseRev("two-sum", "python", 1, AT);
+    q.setStash("two-sum", "python", { code: "my displaced copy", updatedAt: AT, deleted: false, displaced: true });
+    q.enqueueDraft("two-sum", "python", { code: "mine", updatedAt: AT, deleted: false });
+    await q.flush();
+
+    expect(q.stash("two-sum", "python")).toMatchObject({ code: "my displaced copy", displaced: true });
+    expect(q.baseRev("two-sum", "python")).toBe(7);
+    q.dispose();
+  });
+
+  it("still stashes the server copy when nothing is held aside", async () => {
+    const t = fakeTransport({
+      putDraft: vi.fn(async (): Promise<PutOutcome> => ({ kind: "conflict", server: { code: "theirs", updatedAt: AT, rev: 7, deleted: false } })),
+    });
+    const q = queue(t);
+    q.setBaseRev("two-sum", "python", 1, AT);
+    q.enqueueDraft("two-sum", "python", { code: "mine", updatedAt: AT, deleted: false });
+    await q.flush();
+
+    expect(q.stash("two-sum", "python")).toMatchObject({ code: "theirs" });
+    q.dispose();
+  });
+});
+
+describe("the sync point a baseRev names (regression)", () => {
+  it("is recorded when a draft is accepted, so a later edit reads as a change", async () => {
+    const t = fakeTransport({ putDraft: vi.fn(async (): Promise<PutOutcome> => ({ kind: "ok", rev: 4 })) });
+    const q = queue(t);
+    q.enqueueDraft("two-sum", "python", { code: "mine", updatedAt: AT, deleted: false });
+    await q.flush();
+    expect(q.syncedAt("two-sum", "python")).toBe(AT);
+    q.dispose();
+  });
+
+  it("survives a reload, so a fresh queue can still tell a stored edit from a synced one", () => {
+    const a = queue(fakeTransport());
+    a.setBaseRev("two-sum", "python", 3, AT);
+    a.dispose();
+    expect(queue(fakeTransport()).syncedAt("two-sum", "python")).toBe(AT);
+  });
+});

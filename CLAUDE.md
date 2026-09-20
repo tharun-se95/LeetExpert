@@ -412,7 +412,18 @@ The content is the product. Code exists to serve it.
   user id only from the session, read with the cookie cache disabled so
   revocation stops writes at once. Marks are an insert-only set; drafts carry
   a server `rev`, and on a conflict the client stashes the losing copy rather
-  than overwriting or discarding it. Sign-out clears every synced key,
+  than overwriting or discarding it. **A draft is judged against its slot's
+  `syncedAt`, never against the queue alone**: an edit typed before the runtime
+  registered is not queued, and the hook's note of it dies with the component,
+  so a draft stamped after the sync point is a local change wherever it came
+  from — reading the queue alone called it clean and let a moved server replace
+  it unstashed. For the same reason a `displaced` stash (what "Use that
+  version" set aside, the only copy of it left) is never overwritten by a
+  409's server copy, which is still on the server. Every tab of an account
+  shares one `sync:v1:<user>` key, so the queue **merges over what is stored
+  rather than writing its whole record**, speaking only for the slots and marks
+  it has touched; `reset()` is the one write-through, because a sign-out must
+  clear the other tabs' entries too. Sign-out clears every synced key,
   including the legacy `dsa-course-*` keys, or the migration revives them.
   Only visited, solved and problem-sandbox drafts sync; adding a kind means
   a merge rule and tests first. Merge rules live in the pure

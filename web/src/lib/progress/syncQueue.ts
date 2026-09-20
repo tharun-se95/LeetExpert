@@ -22,6 +22,10 @@ function parseSlot(slot: string): { sandboxId: string; lang: DraftLang } {
   return { sandboxId: slot.slice(0, cut), lang: slot.slice(cut + 1) === "python" ? "python" : "javascript" };
 }
 
+function markKey(m: Mark): string {
+  return `${m.course}\u0000${m.kind}\u0000${m.id}`;
+}
+
 export class SyncQueue {
   private record: SyncRecord;
   private timer: ReturnType<typeof setTimeout> | null = null;
@@ -32,21 +36,37 @@ export class SyncQueue {
   private disposed = false;
   private readonly listeners = new Set<() => void>();
   private readonly now: () => number;
+  /**
+   * What this instance speaks for. Every tab of one account shares the single
+   * `sync:v1:<user>` key, so a blind write of this record would erase work a
+   * second tab queued after this one loaded. On persist, only these slots and
+   * marks are taken from here; anything else in storage is another tab's and
+   * is carried through untouched.
+   */
+  private readonly ownedSlots = new Set<string>();
+  private readonly seenMarks = new Set<string>();
 
   constructor(private readonly deps: QueueDeps) {
     this.record = readSyncRecord(deps.storage, deps.userId);
     this.now = deps.now ?? Date.now;
+    // Loaded state is this instance's to speak for, including its deletions.
+    for (const m of this.record.marks) this.seenMarks.add(markKey(m));
+    for (const slot of Object.keys(this.record.drafts)) this.ownedSlots.add(slot);
+    for (const slot of Object.keys(this.record.stashes)) this.ownedSlots.add(slot);
   }
 
   enqueueMark(mark: Mark): void {
     const dup = this.record.marks.some((m) => m.course === mark.course && m.kind === mark.kind && m.id === mark.id);
     if (!dup) this.record.marks.push(mark);
+    this.seenMarks.add(markKey(mark));
     this.persist();
     this.schedule(MARKS_DEBOUNCE_MS);
   }
 
   enqueueDraft(sandboxId: string, lang: DraftLang, draft: PendingDraft): void {
-    this.record.drafts[draftSlot(sandboxId, lang)] = draft;
+    const slot = draftSlot(sandboxId, lang);
+    this.ownedSlots.add(slot);
+    this.record.drafts[slot] = draft;
     this.persist();
     this.schedule(DRAFTS_DEBOUNCE_MS);
   }
@@ -67,7 +87,9 @@ export class SyncQueue {
    */
   discardDraft(sandboxId: string, lang: DraftLang): void {
     if (!this.hasPendingDraft(sandboxId, lang)) return;
-    delete this.record.drafts[draftSlot(sandboxId, lang)];
+    const slot = draftSlot(sandboxId, lang);
+    this.ownedSlots.add(slot);
+    delete this.record.drafts[slot];
     this.persist();
   }
 
@@ -75,8 +97,21 @@ export class SyncQueue {
     return this.record.baseRevs[draftSlot(sandboxId, lang)] ?? 0;
   }
 
-  setBaseRev(sandboxId: string, lang: DraftLang, rev: number): void {
-    this.record.baseRevs[draftSlot(sandboxId, lang)] = rev;
+  /** The `updatedAt` of the content `baseRev` names, or null if none is known. */
+  syncedAt(sandboxId: string, lang: DraftLang): string | null {
+    return this.record.syncedAt[draftSlot(sandboxId, lang)] ?? null;
+  }
+
+  /**
+   * `syncedAt` is the timestamp of the content the server holds at `rev`.
+   * Omitting it leaves the slot with no known sync point, so a stored draft
+   * there counts as edited — callers that know the timestamp should pass it.
+   */
+  setBaseRev(sandboxId: string, lang: DraftLang, rev: number, syncedAt?: string): void {
+    const slot = draftSlot(sandboxId, lang);
+    this.ownedSlots.add(slot);
+    this.record.baseRevs[slot] = rev;
+    if (syncedAt !== undefined) this.record.syncedAt[slot] = syncedAt;
     this.persist();
   }
 
@@ -86,6 +121,7 @@ export class SyncQueue {
 
   setStash(sandboxId: string, lang: DraftLang, stash: Stash | null): void {
     const slot = draftSlot(sandboxId, lang);
+    this.ownedSlots.add(slot);
     if (stash) this.record.stashes[slot] = stash;
     else delete this.record.stashes[slot];
     this.persist();
@@ -167,7 +203,12 @@ export class SyncQueue {
       this.offlineAt = null;
       this.setStatus("synced");
     }
-    this.persist();
+    // A wipe of this user's queue, not an edit to it: it must clear what other
+    // tabs stored too, so it writes through instead of merging over them.
+    this.ownedSlots.clear();
+    this.seenMarks.clear();
+    writeSyncRecord(this.deps.storage, this.deps.userId, this.record);
+    for (const fn of this.listeners) fn();
   }
 
   dispose(): void {
@@ -179,8 +220,46 @@ export class SyncQueue {
 
   private persist(): void {
     if (this.disposed) return;
-    writeSyncRecord(this.deps.storage, this.deps.userId, this.record);
+    writeSyncRecord(this.deps.storage, this.deps.userId, this.mergeOver(readSyncRecord(this.deps.storage, this.deps.userId)));
     for (const fn of this.listeners) fn();
+  }
+
+  /**
+   * This instance's state laid over what is in storage now, so a second tab's
+   * queued work survives this write. The merged view is only written out — it
+   * is never adopted into `this.record`, because `run()` matches queued drafts
+   * by object identity and a foreign copy would never satisfy that check.
+   */
+  private mergeOver(stored: SyncRecord): SyncRecord {
+    const merged = emptySyncRecord();
+
+    // Marks are an insert-only set, so keeping both tabs' is always safe: the
+    // worst case is one idempotent re-POST, against losing a mark outright.
+    merged.marks = [...this.record.marks];
+    for (const m of stored.marks) {
+      if (this.seenMarks.has(markKey(m))) continue;
+      merged.marks.push(m);
+    }
+
+    for (const [slot, draft] of Object.entries(stored.drafts)) {
+      if (!this.ownedSlots.has(slot)) merged.drafts[slot] = draft;
+    }
+    Object.assign(merged.drafts, this.record.drafts);
+
+    for (const [slot, stash] of Object.entries(stored.stashes)) {
+      if (!this.ownedSlots.has(slot)) merged.stashes[slot] = stash;
+    }
+    Object.assign(merged.stashes, this.record.stashes);
+
+    // A rev only moves forward, and a sync point is never unset, so these two
+    // need no ownership test.
+    merged.baseRevs = { ...stored.baseRevs };
+    for (const [slot, rev] of Object.entries(this.record.baseRevs)) {
+      merged.baseRevs[slot] = Math.max(rev, merged.baseRevs[slot] ?? 0);
+    }
+    merged.syncedAt = { ...stored.syncedAt, ...this.record.syncedAt };
+
+    return merged;
   }
 
   private setStatus(next: SyncStatus): void {
@@ -299,6 +378,9 @@ export class SyncQueue {
         if (this.disposed) return;
         if (out.kind === "ok") {
           this.record.baseRevs[slot] = out.rev;
+          // The server now holds exactly what was sent, so that is this
+          // slot's sync point: a later draft stamped after it is a real edit.
+          this.record.syncedAt[slot] = pending.updatedAt;
           // Identity check: an edit that arrived during the request is newer
           // than what was sent and must stay queued.
           if (this.record.drafts[slot] === pending) delete this.record.drafts[slot];
@@ -313,12 +395,20 @@ export class SyncQueue {
           // already shows. Re-read the slot instead (a newer edit is re-sent).
           if (this.record.drafts[slot] !== pending) continue;
           this.record.baseRevs[slot] = out.server.rev;
+          this.record.syncedAt[slot] = out.server.updatedAt;
           if (resolveOn409(pending, out.server) === "adopt-rev") {
             if (this.record.drafts[slot] === pending) delete this.record.drafts[slot];
             this.persist();
             break;
           }
-          this.record.stashes[slot] = { code: out.server.code, updatedAt: out.server.updatedAt, deleted: out.server.deleted };
+          // A `displaced` stash is this device's own version, set aside by
+          // "Use that version", and the only copy of it left anywhere. The
+          // server copy this 409 carries is still on the server, so it must
+          // not take its place — that would break the row's promise that the
+          // swap is reversible.
+          if (!this.record.stashes[slot]?.displaced) {
+            this.record.stashes[slot] = { code: out.server.code, updatedAt: out.server.updatedAt, deleted: out.server.deleted };
+          }
           this.persist();
           continue;
         }
