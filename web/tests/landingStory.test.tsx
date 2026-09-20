@@ -257,11 +257,11 @@ describe("snapping", () => {
   });
 
   it("turns one wheel gesture into one stop, and never skips part of a tall section", () => {
-    const base = { locked: false, sectionTop: 0, sectionBottom: 1000, viewport: 1000 };
+    const base = { sectionTop: 0, sectionBottom: 1000, viewport: 1000 };
     expect(pagingIntent({ ...base, deltaY: 120 })).toBe("down");
     expect(pagingIntent({ ...base, deltaY: -3 })).toBe("up");
-    // Momentum from the gesture that already moved a stop is swallowed.
-    expect(pagingIntent({ ...base, deltaY: 40, locked: true })).toBe("hold");
+    // Swallowing a gesture's momentum tail is wheelGesture's job now, and is
+    // covered in landingPaging.test.ts: pagingIntent only names the direction.
     // A section taller than the viewport scrolls natively until its edge.
     expect(pagingIntent({ ...base, sectionBottom: 1400, deltaY: 100 })).toBe("native");
     expect(pagingIntent({ ...base, sectionTop: -400, sectionBottom: 1000, deltaY: 100 })).toBe("down");
