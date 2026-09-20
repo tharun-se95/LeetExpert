@@ -8,7 +8,9 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useSyncBridge } from "@/components/providers/SyncBridge";
 import { countLessonsProgress } from "@/lib/course/nav";
+import { SYNCED_COURSE, type MarkKind } from "@/lib/progress/types";
 import {
   migrateLegacyProgress,
   readSet,
@@ -47,6 +49,7 @@ export function ProgressProvider({
   const [solved, setSolved] = useState<Set<string>>(new Set());
   const vKey = visitedKey(courseSlug);
   const sKey = solvedKey(courseSlug);
+  const { runtime, marksEpoch } = useSyncBridge();
 
   // Reading localStorage during render would desync server and client
   // HTML, so both restores happen in an effect, once, on mount.
@@ -55,10 +58,23 @@ export function ProgressProvider({
     setVisited(readSet(vKey));
     setSolved(readSet(sKey));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courseSlug]);
+  }, [courseSlug, marksEpoch]);
+
+  // Checked against storage, not React state: VisitTracker can fire before
+  // the restore effect (see markVisited), when state is still empty and every
+  // visit would look new.
+  const report = useCallback(
+    (key: string, kind: MarkKind, id: string) => {
+      if (!runtime || courseSlug !== SYNCED_COURSE) return;
+      if (readSet(key).has(id)) return;
+      runtime.queue.enqueueMark({ course: courseSlug, kind, id });
+    },
+    [runtime, courseSlug],
+  );
 
   const markVisited = useCallback(
     (id: string) => {
+      report(vKey, "visited", id);
       setVisited((prev) => {
         if (prev.has(id)) return prev;
         // Merge against what's actually on disk, not just React's prior
@@ -74,11 +90,12 @@ export function ProgressProvider({
         return next;
       });
     },
-    [vKey],
+    [vKey, report],
   );
 
   const markSolved = useCallback(
     (id: string) => {
+      report(sKey, "solved", id);
       setSolved((prev) => {
         if (prev.has(id)) return prev;
         const next = new Set([...readSet(sKey), ...prev, id]);
@@ -86,7 +103,7 @@ export function ProgressProvider({
         return next;
       });
     },
-    [sKey],
+    [sKey, report],
   );
 
   const progressIdSet = useMemo(

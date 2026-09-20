@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { canonicalFor } from "@/lib/seo/site";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { courseLd } from "@/lib/seo/jsonLd";
+import { SyncHint } from "@/components/auth/SyncHint";
 
 /**
  * This page had no metadata export at all, so it inherited the layout's
@@ -78,6 +79,7 @@ export default function CourseOverviewPage() {
           {availableCount} of {MODULES.length} modules live — the rest are
           being written in curriculum order.
         </p>
+        <SyncHint />
 
         {STAGES.map((stage) => (
           <section key={stage.number} className="mt-14">

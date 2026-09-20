@@ -232,7 +232,7 @@ describe("lamp boot script", () => {
     const layout = readFileSync(join(SRC, "app", "layout.tsx"), "utf8");
     const script = layout.indexOf("__html: LAMP_BOOT_SCRIPT");
     expect(script).toBeGreaterThan(layout.indexOf("<body"));
-    expect(script).toBeLessThan(layout.indexOf("<AppShell>"));
+    expect(script).toBeLessThan(layout.indexOf("<AppShell"));
   });
 });
 

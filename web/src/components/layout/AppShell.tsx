@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { AccountRuntime } from "@/components/auth/AccountRuntime";
 import { Header } from "@/components/layout/Header";
 import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
 import { LandingHeader } from "@/components/landing/LandingHeader";
@@ -11,6 +12,7 @@ import { PageEnter } from "@/components/layout/PageEnter";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { SidebarProvider } from "@/components/layout/SidebarContext";
 import { ProgressProvider } from "@/components/providers/ProgressProvider";
+import { SyncBridgeProvider } from "@/components/providers/SyncBridge";
 import { ScrollbarAutoHide } from "@/components/providers/ScrollbarAutoHide";
 import { VisitTracker } from "@/components/providers/VisitTracker";
 import {
@@ -115,7 +117,7 @@ const HOVER_CLOSE_MS = 60_000;
 /** Hover-driven open only where a pointer can actually hover. */
 const HOVER_MQ = "(hover: hover) and (pointer: fine)";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children, authEnabled = false }: { children: React.ReactNode; authEnabled?: boolean }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -294,6 +296,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [landing]);
 
   return (
+    <SyncBridgeProvider authEnabled={authEnabled}>
     <ProgressProvider
       courseSlug={courseSlug}
       totalCount={totalCount}
@@ -302,6 +305,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     >
       <>
         <VisitTracker />
+        <AccountRuntime />
         <ScrollbarAutoHide />
         <SidebarProvider open={sidebarOpen} toggle={toggleSidebar}>
           <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
@@ -417,5 +421,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarProvider>
       </>
     </ProgressProvider>
+    </SyncBridgeProvider>
   );
 }

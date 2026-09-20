@@ -28,9 +28,10 @@ export function CodeEditor({
   height,
   minHeight = "10rem",
   onCursorChange,
+  readOnly = false,
 }: {
   value: string;
-  onChange: (next: string) => void;
+  onChange?: (next: string) => void;
   lang: SandboxLang;
   ariaLabel: string;
   /** Fill a flex parent (IDE layout). When set, `minHeight` is ignored. */
@@ -43,6 +44,13 @@ export function CodeEditor({
    * whole extension array.
    */
   onCursorChange?: (pos: { line: number; col: number }) => void;
+  /**
+   * Compare view: shows code in the editor's own colours, not editable. Only
+   * the document is locked (`readOnly`), not `editable`: the content stays
+   * focusable, so a keyboard user can still move through and scroll code that
+   * runs past the pane, and Tab is not captured for indentation.
+   */
+  readOnly?: boolean;
 }) {
   const hintId = useId();
 
@@ -85,6 +93,7 @@ export function CodeEditor({
       <CodeMirror
         value={value}
         onChange={onChange}
+        readOnly={readOnly}
         extensions={extensions}
         {...(height ? { height } : { minHeight })}
         // Without this, @uiw injects its own default LIGHT theme — an opaque
@@ -108,16 +117,24 @@ export function CodeEditor({
           indentOnInput: true,
         }}
       />
-      <p id={hintId} className="sr-only">
-        Tab indents. To move keyboard focus out of this editor, press Escape,
-        then Tab.
-      </p>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-1.5 right-2 rounded-[length:var(--radius-xs)] bg-elevated shadow-elevation px-1.5 py-0.5 text-[0.62rem] text-muted opacity-0 transition-opacity group-focus-within:opacity-100 motion-reduce:transition-none"
-      >
-        Esc then Tab to leave
-      </div>
+      {readOnly ? (
+        <p id={hintId} className="sr-only">
+          Read only. Tab moves focus on.
+        </p>
+      ) : (
+        <>
+          <p id={hintId} className="sr-only">
+            Tab indents. To move keyboard focus out of this editor, press Escape,
+            then Tab.
+          </p>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute bottom-1.5 right-2 rounded-[length:var(--radius-xs)] bg-elevated shadow-elevation px-1.5 py-0.5 text-[0.62rem] text-muted opacity-0 transition-opacity group-focus-within:opacity-100 motion-reduce:transition-none"
+          >
+            Esc then Tab to leave
+          </div>
+        </>
+      )}
     </div>
   );
 }

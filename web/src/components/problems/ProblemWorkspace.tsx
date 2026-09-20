@@ -166,6 +166,7 @@ export function ProblemWorkspace({
       source={lesson.sandbox.sandboxSource}
       onSolved={() => markSolved(id)}
       variant="ide"
+      syncDraft
       moduleSlug={lesson.moduleSlug}
       extractedComplexity={extractedComplexity}
     />

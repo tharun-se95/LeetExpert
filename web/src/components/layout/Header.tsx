@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { List, MagnifyingGlass } from "@phosphor-icons/react";
+import { AccountControl } from "@/components/auth/AccountControl";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Lamp } from "@/components/brand/Lamp";
 import {
@@ -185,6 +186,7 @@ export function Header({
         </div>
 
         <ThemeToggle className="h-11 w-11 rounded-full md:h-10 md:w-10" />
+        <AccountControl />
       </div>
     </header>
   );

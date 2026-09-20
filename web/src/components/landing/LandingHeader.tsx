@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import { AccountControl } from "@/components/auth/AccountControl";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Lamp } from "@/components/brand/Lamp";
 import { LOGO_LAMP_SIZE, NAV_LINK, ROUND_CONTROL, WORDMARK, TRANSLUCENT_PAPER } from "@/components/layout/headerChrome";
@@ -95,6 +96,7 @@ export function LandingHeader({
             <kbd className="hidden font-mono text-[11px] md:inline">⌘K</kbd>
           </button>
           <ThemeToggle className="h-11 w-11 rounded-full md:h-10 md:w-10" />
+          <AccountControl />
         </div>
       </div>
     </header>
