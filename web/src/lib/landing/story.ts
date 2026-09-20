@@ -151,7 +151,7 @@ export const FAQ: readonly { q: string; a: string }[] = [
 ];
 
 // --- typing -------------------------------------------------------------
-const clamp01 = (v: number) => (Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0);
+export const clamp01 = (v: number) => (Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0);
 
 /**
  * Characters of `text` visible at `progress`, in whole words: the cut always
