@@ -242,7 +242,19 @@ The content is the product. Code exists to serve it.
   snaps section to section (`snap-y` on `<main>`, only on `/`, mandatory from
   `lg`, where `useSectionPaging` turns one wheel gesture into one stop —
   measured in Chrome, mandatory snapping pulled a 300px wheel scroll back to
-  the stop it left): scroll-scrubbed typing was tried first and replaced the same day
+  the stop it left. The travel is a tween the hook runs itself, not
+  `behavior: "smooth"`, whose duration is fixed and unreadable: the pure
+  `lib/landing/wheelGesture.ts` sets it from the gesture's accumulated px/ms
+  and shortens it as the gesture continues, never re-targeting it. Snapping is
+  suspended (`scroll-snap-type: none`) for the tween's lifetime and restored
+  on landing — measured at 1440x900, with it left on Chrome reverted every one
+  of 20 frames back to the snap point, so the page moved not at all; the
+  restore also corrects the 6px and 9px gaps where stops are not a whole
+  viewport apart. A gesture is held while its momentum tail decays and
+  released by a rising delta or 120ms of silence, never by a fixed timer:
+  the old one was extended by each swallowed event, so the tail it existed to
+  outlast kept feeding it and the page froze (owner, 2026-09-20 "it feels very
+  sluggish")): scroll-scrubbed typing was tried first and replaced the same day
   because re-rendering text and SVG on every scroll frame felt unsmooth. When
   a section becomes active (`useActiveSection`: an IntersectionObserver on a
   1% band across `<main>`'s middle — not a scroll listener, which never fired
