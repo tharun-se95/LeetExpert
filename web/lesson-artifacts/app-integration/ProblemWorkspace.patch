@@ -1,0 +1,222 @@
+diff --git a/web/src/components/problems/ProblemWorkspace.tsx b/web/src/components/problems/ProblemWorkspace.tsx
+index 4e5e345..e8a0bd1 100644
+--- a/web/src/components/problems/ProblemWorkspace.tsx
++++ b/web/src/components/problems/ProblemWorkspace.tsx
+@@ -19,6 +19,7 @@ import {
+   Code,
+   CaretLeft,
+   FileText,
++  Lightbulb,
+   PencilSimple,
+   Question,
+   Sparkle,
+@@ -38,13 +39,15 @@ import { extractComplexityFromMarkdown } from "@/lib/insight/extractComplexity";
+ import { CoachProvider, useCoach } from "@/components/coach/CoachProvider";
+ import { CoachPanel } from "@/components/coach/CoachPanel";
+ import { IdeWithCoach } from "@/components/coach/IdeWithCoach";
++import { LessonArtifactPanel } from "@/components/problems/LessonArtifactFrame";
++import { getLessonArtifact, type LessonArtifact } from "@/lib/course/lessonArtifacts";
+ 
+ interface NeighborLink {
+   href: string;
+   title: string;
+ }
+ 
+-type ContentTab = "description" | "explanation" | "solution" | "quiz";
++type ContentTab = "interactive" | "description" | "explanation" | "solution" | "quiz";
+ type WorkspaceTab = ContentTab | "code" | "coach";
+ 
+ /**
+@@ -54,6 +57,7 @@ type WorkspaceTab = ContentTab | "code" | "coach";
+  * has to hold up, not whether some other panel elsewhere also uses a pencil.
+  */
+ const TAB_ICON: Record<WorkspaceTab, Icon> = {
++  interactive: Lightbulb,
+   description: FileText,
+   explanation: Brain,
+   solution: Code,
+@@ -62,6 +66,12 @@ const TAB_ICON: Record<WorkspaceTab, Icon> = {
+   coach: Sparkle,
+ };
+ 
++/** Only lessons with an artifact carry it; it leads, and is the tab they open on. */
++const INTERACTIVE_TAB: { id: ContentTab; label: string } = {
++  id: "interactive",
++  label: "Lesson",
++};
++
+ const CONTENT_TABS: { id: ContentTab; label: string }[] = [
+   { id: "description", label: "Description" },
+   { id: "explanation", label: "Explanation" },
+@@ -111,7 +121,10 @@ export function ProblemWorkspace({
+   const { solved, markSolved } = useProgress();
+   const id = lessonId(lesson.moduleSlug, lesson.lessonSlug);
+   const isSolved = solved.has(id);
+-  const [tab, setTab] = useState<WorkspaceTab>("description");
++  const artifact = getLessonArtifact(lesson.moduleSlug, lesson.lessonSlug);
++  const [tab, setTab] = useState<WorkspaceTab>(
++    artifact ? "interactive" : "description",
++  );
+   const [wide, setWide] = useState(false);
+   const tabsId = useId();
+ 
+@@ -122,13 +135,19 @@ export function ProblemWorkspace({
+       setWide(nextWide);
+       // Desktop has no Code tab — fall back so the left pane stays valid.
+       if (nextWide) {
+-        setTab((t) => (t === "code" || t === "coach" ? "description" : t));
++        setTab((t) =>
++          t === "code" || t === "coach"
++            ? artifact
++              ? "interactive"
++              : "description"
++            : t,
++        );
+       }
+     };
+     sync();
+     mq.addEventListener("change", sync);
+     return () => mq.removeEventListener("change", sync);
+-  }, []);
++  }, [artifact]);
+ 
+   const { explanation, solution, quiz } = useMemo(
+     () => splitProblemTabs(lesson.sandbox.afterSandbox),
+@@ -153,7 +172,9 @@ export function ProblemWorkspace({
+     tab === "code" || tab === "coach" ? "description" : tab;
+ 
+   const tabSource =
+-    contentTab === "description"
++    contentTab === "interactive"
++      ? ""
++      : contentTab === "description"
+       ? lesson.sandbox.beforeSandbox
+       : contentTab === "explanation"
+         ? explanation
+@@ -284,6 +305,7 @@ export function ProblemWorkspace({
+                 <LeftPane
+                   tab={contentTab}
+                   onTabChange={setTab}
++                  artifact={artifact}
+                   source={tabSource}
+                   highlightedBlocks={lesson.highlightedBlocks}
+                   highlightedTabs={lesson.highlightedTabs}
+@@ -297,6 +319,7 @@ export function ProblemWorkspace({
+           <MobileWorkspace
+             tab={tab}
+             onTabChange={setTab}
++            artifact={artifact}
+             source={tabSource}
+             highlightedBlocks={lesson.highlightedBlocks}
+             highlightedTabs={lesson.highlightedTabs}
+@@ -312,6 +335,7 @@ export function ProblemWorkspace({
+ function MobileWorkspace({
+   tab,
+   onTabChange,
++  artifact,
+   source,
+   highlightedBlocks,
+   highlightedTabs,
+@@ -320,6 +344,7 @@ function MobileWorkspace({
+ }: {
+   tab: WorkspaceTab;
+   onTabChange: (tab: WorkspaceTab) => void;
++  artifact: LessonArtifact | null;
+   source: string;
+   highlightedBlocks: Record<string, string | null>;
+   highlightedTabs: Record<string, TabBlock[]>;
+@@ -339,7 +364,7 @@ function MobileWorkspace({
+   return (
+     <div className="flex min-h-0 flex-1 flex-col bg-elevated grain-paper [--grain-paper:var(--elevated)]">
+       <TabList
+-        tabs={MOBILE_TABS}
++        tabs={artifact ? [INTERACTIVE_TAB, ...MOBILE_TABS] : MOBILE_TABS}
+         active={tab}
+         onChange={onTabChange}
+         tabsId={tabsId}
+@@ -349,7 +374,13 @@ function MobileWorkspace({
+         className="h-11"
+         badgeId={unread ? "coach" : null}
+       />
+-      {showArticle ? (
++      {showArticle && tab === "interactive" && artifact ? (
++        <LessonArtifactPanel
++          artifact={artifact}
++          id={panelId}
++          labelledBy={`${tabsId}-tab-${tab}`}
++        />
++      ) : showArticle ? (
+         <div
+           role="tabpanel"
+           id={panelId}
+@@ -396,6 +427,7 @@ function MobileWorkspace({
+ function LeftPane({
+   tab,
+   onTabChange,
++  artifact,
+   source,
+   highlightedBlocks,
+   highlightedTabs,
+@@ -403,6 +435,7 @@ function LeftPane({
+ }: {
+   tab: ContentTab;
+   onTabChange: (tab: WorkspaceTab) => void;
++  artifact: LessonArtifact | null;
+   source: string;
+   highlightedBlocks: Record<string, string | null>;
+   highlightedTabs: Record<string, TabBlock[]>;
+@@ -413,7 +446,7 @@ function LeftPane({
+   return (
+     <div className="flex h-full min-h-0 flex-col bg-elevated grain-paper [--grain-paper:var(--elevated)]">
+       <TabList
+-        tabs={CONTENT_TABS}
++        tabs={artifact ? [INTERACTIVE_TAB, ...CONTENT_TABS] : CONTENT_TABS}
+         active={tab}
+         onChange={onTabChange}
+         tabsId={tabsId}
+@@ -421,22 +454,30 @@ function LeftPane({
+         panelId={panelId}
+         className="h-9"
+       />
+-      <div
+-        role="tabpanel"
+-        id={panelId}
+-        aria-labelledby={`${tabsId}-tab-${tab}`}
+-        // The pane runs to the viewport's bottom-left corner, where the
+-        // lessons-drawer opener floats from lg: the bottom padding lets the
+-        // last lines scroll clear of it (bottom-6 + h-11, plus a 1rem gap).
+-        className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 lg:pb-21"
+-      >
+-        <ContentBody
+-          tab={tab}
+-          source={source}
+-          highlightedBlocks={highlightedBlocks}
+-          highlightedTabs={highlightedTabs}
++      {tab === "interactive" && artifact ? (
++        <LessonArtifactPanel
++          artifact={artifact}
++          id={panelId}
++          labelledBy={`${tabsId}-tab-${tab}`}
+         />
+-      </div>
++      ) : (
++        <div
++          role="tabpanel"
++          id={panelId}
++          aria-labelledby={`${tabsId}-tab-${tab}`}
++          // The pane runs to the viewport's bottom-left corner, where the
++          // lessons-drawer opener floats from lg: the bottom padding lets the
++          // last lines scroll clear of it (bottom-6 + h-11, plus a 1rem gap).
++          className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 lg:pb-21"
++        >
++          <ContentBody
++            tab={tab}
++            source={source}
++            highlightedBlocks={highlightedBlocks}
++            highlightedTabs={highlightedTabs}
++          />
++        </div>
++      )}
+     </div>
+   );
+ }

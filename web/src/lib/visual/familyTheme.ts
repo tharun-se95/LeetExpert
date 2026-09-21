@@ -59,7 +59,7 @@ export interface FamilyTheme {
 // --pop/--accent paint chrome across the sidebar (elevated), editor (code),
 // tests rail (surface) and the page itself (background), not just the page.
 const LIGHT_SURFACES = ["#F1F4F9", "#ffffff", "#e4e9f2", "#d8dde8"];
-const DARK_SURFACES = ["#121214", "#26262a", "#19191d", "#0c0c0d"];
+const DARK_SURFACES = ["#060607", "#26262a", "#19191d", "#000000"];
 const DARK_INK = "#111827";
 
 function hexRgb(hex: string): [number, number, number] {

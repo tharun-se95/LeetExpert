@@ -30,8 +30,7 @@ export const ROUND_CONTROL =
  * landing header once scrolled). 90%, not the 80% the landing header started
  * at: over a dark code block passing beneath, muted header text measured
  * 3.85:1 at 80% and 4.76:1 at 90% in light (6.20:1 dark) —
- * grainContrast.test.ts reads the opacity from this string. A translucent layer
- * cannot carry .grain-paper (it is opaque), so the page's own grain is what
- * shows through. Spec: docs/superpowers/specs/2026-09-15-translucent-chrome-and-pane-grain-design.md
+ * paperContrast.test.ts reads the opacity from this string.
+ * Spec: docs/superpowers/specs/2026-09-15-translucent-chrome-and-pane-grain-design.md
  */
 export const TRANSLUCENT_PAPER = "bg-background/90 backdrop-blur-md";

@@ -292,11 +292,10 @@ describe("CourseNavPanel header row", () => {
       .match(/<div class="([^"]*)"/)![1]
       .split(/\s+/);
 
-  it("keeps the pinned row grainy paper at rest, like the rail behind it", () => {
-    // Translucent at rest, flat 90% paper read as a lighter strip against the
-    // rail's grain (owner, 2026-09-15).
+  it("keeps the pinned row flat paper at rest, like the rail behind it", () => {
+    // Translucent at rest, 90% paper read as a lighter strip against the rail
+    // (owner, 2026-09-15).
     const cls = rowClasses();
-    expect(cls).toContain("grain-paper");
     expect(cls).toContain("bg-background");
     expect(cls.join(" ")).not.toMatch(/\bbackdrop-|\bbg-background\/|\bshadow-|\bborder-b\b/);
   });
@@ -304,7 +303,6 @@ describe("CourseNavPanel header row", () => {
   it("turns the pinned row translucent once rows scroll under it", () => {
     const cls = rowClasses(true);
     for (const c of TRANSLUCENT_PAPER.split(" ")) expect(cls, c).toContain(c);
-    expect(cls).not.toContain("grain-paper");
     // No shadow (owner, 2026-09-15) and no border-b: the module heading below
     // is the first ruled div (see level 2).
     expect(cls.join(" ")).not.toMatch(/\bshadow-|\bborder-b\b/);
@@ -312,7 +310,7 @@ describe("CourseNavPanel header row", () => {
 
   it("learns 'scrolled' from a sentinel observed against the nav, not a scroll listener", () => {
     // A drawer restored mid-scroll fires no scroll event, so a listener would
-    // leave the row grainy over rows it is covering.
+    // leave the row flat over rows it is covering.
     const tree = readFileSync(join(__dirname, "..", "src", "components", "layout", "CourseNavTree.tsx"), "utf8");
     expect(tree).toMatch(/new IntersectionObserver\(/);
     expect(tree).toMatch(/root: scrollRef\.current/);

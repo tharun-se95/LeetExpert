@@ -46,7 +46,7 @@ export function ConceptMapNode({ data }: NodeProps & { data: ConceptMapNodeData 
             className={
               isRoot
                 ? "shrink-0 rounded-full bg-black/15 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums"
-                : "shrink-0 rounded-full bg-accent/12 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-accent"
+                : "shrink-0 rounded-full bg-accent/12 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-mark"
             }
           >
             {childCount}
@@ -59,7 +59,7 @@ export function ConceptMapNode({ data }: NodeProps & { data: ConceptMapNodeData 
           onClick={onToggle}
           aria-expanded={isExpanded}
           aria-label={`${isExpanded ? "Collapse" : "Expand"} ${label}`}
-          className="nodrag nopan pointer-events-auto flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-accent/40 bg-elevated text-accent transition hover:scale-110 hover:bg-accent/10 motion-reduce:transition-none"
+          className="nodrag nopan pointer-events-auto flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-accent/40 bg-elevated text-mark transition hover:scale-110 hover:bg-accent/10 motion-reduce:transition-none"
           style={{ height: circleSize, width: circleSize }}
         >
           <CaretRight

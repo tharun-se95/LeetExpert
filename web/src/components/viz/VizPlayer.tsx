@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { MotionConfig, useReducedMotion } from "motion/react";
 import { ArrowsOut as Maximize2, ArrowsIn as Minimize2, Pause, Play, ArrowCounterClockwise as RotateCcw, SkipBack as StepBack, SkipForward as StepForward } from "@phosphor-icons/react";
@@ -57,10 +58,11 @@ export function VizPlayer<S>({
 }) {
   const last = Math.max(0, steps.length - 1);
   const reduced = useReducedMotion() ?? false;
-  const { embedded } = useVizChrome();
+  const { embedded, code: codeShown } = useVizChrome();
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const showCode = codeShown || expanded;
   const rootRef = useRef<HTMLDivElement>(null);
   const liveId = useId();
 
@@ -128,7 +130,8 @@ export function VizPlayer<S>({
     };
     el.addEventListener("keydown", onKey);
     return () => el.removeEventListener("keydown", onKey);
-  }, [togglePlay, forward, back]);
+    // `expanded`: fullscreen renders into <body>, a new element to listen on.
+  }, [togglePlay, forward, back, expanded]);
 
   // Fullscreen mode: Escape closes, page scroll locks behind the overlay.
   useEffect(() => {
@@ -149,8 +152,7 @@ export function VizPlayer<S>({
   if (steps.length === 0) return null;
   const step = steps[index];
 
-  return (
-    <MotionConfig reducedMotion="user">
+  const player = (
       <div
         ref={rootRef}
         tabIndex={0}
@@ -180,7 +182,7 @@ export function VizPlayer<S>({
               // the stage is not crushed beside a 34rem code pane.
               expanded &&
                 "md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]",
-              embedded && "md:grid-cols-2",
+              embedded && showCode && "md:grid-cols-2",
             )}
           >
             <div
@@ -194,20 +196,22 @@ export function VizPlayer<S>({
             >
               {children(step.state, { reduced, index })}
             </div>
-            <div
-              className={cn(
-                "min-w-0",
-                expanded || embedded ? "md:order-2" : "order-2",
-              )}
-            >
-              <CodePanel
-                code={code}
-                line={step.line}
-                reduced={reduced}
-                large={expanded}
-                flush={embedded}
-              />
-            </div>
+            {showCode ? (
+              <div
+                className={cn(
+                  "min-w-0",
+                  expanded || embedded ? "md:order-2" : "order-2",
+                )}
+              >
+                <CodePanel
+                  code={code}
+                  line={step.line}
+                  reduced={reduced}
+                  large={expanded}
+                  flush={embedded}
+                />
+              </div>
+            ) : null}
           </div>
 
           <p
@@ -271,6 +275,15 @@ export function VizPlayer<S>({
           </div>
         </div>
       </div>
+  );
+
+  return (
+    <MotionConfig reducedMotion="user">
+      {/* Fullscreen goes to <body>: a `fixed inset-0` overlay is only the
+          viewport's size when no ancestor has a transform or filter, and the
+          landing carousel's ring slots have both (found in the browser, where
+          it opened 848×570 inside the slot). */}
+      {expanded ? createPortal(player, document.body) : player}
     </MotionConfig>
   );
 }

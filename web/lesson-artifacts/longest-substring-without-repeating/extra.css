@@ -1,0 +1,10 @@
+.hs-lb{fill:var(--card);stroke:var(--hair2);stroke-width:1.5}
+.hs-tile{fill:var(--card);stroke:var(--hair2);stroke-width:1.5}
+.hs-tile.in{fill:var(--b-1);stroke:var(--fam)}
+.hs-tile.out{fill:var(--well);opacity:.55}
+.hs-tile.cur{fill:var(--o-ink);stroke:var(--o-ink)}
+.hs-tile.bad{fill:var(--r-ink);stroke:var(--r-ink)}
+.hs-ch{font:500 20px 'JetBrains Mono',monospace;fill:var(--fg)}
+.hs-tile.cur+.hs-ch,.hs-tile.bad+.hs-ch{fill:var(--bg)}
+.hs-win{fill:none;stroke:var(--fam);stroke-width:3;stroke-dasharray:0}
+.hs-arm{stroke:var(--mut);stroke-width:2;stroke-dasharray:4 4;opacity:.7}

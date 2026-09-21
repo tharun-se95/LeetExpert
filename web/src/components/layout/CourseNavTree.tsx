@@ -63,7 +63,7 @@ export function CourseNavTree({
   const wantsFocus = useRef(false);
 
   /**
-   * The drawer's pinned row stays grainy paper until rows scroll under it —
+   * The drawer's pinned row stays flat paper until rows scroll under it —
    * translucent at rest, it read as a lighter strip against the rail. A sentinel
    * at the top of the nav, observed against the nav, rather than a scroll
    * listener: a drawer restored mid-scroll fires no scroll event. Only the

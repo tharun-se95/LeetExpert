@@ -4,10 +4,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   BookOpen,
-  CheckCircle,
+  // CheckCircle, — stat strip, commented out below
   Target,
-  Timer,
-  Lock,
+  // Timer, — stat strip
+  // Lock, — stat strip
 } from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ModuleGlyph } from "@/app/courses/dsa/_components/ModuleGlyph";
@@ -19,7 +19,8 @@ import {
   moduleFamily,
 } from "@/lib/course/manifest";
 import { CHEATSHEETS } from "@/lib/course/cheatsheets/registry";
-import { getModuleArt } from "@/lib/course/media";
+import { getModuleArt, getModuleVideo } from "@/lib/course/media";
+import { VideoPlayer } from "@/components/course/VideoPlayer";
 import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
 import { allModuleSlugs } from "@/lib/course/load";
 import { lessonHref, moduleHref } from "@/lib/course/nav";
@@ -64,6 +65,27 @@ export default async function ModulePage({ params }: PageProps) {
   // Same image the curriculum card uses — it already carries the module
   // title as type, which is why the h1 below goes sr-only when it exists.
   const art = getModuleArt(mod.slug);
+  const introVideo = getModuleVideo(mod.slug);
+  const artImages = art ? (
+    <>
+      <Image
+        src={art.light}
+        alt=""
+        fill
+        priority
+        sizes="(min-width: 1152px) 1088px, 100vw"
+        className="module-art-light object-contain"
+      />
+      <Image
+        src={art.dark}
+        alt=""
+        fill
+        priority
+        sizes="(min-width: 1152px) 1088px, 100vw"
+        className="module-art-dark object-contain"
+      />
+    </>
+  ) : null;
 
   return (
     <div className="relative overflow-hidden">
@@ -83,28 +105,27 @@ export default async function ModulePage({ params }: PageProps) {
         />
 
         {/* Hero */}
-        {art ? (
-          // The box matches the art's own 8:5, and object-contain guarantees
+        {art || introVideo ? (
+          // The box matches the art's own 43:24, and object-contain guarantees
           // the whole frame is shown: a 16:6 box with object-cover threw away
           // 40% of the height (measured), slicing the bottom off trees and
           // chains. Nothing about the art is cropped here.
           <div className="relative mt-6 aspect-[43/24] w-full overflow-hidden rounded-[length:var(--radius-lg)] border border-border shadow-elevation">
-            <Image
-              src={art.light}
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1152px) 1088px, 100vw"
-              className="module-art-light object-contain"
-            />
-            <Image
-              src={art.dark}
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1152px) 1088px, 100vw"
-              className="module-art-dark object-contain"
-            />
+            {introVideo ? (
+              // A module with an intro plays it in this same box, with the art
+              // as its poster until playback starts. The player preloads only
+              // metadata (the MP4 index) — the video itself is fetched on play.
+              <VideoPlayer
+                src={introVideo}
+                fill
+                poster={artImages}
+                ariaLabel={`Introduction to ${mod.title}`}
+                playLabel={`Play the ${mod.title} intro video`}
+                posterCta="Watch the module intro"
+              />
+            ) : (
+              artImages
+            )}
           </div>
         ) : null}
         <div className="mt-6 flex items-start gap-5">
@@ -126,6 +147,7 @@ export default async function ModulePage({ params }: PageProps) {
                   </span>
                 </span>
               ) : null}
+
             </div>
             {/* The banner already shows the module name as type. Keeping a
                 real h1 in the DOM (visually hidden when the art is present)
@@ -145,7 +167,12 @@ export default async function ModulePage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Stat strip */}
+
+        {/*
+          Stat strip (Concept lessons · Problems · Practice · Status) — hidden
+          on request, 2026-09-14. To restore it, uncomment this block together
+          with the CheckCircle, Timer and Lock icon imports at the top.
+
         <dl className="mt-8 grid grid-cols-2 gap-y-6 rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation px-5 py-4 sm:grid-cols-4 sm:divide-x sm:divide-border">
           <div className="sm:pr-4">
             <dt className="text-xs uppercase tracking-wide text-muted">
@@ -193,7 +220,7 @@ export default async function ModulePage({ params }: PageProps) {
             </dd>
           </div>
         </dl>
-
+        */}
 
         {mod.status === "coming-soon" ? (
           <div className="mt-8 rounded-[length:var(--radius-lg)] border border-dashed border-border bg-surface/40 p-6">

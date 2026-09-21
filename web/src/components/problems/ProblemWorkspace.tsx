@@ -178,7 +178,7 @@ export function ProblemWorkspace({
       <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
         {/*
           No paper of its own, like the root above: both are transparent over
-          the app's grain desk, so the app header, this band and the drawer
+          the app's desk, so the app header, this band and the drawer
           read as one sheet. A solid band here read as a second surface under
           the header. The IDE below stays solid.
         */}
@@ -337,7 +337,7 @@ function MobileWorkspace({
   }, [mobileCoachTick, onTabChange]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-elevated grain-paper [--grain-paper:var(--elevated)]">
+    <div className="flex min-h-0 flex-1 flex-col bg-elevated">
       <TabList
         tabs={MOBILE_TABS}
         active={tab}
@@ -411,7 +411,7 @@ function LeftPane({
   const panelId = `${tabsId}-panel`;
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-elevated grain-paper [--grain-paper:var(--elevated)]">
+    <div className="flex h-full min-h-0 flex-col bg-elevated">
       <TabList
         tabs={CONTENT_TABS}
         active={tab}

@@ -5,6 +5,12 @@
 `2026-09-14-landing-header-and-grain-design.md` (header, grain, centred
 `max-w-landing` column), which stays.
 **Status:** design approved by the owner in brainstorming on 2026-09-14.
+**Partly superseded (2026-09-15)** by
+`2026-09-15-landing-product-page-design.md`: the argument screen (§4.7) became
+the six habits, the pinned structure moved into the hero, the "no viz or code
+blocks" rule was relaxed for one showcase, and features and placeholder
+social proof were added. Header, grain, snapping, typing, stage cards, the
+heatmap and the footer below still hold.
 
 ---
 
@@ -277,6 +283,25 @@ fundamentals) "a long scroll to make a point and to get to the point". This
   algorithms is for the part of the job that doesn't get automated." (the
   old lede's "seeing the shape of a problem, and knowing what a good answer
   costs" is carried by the argument's points).
+
+### 4.8 Stage cards in "What's inside" (owner, 2026-09-15)
+
+The owner asked for cards in "What's inside" and chose the five real course
+stages over count cards or a "what a lesson gives you" grid (the latter is the
+feature grid this page rules out).
+
+- `stageCards()` (server, `lib/landing/content.ts`) builds one card per
+  `STAGES` entry: number, title, description, module and lesson counts from
+  `modulesByStage`, and `href` `/courses/dsa#stage-N`. The curriculum hub's
+  stage sections gained `id="stage-N"` for those links.
+- Each card is one link: "Stage N" kicker, title, description, "3 modules ·
+  21 lessons" (pluralised by `stageMeta`), and an arrow; bordered
+  `bg-elevated` card with `shadow-elevation`, two columns from `sm`.
+- Motion: cards start at opacity 0 and 0.5rem low; `data-lit` on the list
+  (set when the section becomes active) raises them with a 70ms stagger, CSS
+  only. Reduced motion and `<noscript>` show them in place.
+- The section's inline mobile drawing was removed: the cards are the
+  section's picture, and the drawing pushed them off a phone screen.
 
 ### 4.6 Credits heat map (owner, 2026-09-14)
 

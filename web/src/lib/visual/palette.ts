@@ -55,23 +55,22 @@ const TEXT_CHROMA_SHARE = 0.98;
 const TEXT_LIGHTNESS_STEP = 0.004;
 
 /**
- * The light card (--elevated) and the paper-grain strength (--grain-opacity).
- * Mirrored because the line rule depends on them: a line on the grainy
- * problem panes is weakest where the grain pushes the paper toward black.
- * tests/palette.test.ts checks both against globals.css.
+ * The light card (--elevated), mirrored because the line rule depends on it:
+ * every line sits on the card. tests/palette.test.ts checks it against
+ * globals.css.
  */
 export const LINE_SURFACE = "#ffffff";
-export const GRAIN_OPACITY = 0.067;
 const LINE_FLOOR = 3;
 const LINE_LIGHTNESS_STEP = 0.002;
 
-type Rgb = [number, number, number];
+export type Rgb = [number, number, number];
 
-function hexToRgb(hex: string): Rgb {
+/** Channels in 0–1. */
+export function hexToRgb(hex: string): Rgb {
   return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255) as Rgb;
 }
 
-function rgbToHex(rgb: Rgb): string {
+export function rgbToHex(rgb: Rgb): string {
   return (
     "#" +
     rgb
@@ -191,19 +190,16 @@ export function textInk(hue: HueName, theme: Theme): string {
 
 /**
  * The colour for a 3:1 line (rule, border, stroke) in `hue`. Dark: level 4,
- * which clears 5.43:1 or more even at the worst grain pixel. Light: level 3,
- * with lightness lowered at the same hue and chroma only until it clears 3:1
- * against the worst grain pixel on the card — at level 3 green fell to
- * 2.86:1 on the grainy problem panes (palette spec §4.3, amended 2026-09-15).
+ * which clears 5.43:1 or more. Light: level 3, with lightness lowered at the
+ * same hue and chroma only until it clears 3:1 against the card.
  */
 export function lineColour(hue: HueName, theme: Theme): string {
   if (theme === "dark") return ramp(hue, "dark")[3];
   const level3 = ramp(hue, "light")[2];
   const { C, H } = hexToOklch(level3);
   let { L } = hexToOklch(level3);
-  const worst = rgbToHex(hexToRgb(LINE_SURFACE).map((c) => c * (1 - GRAIN_OPACITY)) as Rgb);
   let line = level3;
-  while (contrastRatio(line, worst) < LINE_FLOOR && L > 0.2) {
+  while (contrastRatio(line, LINE_SURFACE) < LINE_FLOOR && L > 0.2) {
     L -= LINE_LIGHTNESS_STEP;
     line = gamutMapped(L, C, H);
   }

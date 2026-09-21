@@ -1,0 +1,5 @@
+.hb-edge{stroke:var(--mut);stroke-width:2;opacity:.75;fill:none}
+.hb-edge.lit{stroke:var(--fam);stroke-width:3.5;opacity:1}
+.hb-node{fill:var(--card);stroke:var(--hair2);stroke-width:1.5}
+.hb-node.done{fill:var(--g-ink);stroke:var(--g-ink)} .hb-node.cur{fill:var(--o-ink);stroke:var(--o-ink)}
+.hb-lab{font:500 13px 'JetBrains Mono',monospace;fill:var(--fg)} .hb-lab.onink{fill:var(--bg)}

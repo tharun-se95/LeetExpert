@@ -5,11 +5,11 @@ import { ArrowUp, Stop } from "@phosphor-icons/react";
 import { useCoach } from "./CoachProvider";
 
 export function CoachComposer() {
-  const { send, pending, error, retryable, configured, remaining, resetAt, retry, stop } =
+  const { send, pending, error, retryable, configured, remaining, resetAt, retry, stop, lockedReason } =
     useCoach();
   const [value, setValue] = useState("");
 
-  const locked = configured === false || remaining === 0;
+  const locked = configured === false || remaining === 0 || lockedReason !== undefined;
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -37,7 +37,9 @@ export function CoachComposer() {
   // Falls back to the quota line so this row is never empty — one footer
   // strip doing both jobs instead of a permanent second one underneath it.
   let helper = quota;
-  if (configured === false) {
+  if (lockedReason !== undefined) {
+    helper = lockedReason;
+  } else if (configured === false) {
     helper = "Chat isn’t available on this deployment. Diagnosis still works.";
   } else if (remaining === 0) {
     helper = resetAt

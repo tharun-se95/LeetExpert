@@ -27,6 +27,13 @@ interface ConceptMindMapProps {
    * parent must have a definite height (a flex child with min-h-0).
    */
   fill?: boolean;
+  /**
+   * Let the wheel scroll the page instead of zooming the canvas. The landing
+   * carousel scrolls feature by feature, and a map that took the wheel
+   * stranded the reader on it (found in the browser); dragging and the
+   * zoom buttons still work.
+   */
+  scrollThrough?: boolean;
 }
 
 const SIZES = {
@@ -175,7 +182,7 @@ function layoutTree(
 /** Approximate rendered node height — up to 2 lines of wrapped label, `min-h-9` floor. */
 const NODE_HEIGHT = 56;
 
-function ConceptMindMapInner({ root, label, size = "md", fill = false }: ConceptMindMapProps) {
+function ConceptMindMapInner({ root, label, size = "md", fill = false, scrollThrough = false }: ConceptMindMapProps) {
   // nodeWidth is a CAP, not a width: each card hugs its own label (see
   // ConceptMapNode) and only wraps when the text would exceed this. Keeping the
   // cap at the preset stops a long label from running into the next column,
@@ -269,6 +276,8 @@ function ConceptMindMapInner({ root, label, size = "md", fill = false }: Concept
         nodesConnectable={false}
         elementsSelectable={false}
         proOptions={{ hideAttribution: true }}
+        zoomOnScroll={!scrollThrough}
+        preventScrolling={!scrollThrough}
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} className="opacity-40" />
         <Controls

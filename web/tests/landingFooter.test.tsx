@@ -71,6 +71,6 @@ describe("landing footer", () => {
   });
 
   it("is the page's last snap stop", () => {
-    expect(html).toMatch(/<footer class="snap-end\b/);
+    expect(html).toMatch(/<footer\b[^>]*\sclass="snap-end\b/);
   });
 });

@@ -1,5 +1,24 @@
-import { MODULES, STAGES } from "@/lib/course/manifest";
+import { MODULES, STAGES, modulesByStage } from "@/lib/course/manifest";
 import { lessonHref, moduleHref } from "@/lib/course/nav";
+import type { StageCard } from "@/lib/landing/story";
+
+/**
+ * The landing page's "What's inside" cards: one per real course stage, counted
+ * from the manifest and linking to that stage's section on the curriculum hub.
+ */
+export function stageCards(): StageCard[] {
+  return STAGES.map((stage) => {
+    const modules = modulesByStage(stage.number);
+    return {
+      number: stage.number,
+      title: stage.title,
+      description: stage.description,
+      modules: modules.length,
+      lessons: modules.reduce((n, m) => n + m.lessons.length, 0),
+      href: `${CURRICULUM}#stage-${stage.number}`,
+    };
+  });
+}
 
 export function curriculumStats() {
   const lessons = MODULES.flatMap((m) => m.lessons);

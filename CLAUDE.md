@@ -155,7 +155,7 @@ The content is the product. Code exists to serve it.
   floating button** (owner, 2026-09-14; spec
   `docs/superpowers/specs/2026-09-14-drawer-header-and-floating-opener-design.md`;
   it replaced the 2026-09-13 edge tabs and their concave fillets). The nav
-  panel's top row is pinned (`sticky top-0`): grainy paper like the rail at
+  panel's top row is pinned (`sticky top-0`): flat paper like the rail at
   rest and `TRANSLUCENT_PAPER` once rows scroll under it (`CourseNavTree` observes
   a sentinel against the nav, not scroll events — translucent at rest it read as
   a lighter strip), with no shadow and no `border-b` (the module heading below
@@ -164,12 +164,12 @@ The content is the product. Code exists to serve it.
   given `onClose`; the desktop drawer passes it, the mobile sheet keeps its
   own "Lessons ✕" header and passes nothing. The drawer's top padding moved
   onto that row, so rows cannot scroll into a gap above it. The opener
-  (`FloatingLessonsButton`) is a round hairline control on grainy paper with
+  (`FloatingLessonsButton`) is a round hairline control on page paper with
   the card shadow, `fixed bottom-6 left-6` (the coach launcher's inset,
   mirrored), z-40 above the hover edge strip, hidden while the drawer is open;
   `next.config` moves Next's dev badge to bottom-right so it does not sit on
   it. The problem page's sub-header reserves no room for a tab. `.sidebar-rail`
-  paints `--rail-surface` — `--background` with the desk grain, the app
+  paints `--background`, the app
   header's own paper, in both themes (owner, 2026-09-13 "match the header").
   The rail clips its own top, bottom and left (`clip-path: inset(0 -3rem 0
   0)`): it sits above the header (z-45), so its edge shadow's blur otherwise
@@ -205,12 +205,13 @@ The content is the product. Code exists to serve it.
   `codeLangSurfaces.test.tsx`.
 - **The landing page (`/`) has its own header and a scroll-typed story; no
   other route does.** Owner direction 2026-09-14
-  (specs `docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md`
-  and `2026-09-14-landing-rewrite-agentic-ai-design.md`). On `/` AppShell
+  (specs `docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md`,
+  `2026-09-14-landing-rewrite-agentic-ai-design.md` and
+  `2026-09-15-landing-product-page-design.md`). On `/` AppShell
   skips the app `Header` and renders `LandingHeader` as the first thing
-  *inside* `<main>`, inside the app's one `.paper-grain` desk wrapper:
+  *inside* `<main>`, inside the app's one desk wrapper (`relative isolate`):
   a `border-border` hairline, **sticky** (owner, 2026-09-14): clear over the
-  grain at the top, `TRANSLUCENT_PAPER` (`bg-background/90 backdrop-blur-md`,
+  page paper at the top, `TRANSLUCENT_PAPER` (`bg-background/90 backdrop-blur-md`,
   owner 2026-09-15 — at 80% muted text fell to 3.85:1 over a dark block) plus
   `shadow-edge-bottom` once content scrolls under it — `scrolled` comes from an
   IntersectionObserver on a sentinel at the page top (not a scroll listener),
@@ -218,27 +219,97 @@ The content is the product. Code exists to serve it.
   `max-w-landing` column (`--container-landing: 88rem`, owner request) with
   `px-6 md:px-16` gutters shared by header and page so they keep one edge.
   Its nav stays Space Grotesk (16px, ink) — the reference's display-face nav
-  was declined to keep the three-faces rule. **The page explains rather than
-  sells** (owner): why learn DSA when agents write code — a hero (its headline
-  one sentence per line, `HERO.lines`, sized `lg:text-4xl xl:text-5xl` so the
-  longer line fits the text column — measured 14.675em), one
-  argument screen (`WHY`: four numbered one-line points, problem-solving
-  mindset first — four full chapters were cut the same day as too long a
-  scroll to reach the point; do not expand it back into chapters), a line of manifest
-  counts, pricing ("Start free. Pay as you learn." — per module, no prices on
-  the page), a heatmap feature section (kicker "Feature", heading "Heatmap",
-  with the owner's line "Earn credits for consistent heat." typed beneath the
-  body) and three questions. Its `HeatMap` is an **example year** and says
+  was declined to keep the three-faces rule. **The page explains the thesis
+  and markets the product** (owner, 2026-09-15 — an outside review found it
+  told the thesis better than the product; it began as "explains rather than
+  sells"). In order: a hero (kicker "DSA for the age of AI"; its headline one
+  sentence per line, `HERO.lines`, sized `lg:text-4xl xl:text-5xl` so the
+  longer line fits the text column — measured 14.675em; the owner's lede; a
+  descriptor saying what the course is; "Start learning free" and "Explore the
+  curriculum" links; a strip of the nine verbs, each linking to `#verb`; the
+  manifest counts); **Understand, Build and Keep** (owner, 2026-09-17 — every
+  feature in the app, headings and verbs as approved in the layout mock, no
+  act numbers; spec §12): Understand "See it before you solve it." (Watch ·
+  Learn · Map), Build "The code is cheap now. Judgment isn't." (Code · Review
+  · Optimize, the six habits folded in on one pair-sum problem), Keep "Come
+  back tomorrow." (Practice · Recall · Burn). Each is a `FeatureSection`
+  (owner, 2026-09-19; spec §14): its copy, a row of three verb tabs with the
+  selected verb's line (Burn: the owner's credits line), and the real page's
+  link under it, beside the **bare components, one visible at a time in a vertical stack**
+  (owner, 2026-09-20; it replaced a 3D ring) — no card, title, kind chip or
+  "Today" footer; each panel is named by its `label`. The selected one sits
+  in place; the ones before it are slid up and the ones after it down, faded
+  out, pointer-less and `inert`, so scrolling down lifts the current one away
+  and brings the next up from below. An opaque feathered `.ring-veil` of
+  desk paper sits behind each component (no frame): a see-through one
+  showed the blurred backdrop and read as blurred (owner, 2026-09-19 — no blur
+  on the items). Each component's box is its content's size, centred in the
+  slot (the map, the list and the coach, which have no height of their own,
+  get 34rem; tall ones cap at the stage and scroll inside). **Scrolling drives it**
+  (owner, 2026-09-20 — "show the features one by one as we scroll"; it
+  replaced an 8 s timer): from lg the section is `data-scroll-steps` screens
+  tall (`STEPPED`), its content pinned (`lg:sticky`), with one `snap-start`
+  marker per feature a screen apart; the marker crossing `<main>`'s middle
+  band is the feature in front, and past the last one the page moves on.
+  `useSectionPaging` moves one step per wheel gesture in a stepped section
+  (never native) over a travel whose duration scales with gesture speed
+  (620ms for a notch down to 260ms for a flick; spec
+  `docs/superpowers/specs/2026-09-20-landing-wheel-paging-design.md`), and
+  first lets a box under the pointer that can still scroll (cheatsheet,
+  problem list, coach thread) scroll — `scrollsInside`;
+  the map passes the wheel through (`ConceptMindMap scrollThrough`), or it
+  stranded the reader on it. A tab, arrow key or `#verb` link scrolls to its
+  feature's step. Reduced motion is read live through `useMediaQuery` (not
+  motion's cached `useReducedMotion`); the slides then jump. Below lg there are
+  no steps: one stop with a swipeable scroll-snap row given explicit flat
+  values — motion keeps the last inline style when `style` becomes undefined. The components:
+  the **Arrays module's HyperFrames intro video**, the Valid Anagram tracer
+  without its code panel (`<Viz code={false}>`), the real Hash Tables
+  `ConceptMindMap`, the live `find_pair` editor, **the real coach panel over a
+  scripted thread** (`ReviewCoach`: `ScriptedCoachProvider` + `CoachPanel
+  variant="showcase"`, composer locked with `lockedReason`, no AI calls —
+  every visitor would otherwise be a paid request; the thread is computed by
+  `reviewThread()`), `BigOObservatory` alone, the real problem list through
+  `useProblemFilters` (shared with the practice page), the Hash Tables
+  `Cheatsheet` and the example-year `HeatMap` without its card. Heavy ones are
+  `next/dynamic` chunks rendered once their section is active or next. The
+  tracer's fullscreen view portals to `<body>`: a transformed slot
+  trapped its `fixed inset-0` in the slot. The `#verb` effect is keyed on the
+  verb ids and a stable `choose` — keyed on anything rebuilt (the verbs array,
+  or a callback that changed when the breakpoint resolved after hydration) it
+  re-applied a stale hash; and the row's scroll observer ignores reports on
+  wide screens, where it pulled a page opened at `#learn` back to Watch. The
+  `find_pair` sandbox is not a lesson, so `landingFeatures.test.tsx` holds it to
+  the reference standard itself (`tests/reference/landing/find-pair.{py,js}` in
+  both runtimes, starter and draft fail). A "What's inside" stop (one card per real course stage from
+  `stageCards()`, owner request 2026-09-15, each linking to `/courses/dsa#stage-N`,
+  rising in on arrival) with a line of manifest counts follows them; then one
+  last slide (owner, 2026-09-19): pricing across the top ("Start free. Pay as
+  you learn." — per module, no prices on the page; pricing is undecided), then
+  learners (**placeholder social proof**, owner 2026-09-15: every stat and
+  quote flagged `placeholder: true` in `PROOF` and tagged `Placeholder` on the
+  page in every build, quotes attributed to "Name Surname" — replace with real
+  data and drop the flags once there are learners) beside the four questions,
+  one open at a time. Burn's `HeatMap` is an **example year** and says
   so — the in-app heatmap is not built yet, so the page must not imply it is
   live beyond that label — seeded (`lib/landing/heat.ts`), ending on the render
   date, its days-practised and streak numbers computed from the same counts;
   it names no credit amounts because the rules aren't defined. Its colour is a
   scoped `--heat-0..4` token ramp (GitHub's greens, contrast recorded beside
   the tokens), squares fade in column by column on arrival via CSS, and
-  `landingHeat.test.tsx` rebuilds the calendar independently. No viz or code blocks, feature grids,
-  testimonials, banners or sticky CTA; do not add them back without asking.
-  Copy lives in `lib/landing/story.ts`, and every number in it is computed
-  (`pairCount`, `nestedSteps`), never typed in. The page
+  `landingHeat.test.tsx` rebuilds the calendar independently. No comparison
+  table against other platforms (declined: it disparages competitors with
+  claims we can't back), banners or sticky CTA; tracer and sandbox windows
+  belong only in Understand and Build. Copy lives in `lib/landing/story.ts`,
+  `features.ts` and `method.ts`, and every number in it is computed
+  (`findPair`, `reviewDiagnosis`, `reviewThread`, server counts), never typed in
+  — `PROOF`'s labelled placeholders are the one exception; Review's draft snippet
+  and the reference solution are run by python3 in `landingFeatures.test.tsx`. Anything
+  that reads the filesystem or the full course registries (the windows'
+  lessons, media, cheatsheet, counts) lives in `lib/landing/productData.ts`,
+  imported only by the server `HomePage`: the client course nav imports
+  `content.ts`, and an `fs` import reachable from it broke every route
+  (guarded in `landingFeatures.test.tsx`). The page
   snaps section to section (`snap-y` on `<main>`, only on `/`, mandatory from
   `lg`, where `useSectionPaging` turns one wheel gesture into one stop —
   measured in Chrome, mandatory snapping pulled a 300px wheel scroll back to
@@ -260,18 +331,37 @@ The content is the product. Code exists to serve it.
   1% band across `<main>`'s middle — not a scroll listener, which never fired
   for a page that returned already scrolled) its text types once, word by word (letter-by-letter was too busy; owner
   2026-09-14), over a length-scaled duration
-  (`TypedText` + `useRevealProgress`); the `sr-only` copy is always complete; the visual layer starts
+  (`TypedText` + `useTypedText`); the `sr-only` copy is always complete; the visual layer starts
   untyped on the server, because a hero rendered typed would flash blank on
-  hydration; a `<noscript>` rule reveals it; reduced motion shows it all. One
-  `EvolvingStructure` stays pinned beside the chapters and animates (motion,
-  0.9s; instant under reduced motion) array → hash table → BST → graph, one
-  stage per argument point as its title starts typing (`argumentStage`; each
-  point gets 1.1s, longer than the morph) — one element per edge, so tree edges stay put when
-  the tree becomes a graph; its layouts are derived from the values
-  (`lib/landing/structureLayouts.ts`) and rebuilt independently in
-  `landingStory.test.tsx`. `HomePage` stays a server component and passes
-  counts and topic links as props, so the course manifest never ships to the
-  landing client. The page ends in `LandingFooter` (landing only; lesson and
+  hydration; a `<noscript>` rule reveals it (and every `.rise-in` card);
+  reduced motion shows it all. One `EvolvingStructure` is the page's
+  **backdrop** (`LandingBackdrop`, owner 2026-09-19; floating points, its own
+  clock, family colour and the free space 2026-09-20, spec 2026-09-15 §15). It
+  keeps to **the free space beside the text, never under it**: fixed right of
+  the text column (the landing container's content edge + 51rem, the widest
+  text measure the story uses being `max-w-3xl`) from `xl`, hidden below `xl`
+  where text spans the screen, and faded out while a stop marked
+  `data-backdrop-off` is on screen (the last slide and the footer, whose text
+  runs to the right edge) — that is all it watches; the Understand/Build/Keep
+  components cover it where they sit. Soft (`--backdrop-blur`) on a slowly
+  swaying 3D plane (`perspective` + `backdrop-sway`). Nine unlabelled floating
+  data points gather into an array, linked list, hash table, tree, 3×3 matrix
+  and graph on **their own clock, independent of scroll**: assemble 3s, hold
+  5s, scatter 3s, float 4s, then the next. Each structure wears the **family
+  colour** (`accentUi`) of the module that teaches it (`STAGE_MODULES`, read by
+  `backdropColours()` in `productData.ts`, which throws on a module with no
+  family), and the ink glides to the next colour as the points scatter. One
+  animation-frame loop writes the SVG directly, with no React render per frame
+  (`backdropTarget` is the pure schedule; a hidden tab pauses it); reduced
+  motion shows the graph, still. Every edge is drawn from the same computed
+  points as its dots, float included, and stays one element across shapes, so
+  shared edges stay put. The shapes come from a hidden seed
+  (`lib/landing/structureLayouts.ts`) and are rebuilt independently in
+  `landingStory.test.tsx`, which also holds the placement; Build's pair-sum
+  input (`METHOD_VALUES`) is its own, not that seed. `HomePage` stays a server component and passes
+  counts, links, stage cards and the windows' data (`featureData()`) as
+  props, so neither the course manifest nor the filesystem readers ship to
+  the landing client. The page ends in `LandingFooter` (landing only; lesson and
   problem pages are viewport-locked): Course and Topics columns linking only
   real routes (`landingFooter.test.tsx` resolves every href against page files
   and the manifest), no legal links until those pages exist, a Connect column
@@ -282,42 +372,52 @@ The content is the product. Code exists to serve it.
   and a computed copyright year. It is the last snap stop (`snap-end`). The app
   `Header` shares its class sets with it through `layout/headerChrome.ts`
   (lamp size, wordmark, nav link, round control) and keeps its own `h-14`,
-  which the drawer geometry above reads. The grain is its own rule below.
+  which the drawer geometry above reads. The desk is its own rule below.
   Guarded in `landingHeader.test.tsx` and `appHeader.test.tsx`.
-- **The grain is the app's desk, on every route** (owner, 2026-09-14; spec
-  `docs/superpowers/specs/2026-09-14-app-header-and-grain-design.md`). The tile
-  is `public/textures/grain.png`, generated by `scripts/make-grain.mjs`
-  (seeded; `paperGrain.test.ts` checks the committed pixels), drawn at 200px
-  with strength `--grain-opacity` per theme. Two paints, one strength:
-  `.paper-grain` (a `::before` at `z-index:-1` in an isolated element) on the
-  ONE transparent desk wrapper inside `<main>` — a second transparent layer
-  inside it would double the strength — and `.grain-paper` (the paper at
-  `1 − opacity` over the opaque tile, measured within 1/255 of `.paper-grain`,
-  `background-origin: border-box` so borders do not show the bare tile) on
-  opaque surfaces: the lessons drawer rail and its pinned row at rest, the
-  floating drawer opener, the mobile lessons sheet and the problem page's two `--elevated` panes (AA holds
-  there too; the `--surface` hover fills stay solid — muted fell to 4.05:1). `--grain-paper` names the surface's paper and
-  `--grain-veil` is declared on the elements that use it, never on `:root`.
-  The app header overlays the page (spec
+- **The desk is flat paper, on every route** (owner, 2026-09-21: the paper
+  grain shipped 2026-09-14 was removed — tile, generator, `--grain-opacity`,
+  `.paper-grain` and `.grain-paper` are gone, and the specs that introduced them
+  are history, not rules). The ONE transparent desk wrapper inside `<main>` is
+  `relative isolate`: `isolate` is load-bearing, since the landing backdrop's
+  `-z-1` layer must sit above the root's paper but beneath every in-flow child,
+  and without a stacking context it would fall behind the root. The app header
+  overlays the page (spec
   `docs/superpowers/specs/2026-09-15-translucent-chrome-and-pane-grain-design.md`):
   `absolute top-0 h-14`, `TRANSLUCENT_PAPER` with `shadow-edge-bottom`. Lesson
   and module pages scroll under it — the desk wrapper's `pt-14` starts them
   below it, the rail starts below it (`mt-14`), and scroll offsets moved 3.5rem
-  (TOC `top-38`, headings `scroll-mt-38`) — and `grainContrast.test.ts` keeps
+  (TOC `top-38`, headings `scroll-mt-38`) — and `paperContrast.test.ts` keeps
   its muted text AA over a code block passing beneath. The problem page's root
-  and sub-header are transparent over the desk. The reading sheet, cards, code, the IDE and
-  dialogs stay solid and cover the grain. Every text ink clears AA at the
-  worst grain pixel (`grainContrast.test.ts`; floors 4.84:1 light on
-  `--good`, 6.65:1 dark on `--muted`, measured on the contribution-green palette) — re-measure if the opacity or a paper changes. Call sites are
-  allowlisted in `paperGrain.test.ts`.
+  and sub-header are transparent over the desk. The reading sheet, cards, code,
+  the IDE and dialogs stay solid. Every text ink clears AA on `--background`
+  and `--elevated` (`paperContrast.test.ts`) — re-check if a paper changes.
+- **Instrument surfaces are navy cards in the light theme** (owner,
+  2026-09-21: "follow the same design pattern across the surfaces"). The
+  Big-O stage and every other `.lab-stage`, the concept map (its module page and
+  the landing), and the landing's practice window, coach and cheatsheet, carry `dark navy-card` (`globals.css`): `--card-navy`
+  `#14202e`, the light theme's code well and the module art's ground, with a
+  recessed `--surface`/`--code` `#1f3145` and a lifted `--elevated` `#2b405a`
+  inside (the concept map's old plate ladder, `#304764` pulled down until every
+  ink cleared AA on it). The `dark` class flips the tokens the dark block sets
+  directly, but `:root` defines the semantic ones by reference
+  (`--foreground: var(--press-ink)`), computed there and inherited resolved, so
+  `.navy-card` re-declares them; `paperContrast.test.ts` fails when one is
+  missing, and holds every ink to AA on all three steps. The dark theme keeps
+  its own surfaces. Not the pattern: the cheatsheet in a lesson and the problem
+  page's panes, which stay on the paper ladder. A new instrument surface
+  gets the two classes, never its own colours.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
   `--background` / `--elevated` / `--code` / `--surface` carry a perceptible
   brightness ladder in BOTH themes — elevated brightest, surface deepest,
   never an inversion. Light: white cards on a cool-gray page (measured
   elevated/background 1.10, background/code 1.11, code/surface 1.12,
-  elevated/surface 1.36). Dark: neutral-grey surfaces (no blue cast) —
-  elevated/paper 1.24, code/elevated 1.16, paper/code 1.07, surface/paper
-  1.05. Every text ink (ink, muted, and every status ink incl. info) clears
+  elevated/surface 1.36). Dark: a space-black page (`#060607`, owner
+  2026-09-19 — "make the background like space") under neutral-grey
+  surfaces (no blue cast), the recess pure black — elevated/paper 1.34,
+  code/elevated 1.16, code/paper 1.16, paper/surface 1.04 (the smallest step
+  the ladder test allows). The static brand tiles use the same paper, so
+  changing it means updating `assets/brand/mark-tile*.svg` and rerunning
+  `node scripts/generate-icons.mjs`. Every text ink (ink, muted, and every status ink incl. info) clears
   AA 4.5:1 on the deepest surface it can render on — the sandbox paints
   verdict rows and insight values on `--press-paper-sunk`, so that is the
   binding floor. A genuinely elevated surface (cards, the coach rail, the
@@ -336,17 +436,16 @@ The content is the product. Code exists to serve it.
   Status colours map onto it — good green, bad red, warn orange, info blue,
   insight yellow — with text in `-ink` (light: level 4's lightness at
   near-max chroma), `*-surface` at level 1 and `*-line` for 3:1 rules. A
-  `*-line` is generated grain-safe (`lineColour`: light level 3, darkened
-  only until it clears 3:1 at the worst grain pixel on `--elevated`; dark
-  level 4) and sits **only on `--elevated`**, grainy or flat — light level 3
-  fails on `--code` and `--surface`, and the grainy desk would need every hue
-  darkened. `grainContrast.test.ts` holds every line to that floor.
+  `*-line` is generated (`lineColour`: light level 3, darkened
+  only until it clears 3:1 on `--elevated`; dark level 4) and sits **only on
+  `--elevated`** — light level 3 fails on `--code` and `--surface`.
+  `paperContrast.test.ts` holds every line to that floor.
 - **Callout colour names the kind of message; the label names the type.**
   Yellow = understanding (Key idea, Mental model), red = a mistake (Watch
   out), blue = context (Goal, Aside), green = a requirement (Constraints),
   steel = advice (Tip). Every labelled callout carries a tint
   (`--callout-tint-*`: palette level 1 mixed into `--elevated`, 50% light /
-  70% dark), a 3px grain-safe `*-line` rule and a label in its text colour; the owner's
+  70% dark), a 3px `*-line` rule and a label in its text colour; the owner's
   declared fallback is treatment A — set the five tint tokens to
   `transparent`. Callout body inherits the prose size. Guarded in
   `design-tokens.test.ts` ("callout tints…", "Callout: treatment B…") and
@@ -380,6 +479,12 @@ The content is the product. Code exists to serve it.
 - Comments explain **why**, never what. Load-bearing decisions, non-obvious
   constraints, and traps get a comment; obvious code does not.
 - Match the conventions of surrounding code rather than importing new ones.
+- **Reuse before writing; fix at the shared root.** Before adding a helper,
+  type or component, search for one that already exists — a second copy of
+  something a few files over drifts from the first. A bug fix starts by
+  finding every caller of the function it touches: fix it once where they
+  all route through, not only on the path the report names, which leaves
+  the sibling callers broken.
 - Registry-addressed content (`viz`, `diagram`, `sandbox` ids) must be
   validated by tests — a string id typo must fail CI, not render an error
   card in production.

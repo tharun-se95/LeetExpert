@@ -71,7 +71,7 @@
     a hex here; change the generator and re-print. Level n is the same
     strength against its own theme's paper: 1 quietest, 4 strongest. -ink is
     the text colour (light: level 4's lightness at near-max chroma), -line the
-    grain-safe 3:1 line colour.
+    3:1 line colour.
     tests/palette.test.ts fails if these drift from the generator.
   */
   --hue-red-1: #ffc2bc;
@@ -97,13 +97,13 @@
   --hue-green-3: #30a14e;
   --hue-green-4: #216e39;
   --hue-green-ink: #067123;
-  --hue-green-line: #2b9d4a;
+  --hue-green-line: #30a14e;
   --hue-cyan-1: #62ebf2;
   --hue-cyan-2: #00bdc5;
   --hue-cyan-3: #009ba2;
   --hue-cyan-4: #006a6f;
   --hue-cyan-ink: #066a6e;
-  --hue-cyan-line: #00989f;
+  --hue-cyan-line: #009ba2;
   --hue-blue-1: #b6d6ff;
   --hue-blue-2: #64a9ff;
   --hue-blue-3: #3d89e4;
@@ -145,6 +145,10 @@
     see `.code-surface` and every `bg-code-editor` site.
   */
   --code-editor: #14202e;
+  /* The landing's dark cards (see navy-card below): the navy the module art and the
+     light theme's code well are painted on (art #15202e, --code-editor). Not
+     remapped for the dark theme, so it names that navy in both. */
+  --card-navy: #14202e;
   /* Hairline gutter border + active-line tint, tuned for THIS (dark) bg —
      reusing the site's own dark-theme --border/--editor-active-line
      formulas below, since those were already proven legible on a dark
@@ -163,8 +167,8 @@
     Status colours (spec 2026-09-14 §4.2). Text ≥ 4.5:1 on every surface in
     both themes (good is the tightest: 4.55 on --surface); text on its own
     *-surface ≥ 3:1. *-line is for rules, borders and strokes and sits only on
-    the card (--elevated): generated grain-safe, 3:1 at the worst grain pixel of
-    the problem panes (palette spec §4.3); on a recessed surface use the text colour.
+    the card (--elevated): generated to 3:1 against it; on a recessed surface use
+    the text colour.
   */
   --good: var(--hue-green-ink);
   --bad: var(--hue-red-ink);
@@ -259,9 +263,12 @@
   --focus-ring: 2px;
   --focus-offset: 2px;
 
-  /* --- paper grain ----------------------------------------- */
-  /* Opacity of the greyscale noise tile; see .paper-grain. */
-  --grain-opacity: 0.067;
+  /* The landing backdrop (LandingBackdrop): each structure in its family's
+     UI accent (3:1 on every paper) at --backdrop-opacity, softly blurred. It
+     keeps to the free space beside the text, so it is strength for visibility,
+     not a contrast budget; landingStory.test.tsx holds the placement. */
+  --backdrop-opacity: 0.55;
+  --backdrop-blur: 3px;
 
   /* --- heat map (landing credits section) ------------------- */
   /* GitHub's contribution greens, the owner's chosen ramp (2026-09-14),
@@ -275,17 +282,20 @@
 }
 
 .dark {
-  /* Neutral grey sheet — no blue cast (Blueprint's charcoal was blue-tinted). */
-  --press-paper: #121214;
+  /* Space black (owner, 2026-09-19: "make the background like space"),
+     neutral — no blue cast. Was #121214. */
+  --press-paper: #060607;
   /*
     Dark is the theme where the layer ladder is real — light is capped at
     ~1.03:1 by muted-AA, dark has room. Same relative order as light, never
     an inversion: elevated (cards) brightest, code above the page, background
     the sheet, surface recessed deepest. Measured adjacent deltas:
-    surface/paper 1.05, paper/code 1.07, code/elevated 1.16, elevated/paper
-    1.24 — visible steps. Muted #9ca9b8 ≥8:1 everywhere.
+    surface/paper 1.04, paper/code 1.16, code/elevated 1.16, elevated/paper
+    1.34 — visible steps; on the space-black page the page-to-recess step is
+    the smallest the ladder test allows, with the recess at pure black.
+    Muted #9ca9b8 ≥8:1 everywhere (8.47 on the page, 8.78 on the recess).
   */
-  --press-paper-sunk: #0c0c0d; /* recessed — tests / muted, deepest */
+  --press-paper-sunk: #000000; /* recessed — tests / muted, deepest */
   --press-ink: #e6edf4; /* 17.1:1 — sheet Text Primary */
   --press-ink-soft: #9ca9b8; /* 8.19:1 — sheet Text Muted */
   --press-rule: rgba(244, 244, 245, 0.09); /* soft rule */
@@ -363,7 +373,9 @@
 
   --press-highlight: color-mix(in oklab, var(--press-olive) 22%, transparent);
   --press-halftone: rgba(244, 244, 245, 0.09);
-  --grain-opacity: 0.067;
+  /* A little stronger on the dark paper, where the accents sit closer to it. */
+  --backdrop-opacity: 0.7;
+  --backdrop-blur: 3px;
   /* Heat ramp on the dark --elevated card (#26262a): 1.22, 1.35, 2.32,
      4.75, 7.62 — adjacent steps 1.11-2.05. Level 0 is lifted off the card
      so an empty day still reads as a square. */
@@ -374,7 +386,7 @@
   --heat-4: #39d353;
   --on-pop: #16202e; /* dark ink on the light-steel chip */
 
-  --surface: #0c0c0d; /* tests / muted — recess, deepest tier */
+  --surface: #000000; /* tests / muted — recess, deepest tier */
   --elevated: #26262a; /* sidebar / lesson / cards — brightest lift */
   --code: #19191d; /* editor — above the page, below elevated */
   /* Code surface inverts relative to the page here too: dark theme gets a
@@ -561,78 +573,6 @@ body {
 }
 
 /*
-  Paper grain — the landing page's background (owner-approved 2026-09-14;
-  docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md).
-
-  A tiled greyscale noise PNG (scripts/make-grain.mjs) at single-digit
-  opacity. The tile is 400px drawn at 200px so a 2x display gets one noise
-  sample per device pixel. AppShell puts it on a wrapper inside <main>, not
-  on <body>: <main> is the app's scroller, so a body background would stay
-  pinned while content moved over it. Worst-case muted text over a grain
-  pixel measured 4.99:1 light, 6.65:1 dark.
-  isolation + z-index:-1 put the grain above the root's paper but beneath
-  every in-flow child — a z-index:auto absolute layer would paint over text.
-  Solid surfaces (cards, the stat band) cover it, so only the paper grains.
-*/
-.paper-grain {
-  isolation: isolate;
-}
-
-.paper-grain::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: url("/textures/grain.png") 0 0 / 200px 200px repeat;
-  opacity: var(--grain-opacity);
-}
-
-@media print {
-  .paper-grain::before {
-    display: none;
-  }
-}
-
-/*
-  Grain on an opaque surface (the app header, the lessons drawer and its
-  pinned header row, the floating drawer opener, the mobile lessons sheet):
-  background layers instead of .paper-grain's ::before, which these surfaces
-  do not need — they paint their own paper — and which a surface using its own
-  pseudo-elements (the mobile sheet's accent strip) cannot spare. The paper at
-  (1 - opacity) over the opaque tile composites to exactly the tile at
-  opacity over the paper — measured against .paper-grain on --background,
-  max channel difference 1/255 in both themes. --grain-paper names the
-  surface's paper; background-color still comes from its own bg-* class.
-  --grain-veil is declared here, on the element that uses it: a custom
-  property resolves var() where it is declared, so on :root it would freeze
-  --grain-paper at :root's value.
-  Spec: docs/superpowers/specs/2026-09-14-app-header-and-grain-design.md
-*/
-.grain-paper {
-  --grain-veil: color-mix(
-    in srgb,
-    var(--grain-paper, var(--background)) calc((1 - var(--grain-opacity)) * 100%),
-    transparent
-  );
-  background-image:
-    linear-gradient(var(--grain-veil), var(--grain-veil)),
-    url("/textures/grain.png");
-  background-size: auto, 200px 200px;
-  background-repeat: no-repeat, repeat;
-  /* From the border edge: backgrounds paint under the border too, and a veil
-     sized to the padding box left the bare tile under the 1px translucent
-     --border as a speckled line. */
-  background-origin: border-box;
-}
-
-@media print {
-  .grain-paper {
-    background-image: none;
-  }
-}
-
-/*
   The landing page's typing caret (TypedText). A left border with a matching
   negative margin gives it zero advance, so the line never shifts as the caret
   moves through it. Reduced motion never renders the caret (TypedText shows
@@ -677,6 +617,93 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .heat-cell {
     opacity: 1;
+    transition: none;
+  }
+}
+
+/*
+  The landing backdrop (LandingBackdrop, spec 2026-09-15 §14–§15): floating
+  data points gathering into structures in the free space beside the text,
+  in each structure's family colour (--backdrop-ink, set by the drawing),
+  softened by a light blur. The wrapper gives the drawing depth and the
+  drawing sways through it slowly, a transform only, so it costs no layout.
+  Reduced motion holds it still.
+*/
+.landing-backdrop {
+  /* Right of the text column: the column starts at the landing container's
+     content edge (its px-16 gutter inside --container-landing) and is at most
+     48rem (max-w-3xl) wide; 3rem more keeps the blur clear of it. */
+  left: calc(max(4rem, (100vw - var(--container-landing)) / 2 + 4rem) + 51rem);
+  opacity: var(--backdrop-opacity);
+  filter: blur(var(--backdrop-blur));
+  perspective: 1400px;
+  transition: opacity 1.2s var(--ease-gentle);
+}
+.landing-backdrop[data-off] {
+  opacity: 0;
+}
+.landing-backdrop-drawing :is(line, rect) {
+  stroke: var(--backdrop-ink);
+}
+.landing-backdrop-drawing circle {
+  fill: var(--backdrop-ink);
+}
+@keyframes backdrop-sway {
+  0% {
+    transform: rotateX(16deg) rotateY(-12deg) rotateZ(-2deg);
+  }
+  50% {
+    transform: rotateX(26deg) rotateY(4deg) rotateZ(1deg);
+  }
+  100% {
+    transform: rotateX(20deg) rotateY(12deg) rotateZ(2deg);
+  }
+}
+.landing-backdrop-drawing {
+  animation: backdrop-sway 60s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-backdrop-drawing {
+    animation: none;
+  }
+}
+
+/*
+  On the landing carousel, behind each component (and, faded in, over the
+  ones turned away to dim them): the desk's own paper, feathered to nothing at
+  the edges, so no frame is drawn and nothing behind shows through.
+*/
+.ring-veil {
+  background-color: var(--background);
+  mask-image:
+    linear-gradient(to right, transparent, #000 1rem, #000 calc(100% - 1rem), transparent),
+    linear-gradient(transparent, #000 1rem, #000 calc(100% - 1rem), transparent);
+  mask-composite: intersect;
+}
+
+/*
+  Landing cards that rise into place when their section arrives — stage cards,
+  feature cards, learner quotes, the showcase frames and its count bars. One
+  data-lit attribute on an ancestor lights them; each carries its own
+  transition-delay inline for the stagger.
+*/
+.rise-in {
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity 420ms var(--ease-gentle),
+    transform 420ms var(--ease-gentle);
+}
+
+[data-lit] .rise-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in {
+    opacity: 1;
+    transform: none;
     transition: none;
   }
 }
@@ -1401,21 +1428,17 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 }
 
 /*
-  Lessons rail: the app header's own paper, --background with the desk grain
-  (owner, 2026-09-13 "match the header"; 2026-09-14 grain app-wide), so the
-  header and the drawer read as one grainy sheet. It used to carry
+  Lessons rail: the app header's own paper, --background (owner, 2026-09-13
+  "match the header"), so the header and the drawer read as one sheet. It used to carry
   a 4%/10% wash of the topic accent, then --elevated; both are gone, and so is
   a brief space-black dark variant. No per-theme rule: the token flips with
   the theme exactly as the header's bg-background does. The rail separates
   from the page by its border-r and edge shadow, not a brightness step.
 
-  Painted through --rail-surface rather than bg-background directly so the
-  rail's grain names its paper by that token ([--grain-paper:var(--rail-surface)]
-  on the aside). Rows inside keep hovering to --surface.
+  Rows inside keep hovering to --surface.
 */
 .sidebar-rail {
-  --rail-surface: var(--background);
-  background-color: var(--rail-surface);
+  background-color: var(--background);
 }
 
 .lab-stage {
@@ -1444,6 +1467,76 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
     var(--surface);
 }
 
+/*
+  A dark card on the landing (the Big-O stage, the practice window). The
+  element also carries .dark, and is in the :root selector list above, so
+  every token inside it takes its dark value in the light theme too and no
+  control is repainted by hand. In the light theme the card is the navy of the
+  code well and the module art; in the dark theme it is that theme's own code
+  paper. A .lab-stage carries it too (light theme: the stage is a navy card; the
+  dark theme's own .dark .lab-stage treatment is more specific and keeps it).
+
+  The block of tokens re-declares the semantic ones :root defines by reference
+  (var(--press-ink)) and the dark block does not set itself: a custom property
+  is computed where it is declared and inherited already resolved, so on a
+  subtree carrying .dark they would stay light. paperContrast.test.ts fails if
+  one is missing here.
+*/
+.navy-card {
+  --background: var(--press-paper);
+  --foreground: var(--press-ink);
+  --muted: var(--press-ink-soft);
+  --border: var(--press-rule);
+  --rule-strong: var(--press-rule-strong);
+  --accent: var(--press-olive);
+  --pop: var(--press-lime);
+  --good: var(--hue-green-ink);
+  --bad: var(--hue-red-ink);
+  --warn: var(--hue-orange-ink);
+  --insight: var(--hue-yellow-ink);
+  --info: var(--hue-blue-ink);
+  --good-surface: var(--hue-green-1);
+  --bad-surface: var(--hue-red-1);
+  --warn-surface: var(--hue-orange-1);
+  --insight-surface: var(--hue-yellow-1);
+  --info-surface: var(--hue-blue-1);
+  --good-line: var(--hue-green-line);
+  --bad-line: var(--hue-red-line);
+  --warn-line: var(--hue-orange-line);
+  --insight-line: var(--hue-yellow-line);
+  --info-line: var(--hue-blue-line);
+  --lamp: var(--press-lamp);
+  --lamp-hi: var(--press-lamp-hi);
+  --lamp-lo: var(--press-lamp-lo);
+  --mark: var(--press-blue);
+  --highlight: var(--press-highlight);
+  --halftone: var(--press-halftone);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--code);
+  color: var(--foreground);
+}
+:root:not(.dark) .navy-card {
+  /* The navy ladder (it began as the concept map's inverted plate): ground, a
+     recessed --surface and a lifted --elevated, so inner surfaces stay visible
+     instead of dropping to the dark theme's black and neutral grey. Measured
+     against the #14202e ground: a recessed #0f1a26 sat at 1.07:1 and vanished,
+     #1f3145 reads at 1.24:1; the lifted step was #304764 (1.73:1) but left --bad
+     at 4.19:1, so it is #2b405a, 1.55:1 with every ink at 4.67:1 or better.
+     --code (the filter track) is the recessed step. The inks stay the dark
+     theme's, which the .dark scope gives; paperContrast.test.ts holds each to
+     AA on all three steps. */
+  --background: var(--card-navy);
+  --elevated: #2b405a;
+  --surface: #1f3145;
+  --code: #1f3145;
+  --border: rgba(230, 237, 244, 0.22);
+  /* The dark theme's muted (#9ca9b8) fell short of AA on the lifted step; the
+     same hue lightened clears it on all three (paperContrast.test.ts). */
+  --muted: #acb9c8;
+  background: var(--card-navy);
+}
 .lab-mesh::before {
   content: "";
   pointer-events: none;
@@ -1834,47 +1927,3 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   }
 }
 
-/*
-  Inverted plate — a panel that deliberately runs opposite to the page, the
-  same idea globals.css already applies to the code surface ("always a dark
-  editor surface in the light theme and always a light one in the dark
-  theme"). Used by the concept map and the module art, so both read as their
-  own instrument rather than as more page.
-
-  This is a SCOPE, not a component style: it remaps the semantic tokens, so
-  everything inside keeps consuming --elevated / --foreground / --border and
-  needs no knowledge of the inversion — exactly how familyCssVars() works.
-  --accent and --on-pop are deliberately NOT remapped: an accent fill carries
-  its own ink, so the root node stays legible on either plate.
-
-  Values mirror the opposite theme's own tokens (--press-ink #e6edf4 /
-  --press-ink-soft #9ca9b8 dark; #16202e / #56606e light), so the plate never
-  invents a palette.
-*/
-.plate-invert {
-  --background: #14202e;
-  /* Node cards sit ON the plate and must read as lifted. Measured against the
-     #14202e ground: the original #1a2736 was 1.09:1 and vanished; #223349 was
-     1.28:1, still weak; #304764 is 1.73:1 — a step you can actually see, with
-     ink at 8.04:1 on it, comfortably past AA. */
-  --elevated: #304764;
-  /* Leaves use --surface and must still be *visible*: on this plate a recessed
-     value (#0f1a26) sat at 1.07:1 and disappeared. #1f3145 reads at 1.24:1
-     against the plate while staying clearly quieter than a branch card
-     (1.40:1 between them); ink on it is 11.2:1. */
-  --surface: #1f3145;
-  --foreground: #e6edf4;
-  --muted: #9ca9b8;
-  --border: rgba(230, 237, 244, 0.22);
-}
-
-.dark .plate-invert {
-  --background: #e4e9f2;
-  --elevated: #ffffff;
-  --surface: #d8dde8;
-  --foreground: #16202e;
-  --muted: #56606e;
-  /* Matches the light plate's border weight: on paper the white card already
-     carries a brightness step, so the rule only has to define the edge. */
-  --border: rgba(22, 32, 46, 0.20);
-}

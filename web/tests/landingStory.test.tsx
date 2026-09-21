@@ -3,6 +3,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { EvolvingStructure } from "@/components/landing/EvolvingStructure";
+import { STOP } from "@/components/landing/landingClasses";
 import { LandingStory } from "@/components/landing/LandingStory";
 import { TypedText } from "@/components/landing/TypedText";
 import { pagingIntent } from "@/components/landing/useSectionPaging";
@@ -10,26 +11,46 @@ import { activeSectionIndex } from "@/components/landing/useSectionReveal";
 import { curriculumStats } from "@/lib/landing/content";
 import {
   ALL_EDGES,
+  ARRAY_CAPSULE,
+  ARRAY_STAGE,
   BUCKETS,
-  CELL,
+  CLOUDS,
+  CLOUD_FLOAT,
   CROSS_LINKS,
+  FORMED_FLOAT,
+  FORMED_MS,
+  GRAPH_STAGE,
   HASH_ROW_Y,
+  HASH_STAGE,
   LAYOUTS,
+  LIST_STAGE,
+  MATRIX_COLS,
+  MATRIX_STAGE,
+  MORPH_MS,
   STAGE_EDGES,
+  STAGE_MODULES,
+  STAGE_MS,
+  STAGE_NAMES,
   STRUCTURE_VALUES,
+  TREE_STAGE,
   VIEW_H,
   VIEW_W,
-  clampStage,
-  cornerFor,
+  backdropTarget,
+  easeInOut,
+  floatOffset,
+  frameFor,
+  mixFrames,
 } from "@/lib/landing/structureLayouts";
+import { heatYear } from "@/lib/landing/heat";
+import { backdropColours, featureData } from "@/lib/landing/productData";
+import { MODULES, moduleFamily } from "@/lib/course/manifest";
+import { FAMILY_THEMES } from "@/lib/visual/familyTheme";
+import { hexToRgb } from "@/lib/visual/palette";
 import {
   FAQ,
   HERO,
   PRICING,
-  WHY,
-  argumentDuration,
-  argumentLengths,
-  argumentStage,
+  clamp01,
   inside,
   segmentProgress,
   typedLength,
@@ -39,6 +60,8 @@ import {
 const src = join(__dirname, "..", "src");
 const read = (...p: string[]) => readFileSync(join(src, ...p), "utf8");
 const values = STRUCTURE_VALUES;
+/** Six distinct inks, one per stage, so a frame's colour says which stage it wears. */
+const INKS = STAGE_NAMES.map((_, i) => hexToRgb(`#${(0x10 + i * 0x20).toString(16).padStart(2, "0")}8040`));
 const pairKey = (a: number, b: number) => (a < b ? `${a}-${b}` : `${b}-${a}`);
 const edgeValues = (edges: readonly (readonly [number, number])[]) =>
   new Set(edges.map(([a, b]) => pairKey(values[a]!, values[b]!)));
@@ -82,23 +105,58 @@ function insertBst(order: readonly number[]) {
 }
 
 describe("evolving structure data", () => {
-  it("places all seven values inside the drawing at every stage", () => {
-    expect(LAYOUTS).toHaveLength(4);
-    for (const layout of LAYOUTS) {
+  it("draws the six structures in the order the page moves through them", () => {
+    expect(STAGE_NAMES).toEqual(["array", "linked list", "hash table", "binary search tree", "matrix", "graph"]);
+    expect([ARRAY_STAGE, LIST_STAGE, HASH_STAGE, TREE_STAGE, MATRIX_STAGE, GRAPH_STAGE]).toEqual([0, 1, 2, 3, 4, 5]);
+  });
+
+  it("places all nine points inside the drawing in every structure and every cloud", () => {
+    expect(LAYOUTS).toHaveLength(STAGE_NAMES.length);
+    expect(CLOUDS).toHaveLength(STAGE_NAMES.length);
+    for (const layout of [...LAYOUTS, ...CLOUDS]) {
       expect(layout).toHaveLength(values.length);
       for (const { x, y } of layout) {
-        expect(x).toBeGreaterThan(0);
-        expect(x).toBeLessThan(VIEW_W);
-        expect(y).toBeGreaterThan(0);
-        expect(y).toBeLessThan(VIEW_H);
+        // The float can carry a cloud point CLOUD_FLOAT further; it must still land inside.
+        expect(x - CLOUD_FLOAT).toBeGreaterThan(0);
+        expect(x + CLOUD_FLOAT).toBeLessThan(VIEW_W);
+        expect(y - CLOUD_FLOAT).toBeGreaterThan(0);
+        expect(y + CLOUD_FLOAT).toBeLessThan(VIEW_H);
       }
     }
   });
 
+  it("scatters a different cloud before each structure", () => {
+    const keys = CLOUDS.map((cloud) => cloud.map(({ x, y }) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" "));
+    expect(new Set(keys).size).toBe(CLOUDS.length);
+  });
+
+  it("draws the array as one tight row inside its capsule", () => {
+    const row = LAYOUTS[ARRAY_STAGE]!;
+    const list = LAYOUTS[LIST_STAGE]!;
+    for (let i = 1; i < values.length; i++) {
+      expect(row[i]!.y).toBe(row[0]!.y);
+      // Tighter than the list: contiguous, not linked.
+      expect(row[i]!.x - row[i - 1]!.x).toBeLessThan(list[i]!.x - list[i - 1]!.x);
+    }
+    for (const { x, y } of row) {
+      expect(x).toBeGreaterThan(ARRAY_CAPSULE.x);
+      expect(x).toBeLessThan(ARRAY_CAPSULE.x + ARRAY_CAPSULE.width);
+      expect(y).toBeGreaterThan(ARRAY_CAPSULE.y);
+      expect(y).toBeLessThan(ARRAY_CAPSULE.y + ARRAY_CAPSULE.height);
+    }
+  });
+
+  it("links the list in array order, left to right", () => {
+    const list = LAYOUTS[LIST_STAGE]!;
+    for (let i = 1; i < values.length; i++) expect(list[i]!.x).toBeGreaterThan(list[i - 1]!.x);
+    const expected = new Set(values.slice(1).map((v, i) => pairKey(values[i]!, v)));
+    expect(edgeValues(STAGE_EDGES[LIST_STAGE]!)).toEqual(expected);
+  });
+
   it("files every value in bucket value % buckets, chained in array order", () => {
-    const hash = LAYOUTS[1]!;
+    const hash = LAYOUTS[HASH_STAGE]!;
     values.forEach((v, i) => expect(hash[i]!.y).toBe(HASH_ROW_Y(v % BUCKETS)));
-    const links = edgeValues(STAGE_EDGES[1]!);
+    const links = edgeValues(STAGE_EDGES[HASH_STAGE]!);
     for (let b = 0; b < BUCKETS; b++) {
       const chain = values.map((v, i) => ({ v, i })).filter(({ v }) => v % BUCKETS === b);
       for (let k = 1; k < chain.length; k++) {
@@ -111,9 +169,9 @@ describe("evolving structure data", () => {
   it("draws the BST that inserting the values in order actually builds", () => {
     const { parent, depth } = insertBst(values);
     const expected = new Set([...parent].map(([child, p]) => pairKey(child, p)));
-    expect(edgeValues(STAGE_EDGES[2]!)).toEqual(expected);
+    expect(edgeValues(STAGE_EDGES[TREE_STAGE]!)).toEqual(expected);
 
-    const tree = LAYOUTS[2]!;
+    const tree = LAYOUTS[TREE_STAGE]!;
     const leftToRight = values.map((v, i) => ({ v, x: tree[i]!.x })).sort((a, b) => a.x - b.x);
     expect(leftToRight.map(({ v }) => v)).toEqual([...values].sort((a, b) => a - b));
     values.forEach((v, i) =>
@@ -123,9 +181,30 @@ describe("evolving structure data", () => {
     );
   });
 
+  it("fills a square matrix row by row and joins each cell to its right and lower neighbours", () => {
+    expect(MATRIX_COLS * MATRIX_COLS).toBe(values.length);
+    const grid = LAYOUTS[MATRIX_STAGE]!;
+    const at = (i: number) => ({ row: Math.floor(i / MATRIX_COLS), col: i % MATRIX_COLS });
+    values.forEach((_, i) =>
+      values.forEach((_, j) => {
+        if (at(i).row === at(j).row) expect(grid[i]!.y).toBe(grid[j]!.y);
+        if (at(i).col === at(j).col) expect(grid[i]!.x).toBe(grid[j]!.x);
+      }),
+    );
+    const expected = new Set<string>();
+    values.forEach((_, i) =>
+      values.forEach((_, j) => {
+        const [a, b] = [at(i), at(j)];
+        if ((a.row === b.row && b.col === a.col + 1) || (a.col === b.col && b.row === a.row + 1))
+          expected.add(pairKey(values[i]!, values[j]!));
+      }),
+    );
+    expect(edgeValues(STAGE_EDGES[MATRIX_STAGE]!)).toEqual(expected);
+  });
+
   it("makes the graph the tree plus cross links that close cycles", () => {
-    const tree = edgeValues(STAGE_EDGES[2]!);
-    const graph = edgeValues(STAGE_EDGES[3]!);
+    const tree = edgeValues(STAGE_EDGES[TREE_STAGE]!);
+    const graph = edgeValues(STAGE_EDGES[GRAPH_STAGE]!);
     for (const edge of tree) expect(graph.has(edge)).toBe(true);
     for (const [a, b] of CROSS_LINKS) expect(graph.has(pairKey(a, b))).toBe(true);
 
@@ -143,38 +222,97 @@ describe("evolving structure data", () => {
     expect(graph.size).toBeGreaterThan(values.length - 1);
   });
 
-  it("keeps each edge as one element across the stages that draw it", () => {
+  it("keeps each edge as one element, drawn in exactly the stages whose structure has it", () => {
     // One element per edge is what lets a tree edge stay put as the tree becomes a graph.
     const keys = ALL_EDGES.map(({ edge: [a, b] }) => pairKey(values[a]!, values[b]!));
     expect(new Set(keys).size).toBe(keys.length);
-    const crossKeys = new Set(CROSS_LINKS.map(([a, b]) => pairKey(a, b)));
-    const treeKeys = edgeValues(STAGE_EDGES[2]!);
+    const perStage = STAGE_EDGES.map(edgeValues);
     for (const { edge: [a, b], stages } of ALL_EDGES) {
       const key = pairKey(values[a]!, values[b]!);
-      if (crossKeys.has(key)) expect(stages).toEqual([3]);
-      else if (treeKeys.has(key)) expect(stages).toEqual([2, 3]);
-      else expect(stages).toEqual([1]);
+      expect(stages).toEqual(perStage.flatMap((set, stage) => (set.has(key) ? [stage] : [])));
     }
   });
 
-  it("rests only on whole stages: square cells in slots, circles as nodes", () => {
-    expect([clampStage(-1), clampStage(1.4), clampStage(9)]).toEqual([0, 1, 3]);
-    expect(cornerFor(0)).toBe(cornerFor(1));
-    expect(cornerFor(2)).toBe(CELL / 2);
-    expect(cornerFor(3)).toBe(CELL / 2);
-    expect(cornerFor(1)).toBeLessThan(cornerFor(2));
+  it("runs its own loop: gather, hold, scatter, float, then the next structure, forever", () => {
+    // The first structure gathers from the moment the loop starts.
+    expect(backdropTarget(0)).toEqual({ kind: "structure", stage: ARRAY_STAGE });
+    expect(backdropTarget(FORMED_MS - 1)).toEqual({ kind: "structure", stage: ARRAY_STAGE });
+    // Then it scatters into the cloud the next structure gathers from.
+    expect(backdropTarget(FORMED_MS)).toEqual({ kind: "cloud", cloud: LIST_STAGE });
+    expect(backdropTarget(STAGE_MS - 1)).toEqual({ kind: "cloud", cloud: LIST_STAGE });
+    expect(backdropTarget(STAGE_MS)).toEqual({ kind: "structure", stage: LIST_STAGE });
+    // Every structure in page order, and round again after the graph.
+    const order = STAGE_NAMES.map((_, k) => backdropTarget(k * STAGE_MS));
+    expect(order).toEqual(STAGE_NAMES.map((_, stage) => ({ kind: "structure", stage })));
+    expect(backdropTarget(STAGE_NAMES.length * STAGE_MS)).toEqual({ kind: "structure", stage: ARRAY_STAGE });
+    expect(backdropTarget((STAGE_NAMES.length - 1) * STAGE_MS + FORMED_MS)).toEqual({ kind: "cloud", cloud: 0 });
+    // Each glide lands before the phase ends: the hold and the float are real rests.
+    expect(FORMED_MS).toBeGreaterThan(MORPH_MS);
+    expect(STAGE_MS - FORMED_MS).toBeGreaterThan(MORPH_MS);
   });
 
-  it("names its stage for screen readers and shows exactly that stage's edges", () => {
-    const at = (stage: number) => renderToStaticMarkup(<EvolvingStructure stage={stage} />);
-    expect(at(0)).toMatch(/role="img"[^>]*aria-label="[^"]*as an array\."/);
-    expect(at(1)).toContain(`as a hash table with ${BUCKETS} buckets.`);
-    expect(at(2)).toContain("as a binary search tree.");
-    expect(at(3)).toContain("as a graph.");
-    expect(at(2).match(/<rect/g)).toHaveLength(values.length);
-    [0, 1, 2, 3].forEach((stage) =>
-      expect(at(stage).match(/data-shown="true"/g) ?? [], `stage ${stage}`).toHaveLength(STAGE_EDGES[stage]!.length),
-    );
+  it("frames a structure with its own edges and extras, a cloud with none", () => {
+    STAGE_NAMES.forEach((_, stage) => {
+      const frame = frameFor({ kind: "structure", stage }, INKS);
+      expect(frame.points).toBe(LAYOUTS[stage]);
+      expect(frame.colour).toBe(INKS[stage]);
+      expect(frame.edges.filter((e) => e === 1)).toHaveLength(STAGE_EDGES[stage]!.length);
+      expect(frame.capsule).toBe(stage === ARRAY_STAGE ? 1 : 0);
+      expect(frame.spine).toBe(stage === HASH_STAGE ? 1 : 0);
+      expect(frame.float).toBe(FORMED_FLOAT);
+    });
+    const cloud = frameFor({ kind: "cloud", cloud: 2 }, INKS);
+    expect(cloud.points).toBe(CLOUDS[2]);
+    // A cloud already wears the ink of the structure it gathers into.
+    expect(cloud.colour).toBe(INKS[2]);
+    expect(cloud.edges.every((e) => e === 0)).toBe(true);
+    expect([cloud.capsule, cloud.spine, cloud.float]).toEqual([0, 0, CLOUD_FLOAT]);
+  });
+
+  it("glides from one frame to the next and lands exactly on it", () => {
+    const from = frameFor({ kind: "cloud", cloud: 0 }, INKS);
+    const to = frameFor({ kind: "structure", stage: TREE_STAGE }, INKS);
+    expect(mixFrames(from, to, 0)).toEqual(from);
+    expect(mixFrames(from, to, 1)).toEqual({ ...to, points: to.points.map((p) => ({ ...p })) });
+    const half = mixFrames(from, to, 0.5);
+    expect(half.points[0]!.x).toBeCloseTo((from.points[0]!.x + to.points[0]!.x) / 2);
+    half.colour.forEach((c, i) => expect(c).toBeCloseTo((from.colour[i]! + to.colour[i]!) / 2));
+    expect([easeInOut(-1), easeInOut(0), easeInOut(0.5), easeInOut(1), easeInOut(2)]).toEqual([0, 0, 0.5, 1, 1]);
+    // Slow in, slow out.
+    expect(easeInOut(0.1)).toBeLessThan(0.1);
+    expect(easeInOut(0.9)).toBeGreaterThan(0.9);
+  });
+
+  it("floats every point on its own bounded path", () => {
+    const paths = values.map((_, i) => [0, 1, 2, 3].map((s) => floatOffset(i, s * 1.7)));
+    for (const path of paths)
+      for (const { x, y } of path) {
+        expect(Math.abs(x)).toBeLessThanOrEqual(1);
+        expect(Math.abs(y)).toBeLessThanOrEqual(1);
+      }
+    expect(new Set(paths.map((p) => JSON.stringify(p))).size).toBe(values.length);
+  });
+
+  it("draws points and lines only — no values, no labels — hidden from assistive tech", () => {
+    const html = renderToStaticMarkup(<EvolvingStructure colours={backdropColours()} />);
+    expect(html).toMatch(/^<svg[^>]*aria-hidden="true"/);
+    expect(html).not.toContain('role="img"');
+    expect(html).not.toContain("<text");
+    expect(html.match(/<circle/g)).toHaveLength(values.length);
+    // It opens on the first cloud, every link still undrawn.
+    expect(html.match(/data-edge/g)).toHaveLength(ALL_EDGES.length);
+    expect(html.match(/stroke-dashoffset:1;opacity:0/g)).toHaveLength(ALL_EDGES.length);
+    CLOUDS[0]!.forEach(({ x }) => expect(html).toContain(`cx="${x}"`));
+    // The server paints the ink the loop starts from: the first structure's.
+    expect(html).toContain(`--backdrop-ink:${backdropColours()[0]}`);
+  });
+
+  it("paints each structure in the family colour of the module that teaches it", () => {
+    const slugs = new Set(MODULES.map((m) => m.slug));
+    for (const slug of STAGE_MODULES) expect(slugs.has(slug), slug).toBe(true);
+    const expected = STAGE_MODULES.map((slug) => FAMILY_THEMES.find((t) => t.id === moduleFamily(slug))!.accentUi);
+    expect(backdropColours()).toEqual(expected);
+    expect(STAGE_MODULES).toHaveLength(STAGE_NAMES.length);
   });
 });
 
@@ -208,6 +346,14 @@ describe("typing", () => {
     expect(segmentProgress([2, 3], 1)).toEqual([1, 1]);
   });
 
+  it("clamps progress, reading a zero-duration run as finished so its loop stops", () => {
+    expect(clamp01(-0.5)).toBe(0);
+    expect(clamp01(0.25)).toBe(0.25);
+    expect(clamp01(2)).toBe(1);
+    expect(clamp01(1 / 0)).toBe(1);
+    expect(clamp01(0 / 0)).toBe(0);
+  });
+
   it("types long sections faster per character, within a floor and a ceiling", () => {
     expect(typingDuration(10)).toBe(700);
     expect(typingDuration(100)).toBe(1200);
@@ -235,7 +381,7 @@ describe("typing", () => {
 
   it("reveals the typed layers when scripts never run", () => {
     expect(read("components", "landing", "LandingStory.tsx")).toContain(
-      'NOSCRIPT_REVEAL = "[data-typed-rest]{color:inherit!important}"',
+      '"[data-typed-rest]{color:inherit!important}.rise-in{opacity:1!important;transform:none!important}"',
     );
   });
 });
@@ -273,7 +419,12 @@ describe("snapping", () => {
     expect(HERO.lines).toEqual(["Agents write the code.", "You decide if it's right."]);
     expect(HERO.title).toBe(HERO.lines.join(" "));
     const html = renderToStaticMarkup(
-      <LandingStory counts={{ modules: 1, lessons: 1, problems: 1 }} topics={[]} />,
+      <LandingStory
+        counts={{ modules: 1, lessons: 1, problems: 1 }}
+        links={{ start: "/start", curriculum: "/curriculum" }}
+        stages={[]}
+        features={{ ...featureData(), heat: heatYear("2026-09-14") }}
+      />,
     );
     const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)![1]!;
     const lines = [...h1.matchAll(/<span class="block text-balance"><span><span class="sr-only">([^<]*)<\/span>/g)].map((m) =>
@@ -290,15 +441,56 @@ describe("snapping", () => {
     expect(h1).toMatch(/\bxl:text-5xl\b/);
   });
 
-  it("keeps the inline mobile drawings clear of the sticky header", () => {
-    const inline = [...story.matchAll(/<EvolvingStructure[^>]*className="([^"]*\blg:hidden\b[^"]*)"/g)].map((m) => m[1]!);
-    expect(inline).toHaveLength(2);
-    for (const cls of inline) expect(cls).toMatch(/\bmt-8\b/);
+  it("draws the structure once, as the page backdrop, on its own clock", () => {
+    // It stood beside the hero until 2026-09-19; it is the whole page's backdrop now.
+    expect(story).not.toContain("<EvolvingStructure");
+    const home = read("components", "landing", "HomePage.tsx");
+    expect(home).toContain("<LandingBackdrop colours={backdropColours()} />");
+    const backdrop = read("components", "landing", "LandingBackdrop.tsx");
+    const drawing = read("components", "landing", "EvolvingStructure.tsx");
+    expect(backdrop).toContain("<EvolvingStructure colours={colours} ");
+    // Independent of scroll (owner, 2026-09-20): the drawing watches nothing,
+    // and the backdrop watches only the stops that ask it to step aside.
+    expect(drawing).not.toContain("IntersectionObserver");
+    for (const text of [backdrop, drawing]) {
+      expect(text).not.toContain("data-scroll-section");
+      expect(text).not.toMatch(/addEventListener\("scroll"/);
+    }
+    expect(backdrop).toMatch(/querySelectorAll<HTMLElement>\("\[data-backdrop-off\]"\)/);
+    expect(backdrop).toMatch(/aria-hidden[^>]*className="landing-backdrop pointer-events-none fixed inset-y-0 right-0/);
+    const css = read("app", "globals.css");
+    expect(css).toMatch(/opacity: var\(--backdrop-opacity\);\s*filter: blur\(var\(--backdrop-blur\)\);\s*perspective: \d+px;/);
+    expect(css).toMatch(/\.landing-backdrop\[data-off\] \{\s*opacity: 0;/);
+    expect(css).toMatch(/\.landing-backdrop-drawing \{\s*animation: backdrop-sway /);
+    // The sway stops under reduced motion, like every landing animation.
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.landing-backdrop-drawing \{\s*animation: none;/);
   });
 
-  it("pages the wheel on the landing story and centres the pinned drawing in a viewport-tall box", () => {
+  it("keeps the backdrop in the free space beside the text, never under it", () => {
+    // Owner, 2026-09-20: "use the empty space, don't disturb the text".
+    const backdrop = read("components", "landing", "LandingBackdrop.tsx");
+    // Hidden below xl, where the text spans the screen.
+    expect(backdrop).toMatch(/className="landing-backdrop [^"]*\bhidden\b[^"]*\bxl:flex\b/);
+    // It starts right of the text column: the container's content edge plus
+    // the widest text measure the story uses, plus a gap.
+    const left = read("app", "globals.css").match(
+      /\.landing-backdrop \{[^}]*left: calc\(max\(4rem, \(100vw - var\(--container-landing\)\) \/ 2 \+ 4rem\) \+ (\d+)rem\);/,
+    );
+    expect(left, "the zone's left edge").not.toBeNull();
+    const measures = [...story.matchAll(/max-w-(\w+)/g)].map((m) => m[1]!);
+    const REM: Record<string, number> = { xl: 36, "2xl": 42, "3xl": 48 };
+    for (const m of measures) expect(m === "full" || m in REM, `max-w-${m} is wider than the zone allows`).toBe(true);
+    // max-w-full only caps the verbs strip, which sizes to its content (w-fit).
+    expect(story).toMatch(/w-fit max-w-full/);
+    const widest = Math.max(...measures.filter((m) => m in REM).map((m) => REM[m]!));
+    expect(Number(left![1])).toBeGreaterThanOrEqual(widest + 2);
+    // Stops whose right side carries text ask it to step aside.
+    expect(outro).toMatch(/<section data-scroll-section data-backdrop-off /);
+    expect(read("components", "landing", "LandingFooter.tsx")).toMatch(/<footer data-backdrop-off /);
+  });
+
+  it("pages the wheel on the landing story", () => {
     expect(story).toMatch(/useSectionPaging\(\);/);
-    expect(story).toMatch(/className="sticky top-0 flex h-dvh items-center"/);
   });
 
   it("snaps only the landing page, mandatory from lg", () => {
@@ -307,25 +499,27 @@ describe("snapping", () => {
     expect(main).toContain('landing && "snap-y snap-proximity lg:snap-mandatory"');
     // One desk wrapper for every route; only on / is it a snap stop.
     expect(main).toMatch(
-      /"paper-grain relative",\s*fillMain \? "flex min-h-0 flex-1 flex-col" : "min-h-full",\s*landing && "snap-start",/,
+      /"relative isolate",\s*fillMain \? "flex min-h-0 flex-1 flex-col" : "min-h-full",\s*landing && "snap-start",/,
     );
   });
 
-  it("makes the argument, what's inside, pricing and questions full-height stops, but not the hero", () => {
-    const hero = story.match(/<section data-scroll-section className="([^"]+)"/)?.[1] ?? "";
+  it("makes every section after the hero a full-height stop, but not the hero", () => {
+    const hero = story.match(/<section\s+data-scroll-section\s+className="([^"]+)"/)?.[1] ?? "";
+    expect(hero).toMatch(/\bmin-h-\[calc\(100dvh-6rem\)\]/);
     expect(hero).not.toMatch(/\bsnap-start\b/);
-    const stop = story.match(/const STOP = "([^"]+)"/)?.[1] ?? "";
-    expect(stop).toMatch(/\bsnap-start\b/);
-    expect(stop).toMatch(/\bmin-h-dvh\b/);
-    // The argument and what's inside; the four chapters are one stop now.
-    expect(story.match(/<section data-scroll-section className=\{STOP\}\s*\/?>/g)).toHaveLength(2);
-    expect(story.match(/data-scroll-section/g)).toHaveLength(3);
-    expect(story).toContain("useActiveSection<HTMLDivElement>(3)");
-    const outroSection = outro.match(/const SECTION = "([^"]+)"/)?.[1] ?? "";
-    expect(outroSection).toMatch(/\bsnap-start\b/);
-    expect(outroSection).toMatch(/\bmin-h-dvh\b/);
-    // Pricing, credits and questions.
-    expect(outro.match(/<section data-scroll-section className=\{SECTION\}>/g)).toHaveLength(3);
+    expect(STOP).toMatch(/\bsnap-start\b/);
+    expect(STOP).toMatch(/\bmin-h-dvh\b/);
+    // What's inside; Understand, Build and Keep are FeatureSections, each one stop.
+    expect(story.match(/<section data-scroll-section className=\{STOP\}\s*\/?>/g)).toHaveLength(1);
+    expect(story.match(/data-scroll-section/g)).toHaveLength(2);
+    expect(story).toContain("useActiveSection<HTMLDivElement>(5)");
+    const feature = read("components", "landing", "FeatureSection.tsx");
+    expect(feature.match(/data-scroll-section/g)).toHaveLength(1);
+    // A stop below lg; from lg one screen per feature (owner, 2026-09-20).
+    expect(feature).toMatch(/data-scroll-section\s+data-scroll-steps=\{count\}\s+id=\{section\.id\}[\s\S]*?className=\{cn\(STOP, STEPPED\)\}/);
+    // Pricing, learners and questions: one slide since 2026-09-19; its text
+    // runs to the right edge, so the backdrop steps aside for it.
+    expect(outro.match(/<section data-scroll-section data-backdrop-off className=\{STOP\}>/g)).toHaveLength(1);
   });
 
   it("finds the active section by observing the middle band, not by listening for scroll", () => {
@@ -341,13 +535,14 @@ describe("snapping", () => {
   it("animates on arrival, not on scroll position", () => {
     for (const [name, text] of [["LandingStory", story], ["LandingOutro", outro]] as const) {
       expect(text, name).toMatch(/useActiveSection/);
-      expect(text, name).toMatch(/useRevealProgress/);
+      expect(text, name).toMatch(/useTypedText/);
       expect(text, name).toMatch(/ref=\{root\}/);
       expect(text, name).not.toMatch(/useScrollProgress|sectionProgress|ref=\{refs\[/);
     }
     const structure = read("components", "landing", "EvolvingStructure.tsx");
-    expect(structure).toContain('from "motion/react"');
-    expect(structure).toMatch(/initial=\{false\}/);
+    // The backdrop runs on its own frame clock, not on arrival or scroll.
+    expect(structure).toMatch(/requestAnimationFrame\(tick\)/);
+    expect(structure).toMatch(/backdropTarget\(elapsed\)/);
     expect(existsSync(join(src, "components", "landing", "useScrollProgress.ts"))).toBe(false);
   });
 });
@@ -355,69 +550,11 @@ describe("snapping", () => {
 describe("landing copy", () => {
   const stats = curriculumStats();
   const course = inside(stats);
-  const text = [WHY.title, ...WHY.points.flatMap((p) => [p.title, p.body])].join("\n");
-
-  it("states numbers that are computed, not typed in", () => {
-    // Recomputed here independently of story.ts's helpers.
-    const n = 1_000_000;
-    const pairs = (n * (n - 1)) / 2;
-    expect(text).toContain(`about ${Math.round(pairs / 1_000_000_000)} billion pair checks`);
-    expect(text).toContain(`${(100 * 100).toLocaleString("en-US")} steps on a hundred items`);
-    expect(n * n).toBe(1e12);
-    expect(text).toContain("and a trillion on a million");
-    // A correct number typed by hand renders the same text, so check the copy
-    // still derives it (CLAUDE.md: every number computed, never typed in).
-    const copy = read("lib", "landing", "story.ts");
-    expect(copy).toContain("${Math.round(pairCount(MILLION) / 1e9)} billion pair checks");
-    expect(copy).toContain("${spellCount(nestedSteps(100))} steps on a hundred items");
-    expect(copy).toContain("${spellCount(nestedSteps(MILLION))} on a million");
-  });
 
   it("counts the course from the manifest", () => {
     expect(course.body.join(" ")).toContain(
       `${stats.modules} modules · ${stats.lessons} lessons · ${stats.problems} problems`,
     );
-  });
-
-  it("makes the argument in four short points, one screen", () => {
-    expect(WHY.points).toHaveLength(4);
-    for (const { title, body } of WHY.points) {
-      // One line of claim, one line of evidence: long enough to say something, short enough to scan.
-      expect(title.length, title).toBeLessThanOrEqual(32);
-      expect(body.length, body).toBeLessThanOrEqual(120);
-    }
-  });
-
-  it("types the heading, then each point's title and body, in order", () => {
-    expect(argumentLengths()).toEqual([
-      WHY.title.length,
-      ...WHY.points.flatMap((p) => [p.title.length, p.body.length]),
-    ]);
-    // Each point gets longer than the structure's 0.9s morph.
-    expect(argumentDuration() / WHY.points.length).toBeGreaterThan(900);
-  });
-
-  it("moves the structure one stage per point as each title starts typing", () => {
-    const lengths = argumentLengths();
-    const at = (p: number) => argumentStage(segmentProgress(lengths, p));
-    expect(at(0)).toBe(0);
-    // Before the first title starts (still on the heading), stage 0.
-    expect(at(WHY.title.length / lengths.reduce((a, b) => a + b, 0) / 2)).toBe(0);
-    expect(at(1)).toBe(WHY.points.length - 1);
-    const stages: number[] = [];
-    for (let p = 0; p <= 1.0001; p += 0.01) stages.push(at(p));
-    for (let k = 1; k < stages.length; k++) expect(stages[k]! - stages[k - 1]!).toBeGreaterThanOrEqual(0);
-    expect(new Set(stages)).toEqual(new Set([0, 1, 2, 3]));
-    // The switch lands exactly where point i's title begins — not its body,
-    // which would leave the drawing a line behind the text.
-    const total = lengths.reduce((a, b) => a + b, 0);
-    const startOf = (segment: number) => lengths.slice(0, segment).reduce((a, b) => a + b, 0);
-    for (let i = 1; i < WHY.points.length; i++) {
-      const titleStart = startOf(1 + 2 * i);
-      expect(at((titleStart - 0.5) / total), `just before point ${i}'s title`).toBe(i - 1);
-      expect(at((titleStart + 0.5) / total), `just after point ${i}'s title starts`).toBe(i);
-    }
-    expect(course.stage).toBe(3);
   });
 
   it("carries the owner's pricing line and no prices", () => {
@@ -433,12 +570,14 @@ describe("landing copy", () => {
       "Learning data structures and algorithms is for the part of the job that doesn't get automated.",
     );
     expect(HERO.lede).toMatch(/data structures and algorithms/);
-    // The four arguments, problem-solving mindset first.
-    expect(WHY.points[0]!.title).toBe("Problem solving is the job.");
-    expect(text).toMatch(/Frame it before you prompt/);
-    expect(text).toMatch(/Review what it costs/);
-    expect(text).toMatch(/Interviews still ask/);
-    expect(FAQ).toHaveLength(3);
+    // The six-habit screen answers "why learn this if AI writes code", so the
+    // FAQ no longer asks it; who it's for and interviews are asked instead.
+    expect(FAQ.map((f) => f.q)).toEqual([
+      "Who is it for?",
+      "Does it help with interviews?",
+      "Which languages?",
+      "Do I need a CS degree?",
+    ]);
   });
 });
 
@@ -454,17 +593,24 @@ describe("landing page", () => {
     "HeroStructureArt",
     "IdeWalkthrough",
     "WhoNotPractical",
+    // Folded into Understand, Build and Keep (2026-09-17).
+    "MethodSteps",
+    "ProductShowcase",
+    // The section clips gave way to the page backdrop (2026-09-19).
+    "SectionClip",
   ];
 
-  it("is built from the story, outro and footer only — no viz or code blocks", () => {
+  it("is built from the backdrop, story, outro and footer, with server data from content, heat and productData", () => {
     const imports = [...home.matchAll(/from "([^"]+)"/g)].map((m) => m[1]);
     expect(imports.sort()).toEqual(
       [
+        "@/components/landing/LandingBackdrop",
         "@/components/landing/LandingFooter",
         "@/components/landing/LandingOutro",
         "@/components/landing/LandingStory",
         "@/lib/landing/content",
         "@/lib/landing/heat",
+        "@/lib/landing/productData",
       ].sort(),
     );
   });

@@ -100,9 +100,8 @@ describe("drawer tab idiom", () => {
     // token also lets the tabs' fillets reuse it as a gradient stop.
     const headerBg = header.match(/<header[^>]*className="[^"]*\bbg-([a-z-]+)\b/)![1];
     expect(rule(".sidebar-rail")).toMatch(
-      new RegExp(`--rail-surface:\\s*var\\(--${headerBg}\\);`),
+      new RegExp(`background-color:\\s*var\\(--${headerBg}\\);`),
     );
-    expect(rule(".sidebar-rail")).toMatch(/background-color:\s*var\(--rail-surface\)/);
     expect(rule(".sidebar-rail")).not.toMatch(/background-image|color-mix/);
     expect(globals).not.toContain(".dark .sidebar-rail {");
   });
@@ -112,7 +111,7 @@ describe("floating opener", () => {
   it("is a round floating button in the bottom-left corner, not a tab", () => {
     const cls = floating.match(/className=\{cn\(ROUND_CONTROL, "([^"]*)"\)\}/)?.[1];
     expect(cls, "opener classes").toBeDefined();
-    for (const c of ["fixed", "bottom-6", "left-6", "bg-background", "grain-paper", "shadow-elevation", "lg:flex"]) {
+    for (const c of ["fixed", "bottom-6", "left-6", "bg-background", "shadow-elevation", "lg:flex"]) {
       expect(cls!.split(" "), c).toContain(c);
     }
     expect(floating).toMatch(/import \{[^}]*\bROUND_CONTROL\b[^}]*\} from "@\/components\/layout\/headerChrome"/);

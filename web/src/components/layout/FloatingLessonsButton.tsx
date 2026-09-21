@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
  * pinned header row carries the close button then.
  *
  * z-40 keeps it above the hover edge strip (z-30), so resting the pointer on
- * the button does not throw the drawer open by itself. Grainy page paper with
+ * the button does not throw the drawer open by itself. Page paper with
  * the card shadow: the header's round control, lifted to float over content.
  */
 export function FloatingLessonsButton() {
@@ -27,7 +27,7 @@ export function FloatingLessonsButton() {
       aria-label="Open lessons drawer"
       aria-controls="lessons-sidebar"
       aria-expanded={false}
-      className={cn(ROUND_CONTROL, "fixed bottom-6 left-6 z-40 hidden h-11 w-11 bg-background grain-paper shadow-elevation lg:flex")}
+      className={cn(ROUND_CONTROL, "fixed bottom-6 left-6 z-40 hidden h-11 w-11 bg-background shadow-elevation lg:flex")}
     >
       <List className="h-5 w-5" weight="bold" />
     </button>

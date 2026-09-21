@@ -82,7 +82,12 @@ export default async function ConceptMapPage({ params }: PageProps) {
         {/* min-h-0 lets the panel shrink inside the flex column instead of
             being pushed past the fold; the floor keeps it usable on a short
             window, where filling the viewport would otherwise squash it. */}
-        <div className="plate-invert mt-8 flex min-h-[22rem] flex-1 flex-col rounded-[length:var(--radius-lg)] border border-border bg-background shadow-elevation p-5">
+        {/* The family goes on the card, not only the wrapper above:
+            .navy-card re-declares --accent, so an ancestor's would lose. */}
+        <div
+          className="dark navy-card mt-8 flex min-h-[22rem] flex-1 flex-col p-5"
+          style={family ? familyCssVars(family) : undefined}
+        >
           <ConceptMindMap root={conceptMap} label={mod.title} size="xl" fill />
         </div>
       </div>

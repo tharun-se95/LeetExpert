@@ -1,207 +1,216 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowsClockwise,
-  ArrowsInLineHorizontal,
-  ArrowsLeftRight,
-  BracketsSquare,
-  Graph,
-  GridFour,
-  Hash,
-  TreeStructure,
-} from "@phosphor-icons/react";
-import type { ComponentType } from "react";
-import { EvolvingStructure } from "@/components/landing/EvolvingStructure";
+import { ArrowRight } from "@phosphor-icons/react";
+import { FeatureSection } from "@/components/landing/FeatureSection";
+import { featureWindows, type FeatureWindowData } from "@/components/landing/FeatureWindows";
+import { KICKER, STOP, TITLE } from "@/components/landing/landingClasses";
 import { TypedText } from "@/components/landing/TypedText";
 import { useSectionPaging } from "@/components/landing/useSectionPaging";
-import { useActiveSection, useRevealProgress } from "@/components/landing/useSectionReveal";
-import type { TOPIC_CHIPS } from "@/lib/landing/content";
+import { useActiveSection, useTypedText } from "@/components/landing/useSectionReveal";
+import { featureSections, type FeatureSection as Section } from "@/lib/landing/features";
 import {
   HERO,
-  WHY,
-  argumentDuration,
-  argumentLengths,
-  argumentStage,
+  RISE_STAGGER_MS,
+  countsLine,
   inside,
-  segmentProgress,
-  typingDuration,
+  stageMeta,
   type Chapter,
   type CurriculumCounts,
+  type StageCard,
 } from "@/lib/landing/story";
+import { cn } from "@/lib/utils";
 
-type Topic = (typeof TOPIC_CHIPS)[number];
+/** Reveals every typed layer and risen card when scripts never run (both start hidden). */
+const NOSCRIPT_REVEAL = "[data-typed-rest]{color:inherit!important}.rise-in{opacity:1!important;transform:none!important}";
 
-/** One icon per topic link, keyed by label so a new chip without an icon fails the typecheck. */
-const TOPIC_ICONS: Record<Topic["label"], ComponentType<{ className?: string; "aria-hidden"?: boolean }>> = {
-  Arrays: BracketsSquare,
-  "Hash Tables": Hash,
-  Trees: TreeStructure,
-  Graphs: Graph,
-  DP: GridFour,
-  "Two Pointers": ArrowsLeftRight,
-  "Binary Search": ArrowsInLineHorizontal,
-  Recursion: ArrowsClockwise,
-};
-
-/** Reveals every typed layer when scripts never run (TypedText starts untyped). */
-const NOSCRIPT_REVEAL = "[data-typed-rest]{color:inherit!important}";
-
-const KICKER = "text-xs font-medium tracking-[0.14em] text-mark uppercase";
-const STOP = "flex min-h-dvh snap-start flex-col justify-center py-24";
+const BODY = "mt-4 max-w-2xl text-lg leading-relaxed text-muted";
 
 /** Section order inside this component. */
 const HERO_SECTION = 0;
-const ARGUMENT_SECTION = 1;
+const UNDERSTAND = 1;
+const BUILD = 2;
+const KEEP = 3;
+const INSIDE = 4;
 
 /**
- * The hero, the argument on one screen, and what's inside — with one
- * structure pinned beside them from lg. The argument's four points type in
- * sequence and the structure takes one stage per point (array → hash table →
- * tree → graph), so the motion that four chapters used to carry now plays on
- * a single stop. Below lg the structure sits inline. Topics and counts come
- * from the server so the course manifest never ships to the client.
+ * The first five stops: the hero, Understand, Build and Keep — every feature
+ * in the app as nine verbs (owner, 2026-09-17) — and the course stages. Each
+ * types once when it becomes active. Counts, links, stage cards and the
+ * windows' lessons come from the server so neither the course manifest nor
+ * the filesystem readers ship to the client.
  */
 export function LandingStory({
   counts,
-  topics,
+  links,
+  stages,
+  features,
 }: {
   counts: CurriculumCounts;
-  topics: readonly Topic[];
+  links: { start: string; curriculum: string };
+  stages: readonly StageCard[];
+  features: FeatureWindowData;
 }) {
-  const course = inside(counts);
-  const { root, active, started } = useActiveSection<HTMLDivElement>(3);
-  // Lifted here, not inside Argument, because the pinned structure follows it.
-  const argumentProgress = useRevealProgress(started[ARGUMENT_SECTION] ?? false, argumentDuration());
-  const argumentParts = segmentProgress(argumentLengths(), argumentProgress);
-  const stage =
-    active === HERO_SECTION || active === -1
-      ? 0
-      : active === ARGUMENT_SECTION
-        ? argumentStage(argumentParts)
-        : course.stage;
+  const { root, active, started } = useActiveSection<HTMLDivElement>(5);
   // Mounted once per landing page; it pages the outro's sections too.
   useSectionPaging();
 
+  const sections = featureSections(features.counts);
+  // A section's heavy windows load once it is the active stop or the next one.
+  const near = (i: number) => (started[i] ?? false) || active === i - 1;
+  const windows = featureWindows(features, { understand: near(UNDERSTAND), build: near(BUILD), keep: near(KEEP) });
+
   return (
-    <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-x-20">
+    <div ref={root}>
       <noscript>
         <style>{NOSCRIPT_REVEAL}</style>
       </noscript>
-
-      <div ref={root} className="min-w-0">
-        <Hero topics={topics} started={started[HERO_SECTION] ?? false} />
-        <Argument parts={argumentParts} />
-        <StoryChapter chapter={course} started={started[2] ?? false} />
-      </div>
-
-      {/* The column spans every section. A viewport-tall sticky box centres the
-          drawing whatever its rendered height — an offset computed from the
-          drawing's size sat it at 88% of the viewport. */}
-      <div className="hidden lg:block">
-        <div className="sticky top-0 flex h-dvh items-center">
-          <EvolvingStructure stage={stage} className="w-full" />
-        </div>
-      </div>
+      <Hero counts={counts} links={links} sections={sections} started={started[HERO_SECTION] ?? false} />
+      {sections.map((section, i) => (
+        <FeatureSection
+          key={section.id}
+          section={section}
+          started={started[UNDERSTAND + i] ?? false}
+          windows={windows}
+        />
+      ))}
+      <Inside chapter={inside(counts)} stages={stages} started={started[INSIDE] ?? false} />
     </div>
   );
 }
 
-/** Not a snap stop itself: AppShell's grain wrapper is, so the first stop keeps the header in view. */
-function Hero({ topics, started }: { topics: readonly Topic[]; started: boolean }) {
-  const lengths = [...HERO.lines.map((line) => line.length), HERO.lede.length];
-  const progress = useRevealProgress(started, typingDuration(lengths.reduce((sum, n) => sum + n, 0)));
-  const parts = segmentProgress(lengths, progress);
+/** Not a snap stop itself: AppShell's desk wrapper is, so the first stop keeps the header in view. */
+function Hero({
+  counts,
+  links,
+  sections,
+  started,
+}: {
+  counts: CurriculumCounts;
+  links: { start: string; curriculum: string };
+  sections: readonly Section[];
+  started: boolean;
+}) {
+  const parts = useTypedText(started, [...HERO.lines, HERO.lede]);
 
   return (
-    <section data-scroll-section className="flex min-h-[calc(100dvh-6rem)] flex-col justify-center py-16">
-      {/*
-        One sentence per line. Sized so the longer line ("You decide if it's
-        right.", 14.675em in Space Mono) fits the text column without wrapping:
-        measured column 49rem from xl, ~39rem at lg beside the pinned drawing,
-        45rem+ single-column from sm. Below sm a sentence still wraps inside
-        its own line, but never across the full stop.
-      */}
-      <h1 className="max-w-3xl font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-4xl lg:leading-[1.1] xl:text-5xl">
-        {HERO.lines.map((line, i) => (
-          <span key={line} className="block text-balance">
-            <TypedText text={line} progress={parts[i] ?? 0} />
-          </span>
-        ))}
-      </h1>
-      <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted">
-        <TypedText text={HERO.lede} progress={parts[HERO.lines.length] ?? 0} />
-      </p>
-      <ul className="mt-12 flex flex-wrap gap-x-5 gap-y-4">
-        {topics.map(({ label, href }) => {
-          const Icon = TOPIC_ICONS[label];
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                className="group inline-flex items-center gap-2 border-b border-border pb-0.5 text-base text-foreground transition-colors hover:border-foreground"
-              >
-                <Icon className="h-5 w-5 text-muted transition-colors group-hover:text-foreground" aria-hidden />
-                {label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
-
-/** The four points, typed in order from one progress value owned by LandingStory. */
-function Argument({ parts }: { parts: readonly number[] }) {
-  return (
-    <section data-scroll-section className={STOP}>
-      {/* mt-8: the argument outgrows a phone screen, so it snaps with its top
-          at py-24 — 2px under the sticky header — and the drawing's top nodes
-          sat right against the hairline (measured 78px vs 76px at 375px). */}
-      <EvolvingStructure stage={argumentStage(parts)} className="mt-8 mb-10 w-full max-w-[16rem] lg:hidden" />
-      <p className={KICKER}>{WHY.kicker}</p>
-      <h2 className="mt-4 max-w-3xl font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-        <TypedText text={WHY.title} progress={parts[0] ?? 0} />
-      </h2>
-      <ol className="mt-12 grid max-w-2xl gap-8">
-        {WHY.points.map((point, i) => (
-          <li key={point.title} className="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-4">
-            <span aria-hidden className="pt-1 font-display text-sm font-bold text-mark tabular-nums">
-              {String(i + 1).padStart(2, "0")}
+    <section
+      data-scroll-section
+      className="grid min-h-[calc(100dvh-6rem)] content-center items-center py-16"
+    >
+      <div className="min-w-0">
+        <p className={KICKER}>{HERO.kicker}</p>
+        {/*
+          One sentence per line. Sized so the longer line ("You decide if it's
+          right.", 14.675em in Space Mono) fits the text column without wrapping:
+          measured column 49rem from xl, 45rem+ from sm (the drawing that sat
+          beside it at lg is the page backdrop now). Below sm a sentence still wraps inside its own
+          line, but never across the full stop.
+        */}
+        <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-4xl lg:leading-[1.1] xl:text-5xl">
+          {HERO.lines.map((line, i) => (
+            <span key={line} className="block text-balance">
+              <TypedText text={line} progress={parts[i] ?? 0} />
             </span>
-            <div>
-              <h3 className="font-display text-xl font-bold tracking-tight">
-                <TypedText text={point.title} progress={parts[1 + 2 * i] ?? 0} />
-              </h3>
-              <p className="mt-2 text-lg leading-relaxed text-muted">
-                <TypedText text={point.body} progress={parts[2 + 2 * i] ?? 0} />
-              </p>
+          ))}
+        </h1>
+        <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted">
+          <TypedText text={HERO.lede} progress={parts[HERO.lines.length] ?? 0} />
+        </p>
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground">{HERO.descriptor}</p>
+        <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <Link
+            href={links.start}
+            className="inline-flex items-center gap-2 rounded-full bg-pop px-5 py-2.5 text-base font-medium text-on-pop transition-opacity hover:opacity-90"
+          >
+            {HERO.start}
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+          <Link
+            href={links.curriculum}
+            className="inline-flex items-center gap-2 border-b border-border pb-0.5 text-base text-foreground transition-colors hover:border-foreground"
+          >
+            {HERO.explore}
+          </Link>
+        </div>
+        {/* The nine verbs, grouped as the sections below; each link selects its
+            verb in that section and brings the section into view. */}
+        {/* Columns sized to their verbs, so "Code Review Optimize" keeps one row
+            where the column allows (it wrapped at an even three-way split). */}
+        <nav aria-label="Features" className="mt-10 grid w-fit max-w-full gap-4 sm:grid-cols-[repeat(3,auto)] sm:gap-x-8">
+          {sections.map((section) => (
+            <div key={section.id} className="grid content-start gap-2 border-t border-border pt-3">
+              <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted uppercase">{section.title}</p>
+              <ul className="flex flex-wrap gap-1.5">
+                {section.verbs.map((verb) => (
+                  <li key={verb.id}>
+                    <a
+                      href={`#${verb.id}`}
+                      className="inline-flex rounded-[length:var(--radius-md)] border border-border bg-elevated px-2.5 py-1.5 font-display text-sm font-bold text-foreground transition-colors hover:border-foreground"
+                    >
+                      {verb.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </li>
-        ))}
-      </ol>
+          ))}
+        </nav>
+        <p className="mt-6 text-sm text-muted tabular-nums">{countsLine(counts)}</p>
+      </div>
     </section>
   );
 }
 
-function StoryChapter({ chapter, started }: { chapter: Chapter; started: boolean }) {
-  const lengths = [chapter.title.length, ...chapter.body.map((para) => para.length)];
-  const progress = useRevealProgress(started, typingDuration(lengths.reduce((sum, n) => sum + n, 0)));
-  const parts = segmentProgress(lengths, progress);
+/**
+ * What's inside: the counts, then one card per real course stage (owner,
+ * 2026-09-15), each linking to that stage on the curriculum hub. The cards
+ * rise in, staggered, when the section arrives — one attribute on the list,
+ * CSS for the motion.
+ */
+function Inside({
+  chapter,
+  stages,
+  started,
+}: {
+  chapter: Chapter;
+  stages: readonly StageCard[];
+  started: boolean;
+}) {
+  const parts = useTypedText(started, [chapter.title, ...chapter.body]);
 
   return (
     <section data-scroll-section className={STOP}>
-      <EvolvingStructure stage={chapter.stage} className="mt-8 mb-12 w-full max-w-sm lg:hidden" />
-      <p className={KICKER}>{chapter.kicker}</p>
-      <h2 className="mt-4 max-w-3xl font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+      {/* mt-8: with the cards this section outgrows the viewport at 1024×768
+          and on phones, so it snaps with its top under the sticky header — the
+          kicker sat 2px below it at 375px and 5px at 1024px. */}
+      <p className={cn(KICKER, "mt-8")}>{chapter.kicker}</p>
+      <h2 className={TITLE}>
         <TypedText text={chapter.title} progress={parts[0] ?? 0} />
       </h2>
       {chapter.body.map((para, j) => (
-        <p key={j} className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
+        <p key={j} className={BODY}>
           <TypedText text={para} progress={parts[j + 1] ?? 0} />
         </p>
       ))}
+      <ol data-lit={started || undefined} className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-2">
+        {stages.map((stage, i) => (
+          <li key={stage.number} className="rise-in" style={{ transitionDelay: `${i * RISE_STAGGER_MS}ms` }}>
+            <Link
+              href={stage.href}
+              className="group flex h-full flex-col rounded-[length:var(--radius-lg)] border border-border bg-elevated p-4 shadow-elevation transition-colors hover:border-accent/45"
+            >
+              <span className="flex items-center justify-between gap-3">
+                <span className={KICKER}>Stage {stage.number}</span>
+                <ArrowRight className="h-4 w-4 text-muted transition-colors group-hover:text-foreground" aria-hidden />
+              </span>
+              <span className="mt-2 font-display text-lg font-bold tracking-tight">{stage.title}</span>
+              <span className="mt-1 text-sm leading-relaxed text-muted">{stage.description}</span>
+              <span className="mt-3 text-xs text-muted tabular-nums">{stageMeta(stage)}</span>
+            </Link>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }

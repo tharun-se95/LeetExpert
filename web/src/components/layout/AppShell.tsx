@@ -379,18 +379,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )}
               >
                 {/*
-                  The app's desk: the page grain, inside the scroller so it
-                  moves with the content, once per page — a second transparent
-                  grain layer inside it would double the strength. The app
-                  Header overlays it translucently and the drawer paints its own
-                  grain beside it, both outside <main>; pt-14 starts the page
-                  below the header it scrolls under. On / the landing header
+                  The app's desk, inside the scroller so it moves with the
+                  content, once per page. isolate makes it a stacking context:
+                  the landing backdrop's -z-1 layer must sit above the root's
+                  paper but beneath every in-flow child, and would otherwise
+                  fall behind the root. The app Header overlays it
+                  translucently and the drawer sits beside it, both outside
+                  <main>; pt-14 starts the page below the header it scrolls
+                  under. On / the landing header
                   lives in here, above the page and outside PageEnter so it
                   does not replay the page's rise.
                 */}
                 <div
                   className={cn(
-                    "paper-grain relative",
+                    "relative isolate",
                     fillMain ? "flex min-h-0 flex-1 flex-col" : "min-h-full",
                     landing && "snap-start",
                     !landing && "pt-14",

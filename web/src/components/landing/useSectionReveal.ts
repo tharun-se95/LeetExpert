@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+import { clamp01, segmentProgress, typingDuration } from "@/lib/landing/story";
 
 /** A 1% band across the scroller's middle; the section it crosses is active. */
 export const MIDDLE_BAND = "-49.5% 0px -49.5% 0px";
@@ -81,4 +80,11 @@ export function useRevealProgress(started: boolean, durationMs: number): number 
   }, [started, durationMs]);
 
   return progress;
+}
+
+/** Progress per string for a section that types `texts` in order, once, after it has arrived. */
+export function useTypedText(started: boolean, texts: readonly string[]): number[] {
+  const lengths = texts.map((text) => text.length);
+  const progress = useRevealProgress(started, typingDuration(lengths.reduce((sum, n) => sum + n, 0)));
+  return segmentProgress(lengths, progress);
 }

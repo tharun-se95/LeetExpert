@@ -130,7 +130,7 @@ export function BigOObservatory() {
 
   return (
     <section
-      className="lab-stage lab-mesh relative overflow-hidden"
+      className="lab-stage lab-mesh dark navy-card relative overflow-hidden"
       aria-label="Big O observatory"
       data-family="ordering-search"
       style={
