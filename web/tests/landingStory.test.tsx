@@ -186,6 +186,14 @@ describe("snapping", () => {
     // left the backing store as tall as the page, and no window resize fixed it.
     expect(backdrop).toContain("new ResizeObserver(resize)");
     expect(backdrop).not.toContain('addEventListener("resize"');
+    // A sweep lights the cells it crosses (no dotted trail), as a pool of light,
+    // in a colour that moves through the families with the pointer's travel.
+    expect(backdrop).toContain("cellsAlong(inverse,");
+    expect(backdrop).toContain("glowField(flashes.values(), now)");
+    expect(backdrop).toContain("rampColour(colours, travel");
+    // The line colours and the flash alpha are read once per repaint, not per frame.
+    expect(backdrop).toMatch(/const repaint = \(\) => \{[\s\S]*?getPropertyValue\("--boxes-flash-alpha"\)[\s\S]*?\};/);
+    expect(backdrop.slice(backdrop.indexOf("const draw ="), backdrop.indexOf("const repaint ="))).not.toContain("getComputedStyle");
     // Frames run only while a flash is live, so an idle page runs none.
     expect(backdrop).toMatch(/if \(flashes\.size > 0\) frame = requestAnimationFrame\(draw\)/);
     // It watches nothing of the page: no scroll, no sections, no observer.

@@ -342,14 +342,20 @@ The content is the product. Code exists to serve it.
   skew transform, the pointer-to-cell inverse and the visible range are pure in
   `lib/landing/boxesGrid.ts`, tested against an independently composed CSS
   matrix chain in `boxesGrid.test.ts` (the round-trip tests alone cannot fail on
-  a wrong offset). The hairline grid is painted once, to an offscreen layer, per
-  size or theme change; only a hovered cell's fade runs frames, so an idle page
-  runs none. Hover flashes a random course family's `accentUi`
-  (`flashColours()` in `productData.ts`, passed as props) at
-  `--boxes-flash-alpha`, which `paperContrast.test.ts` holds under AA for
-  `--muted` and `--foreground` with every family (`--muted` is the binding ink:
-  0.162 light, 0.274 dark; a stronger flash needs a stronger `--muted`, not a
-  weaker test). The pointer is read on `window`, since content covers the layer;
+  a wrong offset). The hairline grid (a minor line, and a heavier one every fourth with the
+  "+" marks on its crossings) is painted once, to an offscreen layer, per size or
+  theme change; only the glow runs frames, so an idle page runs none. A pointer
+  sweep lights every cell it crosses (`cellsAlong`, so a fast sweep is a ribbon,
+  not dots), each rising over 120 ms and fading over 1.9 s (`flashLevel`) into a
+  pool that spills onto its eight neighbours, strongest wins and never summed
+  (`glowField`); the colour moves through the course families with the pointer's
+  travel (`rampColour`, from `flashColours()` in `productData.ts`). Every
+  claim of AA is measured in `paperContrast.test.ts` and binds on `--muted`: a
+  flash at `--boxes-flash-alpha` under any family or any mix of two (0.162 light,
+  0.274 dark is the limit; tokens 0.15, 0.25), and a hairline covering a glyph on
+  the page paper (12.7% light, 24.1% dark is the limit; major 11% and 20%, minor
+  about half). A stronger look needs a stronger `--muted`, not a weaker test.
+  The pointer is read on `window`, since content covers the layer;
   touch and reduced motion show the still grid. The canvas is sized by a
   `ResizeObserver`, not a window `resize`: a page-enter transform on an ancestor
   once made the fixed layer page-tall, and nothing else fired when it settled.

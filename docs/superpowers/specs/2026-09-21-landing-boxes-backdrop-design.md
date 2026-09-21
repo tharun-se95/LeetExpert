@@ -86,3 +86,44 @@ hovering to see a flash and watching the frame loop stop when idle.
 
 Ambient random flashes on touch (YAGNI), a separate colour setting, the Aceternity
 `motion.div` port, `framer-motion` (the app uses `motion`).
+
+## Refinement (owner, 2026-09-22): smoother and more refined
+
+The first build matched the reference and its flaws (hard pop, dotted sweeps,
+one line weight, a generic fade). Ideas 1 to 6 of that review, all canvas-side
+and pure where they can be:
+
+1. **Trail.** `cellsAlong(inverse, x0, y0, x1, y1)` walks the pointer's segment in
+   grid space (a straight line stays straight under the affine) at two samples per
+   cell, so consecutive cells are 8-connected. Each step carries `t` in 0..1; the
+   cell's start time is back-dated by `(1 - t) * dt`, so a fast sweep leaves a
+   tail that fades from its oldest cell. A pause over 120 ms or a jump over 400px
+   starts a new stroke (no line drawn across a window re-entry).
+2. **Envelope.** `flashLevel(age, from)`: ease-out-cubic attack over 120 ms from
+   `from` (the level the cell still had when re-hit, so a re-hit rises instead of
+   restarting from nothing), then a cosine decay over 1900 ms (a soft hold, then
+   a long tail). Continuous at both joins.
+3. **Pool of light.** `glowField(flashes, now)` spills each flash onto its eight
+   neighbours (0.4 sides, 0.22 corners) and keeps the **max**, never the sum, so
+   the level never exceeds 1 and `--boxes-flash-alpha` still bounds the paint.
+4. **Major and minor lines.** Every 4th column and row is a major line in
+   `--boxes-line-major`; the "+" marks move to major crossings. `paperContrast`
+   holds both line tokens, worst case covering text, at AA for `--muted`.
+5. **Coherent colour.** `rampColour(colours, travel)` advances through the family
+   list as the pointer travels (`RAMP_SPAN_PX` per family, smoothstepped so it
+   lingers on each), mixing neighbours by channel. Mixed colours are not tokens,
+   so the contrast guard samples the whole ramp, not only the families. A re-hit
+   keeps the cell's colour.
+6. **Shaped fade.** The radial mask becomes two intersected ramps: clear under the
+   header (0 at 3.5rem to full by 9rem) and a bottom fade, and a left-to-right
+   ramp from 30% to full by 55% of the width, so the grid is quietest where the
+   text is and strongest in the free space.
+
+The flash colour is read once per repaint (theme change), not per frame.
+
+**As built and measured (2026-09-22).** The hairline limits are tighter than the
+first build assumed: the highest alpha that keeps `--muted` at 4.5:1 under a
+line covering a glyph on the page paper is 12.7% in light and 24.1% in dark, so
+the 16% and 20% lines of the first build were over the bound (only the flashes
+had been guarded). Tokens are now minor 6% / major 11% light and 10% / 20% dark.
+The mask stays a look, not the guard. The ramp mixes pass at the flash alpha.

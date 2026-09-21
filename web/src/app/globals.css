@@ -263,15 +263,18 @@
   --focus-ring: 2px;
   --focus-offset: 2px;
 
-  /* The landing's boxes backdrop (LandingBackdrop, spec 2026-09-21): hairlines
-     in the page ink at low alpha, and a hover flash in a family's UI accent at
-     --boxes-flash-alpha. Text sits over it at every width, so
-     paperContrast.test.ts holds every family's flash under --foreground and
-     --muted at AA. --muted is the binding ink: the highest alpha that keeps
-     it at 4.5:1 under every family's flash is 0.162 in light (Priority
-     structures on the page) and 0.274 in dark (State transition on
-     --elevated), so 0.15 and 0.25 leave a little margin. */
-  --boxes-line: color-mix(in oklab, var(--press-ink) 16%, transparent);
+  /* The landing's boxes backdrop (LandingBackdrop, spec 2026-09-21): minor and
+     major hairlines in the page ink at low alpha, and a hover flash in a
+     family's UI accent at --boxes-flash-alpha. Text sits over it at every
+     width, so paperContrast.test.ts holds all of it at AA for --foreground and
+     --muted, --muted being the binding ink. A flash: the highest alpha that
+     keeps it at 4.5:1 under any family or mix of two is 0.162 in light and 0.274
+     in dark, so 0.15 and 0.25. A hairline (worst case, covering a glyph, on the
+     page paper: cards are opaque and sit above the layer): 12.7% in light and
+     24.1% in dark, so the major line is 11% and 20% and the minor line about
+     half of it. */
+  --boxes-line: color-mix(in oklab, var(--press-ink) 6%, transparent);
+  --boxes-line-major: color-mix(in oklab, var(--press-ink) 11%, transparent);
   --boxes-flash-alpha: 0.15;
 
   /* --- heat map (landing credits section) ------------------- */
@@ -378,7 +381,8 @@
   --press-highlight: color-mix(in oklab, var(--press-olive) 22%, transparent);
   --press-halftone: rgba(244, 244, 245, 0.09);
   /* A little stronger on the dark paper, where the accents sit closer to it. */
-  --boxes-line: color-mix(in oklab, var(--press-ink) 20%, transparent);
+  --boxes-line: color-mix(in oklab, var(--press-ink) 10%, transparent);
+  --boxes-line-major: color-mix(in oklab, var(--press-ink) 20%, transparent);
   --boxes-flash-alpha: 0.25;
   /* Heat ramp on the dark --elevated card (#26262a): 1.22, 1.35, 2.32,
      4.75, 7.62 — adjacent steps 1.11-2.05. Level 0 is lifted off the card
@@ -627,14 +631,21 @@ body {
 
 /*
   The landing's boxes backdrop (LandingBackdrop, spec 2026-09-21): a canvas of
-  skewed hairline boxes. `color` carries the line token to the script, which
-  reads it back with getComputedStyle. The mask is the original's radial fade
-  (an opaque plate over the grid's edges) as an alpha ramp: full at the centre,
-  falling toward the corners.
+  skewed hairline boxes. `color` and `border-top-color` carry the minor and
+  major line tokens to the script, which reads them back with getComputedStyle
+  (a computed colour, where a custom property would hand it the unparsed mix).
+  The mask is two ramps, intersected: clear under the header and faded at the
+  foot, and quieter on the left, where the text is, than in the free space on
+  the right. It shapes the look only; the contrast bounds are on the tokens.
 */
 .landing-boxes {
   color: var(--boxes-line);
-  mask-image: radial-gradient(ellipse at center, black 20%, transparent 100%);
+  border-top-color: var(--boxes-line-major);
+  mask-image:
+    linear-gradient(to bottom, transparent 3.5rem, black 9rem, black 88%, transparent),
+    linear-gradient(to right, rgb(0 0 0 / 0.55), black 60%);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
 }
 
 /*

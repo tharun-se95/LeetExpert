@@ -10,12 +10,23 @@
  * a canvas. Grid space is pixels from the grid's own corner (cell col,row spans
  * x 64*col..64*col+64, y 32*row..32*row+32); viewport space is CSS pixels.
  */
+import { hexToRgb, rgbToHex, type Rgb } from "@/lib/visual/palette";
+
 export const CELL_W = 64;
 export const CELL_H = 32;
 export const COLS = 150;
 export const ROWS = 100;
-/** A flash paints at once and fades out over this long, as the original's `duration: 2` does, a little shorter. */
-export const BOXES_FADE_MS = 1500;
+/** Every 4th column and row is a major line; the "+" marks sit on major crossings. */
+export const MAJOR_EVERY = 4;
+/** A flash rises over this long (ease-out), then decays over FLASH_DECAY_MS (cosine). */
+export const FLASH_ATTACK_MS = 120;
+export const FLASH_DECAY_MS = 1900;
+export const FLASH_MS = FLASH_ATTACK_MS + FLASH_DECAY_MS;
+/** How much of a flash's level each neighbour takes: edge-sharing, and corner-touching. */
+export const SPILL_SIDE = 0.4;
+export const SPILL_CORNER = 0.22;
+/** Pointer travel over which the flash colour moves from one family to the next. */
+export const RAMP_SPAN_PX = 320;
 
 const PAD = 16;
 const SKEW_X = Math.tan((-48 * Math.PI) / 180);
@@ -81,12 +92,110 @@ export function visibleCells(inverse: Affine, w: number, h: number) {
 
 export const flashKey = ({ col, row }: Cell) => row * COLS + col;
 
-/** 1 the moment a cell is entered, 0 once BOXES_FADE_MS has passed. */
-export const flashAlpha = (ageMs: number) => Math.min(1, Math.max(0, 1 - ageMs / BOXES_FADE_MS));
+const inGrid = ({ col, row }: Cell) => col >= 0 && col < COLS && row >= 0 && row < ROWS;
 
-/** `rand` is injected so the pick is testable; `Math.random` in the page. */
-export function pickColour(colours: readonly string[], rand: () => number): string {
-  const colour = colours[Math.min(colours.length - 1, Math.floor(rand() * colours.length))];
-  if (colour === undefined) throw new Error("pickColour: no colours to pick from");
-  return colour;
+export type Step = { cell: Cell; t: number };
+
+/**
+ * The cells a pointer crossed going from one viewport point to another, in
+ * order, each with `t` in 0..1 for how far along the segment it was first
+ * entered (the last is 1). The segment is walked in grid space, where a straight
+ * line stays straight, at two samples per cell: consecutive samples are at most
+ * half a cell apart, so consecutive cells are 8-connected. Points outside the
+ * grid are skipped, not clamped onto its edge.
+ */
+export function cellsAlong(inverse: Affine, x0: number, y0: number, x1: number, y1: number): Step[] {
+  const [ax, ay] = project(inverse, x0, y0);
+  const [bx, by] = project(inverse, x1, y1);
+  const n = Math.max(1, Math.ceil(2 * Math.max(Math.abs(bx - ax) / CELL_W, Math.abs(by - ay) / CELL_H)));
+  const steps: Step[] = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const cell = { col: Math.floor((ax + (bx - ax) * t) / CELL_W), row: Math.floor((ay + (by - ay) * t) / CELL_H) };
+    if (!inGrid(cell)) continue;
+    const prev = steps.at(-1);
+    if (prev && flashKey(prev.cell) === flashKey(cell)) {
+      if (i === n) prev.t = 1;
+      continue;
+    }
+    steps.push({ cell, t });
+  }
+  return steps;
+}
+
+/** A live flash: `from` is the level the cell still had when it was hit again (0 for a fresh one). */
+export type Flash = { cell: Cell; colour: string; t0: number; from: number };
+export type Glow = { cell: Cell; colour: string; level: number };
+
+/**
+ * A flash's level, 0..1, `ageMs` after it began: an ease-out-cubic rise from
+ * `from` over FLASH_ATTACK_MS, then a cosine decay over FLASH_DECAY_MS (a soft
+ * hold at the peak and a long tail). Continuous at the join and at the end.
+ */
+export function flashLevel(ageMs: number, from = 0): number {
+  if (ageMs <= 0) return from;
+  if (ageMs >= FLASH_MS) return 0;
+  if (ageMs < FLASH_ATTACK_MS) {
+    const p = ageMs / FLASH_ATTACK_MS;
+    return from + (1 - from) * (1 - (1 - p) ** 3);
+  }
+  const p = (ageMs - FLASH_ATTACK_MS) / FLASH_DECAY_MS;
+  return (1 + Math.cos(Math.PI * p)) / 2;
+}
+
+const SPILL: readonly (readonly [dcol: number, drow: number, weight: number])[] = [
+  [-1, 0, SPILL_SIDE],
+  [1, 0, SPILL_SIDE],
+  [0, -1, SPILL_SIDE],
+  [0, 1, SPILL_SIDE],
+  [-1, -1, SPILL_CORNER],
+  [1, -1, SPILL_CORNER],
+  [-1, 1, SPILL_CORNER],
+  [1, 1, SPILL_CORNER],
+];
+
+/**
+ * Every lit cell at `now`: each live flash lights its own cell at its level and
+ * spills onto its eight neighbours. Where pools overlap the strongest wins (and
+ * keeps its colour); levels are never summed, so nothing exceeds 1 and the
+ * flash alpha token still bounds the paint. Expired flashes contribute nothing.
+ */
+export function glowField(flashes: Iterable<Flash>, now: number): Map<number, Glow> {
+  const field = new Map<number, Glow>();
+  const put = (cell: Cell, colour: string, level: number) => {
+    if (level <= 0 || !inGrid(cell)) return;
+    const key = flashKey(cell);
+    const held = field.get(key);
+    if (!held || level > held.level) field.set(key, { cell, colour, level });
+  };
+  for (const flash of flashes) {
+    const level = flashLevel(now - flash.t0, flash.from);
+    if (level <= 0) continue;
+    put(flash.cell, flash.colour, level);
+    for (const [dc, dr, weight] of SPILL) {
+      put({ col: flash.cell.col + dc, row: flash.cell.row + dr }, flash.colour, level * weight);
+    }
+  }
+  return field;
+}
+
+const smoothstep = (f: number) => f * f * (3 - 2 * f);
+
+/**
+ * The flash colour after the pointer has travelled `travel` px: it moves through
+ * the family list, RAMP_SPAN_PX per family, lingering on each (smoothstepped) and
+ * mixing the two neighbours by channel in between, so a sweep leaves a smooth
+ * ramp instead of confetti. Mixed colours are not tokens: paperContrast.test.ts
+ * samples the whole ramp.
+ */
+export function rampColour(colours: readonly string[], travel: number): string {
+  const n = colours.length;
+  const first = colours[0];
+  if (first === undefined) throw new Error("rampColour: no colours");
+  const at = (((travel / RAMP_SPAN_PX) % n) + n) % n;
+  const i = Math.floor(at);
+  const from = hexToRgb(colours[i] ?? first);
+  const to = hexToRgb(colours[(i + 1) % n] ?? first);
+  const f = smoothstep(at - i);
+  return rgbToHex(from.map((c, k) => c * (1 - f) + to[k]! * f) as Rgb);
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { RAMP_SPAN_PX, rampColour } from "@/lib/landing/boxesGrid";
 import { FAMILY_THEMES } from "@/lib/visual/familyTheme";
 
 /**
@@ -171,15 +172,47 @@ describe("text over the landing's boxes backdrop", () => {
       expect(alpha, "--boxes-flash-alpha").toBeLessThanOrEqual(1);
       for (const surface of ["background", "elevated"]) {
         const paper = rgb(resolve(t, surface));
-        for (const family of FAMILY_THEMES) {
-          const flash = rgb(family.accentUi);
+        // The flash colour is a mix of two families' accents part-way between
+        // them (rampColour), so the mixes are held as well as the families.
+        const accents = FAMILY_THEMES.map((family) => family.accentUi);
+        const flashes = [
+          ...FAMILY_THEMES.map((family) => ({ name: family.id, hex: family.accentUi })),
+          ...Array.from({ length: accents.length * 40 }, (_, k) => ({
+            name: `ramp ${k}`,
+            hex: rampColour(accents, (k / 40) * RAMP_SPAN_PX),
+          })),
+        ];
+        for (const { name, hex } of flashes) {
+          const flash = rgb(hex);
           const mix = paper.map((p, i) => alpha * flash[i] + (1 - alpha) * p);
           for (const ink of ["foreground", "muted"]) {
             expect(
               contrast(rgb(resolve(t, ink)), mix),
-              `${theme} --${ink} under ${family.id} on --${surface}`,
+              `${theme} --${ink} under ${name} (${hex}) on --${surface}`,
             ).toBeGreaterThanOrEqual(4.5);
           }
+        }
+      }
+    });
+
+    it(`keeps --foreground and --muted AA under both hairline weights in ${theme}`, () => {
+      // Worst case: a line the width of a glyph, at full strength, under the text.
+      // Only the page paper: cards (--elevated) are opaque and sit above the layer,
+      // so no line ever shows through them. On the page --muted is the binding ink;
+      // the highest line alpha that keeps it at 4.5:1 is 12.7% in light and 24.1%
+      // in dark.
+      for (const token of ["boxes-line", "boxes-line-major"]) {
+        const mixed = t[token]?.match(/^color-mix\(in oklab, var\(--([a-z0-9-]+)\) (\d+)%, transparent\)$/);
+        expect(mixed, `--${token} is ink at a percentage`).not.toBeNull();
+        const alpha = Number(mixed![2]) / 100;
+        const ink = rgb(resolve(t, mixed![1]!));
+        const paper = rgb(resolve(t, "background"));
+        const mix = paper.map((p, i) => alpha * ink[i] + (1 - alpha) * p);
+        for (const text of ["foreground", "muted"]) {
+          expect(
+            contrast(rgb(resolve(t, text)), mix),
+            `${theme} --${text} under --${token} on --background`,
+          ).toBeGreaterThanOrEqual(4.5);
         }
       }
     });

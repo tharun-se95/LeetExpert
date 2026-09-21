@@ -1,18 +1,25 @@
 import { describe, expect, it } from "vitest";
 import {
-  BOXES_FADE_MS,
   CELL_H,
   CELL_W,
   COLS,
+  FLASH_ATTACK_MS,
+  FLASH_MS,
+  RAMP_SPAN_PX,
   ROWS,
+  SPILL_CORNER,
+  SPILL_SIDE,
   cellAt,
-  flashAlpha,
+  cellsAlong,
   flashKey,
+  flashLevel,
+  glowField,
   gridTransform,
   invert,
-  pickColour,
   project,
+  rampColour,
   visibleCells,
+  type Flash,
 } from "@/lib/landing/boxesGrid";
 
 const VIEWPORTS = [
@@ -118,23 +125,138 @@ describe("the transform is the original's CSS", () => {
   });
 });
 
-describe("flash helpers", () => {
-  it("fades linearly from full to nothing over BOXES_FADE_MS", () => {
-    expect(flashAlpha(0)).toBe(1);
-    expect(flashAlpha(BOXES_FADE_MS / 2)).toBeCloseTo(0.5);
-    expect(flashAlpha(BOXES_FADE_MS)).toBe(0);
-    expect(flashAlpha(BOXES_FADE_MS * 3)).toBe(0);
+describe("the pointer's trail", () => {
+  const m = gridTransform(1440, 900);
+  const inv = invert(m);
+  const at = (col: number, row: number) => project(m, col * CELL_W + CELL_W / 2, row * CELL_H + CELL_H / 2);
+
+  it("is 8-connected, starts and ends in the endpoints' cells, and never repeats a cell in a row", () => {
+    for (const [a, b] of [
+      [at(20, 10), at(60, 40)],
+      [at(60, 40), at(20, 10)],
+      [at(30, 30), at(31, 30)],
+      [at(30, 30), at(30, 30)],
+    ] as const) {
+      const steps = cellsAlong(inv, a[0], a[1], b[0], b[1]);
+      expect(steps.length).toBeGreaterThan(0);
+      expect(steps[0]!.cell).toEqual(cellAt(inv, a[0], a[1]));
+      expect(steps.at(-1)!.cell).toEqual(cellAt(inv, b[0], b[1]));
+      for (let i = 1; i < steps.length; i++) {
+        const p = steps[i - 1]!.cell;
+        const q = steps[i]!.cell;
+        expect(Math.max(Math.abs(p.col - q.col), Math.abs(p.row - q.row)), `step ${i}`).toBe(1);
+      }
+    }
   });
 
-  it("picks each colour from a random source, and never runs off the end", () => {
-    const colours = ["#111111", "#222222", "#333333"];
-    expect(pickColour(colours, () => 0)).toBe("#111111");
-    expect(pickColour(colours, () => 0.5)).toBe("#222222");
-    expect(pickColour(colours, () => 0.999999)).toBe("#333333");
-    expect(pickColour(colours, () => 1)).toBe("#333333");
+  it("orders steps by t from 0 to 1", () => {
+    const [x0, y0] = at(10, 10);
+    const [x1, y1] = at(50, 30);
+    const steps = cellsAlong(inv, x0, y0, x1, y1);
+    expect(steps[0]!.t).toBe(0);
+    expect(steps.at(-1)!.t).toBe(1);
+    for (let i = 1; i < steps.length; i++) expect(steps[i]!.t).toBeGreaterThan(steps[i - 1]!.t);
   });
 
-  it("refuses an empty palette instead of painting undefined", () => {
-    expect(() => pickColour([], () => 0.5)).toThrow();
+  it("skips points outside the grid instead of clamping them onto its edge", () => {
+    const [x0, y0] = project(m, -500, -500);
+    const [x1, y1] = project(m, -300, -300);
+    expect(cellsAlong(inv, x0, y0, x1, y1)).toEqual([]);
+  });
+});
+
+describe("the flash envelope", () => {
+  it("rises with an ease-out attack, then decays softly to nothing", () => {
+    expect(flashLevel(0)).toBe(0);
+    expect(flashLevel(FLASH_ATTACK_MS)).toBeCloseTo(1, 9);
+    // Ease-out: most of the rise is done by the halfway point.
+    expect(flashLevel(FLASH_ATTACK_MS / 2)).toBeGreaterThan(0.8);
+    // A soft hold: barely below the peak just after it, a long tail near the end.
+    expect(flashLevel(FLASH_ATTACK_MS + 50)).toBeGreaterThan(0.98);
+    expect(flashLevel(FLASH_MS - 100)).toBeLessThan(0.01);
+    expect(flashLevel(FLASH_MS)).toBe(0);
+    expect(flashLevel(FLASH_MS * 3)).toBe(0);
+  });
+
+  it("is continuous and only falls after the peak", () => {
+    let prev = flashLevel(0);
+    for (let age = 1; age <= FLASH_MS; age++) {
+      const level = flashLevel(age);
+      expect(Math.abs(level - prev), `age ${age}`).toBeLessThan(0.1);
+      if (age > FLASH_ATTACK_MS) expect(level, `age ${age}`).toBeLessThanOrEqual(prev + 1e-9);
+      prev = level;
+    }
+  });
+
+  it("resumes a re-hit from the level it had, so it never dips first", () => {
+    expect(flashLevel(0, 0.6)).toBe(0.6);
+    expect(flashLevel(FLASH_ATTACK_MS, 0.6)).toBeCloseTo(1, 9);
+    let prev = 0.6;
+    for (let age = 0; age <= FLASH_ATTACK_MS; age++) {
+      const level = flashLevel(age, 0.6);
+      expect(level).toBeGreaterThanOrEqual(prev - 1e-9);
+      prev = level;
+    }
+  });
+});
+
+describe("the pool of light", () => {
+  const flash = (col: number, row: number, colour: string, t0 = 0, from = 0): Flash => ({ cell: { col, row }, colour, t0, from });
+  const peak = FLASH_ATTACK_MS;
+
+  it("lights the cell fully and its eight neighbours by the spill weights", () => {
+    const field = glowField([flash(10, 10, "#111111")], peak);
+    expect(field.size).toBe(9);
+    expect(field.get(flashKey({ col: 10, row: 10 }))!.level).toBeCloseTo(1, 9);
+    expect(field.get(flashKey({ col: 11, row: 10 }))!.level).toBeCloseTo(SPILL_SIDE, 9);
+    expect(field.get(flashKey({ col: 10, row: 9 }))!.level).toBeCloseTo(SPILL_SIDE, 9);
+    expect(field.get(flashKey({ col: 11, row: 11 }))!.level).toBeCloseTo(SPILL_CORNER, 9);
+  });
+
+  it("takes the strongest contribution where pools overlap, never the sum", () => {
+    // Two adjacent flashes at the peak: each is the other's side neighbour.
+    const field = glowField([flash(10, 10, "#111111"), flash(11, 10, "#222222")], peak);
+    for (const glow of field.values()) expect(glow.level).toBeLessThanOrEqual(1 + 1e-9);
+    expect(field.get(flashKey({ col: 10, row: 10 }))).toMatchObject({ colour: "#111111" });
+    expect(field.get(flashKey({ col: 11, row: 10 }))).toMatchObject({ colour: "#222222" });
+    // A cell between two peaks gets the larger spill (0.4), not 0.8.
+    const between = glowField([flash(10, 10, "#111111"), flash(12, 10, "#222222")], peak);
+    expect(between.get(flashKey({ col: 11, row: 10 }))!.level).toBeCloseTo(SPILL_SIDE, 9);
+  });
+
+  it("drops expired flashes and clips the pool at the grid's edge", () => {
+    expect(glowField([flash(10, 10, "#111111", 0)], FLASH_MS).size).toBe(0);
+    const corner = glowField([flash(0, 0, "#111111")], peak);
+    expect(corner.size).toBe(4);
+    for (const { cell } of corner.values()) {
+      expect(cell.col).toBeGreaterThanOrEqual(0);
+      expect(cell.row).toBeGreaterThanOrEqual(0);
+    }
+    const far = glowField([flash(COLS - 1, ROWS - 1, "#111111")], peak);
+    expect(far.size).toBe(4);
+  });
+});
+
+describe("the colour ramp", () => {
+  const colours = ["#ff0000", "#00ff00", "#0000ff"];
+
+  it("sits on each family's colour at the start of its span and wraps around", () => {
+    expect(rampColour(colours, 0)).toBe("#ff0000");
+    expect(rampColour(colours, RAMP_SPAN_PX)).toBe("#00ff00");
+    expect(rampColour(colours, RAMP_SPAN_PX * 2)).toBe("#0000ff");
+    expect(rampColour(colours, RAMP_SPAN_PX * 3)).toBe("#ff0000");
+    expect(rampColour(colours, -RAMP_SPAN_PX)).toBe("#0000ff");
+  });
+
+  it("mixes the neighbours between two spans, and lingers on each colour", () => {
+    expect(rampColour(colours, RAMP_SPAN_PX / 2)).toBe("#808000");
+    // Smoothstepped: a tenth of the way in is still nearly the first colour.
+    const early = rampColour(colours, RAMP_SPAN_PX * 0.1);
+    expect(parseInt(early.slice(1, 3), 16)).toBeGreaterThan(240);
+  });
+
+  it("works for a single colour and refuses none", () => {
+    expect(rampColour(["#123456"], 12345)).toBe("#123456");
+    expect(() => rampColour([], 0)).toThrow();
   });
 });
