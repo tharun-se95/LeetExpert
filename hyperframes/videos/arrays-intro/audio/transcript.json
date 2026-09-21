@@ -1,0 +1,172 @@
+[
+  {
+    "text": "The",
+    "start": 0.06,
+    "end": 0.29
+  },
+  {
+    "text": "address",
+    "start": 0.29,
+    "end": 0.98
+  },
+  {
+    "text": "of",
+    "start": 0.98,
+    "end": 1.17
+  },
+  {
+    "text": "slot",
+    "start": 1.17,
+    "end": 1.48
+  },
+  {
+    "text": "i",
+    "start": 1.48,
+    "end": 1.75
+  },
+  {
+    "text": "is",
+    "start": 1.75,
+    "end": 1.87
+  },
+  {
+    "text": "the",
+    "start": 1.91,
+    "end": 2.16
+  },
+  {
+    "text": "base",
+    "start": 2.16,
+    "end": 2.55
+  },
+  {
+    "text": "address,",
+    "start": 2.55,
+    "end": 3.45
+  },
+  {
+    "text": "plus",
+    "start": 3.45,
+    "end": 3.88
+  },
+  {
+    "text": "i",
+    "start": 3.88,
+    "end": 3.9
+  },
+  {
+    "text": "times",
+    "start": 4.07,
+    "end": 4.41
+  },
+  {
+    "text": "the",
+    "start": 4.48,
+    "end": 4.59
+  },
+  {
+    "text": "slot",
+    "start": 4.67,
+    "end": 4.84
+  },
+  {
+    "text": "size,",
+    "start": 4.88,
+    "end": 5.78
+  },
+  {
+    "text": "one",
+    "start": 5.78,
+    "end": 6
+  },
+  {
+    "text": "multiply,",
+    "start": 6,
+    "end": 7.52
+  },
+  {
+    "text": "one",
+    "start": 7.59,
+    "end": 7.89
+  },
+  {
+    "text": "add.",
+    "start": 7.91,
+    "end": 8.58
+  },
+  {
+    "text": "That",
+    "start": 8.72,
+    "end": 8.97
+  },
+  {
+    "text": "cost",
+    "start": 8.97,
+    "end": 9.2
+  },
+  {
+    "text": "does",
+    "start": 9.29,
+    "end": 9.59
+  },
+  {
+    "text": "not",
+    "start": 9.59,
+    "end": 9.82
+  },
+  {
+    "text": "grow",
+    "start": 9.82,
+    "end": 10.13
+  },
+  {
+    "text": "with",
+    "start": 10.13,
+    "end": 10.44
+  },
+  {
+    "text": "the",
+    "start": 10.44,
+    "end": 10.67
+  },
+  {
+    "text": "array.",
+    "start": 10.67,
+    "end": 11.35
+  },
+  {
+    "text": "That",
+    "start": 11.42,
+    "end": 11.63
+  },
+  {
+    "text": "is",
+    "start": 11.63,
+    "end": 11.76
+  },
+  {
+    "text": "what",
+    "start": 11.76,
+    "end": 12.03
+  },
+  {
+    "text": "O",
+    "start": 12.03,
+    "end": 12.07
+  },
+  {
+    "text": "of",
+    "start": 12.09,
+    "end": 12.19
+  },
+  {
+    "text": "1",
+    "start": 12.22,
+    "end": 12.42
+  },
+  {
+    "text": "means.",
+    "start": 12.42,
+    "end": 12.84
+  }
+]

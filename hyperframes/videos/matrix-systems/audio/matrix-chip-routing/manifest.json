@@ -1,0 +1,58 @@
+{
+  "voice": "SAz9YHcvj6GT2YYXdXww",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.1,
+    "use_speaker_boost": true
+  },
+  "estimated": false,
+  "lines": [
+    {
+      "line": 1,
+      "title": "hook",
+      "file": "line-1.mp3",
+      "duration": 13.839,
+      "word_count": 42,
+      "attempts": 1,
+      "text": "Finding a path through a grid means committing to a cell, exploring from it, and undoing the commitment when it fails. Chip and circuit board routers, puzzle solvers and maze solvers all lean on this. Here, we search for the word ROUTE."
+    },
+    {
+      "line": 2,
+      "title": "commit",
+      "file": "line-2.mp3",
+      "duration": 15.139,
+      "word_count": 42,
+      "attempts": 1,
+      "text": "Move up, right, down, left, and never reuse a cell. Only one R exists, so start there: R, then O, then U along the top, then T. Every matched cell is marked as used, so this attempt can never walk over itself."
+    },
+    {
+      "line": 3,
+      "title": "dead ends",
+      "file": "line-3.mp3",
+      "duration": 17.09,
+      "word_count": 48,
+      "attempts": 1,
+      "text": "The T at the top right needs an E next, and its only unused neighbour is an X. Dead end. So un-mark the T, step back to the U, and try its remaining directions. Nothing there spells T either. Another dead end, and the U is un-marked too."
+    },
+    {
+      "line": 4,
+      "title": "the real route",
+      "file": "line-4.mp3",
+      "duration": 14.211,
+      "word_count": 44,
+      "attempts": 1,
+      "text": "Back at the O, the next direction is down: another U, then a T, then an E. ROUTE, found. Un-marking is the whole point. Without it, the failed attempt would leave its cells blocked, and a route that exists would be reported as missing."
+    },
+    {
+      "line": 5,
+      "title": "facts",
+      "file": "line-5.mp3",
+      "duration": 14.164,
+      "word_count": 42,
+      "attempts": 1,
+      "text": "Two backtracks before the route appeared. Five letters, so the search never goes deeper than five cells. One board reused as its own visited marker. And in the worst case, m times n times four to the power of the word length."
+    }
+  ]
+}

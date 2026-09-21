@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>arrays-intro · scene 7</title>
+  </head>
+  <body>
+    <template>
+      <!-- Geometry helpers and shared styles come from the host index.html
+           (window.LE), so every scene draws the row from the same numbers. -->
+      <div id="s7-root" data-composition-id="s7" data-width="1920" data-height="1080"
+           data-duration="9.784" style="position:absolute;left:0;top:0;width:1920px;height:1080px;"></div>
+      <script>
+      // ── Scene 7 — in place ──────────────────────────────────────────────────
+      // The lesson's own write-pointer tracer, 0 1 0 3 12, executed here. read
+      // visits every slot; write only advances on a keeper, so write <= read
+      // always holds and the slot being overwritten has already been read.
+      (function scene7() {
+        const { W, H, CW, CH, GP, PITCH, ROW_W, ROW_L, ROW_T, ROW_T_HI, OFF_TRACK, OFF_IDX, OFF_ADDR, BASE_ADDR, SLOT, ADV, monoW, $, mk, svg, poly, tri, dashPrep, tok, mount, monoLine, makeRow, couplers, eyebrow } = window.LE;
+        const tl = gsap.timeline({ paused: true });
+        const c = mount("s7"), t0 = 0;
+        // Beats anchored to spoken words (see s3.html): word timings come from the
+        // alignment of the current take via timing.js, so a regenerated voiceover
+        // cannot desync this scene. A changed word count means the script changed.
+        const WORDS = window.AI_TIMING.scenes.find((x) => x.scene === 7).words;
+        if (WORDS.length !== 30) throw new Error("s7: expected 30 anchored words, got " + WORDS.length);
+        const WA = (k, off) => WORDS[k].s + off;
+        const eb = eyebrow(c, "O(1) AUXILIARY SPACE");
+        const NUMS = [0, 1, 0, 3, 12];
+
+        // Stable compaction as a pure function: returns every step and the final
+        // array, so the tweens below are driven by the algorithm, not by hand.
+        function compactTrace(input) {
+          const a = input.slice(), steps = [];
+          let write = 0;
+          for (let read = 0; read < a.length; read++) {
+            const keep = a[read] !== 0;
+            const step = { read: read, writeBefore: write, keep: keep, value: a[read] };
+            if (keep) { a[write] = a[read]; write++; }
+            step.writeAfter = write;
+            steps.push(step);
+          }
+          return { steps: steps, out: a, write: write };
+        }
+        const TR = compactTrace(NUMS);
+        if (TR.out.slice(0, TR.write).join(" ") !== "1 3 12" || TR.steps.some((s) => s.writeAfter > s.read + 1)) {
+          throw new Error("compaction trace is wrong: " + JSON.stringify(TR));
+        }
+
+        const n = NUMS.length, RW = n * CW + (n - 1) * GP, RL = (W - RW) / 2, RT = ROW_T;
+        const wrap = mk("div", null, c, { position: "absolute", left: "0px", top: "0px", width: "1920px", height: "680px" });
+        wrap.id = "s7-wrap";
+        const g = makeRow(wrap, { id: "s7", left: RL, top: RT, n: n, idx: true, values: NUMS });
+
+        // Ghost of the second array this technique refuses to allocate.
+        const ghost = mk("div", null, c, { position: "absolute", left: "0px", top: "0px", width: "1920px", height: "300px" });
+        ghost.id = "s7-ghost";
+        const GC = 62, GG = 10, GW = n * GC + (n - 1) * GG, GL = (W - GW) / 2, GT = 170;
+        for (let i = 0; i < n; i++) {
+          mk("div", null, ghost, {
+            position: "absolute", left: (GL + i * (GC + GG)) + "px", top: GT + "px",
+            width: GC + "px", height: "72px", border: "2px dashed var(--line)", borderRadius: "10px",
+          });
+        }
+        const gsv = svg(ghost);
+        const strike = poly(gsv, [[GL - 24, GT + 90], [GL + GW + 24, GT - 18]], "var(--line)", 4);
+        dashPrep(strike);
+
+        // Pointers: range-scan's rig exactly — write rides above, read below.
+        const pw = mk("div", "ptr", c, { top: (RT - 66) + "px", left: RL + "px", fontSize: "21px", gap: "7px" });
+        pw.setAttribute("data-dir", "down"); pw.id = "s7-pw";
+        mk("span", "lab", pw, { position: "static", color: "var(--line)", fontFamily: "'Space Mono', monospace", fontWeight: 700 }).textContent = "write";
+        mk("span", "caret", pw);
+        const pr = mk("div", "ptr", c, { top: (RT + CH + 78) + "px", left: RL + "px", fontSize: "21px", gap: "7px" });
+        pr.setAttribute("data-dir", "up"); pr.id = "s7-pr";
+        mk("span", "caret", pr);
+        mk("span", "lab", pr, { position: "static", color: "var(--line)", fontFamily: "'Space Mono', monospace", fontWeight: 700 }).textContent = "read";
+        const cx = (i) => i * PITCH + CW / 2;
+
+        const under = mk("div", null, c, {
+          position: "absolute", left: RL + "px", top: (RT + CH + 10) + "px",
+          width: RW + "px", height: "5px", background: "var(--accent-ink)", borderRadius: "3px",
+        });
+        under.id = "s7-under";
+        const underScale = (w) => (w === 0 ? 0 : (w * CW + (w - 1) * GP) / RW);
+
+        const RO = monoLine(c, [
+          { text: "read = " }, { text: "0", id: "s7-r", bold: true },
+          { text: "    write = " }, { text: "0", id: "s7-w", bold: true },
+        ], { size: 30, top: 700 });
+        const INV = monoLine(c, [{ text: "write <= read", cls: "acc", id: "s7-inv", bold: true }], { size: 48, top: 772 });
+        const cap = mk("div", "caption", c, { top: "846px" });
+        cap.textContent = "the slot you overwrite was already read";
+        cap.id = "s7-cap";
+
+        gsap.set(wrap, { transformOrigin: "960px 446px", scale: 0.62, y: 150, autoAlpha: 0 });
+        gsap.set([eb, ghost, cap], { autoAlpha: 0 });
+        gsap.set([pw, pr], { xPercent: -50, x: cx(0), autoAlpha: 0 });
+        gsap.set(pw, { y: -30 });
+        gsap.set(pr, { y: 30 });
+        gsap.set(under, { scaleX: 0, transformOrigin: "0% 50%" });
+        gsap.set(Object.keys(RO).map((k) => RO[k].el).filter(Boolean), { autoAlpha: 0 });
+        gsap.set(INV["s7-inv"].el, { autoAlpha: 0, y: 12 });
+
+        tl.to(eb, { autoAlpha: 1, duration: 0.4 }, t0 + 0.0);
+        tl.to(wrap, { scale: 1, y: 0, autoAlpha: 1, duration: 0.65, ease: "power2.out" }, t0 + 0.0);
+        tl.to(ghost, { autoAlpha: 0.55, duration: 0.3 }, t0 + WA(1, 0.19));
+        tl.to(strike, { strokeDashoffset: 0, duration: 0.4, ease: "power2.in" }, t0 + WA(4, 0.1));
+        tl.to(ghost, { autoAlpha: 0, duration: 0.4 }, t0 + WA(6, 0.2));
+
+        tl.to(pw, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" }, t0 + WA(7, 0.6));
+        tl.to(pr, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" }, t0 + WA(7, 0.8));
+        tl.to(Object.keys(RO).map((k) => RO[k].el).filter(Boolean), { autoAlpha: 1, duration: 0.3 }, t0 + WA(7, 0.9));
+
+        // The five read/write steps start on the word they illustrate, not at a fixed second.
+        const STEP = 0.9, T_STEPS = WA(10, 0.22);
+        TR.steps.forEach((s, k) => {
+          const t = t0 + T_STEPS + k * STEP;
+          if (k > 0) tl.to(pr, { x: cx(s.read), duration: 0.4, ease: "power2.inOut" }, t);
+          tl.set(RO["s7-r"].el, { textContent: String(s.read) }, t + 0.2);
+          tl.to(g.__cells[s.read], { scale: 1.06, duration: 0.14, yoyo: true, repeat: 1, transformOrigin: "50% 50%" }, t + 0.35);
+          if (s.keep) {
+            tl.set(g.__cells[s.writeBefore], { textContent: String(s.value), attr: { "data-state": "marked" } }, t + 0.5);
+            tl.to(under, { scaleX: underScale(s.writeAfter), duration: 0.3, ease: "power2.out" }, t + 0.5);
+            tl.to(pw, { x: cx(s.writeAfter), duration: 0.35, ease: "power2.inOut" }, t + 0.55);
+            tl.set(RO["s7-w"].el, { textContent: String(s.writeAfter) }, t + 0.7);
+          }
+        });
+        const tEnd = T_STEPS + TR.steps.length * STEP;                 // 7.4
+        // The tail is left as stale copies: the invariant makes no claim about it.
+        tl.to(g.__cells.slice(TR.write), { opacity: 0.45, duration: 0.4 }, t0 + tEnd - 0.2);
+        tl.to(INV["s7-inv"].el, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, t0 + tEnd - 0.05);
+        tl.to(cap, { autoAlpha: 1, duration: 0.5 }, t0 + tEnd + 0.45);
+        window.LE.assertFits(7, tl);
+        window.__timelines["s7"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

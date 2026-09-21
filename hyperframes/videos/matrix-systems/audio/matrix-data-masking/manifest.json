@@ -1,0 +1,67 @@
+{
+  "voice": "SAz9YHcvj6GT2YYXdXww",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.1,
+    "use_speaker_boost": true
+  },
+  "estimated": false,
+  "lines": [
+    {
+      "line": 1,
+      "title": "hook",
+      "file": "line-1.mp3",
+      "duration": 12.353,
+      "word_count": 39,
+      "attempts": 1,
+      "text": "One corrupt reading in a telemetry table can invalidate its whole row and its whole column. The obvious fix keeps two lists of what to erase. There is a neater way: use the table's own border as scratch paper."
+    },
+    {
+      "line": 2,
+      "title": "find first, act second",
+      "file": "line-2.mp3",
+      "duration": 19.691,
+      "word_count": 60,
+      "attempts": 1,
+      "text": "Five servers, six metrics, and three cells hold zero. If we wipe a row the moment we see a zero, the new zeros look exactly like real ones and we wipe rows we should not. So we must find every zero first, and act second. One zero already sits in row zero, so we remember that in a single flag."
+    },
+    {
+      "line": 3,
+      "title": "flags on the border",
+      "file": "line-3.mp3",
+      "duration": 16.951,
+      "word_count": 52,
+      "attempts": 2,
+      "text": "Now scan the interior. When a zero appears at row i, column j, write a zero at the left end of row i and at the top of column j. Those border cells are our notes. The gold cells are flags, not data, and no second table was needed to hold them."
+    },
+    {
+      "line": 4,
+      "title": "apply the flags",
+      "file": "line-4.mp3",
+      "duration": 11.796,
+      "word_count": 34,
+      "attempts": 1,
+      "text": "Second pass, interior only. If a cell's row flag or column flag is zero, zero the cell. The border has to wait: zero it now and the flags are erased before they are read."
+    },
+    {
+      "line": 5,
+      "title": "border last",
+      "file": "line-5.mp3",
+      "duration": 6.966,
+      "word_count": 22,
+      "attempts": 1,
+      "text": "Last, because row zero held a zero at the start, zero that whole row. Two flags in total, and no extra tables."
+    },
+    {
+      "line": 6,
+      "title": "facts",
+      "file": "line-6.mp3",
+      "duration": 16.904,
+      "word_count": 47,
+      "attempts": 1,
+      "text": "Two flag variables replace two arrays of m plus n booleans. On a ten thousand by ten thousand grid that avoids twenty thousand flags. Two passes, still order m times n. And zero the interior before the border, or the flags are gone before you read them."
+    }
+  ]
+}

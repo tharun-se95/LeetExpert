@@ -1,0 +1,67 @@
+{
+  "voice": "SAz9YHcvj6GT2YYXdXww",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.1,
+    "use_speaker_boost": true
+  },
+  "estimated": false,
+  "lines": [
+    {
+      "line": 1,
+      "title": "hook",
+      "file": "line-1.mp3",
+      "duration": 11.61,
+      "word_count": 40,
+      "attempts": 1,
+      "text": "A blur looks like magic. It is not. Every output pixel is just the average of the pixels around it. The interesting part is what happens at the edge of the picture, where some of those neighbours do not exist."
+    },
+    {
+      "line": 2,
+      "title": "the corner",
+      "file": "line-2.mp3",
+      "duration": 19.969,
+      "word_count": 58,
+      "attempts": 1,
+      "text": "Here is a tiny image: a bright plus sign on a dark background, with brightness from zero to nine. To blur it, visit every pixel and average its three by three window. Start at the top left corner. Its window hangs off the image, so only three of its eight neighbours exist, and the average uses four values."
+    },
+    {
+      "line": 3,
+      "title": "bounds checks",
+      "file": "line-3.mp3",
+      "duration": 17.926,
+      "word_count": 50,
+      "attempts": 1,
+      "text": "Along the top edge, five neighbours exist. This is the trick that keeps the code safe: a list of eight direction vectors, up and left, up, up and right, and so on, and one bounds check per neighbour. If the neighbour's row or column falls outside the grid, skip it."
+    },
+    {
+      "line": 4,
+      "title": "the interior",
+      "file": "line-4.mp3",
+      "duration": 13.793,
+      "word_count": 38,
+      "attempts": 1,
+      "text": "Once the window sits fully inside the image, all eight neighbours count. Nine values, added up and divided by nine. Watch the plus sign soften: a sharp nine next to a zero becomes a five, or a seven."
+    },
+    {
+      "line": 5,
+      "title": "every pixel once",
+      "file": "line-5.mp3",
+      "duration": 25.31,
+      "word_count": 69,
+      "attempts": 1,
+      "text": "The window keeps sliding, row by row, and every pixel is visited exactly once. Corners use three neighbours, edges five, the interior eight. When it finishes, the hard edges have softened, and the border pixels were averaged from fewer real values, not from invented ones. One warning: in Python, a negative index quietly wraps to the far side of the grid, so always check the bounds before you read."
+    },
+    {
+      "line": 6,
+      "title": "facts",
+      "file": "line-6.mp3",
+      "duration": 12.817,
+      "word_count": 33,
+      "attempts": 1,
+      "text": "One twelve megapixel photo means about ninety-six million neighbour reads. Eight neighbours for an interior pixel, five on an edge, three in a corner. And just eight direction vectors carry the whole technique."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+/* Cell-state colours for the matrix-systems primitive, built only from the
+   generated brand tokens (app theme + family colour), so both themes and every
+   family come for free. Declared on .stage, not :root: var() resolves where it
+   is declared, and --accent only changes inside a [data-family] scope on the
+   same element.
+   A state is a fill and the ink drawn on it. Status hues fill with their -ink
+   colour and put the page ground on top (dark theme: a bright hue with near-black
+   text; light theme: a deep hue with near-white text); the family accent fills
+   with its own on-accent ink. The contrast of every pair is asserted in
+   web/tests/hyperframesBrand.test.ts. */
+.stage {
+  --k-idle: var(--panel);        --k-idle-ink: var(--ink);
+  --k-cur: var(--hue-orange-ink);  --k-cur-ink: var(--ground);
+  --k-acc: var(--accent);          --k-acc-ink: var(--on-accent, var(--on-ink));
+  --k-done: var(--hue-green-ink);  --k-done-ink: var(--ground);
+  --k-bad: var(--hue-red-ink);     --k-bad-ink: var(--ground);
+  --k-warn: var(--hue-yellow-ink); --k-warn-ink: var(--ground);
+  --k-viol: var(--hue-purple-ink); --k-viol-ink: var(--ground);
+  --k-dim: var(--code);            --k-dim-ink: var(--dim);
+  --k-land: var(--hue-orange-1);   --k-land-ink: var(--ink);
+  --k-water: var(--code);          --k-water-ink: var(--dim);
+  --k-win: var(--hue-blue-1);      --k-win-ink: var(--ink);
+}

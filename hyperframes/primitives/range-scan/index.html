@@ -1,0 +1,246 @@
+<!doctype html>
+<html
+  lang="en"
+  data-resolution="landscape"
+  data-composition-variables='[{"id": "eyebrow", "type": "string", "label": "Eyebrow", "default": "Ordering &amp; Search"}, {"id": "title", "type": "string", "label": "Title", "default": "Binary Search"}, {"id": "family", "type": "enum", "label": "Pattern family", "default": "ordering-search", "options": [{"value": "linear-traversal", "label": "Linear Traversal"}, {"value": "pointer-movement", "label": "Pointer Movement"}, {"value": "ordering-search", "label": "Ordering &amp; Search"}, {"value": "recursive-exploration", "label": "Recursive Exploration"}, {"value": "state-transition", "label": "State Transition"}, {"value": "relationships", "label": "Relationships"}, {"value": "priority-structures", "label": "Priority Structures"}]}, {"id": "theme", "type": "enum", "label": "Theme", "default": "dark", "options": [{"value": "dark", "label": "Dark"}, {"value": "light", "label": "Light"}]}, {"id": "values", "type": "string", "label": "Cell values (comma separated)", "default": "1,3,5,7,9,11,13,15"}, {"id": "loLabel", "type": "string", "label": "Low pointer label", "default": "lo"}, {"id": "hiLabel", "type": "string", "label": "High pointer label", "default": "hi"}, {"id": "midLabel", "type": "string", "label": "Mid pointer label", "default": "mid"}, {"id": "showMid", "type": "boolean", "label": "Show mid pointer", "default": true}, {"id": "steps", "type": "string", "label": "Steps JSON [{lo,hi,mid,note}]", "default": "[{\"lo\":0,\"hi\":7,\"mid\":3,\"note\":\"Range is the whole array. Check the midpoint.\"},{\"lo\":4,\"hi\":7,\"mid\":5,\"note\":\"arr[3] < target — the left half cannot hold it.\"},{\"lo\":6,\"hi\":7,\"mid\":6,\"note\":\"arr[5] < target — eliminate again.\"},{\"lo\":6,\"hi\":6,\"mid\":6,\"note\":\"One candidate left. This is the answer.\"}]"}, {"id": "stepSeconds", "type": "number", "label": "Seconds per step", "default": 2.2, "min": 0.6, "max": 8, "step": 0.1}, {"id": "compact", "type": "boolean", "label": "Compact: structure only, drawn 2x (small placements)", "default": false}]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>leetExpert — Range Scan</title>
+    <style>
+/* Latin subsets only, vendored — the renderer has no network. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f15.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f10.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+    </style>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { width: 1920px; height: 1080px; padding: 96px 112px; display: flex; flex-direction: column; }
+      .head { display: flex; flex-direction: column; gap: 22px; }
+      .eyebrow { font-size: 26px; }
+      .title { font-size: 78px; }
+      /* A short family-accent rule above the title — content-scoped accent,
+         mirroring the chapter-heading treatment in the course. */
+      .rule { width: 132px; height: 5px; background: var(--accent, var(--ink)); border-radius: 3px; }
+      .board { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
+      .row { position: relative; }
+      .cells { display: flex; }
+      .cell { height: 200px; font-size: 64px; }
+      .idxrow { display: flex; margin-top: 18px; }
+      .idx { font-size: 22px; }
+      .note {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 36px; line-height: 1.45; color: var(--line);
+        max-width: 1180px; min-height: 100px;
+      }
+      .note b { color: var(--ink); font-weight: 700; }
+      .foot { display: flex; align-items: flex-end; justify-content: space-between; }
+      .wordmark { font-size: 30px; }
+      .counter { font-family: "Space Mono", monospace; font-size: 22px; letter-spacing: .16em; color: var(--dim); }
+      .ptr { font-size: 21px; gap: 7px; }
+      /* Compact drops the index row and enlarges the pointer labels, which
+         would otherwise draw at ~7px. */
+      #root[data-compact] .idxrow { display: none; }
+      #root[data-compact] .ptr { font-size: 30px; gap: 8px; }
+      #root[data-compact] .ptr .caret { border-left-width: 14px; border-right-width: 14px; }
+      #root[data-compact] .ptr[data-dir="up"] .caret { border-bottom-width: 17px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="range-scan" data-start="0"
+         data-width="1920" data-height="1080">
+      <div class="head">
+        <div class="rule"></div>
+        <div class="eyebrow" id="eyebrow"></div>
+        <div class="title display" id="title"></div>
+      </div>
+
+      <div class="board">
+        <div class="row" id="row">
+          <div class="cells" id="cells"></div>
+          <div class="idxrow" id="idxrow"></div>
+          <div class="ptr" id="ptr-lo" data-dir="up"><span class="caret"></span><span class="lab"></span></div>
+          <div class="ptr" id="ptr-hi" data-dir="up"><span class="caret"></span><span class="lab"></span></div>
+          <div class="ptr" id="ptr-mid" data-dir="down"><span class="lab"></span><span class="caret"></span></div>
+        </div>
+      </div>
+
+      <div class="note" id="note"></div>
+      <div class="foot">
+        <span class="wordmark">leetExpert</span>
+        <span class="counter" id="counter"></span>
+      </div>
+    </div>
+
+    <script>
+      const V = window.__hyperframes.getVariables();
+      const root = document.getElementById("root");
+      root.setAttribute("data-theme", V.theme);
+      root.setAttribute("data-family", V.family);
+      if (V.compact) root.setAttribute("data-compact", "");
+      document.getElementById("eyebrow").textContent = V.eyebrow;
+      document.getElementById("title").textContent = V.title;
+
+      const values = String(V.values).split(",").map((s) => s.trim()).filter(Boolean);
+      const steps = JSON.parse(V.steps);
+
+      // Geometry is derived once, not hardcoded, so the same primitive serves an
+      // 8-cell binary search and a 5-cell window without re-authoring. The cell
+      // shrinks only when the row would overflow the board (compact frames).
+      const GAP = 16;
+      const boardW = document.querySelector(".board").clientWidth;
+      const CELL = Math.min(168, Math.floor((boardW - GAP * (values.length - 1)) / values.length));
+      const cellsEl = document.getElementById("cells");
+      const idxEl = document.getElementById("idxrow");
+      values.forEach((v, i) => {
+        const c = document.createElement("div");
+        c.className = "cell";
+        c.id = "cell-" + i;
+        c.style.width = CELL + "px";
+        c.style.marginRight = i < values.length - 1 ? GAP + "px" : "0";
+        c.textContent = v;
+        cellsEl.appendChild(c);
+        const d = document.createElement("div");
+        d.className = "idx";
+        d.style.width = CELL + "px";
+        d.style.marginRight = i < values.length - 1 ? GAP + "px" : "0";
+        d.textContent = i;
+        idxEl.appendChild(d);
+      });
+
+      const centerX = (i) => i * (CELL + GAP) + CELL / 2;
+      const ptr = { lo: document.getElementById("ptr-lo"), hi: document.getElementById("ptr-hi"), mid: document.getElementById("ptr-mid") };
+      ptr.lo.querySelector(".lab").textContent = V.loLabel;
+      ptr.hi.querySelector(".lab").textContent = V.hiLabel;
+      ptr.mid.querySelector(".lab").textContent = V.midLabel;
+      if (!V.showMid) ptr.mid.style.display = "none";
+
+      // lo/hi sit under the row, mid rides above it.
+      const ROW_H = 200;
+      const below = ROW_H + (V.compact ? 14 : 62);
+      ptr.lo.style.top = below + "px";
+      ptr.hi.style.top = below + "px";
+      ptr.mid.style.top = "-66px";
+      // Initial placement via gsap.set — never a CSS transform, which would
+      // fight the tweens on the same property (lint: gsap_css_transform_conflict).
+      Object.values(ptr).forEach((p) => gsap.set(p, { xPercent: -50 }));
+
+      const noteEl = document.getElementById("note");
+      const counterEl = document.getElementById("counter");
+      const STEP = Number(V.stepSeconds);
+
+      // Every state change is a zero-duration tl.set(), never tl.call().
+      // GSAP suppresses callbacks during seek(), and render workers seek to
+      // arbitrary times in parallel — a .call() here yields wrong cell states
+      // in the rendered frames while looking correct in preview.
+      const labLo = ptr.lo.querySelector(".lab");
+
+      document.fonts.ready.then(() => {
+        const tl = gsap.timeline({ paused: true });
+
+        steps.forEach((s, k) => {
+          const t = k * STEP;
+
+          // `hit` (optional) names the cells a step settles on — a found pair —
+          // drawn filled like the active cell.
+          const hit = s.hit || [];
+          values.forEach((_, i) => {
+            const inRange = i >= s.lo && i <= s.hi;
+            const state = !inRange
+              ? "eliminated"
+              : (hit.includes(i) || (V.showMid && i === s.mid) ? "active" : "default");
+            tl.set("#cell-" + i, { attr: { "data-state": state } }, t);
+          });
+
+          // lo and hi landing on the same index is the algorithm converging, not
+          // a collision — collapse them into one label instead of stacking two
+          // unreadable ones (layout: content_overlap).
+          const converged = s.lo === s.hi;
+          tl.set(labLo, { textContent: converged ? V.loLabel + " \u00b7 " + V.hiLabel : V.loLabel }, t);
+          tl.set(ptr.hi, { autoAlpha: converged ? 0 : 1 }, t);
+
+          tl.set(noteEl, { innerHTML: s.note }, t);
+          tl.set(counterEl, { textContent: "STEP " + (k + 1) + " / " + steps.length }, t);
+
+          const dur = k === 0 ? 0 : 0.55;
+          tl.to(ptr.lo, { x: centerX(s.lo), duration: dur, ease: "power2.inOut" }, t);
+          tl.to(ptr.hi, { x: centerX(s.hi), duration: dur, ease: "power2.inOut" }, t);
+          if (V.showMid) tl.to(ptr.mid, { x: centerX(s.mid), duration: dur, ease: "power2.inOut" }, t);
+          if (k === 0) tl.from(noteEl, { opacity: 0, y: 14, duration: 0.5, ease: "power3.out" }, 0.15);
+        });
+
+        // Hold the final state so the last step reads rather than flashes.
+        tl.to({}, { duration: STEP }, (steps.length - 1) * STEP);
+        window.__timelines["range-scan"] = tl;
+        // Registered after the runtime initialised, so it must be re-bound: without
+        // this `render` saw a zero-length composition ("Composition has zero
+        // duration") although `snapshot` and the browser played it.
+        window.__hfForceTimelineRebind?.();
+      });
+    </script>
+  </body>
+</html>

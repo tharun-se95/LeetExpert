@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>leetExpert — Arrays &amp; Dynamic Arrays</title>
+    <style>
+/* Latin subsets only, vendored — the renderer has no network. Inlined rather
+   than linked because StaticGuard does not follow <link>, so a linked face can
+   silently fall back to a system font in the render. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f15.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f10.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+    </style>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #15202e; }
+      #root { position: relative; width: 1920px; height: 1080px; }
+
+      /* The framework forces root-level clips to position:absolute; this supplies
+         the full-frame box the scaffold convention expects. */
+      .clip { position: absolute; inset: 0; }
+
+      /* --accent (#0A7A6A) measures 3.10:1 on the #15202E ground. That clears the
+         3:1 UI floor for rules, calipers and cell borders, but fails AA for text.
+         Accent TEXT therefore uses this lightened sibling of the same hue:
+         #29A691 on #15202E = 5.45:1 (AA for body, AAA for large). Mirrors the
+         product's "--mark, never --accent, at body size" rule. */
+      :root { --accent-ink: #29a691; }
+
+      .ovl { position: absolute; inset: 0; pointer-events: none; }
+
+      .tok { position: absolute; white-space: pre; font-weight: 500; color: var(--ink); }
+      .tok.dim { color: var(--dim); }
+      .tok.line { color: var(--line); }
+      .tok.acc { color: var(--accent-ink); }
+
+      .eyebrow { font-size: 26px; }
+      .caption {
+        position: absolute; text-align: center; left: 0; right: 0;
+        font-family: "Space Grotesk", system-ui, sans-serif; font-size: 32px;
+        line-height: 1.4; color: var(--line);
+      }
+      .lab {
+        position: absolute; text-align: center;
+        font-family: "JetBrains Mono", monospace; font-weight: 500; color: var(--line);
+      }
+      .bar { position: absolute; background: var(--accent, var(--ink)); border-radius: 2px; }
+      .track { position: absolute; background: var(--rule); border-radius: 2px; }
+      .coupler { position: absolute; background: var(--ink); border-radius: 2px; }
+
+      /* The occupied stretch of track: hatched so it reads as claimed memory
+         rather than another array cell. */
+      .occupied {
+        position: absolute; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-size: 26px; color: var(--ink);
+        background-color: var(--muted-fill);
+        background-image: repeating-linear-gradient(
+          -45deg, transparent 0 9px, rgba(229,235,242,.14) 9px 18px);
+        border: 2.5px solid var(--muted-fill);
+      }
+
+      .node {
+        position: absolute; display: flex; align-items: center; justify-content: center;
+        border: 2.5px solid var(--ink); border-radius: 14px;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 40px;
+        color: var(--ink);
+      }
+      .node[data-state="eliminated"] { border-color: var(--muted-fill); background: var(--muted-fill); color: var(--dim); }
+
+      #s4-token {
+        position: absolute; width: 26px; height: 26px; border-radius: 50%;
+        background: var(--accent-ink);
+      }
+
+      .brandmark { position: absolute; left: 112px; top: 996px; font-size: 24px; color: var(--dim); }
+
+      .s8-title { position: absolute; left: 112px; }
+      .s8-plate { position: absolute; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-theme="dark" data-family="linear-traversal"
+         data-composition-id="arrays-intro" data-start="0"
+         data-width="1920" data-height="1080" data-duration="87.846" data-fps="30">
+
+      <div id="s1-host" class="clip" data-composition-id="s1" data-composition-src="compositions/s1.html"
+           data-start="0" data-duration="10.292" data-track-index="0" data-width="1920" data-height="1080"></div>
+      <div id="s2-host" class="clip" data-composition-id="s2" data-composition-src="compositions/s2.html"
+           data-start="10.292" data-duration="8.670" data-track-index="1" data-width="1920" data-height="1080"></div>
+      <div id="s3-host" class="clip" data-composition-id="s3" data-composition-src="compositions/s3.html"
+           data-start="18.962" data-duration="13.918" data-track-index="2" data-width="1920" data-height="1080"></div>
+      <div id="s4-host" class="clip" data-composition-id="s4" data-composition-src="compositions/s4.html"
+           data-start="32.880" data-duration="8.902" data-track-index="0" data-width="1920" data-height="1080"></div>
+      <div id="s5-host" class="clip" data-composition-id="s5" data-composition-src="compositions/s5.html"
+           data-start="41.782" data-duration="9.924" data-track-index="1" data-width="1920" data-height="1080"></div>
+      <div id="s6-host" class="clip" data-composition-id="s6" data-composition-src="compositions/s6.html"
+           data-start="51.706" data-duration="14.800" data-track-index="2" data-width="1920" data-height="1080"></div>
+      <div id="s7-host" class="clip" data-composition-id="s7" data-composition-src="compositions/s7.html"
+           data-start="66.506" data-duration="9.784" data-track-index="0" data-width="1920" data-height="1080"></div>
+      <div id="s8-host" class="clip" data-composition-id="s8" data-composition-src="compositions/s8.html"
+           data-start="76.290" data-duration="11.556" data-track-index="1" data-width="1920" data-height="1080"></div>
+
+      <div id="brandmark" class="brandmark wordmark">leetExpert</div>
+
+      <audio id="narration" src="audio/narration.m4a" data-start="0" data-track-index="1"></audio>
+    </div>
+
+    <script>
+      // ── Shared geometry ─────────────────────────────────────────────────────
+      // Derived once and reused by every scene so the row is literally the same
+      // object from scene to scene: a cut between two scenes that both place the
+      // row at the same coordinates is invisible on screen.
+      const W = 1920, H = 1080;
+      const CW = 156, CH = 172, GP = 16, PITCH = CW + GP;   // 8 cells -> 1360px
+      const ROW_W = 8 * CW + 7 * GP;                         // 1360
+      const ROW_L = (W - ROW_W) / 2;                         // 280
+      const ROW_T = 360;                                     // scenes 1, 2, 5
+      const ROW_T_HI = 120;                                  // scenes 3, 4
+      const OFF_TRACK = 186, OFF_IDX = 206, OFF_ADDR = 246;  // group-relative y
+      const BASE_ADDR = 4096, SLOT = 8;                      // the lesson's own diagram values
+
+      // JetBrains Mono is a 600/1000 monospace, so a string's width is exact.
+      // Knowing it lets every leader line, caliper and flight target be computed
+      // rather than measured — measurement inside a hidden clip returns zeros.
+      const ADV = 0.6;
+      const monoW = (s, size) => s.length * size * ADV;
+
+      const $ = (id) => document.getElementById(id);
+      function mk(tag, cls, parent, css) {
+        const e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (css) Object.assign(e.style, css);
+        if (parent) parent.appendChild(e);
+        return e;
+      }
+      function svg(parent) {
+        const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        s.setAttribute("class", "ovl");
+        s.setAttribute("viewBox", "0 0 1920 1080");
+        s.setAttribute("width", "1920");
+        s.setAttribute("height", "1080");
+        parent.appendChild(s);
+        return s;
+      }
+      function poly(s, pts, stroke, width) {
+        const p = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+        p.setAttribute("points", pts.map((q) => q.join(",")).join(" "));
+        p.setAttribute("fill", "none");
+        p.setAttribute("stroke", stroke);
+        p.setAttribute("stroke-width", width || 2.5);
+        p.setAttribute("stroke-linecap", "round");
+        p.setAttribute("stroke-linejoin", "round");
+        s.appendChild(p);
+        return p;
+      }
+      // An arrowhead whose tip sits exactly on (x, y). deg 0 points down (+y),
+      // 180 up, 90 left, -90 right; for a direction (dx, dy) use atan2 - 90.
+      function tri(s, x, y, deg, fill, size) {
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        const r = size || 8;
+        t.setAttribute("points", (-r) + "," + (-r * 1.4) + " " + r + "," + (-r * 1.4) + " 0,0");
+        t.setAttribute("fill", fill);
+        t.setAttribute("transform", "translate(" + x + "," + y + ") rotate(" + deg + ")");
+        s.appendChild(t);
+        return t;
+      }
+      // A dashed-on reveal whose length is computed from the geometry, never
+      // measured: getTotalLength() throws on a clip that is display:none when its
+      // scene script runs, and pathLength="1" does not scale stroke-dashoffset in
+      // Chrome, so a pathLength draw snaps from nothing to whole instead of drawing.
+      // Polylines are summed exactly; a path passes its own computed length.
+      function dashPrep(p, len) {
+        let L = len;
+        if (L === undefined) {
+          const pts = p.getAttribute("points").trim().split(/\s+/).map((q) => q.split(",").map(Number));
+          L = 0;
+          for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+        }
+        gsap.set(p, { strokeDasharray: L, strokeDashoffset: L });
+        return L;
+      }
+      // A token's resolved colour, for GSAP colour tweens. Resolving from the live
+      // root keeps the palette single-sourced in brand.css and the style block.
+      function tok(name) {
+        return getComputedStyle(document.getElementById("root")).getPropertyValue(name).trim();
+      }
+      // A scene's mount: the host slot carries the scene's composition id and is
+      // in the DOM before any scene script runs.
+      function mount(id) {
+        return document.querySelector('[data-composition-id="' + id + '"]');
+      }
+
+      // A run of monospace tokens laid out by character offset. Returns a map of
+      // token id -> { x, w, el } so downstream geometry (leaders, flights,
+      // underlines) can be computed from the same numbers that positioned it.
+      function monoLine(parent, tokens, opt) {
+        const size = opt.size, top = opt.top;
+        const total = tokens.reduce((n, t) => n + t.text.length, 0);
+        const left = opt.left !== undefined ? opt.left : (W - total * size * ADV) / 2;
+        const out = { left: left, width: total * size * ADV };
+        let ci = 0;
+        tokens.forEach((t) => {
+          const e = mk("span", "tok" + (t.cls ? " " + t.cls : ""), parent, {
+            left: (left + ci * size * ADV) + "px",
+            top: top + "px",
+            fontSize: size + "px",
+            fontWeight: t.bold ? 700 : 500,
+          });
+          e.className = "tok mono" + (t.cls ? " " + t.cls : "");
+          e.textContent = t.text;
+          if (t.id) e.id = t.id;
+          out[t.id || t.text] = { x: left + ci * size * ADV, w: t.text.length * size * ADV, el: e };
+          ci += t.text.length;
+        });
+        return out;
+      }
+
+      // A cell row group: cells, optional track, index labels and address labels,
+      // all inside one positioned group so a scene can move the whole object.
+      function makeRow(parent, o) {
+        const n = o.n, cw = o.cw || CW, ch = o.ch || CH, gp = o.gp === undefined ? GP : o.gp;
+        const pitch = cw + gp;
+        const g = mk("div", null, parent, {
+          position: "absolute", left: o.left + "px", top: o.top + "px",
+          width: (n * cw + (n - 1) * gp) + "px",
+          height: (o.addr ? OFF_ADDR + 36 : o.idx ? OFF_IDX + 30 : ch) + "px",
+        });
+        if (o.id) g.id = o.id;
+        const cells = [], idxs = [], addrs = [];
+        for (let i = 0; i < n; i++) {
+          const c = mk("div", "cell", g, {
+            position: "absolute", left: (i * pitch) + "px", top: "0px",
+            width: cw + "px", height: ch + "px", fontSize: (o.font || 60) + "px",
+          });
+          if (o.id) c.id = o.id + "-c" + i;
+          // An explicit starting state: GSAP records it as the value to restore
+          // when a render worker seeks backwards past a data-state set. With no
+          // attribute present the revert silently keeps the later state.
+          c.setAttribute("data-state", "default");
+          if (o.values) c.textContent = o.values[i];
+          cells.push(c);
+        }
+        if (o.track) {
+          const tr = mk("div", "track", g, {
+            left: "-40px", top: (o.trackOff || OFF_TRACK) + "px",
+            width: (n * cw + (n - 1) * gp + 80) + "px", height: "3px",
+          });
+          if (o.id) tr.id = o.id + "-track";
+          g.__track = tr;
+        }
+        if (o.idx) {
+          for (let i = 0; i < n; i++) {
+            const d = mk("div", "idx", g, {
+              position: "absolute", left: (i * pitch) + "px", top: OFF_IDX + "px",
+              width: cw + "px", fontSize: "22px",
+            });
+            d.textContent = i;
+            if (o.id) d.id = o.id + "-i" + i;
+            idxs.push(d);
+          }
+        }
+        if (o.addr) {
+          for (let i = 0; i < n; i++) {
+            const a = mk("div", "lab", g, {
+              left: (i * pitch) + "px", top: OFF_ADDR + "px",
+              width: cw + "px", fontSize: "26px",
+            });
+            a.textContent = BASE_ADDR + i * SLOT;
+            if (o.id) a.id = o.id + "-a" + i;
+            addrs.push(a);
+          }
+        }
+        g.__cells = cells; g.__idxs = idxs; g.__addrs = addrs; g.__pitch = pitch;
+        g.__cx = (i) => o.left + i * pitch + cw / 2;   // absolute centre x of cell i
+        return g;
+      }
+      function couplers(g, n, cw, gp) {
+        const pitch = cw + gp, out = [];
+        for (let i = 0; i < n - 1; i++) {
+          out.push(mk("div", "coupler", g, {
+            left: (i * pitch + cw) + "px", top: (CH / 2 - 2) + "px",
+            width: gp + "px", height: "4px",
+          }));
+        }
+        return out;
+      }
+      function eyebrow(parent, text, top) {
+        const e = mk("div", "eyebrow", parent, {
+          position: "absolute", left: "112px", top: (top === undefined ? 58 : top) + "px",
+        });
+        e.textContent = text;
+        return e;
+      }
+
+      // Exposed once for the scene sub-compositions: one source of geometry.
+      window.LE = { W, H, CW, CH, GP, PITCH, ROW_W, ROW_L, ROW_T, ROW_T_HI, OFF_TRACK, OFF_IDX, OFF_ADDR,
+                    BASE_ADDR, SLOT, ADV, monoW, $, mk, svg, poly, tri, dashPrep, tok, mount, monoLine, makeRow, couplers, eyebrow };
+
+      // The host timeline owns only what lives on the host: the brandmark stays
+      // off the opening plate (which carries its own art) and off the closing
+      // card (which carries the full wordmark).
+      const tl = gsap.timeline({ paused: true });
+      gsap.set("#brandmark", { autoAlpha: 0 });
+      tl.to("#brandmark", { autoAlpha: 1, duration: 0.6 }, 2.6);
+      tl.set("#brandmark", { autoAlpha: 0 }, 76.29);
+      window.__timelines["arrays-intro"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,242 @@
+<!doctype html>
+<html
+  lang="en"
+  data-resolution="landscape"
+  data-composition-variables='[{"id": "eyebrow", "type": "string", "label": "Eyebrow", "default": "Relationships"}, {"id": "title", "type": "string", "label": "Title", "default": "Breadth-First Search"}, {"id": "family", "type": "enum", "label": "Pattern family", "default": "relationships", "options": [{"value": "linear-traversal", "label": "Linear Traversal"}, {"value": "pointer-movement", "label": "Pointer Movement"}, {"value": "ordering-search", "label": "Ordering &amp; Search"}, {"value": "recursive-exploration", "label": "Recursive Exploration"}, {"value": "state-transition", "label": "State Transition"}, {"value": "relationships", "label": "Relationships"}, {"value": "priority-structures", "label": "Priority Structures"}]}, {"id": "theme", "type": "enum", "label": "Theme", "default": "dark", "options": [{"value": "dark", "label": "Dark"}, {"value": "light", "label": "Light"}]}, {"id": "nodes", "type": "string", "label": "Nodes JSON [{id,x,y}] with x,y in 0..1", "default": "[{\"id\": \"A\", \"x\": 0.06, \"y\": 0.5}, {\"id\": \"B\", \"x\": 0.3, \"y\": 0.16}, {\"id\": \"C\", \"x\": 0.3, \"y\": 0.84}, {\"id\": \"D\", \"x\": 0.58, \"y\": 0.3}, {\"id\": \"E\", \"x\": 0.58, \"y\": 0.8}, {\"id\": \"F\", \"x\": 0.88, \"y\": 0.52}]"}, {"id": "edges", "type": "string", "label": "Edges JSON [[a,b],...]", "default": "[[\"A\", \"B\"], [\"A\", \"C\"], [\"B\", \"D\"], [\"C\", \"D\"], [\"C\", \"E\"], [\"D\", \"F\"], [\"E\", \"F\"]]"}, {"id": "directed", "type": "boolean", "label": "Directed edges", "default": false}, {"id": "queueLabel", "type": "string", "label": "Strip label", "default": "visit order"}, {"id": "steps", "type": "string", "label": "Steps JSON [{cur,visited,frontier,note}]", "default": "[{\"cur\": null, \"visited\": [], \"frontier\": [\"A\"], \"note\": \"Start at <b>A</b>. The queue holds nodes discovered but not yet processed.\"}, {\"cur\": \"A\", \"visited\": [\"A\"], \"frontier\": [\"B\", \"C\"], \"note\": \"Process <b>A</b> (distance 0). Discovers B, C \\u2014 queued behind everything already waiting.\"}, {\"cur\": \"B\", \"visited\": [\"A\", \"B\"], \"frontier\": [\"C\", \"D\"], \"note\": \"Process <b>B</b> (distance 1). Discovers D \\u2014 queued behind everything already waiting.\"}, {\"cur\": \"C\", \"visited\": [\"A\", \"B\", \"C\"], \"frontier\": [\"D\", \"E\"], \"note\": \"Process <b>C</b> (distance 1). Discovers E \\u2014 queued behind everything already waiting.\"}, {\"cur\": \"D\", \"visited\": [\"A\", \"B\", \"C\", \"D\"], \"frontier\": [\"E\", \"F\"], \"note\": \"Process <b>D</b> (distance 2). Discovers F \\u2014 queued behind everything already waiting.\"}, {\"cur\": \"E\", \"visited\": [\"A\", \"B\", \"C\", \"D\", \"E\"], \"frontier\": [\"F\"], \"note\": \"Process <b>E</b> (distance 2). No new neighbours; everything it touches is already seen.\"}, {\"cur\": \"F\", \"visited\": [\"A\", \"B\", \"C\", \"D\", \"E\", \"F\"], \"frontier\": [], \"note\": \"Process <b>F</b> (distance 3). No new neighbours; everything it touches is already seen.\"}, {\"cur\": null, \"visited\": [\"A\", \"B\", \"C\", \"D\", \"E\", \"F\"], \"frontier\": [], \"note\": \"Visit order <b>A B C D E F</b>. BFS drains the queue in arrival order, so nodes come out grouped by distance \\u2014 which is why it finds shortest paths.\"}]"}, {"id": "stepSeconds", "type": "number", "label": "Seconds per step", "default": 1.9, "min": 0.3, "max": 8, "step": 0.1}]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>leetExpert — Graph</title>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+/* Latin subsets only, vendored — the renderer has no network. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f15.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f10.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+    </style>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { width: 1920px; height: 1080px; padding: 88px 112px; display: flex; flex-direction: column; }
+      .head { display: flex; flex-direction: column; gap: 20px; }
+      .rule { width: 132px; height: 5px; background: var(--accent, var(--ink)); border-radius: 3px; }
+      .eyebrow { font-size: 26px; }
+      .title { font-size: 72px; }
+      .board { flex: 1; position: relative; }
+      #canvas { position: absolute; inset: 0; }
+      #edges { position: absolute; inset: 0; overflow: visible; }
+      .gnode {
+        position: absolute; width: 104px; height: 104px; margin: -52px 0 0 -52px;
+        border: 2.5px solid var(--line); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 38px; color: var(--line);
+        background: var(--ground);
+      }
+      /* Three states are what make a search legible: discovered but not yet
+         processed (frontier), being processed now, and finished. */
+      .gnode[data-state="frontier"] { border-color: var(--accent, var(--ink)); color: var(--ink); border-width: 4px; }
+      .gnode[data-state="cur"] { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+      .gnode[data-state="done"] { border-color: var(--muted-fill); color: var(--dim); }
+      .strip { display: flex; align-items: center; gap: 12px; min-height: 70px; }
+      .striplab {
+        font-family: "Space Mono", monospace; font-size: 20px; letter-spacing: .14em;
+        text-transform: uppercase; color: var(--dim); margin-right: 10px;
+      }
+      .scell {
+        min-width: 58px; height: 58px; padding: 0 10px;
+        border: 2px solid var(--rule-strong); border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; color: var(--ink);
+      }
+      .note {
+        font-family: "Space Grotesk", sans-serif; font-size: 32px; line-height: 1.45;
+        color: var(--line); max-width: 1180px; min-height: 84px; margin-top: 16px;
+      }
+      .note b { color: var(--ink); font-weight: 700; }
+      .foot { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 12px; }
+      .wordmark { font-size: 30px; }
+      .counter { font-family: "Space Mono", monospace; font-size: 22px; letter-spacing: .16em; color: var(--dim); }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="graph" data-start="0"
+         data-width="1920" data-height="1080">
+      <div class="head">
+        <div class="rule"></div>
+        <div class="eyebrow" id="eyebrow"></div>
+        <div class="title display" id="title"></div>
+      </div>
+      <div class="board"><div id="canvas"><svg id="edges"></svg></div></div>
+      <div class="strip" id="strip"></div>
+      <div class="note" id="note"></div>
+      <div class="foot">
+        <span class="wordmark">leetExpert</span>
+        <span class="counter" id="counter"></span>
+      </div>
+    </div>
+    <script>
+      const V = window.__hyperframes.getVariables();
+      const root = document.getElementById("root");
+      root.setAttribute("data-theme", V.theme);
+      root.setAttribute("data-family", V.family);
+      document.getElementById("eyebrow").textContent = V.eyebrow;
+      document.getElementById("title").textContent = V.title;
+
+      const nodes = JSON.parse(V.nodes);
+      const edges = JSON.parse(V.edges);
+      const steps = JSON.parse(V.steps);
+      const canvas = document.getElementById("canvas");
+      const svg = document.getElementById("edges");
+      const strip = document.getElementById("strip");
+      const noteEl = document.getElementById("note");
+      const counterEl = document.getElementById("counter");
+      const STEP = Number(V.stepSeconds);
+      const R = 52;
+
+      document.fonts.ready.then(() => {
+        // Positions are authored normalised (0..1) and mapped onto the measured
+        // board, so one layout survives any canvas size.
+        const W = canvas.clientWidth, H = canvas.clientHeight;
+        const pad = R + 10;
+        const at = {};
+        nodes.forEach((n) => {
+          at[n.id] = { x: pad + n.x * (W - pad * 2), y: pad + n.y * (H - pad * 2) };
+        });
+
+        if (V.directed) {
+          const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+          defs.innerHTML =
+            '<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
+            '<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path></marker>';
+          svg.appendChild(defs);
+        }
+        edges.forEach(([a, b]) => {
+          const p = at[a], q = at[b];
+          if (!p || !q) return;
+          // Stop the edge at the node's rim, not its centre, so an arrowhead
+          // lands on the circle instead of under it.
+          const dx = q.x - p.x, dy = q.y - p.y;
+          const len = Math.hypot(dx, dy) || 1;
+          const ux = dx / len, uy = dy / len;
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", p.x + ux * R); line.setAttribute("y1", p.y + uy * R);
+          line.setAttribute("x2", q.x - ux * R); line.setAttribute("y2", q.y - uy * R);
+          line.setAttribute("stroke", "currentColor");
+          line.setAttribute("stroke-width", "2.5");
+          line.setAttribute("opacity", "0.5");
+          if (V.directed) line.setAttribute("marker-end", "url(#ah)");
+          svg.appendChild(line);
+        });
+        svg.style.color = "var(--line)";
+
+        nodes.forEach((n) => {
+          const el = document.createElement("div");
+          el.className = "gnode"; el.id = "gn-" + n.id; el.textContent = n.id;
+          el.style.left = at[n.id].x + "px"; el.style.top = at[n.id].y + "px";
+          canvas.appendChild(el);
+        });
+
+        const maxVisited = steps.reduce((m, s) => Math.max(m, (s.visited || []).length), 0);
+        const lab = document.createElement("span");
+        lab.className = "striplab"; lab.textContent = V.queueLabel;
+        strip.appendChild(lab);
+        for (let k = 0; k < maxVisited; k++) {
+          const c = document.createElement("div");
+          c.className = "scell"; c.id = "sc-" + k;
+          strip.appendChild(c);
+        }
+        if (maxVisited > 0) gsap.set(".scell", { autoAlpha: 0 });
+
+        const tl = gsap.timeline({ paused: true });
+        steps.forEach((s, k) => {
+          const t = k * STEP;
+          const visited = s.visited || [];
+          const frontier = new Set(s.frontier || []);
+          nodes.forEach((n) => {
+            const state = n.id === s.cur ? "cur"
+              : (frontier.has(n.id) ? "frontier"
+              : (visited.includes(n.id) ? "done" : "default"));
+            tl.set("#gn-" + n.id, { attr: { "data-state": state } }, t);
+          });
+          for (let c = 0; c < maxVisited; c++) {
+            const filled = c < visited.length;
+            tl.set("#sc-" + c, { autoAlpha: filled ? 1 : 0, textContent: filled ? visited[c] : "" }, t);
+          }
+          tl.set(noteEl, { innerHTML: s.note }, t);
+          tl.set(counterEl, { textContent: "STEP " + (k + 1) + " / " + steps.length }, t);
+          if (k === 0) tl.from(noteEl, { opacity: 0, y: 12, duration: 0.45, ease: "power3.out" }, 0.15);
+        });
+        tl.to({}, { duration: STEP }, (steps.length - 1) * STEP);
+        window.__timelines["graph"] = tl;
+        // Registered after the runtime initialised, so it must be re-bound: without
+        // this `render` saw a zero-length composition ("Composition has zero
+        // duration") although `snapshot` and the browser played it.
+        window.__hfForceTimelineRebind?.();
+      });
+    </script>
+  </body>
+</html>

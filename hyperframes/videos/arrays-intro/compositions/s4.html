@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>arrays-intro · scene 4</title>
+  </head>
+  <body>
+    <template>
+      <!-- Geometry helpers and shared styles come from the host index.html
+           (window.LE), so every scene draws the row from the same numbers. -->
+      <div id="s4-root" data-composition-id="s4" data-width="1920" data-height="1080"
+           data-duration="9.041" style="position:absolute;left:0;top:0;width:1920px;height:1080px;"></div>
+      <script>
+      // ── Scene 4 — against a chain ───────────────────────────────────────────
+      // Two bands on one ground. The chain is walked hop by hop and every node
+      // it passes is spent; the array is reached in a single arc and nothing
+      // else is touched. The comparison is made by the motion, not by a caption.
+      (function scene4() {
+        const { W, H, CW, CH, GP, PITCH, ROW_W, ROW_L, ROW_T, ROW_T_HI, OFF_TRACK, OFF_IDX, OFF_ADDR, BASE_ADDR, SLOT, ADV, monoW, $, mk, svg, poly, tri, dashPrep, tok, mount, monoLine, makeRow, couplers, eyebrow } = window.LE;
+        const tl = gsap.timeline({ paused: true });
+        const c = mount("s4"), t0 = 0;
+        // Beats anchored to spoken words (see s3.html): word timings come from the
+        // alignment of the current take via timing.js, so a regenerated voiceover
+        // cannot desync this scene. A changed word count means the script changed.
+        const WORDS = window.AI_TIMING.scenes.find((x) => x.scene === 4).words;
+        if (WORDS.length !== 22) throw new Error("s4: expected 22 anchored words, got " + WORDS.length);
+        const WA = (k, off) => WORDS[k].s + off;
+        const eb = eyebrow(c, "ONE JUMP · SEVEN HOPS");
+        const g = makeRow(c, { id: "s4", left: ROW_L, top: ROW_T_HI, n: 8, track: true, idx: true });
+
+        const labA = mk("div", "eyebrow", c, { position: "absolute", left: "112px", top: "128px", fontSize: "22px" });
+        labA.textContent = "ARRAY"; labA.id = "s4-la";
+        const labB = mk("div", "eyebrow", c, { position: "absolute", left: "112px", top: "560px", fontSize: "22px" });
+        labB.textContent = "CHAIN"; labB.id = "s4-lb";
+
+        // Nodes scattered in y: a chain's nodes are wherever the allocator put
+        // them, which is the whole reason you cannot compute their addresses.
+        const ND = 104, NGAP = 56, NP = ND + NGAP, NL = (W - (8 * ND + 7 * NGAP)) / 2, NT = 640;
+        const OFFY = [0, 26, -16, 32, -10, 20, -28, 8];
+        const sv = svg(c);
+        const nodes = [], edges = [], heads = [];
+        for (let i = 0; i < 8; i++) {
+          const n = mk("div", "node", c, {
+            left: (NL + i * NP) + "px", top: (NT + OFFY[i]) + "px",
+            width: ND + "px", height: ND + "px",
+          });
+          n.textContent = i; n.id = "s4-n" + i;
+          n.setAttribute("data-state", "default");
+          nodes.push(n);
+        }
+        const ncx = (i) => NL + i * NP + ND / 2, ncy = (i) => NT + OFFY[i] + ND / 2;
+        // The walker rides just above each node so it never covers the node's label.
+        const tky = (i) => NT + OFFY[i] - 36;
+        for (let i = 0; i < 7; i++) {
+          const x1 = NL + i * NP + ND + 6, y1 = ncy(i);
+          const x2 = NL + (i + 1) * NP - 20, y2 = ncy(i + 1);
+          const e = poly(sv, [[x1, y1], [x2, y2]], "var(--line)", 2.5);
+          dashPrep(e);
+          edges.push(e);
+          const len = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / len, uy = (y2 - y1) / len;
+          const deg = Math.atan2(uy, ux) * 180 / Math.PI - 90;
+          heads.push(tri(sv, x2 + ux * 12, y2 + uy * 12, deg, "var(--line)", 7));
+        }
+
+        const token = mk("div", null, c, { left: "0px", top: "0px" });
+        token.id = "s4-token";
+
+        // One arc: leave the base, arrive at 7. No scan across the row.
+        const arc = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        arc.setAttribute("d", "M 250 206 L 250 372 Q 960 500 1670 372 L 1670 206 L 1646 206");
+        arc.setAttribute("fill", "none");
+        arc.setAttribute("stroke", "var(--accent-ink)");
+        arc.setAttribute("stroke-width", "3");
+        arc.setAttribute("stroke-linecap", "round");
+        sv.appendChild(arc);
+        // M 250 206 L 250 372 Q 960 500 1670 372 L 1670 206 L 1646 206: two straight
+        // legs plus a quadratic, whose length is summed over fine deterministic steps.
+        let quadL = 0, px = 250, py = 372;
+        for (let k = 1; k <= 400; k++) {
+          const u = k / 400, x = (1 - u) * (1 - u) * 250 + 2 * (1 - u) * u * 960 + u * u * 1670;
+          const y = (1 - u) * (1 - u) * 372 + 2 * (1 - u) * u * 500 + u * u * 372;
+          quadL += Math.hypot(x - px, y - py); px = x; py = y;
+        }
+        const arcL = dashPrep(arc, 166 + quadL + 166 + 24);
+        const arcHead = tri(sv, 1642, 206, 90, "var(--accent-ink)", 8);
+        const baseLab = mk("div", "lab mono", c, { left: "120px", top: "190px", width: "112px", fontSize: "24px", textAlign: "right" });
+        baseLab.textContent = "base"; baseLab.id = "s4-base";
+
+        const CL = (W - 26 * 34 * ADV) / 2;
+        const A = monoLine(c, [
+          { text: "chain    " }, { text: "0", id: "s4-h", cls: "acc", bold: true }, { text: " hops" },
+        ], { size: 34, top: 846, left: CL });
+        const B = monoLine(c, [
+          { text: "array    " }, { text: "1 multiply, 1 add", cls: "acc", bold: true },
+        ], { size: 34, top: 894, left: CL });
+
+        gsap.set(nodes, { autoAlpha: 0, y: 14 });
+        gsap.set(heads, { autoAlpha: 0 });
+        gsap.set([token, arcHead, baseLab], { autoAlpha: 0 });
+        gsap.set([labA, labB, eb], { autoAlpha: 0 });
+        [A, B].forEach((L) => Object.keys(L).forEach((k) => { if (L[k].el) gsap.set(L[k].el, { autoAlpha: 0 }); }));
+        gsap.set(token, { x: ncx(0) - 13, y: tky(0) });
+
+        tl.to([eb, labA, labB], { autoAlpha: 1, duration: 0.4 }, t0 + 0.0);
+        tl.to(nodes, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.07, ease: "power2.out" }, t0 + WA(0, 0.12));
+        edges.forEach((e, i) => {
+          tl.to(e, { strokeDashoffset: 0, duration: 0.35, ease: "power1.inOut" }, t0 + WA(1, 0.03) + i * 0.1);
+          tl.to(heads[i], { autoAlpha: 1, duration: 0.15 }, t0 + WA(2, 0.03) + i * 0.1);
+        });
+        Object.keys(A).forEach((k) => { if (A[k].el) tl.to(A[k].el, { autoAlpha: 1, duration: 0.35 }, t0 + WA(3, 0.11)); });
+        tl.to(token, { autoAlpha: 1, duration: 0.25 }, t0 + WA(5, 0.02));
+        for (let k = 0; k < 7; k++) {
+          const t = t0 + WA(5, 0.27) + k * 0.3;
+          tl.to(token, { x: ncx(k + 1) - 13, y: tky(k + 1), duration: 0.26, ease: "power1.inOut" }, t);
+          tl.set(nodes[k], { attr: { "data-state": "eliminated" } }, t + 0.26);
+          tl.set(A["s4-h"].el, { textContent: String(k + 1) }, t + 0.26);
+        }
+        tl.to(baseLab, { autoAlpha: 1, duration: 0.3 }, t0 + WA(9, 0.58));
+        tl.to(arc, { strokeDashoffset: 0, duration: 0.65, ease: "power2.inOut" }, t0 + WA(9, 0.78));
+        tl.to(arcHead, { autoAlpha: 1, duration: 0.15 }, t0 + WA(11, 0.19));
+        tl.set(g.__cells[7], { attr: { "data-state": "active" } }, t0 + WA(11, 0.25));
+        Object.keys(B).forEach((k) => { if (B[k].el) tl.to(B[k].el, { autoAlpha: 1, duration: 0.35 }, t0 + WA(13, 0.0)); });
+        // Seven positions spent against one: shown by counting pulses, not words.
+        tl.to(nodes.slice(0, 7), { scale: 1.07, duration: 0.16, yoyo: true, repeat: 1, stagger: 0.08, ease: "power2.inOut", transformOrigin: "50% 50%" }, t0 + WA(16, 0.51));
+        tl.to(g.__cells[7], { scale: 1.07, duration: 0.3, yoyo: true, repeat: 1, ease: "power2.inOut", transformOrigin: "50% 50%" }, t0 + WA(19, 0.14));
+        window.LE.assertFits(4, tl);
+        window.__timelines["s4"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

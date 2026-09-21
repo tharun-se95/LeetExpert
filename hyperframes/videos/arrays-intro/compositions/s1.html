@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>arrays-intro · scene 1</title>
+  </head>
+  <body>
+    <template>
+      <!-- Geometry helpers and shared styles come from the host index.html
+           (window.LE), so every scene draws the row from the same numbers. -->
+      <div id="s1-root" data-composition-id="s1" data-width="1920" data-height="1080"
+           data-duration="9.27" style="position:absolute;left:0;top:0;width:1920px;height:1080px;"></div>
+      <script>
+      // ── Scene 1 — the picture ───────────────────────────────────────────────
+      // The module-art plate opens the film and hands off to live cells; three
+      // more cars couple on; couplers draw. Cells stay empty: this scene is about
+      // the SHAPE (equal widths, touching, one straight line), not the contents.
+      (function scene1() {
+        const { W, H, CW, CH, GP, PITCH, ROW_W, ROW_L, ROW_T, ROW_T_HI, OFF_TRACK, OFF_IDX, OFF_ADDR, BASE_ADDR, SLOT, ADV, monoW, $, mk, svg, poly, tri, dashPrep, tok, mount, monoLine, makeRow, couplers, eyebrow } = window.LE;
+        const tl = gsap.timeline({ paused: true });
+        const c = mount("s1"), t0 = 0;
+        // Beats anchored to spoken words (see s3.html): word timings come from the
+        // alignment of the current take via timing.js, so a regenerated voiceover
+        // cannot desync this scene. A changed word count means the script changed.
+        const WORDS = window.AI_TIMING.scenes.find((x) => x.scene === 1).words;
+        if (WORDS.length !== 22) throw new Error("s1: expected 22 anchored words, got " + WORDS.length);
+        const WA = (k, off) => WORDS[k].s + off;
+        const plate = mk("img", "s8-plate", c, {
+          left: "0px", top: "0px", width: "1920px", height: "1080px", objectFit: "cover",
+        });
+        plate.id = "s1-plate";
+        plate.src = "media/arrays-plate.webp";
+        plate.alt = "Arrays module plate: the wordmark ARRAYS beside a row of outlined cells";
+
+        const g = makeRow(c, { id: "s1", left: ROW_L, top: ROW_T, n: 8, track: true });
+        const cps = couplers(g, 8, CW, GP);
+        const eb = eyebrow(c, "IDENTICAL · COUPLED · CONTIGUOUS", 700);
+        eb.style.left = "0px"; eb.style.right = "0px"; eb.style.textAlign = "center";
+        eb.id = "s1-eb";
+
+        gsap.set(g.__cells, { autoAlpha: 0 });
+        gsap.set(g.__track, { scaleX: 0, transformOrigin: "0% 50%" });
+        gsap.set(cps, { autoAlpha: 0, scaleX: 0, transformOrigin: "50% 50%" });
+        gsap.set(eb, { autoAlpha: 0, y: 12 });
+        gsap.set(g.__cells.slice(5), { x: 300 });
+
+        tl.to(plate, { autoAlpha: 0, scale: 1.05, duration: 1.1, ease: "power2.inOut" }, t0 + WA(2, 0.6));
+        tl.to(g.__cells.slice(0, 5), { autoAlpha: 1, duration: 0.55, stagger: 0.09, ease: "power2.out" }, t0 + WA(3, 0.08));
+        tl.to(g.__track, { scaleX: 1, duration: 0.7, ease: "power2.out" }, t0 + WA(3, 0.68));
+        [5, 6, 7].forEach((i, k) => {
+          tl.to(g.__cells[i], { autoAlpha: 1, duration: 0.25 }, t0 + WA(5, 0.07) + k * 0.5);
+          tl.to(g.__cells[i], { x: 0, duration: 0.55, ease: "power3.out" }, t0 + WA(5, 0.07) + k * 0.5);
+        });
+        tl.to(cps, { autoAlpha: 1, scaleX: 1, duration: 0.3, stagger: 0.12, ease: "power2.out" }, t0 + WA(12, 0.28));
+        tl.to(eb, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out" }, t0 + WA(14, 0.08));
+        window.LE.assertFits(1, tl);
+        window.__timelines["s1"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>arrays-intro · scene 6</title>
+  </head>
+  <body>
+    <template>
+      <!-- Geometry helpers and shared styles come from the host index.html
+           (window.LE), so every scene draws the row from the same numbers. -->
+      <div id="s6-root" data-composition-id="s6" data-width="1920" data-height="1080"
+           data-duration="14.800" style="position:absolute;left:0;top:0;width:1920px;height:1080px;"></div>
+      <script>
+      // ── Scene 6 — doubling ──────────────────────────────────────────────────
+      // The full row shrinks to the upper row (a match to scene 5's size), fresh
+      // track and sixteen slots allocate below, every car is copied across one at
+      // a time, then the ledger of every grow is summed to show the < 2n bound.
+      (function scene6() {
+        const { W, H, CW, CH, GP, PITCH, ROW_W, ROW_L, ROW_T, ROW_T_HI, OFF_TRACK, OFF_IDX, OFF_ADDR, BASE_ADDR, SLOT, ADV, monoW, $, mk, svg, poly, tri, dashPrep, tok, mount, monoLine, makeRow, couplers, eyebrow } = window.LE;
+        const tl = gsap.timeline({ paused: true });
+        const c = mount("s6"), t0 = 0;
+        const eb = eyebrow(c, "DYNAMIC ARRAY · GROW BY DOUBLING");
+        const cw = 92, ch = 104, gp = 10, pitch = cw + gp;
+        const OLD_W = 8 * cw + 7 * gp, OLD_L = (W - OLD_W) / 2, OLD_T = 200;   // 557
+        const NEW_W = 16 * cw + 15 * gp, NEW_L = (W - NEW_W) / 2, NEW_T = 520; // 149
+        const VALUES = [3, 1, 4, 1, 5, 9, 2, 6];
+
+        // Execute the doubling policy rather than typing its ledger: append n
+        // items into a capacity-1 buffer, doubling when full, and record every
+        // grow and the copies it cost.
+        function doublingLedger(n) {
+          let cap = 1, len = 0, total = 0;
+          const grows = [];
+          for (let k = 0; k < n; k++) {
+            if (len === cap) { grows.push({ from: cap, to: cap * 2, copies: len }); total += len; cap *= 2; }
+            len++;
+          }
+          return { grows: grows, total: total, cap: cap };
+        }
+        const N_APPENDS = 16;
+        const LED = doublingLedger(N_APPENDS);
+        if (LED.total >= 2 * N_APPENDS || LED.cap !== 16 || LED.grows.length !== 4) {
+          throw new Error("doubling ledger disagrees with the < 2n claim: " + JSON.stringify(LED));
+        }
+
+        // Scene 5's row centre was (840, 446) at 156px cells; this row's centre is
+        // (960, 252) at 92px. Scaling from that origin makes the cut a continuous
+        // pull-back rather than a jump.
+        const oldWrap = mk("div", null, c, { position: "absolute", left: "0px", top: "0px", width: "1920px", height: "360px" });
+        oldWrap.id = "s6-oldwrap";
+        const og = makeRow(oldWrap, { id: "s6o", left: OLD_L, top: OLD_T, n: 8, cw: cw, ch: ch, gp: gp });
+        const oldVals = og.__cells.map((cell, i) => {
+          const s = mk("span", null, cell, { fontSize: "40px" });
+          s.textContent = VALUES[i]; s.id = "s6-ov" + i;
+          return s;
+        });
+        const oldTrack = mk("div", "track", c, { left: (OLD_L - 40) + "px", top: (OLD_T + ch + 12) + "px", width: (OLD_W + 80) + "px", height: "3px" });
+        oldTrack.id = "s6-otrack";
+        const oldLab = mk("div", "lab", c, { left: "0px", width: "1920px", top: "140px", fontSize: "28px" });
+        oldLab.textContent = "capacity 8 · length 8 · full"; oldLab.id = "s6-olab";
+
+        const newTrack = mk("div", "track", c, { left: (NEW_L - 40) + "px", top: (NEW_T + ch + 12) + "px", width: (NEW_W + 80) + "px", height: "3px", background: "var(--line)" });
+        newTrack.id = "s6-ntrack";
+        const ng = makeRow(c, { id: "s6n", left: NEW_L, top: NEW_T, n: 16, cw: cw, ch: ch, gp: gp });
+        const newVals = ng.__cells.slice(0, 8).map((cell, i) => {
+          const s = mk("span", null, cell, { fontSize: "40px" });
+          s.textContent = VALUES[i]; s.id = "s6-nv" + i;
+          return s;
+        });
+        const newLab = mk("div", "lab", c, { left: "0px", width: "1920px", top: (NEW_T + ch + 30) + "px", fontSize: "28px" });
+        newLab.textContent = "capacity 16 · length 0"; newLab.id = "s6-nlab";
+
+        const flyers = VALUES.map((v, i) => {
+          const f = mk("div", "cell", c, {
+            position: "absolute", left: (OLD_L + i * pitch) + "px", top: OLD_T + "px",
+            width: cw + "px", height: ch + "px", fontSize: "40px", color: "var(--accent-ink)",
+            borderColor: "var(--accent-ink)",
+          });
+          f.textContent = v; f.id = "s6-f" + i;
+          return f;
+        });
+        const FDX = NEW_L - OLD_L, FDY = NEW_T - OLD_T;
+
+        // The ledger: one row per grow, from the executed simulation.
+        const pad = (s, n) => (s + "          ").slice(0, n);
+        const ledger = LED.grows.map((gr, k) => monoLine(c, [
+          { text: "grow  " + pad(gr.from + " -> " + gr.to, 9) + "  copy ", cls: "dim" },
+          { text: String(gr.copies), cls: "line", bold: true, id: "s6-lc" + k },
+        ], { size: 26, top: 332 + k * 42, left: 1420 }));
+
+        const sumTerms = LED.grows.map((gr) => gr.copies).join(" + ");
+        const S1 = monoLine(c, [{ text: sumTerms + " = " + LED.total + " copies", cls: "line" }], { size: 38, top: 740 });
+        const S2 = monoLine(c, [
+          { text: LED.total + " < 2n", cls: "acc", bold: true },
+          { text: "   for n = " + N_APPENDS + " appends", cls: "line" },
+        ], { size: 38, top: 798 });
+        const S3 = monoLine(c, [
+          { text: "per append: ", cls: "line" },
+          { text: "O(1) amortized", cls: "acc", bold: true },
+        ], { size: 38, top: 856 });
+        const els = (L) => Object.keys(L).map((k) => L[k].el).filter(Boolean);
+
+        // ── initial states ──
+        gsap.set(oldWrap, { transformOrigin: "960px 252px", scale: 1.695, x: -120, y: 194 });
+        gsap.set(oldVals, { autoAlpha: 0 });
+        gsap.set([oldTrack, oldLab, newLab, eb], { autoAlpha: 0 });
+        gsap.set(newTrack, { scaleX: 0, transformOrigin: "0% 50%" });
+        gsap.set(ng.__cells, { autoAlpha: 0, scale: 0.6, transformOrigin: "50% 50%" });
+        gsap.set(newVals, { autoAlpha: 0 });
+        gsap.set(flyers, { autoAlpha: 0, x: 0, y: 0 });
+        ledger.forEach((L) => gsap.set(els(L), { autoAlpha: 0, x: 16 }));
+        gsap.set(els(S1).concat(els(S2), els(S3)), { autoAlpha: 0, y: 12 });
+
+        tl.to(eb, { autoAlpha: 1, duration: 0.4 }, t0 + 0.0);
+        tl.to(oldWrap, { scale: 1, x: 0, y: 0, duration: 0.9, ease: "power2.inOut" }, t0 + 0.0);
+        tl.to(oldVals, { autoAlpha: 1, duration: 0.35, stagger: 0.04 }, t0 + 0.6);
+        tl.to([oldTrack, oldLab], { autoAlpha: 1, duration: 0.4 }, t0 + 0.9);
+
+        tl.to(newTrack, { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, t0 + 1.4);
+        tl.to(ng.__cells, { autoAlpha: 1, scale: 1, duration: 0.25, stagger: 0.06, ease: "back.out(1.6)" }, t0 + 2.3);
+        tl.to(newLab, { autoAlpha: 1, duration: 0.4 }, t0 + 3.35);
+
+        // The copy: visibly O(n) work, one car after another.
+        VALUES.forEach((v, i) => {
+          const t = t0 + 3.6 + i * 0.42;
+          tl.set(oldVals[i], { autoAlpha: 0 }, t);
+          tl.set(flyers[i], { autoAlpha: 1 }, t);
+          tl.to(flyers[i], { x: FDX, y: FDY, duration: 0.6, ease: "power2.inOut" }, t);
+          tl.set(flyers[i], { autoAlpha: 0 }, t + 0.6);
+          tl.set(newVals[i], { autoAlpha: 1 }, t + 0.6);
+          tl.set(og.__cells[i], { attr: { "data-state": "eliminated" } }, t + 0.6);
+          tl.set(newLab, { textContent: "capacity 16 · length " + (i + 1) }, t + 0.6);
+        });
+        tl.to([oldWrap, oldLab], { opacity: 0.3, duration: 0.6 }, t0 + 7.3);
+        tl.to(oldTrack, { autoAlpha: 0, duration: 0.6 }, t0 + 7.3);
+
+        // Grows get rarer as the numbers grow: the reveal gaps widen with them.
+        [7.4, 8.1, 8.9, 9.9].forEach((t, k) => {
+          tl.to(els(ledger[k]), { autoAlpha: 1, x: 0, duration: 0.4, ease: "power2.out" }, t0 + t);
+        });
+        tl.to(els(S1), { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, t0 + 10.6);
+        tl.to(els(S2), { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, t0 + 11.35);
+        tl.to(els(S3), { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, t0 + 12.2);
+        window.__timelines["s6"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

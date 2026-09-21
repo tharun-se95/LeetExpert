@@ -1,0 +1,15 @@
+[
+  {
+    "_out": "hash-chaining",
+    "family": "linear-traversal",
+    "theme": "dark",
+    "eyebrow": "Linear Traversal",
+    "title": "Hash Table Collisions",
+    "keys": "12,7,19,5,26",
+    "buckets": 5,
+    "chainCap": 2,
+    "formula": "h(k) = k mod 5",
+    "stepSeconds": 1.9,
+    "steps": "[{\"i\": 0, \"bucket\": -1, \"table\": [[], [], [], [], []], \"note\": \"An array of 5 buckets. Each key lands in exactly one of them.\"}, {\"i\": 0, \"bucket\": 2, \"table\": [[], [], [12], [], []], \"note\": \"h(12) = 12 mod 5 = <b>2</b>. Bucket is empty, so the key goes straight in.\"}, {\"i\": 1, \"bucket\": 2, \"table\": [[], [], [12, 7], [], []], \"note\": \"h(7) = 7 mod 5 = <b>2</b>. Bucket 2 is already occupied \\u2014 a <b>collision</b>. 7 joins the chain rather than overwriting.\"}, {\"i\": 2, \"bucket\": 4, \"table\": [[], [], [12, 7], [], [19]], \"note\": \"h(19) = 19 mod 5 = <b>4</b>. Bucket is empty, so the key goes straight in.\"}, {\"i\": 3, \"bucket\": 0, \"table\": [[5], [], [12, 7], [], [19]], \"note\": \"h(5) = 5 mod 5 = <b>0</b>. Bucket is empty, so the key goes straight in.\"}, {\"i\": 4, \"bucket\": 1, \"table\": [[5], [26], [12, 7], [], [19]], \"note\": \"h(26) = 26 mod 5 = <b>1</b>. Bucket is empty, so the key goes straight in.\"}, {\"i\": 4, \"bucket\": -1, \"table\": [[5], [26], [12, 7], [], [19]], \"note\": \"All 5 keys stored. Longest chain is <b>2</b> \\u2014 lookup costs O(chain), which is why a good hash spreads keys evenly.\"}]"
+  }
+]

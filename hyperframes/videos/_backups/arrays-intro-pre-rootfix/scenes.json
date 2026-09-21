@@ -1,0 +1,74 @@
+{
+  "narration": "audio/narration.m4a",
+  "planned_total": 87.846,
+  "measured_total": 87.845,
+  "lead": 0.6,
+  "gap": 0.45,
+  "tail": 1.2,
+  "scenes": [
+    {
+      "scene": 1,
+      "title": "The picture (Scene 1)",
+      "start": 0.6,
+      "end": 10.292,
+      "duration": 9.692,
+      "vo": "Picture a train. Identical cars, permanently coupled, sitting on one straight length of track. That picture is what an array actually is."
+    },
+    {
+      "scene": 2,
+      "title": "The definition (Scene 2)",
+      "start": 10.292,
+      "end": 18.962,
+      "duration": 8.67,
+      "vo": "One contiguous block of memory. Equal-sized slots, packed end to end. So you never walk the platform counting cars. You compute."
+    },
+    {
+      "scene": 3,
+      "title": "Why indexing is O(1) (Scene 3)",
+      "start": 18.962,
+      "end": 32.88,
+      "duration": 13.918,
+      "vo": "The address of slot i is the base address plus i times the slot size. One multiply. One add. That cost does not grow with the array. That is what O of one means."
+    },
+    {
+      "scene": 4,
+      "title": "The contrast (Scene 4)",
+      "start": 32.88,
+      "end": 41.782,
+      "duration": 8.902,
+      "vo": "Reaching item seven in a linked chain means seven hops. Here, seven is a number you multiply. No other position is touched."
+    },
+    {
+      "scene": 5,
+      "title": "Where the train breaks (Scene 5)",
+      "start": 41.782,
+      "end": 51.706,
+      "duration": 9.924,
+      "vo": "Now the limit. The track behind the caboose already belongs to something else. A raw array cannot grow in place, for exactly that reason."
+    },
+    {
+      "scene": 6,
+      "title": "Doubling (Scene 6)",
+      "start": 51.706,
+      "end": 66.506,
+      "duration": 14.8,
+      "vo": "So a dynamic array builds a longer train on fresh track and moves every car across. Double the capacity each time, and the copying across n appends sums to under two n. Constant work per append, amortized."
+    },
+    {
+      "scene": 7,
+      "title": "In place (Scene 7)",
+      "start": 66.506,
+      "end": 76.29,
+      "duration": 9.784,
+      "vo": "The rest of the module stays inside one array. A read pointer and a write pointer. Write never passes read, so you can never destroy a value you still need."
+    },
+    {
+      "scene": 8,
+      "title": "Close (Scene 8)",
+      "start": 76.29,
+      "end": 87.846,
+      "duration": 11.556,
+      "vo": "Four concept lessons, five problems, one practice set. Module four of the leetExpert DSA course. Free in early access at leetexpert dot com."
+    }
+  ]
+}

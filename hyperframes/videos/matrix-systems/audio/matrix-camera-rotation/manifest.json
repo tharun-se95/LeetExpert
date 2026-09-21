@@ -1,0 +1,58 @@
+{
+  "voice": "SAz9YHcvj6GT2YYXdXww",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.1,
+    "use_speaker_boost": true
+  },
+  "estimated": false,
+  "lines": [
+    {
+      "line": 1,
+      "title": "hook",
+      "file": "line-1.mp3",
+      "duration": 14.025,
+      "word_count": 46,
+      "attempts": 1,
+      "text": "A phone takes a photo sideways, and something has to turn it upright. The obvious way allocates a second image. A twelve megapixel photo is forty-eight million bytes, so a copy is not free. There is a way to turn it in place, in two moves."
+    },
+    {
+      "line": 2,
+      "title": "transpose",
+      "file": "line-2.mp3",
+      "duration": 17.879,
+      "word_count": 51,
+      "attempts": 1,
+      "text": "Take a four by four picture. Each tile keeps its number, and the shade runs from dark at one to bright at sixteen, so you can follow every tile. Move one: transpose. Swap each tile with its mirror image across the main diagonal. Six swaps, and the rows have become columns."
+    },
+    {
+      "line": 3,
+      "title": "reverse each row",
+      "file": "line-3.mp3",
+      "duration": 25.542,
+      "word_count": 73,
+      "attempts": 1,
+      "text": "Move two: reverse every row. Swap the first tile with the last, the second with the third. Eight more swaps. Why does that make a turn? Follow tile two, top row, second column. Transposing sends it to the second row, first column. Flipping that row sends it to the last column. So tile two moved from the top row to the last column, which is exactly where a clockwise quarter turn puts it."
+    },
+    {
+      "line": 4,
+      "title": "result",
+      "file": "line-4.mp3",
+      "duration": 11.424,
+      "word_count": 30,
+      "attempts": 1,
+      "text": "Tile one, which started top left, is now top right. Tile thirteen moved from bottom left to top left. Fourteen swaps in total, and one temporary value of extra memory."
+    },
+    {
+      "line": 5,
+      "title": "facts",
+      "file": "line-5.mp3",
+      "duration": 13.886,
+      "word_count": 36,
+      "attempts": 1,
+      "text": "Forty-eight million bytes for a copy. Fourteen swaps here, six transposing and eight flipping. One temporary value. And start the transpose loop at i plus one, or every pair swaps twice and the picture never changes."
+    }
+  ]
+}

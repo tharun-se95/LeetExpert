@@ -1,0 +1,300 @@
+/* leetExpert brand for HyperFrames compositions.
+   The colour tokens below are GENERATED from the app (globals.css theme tokens
+   and familyTheme.ts family colours), so a video wears the same dark (space
+   black) and light (paper) themes and the same family accents as the site.
+   Regenerate: UPDATE_HYPERFRAMES_BRAND=1 npx vitest run tests/hyperframesBrand.test.ts
+   (from web/). Everything outside the markers is hand-written. */
+
+/* BEGIN GENERATED tokens: web/src/lib/visual/hyperframesBrand.ts (do not edit) */
+/* Read from web/src/app/globals.css and web/src/lib/visual/familyTheme.ts.
+   The base theme is monochrome steel; a family colour is scoped to content with
+   data-family, never used for chrome. Body-size accent text uses --mark, not --accent.
+   Measured WCAG contrast:
+   dark  ink/ground 17.15 · muted/ground 8.47 · muted/panel 6.30 · muted/code 7.33 · family accents on every dark surface >= 3.00
+   light ink/ground 14.88 · muted/ground 5.78 · muted/panel 6.38 · muted/code 5.23 · family accents on every light surface >= 3.00 */
+
+:root,
+[data-theme="dark"] {
+  --ground: #060607; /* --background */
+  --panel: #26262a; /* --elevated */
+  --code: #19191d; /* --code */
+  --surface: #000000; /* --surface */
+  --ink: #e6edf4; /* --foreground */
+  --line: #9ca9b8; /* --muted */
+  --dim: #9ca9b8; /* --muted */
+  --rule: rgba(244, 244, 245, 0.09); /* --border */
+  --rule-strong: rgba(244, 244, 245, 0.18); /* --rule-strong */
+  --dot: rgba(244, 244, 245, 0.09); /* --border */
+  --muted-fill: #19191d; /* --code */
+  --on-ink: #060607; /* --background */
+  --mark: #cbd5e1; /* --mark */
+  --accent: #cbd5e1; /* --accent */
+  --good: #39d353; /* --good */
+  --bad: #ff8b83; /* --bad */
+  --warn: #ff923a; /* --warn */
+  --insight: #d1af00; /* --insight */
+  --info: #7ab5ff; /* --info */
+  --hue-red-1: #592825;
+  --hue-red-2: #943734;
+  --hue-red-3: #e35551;
+  --hue-red-4: #ff8b83;
+  --hue-red-ink: #ff8b83;
+  --hue-red-line: #ff8b83;
+  --hue-orange-1: #552d0e;
+  --hue-orange-2: #8a4500;
+  --hue-orange-3: #d16c00;
+  --hue-orange-4: #ff923a;
+  --hue-orange-ink: #ff923a;
+  --hue-orange-line: #ff923a;
+  --hue-yellow-1: #453800;
+  --hue-yellow-2: #6b5900;
+  --hue-yellow-3: #a48900;
+  --hue-yellow-4: #d1af00;
+  --hue-yellow-ink: #d1af00;
+  --hue-yellow-line: #d1af00;
+  --hue-green-1: #0e4429;
+  --hue-green-2: #006d32;
+  --hue-green-3: #26a641;
+  --hue-green-4: #39d353;
+  --hue-green-ink: #39d353;
+  --hue-green-line: #39d353;
+  --hue-cyan-1: #004245;
+  --hue-cyan-2: #00676c;
+  --hue-cyan-3: #009ea5;
+  --hue-cyan-4: #00cad2;
+  --hue-cyan-ink: #00cad2;
+  --hue-cyan-line: #00cad2;
+  --hue-blue-1: #1d3a5e;
+  --hue-blue-2: #205a9f;
+  --hue-blue-3: #318bf3;
+  --hue-blue-4: #7ab5ff;
+  --hue-blue-ink: #7ab5ff;
+  --hue-blue-line: #7ab5ff;
+  --hue-purple-1: #3f2f59;
+  --hue-purple-2: #664695;
+  --hue-purple-3: #9d6ce5;
+  --hue-purple-4: #c09bff;
+  --hue-purple-ink: #c09bff;
+  --hue-purple-line: #c09bff;
+  --hue-pink-1: #54283e;
+  --hue-pink-2: #8c3764;
+  --hue-pink-3: #d6559a;
+  --hue-pink-4: #ff80c1;
+  --hue-pink-ink: #ff80c1;
+  --hue-pink-line: #ff80c1;
+}
+
+[data-theme="light"] {
+  --ground: #f1f4f9; /* --background */
+  --panel: #ffffff; /* --elevated */
+  --code: #e4e9f2; /* --code */
+  --surface: #d8dde8; /* --surface */
+  --ink: #16202e; /* --foreground */
+  --line: #56606e; /* --muted */
+  --dim: #56606e; /* --muted */
+  --rule: rgba(22, 32, 46, 0.09); /* --border */
+  --rule-strong: rgba(22, 32, 46, 0.18); /* --rule-strong */
+  --dot: rgba(22, 32, 46, 0.09); /* --border */
+  --muted-fill: #e4e9f2; /* --code */
+  --on-ink: #f1f4f9; /* --background */
+  --mark: #1e293b; /* --mark */
+  --accent: #1e293b; /* --accent */
+  --good: #067123; /* --good */
+  --bad: #b0081d; /* --bad */
+  --warn: #8e4805; /* --warn */
+  --insight: #6e5c05; /* --insight */
+  --info: #055bb1; /* --info */
+  --hue-red-1: #ffc2bc;
+  --hue-red-2: #ff766f;
+  --hue-red-3: #d75b56;
+  --hue-red-4: #92403c;
+  --hue-red-ink: #b0081d;
+  --hue-red-line: #d75b56;
+  --hue-orange-1: #ffc59f;
+  --hue-orange-2: #f98209;
+  --hue-orange-3: #cd6900;
+  --hue-orange-4: #8c490d;
+  --hue-orange-ink: #8e4805;
+  --hue-orange-line: #cd6900;
+  --hue-yellow-1: #ebd374;
+  --hue-yellow-2: #c4a400;
+  --hue-yellow-3: #a18600;
+  --hue-yellow-4: #6e5c00;
+  --hue-yellow-ink: #6e5c05;
+  --hue-yellow-line: #a18600;
+  --hue-green-1: #9be9a8;
+  --hue-green-2: #40c463;
+  --hue-green-3: #30a14e;
+  --hue-green-4: #216e39;
+  --hue-green-ink: #067123;
+  --hue-green-line: #30a14e;
+  --hue-cyan-1: #62ebf2;
+  --hue-cyan-2: #00bdc5;
+  --hue-cyan-3: #009ba2;
+  --hue-cyan-4: #006a6f;
+  --hue-cyan-ink: #066a6e;
+  --hue-cyan-line: #009ba2;
+  --hue-blue-1: #b6d6ff;
+  --hue-blue-2: #64a9ff;
+  --hue-blue-3: #3d89e4;
+  --hue-blue-4: #2c5e9b;
+  --hue-blue-ink: #055bb1;
+  --hue-blue-line: #3d89e4;
+  --hue-purple-1: #dac8ff;
+  --hue-purple-2: #b88bff;
+  --hue-purple-3: #986ed8;
+  --hue-purple-4: #674c92;
+  --hue-purple-ink: #770ad0;
+  --hue-purple-line: #986ed8;
+  --hue-pink-1: #ffbddb;
+  --hue-pink-2: #f671b6;
+  --hue-pink-3: #cb5a95;
+  --hue-pink-4: #8a3f66;
+  --hue-pink-ink: #a5076c;
+  --hue-pink-line: #cb5a95;
+}
+
+[data-family="linear-traversal"] {
+  --accent: #107d6e; /* accentUi: 3:1 on every surface, both themes */
+  --family-accent: #0a7a6a;
+  --on-accent: #ffffff;
+}
+[data-family="pointer-movement"] {
+  --accent: #c45c26; /* accentUi: 3:1 on every surface, both themes */
+  --family-accent: #c45c26;
+  --on-accent: #ffffff;
+}
+[data-family="ordering-search"] {
+  --accent: #2f6fed; /* accentUi: 3:1 on every surface, both themes */
+  --family-accent: #2f6fed;
+  --on-accent: #ffffff;
+}
+[data-family="recursive-exploration"] {
+  --accent: #7355e7; /* accentUi: 3:1 on every surface, both themes */
+  --family-accent: #6b4ce6;
+  --on-accent: #ffffff;
+}
+[data-family="state-transition"] {
+  --accent: #987a1d; /* accentUi: 3:1 on every surface, both themes */
+  --family-accent: #c9a227;
+  --on-accent: #ffffff;
+}
+[data-family="relationships"] {
+  --accent: #1c8c7b; /* accentUi: 3:1 on every surface, both themes */
+  --family-accent: #1f9d8a;
+  --on-accent: #ffffff;
+}
+[data-family="priority-structures"] {
+  --accent: #e11d48; /* accentUi: 3:1 on every surface, both themes */
+  --family-accent: #e11d48;
+  --on-accent: #ffffff;
+}
+/* END GENERATED tokens */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* JetBrains Mono ligatures rewrite `<=` and `==` into glyphs that are not valid
+   source. Code shown in a composition must stay literally retypable. */
+* { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  /* blueprint grid — the module-art surface signature */
+  background-image: radial-gradient(var(--dot) 1.6px, transparent 1.6px);
+  background-size: 26px 26px;
+  background-position: 13px 13px;
+}
+
+.eyebrow {
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--line);
+}
+
+.display {
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  line-height: 1.14;
+  color: var(--ink);
+}
+
+.mono { font-family: "JetBrains Mono", monospace; }
+
+.wordmark {
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+/* ── The cell: the atom of the DSA vocabulary ───────────────────────────────
+   Every linear structure in the course (array, window, queue, ring buffer,
+   hash bucket row) is drawn from this one shape, so its states are defined
+   once here rather than per composition. */
+.cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+  color: var(--ink);
+  background: transparent;
+}
+.cell[data-state="active"]     { background: var(--ink); color: var(--on-ink); }
+.cell[data-state="eliminated"] { border-color: var(--muted-fill); background: var(--muted-fill); color: var(--dim); }
+.cell[data-state="marked"]     { border-color: var(--accent, var(--ink)); }
+
+.idx {
+  font-family: "JetBrains Mono", monospace;
+  color: var(--dim);
+  text-align: center;
+}
+
+/* A pointer is a labelled caret that travels the cell row. */
+.ptr {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--line);
+}
+.ptr .caret {
+  width: 0; height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+}
+.ptr[data-dir="down"] .caret { border-top: 11px solid var(--line); }
+.ptr[data-dir="up"]   .caret { border-bottom: 11px solid var(--line); }
+
+/* Compact (`compact` variable): the structure alone, for small placements such
+   as the landing page's section clips (~21rem wide). At that size a 1920 frame's
+   title, notes and wordmark would draw at ~7px, so they are dropped, and the
+   frame is laid out at 960x540 and drawn at 2x: the structure keeps its full
+   size relative to a frame half as wide. `!important` because the render
+   runtime writes the frame's 1920x1080 size inline on the root; without it the
+   layout stayed full size and the 2x drew it cropped (seen in a render). */
+#root[data-compact] {
+  width: 960px !important;
+  height: 540px !important;
+  padding: 40px 48px;
+  transform: scale(2);
+  transform-origin: 0 0;
+}
+#root[data-compact] .head,
+#root[data-compact] .note,
+#root[data-compact] .foot { display: none; }

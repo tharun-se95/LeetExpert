@@ -1,0 +1,58 @@
+{
+  "voice": "SAz9YHcvj6GT2YYXdXww",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.1,
+    "use_speaker_boost": true
+  },
+  "estimated": false,
+  "lines": [
+    {
+      "line": 1,
+      "title": "hook",
+      "file": "line-1.mp3",
+      "duration": 15.232,
+      "word_count": 52,
+      "attempts": 1,
+      "text": "A database does not scan a table to find a key. It keeps keys sorted in pages and jumps. Here is a trick: if every page is sorted, and each page starts above where the last one ended, then the whole set of pages is a single sorted array folded into rows."
+    },
+    {
+      "line": 2,
+      "title": "one sorted array",
+      "file": "line-2.mp3",
+      "duration": 12.399,
+      "word_count": 38,
+      "attempts": 1,
+      "text": "Five pages of six keys. Read them left to right, top to bottom, and it is thirty sorted keys. So binary search works, as long as we can turn a flat position into a page and a slot."
+    },
+    {
+      "line": 3,
+      "title": "the translation",
+      "file": "line-3.mp3",
+      "duration": 26.331,
+      "word_count": 62,
+      "attempts": 1,
+      "text": "The translation is one line: page equals position divided by six, slot equals the remainder. We are looking for thirty-seven. The middle position is fourteen, which is page two, slot two. Its key, sixty-one, is above thirty-seven, so the upper half is gone. The new middle is six: page one, slot zero, key twenty-seven, below thirty-seven, so the lower half is gone."
+    },
+    {
+      "line": 4,
+      "title": "converging",
+      "file": "line-4.mp3",
+      "duration": 18.994,
+      "word_count": 49,
+      "attempts": 2,
+      "text": "Middle ten: page one, slot four, key forty-four, too high again. Middle eight: page one, slot two, key thirty-seven. Found, in four probes out of thirty keys. Real engines usually search the page boundaries first and then inside the page. Flattening is the same arithmetic in a single search."
+    },
+    {
+      "line": 5,
+      "title": "facts",
+      "file": "line-5.mp3",
+      "duration": 13.375,
+      "word_count": 38,
+      "attempts": 1,
+      "text": "Twenty probes find one key among a million, since log base two of a million is about nineteen point nine. Four probes here. And one line of arithmetic, divide and remainder, connects the flat index to the page."
+    }
+  ]
+}
