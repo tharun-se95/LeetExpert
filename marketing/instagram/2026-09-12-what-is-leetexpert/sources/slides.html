@@ -1,0 +1,160 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="local.css" rel="stylesheet">
+<style>
+:root{
+  --ground:#15202E; --ink:#E5EBF2; --line:#AEBAC6; --dim:#8B97A6;
+  --elim:#34404C; --panel:#1B2735; --dot:#202C3A; --rule:#26323F;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+/* JetBrains Mono ligatures rewrite `<=` / `==` into glyphs that are not valid
+   source. Code in these images must stay literally retypable. */
+*{font-variant-ligatures:none;font-feature-settings:'liga' 0,'calt' 0}
+body{background:#555}
+.slide{
+  width:1080px;height:1350px;background:var(--ground);position:relative;
+  overflow:hidden;padding:72px;display:flex;flex-direction:column;
+  font-family:'Space Grotesk',sans-serif;color:var(--ink);
+  background-image:radial-gradient(var(--dot) 1.6px, transparent 1.6px);
+  background-size:26px 26px;background-position:13px 13px;
+}
+.eyebrow{font-family:'Space Mono',monospace;font-size:19px;font-weight:700;
+  letter-spacing:.2em;color:var(--line);text-transform:uppercase}
+h1,h2{font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase;
+  letter-spacing:.055em;line-height:1.14;color:var(--ink)}
+h1{font-size:80px;margin-top:34px}
+h2{font-size:58px;margin-top:30px}
+.deck{font-size:31px;line-height:1.5;color:var(--line);margin-top:30px;max-width:850px}
+.note{font-size:28px;line-height:1.55;color:var(--line);max-width:880px}
+.note b{color:var(--ink);font-weight:700}
+.spacer{flex:1}
+.well{background:var(--panel);border:1.5px solid var(--rule);border-radius:14px;
+  padding:36px 40px;font-family:'JetBrains Mono',monospace;font-size:26px;
+  line-height:1.66;color:var(--ink);white-space:pre}
+.tabs{display:flex;gap:12px;margin-bottom:-2px}
+.tab{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;padding:12px 24px;
+  border:1.5px solid var(--rule);border-bottom:none;border-radius:12px 12px 0 0;
+  color:var(--dim);background:#18232F}
+.tab.on{background:var(--panel);color:var(--ink);border-color:var(--rule)}
+.well.joined{border-radius:0 14px 14px 14px}
+footer{display:flex;align-items:flex-end;justify-content:space-between;margin-top:44px}
+.wordmark{font-family:'Space Mono',monospace;font-weight:700;font-size:28px;
+  letter-spacing:.02em;color:var(--ink)}
+.pill{font-family:'Space Mono',monospace;font-size:19px;letter-spacing:.16em;
+  color:var(--dim);text-transform:uppercase}
+/* stage ladder */
+.stage{display:flex;align-items:center;gap:28px;padding:19px 0;
+  border-top:1.5px solid var(--rule)}
+.stage:last-child{border-bottom:1.5px solid var(--rule)}
+.snum{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;
+  letter-spacing:.14em;color:var(--dim);width:142px;flex:none}
+.bar{display:flex;gap:9px;width:252px;flex:none}
+.unit{width:31px;height:42px;border:2px solid var(--ink);border-radius:6px}
+.stitle{font-family:'Space Mono',monospace;font-size:25px;font-weight:700;
+  letter-spacing:.045em;text-transform:uppercase;color:var(--ink)}
+.legend{font-family:'Space Mono',monospace;font-size:21px;letter-spacing:.1em;
+  color:var(--dim);text-transform:uppercase;margin-top:26px}
+/* lesson contents */
+.item{display:flex;gap:30px;align-items:flex-start;padding:30px 0;
+  border-top:1.5px solid var(--rule)}
+.item:last-child{border-bottom:1.5px solid var(--rule)}
+.mark{width:56px;height:56px;border:2.5px solid var(--ink);border-radius:10px;
+  flex:none;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:27px;font-weight:700;color:var(--ink)}
+.itext{font-size:28px;line-height:1.5;color:var(--line);padding-top:4px}
+.itext b{display:block;font-family:'Space Mono',monospace;font-weight:700;
+  font-size:25px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);
+  margin-bottom:9px}
+/* closing */
+.big{font-family:'Space Mono',monospace;font-weight:700;font-size:132px;
+  letter-spacing:.02em;color:var(--ink);line-height:1}
+.chip{background:var(--ink);color:var(--ground);border-radius:12px;
+  padding:10px 26px;font-family:'Space Mono',monospace;font-weight:700;
+  font-size:34px;letter-spacing:.04em;display:inline-block}
+.url{font-family:'Space Mono',monospace;font-size:34px;font-weight:700;
+  letter-spacing:.06em;color:var(--ink)}
+</style></head><body>
+
+<!-- 1 -->
+<div class="slide">
+  <div class="eyebrow">Interactive DSA course</div>
+  <h1>The code<br>on the page<br>runs</h1>
+  <div class="deck">Not a screenshot of a solution. An editor, in the lesson, in Python or TypeScript — you change it and execute it without leaving the page.</div>
+  <div class="spacer"></div>
+  <div>
+    <div class="tabs" style="margin-top:16px"><div class="tab on">Python</div><div class="tab">TypeScript</div></div>
+    <div class="well joined">def binary_search(arr, target):
+    lo, hi = 0, len(arr) - 1
+    while lo &lt;= hi:
+        mid = lo + (hi - lo) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] &lt; target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return -1</div>
+  </div>
+  <div class="spacer"></div>
+  <footer><span class="wordmark">leetExpert</span><span class="pill">1 / 4 · Swipe</span></footer>
+</div>
+
+<!-- 2 -->
+<div class="slide">
+  <div class="eyebrow">The curriculum</div>
+  <h2>24 modules.<br>Five stages.<br>In order.</h2>
+  <div class="spacer"></div>
+  <div>
+    <div class="stage"><div class="snum">Stage 0</div>
+      <div class="bar"><i class="unit"></i><i class="unit"></i><i class="unit"></i></div>
+      <div class="stitle">Foundations</div></div>
+    <div class="stage"><div class="snum">Stage 1</div>
+      <div class="bar"><i class="unit"></i><i class="unit"></i><i class="unit"></i><i class="unit"></i><i class="unit"></i><i class="unit"></i></div>
+      <div class="stitle">Linear Structures</div></div>
+    <div class="stage"><div class="snum">Stage 2</div>
+      <div class="bar"><i class="unit"></i><i class="unit"></i><i class="unit"></i><i class="unit"></i><i class="unit"></i><i class="unit"></i></div>
+      <div class="stitle">Techniques</div></div>
+    <div class="stage"><div class="snum">Stage 3</div>
+      <div class="bar"><i class="unit"></i><i class="unit"></i><i class="unit"></i><i class="unit"></i><i class="unit"></i></div>
+      <div class="stitle">Recursive &amp; Tree</div></div>
+    <div class="stage"><div class="snum">Stage 4</div>
+      <div class="bar"><i class="unit"></i><i class="unit"></i><i class="unit"></i><i class="unit"></i></div>
+      <div class="stitle">Global Reasoning</div></div>
+    <div class="legend">One square = one module</div>
+  </div>
+  <div class="note" style="margin-top:44px">Foundations before structures. Structures before the techniques built on them. <b>Nothing is introduced before the thing it depends on</b> — which is why Big&nbsp;O comes first, not as an appendix.</div>
+  <div class="spacer"></div>
+  <footer><span class="wordmark">leetExpert</span><span class="pill">2 / 4</span></footer>
+</div>
+
+<!-- 3 -->
+<div class="slide">
+  <div class="eyebrow">Inside the course</div>
+  <h2>What 220 lessons<br>actually contain</h2>
+  <div class="spacer"></div>
+  <div>
+    <div class="item"><div class="mark">1</div><div class="itext">
+      <b>116 runnable problems</b>Every problem lesson ships a sandbox — starter code in Python and TypeScript, executed in the browser against real test cases. All 116 of them, both languages.</div></div>
+    <div class="item"><div class="mark">2</div><div class="itext">
+      <b>Visuals where they earn it</b>27 animated tracers and 61 diagrams. Not a decorative graphic on every page — a picture only where it shows something the prose cannot.</div></div>
+    <div class="item"><div class="mark">3</div><div class="itext">
+      <b>Solutions stay hidden</b>Until you ask for them. Reading an answer you never attempted teaches nothing.</div></div>
+  </div>
+  <div class="note" style="margin-top:44px"><b>83 concept lessons. 116 problems. 21 practice sets.</b> Concepts first in each module, then the problems built on them.</div>
+  <div class="spacer"></div>
+  <footer><span class="wordmark">leetExpert</span><span class="pill">3 / 4</span></footer>
+</div>
+
+<!-- 4 -->
+<div class="slide">
+  <div class="eyebrow">While it is in early access</div>
+  <div class="spacer"></div>
+  <div class="big">Free</div>
+  <div class="deck" style="margin-top:34px;max-width:830px">All 24 modules and all 220 lessons are open right now, with no account wall in front of the curriculum. It is in early access, so it is still being finished in the open.</div>
+  <div style="margin-top:56px"><span class="chip">leetexpert.com</span></div>
+  <div class="spacer"></div>
+  <div class="note" style="color:var(--dim)">Built for people who want to understand the reasoning, not memorise a list of problems.</div>
+  <footer><span class="wordmark">leetExpert</span><span class="pill">4 / 4</span></footer>
+</div>
+</body></html>

@@ -1,0 +1,19 @@
+modules                : 24   (on disk: 24)
+modules per stage      : {0: 3, 1: 6, 2: 6, 3: 5, 4: 4}
+lesson .md files       : 220
+  concept entries      : 83
+  problem entries      : 116
+  practice entries     : 21
+  sum                  : 220
+sandbox blocks         : 116
+viz tracer blocks      : 27
+diagram blocks         : 61
+
+claims made on the slides:
+  PASS  24 modules
+  PASS  five stages
+  PASS  stage sizes 3/6/6/5/4
+  PASS  220 lessons
+  PASS  83 concepts / 116 problems / 21 practice
+  PASS  every problem lesson has a sandbox
+  PASS  27 tracers, 61 diagrams
