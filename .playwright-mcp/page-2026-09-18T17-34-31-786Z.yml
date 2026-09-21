@@ -1,0 +1,340 @@
+- generic [ref=f5e1]:
+  - generic [ref=f5e6] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=f5e7]
+    - generic [ref=f5e11]:
+      - button "Open issues overlay" [ref=f5e12]:
+        - generic [ref=f5e13]:
+          - generic [aria-hidden] [ref=f5e14]: "1"
+          - generic [ref=f5e15]: "2"
+        - generic [ref=f5e16]:
+          - text: Issue
+          - generic [aria-hidden] [ref=f5e17]: s
+      - button "Collapse issues badge" [ref=f5e18]
+  - button "Open lessons drawer" [ref=f5e21]
+  - generic [ref=f5e24]:
+    - banner [ref=f5e25]:
+      - link "leetExpert DSA" [ref=f5e27] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f5e28]:
+          - generic [ref=f5e29]: leetExpert
+          - generic [ref=f5e35]: DSA
+      - navigation "Product modes" [ref=f5e36]:
+        - link "Lessons" [ref=f5e37] [cursor=pointer]:
+          - /url: /courses/dsa
+        - link "Practice" [ref=f5e38] [cursor=pointer]:
+          - /url: /courses/dsa/problems
+      - generic [ref=f5e39]:
+        - button "Search lessons and problems" [ref=f5e40]:
+          - generic [ref=f5e43]: Search
+          - generic [ref=f5e44]: ⌘K
+        - generic "0 of 104 lessons completed" [ref=f5e46]: 0/104
+        - button "Switch to dark mode" [ref=f5e49]
+    - generic [ref=f5e52]:
+      - complementary:
+        - navigation "Course" [ref=f5e54]:
+          - generic [ref=f5e57]:
+            - button "Close lessons drawer" [ref=f5e59]
+            - link "Overview" [ref=f5e62] [cursor=pointer]:
+              - /url: /courses/dsa
+            - generic [ref=f5e63]:
+              - paragraph [ref=f5e64]: Foundations
+              - generic [ref=f5e65]:
+                - link "Getting Started0/4" [ref=f5e66] [cursor=pointer]:
+                  - /url: /courses/dsa/getting-started
+                  - generic [ref=f5e67]:
+                    - text: Getting Started
+                    - generic [ref=f5e68]: 0/4
+                - link "Big O0/9" [ref=f5e71] [cursor=pointer]:
+                  - /url: /courses/dsa/big-o
+                  - generic [ref=f5e72]:
+                    - text: Big O
+                    - generic [ref=f5e73]: 0/9
+                - link "Math0/6" [ref=f5e76] [cursor=pointer]:
+                  - /url: /courses/dsa/math-for-dsa
+                  - generic [ref=f5e77]:
+                    - text: Math
+                    - generic [ref=f5e78]: 0/6
+            - generic [ref=f5e81]:
+              - paragraph [ref=f5e82]: Linear Structures
+              - generic [ref=f5e83]:
+                - link "Arrays0/5" [ref=f5e84] [cursor=pointer]:
+                  - /url: /courses/dsa/arrays
+                  - generic [ref=f5e85]:
+                    - text: Arrays
+                    - generic [ref=f5e86]: 0/5
+                - link "Strings0/4" [ref=f5e89] [cursor=pointer]:
+                  - /url: /courses/dsa/strings
+                  - generic [ref=f5e90]:
+                    - text: Strings
+                    - generic [ref=f5e91]: 0/4
+                - link "Hash Tables0/7" [ref=f5e94] [cursor=pointer]:
+                  - /url: /courses/dsa/hash-tables
+                  - generic [ref=f5e95]:
+                    - text: Hash Tables
+                    - generic [ref=f5e96]: 0/7
+                - link "Linked Lists0/4" [ref=f5e99] [cursor=pointer]:
+                  - /url: /courses/dsa/linked-lists
+                  - generic [ref=f5e100]:
+                    - text: Linked Lists
+                    - generic [ref=f5e101]: 0/4
+                - link "Stacks0/4" [ref=f5e104] [cursor=pointer]:
+                  - /url: /courses/dsa/stacks
+                  - generic [ref=f5e105]:
+                    - text: Stacks
+                    - generic [ref=f5e106]: 0/4
+                - link "Queues0/4" [ref=f5e109] [cursor=pointer]:
+                  - /url: /courses/dsa/queues
+                  - generic [ref=f5e110]:
+                    - text: Queues
+                    - generic [ref=f5e111]: 0/4
+            - generic [ref=f5e114]:
+              - paragraph [ref=f5e115]: Techniques on Linear Data
+              - generic [ref=f5e116]:
+                - link "Two Pointers0/3" [ref=f5e117] [cursor=pointer]:
+                  - /url: /courses/dsa/two-pointers
+                  - generic [ref=f5e118]:
+                    - text: Two Pointers
+                    - generic [ref=f5e119]: 0/3
+                - link "Sliding Window0/3" [ref=f5e122] [cursor=pointer]:
+                  - /url: /courses/dsa/sliding-window
+                  - generic [ref=f5e123]:
+                    - text: Sliding Window
+                    - generic [ref=f5e124]: 0/3
+                - link "Prefix Sum0/4" [ref=f5e127] [cursor=pointer]:
+                  - /url: /courses/dsa/prefix-sum
+                  - generic [ref=f5e128]:
+                    - text: Prefix Sum
+                    - generic [ref=f5e129]: 0/4
+                - link "Binary Search0/4" [ref=f5e132] [cursor=pointer]:
+                  - /url: /courses/dsa/binary-search
+                  - generic [ref=f5e133]:
+                    - text: Binary Search
+                    - generic [ref=f5e134]: 0/4
+                - link "Sorting0/5" [ref=f5e137] [cursor=pointer]:
+                  - /url: /courses/dsa/sorting
+                  - generic [ref=f5e138]:
+                    - text: Sorting
+                    - generic [ref=f5e139]: 0/5
+                - link "Matrix0/4" [ref=f5e142] [cursor=pointer]:
+                  - /url: /courses/dsa/matrix
+                  - generic [ref=f5e143]:
+                    - text: Matrix
+                    - generic [ref=f5e144]: 0/4
+            - generic [ref=f5e147]:
+              - paragraph [ref=f5e148]: Recursive & Hierarchical
+              - generic [ref=f5e149]:
+                - link "Recursion0/4" [ref=f5e150] [cursor=pointer]:
+                  - /url: /courses/dsa/recursion-backtracking
+                  - generic [ref=f5e151]:
+                    - text: Recursion
+                    - generic [ref=f5e152]: 0/4
+                - link "Binary Trees0/5" [ref=f5e155] [cursor=pointer]:
+                  - /url: /courses/dsa/binary-trees
+                  - generic [ref=f5e156]:
+                    - text: Binary Trees
+                    - generic [ref=f5e157]: 0/5
+                - link "BST0/3" [ref=f5e160] [cursor=pointer]:
+                  - /url: /courses/dsa/bst
+                  - generic [ref=f5e161]:
+                    - text: BST
+                    - generic [ref=f5e162]: 0/3
+                - link "Heaps0/3" [ref=f5e165] [cursor=pointer]:
+                  - /url: /courses/dsa/heaps
+                  - generic [ref=f5e166]:
+                    - text: Heaps
+                    - generic [ref=f5e167]: 0/3
+                - link "Tries0/2" [ref=f5e170] [cursor=pointer]:
+                  - /url: /courses/dsa/tries
+                  - generic [ref=f5e171]:
+                    - text: Tries
+                    - generic [ref=f5e172]: 0/2
+            - generic [ref=f5e175]:
+              - paragraph [ref=f5e176]: Global Reasoning
+              - generic [ref=f5e177]:
+                - link "Intervals0/2" [ref=f5e178] [cursor=pointer]:
+                  - /url: /courses/dsa/intervals
+                  - generic [ref=f5e179]:
+                    - text: Intervals
+                    - generic [ref=f5e180]: 0/2
+                - link "Greedy0/2" [ref=f5e183] [cursor=pointer]:
+                  - /url: /courses/dsa/greedy
+                  - generic [ref=f5e184]:
+                    - text: Greedy
+                    - generic [ref=f5e185]: 0/2
+                - link "Graphs0/7" [ref=f5e188] [cursor=pointer]:
+                  - /url: /courses/dsa/graphs
+                  - generic [ref=f5e189]:
+                    - text: Graphs
+                    - generic [ref=f5e190]: 0/7
+                - link "DP0/6" [ref=f5e193] [cursor=pointer]:
+                  - /url: /courses/dsa/dynamic-programming
+                  - generic [ref=f5e194]:
+                    - text: DP
+                    - generic [ref=f5e195]: 0/6
+        - button "Resize lessons drawer" [ref=f5e198]
+      - main [ref=f5e199]:
+        - generic [ref=f5e202]:
+          - generic [ref=f5e203]:
+            - link "Practice" [ref=f5e204] [cursor=pointer]:
+              - /url: /courses/dsa/hash-tables/practice
+            - generic [ref=f5e209]:
+              - heading "Two Sum" [level=1] [ref=f5e210]
+              - paragraph [ref=f5e211]: Module 6 · Hash Tables
+            - navigation "Problem navigation" [ref=f5e213]:
+              - 'link "Next: Contains Duplicate II" [ref=f5e217] [cursor=pointer]':
+                - /url: /courses/dsa/problems/contains-duplicate-ii
+          - generic [ref=f5e221]:
+            - generic [ref=f5e223]:
+              - tablist "Problem content" [ref=f5e225]:
+                - tab "Description" [selected] [ref=f5e226]
+                - tab "Explanation" [ref=f5e230]
+                - tab "Solution" [ref=f5e234]
+                - tab "Quiz" [ref=f5e238]
+              - tabpanel "Description" [ref=f5e242]:
+                - generic [ref=f5e244]:
+                  - heading [level=2] [ref=f5e245]:
+                    - link "Problem" [ref=f5e246] [cursor=pointer]:
+                      - /url: "#problem"
+                  - paragraph [ref=f5e247]:
+                    - text: Given
+                    - code [ref=f5e248]: nums
+                    - text: and
+                    - code [ref=f5e249]: target
+                    - text: ", return the"
+                    - mark [ref=f5e250]: indices
+                    - text: of the two numbers that sum to
+                    - code [ref=f5e251]: target
+                    - text: . Exactly one solution exists; you may not use the same element twice.
+                  - blockquote [ref=f5e252]:
+                    - button "Copy callout" [ref=f5e253]
+                    - generic [ref=f5e256]:
+                      - paragraph [ref=f5e257]: Goal
+                      - paragraph [ref=f5e261]: Return a pair of indices — not the values. Order of the pair does not matter to the judge as long as both indices are correct.
+                  - paragraph [ref=f5e262]:
+                    - strong [ref=f5e263]: Examples
+                  - list "Examples" [ref=f5e264]:
+                    - listitem [ref=f5e265]:
+                      - paragraph [ref=f5e266]: Example 1
+                      - generic [ref=f5e267]:
+                        - generic [ref=f5e268]: Input
+                        - code [ref=f5e269]: nums = [2,7,11,15], target = 9
+                        - generic [ref=f5e270]: Output
+                        - code [ref=f5e271]: "[0,1]"
+                    - listitem [ref=f5e272]:
+                      - paragraph [ref=f5e273]: Example 2
+                      - generic [ref=f5e274]:
+                        - generic [ref=f5e275]: Input
+                        - code [ref=f5e276]: nums = [3,2,4], target = 6
+                        - generic [ref=f5e277]: Output
+                        - code [ref=f5e278]: "[1,2]"
+                      - paragraph [ref=f5e279]: Explanation. not [0,0]!
+                    - listitem [ref=f5e280]:
+                      - paragraph [ref=f5e281]: Example 3
+                      - generic [ref=f5e282]:
+                        - generic [ref=f5e283]: Input
+                        - code [ref=f5e284]: nums = [3,3], target = 6
+                        - generic [ref=f5e285]: Output
+                        - code [ref=f5e286]: "[0,1]"
+                  - blockquote [ref=f5e287]:
+                    - button "Copy callout" [ref=f5e288]
+                    - generic [ref=f5e291]:
+                      - paragraph [ref=f5e292]: Constraints
+                      - paragraph [ref=f5e296]: 2 ≤ n ≤ 10⁴ · values in ±10⁹ · exactly one answer
+                  - heading [level=2] [ref=f5e297]:
+                    - link "Attempt it first" [ref=f5e298] [cursor=pointer]:
+                      - /url: "#attempt-it-first"
+                  - blockquote [ref=f5e299]:
+                    - button "Copy callout" [ref=f5e300]
+                    - generic [ref=f5e303]:
+                      - paragraph [ref=f5e304]: Tip
+                      - paragraph [ref=f5e308]:
+                        - text: You've known the O(n)
+                        - emphasis [ref=f5e309]: decision
+                        - text: version ("does a pair exist?") since lesson one of Big O. This asks for
+                        - strong [ref=f5e310]: indices
+                        - text: — which changes the structure you carry. Watch
+                        - code [ref=f5e311]: "[3,2,4]"
+                        - text: and
+                        - code [ref=f5e312]: "[3,3]"
+                        - text: ": both trap specific wrong versions."
+            - button "Resize description and editor" [ref=f5e313]
+            - generic [ref=f5e318]:
+              - generic [ref=f5e319]:
+                - 'button "Code language: Python" [ref=f5e321]':
+                  - generic [ref=f5e322]: "Code language:"
+                  - generic [ref=f5e323]:
+                    - generic [aria-hidden] [ref=f5e324]: Py
+                    - text: Python
+                - generic [ref=f5e327]:
+                  - button "Reset" [ref=f5e328]
+                  - button "Run" [ref=f5e331]
+              - generic [ref=f5e336]:
+                - status [ref=f5e337]:
+                  - paragraph [ref=f5e338]: A different version of this draft was saved on another device.
+                  - generic [ref=f5e339]:
+                    - button "Compare" [ref=f5e340]
+                    - button "Use that version" [ref=f5e341]
+                    - button "Dismiss" [ref=f5e342]
+                - generic [ref=f5e344]:
+                  - generic [ref=f5e347]:
+                    - generic [ref=f5e349]:
+                      - generic [ref=f5e350]: "1"
+                      - generic [ref=f5e351]: "2"
+                      - generic [ref=f5e352]: "3"
+                    - textbox "Python solution editor" [ref=f5e353]:
+                      - generic [ref=f5e354]: "def two_sum(nums, target):"
+                      - generic [ref=f5e355]: "return [0, 1] # mine"
+                  - paragraph [ref=f5e357]: Tab indents. To move keyboard focus out of this editor, press Escape, then Tab.
+                  - generic [aria-hidden]: Esc then Tab to leave
+                - generic [ref=f5e358]:
+                  - generic [ref=f5e359]: Ln 1, Col 1
+                  - generic [ref=f5e360]: Python
+                  - generic [ref=f5e361]: "Spaces: 4"
+              - generic [ref=f5e362]:
+                - tablist "Insight, tests, and console" [ref=f5e363]:
+                  - tab "Insight" [ref=f5e364]
+                  - tab "Tests 4" [ref=f5e367]:
+                    - text: Tests
+                    - generic [ref=f5e370]: "4"
+                  - tab "Console" [ref=f5e371]
+                - paragraph [ref=f5e374]: 4 tests waiting
+                - button "Expand panel" [ref=f5e375]
+  - alert [ref=f5e378]
+  - button "Open problem coach" [ref=f5e379]
+  - dialog "Compare draft versions" [ref=f5e383]:
+    - generic [ref=f5e384]:
+      - region "This editor" [ref=f5e385]:
+        - heading "This editor" [level=2] [ref=f5e386]
+        - generic [ref=f5e389]:
+          - generic [ref=f5e392]:
+            - generic [ref=f5e394]:
+              - generic [ref=f5e395]: "1"
+              - generic [ref=f5e396]: "2"
+              - generic [ref=f5e397]: "3"
+            - textbox "Code in this editor" [ref=f5e398]:
+              - generic [ref=f5e399]: "def two_sum(nums, target):"
+              - generic [ref=f5e400]: "return [0, 1] # mine"
+          - paragraph [ref=f5e402]: Read only. Tab moves focus on.
+      - region "Other device" [ref=f5e403]:
+        - heading "Other device" [level=2] [ref=f5e404]
+        - generic [ref=f5e407]:
+          - generic [ref=f5e410]:
+            - generic [ref=f5e412]:
+              - generic [ref=f5e413]: "1"
+              - generic [ref=f5e414]: "2"
+              - generic [ref=f5e415]: "3"
+              - generic [ref=f5e416]: "4"
+              - generic [ref=f5e417]: "5"
+              - generic [ref=f5e418]: "6"
+              - generic [ref=f5e419]: "7"
+              - generic [ref=f5e420]: "8"
+            - textbox "Code from the other device" [ref=f5e421]:
+              - generic [ref=f5e422]: "def two_sum(nums, target):"
+              - generic [ref=f5e423]: "# from the other device"
+              - generic [ref=f5e424]: "seen = {}"
+              - generic [ref=f5e425]: "for i, n in enumerate(nums):"
+              - generic [ref=f5e426]: "if target - n in seen:"
+              - generic [ref=f5e427]: return [seen[target - n], i]
+              - generic [ref=f5e428]: seen[n] = i
+          - paragraph [ref=f5e430]: Read only. Tab moves focus on.
+    - button "Close" [active] [ref=f5e432]

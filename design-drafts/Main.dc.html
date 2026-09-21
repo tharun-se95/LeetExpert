@@ -1,0 +1,368 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.55 0.15 252); text-decoration: none; }
+    a:hover { color: oklch(0.45 0.15 252); }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: oklch(0.975 0.004 258); color: oklch(0.22 0.012 258); font-family: 'Space Grotesk', system-ui, sans-serif; overflow: hidden;">
+
+  <!-- ============ HEADER ============ -->
+  <div style="height: 52px; flex-shrink: 0; display: flex; align-items: center; gap: 24px; padding: 0 20px; border-bottom: 1px solid oklch(0.88 0.008 258); background: oklch(1 0 0);">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: oklch(0.22 0.012 258);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.98 0 0)" stroke-width="2.2" stroke-linecap="square"><path d="M8 6 L3 12 L8 18"></path><path d="M16 6 L21 12 L16 18"></path></svg>
+      </div>
+      <span style="font-size: 15px; font-weight: 700; letter-spacing: -0.02em;">Latch</span>
+    </div>
+
+    <div style="display: flex; align-items: stretch; height: 52px; margin-left: 8px;">
+      <div style="display: flex; align-items: center; padding: 0 14px; font-size: 13px; font-weight: 500; color: oklch(0.48 0.02 258);">Learn</div>
+      <div style="display: flex; align-items: center; padding: 0 14px; font-size: 13px; font-weight: 600; border-bottom: 2px solid oklch(0.22 0.012 258);">Practice</div>
+    </div>
+
+    <div style="flex-grow: 1;"></div>
+
+    <div style="display: flex; align-items: center; gap: 8px; padding: 5px 10px; border: 1px solid oklch(0.88 0.008 258); min-width: 190px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.02 258)" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M20 20 L16 16"></path></svg>
+      <span style="font-size: 12px; color: oklch(0.55 0.02 258); flex-grow: 1;">Search</span>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: oklch(0.6 0.02 258);">⌘K</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 9px;">
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; color: oklch(0.45 0.02 258);">41<span style="color: oklch(0.7 0.02 258);">/104</span></span>
+      <div style="width: 54px; height: 3px; background: oklch(0.9 0.008 258);">
+        <div style="width: 39%; height: 3px; background: oklch(0.55 0.15 252);"></div>
+      </div>
+    </div>
+
+    <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid oklch(0.88 0.008 258);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="oklch(0.4 0.02 258)" stroke-width="2"><path d="M21 13A9 9 0 1 1 11 3 a7 7 0 0 0 10 10z"></path></svg>
+    </div>
+  </div>
+
+  <!-- ============ BODY ============ -->
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+
+    <!-- ---------- MODULE INDEX ---------- -->
+    <div style="width: 196px; flex-shrink: 0; border-right: 1px solid oklch(0.88 0.008 258); background: oklch(1 0 0); display: flex; flex-direction: column; min-height: 0;">
+      <div style="padding: 14px 16px 10px; display: flex; align-items: baseline; justify-content: space-between;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: oklch(0.5 0.02 258);">Index</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.6 0.02 258)" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg>
+      </div>
+
+      <div style="flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; gap: 2px; padding: 0 8px;">
+
+        <div style="padding: 12px 8px 5px; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: oklch(0.65 0.02 258);">Foundations</div>
+        <div style="display: flex; align-items: center; gap: 9px; padding: 6px 8px;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: oklch(0.68 0.02 258);">01</span>
+          <span style="font-size: 12.5px; flex-grow: 1; color: oklch(0.35 0.015 258);">Getting Started</span>
+          <span style="width: 22px; height: 3px; background: oklch(0.9 0.008 258);"><span style="display: block; width: 100%; height: 3px; background: oklch(0.55 0.15 148);"></span></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 9px; padding: 6px 8px;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: oklch(0.68 0.02 258);">02</span>
+          <span style="font-size: 12.5px; flex-grow: 1; color: oklch(0.35 0.015 258);">Big O</span>
+          <span style="width: 22px; height: 3px; background: oklch(0.9 0.008 258);"><span style="display: block; width: 66%; height: 3px; background: oklch(0.55 0.15 148);"></span></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 9px; padding: 6px 8px;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: oklch(0.68 0.02 258);">03</span>
+          <span style="font-size: 12.5px; flex-grow: 1; color: oklch(0.35 0.015 258);">Math</span>
+          <span style="width: 22px; height: 3px; background: oklch(0.9 0.008 258);"><span style="display: block; width: 30%; height: 3px; background: oklch(0.55 0.15 148);"></span></span>
+        </div>
+
+        <div style="padding: 14px 8px 5px; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: oklch(0.65 0.02 258);">Linear Structures</div>
+
+        <div style="display: flex; align-items: center; gap: 9px; padding: 7px 8px; background: oklch(0.22 0.012 258); color: oklch(0.98 0 0);">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: oklch(0.75 0.02 258);">04</span>
+          <span style="font-size: 12.5px; font-weight: 600; flex-grow: 1;">Arrays</span>
+          <span style="width: 22px; height: 3px; background: oklch(0.4 0.02 258);"><span style="display: block; width: 80%; height: 3px; background: oklch(0.75 0.15 148);"></span></span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1px; padding: 4px 0 4px 25px;">
+          <div style="font-size: 12px; padding: 4px 8px; color: oklch(0.5 0.015 258);">Contiguous Memory</div>
+          <div style="font-size: 12px; padding: 4px 8px; color: oklch(0.5 0.015 258);">Dynamic Arrays</div>
+          <div style="font-size: 12px; padding: 4px 8px; color: oklch(0.5 0.015 258);">In-Place Foundations</div>
+          <div style="display: flex; align-items: center; gap: 7px; padding: 4px 8px; font-size: 12px; font-weight: 600; color: oklch(0.55 0.15 252);">
+            <span style="width: 4px; height: 4px; background: oklch(0.55 0.15 252);"></span>
+            Remove Duplicates
+          </div>
+          <div style="font-size: 12px; padding: 4px 8px; color: oklch(0.5 0.015 258);">Move Zeroes</div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 9px; padding: 6px 8px;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: oklch(0.68 0.02 258);">05</span>
+          <span style="font-size: 12.5px; flex-grow: 1; color: oklch(0.35 0.015 258);">Strings</span>
+          <span style="width: 22px; height: 3px; background: oklch(0.9 0.008 258);"></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 9px; padding: 6px 8px;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: oklch(0.68 0.02 258);">06</span>
+          <span style="font-size: 12.5px; flex-grow: 1; color: oklch(0.35 0.015 258);">Hash Tables</span>
+          <span style="width: 22px; height: 3px; background: oklch(0.9 0.008 258);"></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 9px; padding: 6px 8px;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: oklch(0.68 0.02 258);">07</span>
+          <span style="font-size: 12.5px; flex-grow: 1; color: oklch(0.35 0.015 258);">Linked Lists</span>
+          <span style="width: 22px; height: 3px; background: oklch(0.9 0.008 258);"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- PROBLEM ---------- -->
+    <div style="width: 392px; flex-shrink: 0; border-right: 1px solid oklch(0.88 0.008 258); display: flex; flex-direction: column; min-height: 0; background: oklch(1 0 0);">
+
+      <div style="display: flex; align-items: stretch; border-bottom: 1px solid oklch(0.88 0.008 258); flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 2px solid oklch(0.22 0.012 258); font-size: 12.5px; font-weight: 600;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="square"><path d="M5 4 H19 V20 H5 Z"></path><path d="M8.5 9 H15.5"></path><path d="M8.5 13 H15.5"></path><path d="M8.5 17 H13"></path></svg>
+          Brief
+        </div>
+        <div style="display: flex; align-items: center; gap: 7px; padding: 11px 14px; font-size: 12.5px; color: oklch(0.5 0.02 258);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="square"><circle cx="12" cy="12" r="8"></circle><path d="M12 11 V16"></path><path d="M12 8 V8.5"></path></svg>
+          Method
+        </div>
+        <div style="display: flex; align-items: center; gap: 7px; padding: 11px 14px; font-size: 12.5px; color: oklch(0.5 0.02 258);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="square"><path d="M4 7 H20"></path><path d="M4 12 H20"></path><path d="M4 17 H14"></path><path d="M17 16 L19 18 L22 14"></path></svg>
+          Answer
+        </div>
+        <div style="display: flex; align-items: center; gap: 7px; padding: 11px 14px; font-size: 12.5px; color: oklch(0.5 0.02 258);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="square"><path d="M9 9 A3 3 0 1 1 12 12 V14"></path><path d="M12 18 V18.5"></path></svg>
+          Check
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; overflow: hidden; padding: 22px 24px;">
+
+        <div style="display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.58 0.02 258); margin-bottom: 12px;">
+          <span>Module 04</span>
+          <span style="width: 12px; height: 1px; background: oklch(0.78 0.02 258);"></span>
+          <span>Arrays</span>
+          <span style="flex-grow: 1;"></span>
+          <span style="padding: 2px 6px; border: 1px solid oklch(0.85 0.02 258); font-size: 9px; letter-spacing: 0.08em;">MEDIUM</span>
+        </div>
+
+        <h1 style="margin: 0 0 16px; font-size: 29px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.08;">Remove Duplicates<br>from Sorted Array</h1>
+
+        <p style="margin: 0 0 20px; font-size: 14px; line-height: 1.65; color: oklch(0.34 0.015 258); text-wrap: pretty;">
+          Given an integer array <code style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; background: oklch(0.95 0.006 258); padding: 1px 4px;">nums</code> sorted in non-decreasing order, remove the duplicates <strong style="font-weight: 600;">in place</strong> so each unique element appears once, keeping relative order.
+        </p>
+
+        <div style="border-left: 2px solid oklch(0.22 0.012 258); padding: 2px 0 2px 13px; margin-bottom: 22px;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: oklch(0.5 0.02 258); margin-bottom: 5px;">Return</div>
+          <p style="margin: 0; font-size: 13.5px; line-height: 1.5; color: oklch(0.3 0.015 258);">
+            The count <code style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px;">k</code> of unique elements. Only <code style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px;">nums[0..k)</code> is read — what sits past it does not matter.
+          </p>
+        </div>
+
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: oklch(0.5 0.02 258); margin-bottom: 12px;">Example 01</div>
+
+        <!-- SIGNATURE: the array drawn as the cells it actually is -->
+        <div style="margin-bottom: 8px;">
+          <div style="font-size: 11px; color: oklch(0.55 0.02 258); margin-bottom: 6px;">in</div>
+          <div style="display: flex; gap: 3px;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;"><div style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border: 1px solid oklch(0.84 0.01 258); font-family: 'IBM Plex Mono', monospace; font-size: 13px;">1</div><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: oklch(0.68 0.02 258);">0</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;"><div style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border: 1px solid oklch(0.84 0.01 258); font-family: 'IBM Plex Mono', monospace; font-size: 13px;">1</div><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: oklch(0.68 0.02 258);">1</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;"><div style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border: 1px solid oklch(0.84 0.01 258); font-family: 'IBM Plex Mono', monospace; font-size: 13px;">2</div><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: oklch(0.68 0.02 258);">2</span></div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px; margin: 12px 0 8px; color: oklch(0.7 0.02 258);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M12 5 V19"></path><path d="M7 14 L12 19 L17 14"></path></svg>
+        </div>
+
+        <div>
+          <div style="font-size: 11px; color: oklch(0.55 0.02 258); margin-bottom: 6px;">out &nbsp;<span style="font-family: 'IBM Plex Mono', monospace; color: oklch(0.3 0.015 258);">k = 2</span></div>
+          <div style="display: flex; gap: 3px;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;"><div style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border: 1px solid oklch(0.55 0.15 252); background: oklch(0.96 0.03 252); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: oklch(0.4 0.15 252);">1</div><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: oklch(0.55 0.15 252);">0</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;"><div style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border: 1px solid oklch(0.55 0.15 252); background: oklch(0.96 0.03 252); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: oklch(0.4 0.15 252);">2</div><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: oklch(0.55 0.15 252);">1</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;"><div style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border: 1px dashed oklch(0.85 0.01 258); font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: oklch(0.75 0.02 258);">_</div><span style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: oklch(0.75 0.02 258);">2</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid oklch(0.9 0.008 258); display: flex; gap: 22px;">
+          <div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.6 0.02 258); margin-bottom: 4px;">Size</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px;">n ≤ 3·10⁴</div>
+          </div>
+          <div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.6 0.02 258); margin-bottom: 4px;">Values</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px;">−100…100</div>
+          </div>
+          <div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.6 0.02 258); margin-bottom: 4px;">Space</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px;">O(1) aux</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- WORK ---------- -->
+    <div style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0;">
+
+      <div style="height: 44px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid oklch(0.88 0.008 258); background: oklch(1 0 0);">
+        <div style="display: flex; border: 1px solid oklch(0.88 0.008 258);">
+          <span style="padding: 4px 11px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; font-weight: 500; background: oklch(0.22 0.012 258); color: oklch(0.98 0 0);">py</span>
+          <span style="padding: 4px 11px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: oklch(0.5 0.02 258);">js</span>
+        </div>
+        <div style="flex-grow: 1;"></div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: oklch(0.45 0.02 258);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="square"><path d="M4 12 A8 8 0 1 0 7 5.5"></path><path d="M4 4 V9 H9"></path></svg>
+          Reset
+        </div>
+        <div style="display: flex; align-items: center; gap: 7px; padding: 6px 15px; background: oklch(0.22 0.012 258); color: oklch(0.98 0 0);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"></path></svg>
+          <span style="font-size: 12.5px; font-weight: 600;">Run</span>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; opacity: 0.6;">⌘⏎</span>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; min-height: 0; background: oklch(1 0 0); padding: 16px 0; overflow: hidden;">
+        <div style="display: flex; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.85;">
+          <div style="width: 44px; flex-shrink: 0; text-align: right; padding-right: 14px; color: oklch(0.75 0.02 258); font-size: 11.5px;">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div>
+          </div>
+          <div style="flex-grow: 1;">
+            <div><span style="color: oklch(0.5 0.16 300);">def</span> <span style="color: oklch(0.45 0.14 252);">remove_duplicates</span>(nums):</div>
+            <div><span style="color: oklch(0.62 0.02 258);">&nbsp;&nbsp;&nbsp;&nbsp;# write index: next slot a unique value belongs in</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;w = <span style="color: oklch(0.52 0.15 40);">1</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: oklch(0.5 0.16 300);">for</span> r <span style="color: oklch(0.5 0.16 300);">in</span> <span style="color: oklch(0.45 0.14 252);">range</span>(<span style="color: oklch(0.52 0.15 40);">1</span>, <span style="color: oklch(0.45 0.14 252);">len</span>(nums)):</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: oklch(0.5 0.16 300);">if</span> nums[r] != nums[w<span style="color: oklch(0.62 0.02 258);"> </span>-<span style="color: oklch(0.62 0.02 258);"> </span><span style="color: oklch(0.52 0.15 40);">1</span>]:</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nums[w] = nums[r]</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: oklch(0.5 0.16 300);">return</span> w<span style="display: inline-block; width: 1.5px; height: 15px; background: oklch(0.22 0.012 258); vertical-align: -3px; margin-left: 1px;"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- results -->
+      <div style="height: 264px; flex-shrink: 0; border-top: 1px solid oklch(0.88 0.008 258); display: flex; flex-direction: column; background: oklch(0.985 0.003 258);">
+
+        <div style="height: 40px; flex-shrink: 0; display: flex; align-items: stretch; border-bottom: 1px solid oklch(0.9 0.008 258);">
+          <div style="display: flex; align-items: center; gap: 7px; padding: 0 14px; border-bottom: 2px solid oklch(0.22 0.012 258); font-size: 12.5px; font-weight: 600;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="square"><path d="M4 18 H20"></path><path d="M7 18 V11"></path><path d="M12 18 V6"></path><path d="M17 18 V14"></path></svg>
+            Cases
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; font-weight: 600; padding: 1.5px 5px; background: oklch(0.55 0.15 148); color: oklch(0.99 0 0);">5/5</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 7px; padding: 0 14px; font-size: 12.5px; color: oklch(0.5 0.02 258);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="square"><path d="M12 4 L4 20 H20 Z"></path></svg>
+            Insight
+          </div>
+          <div style="display: flex; align-items: center; gap: 7px; padding: 0 14px; font-size: 12.5px; color: oklch(0.5 0.02 258);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="square"><path d="M6 8 L10 12 L6 16"></path><path d="M13 16 H18"></path></svg>
+            Console
+          </div>
+          <div style="flex-grow: 1;"></div>
+          <div style="display: flex; align-items: center; gap: 7px; padding: 0 14px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: oklch(0.45 0.02 258);">
+            <span style="width: 6px; height: 6px; background: oklch(0.55 0.15 148);"></span>
+            all passed · 41ms
+          </div>
+        </div>
+
+        <!-- SIGNATURE: cases as a strip of numbered slots -->
+        <div style="display: flex; gap: 4px; padding: 12px 14px 10px;">
+          <div style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; border: 1.5px solid oklch(0.22 0.012 258); background: oklch(0.22 0.012 258); color: oklch(0.98 0 0);">01</div>
+          <div style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; border: 1px solid oklch(0.55 0.15 148); color: oklch(0.42 0.15 148);">02</div>
+          <div style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; border: 1px solid oklch(0.55 0.15 148); color: oklch(0.42 0.15 148);">03</div>
+          <div style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; border: 1px solid oklch(0.55 0.15 148); color: oklch(0.42 0.15 148);">04</div>
+          <div style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; border: 1px solid oklch(0.55 0.15 148); color: oklch(0.42 0.15 148);">05</div>
+        </div>
+
+        <div style="padding: 4px 14px 14px; display: flex; flex-direction: column; gap: 9px;">
+          <div style="display: flex; gap: 12px; align-items: baseline;">
+            <span style="width: 62px; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.6 0.02 258);">Input</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px;">[1, 1, 2]</span>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: baseline;">
+            <span style="width: 62px; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.6 0.02 258);">Expected</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px;">k = 2 &nbsp;·&nbsp; [1, 2]</span>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: baseline;">
+            <span style="width: 62px; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.6 0.02 258);">Yours</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: oklch(0.42 0.15 148);">k = 2 &nbsp;·&nbsp; [1, 2]</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.15 148)" stroke-width="2.4" stroke-linecap="square"><path d="M5 13 L10 18 L19 7"></path></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- COACH ---------- -->
+    <div style="width: 320px; flex-shrink: 0; border-left: 1px solid oklch(0.88 0.008 258); background: oklch(1 0 0); display: flex; flex-direction: column; min-height: 0;">
+
+      <div style="padding: 16px 16px 14px; border-bottom: 1px solid oklch(0.9 0.008 258); flex-shrink: 0;">
+        <div style="display: flex; align-items: flex-start; gap: 11px;">
+          <div style="width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: oklch(0.55 0.15 252);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="oklch(0.99 0 0)" stroke-width="2.1" stroke-linecap="square"><path d="M4 5 H20 V16 H12 L7 20 V16 H4 Z"></path></svg>
+          </div>
+          <div style="flex-grow: 1; min-width: 0;">
+            <div style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;">Socratic</div>
+            <div style="font-size: 11.5px; color: oklch(0.52 0.02 258); margin-top: 3px; line-height: 1.35;">Reads your code. Asks, never answers.</div>
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.62 0.02 258)" stroke-width="1.9" stroke-linecap="square" style="flex-shrink: 0; margin-top: 2px;"><path d="M6 6 L18 18"></path><path d="M18 6 L6 18"></path></svg>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; overflow: hidden; padding: 14px 16px; display: flex; flex-direction: column; gap: 14px;">
+
+        <div style="border-left: 2px solid oklch(0.55 0.15 148); padding-left: 11px;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: oklch(0.5 0.02 258); margin-bottom: 4px;">Run 03 · all passed</div>
+          <div style="font-size: 12.5px; line-height: 1.5; color: oklch(0.32 0.015 258);">Five of five, O(n) time and O(1) space. This is the write-pointer template.</div>
+        </div>
+
+        <div style="align-self: flex-end; max-width: 88%; background: oklch(0.955 0.005 258); padding: 9px 12px; font-size: 13px; line-height: 1.5;">
+          Why start w at 1 and not 0?
+        </div>
+
+        <div style="display: flex; gap: 9px;">
+          <div style="width: 22px; height: 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: oklch(0.55 0.15 252); margin-top: 2px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="oklch(0.99 0 0)" stroke-width="2.4" stroke-linecap="square"><path d="M4 5 H20 V16 H12 L7 20 V16 H4 Z"></path></svg>
+          </div>
+          <div style="font-size: 13px; line-height: 1.55; color: oklch(0.28 0.015 258); min-width: 0;">
+            Before the loop runs even once, how many elements of the answer are already in place — and where did they come from?
+          </div>
+        </div>
+
+        <div style="align-self: flex-end; max-width: 88%; background: oklch(0.955 0.005 258); padding: 9px 12px; font-size: 13px; line-height: 1.5;">
+          The first one. It can't be a duplicate of anything.
+        </div>
+
+        <div style="display: flex; gap: 9px;">
+          <div style="width: 22px; height: 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: oklch(0.55 0.15 252); margin-top: 2px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="oklch(0.99 0 0)" stroke-width="2.4" stroke-linecap="square"><path d="M4 5 H20 V16 H12 L7 20 V16 H4 Z"></path></svg>
+          </div>
+          <div style="font-size: 13px; line-height: 1.55; color: oklch(0.28 0.015 258); min-width: 0;">
+            That's the invariant. Say it as a sentence about <code style="font-family: 'IBM Plex Mono', monospace; font-size: 12px;">nums[0..w)</code> and you have the proof.
+          </div>
+        </div>
+      </div>
+
+      <div style="flex-shrink: 0; padding: 12px 16px 14px; border-top: 1px solid oklch(0.9 0.008 258);">
+        <div style="display: flex; align-items: center; gap: 9px; border: 1px solid oklch(0.85 0.01 258); padding: 9px 11px;">
+          <span style="flex-grow: 1; font-size: 12.5px; color: oklch(0.6 0.02 258);">Ask about your approach</span>
+          <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: oklch(0.22 0.012 258);">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.99 0 0)" stroke-width="2.3" stroke-linecap="square"><path d="M12 19 V5"></path><path d="M6 11 L12 5 L18 11"></path></svg>
+          </div>
+        </div>
+        <div style="margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.06em; color: oklch(0.62 0.02 258);">39 turns left today</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#3b6fd4","section":"Theme"},"pass":{"editor":"color","default":"#3d8a52","section":"Theme"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

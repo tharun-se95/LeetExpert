@@ -1,0 +1,723 @@
+[    3861ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    3945ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    4186ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    4194ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    4462ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    4754ms] [LOG] [Fast Refresh] done in 392ms @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    4858ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    4861ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    4861ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    4862ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752779093} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    5699ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    5705ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    5961ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    5965ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    5965ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[    5965ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752780197} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   24636ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   24724ms] [LOG] [Fast Refresh] done in 190ms @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   24853ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   24866ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   24909ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[   24994ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" suppressHydrationWarning={true} className="space_mono...">
+        <body className="min-h-full...">
+          <script>
+          <script>
+          <style>
+          <script>
+          <script>
+          <ThemeProvider>
+            <J attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+              <V attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+                <script>
+                <AppShell authEnabled={true}>
+                  <SyncBridgeProvider authEnabled={true}>
+                    <ProgressProvider courseSlug="dsa" totalCount={104} totalProblemCount={116} lessonProgressIds={[...]}>
+                      <VisitTracker>
+                      <AccountRuntime>
+                      <ScrollbarAutoHide>
+                      <SidebarProvider open={true} toggle={function AppShell.useCallback[toggleSidebar]}>
+                        <SearchDialog>
+                        <MobileLessonsSheet>
+                        <FloatingLessonsButton>
++                       <div className="relative flex h-dvh flex-col overflow-hidden">
+-                       <Suspense>
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at beginWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+[   25157ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25157ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25157ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25158ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752799389} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25158ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752799389} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25159ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25307ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25315ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25363ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[   25418ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" suppressHydrationWarning={true} className="space_mono...">
+        <body className="min-h-full...">
+          <script>
+          <script>
+          <style>
+          <script>
+          <script>
+          <ThemeProvider>
+            <J attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+              <V attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+                <script>
+                <AppShell authEnabled={true}>
+                  <SyncBridgeProvider authEnabled={true}>
+                    <ProgressProvider courseSlug="dsa" totalCount={104} totalProblemCount={116} lessonProgressIds={[...]}>
+                      <VisitTracker>
+                      <AccountRuntime>
+                      <ScrollbarAutoHide>
+                      <SidebarProvider open={true} toggle={function AppShell.useCallback[toggleSidebar]}>
+                        <SearchDialog>
+                        <MobileLessonsSheet>
+                        <FloatingLessonsButton>
++                       <div className="relative flex h-dvh flex-col overflow-hidden">
+-                       <Suspense>
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at beginWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+[   25527ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25529ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25529ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25529ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25529ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752799760} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   25529ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752799760} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85308ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85318ms] [LOG] [Fast Refresh] done in 112ms @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85436ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85446ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85500ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[   85559ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" suppressHydrationWarning={true} className="space_mono...">
+        <body className="min-h-full...">
+          <script>
+          <script>
+          <style>
+          <script>
+          <script>
+          <ThemeProvider>
+            <J attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+              <V attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+                <script>
+                <AppShell authEnabled={true}>
+                  <SyncBridgeProvider authEnabled={true}>
+                    <ProgressProvider courseSlug="dsa" totalCount={104} totalProblemCount={116} lessonProgressIds={[...]}>
+                      <VisitTracker>
+                      <AccountRuntime>
+                      <ScrollbarAutoHide>
+                      <SidebarProvider open={true} toggle={function AppShell.useCallback[toggleSidebar]}>
+                        <SearchDialog>
+                        <MobileLessonsSheet>
+                        <FloatingLessonsButton>
++                       <div className="relative flex h-dvh flex-col overflow-hidden">
+-                       <Suspense>
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at beginWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+[   85667ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85667ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85668ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85668ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752859899} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85668ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752859899} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   85668ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  146133ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  146177ms] [LOG] [Fast Refresh] done in 112ms @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  148907ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  148939ms] [LOG] [Fast Refresh] done in 82ms @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  149712ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  149747ms] [LOG] [Fast Refresh] done in 53ms @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  164434ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  164444ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  164495ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[  164568ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" suppressHydrationWarning={true} className="space_mono...">
+        <body className="min-h-full...">
+          <script>
+          <script>
+          <style>
+          <script>
+          <script>
+          <ThemeProvider>
+            <J attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+              <V attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+                <script>
+                <AppShell authEnabled={true}>
+                  <SyncBridgeProvider authEnabled={true}>
+                    <ProgressProvider courseSlug="dsa" totalCount={104} totalProblemCount={116} lessonProgressIds={[...]}>
+                      <VisitTracker>
+                      <AccountRuntime>
+                      <ScrollbarAutoHide>
+                      <SidebarProvider open={true} toggle={function AppShell.useCallback[toggleSidebar]}>
+                        <SearchDialog>
+                        <MobileLessonsSheet>
+                        <FloatingLessonsButton>
++                       <div className="relative flex h-dvh flex-col overflow-hidden">
+-                       <Suspense>
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at beginWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+[  164755ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  164755ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  164755ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  164755ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  164755ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752938987} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  164755ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752938987} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  173770ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  173776ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  173825ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[  173883ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" suppressHydrationWarning={true} className="space_mono...">
+        <body className="min-h-full...">
+          <script>
+          <script>
+          <style>
+          <script>
+          <script>
+          <ThemeProvider>
+            <J attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+              <V attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+                <script>
+                <AppShell authEnabled={true}>
+                  <SyncBridgeProvider authEnabled={true}>
+                    <ProgressProvider courseSlug="dsa" totalCount={104} totalProblemCount={116} lessonProgressIds={[...]}>
+                      <VisitTracker>
+                      <AccountRuntime>
+                      <ScrollbarAutoHide>
+                      <SidebarProvider open={true} toggle={function AppShell.useCallback[toggleSidebar]}>
+                        <SearchDialog>
+                        <MobileLessonsSheet>
+                        <FloatingLessonsButton>
++                       <div className="relative flex h-dvh flex-col overflow-hidden">
+-                       <Suspense>
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at beginWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+[  174001ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  174001ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  174001ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  174001ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752948232} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  174001ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789752948232} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  174001ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  237181ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  238182ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  239184ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  240186ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  241188ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  246199ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  251202ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  256204ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  261206ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  266208ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  271217ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  276220ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=6q9yOKv0FhiZCAIjMrSel' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  997840ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  997893ms] [LOG] [HMR] connected @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  998606ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  998611ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  998611ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  998612ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3112/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3112/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753772843} /_vercel/insights/view @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1024260ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1024268ms] [LOG] [HMR] connected @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1024589ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1024589ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1024589ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3112/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3112/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753798821} /_vercel/insights/view @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1024597ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1028159ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1028214ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1028469ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1028490ms] [LOG] [Fast Refresh] done in 122ms @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1028772ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1028773ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1028773ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753803004} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1028785ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1031765ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1031772ms] [LOG] [HMR] connected @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1032043ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1032043ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1032043ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3112/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3112/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753806274} /_vercel/insights/view @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1032043ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1034714ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1034721ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1035023ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1035023ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1035023ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753809255} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1035023ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1054610ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1054620ms] [LOG] [HMR] connected @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1054932ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1054949ms] [LOG] [HMR] connected @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1055249ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1055250ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1055250ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3112/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3112/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753829481} /_vercel/insights/view @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1055250ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1056370ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1056377ms] [LOG] [HMR] connected @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1056647ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1056647ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1056647ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3112/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3112/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753830879} /_vercel/insights/view @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1056653ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3112/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1058339ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1058346ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1058635ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1058641ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1058943ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1058943ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1058944ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753833175} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1058944ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1060009ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1060015ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1060265ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1060277ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1060277ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1060277ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753834508} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1077840ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1077856ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1078093ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1078098ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1078377ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1078377ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1078378ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753852609} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1078382ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1079474ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1079481ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1079748ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1079759ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1079759ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1079759ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753853990} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1101721ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1101730ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1101782ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[ 1101842ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" suppressHydrationWarning={true} className="space_mono...">
+        <body className="min-h-full...">
+          <script>
+          <script>
+          <style>
+          <script>
+          <script>
+          <ThemeProvider>
+            <J attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+              <V attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+                <script>
+                <AppShell authEnabled={true}>
+                  <SyncBridgeProvider authEnabled={true}>
+                    <ProgressProvider courseSlug="dsa" totalCount={104} totalProblemCount={116} lessonProgressIds={[...]}>
+                      <VisitTracker>
+                      <AccountRuntime>
+                      <ScrollbarAutoHide>
+                      <SidebarProvider open={true} toggle={function AppShell.useCallback[toggleSidebar]}>
+                        <SearchDialog>
+                        <MobileLessonsSheet>
+                        <FloatingLessonsButton>
++                       <div className="relative flex h-dvh flex-col overflow-hidden">
+-                       <Suspense>
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at beginWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+[ 1101980ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1101980ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1101980ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1101980ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753876212} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1101980ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753876212} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1101980ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1102141ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1102147ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1102194ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[ 1102252ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" suppressHydrationWarning={true} className="space_mono...">
+        <body className="min-h-full...">
+          <script>
+          <script>
+          <style>
+          <script>
+          <script>
+          <ThemeProvider>
+            <J attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+              <V attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+                <script>
+                <AppShell authEnabled={true}>
+                  <SyncBridgeProvider authEnabled={true}>
+                    <ProgressProvider courseSlug="dsa" totalCount={104} totalProblemCount={116} lessonProgressIds={[...]}>
+                      <VisitTracker>
+                      <AccountRuntime>
+                      <ScrollbarAutoHide>
+                      <SidebarProvider open={true} toggle={function AppShell.useCallback[toggleSidebar]}>
+                        <SearchDialog>
+                        <MobileLessonsSheet>
+                        <FloatingLessonsButton>
++                       <div className="relative flex h-dvh flex-col overflow-hidden">
+-                       <Suspense>
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at beginWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+[ 1102338ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1102338ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1102338ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1102339ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1102339ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753876570} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1102339ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753876570} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1102376ms] [ERROR] Failed to load resource: the server responded with a status of 409 (Conflict) @ http://localhost:3111/api/progress/drafts/two-sum:0
+[ 1106088ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1106095ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1106389ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1106389ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1106389ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753880620} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1106389ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1121999ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122006ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122053ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[ 1122128ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" suppressHydrationWarning={true} className="space_mono...">
+        <body className="min-h-full...">
+          <script>
+          <script>
+          <style>
+          <script>
+          <script>
+          <ThemeProvider>
+            <J attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+              <V attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+                <script>
+                <AppShell authEnabled={true}>
+                  <SyncBridgeProvider authEnabled={true}>
+                    <ProgressProvider courseSlug="dsa" totalCount={104} totalProblemCount={116} lessonProgressIds={[...]}>
+                      <VisitTracker>
+                      <AccountRuntime>
+                      <ScrollbarAutoHide>
+                      <SidebarProvider open={true} toggle={function AppShell.useCallback[toggleSidebar]}>
+                        <SearchDialog>
+                        <MobileLessonsSheet>
+                        <FloatingLessonsButton>
++                       <div className="relative flex h-dvh flex-col overflow-hidden">
+-                       <Suspense>
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at beginWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+[ 1122278ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122278ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122279ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122279ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753896510} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122279ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753896510} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122279ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122498ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122507ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122576ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[ 1122656ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" suppressHydrationWarning={true} className="space_mono...">
+        <body className="min-h-full...">
+          <script>
+          <script>
+          <style>
+          <script>
+          <script>
+          <ThemeProvider>
+            <J attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+              <V attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange={true}>
+                <script>
+                <AppShell authEnabled={true}>
+                  <SyncBridgeProvider authEnabled={true}>
+                    <ProgressProvider courseSlug="dsa" totalCount={104} totalProblemCount={116} lessonProgressIds={[...]}>
+                      <VisitTracker>
+                      <AccountRuntime>
+                      <ScrollbarAutoHide>
+                      <SidebarProvider open={true} toggle={function AppShell.useCallback[toggleSidebar]}>
+                        <SearchDialog>
+                        <MobileLessonsSheet>
+                        <FloatingLessonsButton>
++                       <div className="relative flex h-dvh flex-col overflow-hidden">
+-                       <Suspense>
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at beginWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at performUnitOfWork (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3111/_next/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+[ 1122743ms] [ERROR] Failed to load resource: the server responded with a status of 409 (Conflict) @ http://localhost:3111/api/progress/drafts/two-sum:0
+[ 1122743ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122743ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122743ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122743ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753896974} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122743ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753896975} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1122758ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1126499ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1126506ms] [LOG] [HMR] connected @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1126974ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1126974ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /courses/dsa/problems/[slug], path: /courses/dsa/problems/two-sum} @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1126974ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3111/courses/dsa/problems/two-sum color: rgb(120, 120, 120) color: inherit {o: http://localhost:3111/courses/dsa/problems/two-sum, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789753901206} /_vercel/insights/view @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1126975ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1147990ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1148992ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1149994ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1150996ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1151999ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1157003ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1162006ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1167009ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1172012ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1177014ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1182018ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[ 1187021ms] [ERROR] WebSocket connection to 'ws://localhost:3111/_next/webpack-hmr?id=h-mD9B9pSViOLhZRHxhLo' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3111/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
