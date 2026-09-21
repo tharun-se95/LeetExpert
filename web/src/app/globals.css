@@ -263,12 +263,16 @@
   --focus-ring: 2px;
   --focus-offset: 2px;
 
-  /* The landing backdrop (LandingBackdrop): each structure in its family's
-     UI accent (3:1 on every paper) at --backdrop-opacity, softly blurred. It
-     keeps to the free space beside the text, so it is strength for visibility,
-     not a contrast budget; landingStory.test.tsx holds the placement. */
-  --backdrop-opacity: 0.55;
-  --backdrop-blur: 3px;
+  /* The landing's boxes backdrop (LandingBackdrop, spec 2026-09-21): hairlines
+     in the page ink at low alpha, and a hover flash in a family's UI accent at
+     --boxes-flash-alpha. Text sits over it at every width, so
+     paperContrast.test.ts holds every family's flash under --foreground and
+     --muted at AA. --muted is the binding ink: the highest alpha that keeps
+     it at 4.5:1 under every family's flash is 0.162 in light (Priority
+     structures on the page) and 0.274 in dark (State transition on
+     --elevated), so 0.15 and 0.25 leave a little margin. */
+  --boxes-line: color-mix(in oklab, var(--press-ink) 16%, transparent);
+  --boxes-flash-alpha: 0.15;
 
   /* --- heat map (landing credits section) ------------------- */
   /* GitHub's contribution greens, the owner's chosen ramp (2026-09-14),
@@ -374,8 +378,8 @@
   --press-highlight: color-mix(in oklab, var(--press-olive) 22%, transparent);
   --press-halftone: rgba(244, 244, 245, 0.09);
   /* A little stronger on the dark paper, where the accents sit closer to it. */
-  --backdrop-opacity: 0.7;
-  --backdrop-blur: 3px;
+  --boxes-line: color-mix(in oklab, var(--press-ink) 20%, transparent);
+  --boxes-flash-alpha: 0.25;
   /* Heat ramp on the dark --elevated card (#26262a): 1.22, 1.35, 2.32,
      4.75, 7.62 — adjacent steps 1.11-2.05. Level 0 is lifted off the card
      so an empty day still reads as a square. */
@@ -622,50 +626,15 @@ body {
 }
 
 /*
-  The landing backdrop (LandingBackdrop, spec 2026-09-15 §14–§15): floating
-  data points gathering into structures in the free space beside the text,
-  in each structure's family colour (--backdrop-ink, set by the drawing),
-  softened by a light blur. The wrapper gives the drawing depth and the
-  drawing sways through it slowly, a transform only, so it costs no layout.
-  Reduced motion holds it still.
+  The landing's boxes backdrop (LandingBackdrop, spec 2026-09-21): a canvas of
+  skewed hairline boxes. `color` carries the line token to the script, which
+  reads it back with getComputedStyle. The mask is the original's radial fade
+  (an opaque plate over the grid's edges) as an alpha ramp: full at the centre,
+  falling toward the corners.
 */
-.landing-backdrop {
-  /* Right of the text column: the column starts at the landing container's
-     content edge (its px-16 gutter inside --container-landing) and is at most
-     48rem (max-w-3xl) wide; 3rem more keeps the blur clear of it. */
-  left: calc(max(4rem, (100vw - var(--container-landing)) / 2 + 4rem) + 51rem);
-  opacity: var(--backdrop-opacity);
-  filter: blur(var(--backdrop-blur));
-  perspective: 1400px;
-  transition: opacity 1.2s var(--ease-gentle);
-}
-.landing-backdrop[data-off] {
-  opacity: 0;
-}
-.landing-backdrop-drawing :is(line, rect) {
-  stroke: var(--backdrop-ink);
-}
-.landing-backdrop-drawing circle {
-  fill: var(--backdrop-ink);
-}
-@keyframes backdrop-sway {
-  0% {
-    transform: rotateX(16deg) rotateY(-12deg) rotateZ(-2deg);
-  }
-  50% {
-    transform: rotateX(26deg) rotateY(4deg) rotateZ(1deg);
-  }
-  100% {
-    transform: rotateX(20deg) rotateY(12deg) rotateZ(2deg);
-  }
-}
-.landing-backdrop-drawing {
-  animation: backdrop-sway 60s ease-in-out infinite alternate;
-}
-@media (prefers-reduced-motion: reduce) {
-  .landing-backdrop-drawing {
-    animation: none;
-  }
+.landing-boxes {
+  color: var(--boxes-line);
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 100%);
 }
 
 /*

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { FAMILY_THEMES } from "@/lib/visual/familyTheme";
 
 /**
  * Text sits directly on the desk (lesson headers, breadcrumbs, the drawer, the
@@ -151,6 +152,35 @@ describe("lines on the card", () => {
       const paper = rgb(resolve(t, "elevated"));
       for (const line of ["good-line", "bad-line", "warn-line", "info-line", "insight-line", "advice-line"]) {
         expect(contrast(rgb(resolve(t, line)), paper), `${theme} --${line} on --elevated`).toBeGreaterThanOrEqual(3);
+      }
+    });
+  }
+});
+
+describe("text over the landing's boxes backdrop", () => {
+  // A flash is a family's UI accent at --boxes-flash-alpha over the page paper,
+  // and text sits over the grid at every width. Worst case: any family, either
+  // paper the desk can show.
+  for (const [theme, t] of [
+    ["light", light],
+    ["dark", dark],
+  ] as const) {
+    it(`keeps --foreground and --muted AA under any family's flash in ${theme}`, () => {
+      const alpha = Number(t["boxes-flash-alpha"]);
+      expect(alpha, "--boxes-flash-alpha").toBeGreaterThan(0);
+      expect(alpha, "--boxes-flash-alpha").toBeLessThanOrEqual(1);
+      for (const surface of ["background", "elevated"]) {
+        const paper = rgb(resolve(t, surface));
+        for (const family of FAMILY_THEMES) {
+          const flash = rgb(family.accentUi);
+          const mix = paper.map((p, i) => alpha * flash[i] + (1 - alpha) * p);
+          for (const ink of ["foreground", "muted"]) {
+            expect(
+              contrast(rgb(resolve(t, ink)), mix),
+              `${theme} --${ink} under ${family.id} on --${surface}`,
+            ).toBeGreaterThanOrEqual(4.5);
+          }
+        }
       }
     });
   }
