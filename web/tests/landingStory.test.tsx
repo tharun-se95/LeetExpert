@@ -182,6 +182,10 @@ describe("snapping", () => {
     expect(backdrop).toContain('window.addEventListener("pointermove", onMove)');
     expect(backdrop).toContain('e.pointerType === "touch"');
     expect(backdrop).toContain("prefers-reduced-motion: reduce");
+    // Sized by observing the canvas: a page-enter transform on an ancestor once
+    // left the backing store as tall as the page, and no window resize fixed it.
+    expect(backdrop).toContain("new ResizeObserver(resize)");
+    expect(backdrop).not.toContain('addEventListener("resize"');
     // Frames run only while a flash is live, so an idle page runs none.
     expect(backdrop).toMatch(/if \(flashes\.size > 0\) frame = requestAnimationFrame\(draw\)/);
     // It watches nothing of the page: no scroll, no sections, no observer.

@@ -451,6 +451,8 @@ the Try-it preview, `OPTIMIZE_INSIGHT`/`OPTIMIZE_NOTE`, `METHOD_PROBLEM`, the
 
 ## 15. Revision: floating data points (owner, 2026-09-20)
 
+> Superseded 2026-09-21 by `2026-09-21-landing-boxes-backdrop-design.md`: the structure backdrop was replaced by the boxes grid; the floating-points schedule, free-space placement and `data-backdrop-off` here no longer apply.
+
 Owner direction on §14's backdrop, answered in chat: **2.5D, not WebGL**; the
 transformations run on **their own slow clock, independent of scroll** (a pure
 ambient loop — this supersedes "takes the next one each time a snap stop

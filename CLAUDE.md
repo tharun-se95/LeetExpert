@@ -334,31 +334,27 @@ The content is the product. Code exists to serve it.
   (`TypedText` + `useTypedText`); the `sr-only` copy is always complete; the visual layer starts
   untyped on the server, because a hero rendered typed would flash blank on
   hydration; a `<noscript>` rule reveals it (and every `.rise-in` card);
-  reduced motion shows it all. One `EvolvingStructure` is the page's
-  **backdrop** (`LandingBackdrop`, owner 2026-09-19; floating points, its own
-  clock, family colour and the free space 2026-09-20, spec 2026-09-15 §15). It
-  keeps to **the free space beside the text, never under it**: fixed right of
-  the text column (the landing container's content edge + 51rem, the widest
-  text measure the story uses being `max-w-3xl`) from `xl`, hidden below `xl`
-  where text spans the screen, and faded out while a stop marked
-  `data-backdrop-off` is on screen (the last slide and the footer, whose text
-  runs to the right edge) — that is all it watches; the Understand/Build/Keep
-  components cover it where they sit. Soft (`--backdrop-blur`) on a slowly
-  swaying 3D plane (`perspective` + `backdrop-sway`). Nine unlabelled floating
-  data points gather into an array, linked list, hash table, tree, 3×3 matrix
-  and graph on **their own clock, independent of scroll**: assemble 3s, hold
-  5s, scatter 3s, float 4s, then the next. Each structure wears the **family
-  colour** (`accentUi`) of the module that teaches it (`STAGE_MODULES`, read by
-  `backdropColours()` in `productData.ts`, which throws on a module with no
-  family), and the ink glides to the next colour as the points scatter. One
-  animation-frame loop writes the SVG directly, with no React render per frame
-  (`backdropTarget` is the pure schedule; a hidden tab pauses it); reduced
-  motion shows the graph, still. Every edge is drawn from the same computed
-  points as its dots, float included, and stays one element across shapes, so
-  shared edges stay put. The shapes come from a hidden seed
-  (`lib/landing/structureLayouts.ts`) and are rebuilt independently in
-  `landingStory.test.tsx`, which also holds the placement; Build's pair-sum
-  input (`METHOD_VALUES`) is its own, not that seed. `HomePage` stays a server component and passes
+  reduced motion shows it all. The page's
+  **backdrop** is `LandingBackdrop`: Aceternity UI's Background Boxes as one
+  fixed canvas behind every section, at every width (owner, 2026-09-21; it
+  replaced the evolving structures; spec
+  `docs/superpowers/specs/2026-09-21-landing-boxes-backdrop-design.md`). The
+  skew transform, the pointer-to-cell inverse and the visible range are pure in
+  `lib/landing/boxesGrid.ts`, tested against an independently composed CSS
+  matrix chain in `boxesGrid.test.ts` (the round-trip tests alone cannot fail on
+  a wrong offset). The hairline grid is painted once, to an offscreen layer, per
+  size or theme change; only a hovered cell's fade runs frames, so an idle page
+  runs none. Hover flashes a random course family's `accentUi`
+  (`flashColours()` in `productData.ts`, passed as props) at
+  `--boxes-flash-alpha`, which `paperContrast.test.ts` holds under AA for
+  `--muted` and `--foreground` with every family (`--muted` is the binding ink:
+  0.162 light, 0.274 dark; a stronger flash needs a stronger `--muted`, not a
+  weaker test). The pointer is read on `window`, since content covers the layer;
+  touch and reduced motion show the still grid. The canvas is sized by a
+  `ResizeObserver`, not a window `resize`: a page-enter transform on an ancestor
+  once made the fixed layer page-tall, and nothing else fired when it settled.
+  Nothing steps it aside (`data-backdrop-off` is gone), and the
+  Understand/Build/Keep components cover it where they sit. `HomePage` stays a server component and passes
   counts, links, stage cards and the windows' data (`featureData()`) as
   props, so neither the course manifest nor the filesystem readers ship to
   the landing client. The page ends in `LandingFooter` (landing only; lesson and

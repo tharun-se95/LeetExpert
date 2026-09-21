@@ -139,15 +139,19 @@ export function LandingBackdrop({ colours }: { colours: readonly string[] }) {
       if (!frame) frame = requestAnimationFrame(draw);
     };
 
-    resize();
-    window.addEventListener("resize", resize);
+    // Observe the canvas, not the window: while a page-enter transform is on an
+    // ancestor the fixed layer is as tall as the page, and it only takes the
+    // viewport's size once that ends, with no window `resize` to say so (found
+    // in the browser: a 16040px-tall backing store). It also fires on first layout.
+    const size = new ResizeObserver(resize);
+    size.observe(canvas);
     // The hairline colour is a token that changes with the theme.
     const theme = new MutationObserver(repaint);
     theme.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-theme"] });
     if (!reduced) window.addEventListener("pointermove", onMove);
 
     return () => {
-      window.removeEventListener("resize", resize);
+      size.disconnect();
       window.removeEventListener("pointermove", onMove);
       theme.disconnect();
       cancelAnimationFrame(frame);
