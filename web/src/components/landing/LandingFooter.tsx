@@ -32,7 +32,7 @@ const COURSE_LINKS = [
  */
 export function LandingFooter({ year }: { year: number }) {
   return (
-    <footer data-backdrop-off className="snap-end border-t border-border pt-16 pb-10 lg:pt-24">
+    <footer className="snap-end border-t border-border pt-16 pb-10 lg:pt-24">
       <div className="grid gap-12 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.8fr)]">
         <div>
           <Link href="/" className="inline-flex items-center gap-2.5">

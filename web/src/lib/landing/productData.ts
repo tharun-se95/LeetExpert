@@ -6,8 +6,7 @@ import { getModuleVideo } from "@/lib/course/media";
 import { conceptMapHref, lessonHref, moduleHref } from "@/lib/course/nav";
 import { PRACTICE } from "@/lib/landing/content";
 import type { FeatureData } from "@/lib/landing/features";
-import { STAGE_MODULES } from "@/lib/landing/structureLayouts";
-import { getFamilyTheme } from "@/lib/visual/familyTheme";
+import { FAMILY_THEMES } from "@/lib/visual/familyTheme";
 
 /**
  * Landing data that reads the filesystem or the full course registries: the
@@ -68,17 +67,10 @@ export function featureData(): FeatureData {
 }
 
 /**
- * The backdrop's ink per structure: the family colour of the module that
- * teaches it (owner, 2026-09-20), as the UI accent, which clears 3:1 on every
- * paper in both themes. Read here, on the server, so the course manifest does
- * not ship to the landing client.
+ * The boxes backdrop's hover flashes: every course family's UI accent (3:1 on
+ * every paper), read here on the server so the family table need not ship to
+ * the landing client.
  */
-export function backdropColours(): string[] {
-  return STAGE_MODULES.map((slug) => {
-    const family = moduleFamily(slug);
-    // getFamilyTheme falls back to a default family for an unknown id; a
-    // renamed module must fail here instead of quietly turning green.
-    if (!family) throw new Error(`backdrop: module "${slug}" has no family`);
-    return getFamilyTheme(family).accentUi;
-  });
+export function flashColours(): string[] {
+  return FAMILY_THEMES.map((theme) => theme.accentUi);
 }

@@ -2,50 +2,14 @@ import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
-import { EvolvingStructure } from "@/components/landing/EvolvingStructure";
 import { STOP } from "@/components/landing/landingClasses";
 import { LandingStory } from "@/components/landing/LandingStory";
 import { TypedText } from "@/components/landing/TypedText";
 import { pagingIntent } from "@/components/landing/useSectionPaging";
 import { activeSectionIndex } from "@/components/landing/useSectionReveal";
 import { curriculumStats } from "@/lib/landing/content";
-import {
-  ALL_EDGES,
-  ARRAY_CAPSULE,
-  ARRAY_STAGE,
-  BUCKETS,
-  CLOUDS,
-  CLOUD_FLOAT,
-  CROSS_LINKS,
-  FORMED_FLOAT,
-  FORMED_MS,
-  GRAPH_STAGE,
-  HASH_ROW_Y,
-  HASH_STAGE,
-  LAYOUTS,
-  LIST_STAGE,
-  MATRIX_COLS,
-  MATRIX_STAGE,
-  MORPH_MS,
-  STAGE_EDGES,
-  STAGE_MODULES,
-  STAGE_MS,
-  STAGE_NAMES,
-  STRUCTURE_VALUES,
-  TREE_STAGE,
-  VIEW_H,
-  VIEW_W,
-  backdropTarget,
-  easeInOut,
-  floatOffset,
-  frameFor,
-  mixFrames,
-} from "@/lib/landing/structureLayouts";
 import { heatYear } from "@/lib/landing/heat";
-import { backdropColours, featureData } from "@/lib/landing/productData";
-import { MODULES, moduleFamily } from "@/lib/course/manifest";
-import { FAMILY_THEMES } from "@/lib/visual/familyTheme";
-import { hexToRgb } from "@/lib/visual/palette";
+import { featureData } from "@/lib/landing/productData";
 import {
   FAQ,
   HERO,
@@ -59,13 +23,6 @@ import {
 
 const src = join(__dirname, "..", "src");
 const read = (...p: string[]) => readFileSync(join(src, ...p), "utf8");
-const values = STRUCTURE_VALUES;
-/** Six distinct inks, one per stage, so a frame's colour says which stage it wears. */
-const INKS = STAGE_NAMES.map((_, i) => hexToRgb(`#${(0x10 + i * 0x20).toString(16).padStart(2, "0")}8040`));
-const pairKey = (a: number, b: number) => (a < b ? `${a}-${b}` : `${b}-${a}`);
-const edgeValues = (edges: readonly (readonly [number, number])[]) =>
-  new Set(edges.map(([a, b]) => pairKey(values[a]!, values[b]!)));
-
 /** The head of the `@media ... {` block that encloses `index`, or null. */
 function enclosingMedia(css: string, index: number): string | null {
   let depth = 0;
@@ -80,241 +37,6 @@ function enclosingMedia(css: string, index: number): string | null {
   }
   return null;
 }
-
-/** Parent and depth (by value) of every value when inserted into a BST in array order. */
-function insertBst(order: readonly number[]) {
-  type Node = { value: number; depth: number; left?: Node; right?: Node };
-  const root: Node = { value: order[0]!, depth: 0 };
-  const parent = new Map<number, number>();
-  const depth = new Map<number, number>([[root.value, 0]]);
-  for (const value of order.slice(1)) {
-    let at = root;
-    for (;;) {
-      const side = value < at.value ? "left" : "right";
-      const next = at[side];
-      if (!next) {
-        at[side] = { value, depth: at.depth + 1 };
-        parent.set(value, at.value);
-        depth.set(value, at.depth + 1);
-        break;
-      }
-      at = next;
-    }
-  }
-  return { parent, depth };
-}
-
-describe("evolving structure data", () => {
-  it("draws the six structures in the order the page moves through them", () => {
-    expect(STAGE_NAMES).toEqual(["array", "linked list", "hash table", "binary search tree", "matrix", "graph"]);
-    expect([ARRAY_STAGE, LIST_STAGE, HASH_STAGE, TREE_STAGE, MATRIX_STAGE, GRAPH_STAGE]).toEqual([0, 1, 2, 3, 4, 5]);
-  });
-
-  it("places all nine points inside the drawing in every structure and every cloud", () => {
-    expect(LAYOUTS).toHaveLength(STAGE_NAMES.length);
-    expect(CLOUDS).toHaveLength(STAGE_NAMES.length);
-    for (const layout of [...LAYOUTS, ...CLOUDS]) {
-      expect(layout).toHaveLength(values.length);
-      for (const { x, y } of layout) {
-        // The float can carry a cloud point CLOUD_FLOAT further; it must still land inside.
-        expect(x - CLOUD_FLOAT).toBeGreaterThan(0);
-        expect(x + CLOUD_FLOAT).toBeLessThan(VIEW_W);
-        expect(y - CLOUD_FLOAT).toBeGreaterThan(0);
-        expect(y + CLOUD_FLOAT).toBeLessThan(VIEW_H);
-      }
-    }
-  });
-
-  it("scatters a different cloud before each structure", () => {
-    const keys = CLOUDS.map((cloud) => cloud.map(({ x, y }) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" "));
-    expect(new Set(keys).size).toBe(CLOUDS.length);
-  });
-
-  it("draws the array as one tight row inside its capsule", () => {
-    const row = LAYOUTS[ARRAY_STAGE]!;
-    const list = LAYOUTS[LIST_STAGE]!;
-    for (let i = 1; i < values.length; i++) {
-      expect(row[i]!.y).toBe(row[0]!.y);
-      // Tighter than the list: contiguous, not linked.
-      expect(row[i]!.x - row[i - 1]!.x).toBeLessThan(list[i]!.x - list[i - 1]!.x);
-    }
-    for (const { x, y } of row) {
-      expect(x).toBeGreaterThan(ARRAY_CAPSULE.x);
-      expect(x).toBeLessThan(ARRAY_CAPSULE.x + ARRAY_CAPSULE.width);
-      expect(y).toBeGreaterThan(ARRAY_CAPSULE.y);
-      expect(y).toBeLessThan(ARRAY_CAPSULE.y + ARRAY_CAPSULE.height);
-    }
-  });
-
-  it("links the list in array order, left to right", () => {
-    const list = LAYOUTS[LIST_STAGE]!;
-    for (let i = 1; i < values.length; i++) expect(list[i]!.x).toBeGreaterThan(list[i - 1]!.x);
-    const expected = new Set(values.slice(1).map((v, i) => pairKey(values[i]!, v)));
-    expect(edgeValues(STAGE_EDGES[LIST_STAGE]!)).toEqual(expected);
-  });
-
-  it("files every value in bucket value % buckets, chained in array order", () => {
-    const hash = LAYOUTS[HASH_STAGE]!;
-    values.forEach((v, i) => expect(hash[i]!.y).toBe(HASH_ROW_Y(v % BUCKETS)));
-    const links = edgeValues(STAGE_EDGES[HASH_STAGE]!);
-    for (let b = 0; b < BUCKETS; b++) {
-      const chain = values.map((v, i) => ({ v, i })).filter(({ v }) => v % BUCKETS === b);
-      for (let k = 1; k < chain.length; k++) {
-        expect(hash[chain[k]!.i]!.x).toBeGreaterThan(hash[chain[k - 1]!.i]!.x);
-        expect(links.has(pairKey(chain[k - 1]!.v, chain[k]!.v))).toBe(true);
-      }
-    }
-  });
-
-  it("draws the BST that inserting the values in order actually builds", () => {
-    const { parent, depth } = insertBst(values);
-    const expected = new Set([...parent].map(([child, p]) => pairKey(child, p)));
-    expect(edgeValues(STAGE_EDGES[TREE_STAGE]!)).toEqual(expected);
-
-    const tree = LAYOUTS[TREE_STAGE]!;
-    const leftToRight = values.map((v, i) => ({ v, x: tree[i]!.x })).sort((a, b) => a.x - b.x);
-    expect(leftToRight.map(({ v }) => v)).toEqual([...values].sort((a, b) => a - b));
-    values.forEach((v, i) =>
-      values.forEach((w, j) => {
-        if (depth.get(v)! > depth.get(w)!) expect(tree[i]!.y).toBeGreaterThan(tree[j]!.y);
-      }),
-    );
-  });
-
-  it("fills a square matrix row by row and joins each cell to its right and lower neighbours", () => {
-    expect(MATRIX_COLS * MATRIX_COLS).toBe(values.length);
-    const grid = LAYOUTS[MATRIX_STAGE]!;
-    const at = (i: number) => ({ row: Math.floor(i / MATRIX_COLS), col: i % MATRIX_COLS });
-    values.forEach((_, i) =>
-      values.forEach((_, j) => {
-        if (at(i).row === at(j).row) expect(grid[i]!.y).toBe(grid[j]!.y);
-        if (at(i).col === at(j).col) expect(grid[i]!.x).toBe(grid[j]!.x);
-      }),
-    );
-    const expected = new Set<string>();
-    values.forEach((_, i) =>
-      values.forEach((_, j) => {
-        const [a, b] = [at(i), at(j)];
-        if ((a.row === b.row && b.col === a.col + 1) || (a.col === b.col && b.row === a.row + 1))
-          expected.add(pairKey(values[i]!, values[j]!));
-      }),
-    );
-    expect(edgeValues(STAGE_EDGES[MATRIX_STAGE]!)).toEqual(expected);
-  });
-
-  it("makes the graph the tree plus cross links that close cycles", () => {
-    const tree = edgeValues(STAGE_EDGES[TREE_STAGE]!);
-    const graph = edgeValues(STAGE_EDGES[GRAPH_STAGE]!);
-    for (const edge of tree) expect(graph.has(edge)).toBe(true);
-    for (const [a, b] of CROSS_LINKS) expect(graph.has(pairKey(a, b))).toBe(true);
-
-    // Connected, and more edges than a tree on the same nodes can have.
-    const adjacent = new Map<number, number[]>(values.map((v) => [v, []]));
-    for (const key of graph) {
-      const [a, b] = key.split("-").map(Number) as [number, number];
-      adjacent.get(a)!.push(b);
-      adjacent.get(b)!.push(a);
-    }
-    const seen = new Set([values[0]!]);
-    const queue = [values[0]!];
-    while (queue.length) for (const n of adjacent.get(queue.shift()!)!) if (!seen.has(n) && seen.add(n)) queue.push(n);
-    expect(seen.size).toBe(values.length);
-    expect(graph.size).toBeGreaterThan(values.length - 1);
-  });
-
-  it("keeps each edge as one element, drawn in exactly the stages whose structure has it", () => {
-    // One element per edge is what lets a tree edge stay put as the tree becomes a graph.
-    const keys = ALL_EDGES.map(({ edge: [a, b] }) => pairKey(values[a]!, values[b]!));
-    expect(new Set(keys).size).toBe(keys.length);
-    const perStage = STAGE_EDGES.map(edgeValues);
-    for (const { edge: [a, b], stages } of ALL_EDGES) {
-      const key = pairKey(values[a]!, values[b]!);
-      expect(stages).toEqual(perStage.flatMap((set, stage) => (set.has(key) ? [stage] : [])));
-    }
-  });
-
-  it("runs its own loop: gather, hold, scatter, float, then the next structure, forever", () => {
-    // The first structure gathers from the moment the loop starts.
-    expect(backdropTarget(0)).toEqual({ kind: "structure", stage: ARRAY_STAGE });
-    expect(backdropTarget(FORMED_MS - 1)).toEqual({ kind: "structure", stage: ARRAY_STAGE });
-    // Then it scatters into the cloud the next structure gathers from.
-    expect(backdropTarget(FORMED_MS)).toEqual({ kind: "cloud", cloud: LIST_STAGE });
-    expect(backdropTarget(STAGE_MS - 1)).toEqual({ kind: "cloud", cloud: LIST_STAGE });
-    expect(backdropTarget(STAGE_MS)).toEqual({ kind: "structure", stage: LIST_STAGE });
-    // Every structure in page order, and round again after the graph.
-    const order = STAGE_NAMES.map((_, k) => backdropTarget(k * STAGE_MS));
-    expect(order).toEqual(STAGE_NAMES.map((_, stage) => ({ kind: "structure", stage })));
-    expect(backdropTarget(STAGE_NAMES.length * STAGE_MS)).toEqual({ kind: "structure", stage: ARRAY_STAGE });
-    expect(backdropTarget((STAGE_NAMES.length - 1) * STAGE_MS + FORMED_MS)).toEqual({ kind: "cloud", cloud: 0 });
-    // Each glide lands before the phase ends: the hold and the float are real rests.
-    expect(FORMED_MS).toBeGreaterThan(MORPH_MS);
-    expect(STAGE_MS - FORMED_MS).toBeGreaterThan(MORPH_MS);
-  });
-
-  it("frames a structure with its own edges and extras, a cloud with none", () => {
-    STAGE_NAMES.forEach((_, stage) => {
-      const frame = frameFor({ kind: "structure", stage }, INKS);
-      expect(frame.points).toBe(LAYOUTS[stage]);
-      expect(frame.colour).toBe(INKS[stage]);
-      expect(frame.edges.filter((e) => e === 1)).toHaveLength(STAGE_EDGES[stage]!.length);
-      expect(frame.capsule).toBe(stage === ARRAY_STAGE ? 1 : 0);
-      expect(frame.spine).toBe(stage === HASH_STAGE ? 1 : 0);
-      expect(frame.float).toBe(FORMED_FLOAT);
-    });
-    const cloud = frameFor({ kind: "cloud", cloud: 2 }, INKS);
-    expect(cloud.points).toBe(CLOUDS[2]);
-    // A cloud already wears the ink of the structure it gathers into.
-    expect(cloud.colour).toBe(INKS[2]);
-    expect(cloud.edges.every((e) => e === 0)).toBe(true);
-    expect([cloud.capsule, cloud.spine, cloud.float]).toEqual([0, 0, CLOUD_FLOAT]);
-  });
-
-  it("glides from one frame to the next and lands exactly on it", () => {
-    const from = frameFor({ kind: "cloud", cloud: 0 }, INKS);
-    const to = frameFor({ kind: "structure", stage: TREE_STAGE }, INKS);
-    expect(mixFrames(from, to, 0)).toEqual(from);
-    expect(mixFrames(from, to, 1)).toEqual({ ...to, points: to.points.map((p) => ({ ...p })) });
-    const half = mixFrames(from, to, 0.5);
-    expect(half.points[0]!.x).toBeCloseTo((from.points[0]!.x + to.points[0]!.x) / 2);
-    half.colour.forEach((c, i) => expect(c).toBeCloseTo((from.colour[i]! + to.colour[i]!) / 2));
-    expect([easeInOut(-1), easeInOut(0), easeInOut(0.5), easeInOut(1), easeInOut(2)]).toEqual([0, 0, 0.5, 1, 1]);
-    // Slow in, slow out.
-    expect(easeInOut(0.1)).toBeLessThan(0.1);
-    expect(easeInOut(0.9)).toBeGreaterThan(0.9);
-  });
-
-  it("floats every point on its own bounded path", () => {
-    const paths = values.map((_, i) => [0, 1, 2, 3].map((s) => floatOffset(i, s * 1.7)));
-    for (const path of paths)
-      for (const { x, y } of path) {
-        expect(Math.abs(x)).toBeLessThanOrEqual(1);
-        expect(Math.abs(y)).toBeLessThanOrEqual(1);
-      }
-    expect(new Set(paths.map((p) => JSON.stringify(p))).size).toBe(values.length);
-  });
-
-  it("draws points and lines only — no values, no labels — hidden from assistive tech", () => {
-    const html = renderToStaticMarkup(<EvolvingStructure colours={backdropColours()} />);
-    expect(html).toMatch(/^<svg[^>]*aria-hidden="true"/);
-    expect(html).not.toContain('role="img"');
-    expect(html).not.toContain("<text");
-    expect(html.match(/<circle/g)).toHaveLength(values.length);
-    // It opens on the first cloud, every link still undrawn.
-    expect(html.match(/data-edge/g)).toHaveLength(ALL_EDGES.length);
-    expect(html.match(/stroke-dashoffset:1;opacity:0/g)).toHaveLength(ALL_EDGES.length);
-    CLOUDS[0]!.forEach(({ x }) => expect(html).toContain(`cx="${x}"`));
-    // The server paints the ink the loop starts from: the first structure's.
-    expect(html).toContain(`--backdrop-ink:${backdropColours()[0]}`);
-  });
-
-  it("paints each structure in the family colour of the module that teaches it", () => {
-    const slugs = new Set(MODULES.map((m) => m.slug));
-    for (const slug of STAGE_MODULES) expect(slugs.has(slug), slug).toBe(true);
-    const expected = STAGE_MODULES.map((slug) => FAMILY_THEMES.find((t) => t.id === moduleFamily(slug))!.accentUi);
-    expect(backdropColours()).toEqual(expected);
-    expect(STAGE_MODULES).toHaveLength(STAGE_NAMES.length);
-  });
-});
 
 describe("typing", () => {
   it("types whole words: clamps, only grows, and always cuts at the end of a word", () => {
@@ -441,52 +163,39 @@ describe("snapping", () => {
     expect(h1).toMatch(/\bxl:text-5xl\b/);
   });
 
-  it("draws the structure once, as the page backdrop, on its own clock", () => {
-    // It stood beside the hero until 2026-09-19; it is the whole page's backdrop now.
-    expect(story).not.toContain("<EvolvingStructure");
+  it("draws the boxes once, as the page backdrop, and nothing steps it aside", () => {
+    // Aceternity's Background Boxes as one canvas replaced the evolving
+    // structures on 2026-09-21; it sits behind the whole page, at every width.
+    expect(story).not.toContain("LandingBackdrop");
     const home = read("components", "landing", "HomePage.tsx");
-    expect(home).toContain("<LandingBackdrop colours={backdropColours()} />");
+    expect(home).toContain("<LandingBackdrop colours={flashColours()} />");
     const backdrop = read("components", "landing", "LandingBackdrop.tsx");
-    const drawing = read("components", "landing", "EvolvingStructure.tsx");
-    expect(backdrop).toContain("<EvolvingStructure colours={colours} ");
-    // Independent of scroll (owner, 2026-09-20): the drawing watches nothing,
-    // and the backdrop watches only the stops that ask it to step aside.
-    expect(drawing).not.toContain("IntersectionObserver");
-    for (const text of [backdrop, drawing]) {
-      expect(text).not.toContain("data-scroll-section");
-      expect(text).not.toMatch(/addEventListener\("scroll"/);
-    }
-    expect(backdrop).toMatch(/querySelectorAll<HTMLElement>\("\[data-backdrop-off\]"\)/);
-    expect(backdrop).toMatch(/aria-hidden[^>]*className="landing-backdrop pointer-events-none fixed inset-y-0 right-0/);
-    const css = read("app", "globals.css");
-    expect(css).toMatch(/opacity: var\(--backdrop-opacity\);\s*filter: blur\(var\(--backdrop-blur\)\);\s*perspective: \d+px;/);
-    expect(css).toMatch(/\.landing-backdrop\[data-off\] \{\s*opacity: 0;/);
-    expect(css).toMatch(/\.landing-backdrop-drawing \{\s*animation: backdrop-sway /);
-    // The sway stops under reduced motion, like every landing animation.
-    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.landing-backdrop-drawing \{\s*animation: none;/);
-  });
-
-  it("keeps the backdrop in the free space beside the text, never under it", () => {
-    // Owner, 2026-09-20: "use the empty space, don't disturb the text".
-    const backdrop = read("components", "landing", "LandingBackdrop.tsx");
-    // Hidden below xl, where the text spans the screen.
-    expect(backdrop).toMatch(/className="landing-backdrop [^"]*\bhidden\b[^"]*\bxl:flex\b/);
-    // It starts right of the text column: the container's content edge plus
-    // the widest text measure the story uses, plus a gap.
-    const left = read("app", "globals.css").match(
-      /\.landing-backdrop \{[^}]*left: calc\(max\(4rem, \(100vw - var\(--container-landing\)\) \/ 2 \+ 4rem\) \+ (\d+)rem\);/,
+    // Fixed behind the desk's paper, inert and hidden from assistive tech.
+    expect(backdrop).toMatch(
+      /<canvas[^>]*aria-hidden[^>]*className="landing-boxes pointer-events-none fixed inset-0 -z-1 /,
     );
-    expect(left, "the zone's left edge").not.toBeNull();
-    const measures = [...story.matchAll(/max-w-(\w+)/g)].map((m) => m[1]!);
-    const REM: Record<string, number> = { xl: 36, "2xl": 42, "3xl": 48 };
-    for (const m of measures) expect(m === "full" || m in REM, `max-w-${m} is wider than the zone allows`).toBe(true);
-    // max-w-full only caps the verbs strip, which sizes to its content (w-fit).
-    expect(story).toMatch(/w-fit max-w-full/);
-    const widest = Math.max(...measures.filter((m) => m in REM).map((m) => REM[m]!));
-    expect(Number(left![1])).toBeGreaterThanOrEqual(widest + 2);
-    // Stops whose right side carries text ask it to step aside.
-    expect(outro).toMatch(/<section data-scroll-section data-backdrop-off /);
-    expect(read("components", "landing", "LandingFooter.tsx")).toMatch(/<footer data-backdrop-off /);
+    // Colour goes through tokens, and the app's animation library is `motion`.
+    expect(backdrop).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+    expect(backdrop).not.toContain("framer-motion");
+    // The pointer is read on window (content covers the layer); touch and
+    // reduced motion keep the grid still.
+    expect(backdrop).toContain('window.addEventListener("pointermove", onMove)');
+    expect(backdrop).toContain('e.pointerType === "touch"');
+    expect(backdrop).toContain("prefers-reduced-motion: reduce");
+    // Frames run only while a flash is live, so an idle page runs none.
+    expect(backdrop).toMatch(/if \(flashes\.size > 0\) frame = requestAnimationFrame\(draw\)/);
+    // It watches nothing of the page: no scroll, no sections, no observer.
+    expect(backdrop).not.toContain("IntersectionObserver");
+    expect(backdrop).not.toContain("data-scroll-section");
+    expect(backdrop).not.toMatch(/addEventListener\("scroll"/);
+    // The stops that used to ask it to step aside no longer do.
+    for (const file of ["LandingOutro.tsx", "LandingFooter.tsx", "LandingStory.tsx", "FeatureSection.tsx"]) {
+      expect(read("components", "landing", file), file).not.toContain("data-backdrop-off");
+    }
+    const css = read("app", "globals.css");
+    expect(css).not.toContain("landing-backdrop");
+    expect(css).not.toContain("backdrop-sway");
+    expect(css).toMatch(/\.landing-boxes \{\s*color: var\(--boxes-line\);/);
   });
 
   it("pages the wheel on the landing story", () => {
@@ -517,9 +226,8 @@ describe("snapping", () => {
     expect(feature.match(/data-scroll-section/g)).toHaveLength(1);
     // A stop below lg; from lg one screen per feature (owner, 2026-09-20).
     expect(feature).toMatch(/data-scroll-section\s+data-scroll-steps=\{count\}\s+id=\{section\.id\}[\s\S]*?className=\{cn\(STOP, STEPPED\)\}/);
-    // Pricing, learners and questions: one slide since 2026-09-19; its text
-    // runs to the right edge, so the backdrop steps aside for it.
-    expect(outro.match(/<section data-scroll-section data-backdrop-off className=\{STOP\}>/g)).toHaveLength(1);
+    // Pricing, learners and questions: one slide since 2026-09-19.
+    expect(outro.match(/<section data-scroll-section className=\{STOP\}>/g)).toHaveLength(1);
   });
 
   it("finds the active section by observing the middle band, not by listening for scroll", () => {
@@ -539,10 +247,6 @@ describe("snapping", () => {
       expect(text, name).toMatch(/ref=\{root\}/);
       expect(text, name).not.toMatch(/useScrollProgress|sectionProgress|ref=\{refs\[/);
     }
-    const structure = read("components", "landing", "EvolvingStructure.tsx");
-    // The backdrop runs on its own frame clock, not on arrival or scroll.
-    expect(structure).toMatch(/requestAnimationFrame\(tick\)/);
-    expect(structure).toMatch(/backdropTarget\(elapsed\)/);
     expect(existsSync(join(src, "components", "landing", "useScrollProgress.ts"))).toBe(false);
   });
 });

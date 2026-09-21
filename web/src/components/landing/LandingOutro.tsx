@@ -24,7 +24,7 @@ export function LandingOutro({ firstLessonHref }: { firstLessonHref: string }) {
 
   return (
     <div ref={root}>
-      <section data-scroll-section data-backdrop-off className={STOP}>
+      <section data-scroll-section className={STOP}>
         <div className="mt-8">
           <p className={KICKER}>{PRICING.kicker}</p>
           <h2 className={TITLE}>

@@ -4,7 +4,7 @@ import { LandingOutro } from "@/components/landing/LandingOutro";
 import { LandingStory } from "@/components/landing/LandingStory";
 import { CURRICULUM, FIRST_LESSON, curriculumStats, stageCards } from "@/lib/landing/content";
 import { heatYear } from "@/lib/landing/heat";
-import { backdropColours, featureData } from "@/lib/landing/productData";
+import { featureData, flashColours } from "@/lib/landing/productData";
 
 /**
  * The home page: why learn data structures and algorithms when agents write
@@ -27,7 +27,7 @@ export default function HomePage() {
 
   return (
     <div className="mx-auto max-w-landing px-6 md:px-16">
-      <LandingBackdrop colours={backdropColours()} />
+      <LandingBackdrop colours={flashColours()} />
       <LandingStory
         counts={{ modules, lessons, problems }}
         links={{ start: FIRST_LESSON, curriculum: CURRICULUM }}
