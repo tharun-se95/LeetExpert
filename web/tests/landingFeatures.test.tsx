@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { FeatureSection, type WindowContent } from "@/components/landing/FeatureSection";
 import { featureWindows, type FeatureWindowData } from "@/components/landing/FeatureWindows";
+import { CheatsheetPreview, PREVIEW } from "@/components/landing/CheatsheetPreview";
 import { LandingOutro } from "@/components/landing/LandingOutro";
 import { LandingStory } from "@/components/landing/LandingStory";
 import { parseSandboxSpec } from "@/components/sandbox/parseSpec";
@@ -87,12 +88,9 @@ describe("hero", () => {
     expect(hero).toContain('class="hero-block"');
   });
 
-  it("lists the nine verbs in section order, each linking to its row", () => {
-    const nav = hero.match(/<nav aria-label="Features"[\s\S]*?<\/nav>/)?.[0] ?? "";
-    const links = [...nav.matchAll(/<a[^>]*href="#([a-z]+)"[^>]*>([^<]+)<\/a>/g)].map((m) => [m[1], m[2]]);
-    expect(links.map(([id]) => id)).toEqual([...ALL_VERBS]);
-    expect(links.map(([, title]) => title)).toEqual(sections.flatMap((s) => s.verbs.map((v) => v.title)));
-    for (const s of sections) expect(nav).toContain(`>${s.title}<`);
+  it("carries no strip of the nine verbs: the sections below already show them (owner, 2026-09-24)", () => {
+    expect(hero).not.toMatch(/<nav aria-label="Features"/);
+    for (const verb of ALL_VERBS) expect(hero, verb).not.toContain(`href="#${verb}"`);
   });
 });
 
@@ -183,7 +181,7 @@ describe("Understand, Build and Keep", () => {
       "sandbox/Sandbox",
       "landing/ReviewCoach",
       "explorers/BigOObservatory",
-      "cheatsheet/Cheatsheet",
+      "landing/CheatsheetPreview",
       "course/ConceptMindMap",
       "landing/PracticeWindow",
     ]) {
@@ -354,6 +352,41 @@ describe("feature data", () => {
     expect(far).toMatch(/aria-label="An example year/);
     expect(far).not.toMatch(/<svg[^>]*data-lit/);
     expect(bodyOf("burn", { ...FAR, keep: true })).toMatch(/<svg[^>]*data-lit/);
+  });
+});
+
+describe("Keep: the cheatsheet excerpt (owner, 2026-09-24: no scroll)", () => {
+  const sheet = featureData().recall.sheet;
+  const html = renderToStaticMarkup(<CheatsheetPreview sheet={sheet} moduleTitle="Hash Tables" />);
+  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+
+  it("sits in a frame that clips but never scrolls, like every window", () => {
+    const frame = read("components", "landing", "FeatureSection.tsx").match(/role="group"[\s\S]*?className=\{cn\(\s*"([^"]*)"/)![1]!;
+    expect(frame).toContain("overflow-clip");
+    expect(frame).not.toMatch(/overflow-(y-)?(auto|scroll)|max-h-/);
+  });
+
+  it("has no scroller of its own inside the scrolling page", () => {
+    const recall = read("components", "landing", "FeatureWindows.tsx").split("recall: {")[1]!.split("burn: {")[0]!;
+    expect(recall).not.toMatch(/overflow-(y-)?(auto|scroll)|max-h-/);
+    expect(html).not.toMatch(/overflow-(y-)?(auto|scroll)|max-h-/);
+  });
+
+  it("shows the real sheet's first entries, and counts what the full sheet adds", () => {
+    for (const cue of sheet.smells.slice(0, PREVIEW.smells)) expect(text).toContain(cue.pattern);
+    for (const cue of sheet.smells.slice(PREVIEW.smells)) expect(text).not.toContain(cue.pattern);
+    for (const card of sheet.patterns.slice(0, PREVIEW.patterns)) expect(text).toContain(card.title);
+    for (const row of sheet.complexity.slice(0, PREVIEW.complexity)) expect(text).toContain(row.label);
+    expect(text).toContain(sheet.traps[0]!.title);
+    expect(text).toContain(
+      `${sheet.patterns.length} patterns · ${sheet.smells.length} cues · ${sheet.complexity.length} targets · ${sheet.traps.length} traps`,
+    );
+  });
+
+  it("names time and space for a screen reader, not two bare big-O strings", () => {
+    const rows = Math.min(PREVIEW.complexity, sheet.complexity.length);
+    expect(html.match(/class="sr-only">time</g)).toHaveLength(rows);
+    expect(html.match(/class="sr-only">space</g)).toHaveLength(rows);
   });
 });
 

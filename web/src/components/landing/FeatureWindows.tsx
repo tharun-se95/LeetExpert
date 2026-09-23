@@ -40,7 +40,7 @@ const BigOObservatory = dynamic(() => import("@/components/explorers/BigOObserva
 const PracticeWindow = dynamic(() => import("@/components/landing/PracticeWindow").then((m) => m.PracticeWindow), {
   loading: stand("Loading practice"),
 });
-const Cheatsheet = dynamic(() => import("@/components/cheatsheet/Cheatsheet").then((m) => m.Cheatsheet));
+const CheatsheetPreview = dynamic(() => import("@/components/landing/CheatsheetPreview").then((m) => m.CheatsheetPreview));
 
 /** What the server reads (productData.ts), plus the example year built on the render date. */
 export type FeatureWindowData = FeatureData & { heat: HeatYear };
@@ -136,13 +136,10 @@ export function featureWindows(
       label: `${data.recall.moduleTitle} cheatsheet`,
       link: { label: "Open the module", href: data.recall.href },
       body: near.keep ? (
-        // The sheet has no card of its own, so it gets the navy card; the
-        // scroller is inside it because .navy-card clips its own overflow (and,
-        // unlayered, would beat a Tailwind overflow utility).
-        <div className="dark navy-card">
-          <div className="max-h-[46rem] overflow-y-auto p-6 [&>section]:my-0">
-            <Cheatsheet sheet={data.recall.sheet} moduleTitle={data.recall.moduleTitle} />
-          </div>
+        // An excerpt sized to be read whole, on the navy card: no scroller of
+        // its own inside the scrolling page (owner, 2026-09-24).
+        <div className="dark navy-card p-6">
+          <CheatsheetPreview sheet={data.recall.sheet} moduleTitle={data.recall.moduleTitle} />
         </div>
       ) : (
         <Standin label="Cheatsheet" />

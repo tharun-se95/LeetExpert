@@ -124,9 +124,13 @@ export function FeatureSection({
                     <div
                       role="group"
                       aria-label={content.label}
+                      // Clips to the rounded corners but never scrolls (owner,
+                      // 2026-09-24: a capped, scrolling frame put a second
+                      // scrollbar inside the page). A window is its content's
+                      // height; the fill ones are fixed and scroll their own list.
                       className={cn(
-                        "relative flex min-w-0 flex-col overflow-y-auto rounded-[length:var(--radius-lg)]",
-                        content.fill ? "h-[28rem]" : "max-h-[46rem]",
+                        "relative flex min-w-0 flex-col overflow-clip rounded-[length:var(--radius-lg)]",
+                        content.fill && "h-[28rem]",
                       )}
                     >
                       <div className={cn("w-full min-w-0", content.fill && "h-full min-h-0")}>{content.body}</div>

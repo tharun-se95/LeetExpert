@@ -244,8 +244,9 @@ The content is the product. Code exists to serve it.
   sentence per line, `HERO.lines`, sized `lg:text-6xl xl:text-7xl` so the
   longer line fits beside its tick; the owner's lede; a
   descriptor saying what the course is; "Start learning free" and "Explore the
-  curriculum" links; a strip of the nine verbs, each linking to `#verb`; the
-  manifest counts); **Understand, Build and Keep** (owner, 2026-09-17 — every
+  curriculum" links; the manifest counts under them — the strip of nine verb
+  chips along its foot was removed, owner 2026-09-24: it repeated the sections
+  just below); **Understand, Build and Keep** (owner, 2026-09-17 — every
   feature in the app, headings and verbs as approved in the layout mock, no
   act numbers; spec §12): Understand "See it before you solve it." (Watch ·
   Learn · Map), Build "The code is cheap now. Judgment isn't." (Code · Review
@@ -258,14 +259,18 @@ The content is the product. Code exists to serve it.
   sentence muted), and the lede, then **all three features as stacked rows** —
   icon tile, name (`h3`), line, link — beside the real component, the text on
   alternate sides. There are no tabs, no selected state and nothing `inert`;
-  each row carries `id={verb.id}`, so the hero's nine chips are plain anchors
+  each row carries `id={verb.id}`, so a `#verb` link is a plain anchor
   (`scroll-mt-28` clears the sticky header). Each section takes its family's
   colour through `familyCssVars(section.family)` on the section element (marks,
   icons, rules only). Each component sits on a card of its own (the navy
   instruments, the paper card round the tracer, the heatmap's own) that floats
   in 3D: `.landing-stage` perspective, `.landing-card3d` resting at
   `rotateX(5deg) rotateY(∓9deg)` and tilting in from below as it arrives,
-  `.landing-float` bobbing, with a soft floor shadow. The components:
+  `.landing-float` bobbing, with a soft floor shadow. The card's frame clips
+  to its rounded corners and **never scrolls** (owner, 2026-09-24: a capped,
+  scrolling frame put a second scrollbar inside the page): a window is its
+  content's height, and only the `fill` ones (map, coach, practice) are fixed
+  and scroll their own list. The components:
   the **Arrays module's HyperFrames intro video**, the Valid Anagram tracer
   without its code panel (`<Viz code={false}>`), the real Hash Tables
   `ConceptMindMap`, the live `find_pair` editor, **the real coach panel over a
@@ -273,8 +278,10 @@ The content is the product. Code exists to serve it.
   variant="showcase"`, composer locked with `lockedReason`, no AI calls —
   every visitor would otherwise be a paid request; the thread is computed by
   `reviewThread()`), `BigOObservatory` alone, the real problem list through
-  `useProblemFilters` (shared with the practice page), the Hash Tables
-  `Cheatsheet` and the example-year `HeatMap` without its card. Heavy ones are
+  `useProblemFilters` (shared with the practice page), a Hash Tables
+  cheatsheet excerpt read whole, without a scroller (`CheatsheetPreview`:
+  the real sheet's first cues, targets, two patterns and a trap through the
+  lesson sheet's own parts, with the full sheet's counts in its footer) and the example-year `HeatMap` without its card. Heavy ones are
   `next/dynamic` chunks rendered once their section is active or next. The
   tracer's fullscreen view portals to `<body>`: a transformed slot
   trapped its `fixed inset-0` in the slot. The `#verb` effect is keyed on the
@@ -323,8 +330,15 @@ The content is the product. Code exists to serve it.
   CSS on **view timelines** bound to `<main>` (globals.css, "Landing motion",
   inside `@supports (animation-timeline: view())`): rows and headings rise,
   hand-drawn marks and kicker rules draw, icons pop, `SectionDeco` line drawings
-  drift at their own speed, and the hero's floor and copy lift away as it
-  leaves. Every resting state is the finished page, so a browser without view
+  drift at their own speed. The hero fills the viewport under the header and
+  is **pinned** (`sticky`) while everything after it rides up over it as one
+  rounded sheet (`.landing-sheet`, `shadow-edge-top`); a sentinel's view
+  timeline (`--landing-cover`, scoped by `.landing-story`) scales the hero
+  back to 0.97 and dims it, eased, until the sheet covers it (owner,
+  2026-09-23/24). Wheel input is eased by Lenis on `<main>`
+  (`useSmoothScroll`, landing only; owner 2026-09-24: native steps felt
+  "very rigid"), with touch left native, nested scrollers keeping the wheel,
+  and no instance under reduced motion. Every resting state is the finished page, so a browser without view
   timelines, a still frame, or `prefers-reduced-motion` (which stills every
   landing animation) shows it complete. Nothing between a moving element and
   `<main>` may become a scroller, or its timeline goes dead: the landing column
@@ -337,10 +351,10 @@ The content is the product. Code exists to serve it.
   tree, a matrix corner), each a top and four sides in one `preserve-3d`
   context — pure markup and CSS, rendered on the server, no canvas and no
   script. Lit blocks take their family's `accentUi` from the family table; the
-  rest paint from `--floor-*` tokens in both themes. It is anchored to the
-  hero's foot at `--hero-floor-h` and the copy is padded by exactly that, and
-  it fades in from its top edge, so it never sits under text at any window
-  height; the nine chips and the counts sit on a solid strip along the foot.
+  rest paint from `--floor-*` tokens in both themes. The hero is a column:
+  the copy, then the floor taking the height left to the hero's foot and
+  fading in from its top edge, so it never sits under text at any window
+  height.
   The headline keeps one sentence per line, its words arriving on load, "code."
   in the accent with a caret, "right." ringed by hand with a tick (the
   accessible name is the plain sentences). The canvas Background Boxes backdrop
