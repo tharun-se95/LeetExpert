@@ -35,7 +35,7 @@ function isTargetBigO(value: string): boolean {
  * "Space" column header (desktop) or beside its own label (mobile), so
  * aria-hidden keeps a screen reader from hearing the axis named twice.
  */
-function TimeCell({ value }: { value: string }) {
+export function TimeCell({ value }: { value: string }) {
   return (
     <span
       className={cn(
@@ -49,7 +49,7 @@ function TimeCell({ value }: { value: string }) {
   );
 }
 
-function SpaceCell({ value }: { value: string }) {
+export function SpaceCell({ value }: { value: string }) {
   return (
     <span
       className={cn(

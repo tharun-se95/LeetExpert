@@ -11,8 +11,9 @@ import { KICKER, STOP } from "@/components/landing/landingClasses";
 import { MarkedHeading } from "@/components/landing/MarkedHeading";
 import { SectionDeco } from "@/components/landing/SectionDeco";
 import { usePopIn } from "@/components/landing/usePopIn";
+import { useSmoothScroll } from "@/components/landing/useSmoothScroll";
 import { useActiveSection } from "@/components/landing/useSectionReveal";
-import { featureSections, type FeatureSection as Section } from "@/lib/landing/features";
+import { featureSections } from "@/lib/landing/features";
 import {
   HERO,
   RISE_STAGGER_MS,
@@ -60,6 +61,7 @@ export function LandingStory({
   const { root, active, started } = useActiveSection<HTMLDivElement>(5);
   // Once per landing page: it pops the outro's rows too.
   usePopIn();
+  useSmoothScroll();
 
   const sections = featureSections(features.counts);
   // A section's heavy windows load once it has arrived, is the next one, or
@@ -73,96 +75,92 @@ export function LandingStory({
   });
 
   return (
-    <div ref={root}>
+    // landing-story scopes the cover timeline, so the pinned hero can read how
+    // far the sheet below it has risen.
+    <div ref={root} className="landing-story">
       <noscript>
         <style>{NOSCRIPT_REVEAL}</style>
       </noscript>
-      <Hero counts={counts} links={links} sections={sections} />
-      {sections.map((section) => (
-        <FeatureSection key={section.id} section={section} windows={windows} />
-      ))}
-      <Inside chapter={inside(counts)} stages={stages} started={started[INSIDE] ?? false} />
+      <Hero counts={counts} links={links} />
+      {/*
+        The sheet (owner, 2026-09-23): everything after the hero rides up over
+        it as one opaque panel with rounded top corners and a shadow on its
+        leading edge. The hero stays pinned beneath until the sheet has covered
+        it, then leaves with the page. The sentinel is one hero-height tall at
+        the sheet's top: its view timeline runs from the sheet entering the
+        viewport to the hero being fully covered.
+      */}
+      <div className="landing-sheet relative z-20 -mx-6 rounded-t-[length:var(--radius-xl)] bg-background px-6 shadow-edge-top md:-mx-16 md:px-16">
+        <div aria-hidden className="landing-cover-sentinel pointer-events-none absolute inset-x-0 top-0 h-[var(--landing-hero-h)]" />
+        {sections.map((section) => (
+          <FeatureSection key={section.id} section={section} windows={windows} />
+        ))}
+        <Inside chapter={inside(counts)} stages={stages} started={started[INSIDE] ?? false} />
+      </div>
     </div>
   );
 }
 
 /**
- * The hero (owner, 2026-09-23): the copy on clear paper at the top, the 3D
- * floor of data structures below it (HeroFloor), and the nine verbs with the
- * course counts on a solid strip along the foot — so nothing the floor draws
- * sits under text. It spans the landing column past its gutters, so the floor
- * runs to the column's edges, and brings the gutters back for its copy.
+ * The hero (owner, 2026-09-23): exactly the viewport below the landing header,
+ * pinned there (sticky) while the sheet after it slides up over it; it scales
+ * back a little and dims as it is covered. Inside, a column: the copy on clear
+ * paper, with the course counts under the buttons, then the 3D floor of data
+ * structures (HeroFloor) filling the height left to the hero's foot — so
+ * nothing the floor draws sits under text. (A strip of the nine verbs along
+ * the foot was removed on the owner's call, 2026-09-24: it repeated the
+ * sections just below.) It spans the landing
+ * column past its gutters, so the floor runs to the column's edges, and brings
+ * the gutters back for its copy.
  * The headline keeps one sentence per line; its words arrive on load, "code."
  * with a caret and "right." with a hand-drawn ring, then a tick.
  */
-function Hero({
-  counts,
-  links,
-  sections,
-}: {
-  counts: CurriculumCounts;
-  links: { start: string; curriculum: string };
-  sections: readonly Section[];
-}) {
+function Hero({ counts, links }: { counts: CurriculumCounts; links: { start: string; curriculum: string } }) {
   return (
     <section
       data-scroll-section
       // The family colour the headline's accents take; content, not chrome.
       style={familyCssVars("linear-traversal")}
-      className="relative -mx-6 overflow-clip border-b border-border md:-mx-16"
+      className="sticky top-[var(--landing-header-h)] -mx-6 h-[var(--landing-hero-h)] overflow-clip md:-mx-16"
     >
-      <HeroFloor />
-      <div className="landing-hero-copy relative z-10 px-6 pt-16 pb-[calc(var(--hero-floor-h)-var(--hero-floor-fade))] md:px-16 lg:pt-20">
-        <p className={cn(KICKER, "flex items-center gap-2.5")}>
-          <span aria-hidden className="relative flex h-2.5 w-2.5">
-            <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-50 motion-reduce:animate-none" />
-            <span className="relative h-2.5 w-2.5 rounded-full bg-accent" />
-          </span>
-          {HERO.kicker}
-        </p>
-        <HeroHeadline />
-        <p className="mt-8 max-w-2xl text-xl leading-relaxed text-muted">{leadAndTail(HERO.lede)}</p>
-        <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground">{HERO.descriptor}</p>
-        <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
-          <Link
-            href={links.start}
-            className="inline-flex items-center gap-2 rounded-full bg-pop px-6 py-3 text-base font-medium text-on-pop shadow-elevation transition-opacity hover:opacity-90"
-          >
-            {HERO.start}
-            <ArrowRight className="h-4 w-4" aria-hidden />
-          </Link>
-          <Link
-            href={links.curriculum}
-            className="inline-flex items-center gap-2 border-b border-border pb-0.5 text-base text-foreground transition-colors hover:border-foreground"
-          >
-            {HERO.explore}
-          </Link>
+      <div className="landing-hero-stage flex h-full flex-col">
+        <div className="landing-hero-copy relative z-10 shrink-0 px-6 pt-10 md:px-16 lg:pt-16">
+          <p className={cn(KICKER, "flex items-center gap-2.5")}>
+            <span aria-hidden className="relative flex h-2.5 w-2.5">
+              <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-50 motion-reduce:animate-none" />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-accent" />
+            </span>
+            {HERO.kicker}
+          </p>
+          <HeroHeadline />
+          <p className="mt-8 max-w-2xl text-xl leading-relaxed text-muted">{leadAndTail(HERO.lede)}</p>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground">{HERO.descriptor}</p>
+          <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <Link
+              href={links.start}
+              className="inline-flex items-center gap-2 rounded-full bg-pop px-6 py-3 text-base font-medium text-on-pop shadow-elevation transition-opacity hover:opacity-90"
+            >
+              {HERO.start}
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+            <Link
+              href={links.curriculum}
+              className="inline-flex items-center gap-2 border-b border-border pb-0.5 text-base text-foreground transition-colors hover:border-foreground"
+            >
+              {HERO.explore}
+            </Link>
+          </div>
+          <p className="mt-6 text-sm text-muted tabular-nums">{countsLine(counts)}</p>
+        </div>
+
+        {/* The floor takes the height the copy leaves, to the hero's foot (never
+            less than a band tall), and fades in from its top edge. */}
+        <div className="relative min-h-40 flex-1">
+          <HeroFloor />
         </div>
       </div>
-
-      {/* The nine verbs, grouped as the sections below; each is a plain link to its row. */}
-      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-wrap items-center justify-between gap-x-10 gap-y-3 border-t border-border bg-background px-6 py-4 md:px-16">
-        <nav aria-label="Features" className="flex flex-wrap items-center gap-x-8 gap-y-3">
-          {sections.map((section) => (
-            <div key={section.id} className="flex items-center gap-3">
-              <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted uppercase">{section.title}</p>
-              <ul className="flex flex-wrap gap-1.5">
-                {section.verbs.map((verb) => (
-                  <li key={verb.id}>
-                    <a
-                      href={`#${verb.id}`}
-                      className="inline-flex rounded-[length:var(--radius-md)] border border-border bg-elevated px-2.5 py-1.5 font-display text-sm font-bold text-foreground transition-colors hover:border-foreground"
-                    >
-                      {verb.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </nav>
-        <p className="text-sm text-muted tabular-nums">{countsLine(counts)}</p>
-      </div>
+      {/* Dims the hero as the sheet covers it (globals.css, .landing-hero-dim). */}
+      <div aria-hidden className="landing-hero-dim" />
     </section>
   );
 }

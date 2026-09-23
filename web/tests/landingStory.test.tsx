@@ -77,7 +77,7 @@ describe("scrolling (owner, 2026-09-23: a regular landing page scroll)", () => {
     const supports = css.slice(css.indexOf("@supports (animation-timeline: view())"));
     const block = supports.slice(0, supports.indexOf("\n}\n") + 2);
     expect(block).not.toMatch(/landing-card3d|landing-pop|landing-reveal|landing-hero-copy/);
-    for (const cls of [".landing-mark > svg path", ".landing-hl::before", ".landing-deco", ".landing-hero-floor"]) {
+    for (const cls of [".landing-mark > svg path", ".landing-hl::before", ".landing-deco", ".landing-hero-stage", ".landing-hero-dim"]) {
       expect(block, cls).toContain(cls);
     }
     // Outside it the cards rest tilted and floating.
@@ -88,7 +88,7 @@ describe("scrolling (owner, 2026-09-23: a regular landing page scroll)", () => {
   it("stills every landing animation under prefers-reduced-motion", () => {
     const reduced = css.slice(css.lastIndexOf("@media (prefers-reduced-motion: reduce) {\n  .hero-floor-drift"));
     const block = reduced.slice(0, reduced.indexOf("}\n}") + 3);
-    for (const cls of [".hero-floor-drift", ".hero-block", ".hero-word", ".landing-float", '[data-pop="in"]', ".landing-deco", ".landing-hero-floor"]) {
+    for (const cls of [".hero-floor-drift", ".hero-block", ".hero-word", ".landing-float", '[data-pop="in"]', ".landing-deco", ".landing-hero-stage", ".landing-hero-dim"]) {
       expect(block, cls).toContain(cls);
     }
     expect(block).toContain("animation: none;");
@@ -142,23 +142,39 @@ describe("hero (owner, 2026-09-23: full 3D, never behind the copy)", () => {
     }
   });
 
-  it("keeps the floor below the copy at every window height, fading in from its top edge", () => {
-    expect(css).toMatch(/\.hero-floor \{[^}]*inset: auto 0 0;\s*height: var\(--hero-floor-h\);/);
-    // Its top band is fully clear, and the copy is padded by the floor's height
-    // less exactly that band, so nothing the floor draws is behind the copy.
-    expect(css).toMatch(/mask-image: linear-gradient\(to bottom, transparent 0, transparent var\(--hero-floor-fade\),/);
-    expect(story).toMatch(/landing-hero-copy [^"]*\bpb-\[calc\(var\(--hero-floor-h\)-var\(--hero-floor-fade\)\)\]/);
-    // Its content's height, not the viewport's: forced full-screen it left a
-    // band of empty paper between the buttons and the floor.
-    expect(story).not.toMatch(/min-h-\[calc\(100dvh/);
-    // The copy and the verb strip sit above it; the strip is solid paper.
-    expect(story).toMatch(/className="landing-hero-copy relative z-10 /);
-    expect(story).toMatch(/absolute inset-x-0 bottom-0 z-20 [^"]*\bbg-background\b/);
+  it("fills the viewport under the header and stays pinned while the sheet covers it (owner, 2026-09-23)", () => {
+    // The header's height comes from its own classes: py-6 + md:h-10 + a 1px
+    // rule, h-11 below md. If those change, the variable must too.
+    const header = read("components", "landing", "LandingHeader.tsx");
+    expect(header).toMatch(/sticky top-0 z-30 border-b border-border py-6/);
+    expect(header).toMatch(/grid h-11 max-w-landing [^"]*md:h-10/);
+    expect(css).toMatch(/\.landing-story \{\s*--landing-header-h: calc\(5\.5rem \+ 1px\);\s*--landing-hero-h: calc\(100dvh - var\(--landing-header-h\)\);/);
+    expect(css).toMatch(/@media \(width < 48rem\) \{\s*\.landing-story \{\s*--landing-header-h: calc\(5\.75rem \+ 1px\);/);
+    expect(story).toMatch(/className="sticky top-\[var\(--landing-header-h\)\] -mx-6 h-\[var\(--landing-hero-h\)\] /);
+    // Everything after the hero rides over it as one opaque sheet, above it.
+    expect(story).toMatch(/className="landing-sheet relative z-20 [^"]*\bbg-background\b[^"]*\bshadow-edge-top\b/);
+    expect(story.indexOf("<Hero ")).toBeLessThan(story.indexOf('className="landing-sheet'));
+    // The recede and the dim read the sheet's cover timeline, scoped by the story.
+    expect(css).toMatch(/\.landing-story \{[^}]*timeline-scope: --landing-cover;/);
+    expect(css).toMatch(/\.landing-cover-sentinel \{\s*view-timeline-name: --landing-cover;/);
+    expect(story).toMatch(/landing-cover-sentinel [^"]*h-\[var\(--landing-hero-h\)\]/);
+    expect(css).toMatch(/\.landing-hero-stage \{[^}]*animation-timeline: --landing-cover;\s*animation-range: entry 0% entry 100%;/);
   });
 
-  it("links each of the nine verbs to its own row", () => {
+  it("keeps the floor below the copy, to the hero's foot, at every window height, fading in from its top edge", () => {
+    // A column: the copy, then the floor taking the height left.
+    const hero = story.slice(story.indexOf("function Hero("), story.indexOf("function leadAndTail("));
+    expect(hero.indexOf("landing-hero-copy")).toBeGreaterThan(0);
+    expect(hero.indexOf("<HeroFloor />")).toBeGreaterThan(hero.indexOf("landing-hero-copy"));
+    expect(hero).toMatch(/<div className="relative min-h-40 flex-1">\s*<HeroFloor \/>/);
+    expect(css).toMatch(/\.hero-floor \{[^}]*inset: 0;[^}]*mask-image: linear-gradient\(to bottom, transparent 0, #000 7rem/);
+    // The verb strip along the foot is gone (owner, 2026-09-24): it repeated
+    // the sections just below.
+    expect(hero).not.toContain('aria-label="Features"');
+  });
+
+  it("gives each of the nine verbs a row a #link can reach", () => {
     for (const verb of ["watch", "learn", "map", "code", "review", "optimize", "practice", "recall", "burn"]) {
-      expect(html, verb).toContain(`href="#${verb}"`);
       expect(html, verb).toContain(`id="${verb}"`);
     }
   });

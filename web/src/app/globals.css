@@ -242,6 +242,8 @@
     0 1px 2px rgb(var(--shadow-tint) / 0.04),
     0 8px 20px -4px rgb(var(--shadow-tint) / 0.1);
   --shadow-edge-bottom: 0 4px 16px rgb(var(--shadow-tint) / 0.08);
+  /* The landing sheet's leading edge as it rides up over the hero. */
+  --shadow-edge-top: 0 -10px 32px rgb(var(--shadow-tint) / 0.12);
   --shadow-edge-right: 4px 0 16px rgb(var(--shadow-tint) / 0.08);
   --shadow-edge-left: -4px 0 16px rgb(var(--shadow-tint) / 0.08);
 
@@ -272,13 +274,9 @@
   --floor-block: #ffffff;
   --floor-edge: color-mix(in oklab, var(--press-ink) 16%, transparent);
   --floor-shade: var(--press-ink);
-  /* Its height, and the clear band along its top edge (the mask's fade):
-     the hero copy clears the floor less that band, so the floor starts right
-     under the buttons with nothing drawn behind them. The hero is its
-     content's height, not the viewport's — forced to the viewport it left
-     ~500px of empty paper between the buttons and the floor on a tall window. */
-  --hero-floor-h: 32rem;
-  --hero-floor-fade: 6rem;
+  /* Darkens the pinned hero as the sheet covers it: page ink in light, black
+     in dark (a light ink would lighten a dark hero instead). */
+  --hero-dim: color-mix(in oklab, var(--press-ink) 18%, transparent);
 
   /* --- heat map (landing credits section) ------------------- */
   /* GitHub's contribution greens, the owner's chosen ramp (2026-09-14),
@@ -390,6 +388,7 @@
   --floor-block: #26262a;
   --floor-edge: color-mix(in oklab, var(--press-ink) 16%, transparent);
   --floor-shade: #000000;
+  --hero-dim: rgb(0 0 0 / 0.42);
   /* Heat ramp on the dark --elevated card (#26262a): 1.22, 1.35, 2.32,
      4.75, 7.62 — adjacent steps 1.11-2.05. Level 0 is lifted off the card
      so an empty day still reads as a square. */
@@ -423,6 +422,7 @@
     0 1px 2px rgb(var(--shadow-tint) / 0.3),
     0 8px 24px -4px rgb(var(--shadow-tint) / 0.45);
   --shadow-edge-bottom: 0 4px 20px rgb(var(--shadow-tint) / 0.35);
+  --shadow-edge-top: 0 -10px 36px rgb(var(--shadow-tint) / 0.55);
   --shadow-edge-right: 4px 0 20px rgb(var(--shadow-tint) / 0.35);
   --shadow-edge-left: -4px 0 20px rgb(var(--shadow-tint) / 0.35);
 
@@ -613,19 +613,18 @@ body {
   plane of hairline cells lying below the copy, with data structures standing
   on it as solid blocks (a top and four sides, each a transformed face in one
   preserve-3d context). It fades out along its top edge, so the copy above it
-  sits on clear paper: it is anchored to the hero's foot at --hero-floor-h,
-  and the copy above keeps that much padding, so they never overlap at any
-  window height. Block faces: --h is the height, --top the top colour; the
+  sits on clear paper: it fills the band the hero column leaves between the
+  copy and the verb strip, so the two never overlap at any window height.
+  Block faces: --h is the height, --top the top colour; the
   sides are that colour shaded toward --floor-shade.
 */
 .hero-floor {
   position: absolute;
-  inset: auto 0 0;
-  height: var(--hero-floor-h);
+  inset: 0;
   perspective: 1300px;
   perspective-origin: 50% 0%;
   pointer-events: none;
-  mask-image: linear-gradient(to bottom, transparent 0, transparent var(--hero-floor-fade), #000 calc(var(--hero-floor-fade) + 8rem), #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 7rem, #000 100%);
 }
 .hero-floor-camera {
   position: absolute;
@@ -865,6 +864,36 @@ body {
   }
 }
 
+/*
+  The pinned hero and the sheet that covers it (LandingStory, owner
+  2026-09-23).
+*/
+/* The landing header's height, fixed by its own classes (LandingHeader: py-6,
+   a row of md:h-10 — h-11 below md — and a 1px rule), and the hero's: the rest
+   of the viewport, where it stays pinned while the sheet covers it. Scoped to
+   the story, which is all that reads them: layout, not theme tokens. */
+.landing-story {
+  --landing-header-h: calc(5.5rem + 1px);
+  --landing-hero-h: calc(100dvh - var(--landing-header-h));
+  timeline-scope: --landing-cover;
+}
+@media (width < 48rem) {
+  .landing-story {
+    --landing-header-h: calc(5.75rem + 1px);
+  }
+}
+.landing-cover-sentinel {
+  view-timeline-name: --landing-cover;
+}
+.landing-hero-dim {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background: var(--hero-dim);
+  opacity: 0;
+}
+
 /* The learner river (TestimonialRiver): faded out at both edges, so cards
    drift in and out of nothing rather than hitting the column's edge. */
 .landing-river {
@@ -928,17 +957,36 @@ body {
   .landing-deco[data-fast] {
     animation-name: landing-parallax-fast;
   }
-  .landing-hero-floor {
-    animation: landing-floor-out linear both;
-    animation-timeline: view();
-    animation-range: exit 0% exit 100%;
+  /* The pinned hero recedes and dims as the sheet rises over it: both read
+     the sheet's cover timeline (the sentinel at its top, scoped by
+     .landing-story), from the sheet entering the viewport to the hero being
+     fully covered. */
+  /* Eased, not linear (owner, 2026-09-24: the cover felt "sensitive"): the
+     recede starts slowly, so the first wheel steps barely move the hero. */
+  .landing-hero-stage {
+    transform-origin: 50% 30%;
+    animation: landing-recede cubic-bezier(0.45, 0, 0.55, 1) both;
+    animation-timeline: --landing-cover;
+    animation-range: entry 0% entry 100%;
+  }
+  .landing-hero-dim {
+    animation: landing-dim cubic-bezier(0.45, 0, 0.55, 1) both;
+    animation-timeline: --landing-cover;
+    animation-range: entry 0% entry 100%;
   }
 }
 @keyframes landing-draw { from { stroke-dashoffset: 420; } to { stroke-dashoffset: 0; } }
 @keyframes landing-sweep { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes landing-parallax { from { transform: translateY(90px) rotate(-4deg); } to { transform: translateY(-90px) rotate(4deg); } }
 @keyframes landing-parallax-fast { from { transform: translateY(200px) rotate(8deg); } to { transform: translateY(-200px) rotate(-8deg); } }
-@keyframes landing-floor-out { to { transform: translateY(-160px) scale(1.12); opacity: 0.25; } }
+@keyframes landing-recede { to { transform: scale(0.97); } }
+@keyframes landing-dim { to { opacity: 1; } }
+
+/* Lenis (useSmoothScroll) writes scrollTop every frame; a smooth
+   scroll-behavior on its wrapper would animate each write and lag it. */
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .hero-floor-drift,
@@ -953,7 +1001,8 @@ body {
   .landing-hl::before,
   .landing-kline,
   .landing-deco,
-  .landing-hero-floor,
+  .landing-hero-stage,
+  .landing-hero-dim,
   [data-pop="in"] {
     animation: none;
   }
@@ -2063,6 +2112,9 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 */
 .shadow-elevation {
   box-shadow: var(--shadow-elevation);
+}
+.shadow-edge-top {
+  box-shadow: var(--shadow-edge-top);
 }
 .shadow-edge-bottom {
   box-shadow: var(--shadow-edge-bottom);
