@@ -1,0 +1,63 @@
+<div class="wrap"><section class="hero2"><div class="hero-copy"><div class="kick">Course Schedule · Graphs module · problem lesson</div>
+<h1 id="h1">Can this build ever finish, or will it wait on itself forever?</h1>
+<p class="lede">A monorepo has dozens of packages, and each one lists the packages that must be built before it. The build system has to find an order that respects every list. If package A needs B, B needs C and C needs A, no order exists, and the pipeline would sit there forever. Deciding whether an order exists is exactly the Course Schedule problem, with courses as packages and prerequisites as dependencies.</p>
+<div class="chips"><span>needs <b>a directed graph</b></span><span>shape <b>peel off what is ready</b></span><span>cost <b>O(V + E)</b></span></div></div>
+<div class="hero-art"><svg id="heroBuild" viewBox="0 0 560 300" role="img" aria-label="Animation: six packages joined by arrows that mean must be built first. Packages with nothing left to wait on are built one at a time, lighting up the packages they unlock, until all six are built."></svg>
+<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> of 6 built</div><div id="heroCap"></div></div></div></section></div>
+<div class="wrap page">
+<nav class="toc" aria-label="Lesson sections"><div class="kick">On this page</div>
+<a href="#problem">Problem</a><a href="#attempt">Attempt it first</a><a href="#trap">Two traps</a><a href="#insight">The insight</a><a href="#solution">Solution</a><a href="#variants">Variants</a><a href="#quiz">Check yourself</a></nav>
+<article>
+
+<section class="sec" id="problem"><h2>Problem</h2><div class="banner" data-b="problem"></div>
+<p>There are <code>numCourses</code> courses, numbered <code>0</code> to <code>numCourses - 1</code>. The list <code>prerequisites</code> holds pairs <code>[a, b]</code>, each meaning: to take course <code>a</code> you must first take course <code>b</code>. Return <code>true</code> if it is possible to take every course, and <code>false</code> if not.</p>
+<div class="ex"><div><span>numCourses = 2, prerequisites = [[1,0]]</span><em>→ true (take 0, then 1)</em></div><div><span>numCourses = 2, prerequisites = [[1,0],[0,1]]</span><em>→ false (each waits on the other)</em></div></div>
+<div class="callout constraint"><div class="cl"><svg class="i"><use href="#i-warn"/></svg>Constraint</div><p>Up to 2000 courses and up to 5000 prerequisite pairs.</p></div>
+<p>Draw each pair <code>[a, b]</code> as an arrow from <code>b</code> to <code>a</code>, meaning "b must come before a". Now the courses are packages, the arrows are build dependencies, and the question is whether the build can run to the end. The only thing that can stop it is a loop of packages each waiting on the next, so what you are really asking is whether the arrows contain a cycle.</p>
+<div class="widget" id="explore"><div class="wl">Explore: run the build yourself</div><div class="extabs" role="group" aria-label="Choose a build"></div><div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 reset">Reset</button><button type="button" class="btn2 best">Show a valid order</button></div></div>
+</section>
+
+<section class="sec" id="attempt"><h2>Attempt it first</h2><div class="banner" data-b="attempt"></div>
+<p>The module's topological-sort lesson asks one question about a directed graph: does a valid ordering exist at all? Before opening anything, work out what property of the arrows decides it.</p>
+<p>A tempting shortcut is to count: "if there are at least as many arrows as courses, there must be a loop". It does not hold. The diamond in the widget above has 4 courses and 4 arrows and can be built. A different set of 5 courses with 5 arrows cannot. The same counts, opposite answers, so the answer lives in how the arrows connect, not how many there are.</p>
+<p>Predict each build, then check.</p>
+<div class="widget"><div class="wl">Can every course be finished?</div><div id="predict"></div></div>
+<div id="hint"></div>
+</section>
+
+<section class="sec" id="trap"><h2>Two traps</h2><div class="banner" data-b="trap"></div>
+<p><b>The first trap is trying every build order.</b> An order is valid if every prerequisite comes before the course that needs it, so generate the orders and test them:</p>
+<div id="slow-code"></div>
+<p>It is correct and it is hopeless. There are n! orders of n courses, and when no valid order exists it has to test every one of them before it can say so. Even 10 courses is 3,628,800 orders. The chart counts the orders it really tests on a loop of n courses, against the work of the method below.</p>
+<div class="widget"><div class="wl">Work to detect a loop of n courses</div><div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>test every order</span><span><i style="background:var(--g-ink)"></i>peel off what is ready</span></div><p class="cost-note"></p></div>
+<p><b>The second trap is a good idea used half-way.</b> The approach in the next section builds courses that are ready and stops when nothing is ready. The mistake is to conclude "the queue is empty, so we finished". An empty queue happens in two very different situations: everything was built, or what is left is locked in a loop. The warning at the end of the solution shows the code that mixes them up.</p>
+</section>
+
+<section class="sec" id="insight"><h2>The insight</h2><div class="banner" data-b="insight"></div>
+<p>Think about how a real build starts. Some packages depend on nothing, so they can be built immediately. Once they are built, some other packages have had all their prerequisites satisfied, and those can be built next. Keep going: build whatever is ready, and record what it releases.</p>
+<p>To know when a course is ready, keep one number per course: how many of its prerequisites are still unbuilt. When a course is built, every course that waited on it drops by one. A course that reaches zero is ready. That is all the bookkeeping there is.</p>
+<p>Now the argument that makes it a complete answer. If the build gets stuck with courses left over, every one of them has at least one unbuilt prerequisite, and that prerequisite is also left over, because otherwise it would have been built. Follow "an unbuilt prerequisite" from any leftover course and you can never leave the leftovers, and there are only finitely many of them, so you must revisit one: a loop. So a build that gets stuck has found a cycle. And if a cycle exists, its courses can never reach zero, because each one waits on another in the loop. Stuck and cycle are the same thing.</p>
+<div class="callout key"><div class="cl"><svg class="i"><use href="#i-meet"/></svg>Key idea</div><p>Build whatever has no unbuilt prerequisites. If every course gets built, an order exists. If some are left, they are waiting on each other in a cycle.</p></div>
+<div class="rosetta" aria-label="The code, read as a build system"><div class="ro-h"><span>In the code</span><span>In the system</span></div>
+<div class="ro"><code>[course, prereq]</code><span>a dependency: the prerequisite package must be built first</span></div>
+<div class="ro"><code>waiting[c]</code><span>how many of package c's dependencies are not built yet</span></div>
+<div class="ro"><code>ready</code><span>packages the build can start right now</span></div>
+<div class="ro"><code>unlocks[c]</code><span>the packages that were waiting on c</span></div>
+<div class="ro"><code>built</code><span>how many packages the pipeline has completed</span></div>
+<div class="ro"><code>built == num_courses</code><span>the whole repo built, so no dependency loop</span></div></div>
+<p>Watch it run. The arrows read "must be built before". The number under a course counts its unbuilt prerequisites, and a blue course is ready.</p>
+<div class="widget" id="stepper"><div class="wl">Run the build</div><div class="extabs" role="group" aria-label="Choose a build"></div><div class="plhost"></div></div>
+</section>
+
+<section class="sec" id="solution"><h2>Solution</h2><div class="banner" data-b="solution"></div>
+<p>Attempt it on paper first: decide what you keep per course, how a course becomes ready, and exactly what the final answer compares. Then compare. Read it as the build scheduler: a table of unmet dependencies, a queue of ready packages, and a count of what actually shipped.</p>
+<div id="solbox"></div>
+</section>
+
+<section class="sec" id="variants"><h2>Variants</h2>
+<p>The same peeling process, asked a different question.</p>
+<div class="vgrid" id="vlist"></div>
+</section>
+
+<section class="sec" id="quiz"><h2>Check yourself</h2><div id="qlist"></div></section>
+</article></div>

@@ -37,14 +37,13 @@ describe("app header", () => {
   });
 
   it("overlays the page as translucent paper with the edge shadow", () => {
-    // Lesson and module pages scroll under it (spec 2026-09-15): the page grain
-    // shows through, blurred. 90% keeps muted text AA over a dark code block
-    // passing beneath (grainContrast.test.ts); an opaque grain layer could not.
+    // Lesson and module pages scroll under it (spec 2026-09-15), blurred through
+    // it. 90% keeps muted text AA over a dark code block passing beneath
+    // (paperContrast.test.ts).
     const cls = header.match(/<header[^>]*className="([^"]*)"/)![1].split(/\s+/);
     for (const c of ["absolute", "top-0", "h-14", "border-b", "shadow-edge-bottom", ...TRANSLUCENT_PAPER.split(" ")]) {
       expect(cls, c).toContain(c);
     }
-    expect(cls).not.toContain("grain-paper");
     expect(cls).not.toContain("sticky");
   });
 

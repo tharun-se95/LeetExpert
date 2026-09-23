@@ -60,7 +60,7 @@ export function PatternLab({
           ...familyCssVars(familyId),
         } as CSSProperties
       }
-      className={cn("lab-stage lab-mesh relative", className)}
+      className={cn("lab-stage lab-mesh dark navy-card relative", className)}
       aria-label={`${patternTitle} pattern laboratory`}
     >
       <header className="relative z-[1] mb-4 flex flex-wrap items-center gap-2">

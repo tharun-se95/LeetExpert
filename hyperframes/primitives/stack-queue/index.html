@@ -1,0 +1,236 @@
+<!doctype html>
+<html
+  lang="en"
+  data-resolution="landscape"
+  data-composition-variables='[{"id": "eyebrow", "type": "string", "label": "Eyebrow", "default": "State Transition"}, {"id": "title", "type": "string", "label": "Title", "default": "Monotonic Stack"}, {"id": "family", "type": "enum", "label": "Pattern family", "default": "state-transition", "options": [{"value": "linear-traversal", "label": "Linear Traversal"}, {"value": "pointer-movement", "label": "Pointer Movement"}, {"value": "ordering-search", "label": "Ordering &amp; Search"}, {"value": "recursive-exploration", "label": "Recursive Exploration"}, {"value": "state-transition", "label": "State Transition"}, {"value": "relationships", "label": "Relationships"}, {"value": "priority-structures", "label": "Priority Structures"}]}, {"id": "theme", "type": "enum", "label": "Theme", "default": "dark", "options": [{"value": "dark", "label": "Dark"}, {"value": "light", "label": "Light"}]}, {"id": "mode", "type": "enum", "label": "Structure", "default": "stack", "options": [{"value": "stack", "label": "Stack (LIFO, vertical)"}, {"value": "queue", "label": "Queue (FIFO, horizontal)"}]}, {"id": "input", "type": "string", "label": "Input sequence (comma separated)", "default": "2,1,5,6,2,3"}, {"id": "capacity", "type": "number", "label": "Max slots to reserve", "default": 2, "min": 1, "max": 14, "step": 1}, {"id": "steps", "type": "string", "label": "Steps JSON [{i,contents,op,note}]", "default": "[{\"i\": 0, \"contents\": [], \"op\": \"start\", \"note\": \"The stack holds values still waiting for a bigger one.\"}, {\"i\": 0, \"contents\": [2], \"op\": \"push 2\", \"note\": \"Nothing left to resolve. Push <b>2</b> and move on.\"}, {\"i\": 1, \"contents\": [2, 1], \"op\": \"push 1\", \"note\": \"Nothing left to resolve. Push <b>1</b> and move on.\"}, {\"i\": 2, \"contents\": [2], \"op\": \"pop 1\", \"note\": \"<b>5</b> is bigger than <b>1</b> \\u2014 so 5 is 1&#39;s next greater. Pop it.\"}, {\"i\": 2, \"contents\": [], \"op\": \"pop 2\", \"note\": \"<b>5</b> is bigger than <b>2</b> \\u2014 so 5 is 2&#39;s next greater. Pop it.\"}, {\"i\": 2, \"contents\": [5], \"op\": \"push 5\", \"note\": \"Nothing left to resolve. Push <b>5</b> and move on.\"}, {\"i\": 3, \"contents\": [], \"op\": \"pop 5\", \"note\": \"<b>6</b> is bigger than <b>5</b> \\u2014 so 6 is 5&#39;s next greater. Pop it.\"}, {\"i\": 3, \"contents\": [6], \"op\": \"push 6\", \"note\": \"Nothing left to resolve. Push <b>6</b> and move on.\"}, {\"i\": 4, \"contents\": [6, 2], \"op\": \"push 2\", \"note\": \"Nothing left to resolve. Push <b>2</b> and move on.\"}, {\"i\": 5, \"contents\": [6], \"op\": \"pop 2\", \"note\": \"<b>3</b> is bigger than <b>2</b> \\u2014 so 3 is 2&#39;s next greater. Pop it.\"}, {\"i\": 5, \"contents\": [6, 3], \"op\": \"push 3\", \"note\": \"Nothing left to resolve. Push <b>3</b> and move on.\"}, {\"i\": 5, \"contents\": [6, 3], \"op\": \"done\", \"note\": \"What is left never found a bigger value: <b>6, 3</b>.\"}]"}, {"id": "stepSeconds", "type": "number", "label": "Seconds per step", "default": 1.5, "min": 0.4, "max": 8, "step": 0.1}]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>leetExpert — Stack / Queue</title>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+/* Latin subsets only, vendored — the renderer has no network. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f15.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f10.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+    </style>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { width: 1920px; height: 1080px; padding: 88px 112px; display: flex; flex-direction: column; }
+      .head { display: flex; flex-direction: column; gap: 20px; }
+      .rule { width: 132px; height: 5px; background: var(--accent, var(--ink)); border-radius: 3px; }
+      .eyebrow { font-size: 26px; }
+      .title { font-size: 72px; }
+      .board { flex: 1; display: flex; align-items: center; gap: 120px; }
+      .col { display: flex; flex-direction: column; gap: 18px; }
+      .collab {
+        font-family: "Space Mono", monospace; font-size: 20px; letter-spacing: .14em;
+        text-transform: uppercase; color: var(--dim);
+      }
+      .inrow { display: flex; gap: 12px; }
+      .incell {
+        width: 86px; height: 86px; border: 2.5px solid var(--rule-strong); border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 34px; color: var(--dim);
+      }
+      .incell[data-state="current"] { border-color: var(--ink); color: var(--ink); }
+      .incell[data-state="consumed"] { opacity: .38; }
+      /* The container is drawn open on the side the structure grows from —
+         a stack is open at the top, a queue at both ends. */
+      .vessel { position: relative; }
+      .vessel[data-mode="stack"] {
+        display: flex; flex-direction: column-reverse; gap: 12px;
+        border: 2.5px solid var(--line); border-top: none;
+        border-radius: 0 0 14px 14px; padding: 0 16px 16px;
+        justify-content: flex-start;
+      }
+      .vessel[data-mode="queue"] {
+        display: flex; flex-direction: row; gap: 12px;
+        border: 2.5px solid var(--line); border-left: none; border-right: none;
+        padding: 16px 0; min-height: 130px; align-items: center;
+      }
+      .slot {
+        width: 104px; height: 96px; flex: none;
+        border: 2.5px solid var(--ink); border-radius: 12px; background: var(--ink); color: var(--on-ink);
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 38px;
+      }
+      .op {
+        font-family: "Space Mono", monospace; font-weight: 700; font-size: 30px;
+        letter-spacing: .05em; color: var(--ink); min-height: 44px;
+      }
+      .note {
+        font-family: "Space Grotesk", sans-serif; font-size: 32px; line-height: 1.45;
+        color: var(--line); max-width: 1180px; min-height: 88px;
+      }
+      .note b { color: var(--ink); font-weight: 700; }
+      .foot { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 14px; }
+      .wordmark { font-size: 30px; }
+      .counter { font-family: "Space Mono", monospace; font-size: 22px; letter-spacing: .16em; color: var(--dim); }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="stack-queue" data-start="0"
+         data-width="1920" data-height="1080">
+      <div class="head">
+        <div class="rule"></div>
+        <div class="eyebrow" id="eyebrow"></div>
+        <div class="title display" id="title"></div>
+      </div>
+      <div class="board">
+        <div class="col">
+          <span class="collab">input</span>
+          <div class="inrow" id="inrow"></div>
+          <span class="op" id="op"></span>
+        </div>
+        <div class="col">
+          <span class="collab" id="vessellab">stack</span>
+          <div class="vessel" id="vessel"></div>
+        </div>
+      </div>
+      <div class="note" id="note"></div>
+      <div class="foot">
+        <span class="wordmark">leetExpert</span>
+        <span class="counter" id="counter"></span>
+      </div>
+    </div>
+    <script>
+      const V = window.__hyperframes.getVariables();
+      const root = document.getElementById("root");
+      root.setAttribute("data-theme", V.theme);
+      root.setAttribute("data-family", V.family);
+      document.getElementById("eyebrow").textContent = V.eyebrow;
+      document.getElementById("title").textContent = V.title;
+
+      const input = String(V.input).split(",").map((s) => s.trim()).filter(Boolean);
+      const steps = JSON.parse(V.steps);
+      const CAP = Number(V.capacity);
+
+      const inrow = document.getElementById("inrow");
+      input.forEach((v, i) => {
+        const c = document.createElement("div");
+        c.className = "incell"; c.id = "in-" + i; c.textContent = v;
+        inrow.appendChild(c);
+      });
+
+      const vessel = document.getElementById("vessel");
+      vessel.setAttribute("data-mode", V.mode);
+      document.getElementById("vessellab").textContent = V.mode;
+      // Slots are pre-built to capacity and revealed, never appended: appending
+      // mid-timeline reflows the row and makes the render unseekable.
+      const GAP = 12, MAXV = 430, MAXSLOT = 104;
+      const along = Math.max(
+        44,
+        Math.min(MAXSLOT, Math.floor((MAXV - (CAP - 1) * GAP) / Math.max(CAP, 1)))
+      );
+      for (let k = 0; k < CAP; k++) {
+        const s = document.createElement("div");
+        s.className = "slot"; s.id = "slot-" + k;
+        // Constrain only the axis the structure grows along; the cross axis
+        // keeps its readable size.
+        if (V.mode === "stack") s.style.height = along + "px";
+        else s.style.width = along + "px";
+        s.style.fontSize = Math.max(22, Math.min(38, along - 58)) + "px";
+        vessel.appendChild(s);
+      }
+      gsap.set(".slot", { autoAlpha: 0 });
+
+      const opEl = document.getElementById("op");
+      const noteEl = document.getElementById("note");
+      const counterEl = document.getElementById("counter");
+      const STEP = Number(V.stepSeconds);
+
+      document.fonts.ready.then(() => {
+        const tl = gsap.timeline({ paused: true });
+        steps.forEach((s, k) => {
+          const t = k * STEP;
+          const contents = s.contents || [];
+          input.forEach((_, i) => {
+            const state = i === s.i ? "current" : (i < s.i ? "consumed" : "default");
+            tl.set("#in-" + i, { attr: { "data-state": state } }, t);
+          });
+          for (let c = 0; c < CAP; c++) {
+            const filled = c < contents.length;
+            tl.set("#slot-" + c, { autoAlpha: filled ? 1 : 0,
+                                   textContent: filled ? contents[c] : "" }, t);
+          }
+          tl.set(opEl, { textContent: s.op || "" }, t);
+          tl.set(noteEl, { innerHTML: s.note }, t);
+          tl.set(counterEl, { textContent: "STEP " + (k + 1) + " / " + steps.length }, t);
+          if (k === 0) tl.from(noteEl, { opacity: 0, y: 12, duration: 0.45, ease: "power3.out" }, 0.15);
+        });
+        tl.to({}, { duration: STEP }, (steps.length - 1) * STEP);
+        window.__timelines["stack-queue"] = tl;
+        // Registered after the runtime initialised, so it must be re-bound: without
+        // this `render` saw a zero-length composition ("Composition has zero
+        // duration") although `snapshot` and the browser played it.
+        window.__hfForceTimelineRebind?.();
+      });
+    </script>
+  </body>
+</html>

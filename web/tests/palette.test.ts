@@ -3,7 +3,6 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   GITHUB_RAMPS,
-  GRAIN_OPACITY,
   HUE_NAMES,
   LIGHT_TEXT_SURFACES,
   LINE_SURFACE,
@@ -74,26 +73,18 @@ describe("palette tokens in globals.css", () => {
   });
 });
 
-describe("grain-safe line colours", () => {
-  const worstGrainPixel = () =>
-    "#" +
-    [1, 3, 5]
-      .map((i) => Math.round(parseInt(LINE_SURFACE.slice(i, i + 2), 16) * (1 - GRAIN_OPACITY)))
-      .map((c) => c.toString(16).padStart(2, "0"))
-      .join("");
-
-  it("mirrors the light card and the grain strength from globals.css", () => {
+describe("line colours", () => {
+  it("mirrors the light card from globals.css", () => {
     // palette.ts cannot read CSS, so it keeps copies; this keeps them honest.
     const css = readFileSync(join(__dirname, "..", "src", "app", "globals.css"), "utf8").replace(
       /\/\*[\s\S]*?\*\//g,
       "",
     );
     expect(css.match(/--elevated:\s*(#[0-9a-f]{6});/)?.[1]).toBe(LINE_SURFACE);
-    expect(Number(css.match(/--grain-opacity:\s*([\d.]+);/)?.[1])).toBe(GRAIN_OPACITY);
   });
 
-  it("gives every hue a light line that clears 3:1 at the worst grain pixel, darkening level 3 only when needed", () => {
-    const worst = worstGrainPixel();
+  it("gives every hue a light line that clears 3:1 on the card, darkening level 3 only when needed", () => {
+    const worst = LINE_SURFACE;
     for (const hue of HUE_NAMES) {
       const level3 = ramp(hue, "light")[2];
       const line = lineColour(hue, "light");

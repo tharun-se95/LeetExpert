@@ -1,0 +1,67 @@
+{
+  "voice": "SAz9YHcvj6GT2YYXdXww",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.1,
+    "use_speaker_boost": true
+  },
+  "estimated": false,
+  "lines": [
+    {
+      "line": 1,
+      "title": "hook",
+      "file": "line-1.mp3",
+      "duration": 13.096,
+      "word_count": 40,
+      "attempts": 1,
+      "text": "Your screen is a grid of pixels. Memory is not. Memory is one long line of bytes, and the way your loop walks that line decides whether an image filter takes a moment, or several times longer. Let's see why."
+    },
+    {
+      "line": 2,
+      "title": "address arithmetic",
+      "file": "line-2.mp3",
+      "duration": 32.508,
+      "word_count": 87,
+      "attempts": 1,
+      "text": "A 1080p frame is eight million, two hundred ninety-four thousand, four hundred bytes, stored row after row. So pixel x, y is never looked up. It is computed: skip y whole rows, then walk x pixels in. With four bytes a pixel and rows seven thousand six hundred eighty bytes wide, the pixel at one hundred, fifty sits at byte three hundred eighty-four thousand, four hundred. On the left, a loop over rows and then columns. On the right, columns and then rows. Same cells, different order."
+    },
+    {
+      "line": 3,
+      "title": "cache lines",
+      "file": "line-3.mp3",
+      "duration": 24.335,
+      "word_count": 76,
+      "attempts": 1,
+      "text": "The processor never fetches a single byte. It loads a whole cache line, drawn here as four cells. The row loop reads zero, and the line arrives with its three neighbours, so the next three reads cost nothing. The column loop reads zero, then eight, then sixteen. Every one of those lives in a different line, and this toy cache holds only two, so old lines are thrown out before the loop comes back for them."
+    },
+    {
+      "line": 4,
+      "title": "counting misses",
+      "file": "line-4.mp3",
+      "duration": 12.817,
+      "word_count": 46,
+      "attempts": 1,
+      "text": "Keep an eye on the counters. The row loop pays one miss for every four cells. The column loop pays a miss on nearly every read, because by the time it returns to the top of the next column, the line it needs is already gone."
+    },
+    {
+      "line": 5,
+      "title": "result",
+      "file": "line-5.mp3",
+      "duration": 15.929,
+      "word_count": 41,
+      "attempts": 1,
+      "text": "Eight misses against thirty-two. Same grid, same arithmetic, same answer, and four times the trips to memory. On typical hardware a cache line is sixty-four bytes, which is sixteen four-byte pixels, so the real gap is wider than this toy shows."
+    },
+    {
+      "line": 6,
+      "title": "facts",
+      "file": "line-6.mp3",
+      "duration": 19.458,
+      "word_count": 46,
+      "attempts": 1,
+      "text": "Remember three numbers. Eight million, two hundred ninety-four thousand, four hundred bytes in one frame. Three hundred eighty-four thousand, four hundred, the position of one pixel, found by arithmetic alone. And sixteen pixels per cache line, which is why you walk along rows, not down columns."
+    }
+  ]
+}

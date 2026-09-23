@@ -71,7 +71,7 @@
     a hex here; change the generator and re-print. Level n is the same
     strength against its own theme's paper: 1 quietest, 4 strongest. -ink is
     the text colour (light: level 4's lightness at near-max chroma), -line the
-    grain-safe 3:1 line colour.
+    3:1 line colour.
     tests/palette.test.ts fails if these drift from the generator.
   */
   --hue-red-1: #ffc2bc;
@@ -97,13 +97,13 @@
   --hue-green-3: #30a14e;
   --hue-green-4: #216e39;
   --hue-green-ink: #067123;
-  --hue-green-line: #2b9d4a;
+  --hue-green-line: #30a14e;
   --hue-cyan-1: #62ebf2;
   --hue-cyan-2: #00bdc5;
   --hue-cyan-3: #009ba2;
   --hue-cyan-4: #006a6f;
   --hue-cyan-ink: #066a6e;
-  --hue-cyan-line: #00989f;
+  --hue-cyan-line: #009ba2;
   --hue-blue-1: #b6d6ff;
   --hue-blue-2: #64a9ff;
   --hue-blue-3: #3d89e4;
@@ -145,6 +145,10 @@
     see `.code-surface` and every `bg-code-editor` site.
   */
   --code-editor: #14202e;
+  /* The landing's dark cards (see navy-card below): the navy the module art and the
+     light theme's code well are painted on (art #15202e, --code-editor). Not
+     remapped for the dark theme, so it names that navy in both. */
+  --card-navy: #14202e;
   /* Hairline gutter border + active-line tint, tuned for THIS (dark) bg —
      reusing the site's own dark-theme --border/--editor-active-line
      formulas below, since those were already proven legible on a dark
@@ -163,8 +167,8 @@
     Status colours (spec 2026-09-14 §4.2). Text ≥ 4.5:1 on every surface in
     both themes (good is the tightest: 4.55 on --surface); text on its own
     *-surface ≥ 3:1. *-line is for rules, borders and strokes and sits only on
-    the card (--elevated): generated grain-safe, 3:1 at the worst grain pixel of
-    the problem panes (palette spec §4.3); on a recessed surface use the text colour.
+    the card (--elevated): generated to 3:1 against it; on a recessed surface use
+    the text colour.
   */
   --good: var(--hue-green-ink);
   --bad: var(--hue-red-ink);
@@ -259,9 +263,22 @@
   --focus-ring: 2px;
   --focus-offset: 2px;
 
-  /* --- paper grain ----------------------------------------- */
-  /* Opacity of the greyscale noise tile; see .paper-grain. */
-  --grain-opacity: 0.067;
+  /* The landing hero's 3D floor (HeroFloor, spec 2026-09-23): hairlines in the
+     page ink, and blocks whose tops are the card paper with sides shaded
+     toward --floor-shade. No text sits over the floor (it lies below the copy
+     and fades out at its top edge), so these carry no contrast budget. */
+  --floor-line: color-mix(in oklab, var(--press-ink) 7.5%, transparent);
+  --floor-line-major: color-mix(in oklab, var(--press-ink) 15%, transparent);
+  --floor-block: #ffffff;
+  --floor-edge: color-mix(in oklab, var(--press-ink) 16%, transparent);
+  --floor-shade: var(--press-ink);
+  /* Its height, and the clear band along its top edge (the mask's fade):
+     the hero copy clears the floor less that band, so the floor starts right
+     under the buttons with nothing drawn behind them. The hero is its
+     content's height, not the viewport's — forced to the viewport it left
+     ~500px of empty paper between the buttons and the floor on a tall window. */
+  --hero-floor-h: 32rem;
+  --hero-floor-fade: 6rem;
 
   /* --- heat map (landing credits section) ------------------- */
   /* GitHub's contribution greens, the owner's chosen ramp (2026-09-14),
@@ -275,17 +292,20 @@
 }
 
 .dark {
-  /* Neutral grey sheet — no blue cast (Blueprint's charcoal was blue-tinted). */
-  --press-paper: #121214;
+  /* Space black (owner, 2026-09-19: "make the background like space"),
+     neutral — no blue cast. Was #121214. */
+  --press-paper: #060607;
   /*
     Dark is the theme where the layer ladder is real — light is capped at
     ~1.03:1 by muted-AA, dark has room. Same relative order as light, never
     an inversion: elevated (cards) brightest, code above the page, background
     the sheet, surface recessed deepest. Measured adjacent deltas:
-    surface/paper 1.05, paper/code 1.07, code/elevated 1.16, elevated/paper
-    1.24 — visible steps. Muted #9ca9b8 ≥8:1 everywhere.
+    surface/paper 1.04, paper/code 1.16, code/elevated 1.16, elevated/paper
+    1.34 — visible steps; on the space-black page the page-to-recess step is
+    the smallest the ladder test allows, with the recess at pure black.
+    Muted #9ca9b8 ≥8:1 everywhere (8.47 on the page, 8.78 on the recess).
   */
-  --press-paper-sunk: #0c0c0d; /* recessed — tests / muted, deepest */
+  --press-paper-sunk: #000000; /* recessed — tests / muted, deepest */
   --press-ink: #e6edf4; /* 17.1:1 — sheet Text Primary */
   --press-ink-soft: #9ca9b8; /* 8.19:1 — sheet Text Muted */
   --press-rule: rgba(244, 244, 245, 0.09); /* soft rule */
@@ -363,7 +383,13 @@
 
   --press-highlight: color-mix(in oklab, var(--press-olive) 22%, transparent);
   --press-halftone: rgba(244, 244, 245, 0.09);
-  --grain-opacity: 0.067;
+  /* The hero floor on the space-black page: stronger lines, grey blocks
+     (the dark --elevated), sides shaded toward black. */
+  --floor-line: color-mix(in oklab, var(--press-ink) 9%, transparent);
+  --floor-line-major: color-mix(in oklab, var(--press-ink) 20%, transparent);
+  --floor-block: #26262a;
+  --floor-edge: color-mix(in oklab, var(--press-ink) 16%, transparent);
+  --floor-shade: #000000;
   /* Heat ramp on the dark --elevated card (#26262a): 1.22, 1.35, 2.32,
      4.75, 7.62 — adjacent steps 1.11-2.05. Level 0 is lifted off the card
      so an empty day still reads as a square. */
@@ -374,7 +400,7 @@
   --heat-4: #39d353;
   --on-pop: #16202e; /* dark ink on the light-steel chip */
 
-  --surface: #0c0c0d; /* tests / muted — recess, deepest tier */
+  --surface: #000000; /* tests / muted — recess, deepest tier */
   --elevated: #26262a; /* sidebar / lesson / cards — brightest lift */
   --code: #19191d; /* editor — above the page, below elevated */
   /* Code surface inverts relative to the page here too: dark theme gets a
@@ -561,105 +587,6 @@ body {
 }
 
 /*
-  Paper grain — the landing page's background (owner-approved 2026-09-14;
-  docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md).
-
-  A tiled greyscale noise PNG (scripts/make-grain.mjs) at single-digit
-  opacity. The tile is 400px drawn at 200px so a 2x display gets one noise
-  sample per device pixel. AppShell puts it on a wrapper inside <main>, not
-  on <body>: <main> is the app's scroller, so a body background would stay
-  pinned while content moved over it. Worst-case muted text over a grain
-  pixel measured 4.99:1 light, 6.65:1 dark.
-  isolation + z-index:-1 put the grain above the root's paper but beneath
-  every in-flow child — a z-index:auto absolute layer would paint over text.
-  Solid surfaces (cards, the stat band) cover it, so only the paper grains.
-*/
-.paper-grain {
-  isolation: isolate;
-}
-
-.paper-grain::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: url("/textures/grain.png") 0 0 / 200px 200px repeat;
-  opacity: var(--grain-opacity);
-}
-
-@media print {
-  .paper-grain::before {
-    display: none;
-  }
-}
-
-/*
-  Grain on an opaque surface (the app header, the lessons drawer and its
-  pinned header row, the floating drawer opener, the mobile lessons sheet):
-  background layers instead of .paper-grain's ::before, which these surfaces
-  do not need — they paint their own paper — and which a surface using its own
-  pseudo-elements (the mobile sheet's accent strip) cannot spare. The paper at
-  (1 - opacity) over the opaque tile composites to exactly the tile at
-  opacity over the paper — measured against .paper-grain on --background,
-  max channel difference 1/255 in both themes. --grain-paper names the
-  surface's paper; background-color still comes from its own bg-* class.
-  --grain-veil is declared here, on the element that uses it: a custom
-  property resolves var() where it is declared, so on :root it would freeze
-  --grain-paper at :root's value.
-  Spec: docs/superpowers/specs/2026-09-14-app-header-and-grain-design.md
-*/
-.grain-paper {
-  --grain-veil: color-mix(
-    in srgb,
-    var(--grain-paper, var(--background)) calc((1 - var(--grain-opacity)) * 100%),
-    transparent
-  );
-  background-image:
-    linear-gradient(var(--grain-veil), var(--grain-veil)),
-    url("/textures/grain.png");
-  background-size: auto, 200px 200px;
-  background-repeat: no-repeat, repeat;
-  /* From the border edge: backgrounds paint under the border too, and a veil
-     sized to the padding box left the bare tile under the 1px translucent
-     --border as a speckled line. */
-  background-origin: border-box;
-}
-
-@media print {
-  .grain-paper {
-    background-image: none;
-  }
-}
-
-/*
-  The landing page's typing caret (TypedText). A left border with a matching
-  negative margin gives it zero advance, so the line never shifts as the caret
-  moves through it. Reduced motion never renders the caret (TypedText shows
-  the whole text), and this also stops the blink in case one is on screen.
-*/
-.typed-caret {
-  display: inline-block;
-  height: 1em;
-  margin-right: -2px;
-  border-left: 2px solid currentColor;
-  vertical-align: -0.12em;
-  animation: typed-caret-blink 1.05s steps(1) infinite;
-}
-
-@keyframes typed-caret-blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .typed-caret {
-    animation: none;
-  }
-}
-
-/*
   The credits heat map (HeatMap): squares fade in when their section arrives.
   One attribute on the <svg> lights every square; each carries its column's
   transition-delay inline, so the year sweeps in left to right with no
@@ -677,6 +604,384 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .heat-cell {
     opacity: 1;
+    transition: none;
+  }
+}
+
+/*
+  The landing hero's 3D floor (HeroFloor, spec 2026-09-23): a perspective
+  plane of hairline cells lying below the copy, with data structures standing
+  on it as solid blocks (a top and four sides, each a transformed face in one
+  preserve-3d context). It fades out along its top edge, so the copy above it
+  sits on clear paper: it is anchored to the hero's foot at --hero-floor-h,
+  and the copy above keeps that much padding, so they never overlap at any
+  window height. Block faces: --h is the height, --top the top colour; the
+  sides are that colour shaded toward --floor-shade.
+*/
+.hero-floor {
+  position: absolute;
+  inset: auto 0 0;
+  height: var(--hero-floor-h);
+  perspective: 1300px;
+  perspective-origin: 50% 0%;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, transparent 0, transparent var(--hero-floor-fade), #000 calc(var(--hero-floor-fade) + 8rem), #000 100%);
+}
+.hero-floor-camera {
+  position: absolute;
+  left: 58%;
+  top: 62%;
+  transform-style: preserve-3d;
+  transform: rotateX(64deg) rotateZ(-40deg);
+}
+.hero-floor-drift {
+  transform-style: preserve-3d;
+  animation: hero-floor-drift 28s ease-in-out infinite alternate;
+}
+.hero-floor-plane {
+  position: absolute;
+  left: -672px;
+  top: -672px;
+  width: 1344px;
+  height: 1344px;
+  transform-style: preserve-3d;
+}
+.hero-floor-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--floor-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--floor-line) 1px, transparent 1px),
+    linear-gradient(var(--floor-line-major) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, var(--floor-line-major) 1.5px, transparent 1.5px);
+  background-size: 56px 56px, 56px 56px, 224px 224px, 224px 224px;
+  mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+}
+.hero-floor-lit {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--top) 18%, transparent);
+  box-shadow: 0 0 28px color-mix(in oklab, var(--top) 30%, transparent);
+  animation: hero-floor-pulse 3.2s ease-in-out infinite alternate;
+}
+.hero-block {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  transform-style: preserve-3d;
+  --top: var(--floor-block);
+}
+.hero-block[data-bob] {
+  animation: hero-block-bob 6s ease-in-out infinite alternate;
+}
+.hero-block > span {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid var(--floor-edge);
+}
+.hero-block > .t { left: 0; top: 0; width: 56px; height: 56px; background: var(--top); transform: translateZ(var(--h)); }
+.hero-block > .s { left: 0; top: 56px; width: 56px; height: var(--h); transform-origin: top; transform: rotateX(90deg); background: color-mix(in oklab, var(--top) 84%, var(--floor-shade)); }
+.hero-block > .n { left: 0; top: calc(-1 * var(--h)); width: 56px; height: var(--h); transform-origin: bottom; transform: rotateX(-90deg); background: color-mix(in oklab, var(--top) 90%, var(--floor-shade)); }
+.hero-block > .e { left: 56px; top: 0; width: var(--h); height: 56px; transform-origin: left; transform: rotateY(-90deg); background: color-mix(in oklab, var(--top) 72%, var(--floor-shade)); }
+.hero-block > .w { left: calc(-1 * var(--h)); top: 0; width: var(--h); height: 56px; transform-origin: right; transform: rotateY(90deg); background: color-mix(in oklab, var(--top) 80%, var(--floor-shade)); }
+.hero-block[data-banded] > .s,
+.hero-block[data-banded] > .e,
+.hero-block[data-banded] > .w,
+.hero-block[data-banded] > .n {
+  background-image: repeating-linear-gradient(to top, transparent 0, transparent 55px, var(--floor-edge) 55px, var(--floor-edge) 56px);
+}
+.dark .hero-block[data-lit-block] > .t {
+  box-shadow: 0 0 36px 6px color-mix(in oklab, var(--top) 55%, transparent);
+}
+@keyframes hero-floor-drift { from { transform: rotateZ(-4deg); } to { transform: rotateZ(6deg); } }
+@keyframes hero-block-bob { from { transform: translateZ(0); } to { transform: translateZ(26px); } }
+@keyframes hero-floor-pulse { from { opacity: 0.35; } to { opacity: 1; } }
+
+/*
+  The hero headline arrives word by word on load; "code." carries a caret and
+  "right." a hand-drawn ring, then a tick (HeroHeadline). The screen-reader
+  copy is the plain sentences; the animated layer is aria-hidden.
+*/
+.hero-word {
+  display: inline-block;
+  animation: hero-word 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes hero-word {
+  from { opacity: 0; transform: translateY(0.55em) rotateX(-70deg); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.hero-caret {
+  display: inline-block;
+  width: 0.42em;
+  height: 0.9em;
+  margin-left: 0.08em;
+  vertical-align: -0.08em;
+  background: var(--accent);
+  animation: hero-caret 1.1s steps(1) infinite;
+}
+@keyframes hero-caret { 50% { opacity: 0; } }
+.hero-ring path {
+  stroke-dasharray: 600;
+  animation: hero-ring 1.1s cubic-bezier(0.6, 0, 0.2, 1) 1.2s both;
+}
+@keyframes hero-ring { from { stroke-dashoffset: 600; } to { stroke-dashoffset: 0; } }
+.hero-tick path {
+  stroke-dasharray: 60;
+  animation: hero-tick 0.5s ease-out 2.1s both;
+}
+@keyframes hero-tick { from { stroke-dashoffset: 60; } to { stroke-dashoffset: 0; } }
+
+/*
+  Landing motion as the page scrolls (owner, 2026-09-23 — "motion as we
+  scroll", panels "3d floating"). Driven by view timelines on <main>, the
+  app's scroller: nothing listens for scroll, and the page is never held or
+  paged. Every resting state is the finished design, so a browser without
+  view timelines, reduced motion, or a still frame shows the page complete.
+*/
+.landing-stage {
+  position: relative;
+  perspective: 1600px;
+}
+.landing-stage::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -2rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--foreground) 22%, transparent), transparent);
+  filter: blur(6px);
+  z-index: -1;
+}
+.landing-card3d {
+  transform: rotateX(5deg) rotateY(-9deg);
+  transform-origin: 40% 50%;
+}
+[data-flip] .landing-card3d {
+  transform: rotateX(5deg) rotateY(9deg);
+  transform-origin: 60% 50%;
+}
+.landing-float {
+  animation: landing-float 7s ease-in-out infinite alternate;
+}
+[data-flip] .landing-float {
+  animation-delay: -3.5s;
+}
+@keyframes landing-float { from { transform: translate3d(0, -8px, 0); } to { transform: translate3d(0, 10px, 0); } }
+
+/* A key word underlined by hand, or swept with a highlighter, in the section's colour. */
+.landing-mark {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.landing-mark > svg {
+  position: absolute;
+  left: -3%;
+  bottom: -0.28em;
+  width: 106%;
+  height: 0.5em;
+  overflow: visible;
+}
+.landing-hl {
+  position: relative;
+  z-index: 0;
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0 0.12em;
+  margin: 0 -0.12em;
+}
+.landing-hl::before {
+  content: "";
+  position: absolute;
+  inset: 0.18em 0 0.08em;
+  border-radius: 0.12em;
+  background: color-mix(in oklab, var(--accent) 20%, transparent);
+  transform-origin: left;
+  z-index: -1;
+}
+.landing-kline {
+  width: 2.5rem;
+  height: 1.5px;
+  background: var(--accent);
+  transform-origin: left;
+}
+.landing-deco {
+  position: absolute;
+  pointer-events: none;
+}
+/*
+  A stage card's art (LandingStory, StageCardLink): the module stills fanned
+  like a hand of cards over a dotted field. --fan is -1, 0 or 1; hover or focus
+  spreads the hand and lifts it, on a springy curve so it pops.
+*/
+.stage-art {
+  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 14%, transparent) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+.stage-tile {
+  transform: translate(-50%, -46%) translateX(calc(var(--fan) * 42%)) rotate(calc(var(--fan) * 8deg))
+    scale(calc(1 - (var(--fan) * var(--fan)) * 0.08));
+  transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.group:hover .stage-tile,
+.group:focus-visible .stage-tile {
+  transform: translate(-50%, -54%) translateX(calc(var(--fan) * 60%)) rotate(calc(var(--fan) * 13deg))
+    scale(calc(1.04 - (var(--fan) * var(--fan)) * 0.08));
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-tile {
+    transition: none;
+  }
+}
+
+/*
+  The landing questions open and close by animating their height (owner,
+  2026-09-23: "there is a layout shift when the accordion is opened"). They
+  are one exclusive group (name="landing-faq"), so opening one closes another:
+  snapped, both heights changed in one frame and everything below jumped; eased
+  together, the page moves once, smoothly. Without ::details-content support
+  they open instantly, as before.
+*/
+.landing-faq {
+  interpolate-size: allow-keywords;
+}
+.landing-faq::details-content {
+  height: 0;
+  overflow: clip;
+  transition:
+    height 0.35s var(--ease-gentle),
+    content-visibility 0.35s allow-discrete;
+}
+.landing-faq[open]::details-content {
+  height: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-faq::details-content {
+    transition: none;
+  }
+}
+
+/* The learner river (TestimonialRiver): faded out at both edges, so cards
+   drift in and out of nothing rather than hitting the column's edge. */
+.landing-river {
+  mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+}
+.landing-icon {
+  background: color-mix(in oklab, var(--accent) 13%, transparent);
+}
+
+/*
+  Rows, headings and cards pop in once as they arrive (usePopIn arms what is
+  below the fold, then flips it to "in"): a short spring, timed, never
+  scrubbed by the scroll. Cards pop harder than text; the component column
+  follows its text by a beat.
+*/
+[data-pop="armed"] {
+  opacity: 0;
+  transform: translateY(1.75rem) scale(0.96);
+}
+[data-pop="in"] {
+  animation: landing-pop 0.62s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: var(--pop-delay, 0ms);
+}
+.landing-stage[data-pop="armed"] {
+  transform: translateY(3rem) scale(0.86);
+}
+.landing-stage[data-pop="in"] {
+  animation-name: landing-pop-card;
+  animation-duration: 0.75s;
+}
+@keyframes landing-pop {
+  0% { opacity: 0; transform: translateY(1.75rem) scale(0.96); }
+  60% { opacity: 1; transform: translateY(-0.25rem) scale(1.01); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes landing-pop-card {
+  0% { opacity: 0; transform: translateY(3rem) scale(0.86); }
+  55% { opacity: 1; transform: translateY(-0.5rem) scale(1.04); }
+  80% { transform: translateY(0.125rem) scale(0.99); }
+  100% { opacity: 1; transform: none; }
+}
+
+@supports (animation-timeline: view()) {
+  .landing-mark > svg path {
+    stroke-dasharray: 420;
+    animation: landing-draw linear both;
+    animation-timeline: view();
+    animation-range: entry 40% cover 38%;
+  }
+  .landing-hl::before,
+  .landing-kline {
+    animation: landing-sweep linear both;
+    animation-timeline: view();
+    animation-range: entry 30% cover 36%;
+  }
+  .landing-deco {
+    animation: landing-parallax linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+  .landing-deco[data-fast] {
+    animation-name: landing-parallax-fast;
+  }
+  .landing-hero-floor {
+    animation: landing-floor-out linear both;
+    animation-timeline: view();
+    animation-range: exit 0% exit 100%;
+  }
+}
+@keyframes landing-draw { from { stroke-dashoffset: 420; } to { stroke-dashoffset: 0; } }
+@keyframes landing-sweep { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes landing-parallax { from { transform: translateY(90px) rotate(-4deg); } to { transform: translateY(-90px) rotate(4deg); } }
+@keyframes landing-parallax-fast { from { transform: translateY(200px) rotate(8deg); } to { transform: translateY(-200px) rotate(-8deg); } }
+@keyframes landing-floor-out { to { transform: translateY(-160px) scale(1.12); opacity: 0.25; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-floor-drift,
+  .hero-floor-lit,
+  .hero-block,
+  .hero-word,
+  .hero-caret,
+  .hero-ring path,
+  .hero-tick path,
+  .landing-float,
+  .landing-mark > svg path,
+  .landing-hl::before,
+  .landing-kline,
+  .landing-deco,
+  .landing-hero-floor,
+  [data-pop="in"] {
+    animation: none;
+  }
+}
+
+/*
+  Landing cards that rise into place when their section arrives — stage cards,
+  feature cards, learner quotes, the showcase frames and its count bars. One
+  data-lit attribute on an ancestor lights them; each carries its own
+  transition-delay inline for the stagger.
+*/
+.rise-in {
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity 420ms var(--ease-gentle),
+    transform 420ms var(--ease-gentle);
+}
+
+[data-lit] .rise-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in {
+    opacity: 1;
+    transform: none;
     transition: none;
   }
 }
@@ -1401,21 +1706,17 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 }
 
 /*
-  Lessons rail: the app header's own paper, --background with the desk grain
-  (owner, 2026-09-13 "match the header"; 2026-09-14 grain app-wide), so the
-  header and the drawer read as one grainy sheet. It used to carry
+  Lessons rail: the app header's own paper, --background (owner, 2026-09-13
+  "match the header"), so the header and the drawer read as one sheet. It used to carry
   a 4%/10% wash of the topic accent, then --elevated; both are gone, and so is
   a brief space-black dark variant. No per-theme rule: the token flips with
   the theme exactly as the header's bg-background does. The rail separates
   from the page by its border-r and edge shadow, not a brightness step.
 
-  Painted through --rail-surface rather than bg-background directly so the
-  rail's grain names its paper by that token ([--grain-paper:var(--rail-surface)]
-  on the aside). Rows inside keep hovering to --surface.
+  Rows inside keep hovering to --surface.
 */
 .sidebar-rail {
-  --rail-surface: var(--background);
-  background-color: var(--rail-surface);
+  background-color: var(--background);
 }
 
 .lab-stage {
@@ -1442,6 +1743,111 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
       transparent 55%
     ),
     var(--surface);
+}
+
+/*
+  A dark card on the landing (the Big-O stage, the practice window). The
+  element also carries .dark, and is in the :root selector list above, so
+  every token inside it takes its dark value in the light theme too and no
+  control is repainted by hand. In the light theme the card is the navy of the
+  code well and the module art; in the dark theme it is that theme's own code
+  paper. A .lab-stage carries it too (light theme: the stage is a navy card; the
+  dark theme's own .dark .lab-stage treatment is more specific and keeps it).
+
+  The block of tokens re-declares the semantic ones :root defines by reference
+  (var(--press-ink)) and the dark block does not set itself: a custom property
+  is computed where it is declared and inherited already resolved, so on a
+  subtree carrying .dark they would stay light. paperContrast.test.ts fails if
+  one is missing here.
+*/
+.navy-card {
+  --background: var(--press-paper);
+  --foreground: var(--press-ink);
+  --muted: var(--press-ink-soft);
+  --border: var(--press-rule);
+  --rule-strong: var(--press-rule-strong);
+  --accent: var(--press-olive);
+  --pop: var(--press-lime);
+  --good: var(--hue-green-ink);
+  --bad: var(--hue-red-ink);
+  --warn: var(--hue-orange-ink);
+  --insight: var(--hue-yellow-ink);
+  --info: var(--hue-blue-ink);
+  --good-surface: var(--hue-green-1);
+  --bad-surface: var(--hue-red-1);
+  --warn-surface: var(--hue-orange-1);
+  --insight-surface: var(--hue-yellow-1);
+  --info-surface: var(--hue-blue-1);
+  --good-line: var(--hue-green-line);
+  --bad-line: var(--hue-red-line);
+  --warn-line: var(--hue-orange-line);
+  --insight-line: var(--hue-yellow-line);
+  --info-line: var(--hue-blue-line);
+  --lamp: var(--press-lamp);
+  --lamp-hi: var(--press-lamp-hi);
+  --lamp-lo: var(--press-lamp-lo);
+  --mark: var(--press-blue);
+  --highlight: var(--press-highlight);
+  --halftone: var(--press-halftone);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--code);
+  color: var(--foreground);
+}
+:root:not(.dark) .navy-card {
+  /* The navy ladder (it began as the concept map's inverted plate): ground, a
+     recessed --surface and a lifted --elevated, so inner surfaces stay visible
+     instead of dropping to the dark theme's black and neutral grey. Measured
+     against the #14202e ground: a recessed #0f1a26 sat at 1.07:1 and vanished,
+     #1f3145 reads at 1.24:1; the lifted step was #304764 (1.73:1) but left --bad
+     at 4.19:1, so it is #2b405a, 1.55:1 with every ink at 4.67:1 or better.
+     --code (the filter track) is the recessed step. The inks stay the dark
+     theme's, which the .dark scope gives; paperContrast.test.ts holds each to
+     AA on all three steps. */
+  --background: var(--card-navy);
+  --elevated: #2b405a;
+  --surface: #1f3145;
+  --code: #1f3145;
+  --border: rgba(230, 237, 244, 0.22);
+  /* The dark theme's muted (#9ca9b8) fell short of AA on the lifted step; the
+     same hue lightened clears it on all three (paperContrast.test.ts). */
+  --muted: #acb9c8;
+  background: var(--card-navy);
+}
+
+/*
+  A floating control's fill mirrored against the page (owner, 2026-09-23):
+  dark on the light theme's page, light on the dark theme's — the opposite of
+  .navy-card, which stays dark in both themes as an "always-on" instrument
+  surface. bg-background read as nearly invisible chrome for a button meant
+  to float over content in either theme, so it swaps instead. Values mirror
+  the light theme's own inks (light: --card-navy / #e6edf4; dark: #e4e9f2 /
+  #16202e), the same pairing the retired .plate-invert used, so nothing here
+  is invented. Plain CSS, not a Tailwind utility: bracket-value colours would
+  bypass the token system, and Tailwind's dark: variant isn't bound to .dark
+  in this project (see the module-art note below). Plain CSS lives outside
+  @layer utilities, so it beats ROUND_CONTROL's own hover:border-accent /
+  hover:text-foreground utilities whatever their specificity, with no
+  !important needed (see the focus-ring opt-out above for the same rule).
+*/
+.floating-invert {
+  background-color: var(--card-navy);
+  color: #e6edf4;
+  border-color: rgba(230, 237, 244, 0.22);
+}
+.floating-invert:hover {
+  border-color: rgba(230, 237, 244, 0.4);
+  color: #ffffff;
+}
+.dark .floating-invert {
+  background-color: #e4e9f2;
+  color: #16202e;
+  border-color: rgba(22, 32, 46, 0.2);
+}
+.dark .floating-invert:hover {
+  border-color: rgba(22, 32, 46, 0.35);
+  color: #060607;
 }
 
 .lab-mesh::before {
@@ -1834,47 +2240,3 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   }
 }
 
-/*
-  Inverted plate — a panel that deliberately runs opposite to the page, the
-  same idea globals.css already applies to the code surface ("always a dark
-  editor surface in the light theme and always a light one in the dark
-  theme"). Used by the concept map and the module art, so both read as their
-  own instrument rather than as more page.
-
-  This is a SCOPE, not a component style: it remaps the semantic tokens, so
-  everything inside keeps consuming --elevated / --foreground / --border and
-  needs no knowledge of the inversion — exactly how familyCssVars() works.
-  --accent and --on-pop are deliberately NOT remapped: an accent fill carries
-  its own ink, so the root node stays legible on either plate.
-
-  Values mirror the opposite theme's own tokens (--press-ink #e6edf4 /
-  --press-ink-soft #9ca9b8 dark; #16202e / #56606e light), so the plate never
-  invents a palette.
-*/
-.plate-invert {
-  --background: #14202e;
-  /* Node cards sit ON the plate and must read as lifted. Measured against the
-     #14202e ground: the original #1a2736 was 1.09:1 and vanished; #223349 was
-     1.28:1, still weak; #304764 is 1.73:1 — a step you can actually see, with
-     ink at 8.04:1 on it, comfortably past AA. */
-  --elevated: #304764;
-  /* Leaves use --surface and must still be *visible*: on this plate a recessed
-     value (#0f1a26) sat at 1.07:1 and disappeared. #1f3145 reads at 1.24:1
-     against the plate while staying clearly quieter than a branch card
-     (1.40:1 between them); ink on it is 11.2:1. */
-  --surface: #1f3145;
-  --foreground: #e6edf4;
-  --muted: #9ca9b8;
-  --border: rgba(230, 237, 244, 0.22);
-}
-
-.dark .plate-invert {
-  --background: #e4e9f2;
-  --elevated: #ffffff;
-  --surface: #d8dde8;
-  --foreground: #16202e;
-  --muted: #56606e;
-  /* Matches the light plate's border weight: on paper the white card already
-     carries a brightness step, so the rule only has to define the edge. */
-  --border: rgba(22, 32, 46, 0.20);
-}

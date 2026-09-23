@@ -1,0 +1,58 @@
+{
+  "voice": "SAz9YHcvj6GT2YYXdXww",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.1,
+    "use_speaker_boost": true
+  },
+  "estimated": false,
+  "lines": [
+    {
+      "line": 1,
+      "title": "hook",
+      "file": "line-1.mp3",
+      "duration": 13.746,
+      "word_count": 44,
+      "attempts": 1,
+      "text": "A milling tool clearing a pocket has to cover every point of an area, and spiralling in from the edge wastes the least motion. Tracking a spiral looks hard until you notice one thing: the part you have not visited is always a rectangle."
+    },
+    {
+      "line": 2,
+      "title": "the first ring",
+      "file": "line-2.mp3",
+      "duration": 17.043,
+      "word_count": 53,
+      "attempts": 3,
+      "text": "Four numbers describe that rectangle: top, bottom, left and right. Start with the whole grid. Walk the top row left to right, then the right column downward, then the bottom row right to left, then the left column back up. That is one ring, and the dashed rectangle marks what is still untouched."
+    },
+    {
+      "line": 3,
+      "title": "shrinking",
+      "file": "line-3.mp3",
+      "duration": 16.44,
+      "word_count": 40,
+      "attempts": 3,
+      "text": "Now shrink the rectangle by one on every side: top plus one, bottom minus one, left plus one, right minus one. Then walk its outer ring the same way. The tool spirals inward, and no cell is ever visited twice."
+    },
+    {
+      "line": 4,
+      "title": "the last ring",
+      "file": "line-4.mp3",
+      "duration": 15.0,
+      "word_count": 46,
+      "attempts": 1,
+      "text": "The edges keep closing until they cross. Here the last ring is a single row, two cells wide. That is exactly why the bottom row and the left column are guarded by a check: with one row left, walking back would cover cells you just emitted."
+    },
+    {
+      "line": 5,
+      "title": "facts",
+      "file": "line-5.mp3",
+      "duration": 10.96,
+      "word_count": 24,
+      "attempts": 1,
+      "text": "Thirty cells, each visited exactly once. Four integers of state, however large the grid. One pass, order m times n, with constant extra space."
+    }
+  ]
+}

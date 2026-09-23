@@ -262,10 +262,10 @@ describe("design tokens", () => {
   it("dark mode defines layered surfaces and soft borders", () => {
     const css = readFileSync(GLOBALS, "utf8");
     const dark = css.slice(css.indexOf(".dark"));
-    expect(firstHexVar(dark, "press-paper")).toBe("#121214");
+    expect(firstHexVar(dark, "press-paper")).toBe("#060607");
     expect(firstHexVar(dark, "elevated")).toBe("#26262a");
     expect(firstHexVar(dark, "code")).toBe("#19191d");
-    expect(firstHexVar(dark, "surface")).toBe("#0c0c0d");
+    expect(firstHexVar(dark, "surface")).toBe("#000000");
     expect(firstHexVar(dark, "press-lime")).toBe("#cbd5e1");
     expect(firstHexVar(dark, "press-blue")).toBe("#cbd5e1");
     expect(dark).toMatch(
@@ -278,7 +278,7 @@ describe("design tokens", () => {
     // relative order — elevated brightest, surface deepest, never an
     // inversion. Light: white cards pop off a cool-gray page, editor and
     // test wells step down. Measured light 1.10 / 1.11 / 1.12 / 1.36; dark
-    // 1.24 / 1.16 / 1.07 / 1.05 (see globals.css comments).
+    // 1.34 / 1.16 / 1.16 / 1.04 (see globals.css comments).
     const css = readFileSync(GLOBALS, "utf8");
     const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
     const dark = css.slice(css.indexOf(".dark"));
@@ -425,10 +425,10 @@ describe("design tokens", () => {
       surface: "#d8dde8",
     };
     const darkSurfaces = {
-      background: "#121214",
+      background: "#060607",
       elevated: "#26262a",
       code: "#19191d",
-      surface: "#0c0c0d",
+      surface: "#000000",
     };
     for (const theme of FAMILY_THEMES) {
       for (const [name, hex] of Object.entries(lightSurfaces)) {
@@ -563,12 +563,13 @@ describe("design tokens", () => {
     // The flat problem list (2026-09 redesign) has no per-module section to
     // scope with familyCssVars — each row/topic just carries a small literal
     // dot in that module's real accent colour, in both the sidebar's Topics
-    // list (ProblemsListClient) and each row's module tag (ProblemsFlatList).
+    // list (useProblemFilters, shared by the practice page and the landing
+    // Practice window) and each row's module tag (ProblemsFlatList).
     // Deliberately different from the curriculum-map card pattern above: a
     // dense list of 116 rows accent-washing per row would be noise, not a
     // design.
     const problemsList = readFileSync(
-      join(SRC, "components", "problems", "ProblemsListClient.tsx"),
+      join(SRC, "components", "problems", "useProblemFilters.ts"),
       "utf8",
     );
     const flatList = readFileSync(
@@ -635,7 +636,7 @@ describe("design tokens", () => {
     for (const [role, hue] of Object.entries(hueOf)) {
       expect(root).toMatch(new RegExp(`--${role}:\\s*var\\(--hue-${hue}-ink\\)`));
       expect(root).toMatch(new RegExp(`--${role}-surface:\\s*var\\(--hue-${hue}-1\\)`));
-      // Lines are generated grain-safe per theme (palette spec §4.3), so the
+      // Lines are generated per theme (palette spec §4.3), so the
       // semantic token names one primitive and .dark does not override it.
       expect(root).toMatch(new RegExp(`--${role}-line:\\s*var\\(--hue-${hue}-line\\)`));
       expect(stripComments(dark)).not.toMatch(new RegExp(`--${role}-line:`));

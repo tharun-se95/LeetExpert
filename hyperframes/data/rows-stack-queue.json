@@ -1,0 +1,26 @@
+[
+  {
+    "_out": "monotonic-stack",
+    "family": "state-transition",
+    "theme": "dark",
+    "eyebrow": "State Transition",
+    "title": "Monotonic Stack",
+    "mode": "stack",
+    "input": "2,1,5,6,2,3",
+    "stepSeconds": 1.5,
+    "steps": "[{\"i\": 0, \"contents\": [], \"op\": \"start\", \"note\": \"The stack holds values still waiting for a bigger one.\"}, {\"i\": 0, \"contents\": [2], \"op\": \"push 2\", \"note\": \"Nothing left to resolve. Push <b>2</b> and move on.\"}, {\"i\": 1, \"contents\": [2, 1], \"op\": \"push 1\", \"note\": \"Nothing left to resolve. Push <b>1</b> and move on.\"}, {\"i\": 2, \"contents\": [2], \"op\": \"pop 1\", \"note\": \"<b>5</b> is bigger than <b>1</b> \\u2014 so 5 is 1's next greater. Pop it.\"}, {\"i\": 2, \"contents\": [], \"op\": \"pop 2\", \"note\": \"<b>5</b> is bigger than <b>2</b> \\u2014 so 5 is 2's next greater. Pop it.\"}, {\"i\": 2, \"contents\": [5], \"op\": \"push 5\", \"note\": \"Nothing left to resolve. Push <b>5</b> and move on.\"}, {\"i\": 3, \"contents\": [], \"op\": \"pop 5\", \"note\": \"<b>6</b> is bigger than <b>5</b> \\u2014 so 6 is 5's next greater. Pop it.\"}, {\"i\": 3, \"contents\": [6], \"op\": \"push 6\", \"note\": \"Nothing left to resolve. Push <b>6</b> and move on.\"}, {\"i\": 4, \"contents\": [6, 2], \"op\": \"push 2\", \"note\": \"Nothing left to resolve. Push <b>2</b> and move on.\"}, {\"i\": 5, \"contents\": [6], \"op\": \"pop 2\", \"note\": \"<b>3</b> is bigger than <b>2</b> \\u2014 so 3 is 2's next greater. Pop it.\"}, {\"i\": 5, \"contents\": [6, 3], \"op\": \"push 3\", \"note\": \"Nothing left to resolve. Push <b>3</b> and move on.\"}, {\"i\": 5, \"contents\": [6, 3], \"op\": \"done\", \"note\": \"What is left never found a bigger value: <b>6, 3</b>.\"}]",
+    "capacity": 2
+  },
+  {
+    "_out": "fifo-queue",
+    "family": "linear-traversal",
+    "theme": "light",
+    "eyebrow": "Linear Traversal",
+    "title": "Queue \u2014 First In, First Out",
+    "mode": "queue",
+    "input": "7,4,9,1,5",
+    "stepSeconds": 1.5,
+    "steps": "[{\"i\": 0, \"contents\": [], \"op\": \"start\", \"note\": \"A queue serves in arrival order \\u2014 first in, first out.\"}, {\"i\": 0, \"contents\": [7], \"op\": \"enqueue 7\", \"note\": \"<b>7</b> joins at the back.\"}, {\"i\": 1, \"contents\": [7, 4], \"op\": \"enqueue 4\", \"note\": \"<b>4</b> joins at the back.\"}, {\"i\": 2, \"contents\": [7, 4, 9], \"op\": \"enqueue 9\", \"note\": \"<b>9</b> joins at the back.\"}, {\"i\": 2, \"contents\": [4, 9], \"op\": \"dequeue 7\", \"note\": \"<b>7</b> arrived first, so it leaves first \\u2014 from the front, not the back.\"}, {\"i\": 3, \"contents\": [4, 9, 1], \"op\": \"enqueue 1\", \"note\": \"<b>1</b> joins at the back.\"}, {\"i\": 3, \"contents\": [9, 1], \"op\": \"dequeue 4\", \"note\": \"<b>4</b> arrived first, so it leaves first \\u2014 from the front, not the back.\"}, {\"i\": 4, \"contents\": [9, 1, 5], \"op\": \"enqueue 5\", \"note\": \"<b>5</b> joins at the back.\"}, {\"i\": 4, \"contents\": [1, 5], \"op\": \"dequeue 9\", \"note\": \"<b>9</b> arrived first, so it leaves first \\u2014 from the front, not the back.\"}]",
+    "capacity": 3
+  }
+]

@@ -4,30 +4,19 @@ import type { curriculumStats } from "@/lib/landing/content";
  * The landing page's copy and the pure helpers that type it out as each
  * section snaps into view. Kept free of runtime imports from content.ts (which pulls the course
  * manifest) so the client components that render it stay small.
- * Spec: docs/superpowers/specs/2026-09-14-landing-rewrite-agentic-ai-design.md
+ * Specs: docs/superpowers/specs/2026-09-14-landing-rewrite-agentic-ai-design.md,
+ * docs/superpowers/specs/2026-09-15-landing-product-page-design.md
  */
 
 export type CurriculumCounts = Pick<ReturnType<typeof curriculumStats>, "modules" | "lessons" | "problems">;
 
-// --- numbers the copy states, computed rather than typed in -------------
-export const MILLION = 1_000_000;
-/** Comparisons needed to check every pair of n records. */
-export const pairCount = (n: number) => (n * (n - 1)) / 2;
-/** Steps a loop nested over n items takes. */
-export const nestedSteps = (n: number) => n * n;
+export const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-const SPELLED: readonly (readonly [number, string])[] = [
-  [1e12, "a trillion"],
-  [1e9, "a billion"],
-  [1e6, "a million"],
-];
-
-/** "a million" for exactly 10^6 and so on; digits with separators otherwise. */
-export function spellCount(n: number): string {
-  return SPELLED.find(([value]) => value === n)?.[1] ?? n.toLocaleString("en-US");
+export function countsLine(counts: CurriculumCounts): string {
+  return `${counts.modules} modules · ${counts.lessons} lessons · ${counts.problems} problems`;
 }
 
-// --- copy ---------------------------------------------------------------
+// --- hero ---------------------------------------------------------------
 /**
  * One sentence per line (owner, 2026-09-14): wrapped as one string it broke
  * "…the / code. You decide / if it's right." Judgment, not "agents can't solve
@@ -36,70 +25,24 @@ export function spellCount(n: number): string {
 const HERO_LINES = ["Agents write the code.", "You decide if it's right."] as const;
 
 export const HERO = {
+  kicker: "DSA for the age of AI",
   lines: HERO_LINES,
   title: HERO_LINES.join(" "),
   // Owner's wording (2026-09-14).
   lede: "Learning data structures and algorithms is for the part of the job that doesn't get automated.",
+  // What the product is, for a visitor who has never heard of it (owner, 2026-09-15).
+  descriptor:
+    "A structured course in data structures and algorithms: visual lessons, and problems you solve in your browser in Python or JavaScript.",
+  start: "Start learning free",
+  explore: "Explore the curriculum",
 } as const;
 
-export type Point = { title: string; body: string };
-
-/**
- * The whole argument on one screen (owner, 2026-09-14): four full chapters
- * were a long scroll to reach the point. Each point is one line of claim and
- * one line of evidence; the structure beside it takes one stage per point.
- */
-export const WHY: { kicker: string; title: string; points: readonly Point[] } = {
-  kicker: "Why it still matters",
-  title: "The code is cheap now. Judgment isn't.",
-  points: [
-    {
-      title: "Problem solving is the job.",
-      body: "Most new problems are counting, searching, ordering or connecting things in disguise.",
-    },
-    {
-      title: "Frame it before you prompt.",
-      body: `A million records is about ${Math.round(pairCount(MILLION) / 1e9)} billion pair checks, or one pass with a hash table.`,
-    },
-    {
-      title: "Review what it costs.",
-      body: `A nested loop is ${spellCount(nestedSteps(100))} steps on a hundred items and ${spellCount(nestedSteps(MILLION))} on a million.`,
-    },
-    {
-      title: "Learn what doesn't expire.",
-      body: "Dijkstra's shortest-path algorithm is from 1959, and routing still builds on it. Interviews still ask for it.",
-    },
-  ],
-};
-
-/** How long each point takes to type; longer than the structure's 0.9s morph so each stage lands before the next begins. */
-export const POINT_MS = 1100;
-
-/** Typing order: the heading, then each point's title and body. */
-export function argumentLengths(): number[] {
-  return [WHY.title.length, ...WHY.points.flatMap((p) => [p.title.length, p.body.length])];
-}
-
-export function argumentDuration(): number {
-  return WHY.points.length * POINT_MS;
-}
-
-/** The structure's stage while the argument types: the last point whose title has started, 0 before any. */
-export function argumentStage(parts: readonly number[]): number {
-  let stage = 0;
-  WHY.points.forEach((_, i) => {
-    if ((parts[1 + 2 * i] ?? 0) > 0) stage = i;
-  });
-  return stage;
-}
-
+// --- what's inside ------------------------------------------------------
 export type Chapter = {
   id: string;
   kicker: string;
   title: string;
   body: readonly string[];
-  /** The structure's stage while this chapter is on screen (pinned from lg, inline below). */
-  stage: number;
 };
 
 export function inside(counts: CurriculumCounts): Chapter {
@@ -108,13 +51,130 @@ export function inside(counts: CurriculumCounts): Chapter {
     kicker: "The course",
     title: "What's inside.",
     body: [
-      `${counts.modules} modules · ${counts.lessons} lessons · ${counts.problems} problems, each one runnable in Python and JavaScript.`,
+      `${countsLine(counts)}, each one runnable in Python and JavaScript.`,
       "Every problem runs in your browser, with nothing to install.",
     ],
-    stage: WHY.points.length - 1,
   };
 }
 
+/** One real course stage as a "What's inside" card; built on the server from the manifest. */
+export type StageCard = {
+  number: number;
+  title: string;
+  description: string;
+  modules: number;
+  lessons: number;
+  href: string;
+  /**
+   * Art of the stage's first modules (up to three), fanned on its card
+   * (owner, 2026-09-23: "beautiful image cards"). Read from disk on the
+   * server by productData.ts; absent where no module has art yet.
+   */
+  art?: readonly { light: string; dark: string; title: string }[];
+};
+
+export function stageMeta(stage: Pick<StageCard, "modules" | "lessons">): string {
+  return `${plural(stage.modules, "module")} · ${plural(stage.lessons, "lesson")}`;
+}
+
+/** Delay between cards as they rise in, so a row reads left to right, top to bottom. */
+export const RISE_STAGGER_MS = 70;
+
+// --- burn (the heatmap) --------------------------------------------------
+/**
+ * The heatmap, renamed Burn (owner, 2026-09-17) and shown in Keep, with the
+ * owner's credits line beneath it. Credit rules aren't defined yet, so the
+ * copy names no amounts or rates.
+ */
+export const HEAT = {
+  title: "Burn",
+  body: "Every day you practise lights up a square, so your rhythm is visible at a glance: the weeks you kept going, the days you stalled, and how long your streak has run.",
+  credits: "Earn credits for consistent heat.",
+  example: "An example year",
+} as const;
+
+// --- learners (placeholder social proof) --------------------------------
+export type ProofStat = { value: string; label: string; placeholder: true };
+export type ProofQuote = { quote: string; name: string; role: string; placeholder: true };
+
+/**
+ * Placeholder social proof (owner, 2026-09-15): examples, labelled on the page
+ * in every build. The one deliberate exception to "every number computed" —
+ * there are no learners to count yet. The reviewers are invented placeholders
+ * with generated avatars (owner, 2026-09-23: "use avatars as placeholders …
+ * create a static list of users and reviews"): no photo of anyone, each one
+ * flagged here and tagged on its card, so none can pass for a real learner.
+ * End condition: replace with real numbers and quotes from real learners (with
+ * their consent), then drop the flags and the tags.
+ */
+export const PROOF: {
+  kicker: string;
+  title: string;
+  note: string;
+  stats: readonly ProofStat[];
+  quotes: readonly ProofQuote[];
+} = {
+  kicker: "Learners",
+  title: "What learners say.",
+  note: "example numbers, reviewers and quotes, to be replaced with real ones before launch",
+  stats: [
+    { value: "2,400+", label: "engineers learning", placeholder: true },
+    { value: "18,000", label: "problems solved", placeholder: true },
+    { value: "4.8 / 5", label: "average lesson rating", placeholder: true },
+  ],
+  quotes: [
+    {
+      quote: "I stopped memorising solutions. Now I can tell why the agent's answer times out.",
+      name: "Priya Raman",
+      role: "Backend engineer",
+      placeholder: true,
+    },
+    {
+      quote: "The tracers made recursion click in an afternoon. Watching the call stack grow and unwind beat any diagram.",
+      name: "Marcus Webb",
+      role: "Computer science student",
+      placeholder: true,
+    },
+    {
+      quote: "Every problem asks what it costs. That habit changed how I review pull requests.",
+      name: "Aiko Tanaka",
+      role: "Senior engineer",
+      placeholder: true,
+    },
+    {
+      quote: "The coach names the case that broke instead of handing me the fix. Annoying for a minute, then it sticks.",
+      name: "Diego Alvarez",
+      role: "Frontend engineer",
+      placeholder: true,
+    },
+    {
+      quote: "Sliding window finally made sense once I could watch the window move over a real array.",
+      name: "Fatima Noor",
+      role: "Bootcamp graduate",
+      placeholder: true,
+    },
+    {
+      quote: "The cheatsheets are what I skim the night before an interview. Smell, pattern, done.",
+      name: "Liam O'Connor",
+      role: "Data engineer",
+      placeholder: true,
+    },
+    {
+      quote: "Solving in Python and checking the same idea in JavaScript showed me where my integer division was wrong.",
+      name: "Sofia Petrova",
+      role: "Mobile developer",
+      placeholder: true,
+    },
+    {
+      quote: "I use it to sanity-check what the agent writes. Knowing the target complexity makes a bad answer obvious.",
+      name: "Kwame Mensah",
+      role: "Staff engineer",
+      placeholder: true,
+    },
+  ],
+};
+
+// --- pricing and questions ----------------------------------------------
 export const PRICING = {
   kicker: "Pricing",
   title: "Start free. Pay as you learn.",
@@ -122,23 +182,14 @@ export const PRICING = {
   cta: "Start the first lesson",
 } as const;
 
-/**
- * The heatmap, presented as a feature (owner, 2026-09-14), with the owner's
- * credits line beneath it. Credit rules aren't defined yet, so the copy names
- * no amounts or rates.
- */
-export const HEAT = {
-  kicker: "Feature",
-  title: "Heatmap",
-  body: "Every day you practise lights up a square, so your rhythm is visible at a glance: the weeks you kept going, the days you stalled, and how long your streak has run.",
-  credits: "Earn credits for consistent heat.",
-  example: "An example year",
-} as const;
-
 export const FAQ: readonly { q: string; a: string }[] = [
   {
-    q: "If AI can write code, why learn this?",
-    a: "Because deciding what to build, and whether what was built is right and fast enough, is still yours. That judgment is what this course trains.",
+    q: "Who is it for?",
+    a: "Engineers preparing for interviews, students breaking into software, and working engineers who use AI and want to judge what it writes.",
+  },
+  {
+    q: "Does it help with interviews?",
+    a: "Yes. The problems are the kind interviews ask, and each one asks for the time and space it should take, not just code that passes.",
   },
   {
     q: "Which languages?",
@@ -149,45 +200,3 @@ export const FAQ: readonly { q: string; a: string }[] = [
     a: "No. If you can write basic loops and functions, you can start; the first stage builds the vocabulary the rest of the course uses.",
   },
 ];
-
-// --- typing -------------------------------------------------------------
-const clamp01 = (v: number) => (Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0);
-
-/**
- * Characters of `text` visible at `progress`, in whole words: the cut always
- * lands at the end of a word, so a word never appears half-typed. Word by word
- * rather than letter by letter (owner, 2026-09-14) — per-letter typing was too
- * busy to read along with. A word is a run of non-space characters, so an
- * emoji's surrogate pair can never be split either.
- */
-export function typedLength(text: string, progress: number): number {
-  const ends = [...text.matchAll(/\S+/g)].map((m) => m.index + m[0].length);
-  if (ends.length === 0) return text.length;
-  const words = Math.round(clamp01(progress) * ends.length);
-  if (words === 0) return 0;
-  return words === ends.length ? text.length : ends[words - 1]!;
-}
-
-/**
- * Splits one progress value across consecutive strings by length, so a
- * heading finishes typing before its paragraphs start.
- */
-export function segmentProgress(lengths: readonly number[], progress: number): number[] {
-  const total = lengths.reduce((sum, len) => sum + len, 0);
-  if (total === 0) return lengths.map(() => 1);
-  const done = clamp01(progress) * total;
-  let start = 0;
-  return lengths.map((len) => {
-    const p = len === 0 ? (done >= start ? 1 : 0) : clamp01((done - start) / len);
-    start += len;
-    return p;
-  });
-}
-
-/**
- * How long a section takes to type: ~12ms a character, but never so quick it
- * reads as a flash, nor so slow a long chapter keeps the reader waiting.
- */
-export function typingDuration(chars: number): number {
-  return Math.min(2400, Math.max(700, chars * 12));
-}

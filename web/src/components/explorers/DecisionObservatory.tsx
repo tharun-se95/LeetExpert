@@ -175,7 +175,7 @@ export function DecisionObservatory() {
 
   return (
     <section
-      className="lab-stage lab-mesh relative overflow-hidden"
+      className="lab-stage lab-mesh dark navy-card relative overflow-hidden"
       aria-label="Decision observatory"
     >
       <div className="relative z-[1] mb-5 flex flex-wrap items-start justify-between gap-3">

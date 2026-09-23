@@ -12,13 +12,13 @@ const NAV = [
 ] as const;
 
 /**
- * The home page's header: transparent over the paper grain with a hairline
+ * The home page's header: transparent over the page paper with a hairline
  * beneath, pinned to the top as the page scrolls (owner, 2026-09-14 — it
  * originally scrolled away like the reference).
  * Spec: docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md
  *
  * AppShell renders this INSIDE <main> on "/" only. The app Header sits above
- * the scroller, so it could neither scroll away nor show the grain — and every
+ * the scroller, so it could not scroll away — and every
  * other route keeps it, because the lessons drawer's tabs are aligned to its
  * height.
  *
@@ -40,7 +40,7 @@ export function LandingHeader({
   return (
     <header
       className={cn(
-        // Sticky within <main>, the page's scroller. Transparent over the grain
+        // Sticky within <main>, the page's scroller. Transparent over the paper
         // at rest; once content passes beneath, a translucent paper keeps the
         // nav legible over it. The height never changes, so nothing below jumps.
         "print:hidden sticky top-0 z-30 border-b border-border py-6 transition-[background-color,box-shadow] duration-300",

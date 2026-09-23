@@ -2,247 +2,39 @@ import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
-import { EvolvingStructure } from "@/components/landing/EvolvingStructure";
+import { STOP } from "@/components/landing/landingClasses";
 import { LandingStory } from "@/components/landing/LandingStory";
-import { TypedText } from "@/components/landing/TypedText";
-import { pagingIntent } from "@/components/landing/useSectionPaging";
 import { activeSectionIndex } from "@/components/landing/useSectionReveal";
 import { curriculumStats } from "@/lib/landing/content";
-import {
-  ALL_EDGES,
-  BUCKETS,
-  CELL,
-  CROSS_LINKS,
-  HASH_ROW_Y,
-  LAYOUTS,
-  STAGE_EDGES,
-  STRUCTURE_VALUES,
-  VIEW_H,
-  VIEW_W,
-  clampStage,
-  cornerFor,
-} from "@/lib/landing/structureLayouts";
-import {
-  FAQ,
-  HERO,
-  PRICING,
-  WHY,
-  argumentDuration,
-  argumentLengths,
-  argumentStage,
-  inside,
-  segmentProgress,
-  typedLength,
-  typingDuration,
-} from "@/lib/landing/story";
+import { heatYear } from "@/lib/landing/heat";
+import { featureData } from "@/lib/landing/productData";
+import { FAQ, HERO, PRICING, inside } from "@/lib/landing/story";
 
 const src = join(__dirname, "..", "src");
 const read = (...p: string[]) => readFileSync(join(src, ...p), "utf8");
-const values = STRUCTURE_VALUES;
-const pairKey = (a: number, b: number) => (a < b ? `${a}-${b}` : `${b}-${a}`);
-const edgeValues = (edges: readonly (readonly [number, number])[]) =>
-  new Set(edges.map(([a, b]) => pairKey(values[a]!, values[b]!)));
 
-/** The head of the `@media ... {` block that encloses `index`, or null. */
-function enclosingMedia(css: string, index: number): string | null {
-  let depth = 0;
-  for (let i = index; i >= 0; i--) {
-    if (css[i] === "}") depth++;
-    else if (css[i] === "{") {
-      if (depth === 0) {
-        const head = css.slice(css.lastIndexOf("\n", i) + 1, i).trim();
-        if (head.startsWith("@media")) return head;
-      } else depth--;
-    }
-  }
-  return null;
-}
-
-/** Parent and depth (by value) of every value when inserted into a BST in array order. */
-function insertBst(order: readonly number[]) {
-  type Node = { value: number; depth: number; left?: Node; right?: Node };
-  const root: Node = { value: order[0]!, depth: 0 };
-  const parent = new Map<number, number>();
-  const depth = new Map<number, number>([[root.value, 0]]);
-  for (const value of order.slice(1)) {
-    let at = root;
-    for (;;) {
-      const side = value < at.value ? "left" : "right";
-      const next = at[side];
-      if (!next) {
-        at[side] = { value, depth: at.depth + 1 };
-        parent.set(value, at.value);
-        depth.set(value, at.depth + 1);
-        break;
-      }
-      at = next;
-    }
-  }
-  return { parent, depth };
-}
-
-describe("evolving structure data", () => {
-  it("places all seven values inside the drawing at every stage", () => {
-    expect(LAYOUTS).toHaveLength(4);
-    for (const layout of LAYOUTS) {
-      expect(layout).toHaveLength(values.length);
-      for (const { x, y } of layout) {
-        expect(x).toBeGreaterThan(0);
-        expect(x).toBeLessThan(VIEW_W);
-        expect(y).toBeGreaterThan(0);
-        expect(y).toBeLessThan(VIEW_H);
-      }
-    }
-  });
-
-  it("files every value in bucket value % buckets, chained in array order", () => {
-    const hash = LAYOUTS[1]!;
-    values.forEach((v, i) => expect(hash[i]!.y).toBe(HASH_ROW_Y(v % BUCKETS)));
-    const links = edgeValues(STAGE_EDGES[1]!);
-    for (let b = 0; b < BUCKETS; b++) {
-      const chain = values.map((v, i) => ({ v, i })).filter(({ v }) => v % BUCKETS === b);
-      for (let k = 1; k < chain.length; k++) {
-        expect(hash[chain[k]!.i]!.x).toBeGreaterThan(hash[chain[k - 1]!.i]!.x);
-        expect(links.has(pairKey(chain[k - 1]!.v, chain[k]!.v))).toBe(true);
-      }
-    }
-  });
-
-  it("draws the BST that inserting the values in order actually builds", () => {
-    const { parent, depth } = insertBst(values);
-    const expected = new Set([...parent].map(([child, p]) => pairKey(child, p)));
-    expect(edgeValues(STAGE_EDGES[2]!)).toEqual(expected);
-
-    const tree = LAYOUTS[2]!;
-    const leftToRight = values.map((v, i) => ({ v, x: tree[i]!.x })).sort((a, b) => a.x - b.x);
-    expect(leftToRight.map(({ v }) => v)).toEqual([...values].sort((a, b) => a - b));
-    values.forEach((v, i) =>
-      values.forEach((w, j) => {
-        if (depth.get(v)! > depth.get(w)!) expect(tree[i]!.y).toBeGreaterThan(tree[j]!.y);
-      }),
-    );
-  });
-
-  it("makes the graph the tree plus cross links that close cycles", () => {
-    const tree = edgeValues(STAGE_EDGES[2]!);
-    const graph = edgeValues(STAGE_EDGES[3]!);
-    for (const edge of tree) expect(graph.has(edge)).toBe(true);
-    for (const [a, b] of CROSS_LINKS) expect(graph.has(pairKey(a, b))).toBe(true);
-
-    // Connected, and more edges than a tree on the same nodes can have.
-    const adjacent = new Map<number, number[]>(values.map((v) => [v, []]));
-    for (const key of graph) {
-      const [a, b] = key.split("-").map(Number) as [number, number];
-      adjacent.get(a)!.push(b);
-      adjacent.get(b)!.push(a);
-    }
-    const seen = new Set([values[0]!]);
-    const queue = [values[0]!];
-    while (queue.length) for (const n of adjacent.get(queue.shift()!)!) if (!seen.has(n) && seen.add(n)) queue.push(n);
-    expect(seen.size).toBe(values.length);
-    expect(graph.size).toBeGreaterThan(values.length - 1);
-  });
-
-  it("keeps each edge as one element across the stages that draw it", () => {
-    // One element per edge is what lets a tree edge stay put as the tree becomes a graph.
-    const keys = ALL_EDGES.map(({ edge: [a, b] }) => pairKey(values[a]!, values[b]!));
-    expect(new Set(keys).size).toBe(keys.length);
-    const crossKeys = new Set(CROSS_LINKS.map(([a, b]) => pairKey(a, b)));
-    const treeKeys = edgeValues(STAGE_EDGES[2]!);
-    for (const { edge: [a, b], stages } of ALL_EDGES) {
-      const key = pairKey(values[a]!, values[b]!);
-      if (crossKeys.has(key)) expect(stages).toEqual([3]);
-      else if (treeKeys.has(key)) expect(stages).toEqual([2, 3]);
-      else expect(stages).toEqual([1]);
-    }
-  });
-
-  it("rests only on whole stages: square cells in slots, circles as nodes", () => {
-    expect([clampStage(-1), clampStage(1.4), clampStage(9)]).toEqual([0, 1, 3]);
-    expect(cornerFor(0)).toBe(cornerFor(1));
-    expect(cornerFor(2)).toBe(CELL / 2);
-    expect(cornerFor(3)).toBe(CELL / 2);
-    expect(cornerFor(1)).toBeLessThan(cornerFor(2));
-  });
-
-  it("names its stage for screen readers and shows exactly that stage's edges", () => {
-    const at = (stage: number) => renderToStaticMarkup(<EvolvingStructure stage={stage} />);
-    expect(at(0)).toMatch(/role="img"[^>]*aria-label="[^"]*as an array\."/);
-    expect(at(1)).toContain(`as a hash table with ${BUCKETS} buckets.`);
-    expect(at(2)).toContain("as a binary search tree.");
-    expect(at(3)).toContain("as a graph.");
-    expect(at(2).match(/<rect/g)).toHaveLength(values.length);
-    [0, 1, 2, 3].forEach((stage) =>
-      expect(at(stage).match(/data-shown="true"/g) ?? [], `stage ${stage}`).toHaveLength(STAGE_EDGES[stage]!.length),
-    );
-  });
-});
-
-describe("typing", () => {
-  it("types whole words: clamps, only grows, and always cuts at the end of a word", () => {
-    const text = "Agents write the code. You decide \u{1F600}ok.";
-    expect(typedLength(text, -1)).toBe(0);
-    expect(typedLength(text, 0)).toBe(0);
-    expect(typedLength(text, 2)).toBe(text.length);
-    expect(typedLength(text, 1)).toBe(text.length);
-    const seen = new Set<string>();
-    let last = 0;
-    for (let p = 0; p <= 1.0001; p += 0.005) {
-      const n = typedLength(text, p);
-      expect(n).toBeGreaterThanOrEqual(last);
-      // Never mid-word: the typed slice ends at the text's end or before a space.
-      if (n > 0 && n < text.length) expect(text[n]).toBe(" ");
-      seen.add(text.slice(0, n));
-      last = n;
-    }
-    // Every word boundary appears, one word at a time: "", "Agents", "Agents write", ...
-    const words = text.split(" ");
-    expect(seen).toEqual(new Set(["", ...words.map((_, i) => words.slice(0, i + 1).join(" "))]));
-    expect(typedLength("   ", 0.5)).toBe(3);
-  });
-
-  it("finishes each string before the next one starts", () => {
-    expect(segmentProgress([2, 3], 0)).toEqual([0, 0]);
-    expect(segmentProgress([2, 3], 0.4)).toEqual([1, 0]);
-    expect(segmentProgress([2, 3], 0.7)).toEqual([1, 0.5]);
-    expect(segmentProgress([2, 3], 1)).toEqual([1, 1]);
-  });
-
-  it("types long sections faster per character, within a floor and a ceiling", () => {
-    expect(typingDuration(10)).toBe(700);
-    expect(typingDuration(100)).toBe(1200);
-    expect(typingDuration(5000)).toBe(2400);
-    for (let n = 0; n < 400; n += 10) expect(typingDuration(n + 10)).toBeGreaterThanOrEqual(typingDuration(n));
-  });
-
-  it("keeps the whole text for screen readers and hides only the visual layer", () => {
-    const html = renderToStaticMarkup(<TypedText text="Hello there world" progress={0.4} />);
-    expect(html).toContain('<span class="sr-only">Hello there world</span>');
-    expect(html).toMatch(
-      /<span aria-hidden="true">Hello<span class="typed-caret"><\/span><span data-typed-rest="true" class="text-transparent"> there world<\/span><\/span>/,
-    );
-    const done = renderToStaticMarkup(<TypedText text="Hello there world" progress={1} />);
-    expect(done).not.toContain("typed-caret");
-    expect(done).not.toContain("data-typed-rest");
-  });
-
-  it("stops the caret blinking under prefers-reduced-motion", () => {
-    const css = read("app", "globals.css");
-    expect(css).toMatch(/\.typed-caret\s*\{[^}]*animation:\s*typed-caret-blink/);
-    const still = [...css.matchAll(/\.typed-caret\s*\{[^}]*animation:\s*none/g)];
-    expect(still.some((m) => enclosingMedia(css, m.index!) === "@media (prefers-reduced-motion: reduce)")).toBe(true);
-  });
-
-  it("reveals the typed layers when scripts never run", () => {
-    expect(read("components", "landing", "LandingStory.tsx")).toContain(
-      'NOSCRIPT_REVEAL = "[data-typed-rest]{color:inherit!important}"',
-    );
-  });
-});
-
-describe("snapping", () => {
+describe("scrolling (owner, 2026-09-23: a regular landing page scroll)", () => {
   const story = read("components", "landing", "LandingStory.tsx");
   const outro = read("components", "landing", "LandingOutro.tsx");
+  const feature = read("components", "landing", "FeatureSection.tsx");
+  const css = read("app", "globals.css");
+
+  it("leaves the wheel, the snap points and the typing to the browser", () => {
+    for (const gone of ["useSectionPaging.ts", "TypedText.tsx", "LandingBackdrop.tsx"]) {
+      expect(existsSync(join(src, "components", "landing", gone)), gone).toBe(false);
+    }
+    for (const gone of ["wheelGesture.ts", "boxesGrid.ts"]) {
+      expect(existsSync(join(src, "lib", "landing", gone)), gone).toBe(false);
+    }
+    const shell = read("components", "layout", "AppShell.tsx");
+    const main = shell.slice(shell.indexOf("<main"), shell.indexOf("</main>"));
+    expect(main).not.toMatch(/\bsnap-(y|start|mandatory|proximity)\b/);
+    expect(STOP).not.toMatch(/\bsnap-|\bmin-h-dvh\b/);
+    for (const [name, text] of [["LandingStory", story], ["LandingOutro", outro], ["FeatureSection", feature]] as const) {
+      expect(text, name).not.toMatch(/snap-start|data-scroll-steps|useTypedText|TypedText|addEventListener\("(wheel|scroll)"/);
+    }
+    expect(css).not.toMatch(/typed-caret|\.landing-boxes|--boxes-|\.ring-veil/);
+  });
 
   it("makes active the section under the viewport's middle line", () => {
     const boxes = [
@@ -256,168 +48,130 @@ describe("snapping", () => {
     expect(activeSectionIndex(boxes, 2000)).toBe(-1);
   });
 
-  it("turns one wheel gesture into one stop, and never skips part of a tall section", () => {
-    const base = { locked: false, sectionTop: 0, sectionBottom: 1000, viewport: 1000 };
-    expect(pagingIntent({ ...base, deltaY: 120 })).toBe("down");
-    expect(pagingIntent({ ...base, deltaY: -3 })).toBe("up");
-    // Momentum from the gesture that already moved a stop is swallowed.
-    expect(pagingIntent({ ...base, deltaY: 40, locked: true })).toBe("hold");
-    // A section taller than the viewport scrolls natively until its edge.
-    expect(pagingIntent({ ...base, sectionBottom: 1400, deltaY: 100 })).toBe("native");
-    expect(pagingIntent({ ...base, sectionTop: -400, sectionBottom: 1000, deltaY: 100 })).toBe("down");
-    expect(pagingIntent({ ...base, sectionTop: -400, sectionBottom: 1000, deltaY: -100 })).toBe("native");
-    expect(pagingIntent({ ...base, sectionTop: 0, sectionBottom: 1400, deltaY: -100 })).toBe("up");
-  });
-
-  it("sets the headline one sentence per line, typed line by line", () => {
-    expect(HERO.lines).toEqual(["Agents write the code.", "You decide if it's right."]);
-    expect(HERO.title).toBe(HERO.lines.join(" "));
-    const html = renderToStaticMarkup(
-      <LandingStory counts={{ modules: 1, lessons: 1, problems: 1 }} topics={[]} />,
-    );
-    const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)![1]!;
-    const lines = [...h1.matchAll(/<span class="block text-balance"><span><span class="sr-only">([^<]*)<\/span>/g)].map((m) =>
-      m[1]!.replace(/&#x27;/g, "'"),
-    );
-    expect(lines).toEqual([...HERO.lines]);
-  });
-
-  it("sizes the headline so its longer line fits the column (measured: 14.675em)", () => {
-    const h1 = story.match(/<h1 className="([^"]+)"/)![1]!;
-    // lg:text-6xl (3.75rem) made the line 55rem in a 49rem column.
-    expect(h1).not.toMatch(/\btext-6xl\b/);
-    expect(h1).toMatch(/\blg:text-4xl\b/);
-    expect(h1).toMatch(/\bxl:text-5xl\b/);
-  });
-
-  it("keeps the inline mobile drawings clear of the sticky header", () => {
-    const inline = [...story.matchAll(/<EvolvingStructure[^>]*className="([^"]*\blg:hidden\b[^"]*)"/g)].map((m) => m[1]!);
-    expect(inline).toHaveLength(2);
-    for (const cls of inline) expect(cls).toMatch(/\bmt-8\b/);
-  });
-
-  it("pages the wheel on the landing story and centres the pinned drawing in a viewport-tall box", () => {
-    expect(story).toMatch(/useSectionPaging\(\);/);
-    expect(story).toMatch(/className="sticky top-0 flex h-dvh items-center"/);
-  });
-
-  it("snaps only the landing page, mandatory from lg", () => {
-    const shell = read("components", "layout", "AppShell.tsx");
-    const main = shell.slice(shell.indexOf("<main"), shell.indexOf("</main>"));
-    expect(main).toContain('landing && "snap-y snap-proximity lg:snap-mandatory"');
-    // One desk wrapper for every route; only on / is it a snap stop.
-    expect(main).toMatch(
-      /"paper-grain relative",\s*fillMain \? "flex min-h-0 flex-1 flex-col" : "min-h-full",\s*landing && "snap-start",/,
-    );
-  });
-
-  it("makes the argument, what's inside, pricing and questions full-height stops, but not the hero", () => {
-    const hero = story.match(/<section data-scroll-section className="([^"]+)"/)?.[1] ?? "";
-    expect(hero).not.toMatch(/\bsnap-start\b/);
-    const stop = story.match(/const STOP = "([^"]+)"/)?.[1] ?? "";
-    expect(stop).toMatch(/\bsnap-start\b/);
-    expect(stop).toMatch(/\bmin-h-dvh\b/);
-    // The argument and what's inside; the four chapters are one stop now.
-    expect(story.match(/<section data-scroll-section className=\{STOP\}\s*\/?>/g)).toHaveLength(2);
-    expect(story.match(/data-scroll-section/g)).toHaveLength(3);
-    expect(story).toContain("useActiveSection<HTMLDivElement>(3)");
-    const outroSection = outro.match(/const SECTION = "([^"]+)"/)?.[1] ?? "";
-    expect(outroSection).toMatch(/\bsnap-start\b/);
-    expect(outroSection).toMatch(/\bmin-h-dvh\b/);
-    // Pricing, credits and questions.
-    expect(outro.match(/<section data-scroll-section className=\{SECTION\}>/g)).toHaveLength(3);
-  });
-
-  it("finds the active section by observing the middle band, not by listening for scroll", () => {
-    // A page that returns already scrolled fires no scroll event; an observer
-    // still reports where the page is.
+  it("finds the arrived sections by observing the middle band, not by listening for scroll", () => {
+    // Which sections have arrived only decides what loads and when the stage
+    // cards rise; a page that returns already scrolled fires no scroll event.
     const hook = read("components", "landing", "useSectionReveal.ts");
     expect(hook).toMatch(/new IntersectionObserver\(/);
     expect(hook).toMatch(/rootMargin: MIDDLE_BAND/);
     expect(hook).toMatch(/root: document\.querySelector\("main"\)/);
-    expect(hook).not.toMatch(/addEventListener\("scroll"/);
+    expect(hook).not.toMatch(/addEventListener\("scroll"|requestAnimationFrame/);
+    expect(story).toContain("useActiveSection<HTMLDivElement>(5)");
   });
 
-  it("animates on arrival, not on scroll position", () => {
-    for (const [name, text] of [["LandingStory", story], ["LandingOutro", outro]] as const) {
-      expect(text, name).toMatch(/useActiveSection/);
-      expect(text, name).toMatch(/useRevealProgress/);
-      expect(text, name).toMatch(/ref=\{root\}/);
-      expect(text, name).not.toMatch(/useScrollProgress|sectionProgress|ref=\{refs\[/);
+  it("pops cards and text in once as they arrive, timed rather than scrubbed by the scroll", () => {
+    // Owner, 2026-09-23: "the animations of the cards should pop, no scroll fade in".
+    const hook = read("components", "landing", "usePopIn.ts");
+    expect(hook).toMatch(/new IntersectionObserver\(/);
+    expect(hook).toContain('dataset.pop = "armed"');
+    expect(hook).toContain('dataset.pop = "in"');
+    expect(hook).toContain("observer.unobserve(entry.target)");
+    // Only what is below the fold is armed, and reduced motion arms nothing.
+    expect(hook).toMatch(/getBoundingClientRect\(\)\.top > fold/);
+    expect(hook).toContain("prefers-reduced-motion: reduce");
+    expect(story).toMatch(/usePopIn\(\);/);
+    expect(feature).toMatch(/className=\{cn\("landing-stage landing-pop /);
+    expect(css).toMatch(/\[data-pop="in"\] \{\s*animation: landing-pop /);
+    expect(css).toMatch(/\.landing-stage\[data-pop="in"\] \{\s*animation-name: landing-pop-card;/);
+    // Nothing pops or fades on a scroll timeline.
+    const supports = css.slice(css.indexOf("@supports (animation-timeline: view())"));
+    const block = supports.slice(0, supports.indexOf("\n}\n") + 2);
+    expect(block).not.toMatch(/landing-card3d|landing-pop|landing-reveal|landing-hero-copy/);
+    for (const cls of [".landing-mark > svg path", ".landing-hl::before", ".landing-deco", ".landing-hero-floor"]) {
+      expect(block, cls).toContain(cls);
     }
-    const structure = read("components", "landing", "EvolvingStructure.tsx");
-    expect(structure).toContain('from "motion/react"');
-    expect(structure).toMatch(/initial=\{false\}/);
-    expect(existsSync(join(src, "components", "landing", "useScrollProgress.ts"))).toBe(false);
+    // Outside it the cards rest tilted and floating.
+    const rest = css.slice(0, css.indexOf("@supports (animation-timeline: view())"));
+    expect(rest).toMatch(/\.landing-card3d \{\s*transform: rotateX\(5deg\) rotateY\(-9deg\);/);
+  });
+
+  it("stills every landing animation under prefers-reduced-motion", () => {
+    const reduced = css.slice(css.lastIndexOf("@media (prefers-reduced-motion: reduce) {\n  .hero-floor-drift"));
+    const block = reduced.slice(0, reduced.indexOf("}\n}") + 3);
+    for (const cls of [".hero-floor-drift", ".hero-block", ".hero-word", ".landing-float", '[data-pop="in"]', ".landing-deco", ".landing-hero-floor"]) {
+      expect(block, cls).toContain(cls);
+    }
+    expect(block).toContain("animation: none;");
+  });
+
+  it("gives each section one data-scroll-section, and every feature a row of its own", () => {
+    expect(story.match(/data-scroll-section/g)).toHaveLength(2);
+    expect(feature.match(/data-scroll-section/g)).toHaveLength(1);
+    expect(outro.match(/data-scroll-section/g)).toHaveLength(1);
+    expect(feature).toMatch(/id=\{verb\.id\}/);
+    expect(feature).not.toMatch(/role="tab(list|panel)?"|inert=/);
+  });
+});
+
+describe("hero (owner, 2026-09-23: full 3D, never behind the copy)", () => {
+  const story = read("components", "landing", "LandingStory.tsx");
+  const floor = read("components", "landing", "HeroFloor.tsx");
+  const css = read("app", "globals.css");
+  const html = renderToStaticMarkup(
+    <LandingStory
+      counts={{ modules: 1, lessons: 1, problems: 1 }}
+      links={{ start: "/start", curriculum: "/curriculum" }}
+      stages={[]}
+      features={{ ...featureData(), heat: heatYear("2026-09-14") }}
+    />,
+  );
+
+  it("names the headline in plain sentences, one per line, and hides the animated words", () => {
+    expect(HERO.lines).toEqual(["Agents write the code.", "You decide if it's right."]);
+    const h1 = html.match(/<h1([^>]*)>([\s\S]*?)<\/h1>/)!;
+    expect(h1[1]).toContain(`aria-label="${HERO.title.replace("'", "&#x27;")}"`);
+    const lines = [...h1[2]!.matchAll(/<span aria-hidden="true" class="block">([\s\S]*?)<\/span>(?=<span aria-hidden="true" class="block">|$)/g)];
+    expect(lines).toHaveLength(2);
+    const text = (fragment: string) => fragment.replace(/<svg[\s\S]*?<\/svg>/g, "").replace(/<[^>]+>/g, "").replace(/&#x27;/g, "'");
+    expect(lines.map((m) => text(m[1]!).replace(/\s+/g, " ").trim())).toEqual([...HERO.lines]);
+  });
+
+  it("stands the data structures on a 3D floor, drawn as solid blocks in one preserve-3d context", () => {
+    expect(story).toContain("<HeroFloor />");
+    expect(floor).toMatch(/aria-hidden className="landing-hero-floor absolute inset-0"/);
+    const blocks = html.match(/class="hero-block"/g) ?? [];
+    expect(blocks.length).toBeGreaterThanOrEqual(12);
+    // Every block has its top and four sides.
+    expect(html.match(/<span class="t"><\/span>/g)).toHaveLength(blocks.length);
+    expect(css).toMatch(/\.hero-floor-camera \{[^}]*transform-style: preserve-3d;[^}]*transform: rotateX\(\d+deg\) rotateZ\(-?\d+deg\);/);
+    // Colour through tokens: the floor's own, or a family accent from the family table.
+    expect(floor).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+    expect(floor).toContain("getFamilyTheme(block.family).accentUi");
+    for (const token of ["--floor-line", "--floor-line-major", "--floor-block", "--floor-edge", "--floor-shade"]) {
+      expect(css.match(new RegExp(`${token}:`, "g")) ?? [], token).toHaveLength(2);
+    }
+  });
+
+  it("keeps the floor below the copy at every window height, fading in from its top edge", () => {
+    expect(css).toMatch(/\.hero-floor \{[^}]*inset: auto 0 0;\s*height: var\(--hero-floor-h\);/);
+    // Its top band is fully clear, and the copy is padded by the floor's height
+    // less exactly that band, so nothing the floor draws is behind the copy.
+    expect(css).toMatch(/mask-image: linear-gradient\(to bottom, transparent 0, transparent var\(--hero-floor-fade\),/);
+    expect(story).toMatch(/landing-hero-copy [^"]*\bpb-\[calc\(var\(--hero-floor-h\)-var\(--hero-floor-fade\)\)\]/);
+    // Its content's height, not the viewport's: forced full-screen it left a
+    // band of empty paper between the buttons and the floor.
+    expect(story).not.toMatch(/min-h-\[calc\(100dvh/);
+    // The copy and the verb strip sit above it; the strip is solid paper.
+    expect(story).toMatch(/className="landing-hero-copy relative z-10 /);
+    expect(story).toMatch(/absolute inset-x-0 bottom-0 z-20 [^"]*\bbg-background\b/);
+  });
+
+  it("links each of the nine verbs to its own row", () => {
+    for (const verb of ["watch", "learn", "map", "code", "review", "optimize", "practice", "recall", "burn"]) {
+      expect(html, verb).toContain(`href="#${verb}"`);
+      expect(html, verb).toContain(`id="${verb}"`);
+    }
   });
 });
 
 describe("landing copy", () => {
   const stats = curriculumStats();
   const course = inside(stats);
-  const text = [WHY.title, ...WHY.points.flatMap((p) => [p.title, p.body])].join("\n");
-
-  it("states numbers that are computed, not typed in", () => {
-    // Recomputed here independently of story.ts's helpers.
-    const n = 1_000_000;
-    const pairs = (n * (n - 1)) / 2;
-    expect(text).toContain(`about ${Math.round(pairs / 1_000_000_000)} billion pair checks`);
-    expect(text).toContain(`${(100 * 100).toLocaleString("en-US")} steps on a hundred items`);
-    expect(n * n).toBe(1e12);
-    expect(text).toContain("and a trillion on a million");
-    // A correct number typed by hand renders the same text, so check the copy
-    // still derives it (CLAUDE.md: every number computed, never typed in).
-    const copy = read("lib", "landing", "story.ts");
-    expect(copy).toContain("${Math.round(pairCount(MILLION) / 1e9)} billion pair checks");
-    expect(copy).toContain("${spellCount(nestedSteps(100))} steps on a hundred items");
-    expect(copy).toContain("${spellCount(nestedSteps(MILLION))} on a million");
-  });
 
   it("counts the course from the manifest", () => {
     expect(course.body.join(" ")).toContain(
       `${stats.modules} modules · ${stats.lessons} lessons · ${stats.problems} problems`,
     );
-  });
-
-  it("makes the argument in four short points, one screen", () => {
-    expect(WHY.points).toHaveLength(4);
-    for (const { title, body } of WHY.points) {
-      // One line of claim, one line of evidence: long enough to say something, short enough to scan.
-      expect(title.length, title).toBeLessThanOrEqual(32);
-      expect(body.length, body).toBeLessThanOrEqual(120);
-    }
-  });
-
-  it("types the heading, then each point's title and body, in order", () => {
-    expect(argumentLengths()).toEqual([
-      WHY.title.length,
-      ...WHY.points.flatMap((p) => [p.title.length, p.body.length]),
-    ]);
-    // Each point gets longer than the structure's 0.9s morph.
-    expect(argumentDuration() / WHY.points.length).toBeGreaterThan(900);
-  });
-
-  it("moves the structure one stage per point as each title starts typing", () => {
-    const lengths = argumentLengths();
-    const at = (p: number) => argumentStage(segmentProgress(lengths, p));
-    expect(at(0)).toBe(0);
-    // Before the first title starts (still on the heading), stage 0.
-    expect(at(WHY.title.length / lengths.reduce((a, b) => a + b, 0) / 2)).toBe(0);
-    expect(at(1)).toBe(WHY.points.length - 1);
-    const stages: number[] = [];
-    for (let p = 0; p <= 1.0001; p += 0.01) stages.push(at(p));
-    for (let k = 1; k < stages.length; k++) expect(stages[k]! - stages[k - 1]!).toBeGreaterThanOrEqual(0);
-    expect(new Set(stages)).toEqual(new Set([0, 1, 2, 3]));
-    // The switch lands exactly where point i's title begins — not its body,
-    // which would leave the drawing a line behind the text.
-    const total = lengths.reduce((a, b) => a + b, 0);
-    const startOf = (segment: number) => lengths.slice(0, segment).reduce((a, b) => a + b, 0);
-    for (let i = 1; i < WHY.points.length; i++) {
-      const titleStart = startOf(1 + 2 * i);
-      expect(at((titleStart - 0.5) / total), `just before point ${i}'s title`).toBe(i - 1);
-      expect(at((titleStart + 0.5) / total), `just after point ${i}'s title starts`).toBe(i);
-    }
-    expect(course.stage).toBe(3);
   });
 
   it("carries the owner's pricing line and no prices", () => {
@@ -433,12 +187,14 @@ describe("landing copy", () => {
       "Learning data structures and algorithms is for the part of the job that doesn't get automated.",
     );
     expect(HERO.lede).toMatch(/data structures and algorithms/);
-    // The four arguments, problem-solving mindset first.
-    expect(WHY.points[0]!.title).toBe("Problem solving is the job.");
-    expect(text).toMatch(/Frame it before you prompt/);
-    expect(text).toMatch(/Review what it costs/);
-    expect(text).toMatch(/Interviews still ask/);
-    expect(FAQ).toHaveLength(3);
+    // The six-habit screen answers "why learn this if AI writes code", so the
+    // FAQ no longer asks it; who it's for and interviews are asked instead.
+    expect(FAQ.map((f) => f.q)).toEqual([
+      "Who is it for?",
+      "Does it help with interviews?",
+      "Which languages?",
+      "Do I need a CS degree?",
+    ]);
   });
 });
 
@@ -454,9 +210,19 @@ describe("landing page", () => {
     "HeroStructureArt",
     "IdeWalkthrough",
     "WhoNotPractical",
+    // Folded into Understand, Build and Keep (2026-09-17).
+    "MethodSteps",
+    "ProductShowcase",
+    // The section clips gave way to the page backdrop (2026-09-19).
+    "SectionClip",
+    // The canvas backdrop, the wheel paging and the typing gave way to the
+    // hero's 3D floor and a native scroll (2026-09-23).
+    "LandingBackdrop",
+    "TypedText",
+    "useSectionPaging",
   ];
 
-  it("is built from the story, outro and footer only — no viz or code blocks", () => {
+  it("is built from the story, outro and footer, with server data from content, heat and productData", () => {
     const imports = [...home.matchAll(/from "([^"]+)"/g)].map((m) => m[1]);
     expect(imports.sort()).toEqual(
       [
@@ -465,6 +231,7 @@ describe("landing page", () => {
         "@/components/landing/LandingStory",
         "@/lib/landing/content",
         "@/lib/landing/heat",
+        "@/lib/landing/productData",
       ].sort(),
     );
   });

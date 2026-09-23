@@ -30,7 +30,7 @@ export interface CourseNavPanelProps {
   onClose?: () => void;
   /**
    * Rows are scrolling under the pinned row (CourseNavTree observes it). At
-   * rest the row is grainy paper like the rail; translucent there, it read as a
+   * rest the row is flat paper like the rail; translucent there, it read as a
    * lighter strip.
    */
   scrolled?: boolean;
@@ -231,10 +231,10 @@ function ExtraRow({
  * The drawer's pinned header row (owner, 2026-09-14; it replaced the close tab
  * that hung off the rail): the back row inside a module, then the close
  * button. Sticky at the top of the drawer's scroller so the way out stays in
- * reach while a 24-module list scrolls beneath. Grainy paper like the rail at
+ * reach while a 24-module list scrolls beneath. Flat paper like the rail at
  * rest; translucent paper that blurs the rows once they scroll under it
  * (TRANSLUCENT_PAPER, owner 2026-09-15) — flat 90% paper at rest read as a
- * lighter strip against the rail's grain. No shadow. pt-3 is the drawer's top padding, moved onto the row
+ * lighter strip against the rail. No shadow. pt-3 is the drawer's top padding, moved onto the row
  * (Sidebar), or rows would scroll into a gap above it. No border-b: the module
  * heading below carries the rule.
  */
@@ -251,15 +251,20 @@ function PinnedRow({
     <div
       className={cn(
         "sticky top-0 z-10 flex items-center justify-end gap-2 pt-3 pb-1",
-        scrolled ? TRANSLUCENT_PAPER : "bg-background grain-paper",
+        scrolled ? TRANSLUCENT_PAPER : "bg-background",
       )}
     >
       {children}
+      {/*
+        The floating opener's own inverted fill (owner, 2026-09-23), not
+        ROUND_CONTROL's plain hairline: this button is its close-side pair, so
+        it carries the same dark-on-light/light-on-dark pill the opener does.
+      */}
       <button
         type="button"
         onClick={onClose}
         aria-label="Close lessons drawer"
-        className={cn(ROUND_CONTROL, "h-8 w-8")}
+        className={cn(ROUND_CONTROL, "floating-invert h-8 w-8")}
       >
         <X className="h-4 w-4" weight="bold" />
       </button>

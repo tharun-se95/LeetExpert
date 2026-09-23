@@ -1,0 +1,110 @@
+{
+  "voice": "SAz9YHcvj6GT2YYXdXww",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.1,
+    "use_speaker_boost": true
+  },
+  "stitching": "previous_text only (next_text removed \u2014 see module docstring)",
+  "total_speech": 77.787,
+  "lines": [
+    {
+      "line": 1,
+      "title": "The picture (Scene 1)",
+      "file": "audio/line-1.mp3",
+      "words_file": "audio/line-1.words.json",
+      "word_count": 22,
+      "duration": 8.22,
+      "attempts": 1,
+      "head_db": -77.8,
+      "tail_db": -86.7,
+      "text": "Picture a train. Identical cars, permanently coupled, sitting on one straight length of track. That picture is what an array actually is."
+    },
+    {
+      "line": 2,
+      "title": "The definition (Scene 2)",
+      "file": "audio/line-2.mp3",
+      "words_file": "audio/line-2.words.json",
+      "word_count": 21,
+      "duration": 8.22,
+      "attempts": 1,
+      "head_db": -79.2,
+      "tail_db": -86.4,
+      "text": "One contiguous block of memory. Equal-sized slots, packed end to end. So you never walk the platform counting cars. You compute."
+    },
+    {
+      "line": 3,
+      "title": "Why indexing is O(1) (Scene 3)",
+      "file": "audio/line-3.mp3",
+      "words_file": "audio/line-3.words.json",
+      "word_count": 34,
+      "duration": 11.471,
+      "attempts": 1,
+      "head_db": -78.1,
+      "tail_db": -87.5,
+      "text": "The address of slot i is the base address plus i times the slot size. One multiply. One add. That cost does not grow with the array. That is what O of one means."
+    },
+    {
+      "line": 4,
+      "title": "The contrast (Scene 4)",
+      "file": "audio/line-4.mp3",
+      "words_file": "audio/line-4.words.json",
+      "word_count": 22,
+      "duration": 8.591,
+      "attempts": 1,
+      "head_db": -75.0,
+      "tail_db": -86.2,
+      "text": "Reaching item seven in a linked chain means seven hops. Here, seven is a number you multiply. No other position is touched."
+    },
+    {
+      "line": 5,
+      "title": "Where the train breaks (Scene 5)",
+      "file": "audio/line-5.mp3",
+      "words_file": "audio/line-5.words.json",
+      "word_count": 24,
+      "duration": 8.081,
+      "attempts": 1,
+      "head_db": -75.5,
+      "tail_db": -86.2,
+      "text": "Now the limit. The track behind the caboose already belongs to something else. A raw array cannot grow in place, for exactly that reason."
+    },
+    {
+      "line": 6,
+      "title": "Doubling (Scene 6)",
+      "file": "audio/line-6.mp3",
+      "words_file": "audio/line-6.words.json",
+      "word_count": 37,
+      "duration": 13.514,
+      "attempts": 1,
+      "head_db": -81.5,
+      "tail_db": -87.5,
+      "text": "So a dynamic array builds a longer train on fresh track and moves every car across. Double the capacity each time, and the copying across n appends sums to under two n. Constant work per append, amortized."
+    },
+    {
+      "line": 7,
+      "title": "In place (Scene 7)",
+      "file": "audio/line-7.mp3",
+      "words_file": "audio/line-7.words.json",
+      "word_count": 30,
+      "duration": 9.334,
+      "attempts": 1,
+      "head_db": -75.2,
+      "tail_db": -85.7,
+      "text": "The rest of the module stays inside one array. A read pointer and a write pointer. Write never passes read, so you can never destroy a value you still need."
+    },
+    {
+      "line": 8,
+      "title": "Close (Scene 8)",
+      "file": "audio/line-8.mp3",
+      "words_file": "audio/line-8.words.json",
+      "word_count": 23,
+      "duration": 10.356,
+      "attempts": 1,
+      "head_db": -62.3,
+      "tail_db": -86.1,
+      "text": "Four concept lessons, five problems, one practice set. Module four of the leetExpert DSA course. Free in early access at leetexpert dot com."
+    }
+  ]
+}

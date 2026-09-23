@@ -1,0 +1,67 @@
+{
+  "voice": "SAz9YHcvj6GT2YYXdXww",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.1,
+    "use_speaker_boost": true
+  },
+  "estimated": false,
+  "lines": [
+    {
+      "line": 1,
+      "title": "hook",
+      "file": "line-1.mp3",
+      "duration": 11.564,
+      "word_count": 39,
+      "attempts": 1,
+      "text": "It is three in the morning and your phone will not stop. Twenty-two alerts, one for every overheating rack. But look at the floor map: those racks are touching. This is not twenty-two problems. So how many is it?"
+    },
+    {
+      "line": 2,
+      "title": "first incident",
+      "file": "line-2.mp3",
+      "duration": 15.65,
+      "word_count": 49,
+      "attempts": 1,
+      "text": "Every warm cell is a rack over its temperature limit. Scan the map row by row. The first hot cell you meet starts an incident. Then flood outward: any hot cell that touches the incident, above, below, left or right, joins it. Four racks in the corner, one incident."
+    },
+    {
+      "line": 3,
+      "title": "claimed cells",
+      "file": "line-3.mp3",
+      "duration": 16.718,
+      "word_count": 53,
+      "attempts": 1,
+      "text": "Keep scanning. The next hot cell that nobody has claimed starts incident two, and the flood repeats. Then a third. A claimed cell is skipped, so nothing is counted twice. Mark a cell as claimed the moment you queue it, not when you pop it, or the same rack can be queued twice."
+    },
+    {
+      "line": 4,
+      "title": "the rest",
+      "file": "line-4.mp3",
+      "duration": 9.149,
+      "word_count": 30,
+      "attempts": 1,
+      "text": "Three more regions appear. Notice that no cell is ever examined more than once, so the work grows with the size of the map, not with the number of incidents."
+    },
+    {
+      "line": 5,
+      "title": "result",
+      "file": "line-5.mp3",
+      "duration": 6.827,
+      "word_count": 18,
+      "attempts": 1,
+      "text": "Twenty-two hot racks collapse into six regions. Six things a person can act on instead of twenty-two pages."
+    },
+    {
+      "line": 6,
+      "title": "facts",
+      "file": "line-6.mp3",
+      "duration": 11.703,
+      "word_count": 31,
+      "attempts": 1,
+      "text": "Twenty-two hot racks. Six connected regions. One visit per cell. The same flood fill powers a paint bucket, counts cells on a microscope slide, and finds lakes on a satellite image."
+    }
+  ]
+}

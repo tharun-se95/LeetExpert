@@ -28,13 +28,16 @@ function ErrorCard({ message }: { message: string }) {
 export function Viz({
   source,
   embedded = false,
+  code = true,
 }: {
   source: string;
   /** Drop the player's outer card when already inside a parent surface. */
   embedded?: boolean;
+  /** Show the code panel beside the stage (the fullscreen view always does). */
+  code?: boolean;
 }) {
   const spec = useMemo(() => parseSpec(source), [source]);
-  const chrome = useMemo(() => ({ embedded }), [embedded]);
+  const chrome = useMemo(() => ({ embedded, code }), [embedded, code]);
 
   if (!spec || typeof spec.id !== "string") {
     return <ErrorCard message="Invalid viz block." />;

@@ -1,0 +1,242 @@
+<!doctype html>
+<html
+  lang="en"
+  data-resolution="landscape"
+  data-composition-variables='[{"id": "eyebrow", "type": "string", "label": "Eyebrow", "default": "Linear Traversal"}, {"id": "title", "type": "string", "label": "Title", "default": "Hash Table Collisions"}, {"id": "family", "type": "enum", "label": "Pattern family", "default": "linear-traversal", "options": [{"value": "linear-traversal", "label": "Linear Traversal"}, {"value": "pointer-movement", "label": "Pointer Movement"}, {"value": "ordering-search", "label": "Ordering &amp; Search"}, {"value": "recursive-exploration", "label": "Recursive Exploration"}, {"value": "state-transition", "label": "State Transition"}, {"value": "relationships", "label": "Relationships"}, {"value": "priority-structures", "label": "Priority Structures"}]}, {"id": "theme", "type": "enum", "label": "Theme", "default": "dark", "options": [{"value": "dark", "label": "Dark"}, {"value": "light", "label": "Light"}]}, {"id": "keys", "type": "string", "label": "Keys to insert (comma separated)", "default": "12,7,19,5,26"}, {"id": "buckets", "type": "number", "label": "Bucket count", "default": 5, "min": 2, "max": 10, "step": 1}, {"id": "chainCap", "type": "number", "label": "Max chain slots to reserve", "default": 2, "min": 1, "max": 8, "step": 1}, {"id": "formula", "type": "string", "label": "Hash formula caption", "default": "h(k) = k mod 5"}, {"id": "steps", "type": "string", "label": "Steps JSON [{i,bucket,table,note}]", "default": "[{\"i\": 0, \"bucket\": -1, \"table\": [[], [], [], [], []], \"note\": \"An array of 5 buckets. Each key lands in exactly one of them.\"}, {\"i\": 0, \"bucket\": 2, \"table\": [[], [], [12], [], []], \"note\": \"h(12) = 12 mod 5 = <b>2</b>. Bucket is empty, so the key goes straight in.\"}, {\"i\": 1, \"bucket\": 2, \"table\": [[], [], [12, 7], [], []], \"note\": \"h(7) = 7 mod 5 = <b>2</b>. Bucket 2 is already occupied \\u2014 a <b>collision</b>. 7 joins the chain rather than overwriting.\"}, {\"i\": 2, \"bucket\": 4, \"table\": [[], [], [12, 7], [], [19]], \"note\": \"h(19) = 19 mod 5 = <b>4</b>. Bucket is empty, so the key goes straight in.\"}, {\"i\": 3, \"bucket\": 0, \"table\": [[5], [], [12, 7], [], [19]], \"note\": \"h(5) = 5 mod 5 = <b>0</b>. Bucket is empty, so the key goes straight in.\"}, {\"i\": 4, \"bucket\": 1, \"table\": [[5], [26], [12, 7], [], [19]], \"note\": \"h(26) = 26 mod 5 = <b>1</b>. Bucket is empty, so the key goes straight in.\"}, {\"i\": 4, \"bucket\": -1, \"table\": [[5], [26], [12, 7], [], [19]], \"note\": \"All 5 keys stored. Longest chain is <b>2</b> \\u2014 lookup costs O(chain), which is why a good hash spreads keys evenly.\"}]"}, {"id": "stepSeconds", "type": "number", "label": "Seconds per step", "default": 1.9, "min": 0.4, "max": 8, "step": 0.1}]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>leetExpert — Hash Buckets</title>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+/* Latin subsets only, vendored — the renderer has no network. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f15.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f10.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+    </style>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { width: 1920px; height: 1080px; padding: 88px 112px; display: flex; flex-direction: column; }
+      .head { display: flex; flex-direction: column; gap: 20px; }
+      .rule { width: 132px; height: 5px; background: var(--accent, var(--ink)); border-radius: 3px; }
+      .eyebrow { font-size: 26px; }
+      .title { font-size: 72px; }
+      .board { flex: 1; display: flex; align-items: center; gap: 110px; }
+      .col { display: flex; flex-direction: column; gap: 16px; }
+      .collab {
+        font-family: "Space Mono", monospace; font-size: 20px; letter-spacing: .14em;
+        text-transform: uppercase; color: var(--dim);
+      }
+      .inrow { display: flex; gap: 12px; }
+      .incell {
+        width: 88px; height: 88px; border: 2.5px solid var(--rule-strong); border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 32px; color: var(--dim);
+      }
+      .incell[data-state="current"] { border-color: var(--ink); color: var(--ink); }
+      .incell[data-state="consumed"] { opacity: .38; }
+      .formula {
+        font-family: "JetBrains Mono", monospace; font-size: 28px; color: var(--line); margin-top: 6px;
+      }
+      /* One row per bucket: index, the arrow into the chain, then the chain. */
+      .brow { display: flex; align-items: center; gap: 16px; height: 78px; }
+      .bidx {
+        width: 74px; height: 66px; flex: none;
+        border: 2.5px solid var(--line); border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; color: var(--line);
+      }
+      .brow[data-state="target"] .bidx { border-color: var(--ink); color: var(--ink); }
+      .barrow { width: 44px; height: 20px; flex: none; position: relative; }
+      .barrow .shaft { position: absolute; left: 0; right: 8px; top: 9px; height: 2.5px; background: var(--muted-fill); }
+      .barrow .head {
+        position: absolute; right: 0; top: 0; width: 0; height: 0;
+        border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+        border-left: 12px solid var(--muted-fill);
+      }
+      .chain { display: flex; gap: 12px; }
+      .link {
+        width: 92px; height: 66px; flex: none;
+        border: 2.5px solid var(--ink); border-radius: 10px; background: var(--ink); color: var(--on-ink);
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 30px;
+      }
+      .note {
+        font-family: "Space Grotesk", sans-serif; font-size: 32px; line-height: 1.45;
+        color: var(--line); max-width: 1180px; min-height: 88px;
+      }
+      .note b { color: var(--ink); font-weight: 700; }
+      .foot { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 14px; }
+      .wordmark { font-size: 30px; }
+      .counter { font-family: "Space Mono", monospace; font-size: 22px; letter-spacing: .16em; color: var(--dim); }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="hash-buckets" data-start="0"
+         data-width="1920" data-height="1080">
+      <div class="head">
+        <div class="rule"></div>
+        <div class="eyebrow" id="eyebrow"></div>
+        <div class="title display" id="title"></div>
+      </div>
+      <div class="board">
+        <div class="col">
+          <span class="collab">keys</span>
+          <div class="inrow" id="inrow"></div>
+          <span class="formula" id="formula"></span>
+        </div>
+        <div class="col">
+          <span class="collab">buckets</span>
+          <div id="table"></div>
+        </div>
+      </div>
+      <div class="note" id="note"></div>
+      <div class="foot">
+        <span class="wordmark">leetExpert</span>
+        <span class="counter" id="counter"></span>
+      </div>
+    </div>
+    <script>
+      const V = window.__hyperframes.getVariables();
+      const root = document.getElementById("root");
+      root.setAttribute("data-theme", V.theme);
+      root.setAttribute("data-family", V.family);
+      document.getElementById("eyebrow").textContent = V.eyebrow;
+      document.getElementById("title").textContent = V.title;
+      document.getElementById("formula").textContent = V.formula;
+
+      const keys = String(V.keys).split(",").map((s) => s.trim()).filter(Boolean);
+      const steps = JSON.parse(V.steps);
+      const M = Number(V.buckets);
+      const CAP = Number(V.chainCap);
+
+      const inrow = document.getElementById("inrow");
+      keys.forEach((k, i) => {
+        const c = document.createElement("div");
+        c.className = "incell"; c.id = "key-" + i; c.textContent = k;
+        inrow.appendChild(c);
+      });
+
+      // Bucket rows and their chain slots are reserved up front: appending a
+      // link mid-timeline would reflow the table and break seeking.
+      const table = document.getElementById("table");
+      for (let b = 0; b < M; b++) {
+        const row = document.createElement("div");
+        row.className = "brow"; row.id = "brow-" + b;
+        const idx = document.createElement("div");
+        idx.className = "bidx"; idx.textContent = b;
+        const arr = document.createElement("div");
+        arr.className = "barrow";
+        arr.innerHTML = '<span class="shaft"></span><span class="head"></span>';
+        const chain = document.createElement("div");
+        chain.className = "chain";
+        for (let c = 0; c < CAP; c++) {
+          const l = document.createElement("div");
+          l.className = "link"; l.id = "link-" + b + "-" + c;
+          chain.appendChild(l);
+        }
+        row.appendChild(idx); row.appendChild(arr); row.appendChild(chain);
+        table.appendChild(row);
+      }
+      gsap.set(".link", { autoAlpha: 0 });
+
+      const noteEl = document.getElementById("note");
+      const counterEl = document.getElementById("counter");
+      const STEP = Number(V.stepSeconds);
+
+      document.fonts.ready.then(() => {
+        const tl = gsap.timeline({ paused: true });
+        steps.forEach((s, k) => {
+          const t = k * STEP;
+          keys.forEach((_, i) => {
+            const state = i === s.i ? "current" : (i < s.i ? "consumed" : "default");
+            tl.set("#key-" + i, { attr: { "data-state": state } }, t);
+          });
+          for (let b = 0; b < M; b++) {
+            tl.set("#brow-" + b, { attr: { "data-state": b === s.bucket ? "target" : "default" } }, t);
+            const chain = (s.table && s.table[b]) || [];
+            for (let c = 0; c < CAP; c++) {
+              const filled = c < chain.length;
+              tl.set("#link-" + b + "-" + c,
+                     { autoAlpha: filled ? 1 : 0, textContent: filled ? chain[c] : "" }, t);
+            }
+          }
+          tl.set(noteEl, { innerHTML: s.note }, t);
+          tl.set(counterEl, { textContent: "STEP " + (k + 1) + " / " + steps.length }, t);
+          if (k === 0) tl.from(noteEl, { opacity: 0, y: 12, duration: 0.45, ease: "power3.out" }, 0.15);
+        });
+        tl.to({}, { duration: STEP }, (steps.length - 1) * STEP);
+        window.__timelines["hash-buckets"] = tl;
+        // Registered after the runtime initialised, so it must be re-bound: without
+        // this `render` saw a zero-length composition ("Composition has zero
+        // duration") although `snapshot` and the browser played it.
+        window.__hfForceTimelineRebind?.();
+      });
+    </script>
+  </body>
+</html>

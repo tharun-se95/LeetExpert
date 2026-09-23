@@ -49,7 +49,9 @@ export function FooterWordmark({ className }: { className?: string }) {
       <noscript>
         <style>{WORDMARK_NOSCRIPT}</style>
       </noscript>
-      <p className="font-display text-[16.3cqw] leading-[0.85] font-bold whitespace-nowrap text-foreground">
+      {/* pb: the box clips the letters' rise, and at leading-[0.85] it cut
+          the descender of the "p" off; the padding keeps it inside the clip. */}
+      <p className="pb-[0.2em] font-display text-[16.3cqw] leading-[0.85] font-bold whitespace-nowrap text-foreground">
         {WORD.split("").map((letter, i) => (
           <motion.span
             key={i}

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>arrays-intro · scene 8</title>
+  </head>
+  <body>
+    <template>
+      <!-- Geometry helpers and shared styles come from the host index.html
+           (window.LE), so every scene draws the row from the same numbers. -->
+      <div id="s8-root" data-composition-id="s8" data-width="1920" data-height="1080"
+           data-duration="11.556" style="position:absolute;left:0;top:0;width:1920px;height:1080px;"></div>
+      <script>
+      // ── Scene 8 — the module ────────────────────────────────────────────────
+      // The row thins into the title rule, the plate that opened the film
+      // returns, the manifest's counts stack, and one URL closes.
+      (function scene8() {
+        const { W, H, CW, CH, GP, PITCH, ROW_W, ROW_L, ROW_T, ROW_T_HI, OFF_TRACK, OFF_IDX, OFF_ADDR, BASE_ADDR, SLOT, ADV, monoW, $, mk, svg, poly, tri, dashPrep, tok, mount, monoLine, makeRow, couplers, eyebrow } = window.LE;
+        const tl = gsap.timeline({ paused: true });
+        const c = mount("s8"), t0 = 0;
+        const n = 5, RW = n * CW + (n - 1) * GP, RL = (W - RW) / 2;
+        const ghost = makeRow(c, { id: "s8g", left: RL, top: ROW_T, n: n });
+        const rule = mk("div", null, c, { position: "absolute", left: "112px", top: "258px", width: "1696px", height: "3px", background: "var(--line)", borderRadius: "2px" });
+        rule.id = "s8-rule";
+
+        const PW = 820, PH = Math.round(PW * 768 / 1376);
+        const plate = mk("img", "s8-plate", c, { left: "1000px", top: "320px", width: PW + "px", height: PH + "px" });
+        plate.id = "s8-plate";
+        plate.src = "media/arrays-plate.webp";
+        plate.alt = "Arrays module plate";
+
+        const mod = mk("div", "display s8-title", c, { top: "320px", fontSize: "34px", color: "var(--line)" });
+        mod.textContent = "MODULE 04"; mod.id = "s8-mod";
+        const t1 = mk("div", "display s8-title", c, { top: "378px", fontSize: "80px" });
+        t1.textContent = "ARRAYS &"; t1.id = "s8-t1";
+        const t2 = mk("div", "display s8-title", c, { top: "482px", fontSize: "80px" });
+        t2.textContent = "DYNAMIC ARRAYS"; t2.id = "s8-t2";
+
+        const COUNTS = ["4 concept lessons", "5 problems", "1 practice set"];
+        const counts = COUNTS.map((s, i) => monoLine(c, [{ text: s, bold: true }], { size: 36, top: 620 + i * 60, left: 112 }));
+        const unders = COUNTS.map((s, i) => mk("div", null, c, {
+          position: "absolute", left: "112px", top: (620 + i * 60 + 48) + "px",
+          width: monoW(s, 36) + "px", height: "3px", background: "var(--accent-ink)", borderRadius: "2px",
+        }));
+
+        const free = mk("div", "eyebrow", c, { position: "absolute", left: "112px", top: "862px", fontSize: "24px" });
+        free.textContent = "FREE IN EARLY ACCESS"; free.id = "s8-free";
+        const url = mk("div", "wordmark", c, { position: "absolute", left: "112px", top: "900px", fontSize: "58px" });
+        url.textContent = "leetexpert.com"; url.id = "s8-url";
+
+        gsap.set(ghost, { transformOrigin: "50% 50%" });
+        gsap.set(rule, { scaleX: 0, transformOrigin: "50% 50%" });
+        gsap.set(plate, { autoAlpha: 0 });
+        gsap.set([mod, t1, t2, free, url], { autoAlpha: 0, y: 16 });
+        counts.forEach((L) => gsap.set(Object.keys(L).map((k) => L[k].el).filter(Boolean), { autoAlpha: 0, x: -12 }));
+        gsap.set(unders, { scaleX: 0, transformOrigin: "0% 50%" });
+
+        tl.to(ghost, { y: 258 - (ROW_T + CH / 2), scaleY: 0.02, duration: 1.0, ease: "power2.in" }, t0 + 0.0);
+        tl.to(ghost, { autoAlpha: 0, duration: 0.25 }, t0 + 0.85);
+        tl.to(rule, { scaleX: 1, duration: 0.9, ease: "power2.inOut" }, t0 + 0.85);
+        tl.to(plate, { autoAlpha: 0.4, duration: 1.2, ease: "power1.inOut" }, t0 + 1.0);
+
+        [0.5, 1.7, 2.8].forEach((t, i) => {
+          tl.to(Object.keys(counts[i]).map((k) => counts[i][k].el).filter(Boolean), { autoAlpha: 1, x: 0, duration: 0.45, ease: "power3.out" }, t0 + t);
+        });
+        tl.to(unders, { scaleX: 1, duration: 0.6, ease: "power2.out" }, t0 + 3.6);
+
+        tl.to(mod, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, t0 + 4.3);
+        tl.to(t1, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, t0 + 4.65);
+        tl.to(t2, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, t0 + 4.95);
+
+        tl.to(free, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, t0 + 7.2);
+        tl.to(url, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, t0 + 7.7);
+        window.__timelines["s8"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

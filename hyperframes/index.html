@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>leetExpert — DSA Visual Vocabulary</title>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+/* Latin subsets only, vendored — the renderer has no network. */
+@font-face{font-family:'Space Mono';font-style:normal;font-weight:700;src:url(assets/fonts/f13.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:400;src:url(assets/fonts/f9.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #15202e; }
+      #root { width: 1920px; height: 1080px; padding: 110px 120px; display: flex; flex-direction: column; }
+      .rule { width: 148px; height: 5px; background: var(--ink); border-radius: 3px; }
+      .eyebrow { font-size: 28px; margin-top: 30px; }
+      .title { font-size: 104px; margin-top: 26px; }
+      .sub { font-size: 36px; line-height: 1.5; color: var(--line); max-width: 1100px; margin-top: 34px; }
+      .spacer { flex: 1; }
+      .foot { display: flex; align-items: flex-end; justify-content: space-between; }
+      .wordmark { font-size: 32px; }
+      .count { font-family: "Space Mono", monospace; font-size: 22px; letter-spacing: .16em; color: var(--dim); text-transform: uppercase; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-theme="dark" data-composition-id="main"
+         data-start="0" data-duration="4" data-width="1920" data-height="1080">
+      <div class="rule"></div>
+      <div class="eyebrow" id="eyebrow">leetExpert</div>
+      <div class="title display" id="title">DSA Visual<br />Vocabulary</div>
+      <div class="sub" id="sub">Seek-safe, themeable primitives for lesson art, social posts and video — one source for every surface.</div>
+      <div class="spacer"></div>
+      <div class="foot">
+        <span class="wordmark">leetExpert</span>
+        <span class="count" id="count">Primitives · see compositions/</span>
+      </div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      tl.from("#title", { y: 40, opacity: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+      tl.from("#sub", { y: 24, opacity: 0, duration: 0.6, ease: "power3.out" }, 0.35);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

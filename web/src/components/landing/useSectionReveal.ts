@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-
 /** A 1% band across the scroller's middle; the section it crosses is active. */
 export const MIDDLE_BAND = "-49.5% 0px -49.5% 0px";
 
@@ -25,10 +23,9 @@ export function activeSectionIndex(
  * scrolled. The observer reports the current position as soon as it starts,
  * and on any change of position, however it happened.
  *
- * The page snaps section to section, so this changes a handful of times per
- * visit; the animation each section plays runs on its own clock
- * (useRevealProgress), not on scroll position. `active` keeps its last value
- * while the band crosses none of this root's sections.
+ * It drives no animation (the landing's motion is CSS on view timelines):
+ * only which heavy features load and when the stage cards rise. `active`
+ * keeps its last value while the band crosses none of this root's sections.
  */
 export function useActiveSection<T extends HTMLElement = HTMLDivElement>(count: number) {
   const root = useRef<T>(null);
@@ -57,28 +54,4 @@ export function useActiveSection<T extends HTMLElement = HTMLDivElement>(count: 
   }, [count]);
 
   return { root, active, started };
-}
-
-/**
- * 0 until `started`, then 0 → 1 over `durationMs`, once. Stays at 1 after, so
- * text already read does not retype when the reader scrolls back to it.
- * Starts at 0 on the server so nothing renders typed and then blanks on load.
- */
-export function useRevealProgress(started: boolean, durationMs: number): number {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (!started) return;
-    let frame = 0;
-    const began = performance.now();
-    const tick = (now: number) => {
-      const p = clamp01((now - began) / durationMs);
-      setProgress(p);
-      if (p < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [started, durationMs]);
-
-  return progress;
 }

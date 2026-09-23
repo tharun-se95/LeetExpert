@@ -55,3 +55,7 @@ venv/
 # Raw NotebookLM media exports (large, local-only backup — see media-source/README.md)
 media-source/*
 !media-source/README.md
+
+# Local dev tool artifacts
+.opencode-shots/
+.playwright-mcp/

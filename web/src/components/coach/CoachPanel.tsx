@@ -11,7 +11,8 @@ export function CoachPanel({
   variant = "floating",
   active = true,
 }: {
-  variant?: "floating" | "page" | "column";
+  /** "showcase": the landing page's scripted panel — the header, no close control. */
+  variant?: "floating" | "page" | "column" | "showcase";
   /** False while the mobile tab is hidden so we do not steal Code focus. */
   active?: boolean;
 }) {
@@ -63,9 +64,10 @@ export function CoachPanel({
       // positioned against this panel, not document flow.
       className={cn(
         "relative flex h-full min-h-0 flex-col",
-        // The column is a flush workspace pane, so it takes the description
-        // pane's grainy --elevated paper (AA holds there, grainContrast.test).
-        variant === "column" ? "grain-paper [--grain-paper:var(--elevated)]" : "bg-elevated",
+        // The column is a flush workspace pane on the description pane's
+        // --elevated paper, like the overlay variant. The landing's showcase
+        // sits on a card that already is the surface, so it paints none.
+        variant !== "showcase" && "bg-elevated",
       )}
     >
       {variant !== "page" ? (
@@ -97,7 +99,7 @@ export function CoachPanel({
             >
               <CaretLineRight size={16} weight="bold" />
             </button>
-          ) : (
+          ) : variant === "showcase" ? null : (
             <button
               type="button"
               aria-label="Close problem coach"
@@ -132,7 +134,7 @@ export function CoachPanel({
         */}
         {/* Nothing to clear on an untouched thread — an enabled control
             whose only outcome is nothing is worse than no control. */}
-        {thread.length > 0 ? (
+        {thread.length > 0 && variant !== "showcase" ? (
           <button
             type="button"
             onClick={clearThread}

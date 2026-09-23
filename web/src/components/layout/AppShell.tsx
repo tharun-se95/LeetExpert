@@ -106,17 +106,6 @@ export function activeThemeFor(pathname: string): FamilyId | null {
   return null;
 }
 
-/**
- * The drawer stays put for a full minute after the pointer leaves. Hover is
- * how it OPENS; closing is a slow tidy-up for a drawer the reader has plainly
- * finished with, not a reaction to the pointer moving away — at sub-second
- * delays it kept vanishing mid-read. The close button is the deliberate way
- * out, and re-entering resets the minute.
- */
-const HOVER_CLOSE_MS = 60_000;
-/** Hover-driven open only where a pointer can actually hover. */
-const HOVER_MQ = "(hover: hover) and (pointer: fine)";
-
 export function AppShell({ children, authEnabled = false }: { children: React.ReactNode; authEnabled?: boolean }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -147,66 +136,10 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
     !landing && (!isNextjs || NEXTJS_COURSE.status === "available");
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
-  // The drawer follows the pointer on hover-capable devices: an edge strip
-  // opens it, leaving it closes it. Touch has no hover, so those devices keep
-  // the explicit close button instead (see Sidebar's showClose).
-  const [canHover, setCanHover] = useState(false);
-  const hoverCloseTimer = useRef<number | null>(null);
-  const cancelHoverClose = useCallback(() => {
-    if (hoverCloseTimer.current !== null) {
-      window.clearTimeout(hoverCloseTimer.current);
-      hoverCloseTimer.current = null;
-    }
-  }, []);
-  const openOnHover = useCallback(() => {
-    cancelHoverClose();
-    setSidebarOpen(true);
-  }, [cancelHoverClose]);
-  const closeAfterGrace = useCallback(() => {
-    cancelHoverClose();
-    hoverCloseTimer.current = window.setTimeout(
-      () => setSidebarOpen(false),
-      HOVER_CLOSE_MS,
-    );
-  }, [cancelHoverClose]);
-
-  useEffect(() => {
-    const mq = window.matchMedia(HOVER_MQ);
-    const sync = () => setCanHover(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => {
-      mq.removeEventListener("change", sync);
-    };
-  }, []);
-  useEffect(() => cancelHoverClose, [cancelHoverClose]);
-
-  /**
-   * Closing cannot rely on the panel's own pointerleave: the drawer slides in
-   * *under* a stationary cursor, so the browser never fires pointerenter on
-   * it, and with no enter there is no leave either (seen in the browser — the
-   * drawer stayed open forever). Tracking the pointer against the rail's own
-   * edge closes it as soon as the pointer moves away, wherever it came from.
-   */
-  useEffect(() => {
-    if (!canHover || !sidebarOpen) return;
-    const onMove = (e: PointerEvent) => {
-      const rail = document.getElementById("lessons-sidebar");
-      if (!rail) return;
-      // The resize grip's pill overhangs the rail's right edge, so the edge
-      // test alone reads "pointer left the drawer" while the pointer is on the
-      // drawer's own control. Hit-testing what is under the pointer covers it.
-      const onDrawer = e.target instanceof Node && rail.contains(e.target);
-      if (!onDrawer && e.clientX > rail.getBoundingClientRect().right)
-        closeAfterGrace();
-      else cancelHoverClose();
-    };
-    window.addEventListener("pointermove", onMove);
-    return () => window.removeEventListener("pointermove", onMove);
-  }, [canHover, sidebarOpen, closeAfterGrace, cancelHoverClose]);
-
-  // Dismissible without moving the pointer (WCAG 1.4.13): Esc closes whatever
-  // hover opened, and is the keyboard user's way out too.
+  // Esc is a second, keyboard-only way to close the drawer (WCAG 1.4.13),
+  // alongside the explicit close button in its own header row — the drawer
+  // opens by default and by the floating button, and closes only from one of
+  // these two deliberate actions, never from the pointer moving away.
   useEffect(() => {
     if (!sidebarOpen || !isDesktop) return;
     const onKey = (e: KeyboardEvent) => {
@@ -230,14 +163,11 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
   }, []);
 
   // Desktop open/closed preference only — mobile sheet must not overwrite it.
+  // Open by default: a reader who never touched the close button gets the
+  // drawer every visit. A stored preference only exists once they've closed
+  // it themselves, and is honoured until they reopen it.
   useEffect(() => {
     if (!showCourseNav || !isDesktop) return;
-    // Hover drives the drawer on a fine pointer, so it starts closed and the
-    // edge strip brings it in; a stored preference would fight that.
-    if (canHover) {
-      setSidebarOpen(false);
-      return;
-    }
     try {
       const raw = localStorage.getItem(SIDEBAR_KEY);
       if (raw === "0" || raw === "1") {
@@ -248,18 +178,16 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
       /* ignore */
     }
     setSidebarOpen(true);
-  }, [showCourseNav, isDesktop, canHover]);
+  }, [showCourseNav, isDesktop]);
 
   useEffect(() => {
-    // A hover-driven drawer is transient state, not a preference — persisting
-    // it would rewrite the key on every pass of the pointer.
-    if (!showCourseNav || !isDesktop || canHover) return;
+    if (!showCourseNav || !isDesktop) return;
     try {
       localStorage.setItem(SIDEBAR_KEY, sidebarOpen ? "1" : "0");
     } catch {
       /* ignore */
     }
-  }, [sidebarOpen, showCourseNav, isDesktop, canHover]);
+  }, [sidebarOpen, showCourseNav, isDesktop]);
 
   // Close the mobile sheet after in-app navigation.
   useEffect(() => {
@@ -318,21 +246,10 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
           {/*
             The drawer opener: one round floating button, bottom-left, on every
             page with the course nav, problem pages included — never in the app
-            Header, which carries only search, progress and theme. The hover
-            edge strip below still skips the IDE, where the description pane
-            starts at that edge.
+            Header, which carries only search, progress and theme. Hidden while
+            the drawer is open (FloatingLessonsButton), which it is by default.
           */}
           {showCourseNav ? <FloatingLessonsButton /> : null}
-          {/* The drawer sits off-screen when closed, so the open trigger is
-              this edge strip rather than the panel itself. 28px wide: a 12px
-              strip needed a deliberate aim at the very edge. */}
-          {showCourseNav && !ideViewport && canHover && !sidebarOpen ? (
-            <div
-              aria-hidden
-              onPointerEnter={openOnHover}
-              className="fixed top-14 bottom-0 left-0 z-30 hidden w-7 lg:block"
-            />
-          ) : null}
           <div className="relative flex h-dvh flex-col overflow-hidden">
             {/*
               The app header overlays the page (absolute, translucent with blur;
@@ -352,13 +269,7 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
             )}
             <div className="flex min-h-0 flex-1">
               {showCourseNav ? (
-                <Sidebar
-                  open={sidebarOpen}
-                  onClose={() => setSidebarOpen(false)}
-                  onPointerEnter={canHover ? cancelHoverClose : undefined}
-                  onPointerLeave={canHover ? closeAfterGrace : undefined}
-                  onFocusCapture={canHover ? cancelHoverClose : undefined}
-                />
+                <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
               ) : null}
               {/*
                 relative: <main> is the only scroller inside an h-dvh,
@@ -376,27 +287,23 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
                   fillMain
                     ? "flex min-h-0 flex-col overflow-hidden"
                     : "overflow-y-auto",
-                  // The landing page moves section to section; every other page
-                  // scrolls freely. Proximity below lg so a section taller than
-                  // a phone screen can still be read end to end.
-                  landing && "snap-y snap-proximity lg:snap-mandatory",
                 )}
               >
                 {/*
-                  The app's desk: the page grain, inside the scroller so it
-                  moves with the content, once per page — a second transparent
-                  grain layer inside it would double the strength. The app
-                  Header overlays it translucently and the drawer paints its own
-                  grain beside it, both outside <main>; pt-14 starts the page
-                  below the header it scrolls under. On / the landing header
+                  The app's desk, inside the scroller so it moves with the
+                  content, once per page. isolate keeps a page's own z-index
+                  layers (the landing hero's floor, its copy and its strip)
+                  inside the page, under the headers. The app Header overlays it
+                  translucently and the drawer sits beside it, both outside
+                  <main>; pt-14 starts the page below the header it scrolls
+                  under. On / the landing header
                   lives in here, above the page and outside PageEnter so it
                   does not replay the page's rise.
                 */}
                 <div
                   className={cn(
-                    "paper-grain relative",
+                    "relative isolate",
                     fillMain ? "flex min-h-0 flex-1 flex-col" : "min-h-full",
-                    landing && "snap-start",
                     !landing && "pt-14",
                   )}
                 >

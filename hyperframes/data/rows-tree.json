@@ -1,0 +1,26 @@
+[
+  {
+    "_out": "tree-inorder",
+    "family": "recursive-exploration",
+    "theme": "dark",
+    "eyebrow": "Recursive Exploration",
+    "title": "In-order Traversal",
+    "values": "8,3,10,1,6,.,14,.,.,4,7,.,.,13,.",
+    "outLabel": "visit order",
+    "showOutput": true,
+    "stepSeconds": 1.4,
+    "steps": "[{\"node\": 0, \"done\": [], \"note\": \"Go left from <b>8</b> before visiting it.\"}, {\"node\": 1, \"done\": [], \"note\": \"Go left from <b>3</b> before visiting it.\"}, {\"node\": 3, \"done\": [], \"note\": \"Go left from <b>1</b> before visiting it.\"}, {\"node\": 3, \"done\": [3], \"note\": \"Left subtree is finished \\u2014 <b>visit 1</b>.\"}, {\"node\": 1, \"done\": [3, 1], \"note\": \"Left subtree is finished \\u2014 <b>visit 3</b>.\"}, {\"node\": 4, \"done\": [3, 1], \"note\": \"Go left from <b>6</b> before visiting it.\"}, {\"node\": 9, \"done\": [3, 1], \"note\": \"Go left from <b>4</b> before visiting it.\"}, {\"node\": 9, \"done\": [3, 1, 9], \"note\": \"Left subtree is finished \\u2014 <b>visit 4</b>.\"}, {\"node\": 4, \"done\": [3, 1, 9, 4], \"note\": \"Left subtree is finished \\u2014 <b>visit 6</b>.\"}, {\"node\": 10, \"done\": [3, 1, 9, 4], \"note\": \"Go left from <b>7</b> before visiting it.\"}, {\"node\": 10, \"done\": [3, 1, 9, 4, 10], \"note\": \"Left subtree is finished \\u2014 <b>visit 7</b>.\"}, {\"node\": 0, \"done\": [3, 1, 9, 4, 10, 0], \"note\": \"Left subtree is finished \\u2014 <b>visit 8</b>.\"}, {\"node\": 2, \"done\": [3, 1, 9, 4, 10, 0], \"note\": \"Go left from <b>10</b> before visiting it.\"}, {\"node\": 2, \"done\": [3, 1, 9, 4, 10, 0, 2], \"note\": \"Left subtree is finished \\u2014 <b>visit 10</b>.\"}, {\"node\": 6, \"done\": [3, 1, 9, 4, 10, 0, 2], \"note\": \"Go left from <b>14</b> before visiting it.\"}, {\"node\": 13, \"done\": [3, 1, 9, 4, 10, 0, 2], \"note\": \"Go left from <b>13</b> before visiting it.\"}, {\"node\": 13, \"done\": [3, 1, 9, 4, 10, 0, 2, 13], \"note\": \"Left subtree is finished \\u2014 <b>visit 13</b>.\"}, {\"node\": 6, \"done\": [3, 1, 9, 4, 10, 0, 2, 13, 6], \"note\": \"Left subtree is finished \\u2014 <b>visit 14</b>.\"}]"
+  },
+  {
+    "_out": "tree-level-order",
+    "family": "relationships",
+    "theme": "light",
+    "eyebrow": "Relationships",
+    "title": "Level-order Traversal",
+    "values": "8,3,10,1,6,.,14,.,.,4,7,.,.,13,.",
+    "outLabel": "queue output",
+    "showOutput": true,
+    "stepSeconds": 1.4,
+    "steps": "[{\"node\": 0, \"done\": [0], \"note\": \"Dequeue <b>8</b>, then enqueue its children. Level 0.\"}, {\"node\": 1, \"done\": [0, 1], \"note\": \"Dequeue <b>3</b>, then enqueue its children. Level 1.\"}, {\"node\": 2, \"done\": [0, 1, 2], \"note\": \"Dequeue <b>10</b>, then enqueue its children. Level 2.\"}, {\"node\": 3, \"done\": [0, 1, 2, 3], \"note\": \"Dequeue <b>1</b>, then enqueue its children. Level 2.\"}, {\"node\": 4, \"done\": [0, 1, 2, 3, 4], \"note\": \"Dequeue <b>6</b>, then enqueue its children. Level 3.\"}, {\"node\": 6, \"done\": [0, 1, 2, 3, 4, 6], \"note\": \"Dequeue <b>14</b>, then enqueue its children. Level 3.\"}, {\"node\": 9, \"done\": [0, 1, 2, 3, 4, 6, 9], \"note\": \"Dequeue <b>4</b>, then enqueue its children. Level 4.\"}, {\"node\": 10, \"done\": [0, 1, 2, 3, 4, 6, 9, 10], \"note\": \"Dequeue <b>7</b>, then enqueue its children. Level 4.\"}, {\"node\": 13, \"done\": [0, 1, 2, 3, 4, 6, 9, 10, 13], \"note\": \"Dequeue <b>13</b>, then enqueue its children. Level 4.\"}]"
+  }
+]

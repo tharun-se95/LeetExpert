@@ -1,0 +1,260 @@
+<!doctype html>
+<html
+  lang="en"
+  data-resolution="landscape"
+  data-composition-variables='[
+    {"id":"eyebrow","type":"string","label":"Eyebrow","default":"Pointer Movement"},
+    {"id":"title","type":"string","label":"Title","default":"Reverse a Linked List"},
+    {"id":"family","type":"enum","label":"Pattern family","default":"pointer-movement",
+      "options":[
+        {"value":"linear-traversal","label":"Linear Traversal"},
+        {"value":"pointer-movement","label":"Pointer Movement"},
+        {"value":"ordering-search","label":"Ordering & Search"},
+        {"value":"recursive-exploration","label":"Recursive Exploration"},
+        {"value":"state-transition","label":"State Transition"},
+        {"value":"relationships","label":"Relationships"},
+        {"value":"priority-structures","label":"Priority Structures"}]},
+    {"id":"theme","type":"enum","label":"Theme","default":"dark",
+      "options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"values","type":"string","label":"Node values (comma separated)","default":"1,2,3,4,5"},
+    {"id":"p1Label","type":"string","label":"Pointer 1 label","default":"curr"},
+    {"id":"p2Label","type":"string","label":"Pointer 2 label","default":"prev"},
+    {"id":"showP2","type":"boolean","label":"Show second pointer","default":true},
+    {"id":"showNull","type":"boolean","label":"Show null terminator","default":true},
+    {"id":"steps","type":"string","label":"Steps JSON [{p1,p2,reversed,note}]",
+      "default":"[{\"p1\":0,\"p2\":-1,\"reversed\":0,\"note\":\"prev starts at null, curr at the head.\"}]"},
+    {"id":"stepSeconds","type":"number","label":"Seconds per step","default":2.2,"min":0.6,"max":8,"step":0.1}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>leetExpert — Linked List</title>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+/* Latin subsets only, vendored — the renderer has no network. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f3.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f9.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/f15.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/f10.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+    </style>
+    <link rel="stylesheet" href="assets/brand.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { width: 1920px; height: 1080px; padding: 96px 112px; display: flex; flex-direction: column; }
+      .head { display: flex; flex-direction: column; gap: 22px; }
+      .rule { width: 132px; height: 5px; background: var(--accent, var(--ink)); border-radius: 3px; }
+      .eyebrow { font-size: 26px; }
+      .title { font-size: 78px; }
+      .board { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
+      .row { position: relative; display: flex; align-items: center; }
+      .node {
+        width: 150px; height: 150px; flex: none;
+        display: flex; align-items: center; justify-content: center;
+        border: 2.5px solid var(--ink); border-radius: 16px;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 58px; color: var(--ink);
+      }
+      .node[data-state="active"] { background: var(--ink); color: var(--on-ink); }
+      .node[data-state="done"] { border-color: var(--muted-fill); color: var(--dim); }
+      /* The arrow is the edge. Its direction is the whole point of a reversal,
+         so it is a real drawn edge, not a text glyph. */
+      .arrow { width: 76px; height: 22px; flex: none; position: relative; }
+      .arrow .shaft {
+        position: absolute; left: 8px; right: 8px; top: 10px; height: 2.5px; background: var(--line);
+      }
+      .arrow .head {
+        position: absolute; top: 1px; width: 0; height: 0;
+        border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+      }
+      .arrow[data-dir="right"] .head { right: 6px; border-left: 13px solid var(--line); }
+      .arrow[data-dir="left"]  .head { left: 6px;  border-right: 13px solid var(--line); }
+      .arrow[data-dir="right"] .head, .arrow[data-dir="left"] .head { display: block; }
+      .nullbox {
+        flex: none; font-family: "JetBrains Mono", monospace; font-size: 40px; color: var(--dim);
+      }
+      .ptr { font-size: 21px; gap: 7px; }
+      .note {
+        font-family: "Space Grotesk", sans-serif; font-size: 36px; line-height: 1.45;
+        color: var(--line); max-width: 1180px; min-height: 100px;
+      }
+      .note b { color: var(--ink); font-weight: 700; }
+      .foot { display: flex; align-items: flex-end; justify-content: space-between; }
+      .wordmark { font-size: 30px; }
+      .counter { font-family: "Space Mono", monospace; font-size: 22px; letter-spacing: .16em; color: var(--dim); }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="linked-list" data-start="0"
+         data-width="1920" data-height="1080">
+      <div class="head">
+        <div class="rule"></div>
+        <div class="eyebrow" id="eyebrow"></div>
+        <div class="title display" id="title"></div>
+      </div>
+      <div class="board">
+        <div class="row" id="row">
+          <div class="ptr" id="ptr-1" data-dir="down"><span class="lab"></span><span class="caret"></span></div>
+          <div class="ptr" id="ptr-2" data-dir="up"><span class="caret"></span><span class="lab"></span></div>
+        </div>
+      </div>
+      <div class="note" id="note"></div>
+      <div class="foot">
+        <span class="wordmark">leetExpert</span>
+        <span class="counter" id="counter"></span>
+      </div>
+    </div>
+    <script>
+      const V = window.__hyperframes.getVariables();
+      const root = document.getElementById("root");
+      root.setAttribute("data-theme", V.theme);
+      root.setAttribute("data-family", V.family);
+      document.getElementById("eyebrow").textContent = V.eyebrow;
+      document.getElementById("title").textContent = V.title;
+
+      const values = String(V.values).split(",").map((s) => s.trim()).filter(Boolean);
+      const steps = JSON.parse(V.steps);
+      const NODE = 150, ARROW = 76;
+
+      const row = document.getElementById("row");
+      const ptr1 = document.getElementById("ptr-1");
+      const ptr2 = document.getElementById("ptr-2");
+      const N = values.length;
+      const mk = (cls, id, html) => {
+        const e = document.createElement("div");
+        e.className = cls; if (id) e.id = id; if (html) e.innerHTML = html;
+        row.insertBefore(e, ptr1); return e;
+      };
+      // Left null + its edge: the reversed list's tail points here.
+      mk("nullbox", "null-left", "\u2205");
+      const aL = mk("arrow", "arrow-left", '<span class="shaft"></span><span class="head"></span>');
+      aL.setAttribute("data-dir", "left");
+      values.forEach((v, i) => {
+        const n = mk("node", "node-" + i); n.textContent = v;
+        if (i < N - 1) {
+          const a = mk("arrow", "arrow-" + i, '<span class="shaft"></span><span class="head"></span>');
+          a.setAttribute("data-dir", "right");
+        }
+      });
+      // Trailing edge + right null: present until the tail is re-pointed.
+      const aT = mk("arrow", "arrow-tail", '<span class="shaft"></span><span class="head"></span>');
+      aT.setAttribute("data-dir", "right");
+      mk("nullbox", "null-right", "\u2205");
+      // Null boxes occupy layout at all times so nothing reflows mid-animation;
+      // only their visibility changes.
+      gsap.set(["#null-left", "#arrow-left"], { autoAlpha: 0 });
+
+      // A pointer at index i sits over that node's centre; index -1 parks it
+      // left of the head, which is how "prev = null" reads on screen.
+      // Node 0 no longer starts at x=0: a null box and its edge sit to its left.
+      const NULLW = 34;
+      const LEAD = NULLW + ARROW;
+      const centerX = (i) => i < 0 ? NULLW / 2 : LEAD + i * (NODE + ARROW) + NODE / 2;
+      ptr1.querySelector(".lab").textContent = V.p1Label;
+      ptr2.querySelector(".lab").textContent = V.p2Label;
+      if (!V.showP2) ptr2.style.display = "none";
+      ptr1.style.top = "-84px";
+      ptr2.style.top = NODE / 2 + 44 + "px";
+      gsap.set([ptr1, ptr2], { xPercent: -50 });
+
+      const noteEl = document.getElementById("note");
+      const counterEl = document.getElementById("counter");
+      const STEP = Number(V.stepSeconds);
+
+      document.fonts.ready.then(() => {
+        const tl = gsap.timeline({ paused: true });
+        steps.forEach((s, k) => {
+          const t = k * STEP;
+          const f = s.reversed || 0;   // nodes 0..f-1 have had .next re-pointed
+          values.forEach((_, i) => {
+            const state = i < f ? "done" : (i === s.p1 ? "active" : "default");
+            tl.set("#node-" + i, { attr: { "data-state": state } }, t);
+            // edge i (node i -> node i+1) reverses only once node i+1 has been
+            // re-pointed, i.e. when f >= i + 2. Off-by-one here would claim a
+            // link exists that the algorithm never made.
+            if (i < N - 1) {
+              tl.set("#arrow-" + i, { attr: { "data-dir": f >= i + 2 ? "left" : "right" } }, t);
+            }
+          });
+          // head.next = null happens on the first iteration.
+          tl.set(["#null-left", "#arrow-left"], { autoAlpha: f >= 1 ? 1 : 0 }, t);
+          // the tail stops pointing at null once it is re-pointed.
+          tl.set(["#null-right", "#arrow-tail"], { autoAlpha: f >= N ? 0 : 1 }, t);
+          tl.set(noteEl, { innerHTML: s.note }, t);
+          tl.set(counterEl, { textContent: "STEP " + (k + 1) + " / " + steps.length }, t);
+          const dur = k === 0 ? 0 : 0.5;
+          tl.to(ptr1, { x: centerX(s.p1), duration: dur, ease: "power2.inOut" }, t);
+          if (V.showP2) tl.to(ptr2, { x: centerX(s.p2), duration: dur, ease: "power2.inOut" }, t);
+          if (k === 0) tl.from(noteEl, { opacity: 0, y: 14, duration: 0.5, ease: "power3.out" }, 0.15);
+        });
+        tl.to({}, { duration: STEP }, (steps.length - 1) * STEP);
+        window.__timelines["linked-list"] = tl;
+        // Registered after the runtime initialised, so it must be re-bound: without
+        // this `render` saw a zero-length composition ("Composition has zero
+        // duration") although `snapshot` and the browser played it.
+        window.__hfForceTimelineRebind?.();
+      });
+    </script>
+  </body>
+</html>

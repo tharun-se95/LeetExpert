@@ -7,9 +7,6 @@ import { CourseNavTree } from "@/components/layout/CourseNavTree";
 
 interface SidebarProps {
   open: boolean;
-  onPointerEnter?: () => void;
-  onPointerLeave?: () => void;
-  onFocusCapture?: () => void;
   onClose: () => void;
 }
 
@@ -26,19 +23,16 @@ function clampWidth(px: number): number {
  * Desktop Lessons drawer (≥ lg): a full panel when open, zero-width when not.
  * Mobile uses {@link MobileLessonsSheet} from the header instead.
  *
- * The opener floats at the viewport's bottom-left (FloatingLessonsButton)
- * rather than living in a collapsed rail. A problem page already has the
+ * Open by default; the opener floats at the viewport's bottom-left
+ * (FloatingLessonsButton) rather than living in a collapsed rail, and only
+ * shows once the drawer is closed. A problem page already has the
  * description, the editor, and the coach competing for horizontal space, so a
  * drawer nobody has open should cost none of it. Closing lives in the nav's
- * own pinned header row (CourseNavPanel), which this passes onClose to.
+ * own pinned header row (CourseNavPanel), which this passes onClose to — the
+ * drawer's only ways to close are that button and Escape (AppShell), never a
+ * pointer leaving it.
  */
-export function Sidebar({
-  open,
-  onClose,
-  onPointerEnter,
-  onPointerLeave,
-  onFocusCapture,
-}: SidebarProps) {
+export function Sidebar({ open, onClose }: SidebarProps) {
   // Always starts at the default so the client's first render matches the
   // server's — reading localStorage during init would hydrate a width the
   // server never rendered. The persisted width is applied right after
@@ -104,17 +98,13 @@ export function Sidebar({
 
   return (
     <aside
-      onPointerEnter={onPointerEnter}
-      onPointerLeave={onPointerLeave}
-      onFocusCapture={onFocusCapture}
       id="lessons-sidebar"
       // Stays mounted so the width transition has something to collapse, and
       // inert while closed so the clipped tree leaves the tab order with it.
       inert={!open}
       style={{ width: open ? width : 0 }}
       className={cn(
-        // .sidebar-rail + .grain-paper (globals.css): the app header's grainy
-        // paper. --grain-paper tells the grain veil that paper is the rail's.
+        // .sidebar-rail (globals.css): the app header's paper.
         // z-45: above the overlaying header (z-40) so the header's shadow-edge-bottom
         // stops falling across the rail's top edge, and still below the search
         // dialog and mobile sheet (z-50), which must cover everything.
@@ -135,7 +125,7 @@ export function Sidebar({
         // mt-14, not h-full: the app header overlays the page, so the rail starts
         // below it (the flex row stretches it to the rest of the height) and its
         // pinned close row is never under the header.
-        "sidebar-rail print:hidden relative z-[45] hidden mt-14 shrink-0 flex-col lg:flex [clip-path:inset(0_-3rem_0_0)] grain-paper [--grain-paper:var(--rail-surface)]",
+        "sidebar-rail print:hidden relative z-[45] hidden mt-14 shrink-0 flex-col lg:flex [clip-path:inset(0_-3rem_0_0)]",
         // The drag handle must track the pointer 1:1, so it opts out.
         !dragging &&
           "transition-[width] duration-[var(--dur-gentle)] ease-[var(--ease-gentle)] motion-reduce:transition-none",

@@ -1,0 +1,28 @@
+[
+  {
+    "_out": "linked-list-reversal",
+    "family": "pointer-movement",
+    "theme": "dark",
+    "eyebrow": "Pointer Movement",
+    "title": "Reverse a Linked List",
+    "values": "1,2,3,4,5",
+    "p1Label": "curr",
+    "p2Label": "prev",
+    "showP2": true,
+    "showNull": true,
+    "steps": "[{\"p1\": 0, \"p2\": -1, \"reversed\": 0, \"note\": \"<b>prev</b> starts at null and <b>curr</b> at the head. Nothing is reversed yet.\"}, {\"p1\": 1, \"p2\": 0, \"reversed\": 1, \"note\": \"Point node 1's next at <b>prev</b>, then walk both forward. 1 node re-pointed.\"}, {\"p1\": 2, \"p2\": 1, \"reversed\": 2, \"note\": \"Point node 2's next at <b>prev</b>, then walk both forward. 2 nodes re-pointed.\"}, {\"p1\": 3, \"p2\": 2, \"reversed\": 3, \"note\": \"Point node 3's next at <b>prev</b>, then walk both forward. 3 nodes re-pointed.\"}, {\"p1\": 4, \"p2\": 3, \"reversed\": 4, \"note\": \"Point node 4's next at <b>prev</b>, then walk both forward. 4 nodes re-pointed.\"}, {\"p1\": 5, \"p2\": 4, \"reversed\": 5, \"note\": \"<b>curr</b> falls off the end. <b>prev</b> is the new head \\u2014 every node now points backwards.\"}]"
+  },
+  {
+    "_out": "linked-list-fast-slow",
+    "family": "pointer-movement",
+    "theme": "light",
+    "eyebrow": "Pointer Movement",
+    "title": "Fast &amp; Slow Pointers",
+    "values": "1,2,3,4,5,6,7",
+    "p1Label": "slow",
+    "p2Label": "fast",
+    "showP2": true,
+    "showNull": true,
+    "steps": "[{\"p1\": 0, \"p2\": 0, \"reversed\": 0, \"note\": \"Both pointers start at the head.\"}, {\"p1\": 1, \"p2\": 2, \"reversed\": 0, \"note\": \"<b>slow</b> moves one to index 1; <b>fast</b> moves two to index 2.\"}, {\"p1\": 2, \"p2\": 4, \"reversed\": 0, \"note\": \"<b>slow</b> moves one to index 2; <b>fast</b> moves two to index 4.\"}, {\"p1\": 3, \"p2\": 6, \"reversed\": 0, \"note\": \"<b>fast</b> reaches the end. <b>slow</b> stopped at index 3 \\u2014 <b>the middle</b>.\"}]"
+  }
+]

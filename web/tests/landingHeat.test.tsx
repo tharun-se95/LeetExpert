@@ -121,26 +121,19 @@ describe("heat map", () => {
 describe("credits section", () => {
   const css = read("app", "globals.css");
 
-  it("presents the heatmap as a feature, with the owner's credits line and no credit amounts", () => {
-    expect(HEAT.kicker).toBe("Feature");
-    expect(HEAT.title).toBe("Heatmap");
+  it("is Burn, with the owner's credits line and no credit amounts", () => {
+    // Renamed from Heatmap and moved into Keep (owner, 2026-09-17).
+    expect(HEAT.title).toBe("Burn");
     expect(HEAT.credits).toBe("Earn credits for consistent heat.");
     expect([HEAT.title, HEAT.body, HEAT.credits].join(" ")).not.toMatch(/\d/);
-    const outro = read("components", "landing", "LandingOutro.tsx");
-    // The credits line types after the heading and body.
-    expect(outro).toContain("[HEAT.title.length, HEAT.body.length, HEAT.credits.length]");
-    expect(outro).toMatch(/<TypedText text=\{HEAT\.credits\} progress=\{credits \?\? 0\} \/>/);
   });
 
-  it("sits between pricing and the questions, as its own snap stop", () => {
-    const outro = read("components", "landing", "LandingOutro.tsx");
-    expect(outro).toContain("useActiveSection<HTMLDivElement>(3)");
-    const order = ["<Pricing started={started[0]", "<HeatmapFeature started={started[1]", "<Questions started={started[2]"].map((s) =>
-      outro.indexOf(s),
-    );
-    expect(order.every((i) => i > 0)).toBe(true);
-    expect([...order].sort((a, b) => a - b)).toEqual(order);
-    expect(outro.match(/<section data-scroll-section className=\{SECTION\}>/g)).toHaveLength(3);
+  it("lives in Keep's Burn window, lit once Keep is near", () => {
+    const windows = read("components", "landing", "FeatureWindows.tsx");
+    const burn = windows.slice(windows.indexOf("    burn: {"), windows.indexOf("function Standin"));
+    expect(burn).toContain("<HeatMap year={data.heat} lit={near.keep}");
+    expect(burn).toContain("note: HEAT.credits,");
+    expect(read("components", "landing", "LandingOutro.tsx")).not.toMatch(/HeatMap/);
   });
 
   it("defines the heat ramp as tokens in both themes", () => {

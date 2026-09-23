@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -38,12 +38,12 @@ describe("LandingHeader", () => {
     expect(navHtml).toMatch(/<a[^>]*href="\/courses\/dsa\/problems"[^>]*>Practice<\/a>/);
   });
 
-  it("stays pinned: clear over the grain at rest, a translucent paper once scrolled", () => {
+  it("stays pinned: clear over the paper at rest, a translucent paper once scrolled", () => {
     expect(headerTag).toMatch(/\bsticky\b/);
     expect(headerTag).toMatch(/\btop-0\b/);
     expect(headerTag).toMatch(/\bz-30\b/);
     expect(headerTag).toMatch(/\bborder-b\b/);
-    // At the top the grain shows through.
+    // At the top the page paper shows through.
     expect(headerTag).not.toMatch(/\bbg-/);
     expect(headerTag).not.toMatch(/\bshadow-/);
     expect(headerTag).not.toMatch(/\bbackdrop-/);
@@ -99,11 +99,11 @@ describe("AppShell landing branch", () => {
     expect(shell).toMatch(/\{landing \? null : \(\s*<Header\b/);
   });
 
-  it("renders one grain wrapper inside <main> for every route, LandingHeader inside it on /", () => {
-    const wrapper = main.indexOf(`"paper-grain relative`);
+  it("renders one desk wrapper inside <main> for every route, LandingHeader inside it on /", () => {
+    const wrapper = main.indexOf(`"relative isolate"`);
     const header = main.indexOf("<LandingHeader");
     const page = main.indexOf("<PageEnter", wrapper);
-    expect(wrapper, "paper-grain wrapper inside <main>").toBeGreaterThan(0);
+    expect(wrapper, "desk wrapper inside <main>").toBeGreaterThan(0);
     expect(header).toBeGreaterThan(wrapper);
     expect(page).toBeGreaterThan(header);
     // One page render inside the one wrapper, not a separate branch per route.
@@ -112,9 +112,8 @@ describe("AppShell landing branch", () => {
   });
 
   it("keeps the app Header and the drawer outside the desk wrapper", () => {
-    // Both paint their own grain (.grain-paper) over opaque paper; inside the
-    // transparent desk wrapper they would sit on top of its grain as well.
-    // The JSX element, not "<main>" in a comment above it.
+    // They sit beside the scroller, not in it. The JSX element, not "<main>" in
+    // a comment above it.
     const mainTag = shell.search(/<main\s+className=/);
     expect(mainTag).toBeGreaterThan(0);
     expect(shell.indexOf("<Header")).toBeGreaterThan(0);
@@ -125,25 +124,10 @@ describe("AppShell landing branch", () => {
   it("tells the header it is scrolled by observing the page top, not by listening for scroll", () => {
     // A landing page restored mid-scroll fires no scroll event.
     const sentinel = main.indexOf("ref={landingTop}");
-    expect(sentinel, "sentinel inside the grain wrapper").toBeGreaterThan(main.indexOf('"paper-grain relative'));
+    expect(sentinel, "sentinel inside the desk wrapper").toBeGreaterThan(main.indexOf('"relative isolate"'));
     expect(sentinel).toBeLessThan(main.indexOf("<LandingHeader"));
     expect(main).toMatch(/scrolled=\{landingScrolled\}/);
     expect(shell).toMatch(/new IntersectionObserver\(\s*\(\[entry\]\) => setLandingScrolled\(!\(entry\?\.isIntersecting \?\? true\)\)/);
     expect(shell).toMatch(/root: sentinel\.closest\("main"\)/);
-  });
-
-  it("paints the grain once — only the shell wrapper carries it", () => {
-    // A second .paper-grain (e.g. left on HomePage's root) doubles the opacity.
-    const tsx: string[] = [];
-    const walk = (dir: string) => {
-      for (const e of readdirSync(dir, { withFileTypes: true })) {
-        const p = join(dir, e.name);
-        if (e.isDirectory()) walk(p);
-        else if (p.endsWith(".tsx")) tsx.push(readFileSync(p, "utf8"));
-      }
-    };
-    walk(src);
-    const uses = tsx.join("\n").match(/["\s]paper-grain\b/g) ?? [];
-    expect(uses).toHaveLength(1);
   });
 });

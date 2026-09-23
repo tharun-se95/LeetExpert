@@ -71,6 +71,11 @@ interface CoachContextValue {
    * drops focus on the document body is a keyboard dead end.
    */
   registerLauncherEl: (el: HTMLElement | null) => void;
+  /**
+   * Set when the coach is shown but cannot be asked (ScriptedCoachProvider):
+   * the composer locks and says this instead of its quota line.
+   */
+  lockedReason?: string;
 }
 
 const CoachContext = createContext<CoachContextValue | null>(null);
@@ -533,6 +538,60 @@ export function useCoach(): CoachContextValue {
   const ctx = useContext(CoachContext);
   if (!ctx) throw new Error("useCoach must be used inside CoachProvider");
   return ctx;
+}
+
+const noop = () => {};
+
+/**
+ * The real coach panel over a fixed thread, with nothing to call: for the
+ * landing page, where every visitor would otherwise be an AI request (owner,
+ * 2026-09-19 — "real UI, scripted thread"). The composer is locked with
+ * `lockedReason`; every action is inert.
+ */
+export function ScriptedCoachProvider({
+  thread,
+  lockedReason,
+  children,
+}: {
+  thread: ThreadItem[];
+  lockedReason: string;
+  children: ReactNode;
+}) {
+  const value = useMemo<CoachContextValue>(
+    () => ({
+      sandboxId: "scripted",
+      hintLabels: [],
+      layout: "column",
+      setLayout: noop,
+      open: true,
+      setOpen: noop,
+      closeCoach: noop,
+      unread: false,
+      clearUnread: noop,
+      thread,
+      diagnosis: null,
+      reportRun: noop,
+      setSource: noop,
+      sourceLang: "python",
+      send: async () => {},
+      retry: async () => {},
+      stop: noop,
+      clearThread: noop,
+      pending: false,
+      error: null,
+      retryable: false,
+      configured: true,
+      remaining: null,
+      resetAt: null,
+      mobileCoachTick: 0,
+      toggleCoach: noop,
+      registerComposerEl: noop,
+      registerLauncherEl: noop,
+      lockedReason,
+    }),
+    [thread, lockedReason],
+  );
+  return <CoachContext.Provider value={value}>{children}</CoachContext.Provider>;
 }
 
 export function useCoachOptional(): CoachContextValue | null {

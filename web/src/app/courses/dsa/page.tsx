@@ -82,7 +82,8 @@ export default function CourseOverviewPage() {
         <SyncHint />
 
         {STAGES.map((stage) => (
-          <section key={stage.number} className="mt-14">
+          // The landing page's stage cards link here by #stage-N.
+          <section key={stage.number} id={`stage-${stage.number}`} className="mt-14 scroll-mt-6">
             <div className="mb-4">
               <h2 className="text-xl font-semibold tracking-tight">
                 Stage {stage.number} — {stage.title}

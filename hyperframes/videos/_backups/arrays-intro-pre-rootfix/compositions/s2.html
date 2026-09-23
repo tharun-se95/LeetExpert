@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>arrays-intro · scene 2</title>
+  </head>
+  <body>
+    <template>
+      <!-- Geometry helpers and shared styles come from the host index.html
+           (window.LE), so every scene draws the row from the same numbers. -->
+      <div id="s2-root" data-composition-id="s2" data-width="1920" data-height="1080"
+           data-duration="8.670" style="position:absolute;left:0;top:0;width:1920px;height:1080px;"></div>
+      <script>
+      // ── Scene 2 — what that means in memory ─────────────────────────────────
+      // Same row, same coordinates, so the cut is invisible. The couplers give
+      // way to one bracket (eight objects -> one allocation), then indices, then
+      // real byte addresses, then the proof that every step is the same size.
+      (function scene2() {
+        const { W, H, CW, CH, GP, PITCH, ROW_W, ROW_L, ROW_T, ROW_T_HI, OFF_TRACK, OFF_IDX, OFF_ADDR, BASE_ADDR, SLOT, ADV, monoW, $, mk, svg, poly, tri, dashPrep, tok, mount, monoLine, makeRow, couplers, eyebrow } = window.LE;
+        const tl = gsap.timeline({ paused: true });
+        const c = mount("s2"), t0 = 0;
+        const g = makeRow(c, { id: "s2", left: ROW_L, top: ROW_T, n: 8, track: true, idx: true, addr: true });
+        const cps = couplers(g, 8, CW, GP);
+        const eb = eyebrow(c, "ONE CONTIGUOUS BLOCK");
+
+        // The allocation bracket: one span under all eight cells.
+        const sv = svg(c);
+        const bx0 = ROW_L - 12, bx1 = ROW_L + ROW_W + 12, by = 656;
+        const brk = poly(sv, [[bx0, by - 14], [bx0, by], [bx1, by], [bx1, by - 14]], "var(--line)", 2.5);
+        const brkL = dashPrep(brk);
+
+        const ticks = [];
+        for (let i = 0; i < 7; i++) {
+          const e = mk("div", "lab", c, {
+            left: (ROW_L + i * PITCH + CW + GP / 2 - 40) + "px", top: "682px",
+            width: "80px", fontSize: "22px",
+          });
+          e.textContent = "+" + SLOT;
+          e.id = "s2-t" + i;
+          ticks.push(e);
+        }
+        const cap = monoLine(c, [{ text: "slot_size = 8 bytes", cls: "line" }], { size: 30, top: 734 });
+
+        gsap.set(g.__idxs, { autoAlpha: 0, y: -8 });
+        gsap.set(g.__addrs, { autoAlpha: 0, y: -8 });
+        gsap.set(ticks, { autoAlpha: 0 });
+        gsap.set(cap["slot_size = 8 bytes"].el, { autoAlpha: 0, y: 10 });
+        gsap.set(eb, { autoAlpha: 0 });
+
+        tl.to(eb, { autoAlpha: 1, duration: 0.4 }, t0 + 0.0);
+        tl.to(cps, { autoAlpha: 0, duration: 0.5, stagger: 0.04 }, t0 + 0.15);
+        tl.to(brk, { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, t0 + 0.4);
+        tl.to(g.__idxs, { autoAlpha: 1, y: 0, duration: 0.35, stagger: 0.15, ease: "power2.out" }, t0 + 1.6);
+        tl.to(g.__addrs, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.2, ease: "power2.out" }, t0 + 3.5);
+        // Each gap ticks once in accent, then settles: the same step, seven times.
+        ticks.forEach((e, i) => {
+          tl.fromTo(e, { autoAlpha: 0, color: tok("--accent-ink") },
+                       { autoAlpha: 1, duration: 0.22, ease: "power2.out" }, t0 + 5.5 + i * 0.14);
+          tl.to(e, { color: tok("--dim"), duration: 0.5 }, t0 + 5.5 + i * 0.14 + 0.34);
+        });
+        tl.to(cap["slot_size = 8 bytes"].el, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, t0 + 6.6);
+        window.__timelines["s2"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

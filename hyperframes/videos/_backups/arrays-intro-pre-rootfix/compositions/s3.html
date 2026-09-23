@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>arrays-intro · scene 3</title>
+  </head>
+  <body>
+    <template>
+      <!-- Geometry helpers and shared styles come from the host index.html
+           (window.LE), so every scene draws the row from the same numbers. -->
+      <div id="s3-root" data-composition-id="s3" data-width="1920" data-height="1080"
+           data-duration="13.918" style="position:absolute;left:0;top:0;width:1920px;height:1080px;"></div>
+      <script>
+      // ── Scene 3 — the derivation ────────────────────────────────────────────
+      // The scene the video exists for. The formula assembles term by term, each
+      // term is tied by a leader to the thing in the picture it names, i = 3 is
+      // substituted, the multiply and the add land as two separate steps, the
+      // result docks onto the address already printed under cell 3, and finally
+      // the row doubles in length while the step count does not move.
+      (function scene3() {
+        const { W, H, CW, CH, GP, PITCH, ROW_W, ROW_L, ROW_T, ROW_T_HI, OFF_TRACK, OFF_IDX, OFF_ADDR, BASE_ADDR, SLOT, ADV, monoW, $, mk, svg, poly, tri, dashPrep, tok, mount, monoLine, makeRow, couplers, eyebrow } = window.LE;
+        const tl = gsap.timeline({ paused: true });
+        const c = mount("s3"), t0 = 0;
+        const eb = eyebrow(c, "ADDRESS ARITHMETIC");
+
+        // The row keeps travelling: it arrives from scene 2's centre position.
+        const wrap = mk("div", null, c, { position: "absolute", left: "0px", top: "0px", width: "1920px", height: "460px" });
+        wrap.id = "s3-wrap";
+        const g = makeRow(wrap, { id: "s3", left: ROW_L, top: ROW_T_HI, n: 8, track: true, idx: true, addr: true });
+        // The doubled tail: eight more cells on the same pitch, immediately right.
+        const EXT_L = ROW_L + ROW_W + GP;
+        const gx = makeRow(wrap, { id: "s3x", left: EXT_L, top: ROW_T_HI, n: 8, track: true, idx: true });
+        gx.__idxs.forEach((d, i) => { d.textContent = i + 8; });
+
+        const sv = svg(c);
+
+        // The formula. Character offsets are exact, so every leader below is
+        // aimed at a computed coordinate rather than an eyeballed one.
+        const F_TOP = 510, F_SIZE = 60;
+        const F = monoLine(c, [
+          { text: "address(i)", id: "f-addr", bold: true },
+          { text: " = " },
+          { text: "base_address", id: "f-base", bold: true },
+          { text: " + " },
+          { text: "i", id: "f-i", bold: true },
+          { text: " " },
+          { text: "×", id: "f-times", bold: true },
+          { text: " " },
+          { text: "slot_size", id: "f-slot", bold: true },
+        ], { size: F_SIZE, top: F_TOP });
+        const fTerms = ["f-addr", "f-base", "f-i", "f-times", "f-slot"];
+        const fGlue = [F[" = "].el, F[" + "].el];
+
+        // Leader A: base_address -> the 4096 already printed under cell 0.
+        const baseCx = F["f-base"].x + F["f-base"].w / 2;          // 906
+        const a0cx = ROW_L + CW / 2;                                // 358
+        const leadA = poly(sv, [[baseCx, 502], [baseCx, 468], [a0cx, 468], [a0cx, 416]], "var(--accent-ink)", 2.5);
+        const leadAL = dashPrep(leadA);
+        const headA = tri(sv, a0cx, 406, 180, "var(--accent-ink)", 7);
+
+        // Leader B: slot_size -> a caliper across the width of one real cell.
+        const slotCx = F["f-slot"].x + F["f-slot"].w / 2;           // 1536
+        const CAL_I = 6, calL = ROW_L + CAL_I * PITCH, calR = calL + CW, calCx = calL + CW / 2;
+        const cal = poly(sv, [[calL, 408], [calL, 416], [calR, 416], [calR, 408]], "var(--accent-ink)", 2.5);
+        const calLen = dashPrep(cal);
+        const leadB = poly(sv, [[slotCx, 502], [slotCx, 488], [calCx, 488], [calCx, 468]], "var(--accent-ink)", 2.5);
+        const leadBL = dashPrep(leadB);
+        const headB = tri(sv, calCx, 458, 180, "var(--accent-ink)", 7);
+        const calLab = mk("div", "lab mono", c, {
+          left: (calCx - 110) + "px", top: "422px", width: "220px",
+          fontSize: "26px", color: "var(--accent-ink)", fontWeight: 700,
+        });
+        calLab.textContent = SLOT + " bytes";
+        calLab.id = "s3-callab";
+
+        // The substitution, three lines aligned on the equals sign.
+        const D_SIZE = 42, D_ADV = D_SIZE * ADV;
+        const D_L = (W - 25 * D_ADV) / 2;                            // 645
+        const L0 = monoLine(c, [{ text: "i = 3", cls: "acc", id: "d-i", bold: true }], { size: 34, top: 620, left: D_L });
+        const L1 = monoLine(c, [
+          { text: "address(3)" }, { text: " = " }, { text: "4096" }, { text: " + " },
+          { text: "3" }, { text: " " }, { text: "×", id: "d1-x", bold: true }, { text: " " }, { text: "8" },
+        ], { size: D_SIZE, top: 672, left: D_L });
+        const L2 = monoLine(c, [
+          { text: "           = " }, { text: "4096" },
+          { text: " + ", id: "d2-p", bold: true }, { text: "24", id: "d2-v" },
+        ], { size: D_SIZE, top: 724, left: D_L });
+        const L3 = monoLine(c, [
+          { text: "           = " }, { text: "4120", id: "d3-v", bold: true },
+        ], { size: D_SIZE, top: 776, left: D_L });
+
+        const BADGE_X = D_L + 25 * D_ADV + 70;                       // 1345
+        const b1 = monoLine(c, [{ text: "1 multiply", cls: "acc" }], { size: 26, top: 730, left: BADGE_X });
+        const b2 = monoLine(c, [{ text: "1 add", cls: "acc" }], { size: 26, top: 782, left: BADGE_X });
+
+        // The flying result: a copy of 4120 that docks onto the printed address.
+        const fly = mk("div", "mono", c, {
+          position: "absolute", left: L3["d3-v"].x + "px", top: "776px",
+          width: L3["d3-v"].w + "px", textAlign: "center",
+          fontSize: D_SIZE + "px", fontWeight: 700, color: "var(--accent-ink)",
+        });
+        fly.textContent = "4120";
+        fly.id = "s3-fly";
+        // Intentional layering: the copy starts on top of 4120 and lands on the printed address.
+        fly.setAttribute("data-layout-allow-overlap", "true");
+        const flyDX = (ROW_L + 3 * PITCH + CW / 2) - (L3["d3-v"].x + L3["d3-v"].w / 2);
+        const flyDY = (ROW_T_HI + OFF_ADDR + 15.6) - (776 + D_SIZE * 0.6);
+        const flyS = 26 / D_SIZE;
+
+        // The independence proof: n changes, steps does not.
+        const P = monoLine(c, [
+          { text: "n = " }, { text: " 8", id: "p-n", bold: true },
+          { text: "     ·     " }, { text: "steps = 2", id: "p-s", bold: true },
+        ], { size: 34, top: 862 });
+        const pu = mk("div", null, c, {
+          position: "absolute", left: P["p-s"].x + "px", top: "906px",
+          width: P["p-s"].w + "px", height: "3px", background: "var(--accent-ink)", borderRadius: "2px",
+        });
+        pu.id = "s3-pu";
+        const BIG = monoLine(c, [{ text: "O(1)", cls: "acc", id: "p-o", bold: true }], { size: 56, top: 926 });
+
+        // ── initial states ──
+        // Scale about the row's own top edge so the doubled row never rises into the eyebrow.
+        gsap.set(wrap, { y: 210, transformOrigin: "960px 120px" });
+        gsap.set(gx, { autoAlpha: 0 });
+        gsap.set(gx.__cells.concat(gx.__idxs), { autoAlpha: 0 });
+        fTerms.forEach((k) => gsap.set(F[k].el, { autoAlpha: 0, y: 16 }));
+        gsap.set(fGlue, { autoAlpha: 0 });
+        gsap.set([leadA, leadB, cal], { autoAlpha: 1 });
+        gsap.set([headA, headB], { autoAlpha: 0 });
+        gsap.set(calLab, { autoAlpha: 0 });
+        [L0, L1, L2, L3, b1, b2].forEach((L) => {
+          Object.keys(L).forEach((k) => { if (L[k].el) gsap.set(L[k].el, { autoAlpha: 0, y: 10 }); });
+        });
+        Object.keys(P).forEach((k) => { if (P[k].el) gsap.set(P[k].el, { autoAlpha: 0 }); });
+        gsap.set([pu, BIG["p-o"].el], { autoAlpha: 0 });
+        gsap.set(pu, { scaleX: 0, transformOrigin: "0% 50%" });
+        gsap.set(fly, { autoAlpha: 0, transformOrigin: "50% 50%" });
+        gsap.set(eb, { autoAlpha: 0 });
+
+        const show = (el, t, d) => tl.to(el, { autoAlpha: 1, y: 0, duration: d || 0.45, ease: "power3.out" }, t0 + t);
+
+        tl.to(eb, { autoAlpha: 1, duration: 0.4 }, t0 + 0.0);
+        tl.to(wrap, { y: 0, duration: 0.55, ease: "power2.inOut" }, t0 + 0.0);
+
+        show(F["f-addr"].el, 0.55, 0.45);
+        tl.to(fGlue[0], { autoAlpha: 1, duration: 0.3 }, t0 + 1.75);
+        show(F["f-base"].el, 1.95, 0.5);
+        tl.to(F["f-base"].el, { color: tok("--accent-ink"), duration: 0.3 }, t0 + 2.35);
+        tl.to(leadA, { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, t0 + 2.35);
+        tl.to(headA, { autoAlpha: 1, duration: 0.2 }, t0 + 3.0);
+        tl.to(g.__addrs[0], { color: tok("--accent-ink"), fontWeight: 700, duration: 0.3 }, t0 + 3.0);
+
+        tl.to(fGlue[1], { autoAlpha: 1, duration: 0.3 }, t0 + 3.45);
+        show(F["f-i"].el, 3.85, 0.35);
+        show(F["f-times"].el, 4.10, 0.35);
+        show(F["f-slot"].el, 4.55, 0.45);
+        tl.to(F["f-slot"].el, { color: tok("--accent-ink"), duration: 0.3 }, t0 + 4.85);
+        tl.to(leadB, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, t0 + 4.85);
+        tl.to(headB, { autoAlpha: 1, duration: 0.2 }, t0 + 5.40);
+        tl.to(cal, { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, t0 + 5.40);
+        tl.to(calLab, { autoAlpha: 1, duration: 0.35 }, t0 + 5.60);
+        // The terms hand their accent back to the picture: the annotations keep it.
+        tl.to([F["f-base"].el, F["f-slot"].el], { color: tok("--ink"), duration: 0.5 }, t0 + 6.10);
+
+        show(L0["d-i"].el, 5.55, 0.4);
+        Object.keys(L1).forEach((k) => { if (L1[k].el) show(L1[k].el, 5.95, 0.45); });
+        // One multiply, made visible: the operator fires, then its result lands.
+        tl.to(L1["d1-x"].el, { color: tok("--accent-ink"), scale: 1.2, duration: 0.22, yoyo: true, repeat: 1, ease: "power2.inOut" }, t0 + 6.35);
+        Object.keys(L2).forEach((k) => { if (L2[k].el) show(L2[k].el, 6.70, 0.45); });
+        show(b1["1 multiply"].el, 6.95, 0.4);
+        tl.to(L2["d2-p"].el, { color: tok("--accent-ink"), scale: 1.2, duration: 0.22, yoyo: true, repeat: 1, ease: "power2.inOut" }, t0 + 7.70);
+        Object.keys(L3).forEach((k) => { if (L3[k].el) show(L3[k].el, 8.05, 0.45); });
+        show(b2["1 add"].el, 8.30, 0.4);
+
+        // Dock the answer onto the address already printed under cell 3.
+        tl.set(fly, { autoAlpha: 1 }, t0 + 8.55);
+        tl.fromTo(fly, { x: 0, y: 0, scale: 1 },
+                       { x: flyDX, y: flyDY, scale: flyS, duration: 0.8, ease: "power2.inOut" }, t0 + 8.55);
+        tl.set(fly, { autoAlpha: 0 }, t0 + 9.35);
+        tl.set(g.__addrs[3], { color: tok("--accent-ink"), fontWeight: 700 }, t0 + 9.35);
+        tl.set(g.__cells[3], { attr: { "data-state": "active" } }, t0 + 9.35);
+
+        Object.keys(P).forEach((k) => { if (P[k].el) tl.to(P[k].el, { autoAlpha: 1, duration: 0.4 }, t0 + 9.00); });
+        tl.to(pu, { autoAlpha: 1, scaleX: 1, duration: 0.5, ease: "power2.out" }, t0 + 9.20);
+
+        // n doubles; steps does not move. The only proof that matters.
+        // The leaders point at fixed coordinates, so they step aside while the row rescales.
+        const notes = [leadA, headA, leadB, headB, cal, calLab];
+        tl.to(notes, { autoAlpha: 0, duration: 0.3 }, t0 + 9.40);
+        tl.to(notes, { autoAlpha: 1, duration: 0.35 }, t0 + 12.15);
+        tl.to(wrap, { scale: 0.62, x: -426.56, duration: 1.0, ease: "power2.inOut" }, t0 + 9.55);
+        tl.to(gx, { autoAlpha: 1, duration: 0.2 }, t0 + 9.60);
+        tl.to(gx.__cells.concat(gx.__idxs), { autoAlpha: 1, duration: 0.3, stagger: 0.035 }, t0 + 9.70);
+        tl.set(P["p-n"].el, { textContent: "16" }, t0 + 9.95);
+        tl.fromTo(P["p-s"].el, { scale: 1 }, { scale: 1.08, duration: 0.3, yoyo: true, repeat: 1, ease: "power2.inOut", transformOrigin: "0% 50%" }, t0 + 9.95);
+        tl.to(gx.__cells.concat(gx.__idxs), { autoAlpha: 0, duration: 0.25 }, t0 + 11.30);
+        tl.to(gx, { autoAlpha: 0, duration: 0.2 }, t0 + 11.50);
+        tl.to(wrap, { scale: 1, x: 0, duration: 0.85, ease: "power2.inOut" }, t0 + 11.30);
+        tl.set(P["p-n"].el, { textContent: " 8" }, t0 + 11.60);
+
+        tl.to(BIG["p-o"].el, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, t0 + 11.45);
+        tl.fromTo(BIG["p-o"].el, { y: 14 }, { y: 0, duration: 0.6, ease: "power3.out" }, t0 + 11.45);
+        window.__timelines["s3"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

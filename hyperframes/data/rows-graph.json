@@ -1,0 +1,15 @@
+[
+  {
+    "_out": "graph-bfs",
+    "family": "relationships",
+    "theme": "dark",
+    "eyebrow": "Relationships",
+    "title": "Breadth-First Search",
+    "nodes": "[{\"id\": \"A\", \"x\": 0.06, \"y\": 0.5}, {\"id\": \"B\", \"x\": 0.3, \"y\": 0.16}, {\"id\": \"C\", \"x\": 0.3, \"y\": 0.84}, {\"id\": \"D\", \"x\": 0.58, \"y\": 0.3}, {\"id\": \"E\", \"x\": 0.58, \"y\": 0.8}, {\"id\": \"F\", \"x\": 0.88, \"y\": 0.52}]",
+    "edges": "[[\"A\", \"B\"], [\"A\", \"C\"], [\"B\", \"D\"], [\"C\", \"D\"], [\"C\", \"E\"], [\"D\", \"F\"], [\"E\", \"F\"]]",
+    "directed": false,
+    "queueLabel": "visit order",
+    "stepSeconds": 1.9,
+    "steps": "[{\"cur\": null, \"visited\": [], \"frontier\": [\"A\"], \"note\": \"Start at <b>A</b>. The queue holds nodes discovered but not yet processed.\"}, {\"cur\": \"A\", \"visited\": [\"A\"], \"frontier\": [\"B\", \"C\"], \"note\": \"Process <b>A</b> (distance 0). Discovers B, C \\u2014 queued behind everything already waiting.\"}, {\"cur\": \"B\", \"visited\": [\"A\", \"B\"], \"frontier\": [\"C\", \"D\"], \"note\": \"Process <b>B</b> (distance 1). Discovers D \\u2014 queued behind everything already waiting.\"}, {\"cur\": \"C\", \"visited\": [\"A\", \"B\", \"C\"], \"frontier\": [\"D\", \"E\"], \"note\": \"Process <b>C</b> (distance 1). Discovers E \\u2014 queued behind everything already waiting.\"}, {\"cur\": \"D\", \"visited\": [\"A\", \"B\", \"C\", \"D\"], \"frontier\": [\"E\", \"F\"], \"note\": \"Process <b>D</b> (distance 2). Discovers F \\u2014 queued behind everything already waiting.\"}, {\"cur\": \"E\", \"visited\": [\"A\", \"B\", \"C\", \"D\", \"E\"], \"frontier\": [\"F\"], \"note\": \"Process <b>E</b> (distance 2). No new neighbours; everything it touches is already seen.\"}, {\"cur\": \"F\", \"visited\": [\"A\", \"B\", \"C\", \"D\", \"E\", \"F\"], \"frontier\": [], \"note\": \"Process <b>F</b> (distance 3). No new neighbours; everything it touches is already seen.\"}, {\"cur\": null, \"visited\": [\"A\", \"B\", \"C\", \"D\", \"E\", \"F\"], \"frontier\": [], \"note\": \"Visit order <b>A B C D E F</b>. BFS drains the queue in arrival order, so nodes come out grouped by distance \\u2014 which is why it finds shortest paths.\"}]"
+  }
+]

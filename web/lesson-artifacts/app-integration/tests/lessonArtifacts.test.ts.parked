@@ -1,0 +1,93 @@
+import { describe, expect, it } from "vitest";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { JSDOM, VirtualConsole } from "jsdom";
+import { LESSON_ARTIFACTS, getLessonArtifact } from "../src/lib/course/lessonArtifacts";
+import { getLesson } from "../src/lib/course/manifest";
+
+const PUBLIC = join(__dirname, "..", "public");
+
+describe("lesson artifacts", () => {
+  it("every key names a real problem lesson", () => {
+    for (const key of Object.keys(LESSON_ARTIFACTS)) {
+      const [moduleSlug, lessonSlug] = key.split("/");
+      const lesson = getLesson(moduleSlug!, lessonSlug!);
+      expect(lesson, `${key} is not in the manifest`).toBeDefined();
+      expect(lesson?.lesson.type, `${key} must be a problem (only problems have the workspace)`).toBe("problem");
+    }
+  });
+
+  it("every page exists under public/ and answers the app's theme and language messages", () => {
+    for (const [key, artifact] of Object.entries(LESSON_ARTIFACTS)) {
+      const file = join(PUBLIC, artifact.src);
+      expect(existsSync(file), `${key}: missing ${artifact.src}`).toBe(true);
+      const html = readFileSync(file, "utf8");
+      // The embed contract the frame relies on: same-origin messages carrying theme and code.
+      expect(html).toContain("source!=='leetexpert'");
+      expect(html).toContain("embed");
+      expect(artifact.src.startsWith("/lessons/")).toBe(true);
+    }
+  });
+
+  it("looks a lesson up by module and slug, and returns null for one without a page", () => {
+    expect(getLessonArtifact("binary-trees", "diameter-of-binary-tree")?.src).toContain("diameter-of-binary-tree");
+    expect(getLessonArtifact("binary-trees", "maximum-depth-of-binary-tree")).toBeNull();
+  });
+});
+
+/**
+ * A page runs its own checks while it loads (its animation frames are replayed from executed
+ * traces and compared with an independent reference, and it throws when they disagree), so a
+ * page that loads and mounts everything has passed those checks too.
+ */
+function load(src: string) {
+  const errors: string[] = [];
+  const virtualConsole = new VirtualConsole();
+  virtualConsole.on("jsdomError", (e) => errors.push(String(e.detail ?? e.message)));
+  virtualConsole.on("error", (...args) => errors.push(String(args[0])));
+  const dom = new JSDOM(readFileSync(join(PUBLIC, src), "utf8"), {
+    runScripts: "dangerously",
+    pretendToBeVisual: true,
+    url: "http://localhost/" + src.replace(/^\//, "") + "?embed=1",
+    virtualConsole,
+  });
+  return { doc: dom.window.document, win: dom.window, errors };
+}
+
+describe("lesson artifact pages", () => {
+  for (const [key, artifact] of Object.entries(LESSON_ARTIFACTS)) {
+    it(`${key}: loads without errors and mounts every part`, () => {
+      const { doc, errors } = load(artifact.src);
+      expect(errors).toEqual([]);
+      expect(doc.documentElement.classList.contains("embed"), "?embed=1 hides the page's own chrome").toBe(true);
+      const count = (sel: string) => doc.querySelectorAll(sel).length;
+      expect(count("section.sec"), "sections").toBeGreaterThanOrEqual(6);
+      expect(count(".qcard"), "quiz questions").toBeGreaterThanOrEqual(2);
+      expect(count(".vcard"), "variants").toBeGreaterThanOrEqual(3);
+      expect(count(".player .ticks i"), "walkthrough frames").toBeGreaterThan(3);
+      expect(count(".pcard"), "predict cards").toBeGreaterThanOrEqual(2);
+      expect(count(".banner svg"), "banners").toBeGreaterThanOrEqual(4);
+    });
+
+    it(`${key}: the solution is not in the page until it is revealed`, () => {
+      const { doc, win } = load(artifact.src);
+      const solbox = doc.querySelector("#solbox");
+      expect(solbox, "#solbox").not.toBeNull();
+      expect(solbox!.querySelector("pre"), "solution code must not be in the DOM before the click").toBeNull();
+      (solbox!.querySelector(".reveal-btn") as HTMLElement).click();
+      expect(solbox!.querySelectorAll("pre").length).toBeGreaterThanOrEqual(2);
+      // both languages are present and follow the page's switch
+      win.__setLessonLang?.("ts");
+      expect((doc.querySelector("main") as HTMLElement).dataset.code).toBe("ts");
+    });
+
+    it(`${key}: answering a quiz question marks the right option and explains it`, () => {
+      const { doc } = load(artifact.src);
+      const card = doc.querySelector(".qcard")!;
+      (card.querySelector(".qopt") as HTMLElement).click();
+      expect(card.querySelectorAll(".qopt.good").length).toBe(1);
+      expect(card.querySelector(".fb")!.textContent!.length).toBeGreaterThan(40);
+      expect([...card.querySelectorAll(".qopt")].every((b) => (b as HTMLButtonElement).disabled)).toBe(true);
+    });
+  }
+});

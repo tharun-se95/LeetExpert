@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>arrays-intro · scene 5</title>
+  </head>
+  <body>
+    <template>
+      <!-- Geometry helpers and shared styles come from the host index.html
+           (window.LE), so every scene draws the row from the same numbers. -->
+      <div id="s5-root" data-composition-id="s5" data-width="1920" data-height="1080"
+           data-duration="8.531" style="position:absolute;left:0;top:0;width:1920px;height:1080px;"></div>
+      <script>
+      // ── Scene 5 — the limit ─────────────────────────────────────────────────
+      // The row shifts left to show what is beside it: the next stretch of track
+      // is already claimed, so the ninth car has nowhere to couple.
+      (function scene5() {
+        const { W, H, CW, CH, GP, PITCH, ROW_W, ROW_L, ROW_T, ROW_T_HI, OFF_TRACK, OFF_IDX, OFF_ADDR, BASE_ADDR, SLOT, ADV, monoW, $, mk, svg, poly, tri, dashPrep, tok, mount, monoLine, makeRow, couplers, eyebrow } = window.LE;
+        const tl = gsap.timeline({ paused: true });
+        const c = mount("s5"), t0 = 0;
+        // Beats anchored to spoken words (see s3.html): word timings come from the
+        // alignment of the current take via timing.js, so a regenerated voiceover
+        // cannot desync this scene. A changed word count means the script changed.
+        const WORDS = window.AI_TIMING.scenes.find((x) => x.scene === 5).words;
+        if (WORDS.length !== 24) throw new Error("s5: expected 24 anchored words, got " + WORDS.length);
+        const WA = (k, off) => WORDS[k].s + off;
+        const eb = eyebrow(c, "FIXED AT ALLOCATION");
+        const L5 = 160;
+        const g = makeRow(c, { id: "s5", left: L5, top: ROW_T, n: 8, idx: true });
+
+        const track = mk("div", "track", c, { left: "120px", top: (ROW_T + OFF_TRACK) + "px", width: "1800px", height: "3px" });
+        track.id = "s5-track";
+
+        const occ = mk("div", "occupied", c, {
+          left: (L5 + ROW_W + GP) + "px", top: ROW_T + "px", width: "164px", height: CH + "px",
+        });
+        occ.textContent = "occupied"; occ.id = "s5-occ";
+
+        const ninth = mk("div", "cell", c, {
+          position: "absolute", left: "1716px", top: ROW_T + "px",
+          width: CW + "px", height: CH + "px", fontSize: "60px",
+        });
+        ninth.textContent = "9"; ninth.id = "s5-ninth";
+        ninth.setAttribute("data-state", "default");
+
+        const sv = svg(c);
+        const brk = poly(sv, [[L5 - 12, 600], [L5 - 12, 614], [L5 + ROW_W + 12, 614], [L5 + ROW_W + 12, 600]], "var(--line)", 2.5);
+        dashPrep(brk);
+        const capLab = mk("div", "lab mono", c, { left: (L5 - 12) + "px", top: "628px", width: (ROW_W + 24) + "px", fontSize: "28px" });
+        capLab.textContent = "capacity 8 — fixed at allocation"; capLab.id = "s5-cap";
+
+        const note = monoLine(c, [
+          { text: "append(9)  ·  slot 8 is already allocated", cls: "line" },
+        ], { size: 32, top: 706 });
+
+        gsap.set(g, { x: 120, y: -240 });
+        gsap.set(track, { scaleX: 0, transformOrigin: "0% 50%" });
+        gsap.set(occ, { autoAlpha: 0, x: 180 });
+        gsap.set(ninth, { autoAlpha: 0, x: 400 });
+        gsap.set([capLab, eb], { autoAlpha: 0 });
+        gsap.set(note["append(9)  ·  slot 8 is already allocated"].el, { autoAlpha: 0, y: 10 });
+
+        tl.to(eb, { autoAlpha: 1, duration: 0.4 }, t0 + 0.0);
+        tl.to(g, { x: 0, y: 0, duration: 0.85, ease: "power2.inOut" }, t0 + 0.0);
+        tl.to(track, { scaleX: 1, duration: 0.9, ease: "power2.out" }, t0 + WA(2, 0.01));
+        tl.to(brk, { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, t0 + WA(2, 0.46));
+        tl.to(capLab, { autoAlpha: 1, duration: 0.4 }, t0 + WA(5, 0.09));
+        tl.to(occ, { autoAlpha: 1, duration: 0.3 }, t0 + WA(5, 0.09));
+        tl.to(occ, { x: 0, duration: 0.95, ease: "power3.out" }, t0 + WA(5, 0.09));
+
+        tl.to(ninth, { autoAlpha: 1, duration: 0.3 }, t0 + WA(12, 0.48));
+        tl.to(ninth, { x: 0, duration: 1.25, ease: "power2.out" }, t0 + WA(12, 0.48));
+        tl.to(ninth, { x: -14, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.inOut" }, t0 + WA(16, 0.1));
+        tl.to(ninth, { x: -14, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.inOut" }, t0 + WA(17, 0.12));
+        tl.set(ninth, { attr: { "data-state": "eliminated" } }, t0 + WA(18, 0.25));
+        tl.to(ninth, { y: 340, autoAlpha: 0, duration: 0.85, ease: "power2.in" }, t0 + WA(20, 0.11));
+        tl.to(note["append(9)  ·  slot 8 is already allocated"].el, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, t0 + WA(21, 0.09));
+        window.LE.assertFits(5, tl);
+        window.__timelines["s5"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

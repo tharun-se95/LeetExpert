@@ -23,6 +23,15 @@ export function getModuleArt(moduleSlug: string) {
   return light && dark ? { light, dark } : undefined;
 }
 
+/**
+ * Module-level intro video, shown on the module page. Named `intro.mp4` inside
+ * the module's media folder — deliberately not `video-<slug>.mp4`, so it can
+ * never collide with a lesson's chapter video in the same folder.
+ */
+export function getModuleVideo(moduleSlug: string): string | undefined {
+  return publicPathIfExists(moduleSlug, "intro.mp4");
+}
+
 /** Chapter-level video, audio walkthrough, and infographic — generated per concept lesson. */
 export function getChapterMedia(moduleSlug: string, lessonSlug: string) {
   return {

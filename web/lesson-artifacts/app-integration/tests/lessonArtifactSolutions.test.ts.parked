@@ -1,0 +1,91 @@
+import { describe, expect, it } from "vitest";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import ts from "typescript";
+import { LESSON_ARTIFACTS } from "../src/lib/course/lessonArtifacts";
+import { judge, localiseOps, request, sandboxFences } from "./helpers/sandboxCases";
+import { pythonAvailable, runJavaScript, runPython } from "./referenceRunner";
+
+/**
+ * The code a lesson page shows is executed, not trusted.
+ *
+ * Each page's `code/solution.py` and `code/solution.ts` are run in the real
+ * runtimes (the same harness as tests/reference.test.ts) against the cases of
+ * the lesson's own sandbox, and the built page must embed exactly those files,
+ * so a stale build or an edited page cannot show code nobody ran.
+ */
+
+const ROOT = join(__dirname, "..");
+const FENCES = sandboxFences();
+
+const entries = Object.entries(LESSON_ARTIFACTS).map(([key, artifact]) => {
+  const slug = key.split("/")[1]!;
+  return { key, artifact, slug, dir: join(ROOT, "lesson-artifacts", slug, "code") };
+});
+
+describe("lesson artifact solutions", () => {
+  it("python3 is available to the test runner", () => {
+    expect(pythonAvailable()).toBe(true);
+  });
+
+  for (const { key, artifact, dir } of entries) {
+    const fence = FENCES.find((f) => f.lesson === key);
+
+    it(`${key}: has a sandbox to judge against and both solution files`, () => {
+      expect(fence, `no sandbox fence in courses/dsa/${key}.md`).toBeDefined();
+      expect(existsSync(join(dir, "solution.py")), "code/solution.py").toBe(true);
+      expect(existsSync(join(dir, "solution.ts")), "code/solution.ts").toBe(true);
+    });
+
+    // Every code file on the page is classified by its name and held to that claim:
+    //   solution*, naive*, alt*  correct: pass every sandbox case
+    //   slow*                    correct but exponential by design: pass the first five cases only
+    //   mistake*                 a shown mistake: must really fail at least one case
+    const codeNames = () =>
+      [...new Set(readdirSync(dir).map((f) => f.replace(/\.(py|ts)$/, "")))].sort();
+    const RULES: [RegExp, "all" | "few" | "fail"][] = [
+      [/^(solution|naive|alt)/, "all"],
+      [/^slow/, "few"],
+      [/^mistake/, "fail"],
+    ];
+
+    it(`${key}: every code file has a name the tests understand`, () => {
+      const unclassified = codeNames().filter((n) => !RULES.some(([re]) => re.test(n)));
+      expect(unclassified, "name code files solution*, naive*, alt*, slow* or mistake*").toEqual([]);
+    });
+
+    for (const name of existsSync(dir) ? codeNames() : []) {
+      const rule = RULES.find(([re]) => re.test(name))?.[1];
+      if (!rule) continue;
+      it(`${key}: ${name} ${rule === "fail" ? "really is wrong" : "is correct"} in both languages`, async () => {
+        if (!fence) return;
+        const fn = fence.spec.fn as Record<string, string>;
+        const keep = <T,>(cases: T[]) => (rule === "few" ? cases.slice(0, 5) : cases);
+        const py = request(fence, readFileSync(join(dir, `${name}.py`), "utf8"));
+        py.fnName = fn.python;
+        py.cls = null;
+        py.cases = keep(localiseOps(fence, "python"));
+        const js = request(
+          fence,
+          ts.transpileModule(readFileSync(join(dir, `${name}.ts`), "utf8"), {
+            compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.None },
+          }).outputText,
+        );
+        js.cases = keep(localiseOps(fence, "javascript"));
+        const sub = (f: typeof fence) => ({ ...f, spec: { ...f.spec, cases: rule === "few" ? (f.spec.cases as unknown[]).slice(0, 5) : f.spec.cases } });
+        for (const bad of [judge(sub(fence), runPython(py)), judge(sub(fence), await runJavaScript(js))]) {
+          if (rule === "fail") expect(bad.length, `${name} passes every case, so the page's warning is not true`).toBeGreaterThan(0);
+          else expect(bad).toEqual([]);
+        }
+      });
+    }
+
+    it(`${key}: the built page embeds exactly the tested code`, () => {
+      const html = readFileSync(join(ROOT, "public", artifact.src), "utf8");
+      for (const lang of ["py", "ts"] as const) {
+        const text = readFileSync(join(dir, `solution.${lang}`), "utf8").replace(/\n$/, "");
+        expect(html, `built page is stale: solution.${lang} differs`).toContain(JSON.stringify(text));
+      }
+    });
+  }
+});

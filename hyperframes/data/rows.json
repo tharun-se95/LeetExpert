@@ -1,0 +1,41 @@
+[
+  {
+    "_out": "binary-search",
+    "family": "ordering-search",
+    "theme": "dark",
+    "eyebrow": "Ordering & Search",
+    "title": "Binary Search",
+    "values": "1,3,5,7,9,11,13,15",
+    "showMid": true,
+    "loLabel": "lo",
+    "hiLabel": "hi",
+    "midLabel": "mid",
+    "steps": "[{\"lo\": 0, \"hi\": 7, \"mid\": 3, \"note\": \"arr[3] = 7 &lt; 13. Everything at or left of 3 is ruled out.\"}, {\"lo\": 4, \"hi\": 7, \"mid\": 5, \"note\": \"arr[5] = 11 &lt; 13. Everything at or left of 5 is ruled out.\"}, {\"lo\": 6, \"hi\": 7, \"mid\": 6, \"note\": \"arr[6] = 13 \\u2014 <b>found the target</b>.\"}]"
+  },
+  {
+    "_out": "two-pointers",
+    "family": "pointer-movement",
+    "theme": "dark",
+    "eyebrow": "Pointer Movement",
+    "title": "Two Pointers",
+    "values": "2,7,11,15,19,24",
+    "showMid": false,
+    "loLabel": "lo",
+    "hiLabel": "hi",
+    "midLabel": "mid",
+    "steps": "[{\"lo\": 0, \"hi\": 5, \"mid\": 0, \"note\": \"2 + 24 = 26 &lt; 30. Only a bigger left value can help \\u2014 move <b>lo</b>.\"}, {\"lo\": 1, \"hi\": 5, \"mid\": 1, \"note\": \"7 + 24 = 31 &gt; 30. Only a smaller right value can help \\u2014 move <b>hi</b>.\"}, {\"lo\": 1, \"hi\": 4, \"mid\": 1, \"note\": \"7 + 19 = 26 &lt; 30. Only a bigger left value can help \\u2014 move <b>lo</b>.\"}, {\"lo\": 2, \"hi\": 4, \"mid\": 2, \"note\": \"11 + 19 = 30. <b>That is the pair.</b>\"}]"
+  },
+  {
+    "_out": "sliding-window",
+    "family": "linear-traversal",
+    "theme": "light",
+    "eyebrow": "Linear Traversal",
+    "title": "Sliding Window",
+    "values": "4,2,1,7,8,1,2,8",
+    "showMid": false,
+    "loLabel": "start",
+    "hiLabel": "end",
+    "midLabel": "mid",
+    "steps": "[{\"lo\": 0, \"hi\": 2, \"mid\": 0, \"note\": \"Window [0..2] sums to 7. <b>Best so far.</b>\"}, {\"lo\": 1, \"hi\": 3, \"mid\": 1, \"note\": \"Window [1..3] sums to 10. <b>Best so far.</b>\"}, {\"lo\": 2, \"hi\": 4, \"mid\": 2, \"note\": \"Window [2..4] sums to 16. <b>Best so far.</b>\"}, {\"lo\": 3, \"hi\": 5, \"mid\": 3, \"note\": \"Window [3..5] sums to 16. <b>Best so far.</b>\"}, {\"lo\": 4, \"hi\": 6, \"mid\": 4, \"note\": \"Window [4..6] sums to 11.\"}, {\"lo\": 5, \"hi\": 7, \"mid\": 5, \"note\": \"Window [5..7] sums to 11.\"}]"
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "title": "A — Slot Grid", "x": 0, "y": 0, "w": 1440, "h": 900 },
+    { "file": "Focus.dc.html", "title": "B — Quiet Stage", "x": 1560, "y": 0, "w": 1440, "h": 900 }
+  ],
+  "annotations": [
+    {
+      "id": "dir-a",
+      "x": 0,
+      "y": -190,
+      "w": 420,
+      "text": "A — SLOT GRID\n\nThe array cell is the atom. Examples are drawn as the indexed cells they actually are; test cases are a strip of numbered slots. Dense, structural, everything on a visible module.\n\nBet: this subject is about position and state, so make the geometry literal."
+    },
+    {
+      "id": "dir-b",
+      "x": 1560,
+      "y": -190,
+      "w": 420,
+      "text": "B — QUIET STAGE\n\nThe problem is reading material, so it is set like reading — serif, 20px, generous. Two panes instead of four. The coach is a floating companion over the work, not a fourth column.\n\nBet: one thing at a time beats everything at once."
+    },
+    {
+      "id": "brief",
+      "x": 660,
+      "y": -190,
+      "w": 780,
+      "text": "Same functional spec, two opposite bets. No palette, type or design system was supplied — every visual decision here is fresh.\n\nBoth carry: module nav, problem brief with worked example and constraints, four content tabs, language switch, editor, run, per-case results with in/expected/got, and the coaching thread with a run verdict."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

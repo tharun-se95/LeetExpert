@@ -1,0 +1,900 @@
+[     130ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/:0
+[     243ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_react-dom_0kla17-._.js:15305
+[     276ms] Error: ./src/lib/course/load.ts:1:1
+Module not found: Can't resolve 'fs'
+> 1 | import fs from "fs";
+    | ^^^^^^^^^^^^^^^^^^^^
+  2 | import path from "path";
+  3 | import matter from "gray-matter";
+  4 | import readingTime from "reading-time";
+
+
+
+Import traces:
+  Server Component:
+    ./src/lib/course/load.ts
+    ./src/lib/landing/content.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/load.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/load.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./src/lib/course/load.ts:1:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at Object.getCompilationErrors (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:1186:59)
+    at DevBundlerService.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/lib/dev-bundler-service.js:44:55)
+    at DevServer.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:720:42)
+    at DevServer.findPageComponents (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:690:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/base-server.js:1753:26)
+[     275ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[     277ms] [ERROR] ./src/lib/course/load.ts:1:1
+Module not found: Can't resolve 'fs'
+> 1 | import fs from "fs";
+    | ^^^^^^^^^^^^^^^^^^^^
+  2 | import path from "path";
+  3 | import matter from "gray-matter";
+  4 | import readingTime from "reading-time";
+
+Import traces:
+  Server Component:
+    ./src/lib/course/load.ts
+    ./src/lib/landing/content.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/load.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/load.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[     277ms] [ERROR] ./src/lib/course/media.ts
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+
+Caused by:
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Debug info:
+- An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+- Execution of <EcmascriptModuleAsset as EcmascriptChunkPlaceable>::chunk_item_content failed
+- Execution of *EcmascriptChunkItemContent::new failed
+- Execution of EcmascriptModuleContent::new failed
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Import traces:
+  Server Component:
+    ./src/lib/course/media.ts
+    ./src/lib/landing/content.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/media.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/media.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[     342ms] [ERROR] ./src/lib/course/load.ts:1:1
+Module not found: Can't resolve 'fs'
+> 1 | import fs from "fs";
+    | ^^^^^^^^^^^^^^^^^^^^
+  2 | import path from "path";
+  3 | import matter from "gray-matter";
+  4 | import readingTime from "reading-time";
+
+Import traces:
+  Server Component:
+    ./src/lib/course/load.ts
+    ./src/lib/landing/content.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/load.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/load.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[     342ms] [ERROR] ./src/lib/course/media.ts
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+
+Caused by:
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Debug info:
+- An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+- Execution of <EcmascriptModuleAsset as EcmascriptChunkPlaceable>::chunk_item_content failed
+- Execution of *EcmascriptChunkItemContent::new failed
+- Execution of EcmascriptModuleContent::new failed
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Import traces:
+  Server Component:
+    ./src/lib/course/media.ts
+    ./src/lib/landing/content.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/media.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/media.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[     380ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[   30780ms] [ERROR] ./src/lib/course/load.ts:1:1
+Module not found: Can't resolve 'fs'
+> 1 | import fs from "fs";
+    | ^^^^^^^^^^^^^^^^^^^^
+  2 | import path from "path";
+  3 | import matter from "gray-matter";
+  4 | import readingTime from "reading-time";
+
+Import traces:
+  Server Component:
+    ./src/lib/course/load.ts
+    ./src/lib/landing/content.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/load.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/load.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   30780ms] [ERROR] ./src/lib/course/media.ts
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+
+Caused by:
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Debug info:
+- An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+- Execution of <EcmascriptModuleAsset as EcmascriptChunkPlaceable>::chunk_item_content failed
+- Execution of *EcmascriptChunkItemContent::new failed
+- Execution of EcmascriptModuleContent::new failed
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Import traces:
+  Server Component:
+    ./src/lib/course/media.ts
+    ./src/lib/landing/content.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/media.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/media.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   30787ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[   38010ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[   38849ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/:0
+[   38896ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_react-dom_0kla17-._.js:15305
+[   38905ms] Error: ./src/components/landing/HomePage.tsx:4:1
+Export featureCounts doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export featureCounts was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+
+    at <unknown> (Error: ./src/components/landing/HomePage.tsx:4:1)
+    at Object.getCompilationErrors (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:1186:59)
+    at DevBundlerService.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/lib/dev-bundler-service.js:44:55)
+    at DevServer.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:720:42)
+    at DevServer.findPageComponents (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:690:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/base-server.js:1753:26)
+[   38907ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[   38914ms] [ERROR] ./src/components/landing/HomePage.tsx:4:1
+Export featureCounts doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export featureCounts was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   38914ms] [ERROR] ./src/components/landing/HomePage.tsx:4:1
+Export showcaseProblem doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export showcaseProblem was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   39073ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/:0
+[   39095ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_react-dom_0kla17-._.js:15305
+[   39098ms] Error: ./src/components/landing/HomePage.tsx:4:1
+Export featureCounts doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export featureCounts was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+
+    at <unknown> (Error: ./src/components/landing/HomePage.tsx:4:1)
+    at Object.getCompilationErrors (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:1186:59)
+    at DevBundlerService.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/lib/dev-bundler-service.js:44:55)
+    at DevServer.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:720:42)
+    at DevServer.findPageComponents (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:690:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/base-server.js:1753:26)
+[   39107ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[   39131ms] [ERROR] ./src/components/landing/HomePage.tsx:4:1
+Export featureCounts doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export featureCounts was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   39131ms] [ERROR] ./src/components/landing/HomePage.tsx:4:1
+Export showcaseProblem doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export showcaseProblem was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   39169ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/:0
+[   39193ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_react-dom_0kla17-._.js:15305
+[   39197ms] Error: ./src/components/landing/HomePage.tsx:4:1
+Export featureCounts doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export featureCounts was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+
+    at <unknown> (Error: ./src/components/landing/HomePage.tsx:4:1)
+    at Object.getCompilationErrors (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:1186:59)
+    at DevBundlerService.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/lib/dev-bundler-service.js:44:55)
+    at DevServer.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:720:42)
+    at DevServer.findPageComponents (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:690:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/base-server.js:1753:26)
+[   39201ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[   39205ms] [ERROR] ./src/components/landing/HomePage.tsx:4:1
+Export featureCounts doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export featureCounts was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   39205ms] [ERROR] ./src/components/landing/HomePage.tsx:4:1
+Export showcaseProblem doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export showcaseProblem was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   39240ms] [ERROR] ./src/components/landing/HomePage.tsx:4:1
+Export featureCounts doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export featureCounts was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   39240ms] [ERROR] ./src/components/landing/HomePage.tsx:4:1
+Export showcaseProblem doesn't exist in target module
+   2 | import { LandingOutro } from "@/components/landing/LandingOutro";
+   3 | import { LandingStory } from "@/components/landing/LandingStory";
+>  4 | import {
+     | ^^^^^^^
+>  5 |   CURRICULUM,
+     | ^^^^^^^^^^^^^
+>  6 |   FIRST_LESSON,
+     | ^^^^^^^^^^^^^^^
+>  7 |   curriculumStats,
+     | ^^^^^^^^^^^^^^^^^^
+>  8 |   featureCounts,
+     | ^^^^^^^^^^^^^^^^
+>  9 |   showcaseProblem,
+     | ^^^^^^^^^^^^^^^^^^
+> 10 |   stageCards,
+     | ^^^^^^^^^^^^^
+> 11 | } from "@/lib/landing/content";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { heatYear } from "@/lib/landing/heat";
+  13 |
+  14 | /**
+
+The export showcaseProblem was not found in module [project]/src/lib/landing/content.ts [app-rsc] (ecmascript).
+Did you mean to import stageCards?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[   39312ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[   40570ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[   40781ms] [LOG] [Fast Refresh] done in 94ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[   41148ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   41190ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   41328ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   41328ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   41328ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789488256577} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   41329ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   69371ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   69384ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   69463ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   69464ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   69464ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789488284712} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[   69464ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  171018ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  171026ms] [ERROR] ./src/components/landing/PlaceholderTag.tsx:21:7
+Expected corresponding JSX closing tag for <span>
+  19 |       <span className="font-medium tracking-[0.14em] text-mark ...
+  20 |       {label ? <span>{label}</span> : null}
+> 21 |     </p>
+     |       ^
+  22 |   );
+  23 | }
+  24 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/landing/PlaceholderTag.tsx [Client Component Browser]
+    ./src/components/landing/LandingOutro.tsx [Client Component Browser]
+    ./src/components/landing/LandingOutro.tsx [Server Component]
+    ./src/components/landing/HomePage.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/landing/PlaceholderTag.tsx [Client Component SSR]
+    ./src/components/landing/LandingOutro.tsx [Client Component SSR]
+    ./src/components/landing/LandingOutro.tsx [Server Component]
+    ./src/components/landing/HomePage.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[  171083ms] [ERROR] ./src/components/landing/PlaceholderTag.tsx:21:7
+Expected corresponding JSX closing tag for <span>
+  19 |       <span className="font-medium tracking-[0.14em] text-mark ...
+  20 |       {label ? <span>{label}</span> : null}
+> 21 |     </p>
+     |       ^
+  22 |   );
+  23 | }
+  24 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/landing/PlaceholderTag.tsx [Client Component Browser]
+    ./src/components/landing/LandingOutro.tsx [Client Component Browser]
+    ./src/components/landing/LandingOutro.tsx [Server Component]
+    ./src/components/landing/HomePage.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/landing/PlaceholderTag.tsx [Client Component SSR]
+    ./src/components/landing/LandingOutro.tsx [Client Component SSR]
+    ./src/components/landing/LandingOutro.tsx [Server Component]
+    ./src/components/landing/HomePage.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:3318
+[  171146ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  172183ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  172229ms] [LOG] [Fast Refresh] done in 58ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  175617ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  175645ms] [LOG] [Fast Refresh] done in 54ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  193369ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  193387ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  193490ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  193490ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  193490ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789488408738} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  193490ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  413467ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  413492ms] [LOG] [Fast Refresh] done in 65ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  415636ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  415664ms] [LOG] [Fast Refresh] done in 40ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  416901ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  416930ms] [LOG] [Fast Refresh] done in 40ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  418168ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  418196ms] [LOG] [Fast Refresh] done in 43ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  419403ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  419430ms] [LOG] [Fast Refresh] done in 47ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  420692ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  420763ms] [LOG] [Fast Refresh] done in 43ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  422034ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  422088ms] [LOG] [Fast Refresh] done in 32ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  423357ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  423420ms] [LOG] [Fast Refresh] done in 43ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  424751ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  425034ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/?_rsc=q3mOO9BClNZHexY7:0
+[  425126ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/?_rsc=q3mOO9BClNZHexY7:0
+[  425153ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/:0
+[  425260ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_react-dom_0kla17-._.js:15305
+[  425295ms] Error: ./src/lib/course/media.ts
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+
+Caused by:
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Debug info:
+- An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+- Execution of <EcmascriptModuleAsset as EcmascriptChunkPlaceable>::chunk_item_content failed
+- Execution of *EcmascriptChunkItemContent::new failed
+- Execution of EcmascriptModuleContent::new failed
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Import traces:
+  Server Component:
+    ./src/lib/course/media.ts
+    ./src/lib/landing/productData.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/media.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/media.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+
+    at Object.getCompilationErrors (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:1186:59)
+    at DevBundlerService.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/lib/dev-bundler-service.js:44:55)
+    at DevServer.getCompilationError (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:720:42)
+    at DevServer.findPageComponents (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/dev/next-dev-server.js:690:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/tharunk/leetExpert/web/node_modules/next/dist/server/base-server.js:1753:26)
+[  425302ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[  425315ms] [ERROR] ./src/lib/course/media.ts
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+
+Caused by:
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Debug info:
+- An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+- Execution of <EcmascriptModuleAsset as EcmascriptChunkPlaceable>::chunk_item_content failed
+- Execution of *EcmascriptChunkItemContent::new failed
+- Execution of EcmascriptModuleContent::new failed
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Import traces:
+  Server Component:
+    ./src/lib/course/media.ts
+    ./src/lib/landing/productData.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/media.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/media.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[  425341ms] [ERROR] ./src/lib/course/media.ts
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+
+Caused by:
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Debug info:
+- An error occurred while generating the chunk item [project]/src/lib/course/media.ts [app-client] (ecmascript)
+- Execution of <EcmascriptModuleAsset as EcmascriptChunkPlaceable>::chunk_item_content failed
+- Execution of *EcmascriptChunkItemContent::new failed
+- Execution of EcmascriptModuleContent::new failed
+- the chunking context (unknown) does not support external modules (request: node:fs)
+
+Import traces:
+  Server Component:
+    ./src/lib/course/media.ts
+    ./src/lib/landing/productData.ts
+    ./src/components/landing/HomePage.tsx
+    ./src/app/page.tsx
+
+  Client Component Browser:
+    ./src/lib/course/media.ts [Client Component Browser]
+    ./src/lib/landing/content.ts [Client Component Browser]
+    ./src/components/layout/CourseNavTree.tsx [Client Component Browser]
+    ./src/components/layout/Sidebar.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Client Component Browser]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/course/media.ts [Client Component SSR]
+    ./src/lib/landing/content.ts [Client Component SSR]
+    ./src/components/layout/CourseNavTree.tsx [Client Component SSR]
+    ./src/components/layout/Sidebar.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Client Component SSR]
+    ./src/components/layout/AppShell.tsx [Server Component]
+    ./src/app/layout.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[  426481ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[  426873ms] [LOG] [Fast Refresh] done in 317ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[  427137ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  427147ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  427268ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  427268ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  427268ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789488642517} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  427269ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  428119ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  428309ms] [LOG] [Fast Refresh] done in 191ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  429542ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  429566ms] [LOG] [Fast Refresh] done in 46ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  430898ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  430927ms] [LOG] [Fast Refresh] done in 42ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  499843ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  499872ms] [LOG] [Fast Refresh] done in 47ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  502094ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  502123ms] [LOG] [Fast Refresh] done in 38ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1779826ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1779874ms] [LOG] [Fast Refresh] done in 151ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1779931ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1779939ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1780000ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1780000ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1780000ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 2.0.1, ts: 1789489995248} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[ 1780000ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477

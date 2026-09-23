@@ -26,13 +26,12 @@ const COURSE_LINKS = [
  * problem pages are viewport-locked workspaces with no room for one.
  *
  * Links only to pages that exist; there are no privacy or terms pages yet, so
- * none are linked. The last snap stop (snap-end): one wheel gesture from the
- * questions lands here. `year` is passed in so the copyright year is computed,
+ * none are linked. `year` is passed in so the copyright year is computed,
  * not typed.
  */
 export function LandingFooter({ year }: { year: number }) {
   return (
-    <footer className="snap-end border-t border-border pt-16 pb-10 lg:pt-24">
+    <footer className="border-t border-border pt-16 pb-10 lg:pt-24">
       <div className="grid gap-12 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.8fr)]">
         <div>
           <Link href="/" className="inline-flex items-center gap-2.5">

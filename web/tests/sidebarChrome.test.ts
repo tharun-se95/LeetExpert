@@ -100,9 +100,8 @@ describe("drawer tab idiom", () => {
     // token also lets the tabs' fillets reuse it as a gradient stop.
     const headerBg = header.match(/<header[^>]*className="[^"]*\bbg-([a-z-]+)\b/)![1];
     expect(rule(".sidebar-rail")).toMatch(
-      new RegExp(`--rail-surface:\\s*var\\(--${headerBg}\\);`),
+      new RegExp(`background-color:\\s*var\\(--${headerBg}\\);`),
     );
-    expect(rule(".sidebar-rail")).toMatch(/background-color:\s*var\(--rail-surface\)/);
     expect(rule(".sidebar-rail")).not.toMatch(/background-image|color-mix/);
     expect(globals).not.toContain(".dark .sidebar-rail {");
   });
@@ -112,7 +111,7 @@ describe("floating opener", () => {
   it("is a round floating button in the bottom-left corner, not a tab", () => {
     const cls = floating.match(/className=\{cn\(ROUND_CONTROL, "([^"]*)"\)\}/)?.[1];
     expect(cls, "opener classes").toBeDefined();
-    for (const c of ["fixed", "bottom-6", "left-6", "bg-background", "grain-paper", "shadow-elevation", "lg:flex"]) {
+    for (const c of ["fixed", "bottom-6", "left-6", "floating-invert", "shadow-elevation", "lg:flex"]) {
       expect(cls!.split(" "), c).toContain(c);
     }
     expect(floating).toMatch(/import \{[^}]*\bROUND_CONTROL\b[^}]*\} from "@\/components\/layout\/headerChrome"/);
@@ -134,12 +133,6 @@ describe("floating opener", () => {
     expect(padding, panel).toBe(covered + 4);
   });
 
-  it("floats above the hover edge strip, so resting on it does not open the drawer", () => {
-    const opener = Number(floating.match(/\bz-(\d+)\b/)![1]);
-    const strip = Number(shell.match(/fixed top-14 bottom-0 left-0 z-(\d+)/)![1]);
-    expect(opener).toBeGreaterThan(strip);
-  });
-
   it("leaves no drawer tab styles behind", () => {
     expect(globals).not.toContain(".drawer-tab");
     for (const src of [sidebar, floating]) expect(src).not.toContain("drawer-tab");
@@ -159,12 +152,6 @@ describe("problem page drawer opener", () => {
     expect(workspace).not.toMatch(/toggleSidebar|useSidebar/);
   });
 
-  it("still keeps the hover edge strip off the IDE", () => {
-    // The description pane starts at the left edge; a pointer resting there
-    // must not throw the drawer open over the problem.
-    expect(shell).toMatch(/showCourseNav && !ideViewport && canHover && !sidebarOpen/);
-  });
-
   it("reserves no room for a tab in the problem header", () => {
     // The opener floats at the bottom-left now, so the band is back to its
     // compact size and starts its content at its own padding.
@@ -173,23 +160,27 @@ describe("problem page drawer opener", () => {
   });
 });
 
-describe("hover-driven drawer", () => {
-  it("opens from an edge strip, since a closed drawer is 0px wide", () => {
-    expect(shell).toContain('"(hover: hover) and (pointer: fine)"');
-    expect(shell).toMatch(/onPointerEnter=\{openOnHover\}/);
+describe("drawer open/close (owner, 2026-09-23: open by default, closes only manually)", () => {
+  it("starts open, with no hover-driven or timed close left in AppShell", () => {
+    expect(shell).toMatch(/const \[sidebarOpen, setSidebarOpen\] = useState\(true\);/);
+    // The whole hover-open/auto-close mechanism (canHover, the edge strip,
+    // HOVER_CLOSE_MS, the pointermove close-by-position effect) is gone —
+    // nothing closes the drawer but the two below.
+    for (const gone of ["canHover", "HOVER_CLOSE_MS", "openOnHover", "closeAfterGrace", "pointermove", "onPointerEnter", "onPointerLeave"]) {
+      expect(shell, gone).not.toContain(gone);
+    }
   });
 
-  it("closes on pointer-leave, after a grace delay long enough to read as auto-close", () => {
-    // Not a snap: a ~200ms grace felt like a glitch when the pointer merely
-    // clipped the panel's edge.
-    expect(shell).toMatch(/const HOVER_CLOSE_MS = [\d_]+;/);
-    const ms = Number(
-      shell.match(/const HOVER_CLOSE_MS = ([\d_]+);/)![1].replace(/_/g, ""),
-    );
-    // A slow tidy-up, not a reaction to the pointer: closing belongs to the
-    // close button.
-    expect(ms).toBeGreaterThanOrEqual(30_000);
-    expect(shell).toMatch(/onPointerLeave=\{canHover \? closeAfterGrace : undefined\}/);
+  it("falls back to open when there is no stored preference, on every pointer type", () => {
+    // No canHover branch forcing it closed for a fine pointer: a stored "0" or
+    // "1" is honoured, and anything else (including nothing stored) is open.
+    const effect = shell.slice(shell.indexOf("if (!showCourseNav || !isDesktop) return;"));
+    expect(effect).toMatch(/if \(raw === "0" \|\| raw === "1"\) \{\s*setSidebarOpen\(raw === "1"\);\s*return;\s*\}/);
+    expect(effect.slice(0, 400)).toMatch(/setSidebarOpen\(true\);/);
+  });
+
+  it("persists a manual close (and reopen) the same way for every pointer type", () => {
+    expect(shell).toMatch(/localStorage\.setItem\(SIDEBAR_KEY, sidebarOpen \? "1" : "0"\);/);
   });
 
   it("pushes the article rather than overlaying it", () => {
@@ -205,25 +196,10 @@ describe("hover-driven drawer", () => {
     expect(sidebar).toContain("ease-[var(--ease-gentle)]");
   });
 
-  it("closes by pointer position, not only by the panel's own leave event", () => {
-    // The drawer slides in under a stationary cursor, so pointerenter never
-    // fires on it and pointerleave never follows — it would hang open.
-    expect(shell).toContain('window.addEventListener("pointermove", onMove)');
-    expect(shell).toMatch(/clientX > rail\.getBoundingClientRect\(\)\.right/);
-  });
-
-  it("counts the drawer's own overhanging controls as still inside it", () => {
-    // The resize grip's pill overhangs the rail's right edge, so the x test
-    // alone would start the close timer while the pointer is on it.
-    expect(shell).toMatch(/rail\.contains\(/);
-  });
-
-  it("is dismissible from the keyboard (WCAG 1.4.13)", () => {
+  it("is dismissible from the keyboard, alongside the close button", () => {
     expect(shell).toMatch(/e\.key === "Escape"/);
-  });
-
-  it("does not persist a hover-driven drawer as a preference", () => {
-    expect(shell).toMatch(/canHover\) return;/);
+    // Sidebar itself takes no pointer handlers any more — only open/onClose.
+    expect(sidebar).not.toMatch(/onPointerEnter|onPointerLeave|onFocusCapture/);
   });
 });
 
