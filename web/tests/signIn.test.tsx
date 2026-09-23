@@ -4,6 +4,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { DEFAULT_NEXT, safeNext } from "@/lib/auth/redirect";
+import { SIGN_IN_COPY } from "@/lib/auth/signInCopy";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -281,12 +282,26 @@ describe("SignInPage", () => {
     GOOGLE_CLIENT_SECRET: "d",
   };
 
-  it("renders the provider buttons under one h1 when auth is configured", () => {
+  it("renders the pitch, the benefits and the provider buttons when auth is configured", () => {
     for (const [k, v] of Object.entries(AUTH_ENV)) vi.stubEnv(k, v);
     const html = renderToStaticMarkup(<SignInPage />);
     expect(html.match(/<h1/g)).toHaveLength(1);
+    expect(html).toMatch(/<h1[^>]*>Pick up where you left off, on any device\.<\/h1>/);
+    expect(html).toMatch(/<h2[^>]*>Sign in<\/h2>/);
+    for (const { title, body } of SIGN_IN_COPY.benefits) {
+      expect(html).toContain(title);
+      expect(html).toContain(body);
+    }
     expect(html).toContain("Continue with GitHub");
     expect(html).toContain("Continue with Google");
+    expect(html).toContain(SIGN_IN_COPY.stored);
+  });
+
+  it("puts the card before the structure and benefits in reading order, so phones see the buttons first", () => {
+    for (const [k, v] of Object.entries(AUTH_ENV)) vi.stubEnv(k, v);
+    const html = renderToStaticMarkup(<SignInPage />);
+    expect(html.indexOf("<h1")).toBeLessThan(html.indexOf("Sign in</h2>"));
+    expect(html.indexOf("Sign in</h2>")).toBeLessThan(html.indexOf(SIGN_IN_COPY.benefits[0]!.title));
   });
 
   it("says plainly that sign-in is unavailable, with no dead buttons, when auth is not configured", () => {
@@ -296,6 +311,8 @@ describe("SignInPage", () => {
     expect(html).toContain("isn&#x27;t available");
     expect(html).not.toContain("<button");
     expect(html).toContain('href="/courses/dsa"');
+    expect(html).not.toContain(SIGN_IN_COPY.headline);
+    expect(html).not.toContain(SIGN_IN_COPY.benefits[0]!.title);
   });
 });
 
