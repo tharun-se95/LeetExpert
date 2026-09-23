@@ -52,24 +52,27 @@ export function LandingHeader({
       <div className="mx-auto grid h-11 max-w-landing grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-6 md:h-10 md:px-16">
         <Link
           href="/"
-          className="lamp-link flex min-w-0 items-center gap-2.5 justify-self-start rounded-[length:var(--radius-md)]"
+          className="lamp-link flex min-w-0 items-center gap-2 justify-self-start sm:gap-2.5 rounded-[length:var(--radius-md)]"
         >
-          {/* sr-only below sm, not hidden: the lamp is aria-hidden, so this
-              text is the link's only accessible name at every width. */}
-          <span className={cn(WORDMARK, "max-sm:sr-only")}>
+          {/* Shown from 360px (owner, 2026-09-24: a phone visit never saw the
+              name). Measured at 360: 92px of mark and lamp beside the nav's
+              94px share, with the tighter phone gaps here and in the nav.
+              sr-only below that, never removed: the lamp is aria-hidden, so
+              this text is the link's only accessible name at every width. */}
+          <span className={cn(WORDMARK, "max-[360px]:sr-only")}>
             <span className="text-foreground">leet</span>
             <span className="text-mark">Expert</span>
           </span>
           {/* The green signal ends the name. / renders no app Header, so this
               is the lamp a first visit sees and it carries the bloom.
-              sm:-ml-1 takes back the halo's transparent edge only where the
+              -ml-1 takes back the halo's transparent edge only where the
               wordmark is visible beside it. */}
-          <Lamp size={LOGO_LAMP_SIZE} bloom className="sm:-ml-1" />
+          <Lamp size={LOGO_LAMP_SIZE} bloom className="min-[360px]:-ml-1" />
         </Link>
 
         <nav
           aria-label="Product modes"
-          className="flex items-center gap-5 justify-self-center sm:gap-8"
+          className="flex items-center gap-3 justify-self-center sm:gap-8"
         >
           {NAV.map(({ href, label }) => (
             <Link

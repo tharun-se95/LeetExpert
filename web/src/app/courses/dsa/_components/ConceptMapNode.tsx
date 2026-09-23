@@ -70,7 +70,15 @@ export function ConceptMapNode({ data }: NodeProps & { data: ConceptMapNodeData 
           />
         </button>
       ) : null}
-      <Handle type="source" position={Position.Right} className="!pointer-events-none !opacity-0" />
+      <Handle id="right" type="source" position={Position.Right} className="!pointer-events-none !opacity-0" />
+      {/* The outline layout's elbow leaves from under the card's left edge. */}
+      <Handle
+        id="down"
+        type="source"
+        position={Position.Bottom}
+        className="!pointer-events-none !opacity-0"
+        style={{ left: 16 }}
+      />
     </div>
   );
 }

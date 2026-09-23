@@ -11,8 +11,12 @@ import { SmellCues } from "@/components/cheatsheet/SmellCues";
 import { TrapList } from "@/components/cheatsheet/TrapList";
 import type { ModuleCheatsheet } from "@/lib/course/cheatsheets/types";
 
-/** How much of each section the excerpt shows; the rest is counted in its footer. */
-export const PREVIEW = { smells: 4, complexity: 3, patterns: 2, traps: 1 } as const;
+/**
+ * How much of each section the excerpt shows; the rest is counted in its
+ * footer. Three cues, not four (owner review, 2026-09-24): each wraps to two
+ * lines in its column, and the fourth took the sheet to 89% of a laptop's height.
+ */
+export const PREVIEW = { smells: 3, complexity: 3, patterns: 2, traps: 1 } as const;
 
 function Head({ icon: Glyph, children }: { icon: Icon; children: string }) {
   return (
@@ -62,7 +66,10 @@ export function CheatsheetPreview({ sheet, moduleTitle }: { sheet: ModuleCheatsh
           <Head icon={MagnifyingGlass}>Smell → pattern</Head>
           <SmellCues smells={smells} />
         </div>
-        <div>
+        {/* Wide sheets only: on a phone the stacked sheet ran taller than the
+            screen (109%), and the cues, a pattern and the trap carry the idea.
+            Still in the markup, and counted in the footer. */}
+        <div className="hidden @lg:block">
           <Head icon={Target}>Complexity targets</Head>
           <dl className="divide-y divide-border rounded-[length:var(--radius-md)] border border-border">
             {complexity.map((row) => (
@@ -82,9 +89,13 @@ export function CheatsheetPreview({ sheet, moduleTitle }: { sheet: ModuleCheatsh
 
       <div className="mt-5">
         <Head icon={SquaresFour}>Patterns</Head>
+        {/* One card on a narrow sheet: two stacked made it 145% of a phone's
+            height. The second stays in the markup, hidden, and is counted. */}
         <div className="grid gap-3 @lg:grid-cols-2">
-          {patterns.map((card) => (
-            <PatternCard key={card.title} card={card} />
+          {patterns.map((card, i) => (
+            <div key={card.title} className={i > 0 ? "hidden @lg:flex [&>*]:flex-1" : "flex [&>*]:flex-1"}>
+              <PatternCard card={card} />
+            </div>
           ))}
         </div>
       </div>
