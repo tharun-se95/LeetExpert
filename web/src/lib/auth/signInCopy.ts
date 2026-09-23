@@ -7,7 +7,11 @@
  * feature behind it.
  */
 export const SIGN_IN_COPY = {
+  /** The landing's kicker idiom; "optional" is the claim the sub-line makes good. */
+  kicker: "Optional account",
   headline: "Pick up where you left off, on any device.",
+  /** Drawn over by hand, as the landing's section headings mark their key word. */
+  mark: "any device",
   subline: "The course works signed out too. Sign in only to sync.",
   benefits: [
     {

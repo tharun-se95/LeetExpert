@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   isIdePath,
   isLandingPath,
+  isSignInPath,
   activeThemeFor,
   isConceptMapPath,
 } from "../src/components/layout/AppShell";
@@ -32,6 +33,24 @@ describe("isIdePath", () => {
     // /courses/dsa/problems/[slug], silently breaking the IDE layout on
     // every problem page until a final-review pass caught it.
     expect(isIdePath("/problems/two-sum")).toBe(false);
+  });
+});
+
+describe("isSignInPath (owner, 2026-09-24: no lessons drawer on /sign-in)", () => {
+  it("matches the sign-in page, with or without a trailing segment", () => {
+    expect(isSignInPath("/sign-in")).toBe(true);
+    expect(isSignInPath("/sign-in/")).toBe(true);
+  });
+
+  it("does not match a course page or a lookalike path", () => {
+    expect(isSignInPath("/courses/dsa")).toBe(false);
+    expect(isSignInPath("/sign-inx")).toBe(false);
+  });
+
+  it("gates the course nav in AppShell", async () => {
+    const { readFileSync } = await import("node:fs");
+    const shell = readFileSync(new URL("../src/components/layout/AppShell.tsx", import.meta.url), "utf8");
+    expect(shell).toMatch(/const showCourseNav =\s*!landing && !isSignInPath\(pathname\)/);
   });
 });
 

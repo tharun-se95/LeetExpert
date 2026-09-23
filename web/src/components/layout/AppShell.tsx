@@ -71,6 +71,13 @@ export function isLandingPath(pathname: string): boolean {
   return pathname === "/";
 }
 
+/** The account's sign-in page: not a course page, so no lessons drawer or
+ *  progress chrome (owner, 2026-09-24 — the drawer opens by default, and on
+ *  /sign-in it took 320px beside a card about accounts). */
+export function isSignInPath(pathname: string): boolean {
+  return pathname === "/sign-in" || pathname.startsWith("/sign-in/");
+}
+
 /**
  * The current lesson's pattern family, derived from the route.
  *
@@ -133,7 +140,7 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
   // and progress chrome would render around content that isn't there.
   const landing = isLandingPath(pathname);
   const showCourseNav =
-    !landing && (!isNextjs || NEXTJS_COURSE.status === "available");
+    !landing && !isSignInPath(pathname) && (!isNextjs || NEXTJS_COURSE.status === "available");
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
   // Esc is a second, keyboard-only way to close the drawer (WCAG 1.4.13),

@@ -286,7 +286,11 @@ describe("SignInPage", () => {
     for (const [k, v] of Object.entries(AUTH_ENV)) vi.stubEnv(k, v);
     const html = renderToStaticMarkup(<SignInPage />);
     expect(html.match(/<h1/g)).toHaveLength(1);
-    expect(html).toMatch(/<h1[^>]*>Pick up where you left off, on any device\.<\/h1>/);
+    // The h1's words are the headline unchanged; the marked word's squiggle is aria-hidden.
+    const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)![1]!;
+    expect(h1.replace(/<svg[\s\S]*?<\/svg>/g, "").replace(/<[^>]+>/g, "")).toBe(SIGN_IN_COPY.headline);
+    expect(h1).toContain('class="landing-mark"');
+    expect(html).toContain(SIGN_IN_COPY.kicker);
     expect(html).toMatch(/<h2[^>]*>Sign in<\/h2>/);
     for (const { title, body } of SIGN_IN_COPY.benefits) {
       expect(html).toContain(title);

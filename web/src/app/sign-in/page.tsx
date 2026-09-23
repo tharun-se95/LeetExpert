@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { KICKER } from "@/components/landing/landingClasses";
+import { MarkedHeading } from "@/components/landing/MarkedHeading";
 import { isAuthConfigured } from "@/lib/auth/env";
 import { SIGN_IN_COPY } from "@/lib/auth/signInCopy";
+import { familyCssVars } from "@/lib/visual/familyTheme";
+import { cn } from "@/lib/utils";
 import { SignInButtons } from "./SignInButtons";
 import { SignInStory } from "./SignInStory";
 
@@ -21,9 +25,24 @@ export default function SignInPage() {
     // One DOM order (headline, card, structure and benefits) so a phone shows the
     // buttons before the story and a screen reader reads the same sequence; from
     // lg the grid places the card beside the other two.
-    <div className="mx-auto grid max-w-5xl gap-y-10 px-6 py-12 md:px-16 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-x-16 lg:py-20">
+    // The landing hero's family colour, for the marked word and the icon
+    // tiles: content, not chrome, so the header and the card stay steel.
+    <div
+      style={familyCssVars("linear-traversal")}
+      className="mx-auto grid max-w-5xl gap-y-10 px-6 py-12 md:px-16 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-x-16 lg:py-20"
+    >
       <header className="lg:col-start-1 lg:row-start-1">
-        <h1 className="font-display text-3xl font-bold tracking-tight lg:text-4xl">{SIGN_IN_COPY.headline}</h1>
+        <p className={cn(KICKER, "flex items-center gap-2.5")}>
+          <span aria-hidden className="h-2 w-2 rounded-full bg-accent" />
+          {SIGN_IN_COPY.kicker}
+        </p>
+        <MarkedHeading
+          as="h1"
+          text={SIGN_IN_COPY.headline}
+          mark={{ word: SIGN_IN_COPY.mark, style: "underline" }}
+          split={false}
+          className="mt-4 text-3xl sm:text-3xl lg:text-4xl"
+        />
         <p className="mt-4 max-w-prose text-base text-muted">{SIGN_IN_COPY.subline}</p>
       </header>
       <section

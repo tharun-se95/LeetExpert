@@ -141,7 +141,7 @@ describe("the sign-in page's story", () => {
   const rel = [...files].map((f) => f.slice(SRC.length + 1));
 
   it("finds the graph it is meant to walk", () => {
-    expect(rel).toEqual(expect.arrayContaining(["app/sign-in/SignInStory.tsx", "components/landing/EvolvingStructure.tsx"]));
+    expect(rel).toEqual(expect.arrayContaining(["app/sign-in/SignInStory.tsx", "components/landing/HeroFloor.tsx"]));
   });
 
   it("never reaches the auth client or its package", () => {

@@ -100,3 +100,26 @@ and 1280 px, with auth on and off, and with `?error=oauth`.
 
 A live "two devices" demo (offered, not chosen); any change to the sync design,
 the buttons' behaviour, `safeNext` or the API; a privacy page (spec §11).
+
+## 6. Revision 2026-09-24: follow the redesigned landing
+
+The branch sat unmerged while the landing was redesigned twice, and
+`EvolvingStructure` (§2.3) was deleted with its backdrop in `7b67b69`, so the
+page no longer compiled. Owner decisions the same day:
+
+- **Art:** the landing's 3D `HeroFloor` replaces the evolving structure, above
+  the benefits. It is markup and CSS, so `SignInStory` is now a server component
+  with no stage timer (§2.3's timer and its tests are gone). The scene is drawn
+  for a ~1200px hero; in a 15rem band it cropped to a few oversized blocks, so it
+  is laid out at 160% and scaled by 1/1.6 from its top centre, and the band fades
+  its bottom edge as the landing fades the floor's top.
+- **Landing idiom:** a kicker ("Optional account") above the `h1`; the `h1` is a
+  `MarkedHeading` (`as="h1"`) with "any device" underlined by hand; the benefit
+  icons sit in the landing's `landing-icon` tiles; the page content takes the
+  landing hero's family colour (`linear-traversal`) for the mark and tiles only.
+- **Buttons:** the provider buttons are outlined pills (`rounded-full`), still
+  unfilled so neither provider reads as preferred.
+- **Chrome:** no lessons drawer, floating opener, lessons menu or progress bar on
+  `/sign-in` (`isSignInPath` in `AppShell`): it is not a course page, and the
+  drawer, open by default since 2026-09-23, took 320px beside the card.
+- §2.5's "grain desk" is history: the desk is flat paper since 2026-09-21.

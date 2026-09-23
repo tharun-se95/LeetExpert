@@ -27,12 +27,15 @@ export function MarkedHeading({
   text,
   mark,
   split: splitSentences = true,
+  as: Tag = "h2",
   className,
 }: {
   text: string;
   mark: { word: string; style: "underline" | "highlight" };
   /** Set a two-sentence heading's first sentence muted on its own line (the default). */
   split?: boolean;
+  /** The heading level: h2 for landing sections, h1 where it heads its page (sign-in). */
+  as?: "h1" | "h2";
   className?: string;
 }) {
   const split = splitSentences ? text.indexOf(". ") : -1;
@@ -60,7 +63,7 @@ export function MarkedHeading({
   };
 
   return (
-    <h2
+    <Tag
       className={cn(
         "landing-pop mt-5 max-w-4xl font-display text-4xl leading-[1.08] font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl",
         className,
@@ -73,6 +76,6 @@ export function MarkedHeading({
         </>
       ) : null}
       {marked(claim)}
-    </h2>
+    </Tag>
   );
 }
