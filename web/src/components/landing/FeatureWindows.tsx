@@ -46,8 +46,9 @@ const Cheatsheet = dynamic(() => import("@/components/cheatsheet/Cheatsheet").th
 export type FeatureWindowData = FeatureData & { heat: HeatYear };
 
 /**
- * The nine windows: each is the app's component alone, with no card around
- * it (owner, 2026-09-19). `near` is true once the window's section is the
+ * The nine windows: each is the app's real component on a card of its own
+ * (owner, 2026-09-23: a light frame per demo, now that each is its own row).
+ * The instruments sit on the navy card; the rest bring their own. `near` is true once the window's section is the
  * active stop or the one before it; until then a heavy feature is a
  * stand-in, so the page's first load pays for none of them.
  */
@@ -68,7 +69,14 @@ export function featureWindows(
     learn: {
       label: `${data.learn.title}: the frequency count tracer`,
       link: { label: "Open the lesson", href: data.learn.href },
-      body: near.understand ? <Viz source={data.learn.viz} embedded code={false} /> : <Standin label="Tracer" />,
+      body: near.understand ? (
+        // The embedded tracer has no card of its own; the paper card frames it like the others.
+        <div className="rounded-[length:var(--radius-lg)] border border-border bg-elevated p-4 shadow-elevation">
+          <Viz source={data.learn.viz} embedded code={false} />
+        </div>
+      ) : (
+        <Standin label="Tracer" />
+      ),
     },
     map: {
       label: `${data.map.moduleTitle} concept map`,
@@ -115,9 +123,8 @@ export function featureWindows(
       link: { label: "Open practice", href: data.practice.href },
       fill: true,
       body: near.keep ? (
-        // Bare on the veil, the filters lost their first letter to the panel's
-        // clip and the list ran off its edge. A dark card (owner, 2026-09-21:
-        // the module art's navy) with padding gives both room.
+        // A dark card (owner, 2026-09-21: the module art's navy) with padding,
+        // so the filters and the list keep clear of the card's rounded clip.
         <div className="dark navy-card relative h-full min-h-0 p-5">
           <PracticeWindow groups={data.practice.groups} />
         </div>
@@ -129,10 +136,9 @@ export function featureWindows(
       label: `${data.recall.moduleTitle} cheatsheet`,
       link: { label: "Open the module", href: data.recall.href },
       body: near.keep ? (
-        // The sheet has no card of its own, and bare on the veil it cut off
-        // mid-card with a loose scrollbar. It gets the same navy card as the
-        // other windows; the scroller is inside it because .navy-card clips its
-        // own overflow (and, unlayered, would beat a Tailwind overflow utility).
+        // The sheet has no card of its own, so it gets the navy card; the
+        // scroller is inside it because .navy-card clips its own overflow (and,
+        // unlayered, would beat a Tailwind overflow utility).
         <div className="dark navy-card">
           <div className="max-h-[46rem] overflow-y-auto p-6 [&>section]:my-0">
             <Cheatsheet sheet={data.recall.sheet} moduleTitle={data.recall.moduleTitle} />
@@ -145,8 +151,8 @@ export function featureWindows(
     burn: {
       label: "An example year of practice",
       note: HEAT.credits,
-      // HeatMap is a card by default; here it stands on the page by itself.
-      body: <HeatMap year={data.heat} lit={near.keep} className="border-0 bg-transparent p-0 shadow-none md:p-0" />,
+      // HeatMap is a card by default, which is the frame this row wants.
+      body: <HeatMap year={data.heat} lit={near.keep} />,
     },
   };
 }

@@ -10,7 +10,7 @@ import { plural } from "@/lib/landing/story";
  * as nine verbs in three sections (owner, 2026-09-17 — headings and verbs as
  * approved in the layout mock). Counts come from the server.
  * Spec: docs/superpowers/specs/2026-09-15-landing-product-page-design.md §12,
- * §13 (the 3D deck: all three windows of a section shown at once).
+ * §13; laid out as stacked rows, spec 2026-09-23-landing-natural-scroll-3d-hero-design.md.
  */
 
 export type VerbId = "watch" | "learn" | "map" | "code" | "review" | "optimize" | "practice" | "recall" | "burn";
@@ -35,7 +35,7 @@ export type FeatureData = {
 export type Verb = {
   id: VerbId;
   title: string;
-  /** What the feature does, shown under the tabs while it is selected. */
+  /** What the feature does, beside its component. */
   line: string;
 };
 
@@ -43,6 +43,13 @@ export type FeatureSection = {
   id: SectionId;
   title: string;
   heading: string;
+  /**
+   * The heading's key word, drawn over as the section arrives (owner,
+   * 2026-09-23): underlined by hand, or swept with a highlighter.
+   */
+  mark: { word: string; style: "underline" | "highlight" };
+  /** The family whose colour the section's marks, icons and rules take — content-scoped, never chrome. */
+  family: FamilyId;
   lede: string;
   verbs: readonly Verb[];
 };
@@ -53,6 +60,8 @@ export function featureSections(counts: FeatureCounts): readonly FeatureSection[
       id: "understand",
       title: "Understand",
       heading: "See it before you solve it.",
+      mark: { word: "before", style: "underline" },
+      family: "linear-traversal",
       lede: "Watch the idea explained, step through it line by line, then see where it sits in the module.",
       verbs: [
         {
@@ -76,6 +85,8 @@ export function featureSections(counts: FeatureCounts): readonly FeatureSection[
       id: "build",
       title: "Build",
       heading: "The code is cheap now. Judgment isn't.",
+      mark: { word: "Judgment", style: "highlight" },
+      family: "pointer-movement",
       lede: `One problem through all three: find two numbers in [${METHOD_VALUES.join(", ")}] that add up to ${METHOD_TARGET}. Write it, let the coach catch a broken draft, then make it fast.`,
       verbs: [
         {
@@ -99,6 +110,8 @@ export function featureSections(counts: FeatureCounts): readonly FeatureSection[
       id: "keep",
       title: "Keep",
       heading: "Come back tomorrow.",
+      mark: { word: "tomorrow.", style: "underline" },
+      family: "recursive-exploration",
       lede: "Practise across the whole course, recall a pattern in seconds, and keep the streak burning.",
       verbs: [
         {

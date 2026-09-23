@@ -318,6 +318,14 @@ describe("CourseNavPanel header row", () => {
     expect(tree).toMatch(/scrolled=\{scrolled\}/);
   });
 
+  it("gives the close button the opener's inverted fill, not plain ROUND_CONTROL chrome", () => {
+    // The floating opener (FloatingLessonsButton) and this button are the
+    // drawer's open/close pair; both carry .floating-invert (owner, 2026-09-23).
+    const html = renderWith({ level: "modules" }, "/courses/dsa", () => {});
+    const button = html.match(/<button[^>]*aria-label="Close lessons drawer"[^>]*>/)![0];
+    expect(button).toContain("floating-invert");
+  });
+
   it("renders no close button and no pinned row without onClose (the mobile sheet has its own)", () => {
     for (const html of [
       renderWith(moduleView, lesson.href),

@@ -1,12 +1,12 @@
 import { CHEATSHEETS, getCheatsheet } from "@/lib/course/cheatsheets/registry";
 import { readLessonMarkdown } from "@/lib/course/load";
 import { getConceptMap } from "@/lib/course/conceptMaps/registry";
-import { MODULES, getLesson, getModule, groupedProblems, moduleFamily } from "@/lib/course/manifest";
-import { getModuleVideo } from "@/lib/course/media";
+import { MODULES, getLesson, getModule, groupedProblems, moduleFamily, modulesByStage } from "@/lib/course/manifest";
+import { getModuleArt, getModuleVideo } from "@/lib/course/media";
 import { conceptMapHref, lessonHref, moduleHref } from "@/lib/course/nav";
-import { PRACTICE } from "@/lib/landing/content";
+import { PRACTICE, stageCards } from "@/lib/landing/content";
+import type { StageCard } from "@/lib/landing/story";
 import type { FeatureData } from "@/lib/landing/features";
-import { FAMILY_THEMES } from "@/lib/visual/familyTheme";
 
 /**
  * Landing data that reads the filesystem or the full course registries: the
@@ -66,11 +66,23 @@ export function featureData(): FeatureData {
   };
 }
 
+/** How many of a stage's modules fan out on its card. */
+const STAGE_ART = 3;
+
 /**
- * The boxes backdrop's hover flashes: every course family's UI accent (3:1 on
- * every paper), read here on the server so the family table need not ship to
- * the landing client.
+ * The course stages as "What's inside" cards, each with the art of its first
+ * modules (the same generated stills the curriculum hub's module cards show).
+ * Here, not in content.ts: the art is found on disk, and content.ts is
+ * reachable from the client course nav.
  */
-export function flashColours(): string[] {
-  return FAMILY_THEMES.map((theme) => theme.accentUi);
+export function stageCardsWithArt(): StageCard[] {
+  return stageCards().map((card) => ({
+    ...card,
+    art: modulesByStage(card.number)
+      .flatMap((mod) => {
+        const art = getModuleArt(mod.slug);
+        return art ? [{ ...art, title: mod.title }] : [];
+      })
+      .slice(0, STAGE_ART),
+  }));
 }

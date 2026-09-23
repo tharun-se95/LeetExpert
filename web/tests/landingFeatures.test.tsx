@@ -83,11 +83,11 @@ describe("hero", () => {
     expect(hero).toMatch(new RegExp(`<a[^>]*href="${FIRST_LESSON}"[^>]*>${HERO.start}`));
     expect(hero).toMatch(new RegExp(`<a[^>]*href="${CURRICULUM}"[^>]*>${HERO.explore}`));
     expect(hero).toContain(countsLine(stats));
-    // The drawing that stood beside it is the page backdrop now (2026-09-19).
-    expect(hero).not.toContain("<svg viewBox");
+    // The hero's art is the 3D floor of blocks, not a drawing beside the copy (2026-09-23).
+    expect(hero).toContain('class="hero-block"');
   });
 
-  it("lists the nine verbs in section order, each linking to the verb it selects", () => {
+  it("lists the nine verbs in section order, each linking to its row", () => {
     const nav = hero.match(/<nav aria-label="Features"[\s\S]*?<\/nav>/)?.[0] ?? "";
     const links = [...nav.matchAll(/<a[^>]*href="#([a-z]+)"[^>]*>([^<]+)<\/a>/g)].map((m) => [m[1], m[2]]);
     expect(links.map(([id]) => id)).toEqual([...ALL_VERBS]);
@@ -111,12 +111,12 @@ describe("Understand, Build and Keep", () => {
     expect(sections.flatMap((s) => s.verbs.map((v) => v.id))).toEqual([...ALL_VERBS]);
   });
 
-  it("shows each feature as the component alone, named for screen readers (owner, 2026-09-19)", () => {
+  it("names each feature's component for screen readers", () => {
     const windows = featureWindows(features, NEAR);
     for (const verb of ALL_VERBS) expect(windows[verb].label.length, verb).toBeGreaterThan(8);
     // The map, the problem list and the coach fill their slot; the rest sit centred in it.
     expect(ALL_VERBS.filter((v) => windows[v].fill)).toEqual(["map", "review", "practice"]);
-    // Burn keeps the owner's credits line, under the tabs now.
+    // Burn keeps the owner's credits line, under its own line.
     expect(windows.burn.note).toBe(HEAT.credits);
     // The kinds and "Today" footers went with the cards.
     const src = read("lib", "landing", "features.ts");
@@ -132,43 +132,43 @@ describe("Understand, Build and Keep", () => {
     const html = renderToStaticMarkup(
       <LandingStory counts={curriculumStats()} links={{ start: "/s", curriculum: "/c" }} stages={[]} features={features} />,
     );
-    expect([...html.matchAll(/<section[^>]*id="([a-z]+)"/g)].map((m) => m[1])).toEqual(["understand", "build", "keep"]);
+    expect([...html.matchAll(/<section[^>]*id="([a-z]+)"/g)].map((m) => m[1])).toEqual(["understand", "build", "keep", "inside"]);
   });
 
-  it("renders a tab list with the first verb selected and all three components, only that one reachable", () => {
+  it("shows all three features at once, each a row with its icon, name, line, link and framed component", () => {
     const stub = Object.fromEntries(ALL_VERBS.map((v) => [v, { label: `${v} component`, body: <p>{v} body</p> }])) as Record<
       VerbId,
       WindowContent
     >;
     stub.watch = { ...stub.watch, link: { label: "Open the module", href: "/module" } };
     const section = sections[0]!;
-    const html = renderToStaticMarkup(<FeatureSection section={section} started={false} windows={stub} />);
-    const tabs = [...html.matchAll(/<button[^>]*role="tab"[^>]*>/g)].map((m) => m[0]);
-    expect(tabs).toHaveLength(3);
-    expect(tabs[0]).toMatch(/aria-selected="true"/);
-    expect(tabs[0]).toMatch(/tabindex="0"/);
-    for (const t of tabs.slice(1)) expect(t).toMatch(/aria-selected="false"[^>]*tabindex="-1"/);
-    const panels = [...html.matchAll(/<div([^>]*role="tabpanel"[^>]*)><div[^>]*><p>(\w+) body/g)].map((m) => [
-      m[2],
-      /\binert=""/.test(m[1]!),
-    ]);
-    expect(panels).toEqual([
-      ["watch", false],
-      ["learn", true],
-      ["map", true],
-    ]);
-    expect(html).toContain(esc(section.verbs[0]!.line));
+    const html = renderToStaticMarkup(<FeatureSection section={section} windows={stub} />);
+    // No tabs and nothing hidden: every component is on the page and reachable.
+    expect(html).not.toMatch(/role="tab|inert=|aria-selected/);
+    for (const verb of section.verbs) {
+      const row = html.slice(html.indexOf(`id="${verb.id}"`));
+      expect(row, verb.id).toMatch(new RegExp(`<h3[^>]*>${verb.title}</h3>`));
+      expect(row, verb.id).toContain(esc(verb.line));
+      expect(row, verb.id).toMatch(new RegExp(`role="group" aria-label="${verb.id} component"[\\s\\S]*?<p>${verb.id} body`));
+      expect(row, verb.id).toContain('class="landing-card3d"');
+    }
     expect(html).toMatch(/<a[^>]*href="\/module"[^>]*>Open the module/);
+    // Text on alternate sides: the middle row flips.
+    expect(html.match(/data-flip="true"/g)).toHaveLength(1);
   });
 
-  it("selects a verb from the hero's link and lets arrows, Home and End move between verbs", () => {
-    const section = read("components", "landing", "FeatureSection.tsx");
-    expect(section).toContain('window.addEventListener("hashchange", pick)');
-    expect(section).toContain("`#${v}` === window.location.hash");
-    // Keyed on the ids: keyed on the verbs array (rebuilt every render) it
-    // re-applied a stale #hash and undid the reader's own choice of verb.
-    expect(section).toMatch(/\}, \[verbIds, choose\]\);/);
-    for (const key of ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"]) expect(section).toContain(`${key}:`);
+  it("draws over each heading's key word, in the section's own family colour", () => {
+    const html = renderToStaticMarkup(
+      <LandingStory counts={curriculumStats()} links={{ start: "/s", curriculum: "/c" }} stages={[]} features={features} />,
+    );
+    for (const s of sections) {
+      const section = html.slice(html.indexOf(`id="${s.id}"`));
+      const h2 = section.match(/<h2[^>]*>([\s\S]*?)<\/h2>/)![1]!;
+      // The words a reader hears are the owner's heading, unchanged.
+      expect(h2.replace(/<svg[\s\S]*?<\/svg>/g, "").replace(/<[^>]+>/g, "").replace(/&#x27;/g, "'"), s.id).toBe(s.heading.replace(". ", ". "));
+      expect(h2, s.id).toContain(s.mark.style === "underline" ? `class="landing-mark">${esc(s.mark.word)}` : `class="landing-hl">${esc(s.mark.word)}`);
+    }
+    expect(new Set(sections.map((s) => s.family)).size).toBe(3);
   });
 
   it("loads no heavy feature until its section is near", () => {
@@ -251,7 +251,7 @@ describe("Build: the worked problem", () => {
   });
 
   it("lets the wheel scroll past the concept map instead of zooming it (owner, 2026-09-20)", () => {
-    // The page scrolls feature by feature; a map that took the wheel stranded the reader on Map.
+    // A map that took the wheel would stop the page scrolling while the pointer is over it.
     expect(read("components", "landing", "FeatureWindows.tsx")).toContain("fill scrollThrough />");
     const map = read("components", "course", "ConceptMindMap.tsx");
     expect(map).toContain("zoomOnScroll={!scrollThrough}");
@@ -264,8 +264,8 @@ describe("Build: the worked problem", () => {
     expect(windows).toContain("<Viz source={data.learn.viz} embedded code={false} />");
     expect(windows).toContain("<BigOObservatory />");
     expect(windows).not.toMatch(/InsightPanel|Try it/);
-    // And no chrome around the heatmap.
-    expect(windows).toMatch(/<HeatMap year=\{data\.heat\} lit=\{near\.keep\} className="border-0 bg-transparent p-0 shadow-none md:p-0" \/>/);
+    // The heatmap keeps its own card: each component is framed now (owner, 2026-09-23).
+    expect(windows).toContain("<HeatMap year={data.heat} lit={near.keep} />");
   });
 });
 
@@ -346,7 +346,7 @@ describe("feature data", () => {
 
   it("renames the heatmap Burn, labels it an example, and lights it when Keep is near", () => {
     expect(HEAT.title).toBe("Burn");
-    // The credits line sits under the tabs; the window is the heatmap alone.
+    // The credits line sits under the feature's own line; the window is the heatmap.
     expect(featureWindows(features, FAR).burn.note).toBe(HEAT.credits);
     const far = bodyOf("burn");
     expect(far).toMatch(/aria-label="An example year/);
@@ -355,10 +355,35 @@ describe("feature data", () => {
   });
 });
 
+describe("learners: the quote river (owner, 2026-09-23, after 21st.dev)", () => {
+  const river = read("components", "landing", "TestimonialRiver.tsx");
+  const html = renderToStaticMarkup(<LandingOutro firstLessonHref="/first" />);
+
+  it("renders each quote once on the server; the loop's copies are client-only, hidden and inert", () => {
+    for (const quote of PROOF.quotes) expect(html.split(esc(quote.quote)).length - 1, quote.role).toBe(1);
+    expect(river).toMatch(/<li aria-hidden=\{clone \|\| undefined\} inert=\{clone \|\| undefined\}/);
+    expect(river).toMatch(/const \[copies, setCopies\] = useState\(0\);/);
+  });
+
+  it("can be paused (WCAG 2.2.2), rests on hover and focus, and never moves under reduced motion", () => {
+    expect(html).toMatch(/<button[^>]*aria-pressed="false"[^>]*aria-label="Pause the learner quotes"/);
+    expect(river).toMatch(/if \(!s\.drag && !s\.hover && !paused && !reduce\) s\.offset -= SPEED \* dt;/);
+    expect(river).toContain("onFocusCapture={() => (state.current.hover = true)}");
+    expect(river).toContain("prefers-reduced-motion: reduce");
+    // Dragging sideways must not steal the page's vertical scroll on touch.
+    expect(river).toContain("touch-pan-y");
+  });
+});
+
 describe("learners: placeholder social proof", () => {
-  it("flags every example, attributes quotes to no invented person, and tags each one on the page", () => {
+  it("flags every example, gives each reviewer a drawn avatar, and tags each one on the page", () => {
     for (const item of [...PROOF.stats, ...PROOF.quotes]) expect(item.placeholder).toBe(true);
-    for (const quote of PROOF.quotes) expect(quote.name).toBe("Name Surname");
+    // Invented placeholder reviewers (owner, 2026-09-23), each flagged above and
+    // tagged below; no two share a name, and none has a photo — the avatar is
+    // drawn from the name, so no real person's face stands in for a learner.
+    expect(new Set(PROOF.quotes.map((q) => q.name)).size).toBe(PROOF.quotes.length);
+    const avatar = read("components", "landing", "ReviewerAvatar.tsx");
+    expect(avatar).not.toMatch(/<img|<Image|https?:\/\//);
     const html = renderToStaticMarkup(<LandingOutro firstLessonHref="/first" />);
     const section = html.split("<section").find((s) => s.includes(esc(PROOF.title)))!;
     const tags = 1 + PROOF.stats.length + PROOF.quotes.length;

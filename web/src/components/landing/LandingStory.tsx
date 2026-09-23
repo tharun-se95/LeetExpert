@@ -1,13 +1,17 @@
 "use client";
 
+import type { CSSProperties } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react";
 import { FeatureSection } from "@/components/landing/FeatureSection";
 import { featureWindows, type FeatureWindowData } from "@/components/landing/FeatureWindows";
-import { KICKER, STOP, TITLE } from "@/components/landing/landingClasses";
-import { TypedText } from "@/components/landing/TypedText";
-import { useSectionPaging } from "@/components/landing/useSectionPaging";
-import { useActiveSection, useTypedText } from "@/components/landing/useSectionReveal";
+import { HeroFloor } from "@/components/landing/HeroFloor";
+import { KICKER, STOP } from "@/components/landing/landingClasses";
+import { MarkedHeading } from "@/components/landing/MarkedHeading";
+import { SectionDeco } from "@/components/landing/SectionDeco";
+import { usePopIn } from "@/components/landing/usePopIn";
+import { useActiveSection } from "@/components/landing/useSectionReveal";
 import { featureSections, type FeatureSection as Section } from "@/lib/landing/features";
 import {
   HERO,
@@ -19,26 +23,28 @@ import {
   type CurriculumCounts,
   type StageCard,
 } from "@/lib/landing/story";
+import { familyCssVars } from "@/lib/visual/familyTheme";
 import { cn } from "@/lib/utils";
 
-/** Reveals every typed layer and risen card when scripts never run (both start hidden). */
-const NOSCRIPT_REVEAL = "[data-typed-rest]{color:inherit!important}.rise-in{opacity:1!important;transform:none!important}";
+/** Reveals every risen card when scripts never run (they start hidden). */
+const NOSCRIPT_REVEAL = ".rise-in{opacity:1!important;transform:none!important}";
 
-const BODY = "mt-4 max-w-2xl text-lg leading-relaxed text-muted";
-
-/** Section order inside this component. */
-const HERO_SECTION = 0;
+/** Section order inside this component: which have arrived drives lazy loading and the cards' rise. */
 const UNDERSTAND = 1;
 const BUILD = 2;
 const KEEP = 3;
 const INSIDE = 4;
 
 /**
- * The first five stops: the hero, Understand, Build and Keep — every feature
- * in the app as nine verbs (owner, 2026-09-17) — and the course stages. Each
- * types once when it becomes active. Counts, links, stage cards and the
- * windows' lessons come from the server so neither the course manifest nor
- * the filesystem readers ship to the client.
+ * The hero, Understand, Build and Keep — every feature in the app as nine
+ * verbs (owner, 2026-09-17) — and the course stages, on a page that scrolls
+ * like any other (owner, 2026-09-23: "like a regular landing page scroll").
+ * Motion as the page moves is CSS on view timelines (globals.css, "Landing
+ * motion"); the only script here watches which sections have arrived, so heavy
+ * features load once they are near and the stage cards rise. Counts, links,
+ * stage cards and the windows' lessons come from the server so neither the
+ * course manifest nor the filesystem readers ship to the client.
+ * Spec: docs/superpowers/specs/2026-09-23-landing-natural-scroll-3d-hero-design.md
  */
 export function LandingStory({
   counts,
@@ -52,76 +58,75 @@ export function LandingStory({
   features: FeatureWindowData;
 }) {
   const { root, active, started } = useActiveSection<HTMLDivElement>(5);
-  // Mounted once per landing page; it pages the outro's sections too.
-  useSectionPaging();
+  // Once per landing page: it pops the outro's rows too.
+  usePopIn();
 
   const sections = featureSections(features.counts);
-  // A section's heavy windows load once it is the active stop or the next one.
-  const near = (i: number) => (started[i] ?? false) || active === i - 1;
-  const windows = featureWindows(features, { understand: near(UNDERSTAND), build: near(BUILD), keep: near(KEEP) });
+  // A section's heavy windows load once it has arrived, is the next one, or
+  // lies behind the active one: a jump past it (a #link, a restored scroll)
+  // never crosses the middle band, and scrolling back up met stand-ins.
+  const near = (i: number) => (started[i] ?? false) || active >= i - 1;
+  const windows = featureWindows(features, {
+    understand: near(UNDERSTAND),
+    build: near(BUILD),
+    keep: near(KEEP),
+  });
 
   return (
     <div ref={root}>
       <noscript>
         <style>{NOSCRIPT_REVEAL}</style>
       </noscript>
-      <Hero counts={counts} links={links} sections={sections} started={started[HERO_SECTION] ?? false} />
-      {sections.map((section, i) => (
-        <FeatureSection
-          key={section.id}
-          section={section}
-          started={started[UNDERSTAND + i] ?? false}
-          windows={windows}
-        />
+      <Hero counts={counts} links={links} sections={sections} />
+      {sections.map((section) => (
+        <FeatureSection key={section.id} section={section} windows={windows} />
       ))}
       <Inside chapter={inside(counts)} stages={stages} started={started[INSIDE] ?? false} />
     </div>
   );
 }
 
-/** Not a snap stop itself: AppShell's desk wrapper is, so the first stop keeps the header in view. */
+/**
+ * The hero (owner, 2026-09-23): the copy on clear paper at the top, the 3D
+ * floor of data structures below it (HeroFloor), and the nine verbs with the
+ * course counts on a solid strip along the foot — so nothing the floor draws
+ * sits under text. It spans the landing column past its gutters, so the floor
+ * runs to the column's edges, and brings the gutters back for its copy.
+ * The headline keeps one sentence per line; its words arrive on load, "code."
+ * with a caret and "right." with a hand-drawn ring, then a tick.
+ */
 function Hero({
   counts,
   links,
   sections,
-  started,
 }: {
   counts: CurriculumCounts;
   links: { start: string; curriculum: string };
   sections: readonly Section[];
-  started: boolean;
 }) {
-  const parts = useTypedText(started, [...HERO.lines, HERO.lede]);
-
   return (
     <section
       data-scroll-section
-      className="grid min-h-[calc(100dvh-6rem)] content-center items-center py-16"
+      // The family colour the headline's accents take; content, not chrome.
+      style={familyCssVars("linear-traversal")}
+      className="relative -mx-6 overflow-clip border-b border-border md:-mx-16"
     >
-      <div className="min-w-0">
-        <p className={KICKER}>{HERO.kicker}</p>
-        {/*
-          One sentence per line. Sized so the longer line ("You decide if it's
-          right.", 14.675em in Space Mono) fits the text column without wrapping:
-          measured column 49rem from xl, 45rem+ from sm (the drawing that sat
-          beside it at lg is the page backdrop now). Below sm a sentence still wraps inside its own
-          line, but never across the full stop.
-        */}
-        <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-4xl lg:leading-[1.1] xl:text-5xl">
-          {HERO.lines.map((line, i) => (
-            <span key={line} className="block text-balance">
-              <TypedText text={line} progress={parts[i] ?? 0} />
-            </span>
-          ))}
-        </h1>
-        <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted">
-          <TypedText text={HERO.lede} progress={parts[HERO.lines.length] ?? 0} />
+      <HeroFloor />
+      <div className="landing-hero-copy relative z-10 px-6 pt-16 pb-[calc(var(--hero-floor-h)-var(--hero-floor-fade))] md:px-16 lg:pt-20">
+        <p className={cn(KICKER, "flex items-center gap-2.5")}>
+          <span aria-hidden className="relative flex h-2.5 w-2.5">
+            <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-50 motion-reduce:animate-none" />
+            <span className="relative h-2.5 w-2.5 rounded-full bg-accent" />
+          </span>
+          {HERO.kicker}
         </p>
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground">{HERO.descriptor}</p>
-        <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <HeroHeadline />
+        <p className="mt-8 max-w-2xl text-xl leading-relaxed text-muted">{leadAndTail(HERO.lede)}</p>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground">{HERO.descriptor}</p>
+        <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
           <Link
             href={links.start}
-            className="inline-flex items-center gap-2 rounded-full bg-pop px-5 py-2.5 text-base font-medium text-on-pop transition-opacity hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-full bg-pop px-6 py-3 text-base font-medium text-on-pop shadow-elevation transition-opacity hover:opacity-90"
           >
             {HERO.start}
             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -133,13 +138,13 @@ function Hero({
             {HERO.explore}
           </Link>
         </div>
-        {/* The nine verbs, grouped as the sections below; each link selects its
-            verb in that section and brings the section into view. */}
-        {/* Columns sized to their verbs, so "Code Review Optimize" keeps one row
-            where the column allows (it wrapped at an even three-way split). */}
-        <nav aria-label="Features" className="mt-10 grid w-fit max-w-full gap-4 sm:grid-cols-[repeat(3,auto)] sm:gap-x-8">
+      </div>
+
+      {/* The nine verbs, grouped as the sections below; each is a plain link to its row. */}
+      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-wrap items-center justify-between gap-x-10 gap-y-3 border-t border-border bg-background px-6 py-4 md:px-16">
+        <nav aria-label="Features" className="flex flex-wrap items-center gap-x-8 gap-y-3">
           {sections.map((section) => (
-            <div key={section.id} className="grid content-start gap-2 border-t border-border pt-3">
+            <div key={section.id} className="flex items-center gap-3">
               <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted uppercase">{section.title}</p>
               <ul className="flex flex-wrap gap-1.5">
                 {section.verbs.map((verb) => (
@@ -156,9 +161,87 @@ function Hero({
             </div>
           ))}
         </nav>
-        <p className="mt-6 text-sm text-muted tabular-nums">{countsLine(counts)}</p>
+        <p className="text-sm text-muted tabular-nums">{countsLine(counts)}</p>
       </div>
     </section>
+  );
+}
+
+/** The lede's clause after "for" set in ink, so the sentence lands on it. */
+function leadAndTail(text: string) {
+  const at = text.indexOf(" for ");
+  if (at === -1) return text;
+  return (
+    <>
+      {text.slice(0, at + 5)}
+      <span className="font-medium text-foreground">{text.slice(at + 5)}</span>
+    </>
+  );
+}
+
+/**
+ * One sentence per line (owner, 2026-09-14). The heading's accessible name is
+ * the plain sentences; the animated words are aria-hidden, so a screen reader
+ * never hears them split up.
+ */
+function HeroHeadline() {
+  const [first, second] = HERO.lines;
+  const words = (line: string, start: number) =>
+    line.split(" ").map((word, i) => (
+      <span key={i}>
+        {i > 0 ? " " : null}
+        <span className="hero-word" style={{ animationDelay: `${(start + i * 0.07).toFixed(2)}s` }}>
+          {word}
+        </span>
+      </span>
+    ));
+  const firstWords = first.split(" ");
+  const secondWords = second.split(" ");
+  return (
+    <h1
+      aria-label={HERO.title}
+      className="mt-7 font-display text-4xl leading-[1.06] font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl"
+      style={{ perspective: "600px" }}
+    >
+      <span aria-hidden className="block">
+        {words(firstWords.slice(0, -1).join(" "), 0.1)}{" "}
+        <span className="hero-word text-accent" style={{ animationDelay: "0.31s" }}>
+          {firstWords.at(-1)}
+        </span>
+        <span className="hero-caret" />
+      </span>
+      <span aria-hidden className="block">
+        {words(secondWords.slice(0, -1).join(" "), 0.5)} {/* "right." and its tick never part across a wrap. */}
+        <span className="whitespace-nowrap">
+          <span className="hero-word relative" style={{ animationDelay: "0.78s" }}>
+            {secondWords.at(-1)}
+            <svg
+              className="hero-ring pointer-events-none absolute -top-[22%] -left-[7%] h-[150%] w-[114%] overflow-visible"
+              viewBox="0 0 200 100"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M20 58 C 18 22, 150 8, 184 40 C 206 64, 150 92, 90 90 C 40 88, 6 70, 22 46 C 30 34, 60 26, 96 24"
+                fill="none"
+                stroke="var(--accent)"
+                strokeWidth="3.2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </span>
+          <svg className="hero-tick ml-[0.4em] inline-block h-[0.6em] w-[0.7em] align-baseline" viewBox="0 0 46 40">
+            <path
+              d="M4 22 L 17 34 L 42 5"
+              fill="none"
+              stroke="var(--accent)"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+      </span>
+    </h1>
   );
 }
 
@@ -168,49 +251,83 @@ function Hero({
  * rise in, staggered, when the section arrives — one attribute on the list,
  * CSS for the motion.
  */
-function Inside({
-  chapter,
-  stages,
-  started,
-}: {
-  chapter: Chapter;
-  stages: readonly StageCard[];
-  started: boolean;
-}) {
-  const parts = useTypedText(started, [chapter.title, ...chapter.body]);
-
+function Inside({ chapter, stages, started }: { chapter: Chapter; stages: readonly StageCard[]; started: boolean }) {
   return (
-    <section data-scroll-section className={STOP}>
-      {/* mt-8: with the cards this section outgrows the viewport at 1024×768
-          and on phones, so it snaps with its top under the sticky header — the
-          kicker sat 2px below it at 375px and 5px at 1024px. */}
-      <p className={cn(KICKER, "mt-8")}>{chapter.kicker}</p>
-      <h2 className={TITLE}>
-        <TypedText text={chapter.title} progress={parts[0] ?? 0} />
-      </h2>
+    <section
+      data-scroll-section
+      id="inside"
+      style={familyCssVars("ordering-search")}
+      className={cn(STOP, "relative border-t border-border")}
+    >
+      <SectionDeco id="inside" />
+      <p className={cn(KICKER, "landing-pop flex items-center gap-2.5")}>
+        {chapter.kicker}
+        <span aria-hidden className="landing-kline" />
+      </p>
+      <MarkedHeading text={chapter.title} mark={{ word: "inside.", style: "highlight" }} />
       {chapter.body.map((para, j) => (
-        <p key={j} className={BODY}>
-          <TypedText text={para} progress={parts[j + 1] ?? 0} />
+        <p key={j} className="landing-pop mt-5 max-w-3xl text-xl leading-relaxed text-muted">
+          {para}
         </p>
       ))}
-      <ol data-lit={started || undefined} className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-2">
+      {/* Five cards: three across, then two wider ones, so the last row fills. */}
+      <ol data-lit={started || undefined} className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
         {stages.map((stage, i) => (
-          <li key={stage.number} className="rise-in" style={{ transitionDelay: `${i * RISE_STAGGER_MS}ms` }}>
-            <Link
-              href={stage.href}
-              className="group flex h-full flex-col rounded-[length:var(--radius-lg)] border border-border bg-elevated p-4 shadow-elevation transition-colors hover:border-accent/45"
-            >
-              <span className="flex items-center justify-between gap-3">
-                <span className={KICKER}>Stage {stage.number}</span>
-                <ArrowRight className="h-4 w-4 text-muted transition-colors group-hover:text-foreground" aria-hidden />
-              </span>
-              <span className="mt-2 font-display text-lg font-bold tracking-tight">{stage.title}</span>
-              <span className="mt-1 text-sm leading-relaxed text-muted">{stage.description}</span>
-              <span className="mt-3 text-xs text-muted tabular-nums">{stageMeta(stage)}</span>
-            </Link>
+          <li
+            key={stage.number}
+            className={cn("rise-in", i < 3 ? "lg:col-span-2" : "lg:col-span-3")}
+            style={{ transitionDelay: `${i * RISE_STAGGER_MS}ms` }}
+          >
+            <StageCardLink stage={stage} />
           </li>
         ))}
       </ol>
     </section>
+  );
+}
+
+/**
+ * One stage as an image card (owner, 2026-09-23: "beautiful image cards … that
+ * pop"): the art of its first modules fanned like a hand of cards over a
+ * dotted field, spreading and lifting on hover or focus, then the stage's
+ * name, line and counts. The art is decorative (each still repeats a module
+ * title in pixels); the card's text names the stage.
+ */
+function StageCardLink({ stage }: { stage: StageCard }) {
+  const art = stage.art ?? [];
+  // Fanned from the middle: the centre card on top, its neighbours tipped out.
+  const fan = art.length === 1 ? [0] : art.length === 2 ? [-1, 1] : [-1, 0, 1];
+  return (
+    <Link
+      href={stage.href}
+      className="group flex h-full flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition-[transform,border-color] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5 hover:border-accent/45 focus-visible:-translate-y-1.5"
+    >
+      {art.length > 0 ? (
+        <div aria-hidden className="stage-art relative h-44 overflow-hidden bg-surface [perspective:900px]">
+          {art.map((still, k) => (
+            <div
+              key={still.title}
+              className="stage-tile absolute top-1/2 left-1/2 aspect-[43/24] h-[68%] overflow-hidden rounded-[length:var(--radius-md)] shadow-elevation"
+              style={{ "--fan": fan[k], zIndex: fan[k] === 0 ? 2 : 1 } as CSSProperties}
+            >
+              <Image src={still.light} alt="" fill sizes="(min-width: 1024px) 280px, 60vw" className="module-art-light object-cover" />
+              <Image src={still.dark} alt="" fill sizes="(min-width: 1024px) 280px, 60vw" className="module-art-dark object-cover" />
+            </div>
+          ))}
+        </div>
+      ) : null}
+      <div className="flex flex-1 flex-col p-5">
+        <span className="flex items-center justify-between gap-3">
+          <span className={KICKER}>Stage {stage.number}</span>
+          <ArrowRight
+            className="h-4 w-4 text-muted transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-foreground"
+            aria-hidden
+          />
+        </span>
+        <span className="mt-2 font-display text-xl font-bold tracking-tight">{stage.title}</span>
+        <span className="mt-1 text-sm leading-relaxed text-muted">{stage.description}</span>
+        <span className="mt-auto pt-4 text-xs text-muted tabular-nums">{stageMeta(stage)}</span>
+      </div>
+    </Link>
   );
 }

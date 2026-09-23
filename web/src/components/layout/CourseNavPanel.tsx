@@ -255,11 +255,16 @@ function PinnedRow({
       )}
     >
       {children}
+      {/*
+        The floating opener's own inverted fill (owner, 2026-09-23), not
+        ROUND_CONTROL's plain hairline: this button is its close-side pair, so
+        it carries the same dark-on-light/light-on-dark pill the opener does.
+      */}
       <button
         type="button"
         onClick={onClose}
         aria-label="Close lessons drawer"
-        className={cn(ROUND_CONTROL, "h-8 w-8")}
+        className={cn(ROUND_CONTROL, "floating-invert h-8 w-8")}
       >
         <X className="h-4 w-4" weight="bold" />
       </button>

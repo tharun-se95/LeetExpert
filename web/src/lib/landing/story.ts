@@ -65,6 +65,12 @@ export type StageCard = {
   modules: number;
   lessons: number;
   href: string;
+  /**
+   * Art of the stage's first modules (up to three), fanned on its card
+   * (owner, 2026-09-23: "beautiful image cards"). Read from disk on the
+   * server by productData.ts; absent where no module has art yet.
+   */
+  art?: readonly { light: string; dark: string; title: string }[];
 };
 
 export function stageMeta(stage: Pick<StageCard, "modules" | "lessons">): string {
@@ -94,9 +100,12 @@ export type ProofQuote = { quote: string; name: string; role: string; placeholde
 /**
  * Placeholder social proof (owner, 2026-09-15): examples, labelled on the page
  * in every build. The one deliberate exception to "every number computed" —
- * there are no learners to count yet. Quotes are attributed to "Name Surname",
- * never an invented person. End condition: replace with real numbers and
- * quotes, then drop the flags and the tags.
+ * there are no learners to count yet. The reviewers are invented placeholders
+ * with generated avatars (owner, 2026-09-23: "use avatars as placeholders …
+ * create a static list of users and reviews"): no photo of anyone, each one
+ * flagged here and tagged on its card, so none can pass for a real learner.
+ * End condition: replace with real numbers and quotes from real learners (with
+ * their consent), then drop the flags and the tags.
  */
 export const PROOF: {
   kicker: string;
@@ -107,7 +116,7 @@ export const PROOF: {
 } = {
   kicker: "Learners",
   title: "What learners say.",
-  note: "example numbers and quotes, to be replaced with real ones before launch",
+  note: "example numbers, reviewers and quotes, to be replaced with real ones before launch",
   stats: [
     { value: "2,400+", label: "engineers learning", placeholder: true },
     { value: "18,000", label: "problems solved", placeholder: true },
@@ -116,20 +125,50 @@ export const PROOF: {
   quotes: [
     {
       quote: "I stopped memorising solutions. Now I can tell why the agent's answer times out.",
-      name: "Name Surname",
+      name: "Priya Raman",
       role: "Backend engineer",
       placeholder: true,
     },
     {
-      quote: "The tracers made recursion click in an afternoon.",
-      name: "Name Surname",
+      quote: "The tracers made recursion click in an afternoon. Watching the call stack grow and unwind beat any diagram.",
+      name: "Marcus Webb",
       role: "Computer science student",
       placeholder: true,
     },
     {
       quote: "Every problem asks what it costs. That habit changed how I review pull requests.",
-      name: "Name Surname",
+      name: "Aiko Tanaka",
       role: "Senior engineer",
+      placeholder: true,
+    },
+    {
+      quote: "The coach names the case that broke instead of handing me the fix. Annoying for a minute, then it sticks.",
+      name: "Diego Alvarez",
+      role: "Frontend engineer",
+      placeholder: true,
+    },
+    {
+      quote: "Sliding window finally made sense once I could watch the window move over a real array.",
+      name: "Fatima Noor",
+      role: "Bootcamp graduate",
+      placeholder: true,
+    },
+    {
+      quote: "The cheatsheets are what I skim the night before an interview. Smell, pattern, done.",
+      name: "Liam O'Connor",
+      role: "Data engineer",
+      placeholder: true,
+    },
+    {
+      quote: "Solving in Python and checking the same idea in JavaScript showed me where my integer division was wrong.",
+      name: "Sofia Petrova",
+      role: "Mobile developer",
+      placeholder: true,
+    },
+    {
+      quote: "I use it to sanity-check what the agent writes. Knowing the target complexity makes a bad answer obvious.",
+      name: "Kwame Mensah",
+      role: "Staff engineer",
       placeholder: true,
     },
   ],
@@ -161,46 +200,3 @@ export const FAQ: readonly { q: string; a: string }[] = [
     a: "No. If you can write basic loops and functions, you can start; the first stage builds the vocabulary the rest of the course uses.",
   },
 ];
-
-// --- typing -------------------------------------------------------------
-// NaN is "not started"; Infinity (a zero duration) is finished, so the reveal loop stops.
-export const clamp01 = (v: number) => (Number.isNaN(v) ? 0 : Math.min(1, Math.max(0, v)));
-
-/**
- * Characters of `text` visible at `progress`, in whole words: the cut always
- * lands at the end of a word, so a word never appears half-typed. Word by word
- * rather than letter by letter (owner, 2026-09-14) — per-letter typing was too
- * busy to read along with. A word is a run of non-space characters, so an
- * emoji's surrogate pair can never be split either.
- */
-export function typedLength(text: string, progress: number): number {
-  const ends = [...text.matchAll(/\S+/g)].map((m) => m.index + m[0].length);
-  if (ends.length === 0) return text.length;
-  const words = Math.round(clamp01(progress) * ends.length);
-  if (words === 0) return 0;
-  return words === ends.length ? text.length : ends[words - 1]!;
-}
-
-/**
- * Splits one progress value across consecutive strings by length, so a
- * heading finishes typing before its paragraphs start.
- */
-export function segmentProgress(lengths: readonly number[], progress: number): number[] {
-  const total = lengths.reduce((sum, len) => sum + len, 0);
-  if (total === 0) return lengths.map(() => 1);
-  const done = clamp01(progress) * total;
-  let start = 0;
-  return lengths.map((len) => {
-    const p = len === 0 ? (done >= start ? 1 : 0) : clamp01((done - start) / len);
-    start += len;
-    return p;
-  });
-}
-
-/**
- * How long a section takes to type: ~12ms a character, but never so quick it
- * reads as a flash, nor so slow a long chapter keeps the reader waiting.
- */
-export function typingDuration(chars: number): number {
-  return Math.min(2400, Math.max(700, chars * 12));
-}

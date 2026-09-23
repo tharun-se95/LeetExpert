@@ -151,32 +151,50 @@ The content is the product. Code exists to serve it.
   and focus. Focus after back moves from a **callback ref**: under
   `AnimatePresence mode="wait"` the incoming level has not mounted when an
   effect or `onExitComplete` fires.
-- **The lessons drawer closes from its own header row and opens from a
-  floating button** (owner, 2026-09-14; spec
-  `docs/superpowers/specs/2026-09-14-drawer-header-and-floating-opener-design.md`;
-  it replaced the 2026-09-13 edge tabs and their concave fillets). The nav
-  panel's top row is pinned (`sticky top-0`): flat paper like the rail at
-  rest and `TRANSLUCENT_PAPER` once rows scroll under it (`CourseNavTree` observes
-  a sentinel against the nav, not scroll events — translucent at rest it read as
-  a lighter strip), with no shadow and no `border-b` (the module heading below
-  carries the rule): inside a module it is the back row ("‹ {stage}") with ✕
-  beside it, at the top level just ✕. `CourseNavPanel` renders it only when
-  given `onClose`; the desktop drawer passes it, the mobile sheet keeps its
-  own "Lessons ✕" header and passes nothing. The drawer's top padding moved
-  onto that row, so rows cannot scroll into a gap above it. The opener
-  (`FloatingLessonsButton`) is a round hairline control on page paper with
-  the card shadow, `fixed bottom-6 left-6` (the coach launcher's inset,
-  mirrored), z-40 above the hover edge strip, hidden while the drawer is open;
+- **The lessons drawer opens by default and closes only manually** (owner,
+  2026-09-23 — it replaced the 2026-09-14 hover-driven drawer: an edge strip
+  opened it on a fine pointer and it auto-closed a minute after the pointer
+  left, tracked by `pointermove` against the rail's edge; all of that —
+  `canHover`, the edge strip, `HOVER_CLOSE_MS`, the pointer-position
+  close — is gone from `AppShell.tsx`). `sidebarOpen` starts `true`
+  unconditionally; a reader who closes the drawer gets that preference back
+  (`localStorage`, `SIDEBAR_KEY`) on their next visit, for every pointer type
+  alike, until they reopen it. The only two ways to close it are the ✕ in the
+  nav's own pinned header row and Escape — never the pointer moving away.
+  Spec `docs/superpowers/specs/2026-09-14-drawer-header-and-floating-opener-design.md`
+  still covers the panel's chrome (it replaced the 2026-09-13 edge tabs and
+  their concave fillets): the nav panel's top row is pinned (`sticky top-0`):
+  flat paper like the rail at rest and `TRANSLUCENT_PAPER` once rows scroll
+  under it (`CourseNavTree` observes a sentinel against the nav, not scroll
+  events — translucent at rest it read as a lighter strip), with no shadow and
+  no `border-b` (the module heading below carries the rule): inside a module
+  it is the back row ("‹ {stage}") with ✕ beside it, at the top level just ✕.
+  `CourseNavPanel` renders it only when given `onClose`; the desktop drawer
+  passes it, the mobile sheet keeps its own "Lessons ✕" header and passes
+  nothing. The drawer's top padding moved onto that row, so rows cannot
+  scroll into a gap above it. The opener (`FloatingLessonsButton`) is a round
+  control on page paper with the card shadow, `fixed bottom-6 left-6` (the
+  coach launcher's inset, mirrored), z-40, hidden while the drawer is open;
   `next.config` moves Next's dev badge to bottom-right so it does not sit on
-  it. The problem page's sub-header reserves no room for a tab. `.sidebar-rail`
-  paints `--background`, the app
-  header's own paper, in both themes (owner, 2026-09-13 "match the header").
-  The rail clips its own top, bottom and left (`clip-path: inset(0 -3rem 0
-  0)`): it sits above the header (z-45), so its edge shadow's blur otherwise
-  spread up onto the header's bottom edge; only the right stays open, for the
-  shadow and the resize grip, whose pill overhangs the edge (which is also why
-  AppShell's hover-close hit-tests `rail.contains`). Guarded in
-  `sidebarChrome.test.ts` and `courseNavPanel.test.tsx`.
+  it. Its fill is `.floating-invert` (owner, 2026-09-23; `globals.css`), not
+  `bg-background`: dark on the light theme's page, light on the dark theme's
+  — the opposite of `.navy-card`, which stays dark in both — mirroring the
+  light theme's own inks (`--card-navy`/`#e6edf4` light, `#e4e9f2`/`#16202e`
+  dark), the same pairing the retired `.plate-invert` used. The drawer's own
+  ✕ (`CourseNavPanel`'s `PinnedRow`, `aria-label="Close lessons drawer"`)
+  carries it too, as the opener's close-side pair — the only other user of the
+  class. Not generalised to every floating control (owner declined for the
+  Coach launcher, whose `bg-pop`/family colour is a deliberate CTA identity)
+  — a new floating control gets `.floating-invert` only on request, not by
+  default. The
+  problem page's sub-header reserves no room for a tab. `.sidebar-rail` paints
+  `--background`, the app header's own paper, in both themes (owner,
+  2026-09-13 "match the header"). The rail clips its own top, bottom and left
+  (`clip-path: inset(0 -3rem 0 0)`): it sits above the header (z-45), so its
+  edge shadow's blur otherwise spread up onto the header's bottom edge; only
+  the right stays open, for the shadow and the resize grip, whose pill
+  overhangs the edge. Guarded in `sidebarChrome.test.ts` and
+  `courseNavPanel.test.tsx`.
 - **Code language is one preference, picked where the code is** (owner,
   2026-09-17; spec `docs/superpowers/specs/2026-09-14-global-code-language-switch-design.md`).
   Every code surface — lesson code blocks (`CodeTabs`), viz code panels
@@ -203,7 +221,7 @@ The content is the product. Code exists to serve it.
   first. Every `tabs` fence carries exactly `python` and `typescript` (content
   test). Guarded in `codeLang.test.ts`, `codeLangMenu.test.tsx` and
   `codeLangSurfaces.test.tsx`.
-- **The landing page (`/`) has its own header and a scroll-typed story; no
+- **The landing page (`/`) has its own header and a scroll-animated story; no
   other route does.** Owner direction 2026-09-14
   (specs `docs/superpowers/specs/2026-09-14-landing-header-and-grain-design.md`,
   `2026-09-14-landing-rewrite-agentic-ai-design.md` and
@@ -223,8 +241,8 @@ The content is the product. Code exists to serve it.
   and markets the product** (owner, 2026-09-15 — an outside review found it
   told the thesis better than the product; it began as "explains rather than
   sells"). In order: a hero (kicker "DSA for the age of AI"; its headline one
-  sentence per line, `HERO.lines`, sized `lg:text-4xl xl:text-5xl` so the
-  longer line fits the text column — measured 14.675em; the owner's lede; a
+  sentence per line, `HERO.lines`, sized `lg:text-6xl xl:text-7xl` so the
+  longer line fits beside its tick; the owner's lede; a
   descriptor saying what the course is; "Start learning free" and "Explore the
   curriculum" links; a strip of the nine verbs, each linking to `#verb`; the
   manifest counts); **Understand, Build and Keep** (owner, 2026-09-17 — every
@@ -232,37 +250,22 @@ The content is the product. Code exists to serve it.
   act numbers; spec §12): Understand "See it before you solve it." (Watch ·
   Learn · Map), Build "The code is cheap now. Judgment isn't." (Code · Review
   · Optimize, the six habits folded in on one pair-sum problem), Keep "Come
-  back tomorrow." (Practice · Recall · Burn). Each is a `FeatureSection`
-  (owner, 2026-09-19; spec §14): its copy, a row of three verb tabs with the
-  selected verb's line (Burn: the owner's credits line), and the real page's
-  link under it, beside the **bare components, one visible at a time in a vertical stack**
-  (owner, 2026-09-20; it replaced a 3D ring) — no card, title, kind chip or
-  "Today" footer; each panel is named by its `label`. The selected one sits
-  in place; the ones before it are slid up and the ones after it down, faded
-  out, pointer-less and `inert`, so scrolling down lifts the current one away
-  and brings the next up from below. An opaque feathered `.ring-veil` of
-  desk paper sits behind each component (no frame): a see-through one
-  showed the blurred backdrop and read as blurred (owner, 2026-09-19 — no blur
-  on the items). Each component's box is its content's size, centred in the
-  slot (the map, the list and the coach, which have no height of their own,
-  get 34rem; tall ones cap at the stage and scroll inside). **Scrolling drives it**
-  (owner, 2026-09-20 — "show the features one by one as we scroll"; it
-  replaced an 8 s timer): from lg the section is `data-scroll-steps` screens
-  tall (`STEPPED`), its content pinned (`lg:sticky`), with one `snap-start`
-  marker per feature a screen apart; the marker crossing `<main>`'s middle
-  band is the feature in front, and past the last one the page moves on.
-  `useSectionPaging` moves one step per wheel gesture in a stepped section
-  (never native) over a travel whose duration scales with gesture speed
-  (620ms for a notch down to 260ms for a flick; spec
-  `docs/superpowers/specs/2026-09-20-landing-wheel-paging-design.md`), and
-  first lets a box under the pointer that can still scroll (cheatsheet,
-  problem list, coach thread) scroll — `scrollsInside`;
-  the map passes the wheel through (`ConceptMindMap scrollThrough`), or it
-  stranded the reader on it. A tab, arrow key or `#verb` link scrolls to its
-  feature's step. Reduced motion is read live through `useMediaQuery` (not
-  motion's cached `useReducedMotion`); the slides then jump. Below lg there are
-  no steps: one stop with a swipeable scroll-snap row given explicit flat
-  values — motion keeps the last inline style when `style` becomes undefined. The components:
+  back tomorrow." (Practice · Recall · Burn). Each is a `FeatureSection` (owner, 2026-09-23; spec
+  `docs/superpowers/specs/2026-09-23-landing-natural-scroll-3d-hero-design.md`,
+  replacing the one-at-a-time stack of 2026-09-20): a kicker with the section's
+  icon, a `MarkedHeading` whose key word is underlined by hand or swept with a
+  highlighter (`features.ts` `mark`; a two-sentence heading sets its first
+  sentence muted), and the lede, then **all three features as stacked rows** —
+  icon tile, name (`h3`), line, link — beside the real component, the text on
+  alternate sides. There are no tabs, no selected state and nothing `inert`;
+  each row carries `id={verb.id}`, so the hero's nine chips are plain anchors
+  (`scroll-mt-28` clears the sticky header). Each section takes its family's
+  colour through `familyCssVars(section.family)` on the section element (marks,
+  icons, rules only). Each component sits on a card of its own (the navy
+  instruments, the paper card round the tracer, the heatmap's own) that floats
+  in 3D: `.landing-stage` perspective, `.landing-card3d` resting at
+  `rotateX(5deg) rotateY(∓9deg)` and tilting in from below as it arrives,
+  `.landing-float` bobbing, with a soft floor shadow. The components:
   the **Arrays module's HyperFrames intro video**, the Valid Anagram tracer
   without its code panel (`<Viz code={false}>`), the real Hash Tables
   `ConceptMindMap`, the live `find_pair` editor, **the real coach panel over a
@@ -288,9 +291,13 @@ The content is the product. Code exists to serve it.
   you learn." — per module, no prices on the page; pricing is undecided), then
   learners (**placeholder social proof**, owner 2026-09-15: every stat and
   quote flagged `placeholder: true` in `PROOF` and tagged `Placeholder` on the
-  page in every build, quotes attributed to "Name Surname" — replace with real
-  data and drop the flags once there are learners) beside the four questions,
-  one open at a time. Burn's `HeatMap` is an **example year** and says
+  page in every build; the reviewers are invented placeholders with avatars
+  drawn from their names — `ReviewerAvatar`, never a photo — owner 2026-09-23;
+  replace with real learners' quotes, with consent, and drop the flags once
+  there are learners), the quotes as `TestimonialRiver`, an endless draggable
+  row with a pause button, then the four questions, one open at a time and
+  eased open and shut so the page below never jumps. The stage cards fan the
+  art of their first modules (`stageCardsWithArt`, server-only). Burn's `HeatMap` is an **example year** and says
   so — the in-app heatmap is not built yet, so the page must not imply it is
   live beyond that label — seeded (`lib/landing/heat.ts`), ending on the render
   date, its days-practised and streak numbers computed from the same counts;
@@ -309,58 +316,35 @@ The content is the product. Code exists to serve it.
   lessons, media, cheatsheet, counts) lives in `lib/landing/productData.ts`,
   imported only by the server `HomePage`: the client course nav imports
   `content.ts`, and an `fs` import reachable from it broke every route
-  (guarded in `landingFeatures.test.tsx`). The page
-  snaps section to section (`snap-y` on `<main>`, only on `/`, mandatory from
-  `lg`, where `useSectionPaging` turns one wheel gesture into one stop —
-  measured in Chrome, mandatory snapping pulled a 300px wheel scroll back to
-  the stop it left. The travel is a tween the hook runs itself, not
-  `behavior: "smooth"`, whose duration is fixed and unreadable: the pure
-  `lib/landing/wheelGesture.ts` sets it from the gesture's accumulated px/ms
-  and shortens it as the gesture continues, never re-targeting it. Snapping is
-  suspended (`scroll-snap-type: none`) for the tween's lifetime and restored
-  on landing — measured at 1440x900, with it left on Chrome reverted every one
-  of 20 frames back to the snap point, so the page moved not at all; the
-  restore also corrects the 6px and 9px gaps where stops are not a whole
-  viewport apart. A gesture is held while its momentum tail decays and
-  released by a rising delta or 120ms of silence, never by a fixed timer:
-  the old one was extended by each swallowed event, so the tail it existed to
-  outlast kept feeding it and the page froze (owner, 2026-09-20 "it feels very
-  sluggish")): scroll-scrubbed typing was tried first and replaced the same day
-  because re-rendering text and SVG on every scroll frame felt unsmooth. When
-  a section becomes active (`useActiveSection`: an IntersectionObserver on a
-  1% band across `<main>`'s middle — not a scroll listener, which never fired
-  for a page that returned already scrolled) its text types once, word by word (letter-by-letter was too busy; owner
-  2026-09-14), over a length-scaled duration
-  (`TypedText` + `useTypedText`); the `sr-only` copy is always complete; the visual layer starts
-  untyped on the server, because a hero rendered typed would flash blank on
-  hydration; a `<noscript>` rule reveals it (and every `.rise-in` card);
-  reduced motion shows it all. The page's
-  **backdrop** is `LandingBackdrop`: Aceternity UI's Background Boxes as one
-  fixed canvas behind every section, at every width (owner, 2026-09-21; it
-  replaced the evolving structures; spec
-  `docs/superpowers/specs/2026-09-21-landing-boxes-backdrop-design.md`). The
-  skew transform, the pointer-to-cell inverse and the visible range are pure in
-  `lib/landing/boxesGrid.ts`, tested against an independently composed CSS
-  matrix chain in `boxesGrid.test.ts` (the round-trip tests alone cannot fail on
-  a wrong offset). The hairline grid (a minor line, and a heavier one every fourth with the
-  "+" marks on its crossings) is painted once, to an offscreen layer, per size or
-  theme change; only the glow runs frames, so an idle page runs none. A pointer
-  sweep lights every cell it crosses (`cellsAlong`, so a fast sweep is a ribbon,
-  not dots), each rising over 120 ms and fading over 1.9 s (`flashLevel`) into a
-  pool that spills onto its eight neighbours, strongest wins and never summed
-  (`glowField`); the colour moves through the course families with the pointer's
-  travel (`rampColour`, from `flashColours()` in `productData.ts`). Every
-  claim of AA is measured in `paperContrast.test.ts` and binds on `--muted`: a
-  flash at `--boxes-flash-alpha` under any family or any mix of two (0.162 light,
-  0.274 dark is the limit; tokens 0.15, 0.25), and a hairline covering a glyph on
-  the page paper (12.7% light, 24.1% dark is the limit; major 11% and 20%, minor
-  about half). A stronger look needs a stronger `--muted`, not a weaker test.
-  The pointer is read on `window`, since content covers the layer;
-  touch and reduced motion show the still grid. The canvas is sized by a
-  `ResizeObserver`, not a window `resize`: a page-enter transform on an ancestor
-  once made the fixed layer page-tall, and nothing else fired when it settled.
-  Nothing steps it aside (`data-backdrop-off` is gone), and the
-  Understand/Build/Keep components cover it where they sit. `HomePage` stays a server component and passes
+  (guarded in `landingFeatures.test.tsx`). **The page scrolls natively** (owner, 2026-09-23: "like a
+  regular landing page scroll"; it replaced the 2026-09-20 wheel paging, the
+  snap stops and the typed headings — `useSectionPaging`, `wheelGesture`,
+  `TypedText` and the typing helpers are deleted). Motion as the page moves is
+  CSS on **view timelines** bound to `<main>` (globals.css, "Landing motion",
+  inside `@supports (animation-timeline: view())`): rows and headings rise,
+  hand-drawn marks and kicker rules draw, icons pop, `SectionDeco` line drawings
+  drift at their own speed, and the hero's floor and copy lift away as it
+  leaves. Every resting state is the finished page, so a browser without view
+  timelines, a still frame, or `prefers-reduced-motion` (which stills every
+  landing animation) shows it complete. Nothing between a moving element and
+  `<main>` may become a scroller, or its timeline goes dead: the landing column
+  is `overflow-x-clip` (the tilted cards reach past it), never `hidden`, and
+  the hero is `overflow-clip`. `useActiveSection` (an IntersectionObserver on
+  a 1% band across `<main>`'s middle) now only decides which heavy features
+  load and when the stage cards (`.rise-in`, `data-lit`) rise. The hero's art
+  is **`HeroFloor`**: a full-3D perspective floor of hairline cells with data
+  structures standing on it as solid blocks (an array, a stack, hash buckets, a
+  tree, a matrix corner), each a top and four sides in one `preserve-3d`
+  context — pure markup and CSS, rendered on the server, no canvas and no
+  script. Lit blocks take their family's `accentUi` from the family table; the
+  rest paint from `--floor-*` tokens in both themes. It is anchored to the
+  hero's foot at `--hero-floor-h` and the copy is padded by exactly that, and
+  it fades in from its top edge, so it never sits under text at any window
+  height; the nine chips and the counts sit on a solid strip along the foot.
+  The headline keeps one sentence per line, its words arriving on load, "code."
+  in the accent with a caret, "right." ringed by hand with a tick (the
+  accessible name is the plain sentences). The canvas Background Boxes backdrop
+  of 2026-09-21 (`LandingBackdrop`, `boxesGrid`, `--boxes-*`) is gone. `HomePage` stays a server component and passes
   counts, links, stage cards and the windows' data (`featureData()`) as
   props, so neither the course manifest nor the filesystem readers ship to
   the landing client. The page ends in `LandingFooter` (landing only; lesson and
@@ -371,7 +355,7 @@ The content is the product. Code exists to serve it.
   public address — empty for now because the GitHub repo is private — an
   oversized `FooterWordmark` (sized in container-query units to span its box,
   letters rise once on first view, aria-hidden, settled under reduced motion)
-  and a computed copyright year. It is the last snap stop (`snap-end`). The app
+  and a computed copyright year. The app
   `Header` shares its class sets with it through `layout/headerChrome.ts`
   (lamp size, wordmark, nav link, round control) and keeps its own `h-14`,
   which the drawer geometry above reads. The desk is its own rule below.

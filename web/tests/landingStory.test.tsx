@@ -4,113 +4,37 @@ import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { STOP } from "@/components/landing/landingClasses";
 import { LandingStory } from "@/components/landing/LandingStory";
-import { TypedText } from "@/components/landing/TypedText";
-import { pagingIntent } from "@/components/landing/useSectionPaging";
 import { activeSectionIndex } from "@/components/landing/useSectionReveal";
 import { curriculumStats } from "@/lib/landing/content";
 import { heatYear } from "@/lib/landing/heat";
 import { featureData } from "@/lib/landing/productData";
-import {
-  FAQ,
-  HERO,
-  PRICING,
-  clamp01,
-  inside,
-  segmentProgress,
-  typedLength,
-  typingDuration,
-} from "@/lib/landing/story";
+import { FAQ, HERO, PRICING, inside } from "@/lib/landing/story";
 
 const src = join(__dirname, "..", "src");
 const read = (...p: string[]) => readFileSync(join(src, ...p), "utf8");
-/** The head of the `@media ... {` block that encloses `index`, or null. */
-function enclosingMedia(css: string, index: number): string | null {
-  let depth = 0;
-  for (let i = index; i >= 0; i--) {
-    if (css[i] === "}") depth++;
-    else if (css[i] === "{") {
-      if (depth === 0) {
-        const head = css.slice(css.lastIndexOf("\n", i) + 1, i).trim();
-        if (head.startsWith("@media")) return head;
-      } else depth--;
-    }
-  }
-  return null;
-}
 
-describe("typing", () => {
-  it("types whole words: clamps, only grows, and always cuts at the end of a word", () => {
-    const text = "Agents write the code. You decide \u{1F600}ok.";
-    expect(typedLength(text, -1)).toBe(0);
-    expect(typedLength(text, 0)).toBe(0);
-    expect(typedLength(text, 2)).toBe(text.length);
-    expect(typedLength(text, 1)).toBe(text.length);
-    const seen = new Set<string>();
-    let last = 0;
-    for (let p = 0; p <= 1.0001; p += 0.005) {
-      const n = typedLength(text, p);
-      expect(n).toBeGreaterThanOrEqual(last);
-      // Never mid-word: the typed slice ends at the text's end or before a space.
-      if (n > 0 && n < text.length) expect(text[n]).toBe(" ");
-      seen.add(text.slice(0, n));
-      last = n;
-    }
-    // Every word boundary appears, one word at a time: "", "Agents", "Agents write", ...
-    const words = text.split(" ");
-    expect(seen).toEqual(new Set(["", ...words.map((_, i) => words.slice(0, i + 1).join(" "))]));
-    expect(typedLength("   ", 0.5)).toBe(3);
-  });
-
-  it("finishes each string before the next one starts", () => {
-    expect(segmentProgress([2, 3], 0)).toEqual([0, 0]);
-    expect(segmentProgress([2, 3], 0.4)).toEqual([1, 0]);
-    expect(segmentProgress([2, 3], 0.7)).toEqual([1, 0.5]);
-    expect(segmentProgress([2, 3], 1)).toEqual([1, 1]);
-  });
-
-  it("clamps progress, reading a zero-duration run as finished so its loop stops", () => {
-    expect(clamp01(-0.5)).toBe(0);
-    expect(clamp01(0.25)).toBe(0.25);
-    expect(clamp01(2)).toBe(1);
-    expect(clamp01(1 / 0)).toBe(1);
-    expect(clamp01(0 / 0)).toBe(0);
-  });
-
-  it("types long sections faster per character, within a floor and a ceiling", () => {
-    expect(typingDuration(10)).toBe(700);
-    expect(typingDuration(100)).toBe(1200);
-    expect(typingDuration(5000)).toBe(2400);
-    for (let n = 0; n < 400; n += 10) expect(typingDuration(n + 10)).toBeGreaterThanOrEqual(typingDuration(n));
-  });
-
-  it("keeps the whole text for screen readers and hides only the visual layer", () => {
-    const html = renderToStaticMarkup(<TypedText text="Hello there world" progress={0.4} />);
-    expect(html).toContain('<span class="sr-only">Hello there world</span>');
-    expect(html).toMatch(
-      /<span aria-hidden="true">Hello<span class="typed-caret"><\/span><span data-typed-rest="true" class="text-transparent"> there world<\/span><\/span>/,
-    );
-    const done = renderToStaticMarkup(<TypedText text="Hello there world" progress={1} />);
-    expect(done).not.toContain("typed-caret");
-    expect(done).not.toContain("data-typed-rest");
-  });
-
-  it("stops the caret blinking under prefers-reduced-motion", () => {
-    const css = read("app", "globals.css");
-    expect(css).toMatch(/\.typed-caret\s*\{[^}]*animation:\s*typed-caret-blink/);
-    const still = [...css.matchAll(/\.typed-caret\s*\{[^}]*animation:\s*none/g)];
-    expect(still.some((m) => enclosingMedia(css, m.index!) === "@media (prefers-reduced-motion: reduce)")).toBe(true);
-  });
-
-  it("reveals the typed layers when scripts never run", () => {
-    expect(read("components", "landing", "LandingStory.tsx")).toContain(
-      '"[data-typed-rest]{color:inherit!important}.rise-in{opacity:1!important;transform:none!important}"',
-    );
-  });
-});
-
-describe("snapping", () => {
+describe("scrolling (owner, 2026-09-23: a regular landing page scroll)", () => {
   const story = read("components", "landing", "LandingStory.tsx");
   const outro = read("components", "landing", "LandingOutro.tsx");
+  const feature = read("components", "landing", "FeatureSection.tsx");
+  const css = read("app", "globals.css");
+
+  it("leaves the wheel, the snap points and the typing to the browser", () => {
+    for (const gone of ["useSectionPaging.ts", "TypedText.tsx", "LandingBackdrop.tsx"]) {
+      expect(existsSync(join(src, "components", "landing", gone)), gone).toBe(false);
+    }
+    for (const gone of ["wheelGesture.ts", "boxesGrid.ts"]) {
+      expect(existsSync(join(src, "lib", "landing", gone)), gone).toBe(false);
+    }
+    const shell = read("components", "layout", "AppShell.tsx");
+    const main = shell.slice(shell.indexOf("<main"), shell.indexOf("</main>"));
+    expect(main).not.toMatch(/\bsnap-(y|start|mandatory|proximity)\b/);
+    expect(STOP).not.toMatch(/\bsnap-|\bmin-h-dvh\b/);
+    for (const [name, text] of [["LandingStory", story], ["LandingOutro", outro], ["FeatureSection", feature]] as const) {
+      expect(text, name).not.toMatch(/snap-start|data-scroll-steps|useTypedText|TypedText|addEventListener\("(wheel|scroll)"/);
+    }
+    expect(css).not.toMatch(/typed-caret|\.landing-boxes|--boxes-|\.ring-veil/);
+  });
 
   it("makes active the section under the viewport's middle line", () => {
     const boxes = [
@@ -124,142 +48,119 @@ describe("snapping", () => {
     expect(activeSectionIndex(boxes, 2000)).toBe(-1);
   });
 
-  it("turns one wheel gesture into one stop, and never skips part of a tall section", () => {
-    const base = { sectionTop: 0, sectionBottom: 1000, viewport: 1000 };
-    expect(pagingIntent({ ...base, deltaY: 120 })).toBe("down");
-    expect(pagingIntent({ ...base, deltaY: -3 })).toBe("up");
-    // Swallowing a gesture's momentum tail is wheelGesture's job now, and is
-    // covered in landingPaging.test.ts: pagingIntent only names the direction.
-    // A section taller than the viewport scrolls natively until its edge.
-    expect(pagingIntent({ ...base, sectionBottom: 1400, deltaY: 100 })).toBe("native");
-    expect(pagingIntent({ ...base, sectionTop: -400, sectionBottom: 1000, deltaY: 100 })).toBe("down");
-    expect(pagingIntent({ ...base, sectionTop: -400, sectionBottom: 1000, deltaY: -100 })).toBe("native");
-    expect(pagingIntent({ ...base, sectionTop: 0, sectionBottom: 1400, deltaY: -100 })).toBe("up");
-  });
-
-  it("sets the headline one sentence per line, typed line by line", () => {
-    expect(HERO.lines).toEqual(["Agents write the code.", "You decide if it's right."]);
-    expect(HERO.title).toBe(HERO.lines.join(" "));
-    const html = renderToStaticMarkup(
-      <LandingStory
-        counts={{ modules: 1, lessons: 1, problems: 1 }}
-        links={{ start: "/start", curriculum: "/curriculum" }}
-        stages={[]}
-        features={{ ...featureData(), heat: heatYear("2026-09-14") }}
-      />,
-    );
-    const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)![1]!;
-    const lines = [...h1.matchAll(/<span class="block text-balance"><span><span class="sr-only">([^<]*)<\/span>/g)].map((m) =>
-      m[1]!.replace(/&#x27;/g, "'"),
-    );
-    expect(lines).toEqual([...HERO.lines]);
-  });
-
-  it("sizes the headline so its longer line fits the column (measured: 14.675em)", () => {
-    const h1 = story.match(/<h1 className="([^"]+)"/)![1]!;
-    // lg:text-6xl (3.75rem) made the line 55rem in a 49rem column.
-    expect(h1).not.toMatch(/\btext-6xl\b/);
-    expect(h1).toMatch(/\blg:text-4xl\b/);
-    expect(h1).toMatch(/\bxl:text-5xl\b/);
-  });
-
-  it("draws the boxes once, as the page backdrop, and nothing steps it aside", () => {
-    // Aceternity's Background Boxes as one canvas replaced the evolving
-    // structures on 2026-09-21; it sits behind the whole page, at every width.
-    expect(story).not.toContain("LandingBackdrop");
-    const home = read("components", "landing", "HomePage.tsx");
-    expect(home).toContain("<LandingBackdrop colours={flashColours()} />");
-    const backdrop = read("components", "landing", "LandingBackdrop.tsx");
-    // Fixed behind the desk's paper, inert and hidden from assistive tech.
-    expect(backdrop).toMatch(
-      /<canvas[^>]*aria-hidden[^>]*className="landing-boxes pointer-events-none fixed inset-0 -z-1 /,
-    );
-    // Colour goes through tokens, and the app's animation library is `motion`.
-    expect(backdrop).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
-    expect(backdrop).not.toContain("framer-motion");
-    // The pointer is read on window (content covers the layer); touch and
-    // reduced motion keep the grid still.
-    expect(backdrop).toContain('window.addEventListener("pointermove", onMove)');
-    expect(backdrop).toContain('e.pointerType === "touch"');
-    expect(backdrop).toContain("prefers-reduced-motion: reduce");
-    // Sized by observing the canvas: a page-enter transform on an ancestor once
-    // left the backing store as tall as the page, and no window resize fixed it.
-    expect(backdrop).toContain("new ResizeObserver(resize)");
-    expect(backdrop).not.toContain('addEventListener("resize"');
-    // A sweep lights the cells it crosses (no dotted trail), as a pool of light,
-    // in a colour that moves through the families with the pointer's travel.
-    expect(backdrop).toContain("cellsAlong(inverse,");
-    expect(backdrop).toContain("glowField(flashes.values(), now)");
-    expect(backdrop).toContain("rampColour(colours, travel");
-    // The line colours and the flash alpha are read once per repaint, not per frame.
-    expect(backdrop).toMatch(/const repaint = \(\) => \{[\s\S]*?getPropertyValue\("--boxes-flash-alpha"\)[\s\S]*?\};/);
-    expect(backdrop.slice(backdrop.indexOf("const draw ="), backdrop.indexOf("const repaint ="))).not.toContain("getComputedStyle");
-    // Frames run only while a flash is live, so an idle page runs none.
-    expect(backdrop).toMatch(/if \(flashes\.size > 0\) frame = requestAnimationFrame\(draw\)/);
-    // It watches nothing of the page: no scroll, no sections, no observer.
-    expect(backdrop).not.toContain("IntersectionObserver");
-    expect(backdrop).not.toContain("data-scroll-section");
-    expect(backdrop).not.toMatch(/addEventListener\("scroll"/);
-    // The stops that used to ask it to step aside no longer do.
-    for (const file of ["LandingOutro.tsx", "LandingFooter.tsx", "LandingStory.tsx", "FeatureSection.tsx"]) {
-      expect(read("components", "landing", file), file).not.toContain("data-backdrop-off");
-    }
-    const css = read("app", "globals.css");
-    expect(css).not.toContain("landing-backdrop");
-    expect(css).not.toContain("backdrop-sway");
-    expect(css).toMatch(/\.landing-boxes \{\s*color: var\(--boxes-line\);/);
-  });
-
-  it("pages the wheel on the landing story", () => {
-    expect(story).toMatch(/useSectionPaging\(\);/);
-  });
-
-  it("snaps only the landing page, mandatory from lg", () => {
-    const shell = read("components", "layout", "AppShell.tsx");
-    const main = shell.slice(shell.indexOf("<main"), shell.indexOf("</main>"));
-    expect(main).toContain('landing && "snap-y snap-proximity lg:snap-mandatory"');
-    // One desk wrapper for every route; only on / is it a snap stop.
-    expect(main).toMatch(
-      /"relative isolate",\s*fillMain \? "flex min-h-0 flex-1 flex-col" : "min-h-full",\s*landing && "snap-start",/,
-    );
-  });
-
-  it("makes every section after the hero a full-height stop, but not the hero", () => {
-    const hero = story.match(/<section\s+data-scroll-section\s+className="([^"]+)"/)?.[1] ?? "";
-    expect(hero).toMatch(/\bmin-h-\[calc\(100dvh-6rem\)\]/);
-    expect(hero).not.toMatch(/\bsnap-start\b/);
-    expect(STOP).toMatch(/\bsnap-start\b/);
-    expect(STOP).toMatch(/\bmin-h-dvh\b/);
-    // What's inside; Understand, Build and Keep are FeatureSections, each one stop.
-    expect(story.match(/<section data-scroll-section className=\{STOP\}\s*\/?>/g)).toHaveLength(1);
-    expect(story.match(/data-scroll-section/g)).toHaveLength(2);
-    expect(story).toContain("useActiveSection<HTMLDivElement>(5)");
-    const feature = read("components", "landing", "FeatureSection.tsx");
-    expect(feature.match(/data-scroll-section/g)).toHaveLength(1);
-    // A stop below lg; from lg one screen per feature (owner, 2026-09-20).
-    expect(feature).toMatch(/data-scroll-section\s+data-scroll-steps=\{count\}\s+id=\{section\.id\}[\s\S]*?className=\{cn\(STOP, STEPPED\)\}/);
-    // Pricing, learners and questions: one slide since 2026-09-19.
-    expect(outro.match(/<section data-scroll-section className=\{STOP\}>/g)).toHaveLength(1);
-  });
-
-  it("finds the active section by observing the middle band, not by listening for scroll", () => {
-    // A page that returns already scrolled fires no scroll event; an observer
-    // still reports where the page is.
+  it("finds the arrived sections by observing the middle band, not by listening for scroll", () => {
+    // Which sections have arrived only decides what loads and when the stage
+    // cards rise; a page that returns already scrolled fires no scroll event.
     const hook = read("components", "landing", "useSectionReveal.ts");
     expect(hook).toMatch(/new IntersectionObserver\(/);
     expect(hook).toMatch(/rootMargin: MIDDLE_BAND/);
     expect(hook).toMatch(/root: document\.querySelector\("main"\)/);
-    expect(hook).not.toMatch(/addEventListener\("scroll"/);
+    expect(hook).not.toMatch(/addEventListener\("scroll"|requestAnimationFrame/);
+    expect(story).toContain("useActiveSection<HTMLDivElement>(5)");
   });
 
-  it("animates on arrival, not on scroll position", () => {
-    for (const [name, text] of [["LandingStory", story], ["LandingOutro", outro]] as const) {
-      expect(text, name).toMatch(/useActiveSection/);
-      expect(text, name).toMatch(/useTypedText/);
-      expect(text, name).toMatch(/ref=\{root\}/);
-      expect(text, name).not.toMatch(/useScrollProgress|sectionProgress|ref=\{refs\[/);
+  it("pops cards and text in once as they arrive, timed rather than scrubbed by the scroll", () => {
+    // Owner, 2026-09-23: "the animations of the cards should pop, no scroll fade in".
+    const hook = read("components", "landing", "usePopIn.ts");
+    expect(hook).toMatch(/new IntersectionObserver\(/);
+    expect(hook).toContain('dataset.pop = "armed"');
+    expect(hook).toContain('dataset.pop = "in"');
+    expect(hook).toContain("observer.unobserve(entry.target)");
+    // Only what is below the fold is armed, and reduced motion arms nothing.
+    expect(hook).toMatch(/getBoundingClientRect\(\)\.top > fold/);
+    expect(hook).toContain("prefers-reduced-motion: reduce");
+    expect(story).toMatch(/usePopIn\(\);/);
+    expect(feature).toMatch(/className=\{cn\("landing-stage landing-pop /);
+    expect(css).toMatch(/\[data-pop="in"\] \{\s*animation: landing-pop /);
+    expect(css).toMatch(/\.landing-stage\[data-pop="in"\] \{\s*animation-name: landing-pop-card;/);
+    // Nothing pops or fades on a scroll timeline.
+    const supports = css.slice(css.indexOf("@supports (animation-timeline: view())"));
+    const block = supports.slice(0, supports.indexOf("\n}\n") + 2);
+    expect(block).not.toMatch(/landing-card3d|landing-pop|landing-reveal|landing-hero-copy/);
+    for (const cls of [".landing-mark > svg path", ".landing-hl::before", ".landing-deco", ".landing-hero-floor"]) {
+      expect(block, cls).toContain(cls);
     }
-    expect(existsSync(join(src, "components", "landing", "useScrollProgress.ts"))).toBe(false);
+    // Outside it the cards rest tilted and floating.
+    const rest = css.slice(0, css.indexOf("@supports (animation-timeline: view())"));
+    expect(rest).toMatch(/\.landing-card3d \{\s*transform: rotateX\(5deg\) rotateY\(-9deg\);/);
+  });
+
+  it("stills every landing animation under prefers-reduced-motion", () => {
+    const reduced = css.slice(css.lastIndexOf("@media (prefers-reduced-motion: reduce) {\n  .hero-floor-drift"));
+    const block = reduced.slice(0, reduced.indexOf("}\n}") + 3);
+    for (const cls of [".hero-floor-drift", ".hero-block", ".hero-word", ".landing-float", '[data-pop="in"]', ".landing-deco", ".landing-hero-floor"]) {
+      expect(block, cls).toContain(cls);
+    }
+    expect(block).toContain("animation: none;");
+  });
+
+  it("gives each section one data-scroll-section, and every feature a row of its own", () => {
+    expect(story.match(/data-scroll-section/g)).toHaveLength(2);
+    expect(feature.match(/data-scroll-section/g)).toHaveLength(1);
+    expect(outro.match(/data-scroll-section/g)).toHaveLength(1);
+    expect(feature).toMatch(/id=\{verb\.id\}/);
+    expect(feature).not.toMatch(/role="tab(list|panel)?"|inert=/);
+  });
+});
+
+describe("hero (owner, 2026-09-23: full 3D, never behind the copy)", () => {
+  const story = read("components", "landing", "LandingStory.tsx");
+  const floor = read("components", "landing", "HeroFloor.tsx");
+  const css = read("app", "globals.css");
+  const html = renderToStaticMarkup(
+    <LandingStory
+      counts={{ modules: 1, lessons: 1, problems: 1 }}
+      links={{ start: "/start", curriculum: "/curriculum" }}
+      stages={[]}
+      features={{ ...featureData(), heat: heatYear("2026-09-14") }}
+    />,
+  );
+
+  it("names the headline in plain sentences, one per line, and hides the animated words", () => {
+    expect(HERO.lines).toEqual(["Agents write the code.", "You decide if it's right."]);
+    const h1 = html.match(/<h1([^>]*)>([\s\S]*?)<\/h1>/)!;
+    expect(h1[1]).toContain(`aria-label="${HERO.title.replace("'", "&#x27;")}"`);
+    const lines = [...h1[2]!.matchAll(/<span aria-hidden="true" class="block">([\s\S]*?)<\/span>(?=<span aria-hidden="true" class="block">|$)/g)];
+    expect(lines).toHaveLength(2);
+    const text = (fragment: string) => fragment.replace(/<svg[\s\S]*?<\/svg>/g, "").replace(/<[^>]+>/g, "").replace(/&#x27;/g, "'");
+    expect(lines.map((m) => text(m[1]!).replace(/\s+/g, " ").trim())).toEqual([...HERO.lines]);
+  });
+
+  it("stands the data structures on a 3D floor, drawn as solid blocks in one preserve-3d context", () => {
+    expect(story).toContain("<HeroFloor />");
+    expect(floor).toMatch(/aria-hidden className="landing-hero-floor absolute inset-0"/);
+    const blocks = html.match(/class="hero-block"/g) ?? [];
+    expect(blocks.length).toBeGreaterThanOrEqual(12);
+    // Every block has its top and four sides.
+    expect(html.match(/<span class="t"><\/span>/g)).toHaveLength(blocks.length);
+    expect(css).toMatch(/\.hero-floor-camera \{[^}]*transform-style: preserve-3d;[^}]*transform: rotateX\(\d+deg\) rotateZ\(-?\d+deg\);/);
+    // Colour through tokens: the floor's own, or a family accent from the family table.
+    expect(floor).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+    expect(floor).toContain("getFamilyTheme(block.family).accentUi");
+    for (const token of ["--floor-line", "--floor-line-major", "--floor-block", "--floor-edge", "--floor-shade"]) {
+      expect(css.match(new RegExp(`${token}:`, "g")) ?? [], token).toHaveLength(2);
+    }
+  });
+
+  it("keeps the floor below the copy at every window height, fading in from its top edge", () => {
+    expect(css).toMatch(/\.hero-floor \{[^}]*inset: auto 0 0;\s*height: var\(--hero-floor-h\);/);
+    // Its top band is fully clear, and the copy is padded by the floor's height
+    // less exactly that band, so nothing the floor draws is behind the copy.
+    expect(css).toMatch(/mask-image: linear-gradient\(to bottom, transparent 0, transparent var\(--hero-floor-fade\),/);
+    expect(story).toMatch(/landing-hero-copy [^"]*\bpb-\[calc\(var\(--hero-floor-h\)-var\(--hero-floor-fade\)\)\]/);
+    // Its content's height, not the viewport's: forced full-screen it left a
+    // band of empty paper between the buttons and the floor.
+    expect(story).not.toMatch(/min-h-\[calc\(100dvh/);
+    // The copy and the verb strip sit above it; the strip is solid paper.
+    expect(story).toMatch(/className="landing-hero-copy relative z-10 /);
+    expect(story).toMatch(/absolute inset-x-0 bottom-0 z-20 [^"]*\bbg-background\b/);
+  });
+
+  it("links each of the nine verbs to its own row", () => {
+    for (const verb of ["watch", "learn", "map", "code", "review", "optimize", "practice", "recall", "burn"]) {
+      expect(html, verb).toContain(`href="#${verb}"`);
+      expect(html, verb).toContain(`id="${verb}"`);
+    }
   });
 });
 
@@ -314,13 +215,17 @@ describe("landing page", () => {
     "ProductShowcase",
     // The section clips gave way to the page backdrop (2026-09-19).
     "SectionClip",
+    // The canvas backdrop, the wheel paging and the typing gave way to the
+    // hero's 3D floor and a native scroll (2026-09-23).
+    "LandingBackdrop",
+    "TypedText",
+    "useSectionPaging",
   ];
 
-  it("is built from the backdrop, story, outro and footer, with server data from content, heat and productData", () => {
+  it("is built from the story, outro and footer, with server data from content, heat and productData", () => {
     const imports = [...home.matchAll(/from "([^"]+)"/g)].map((m) => m[1]);
     expect(imports.sort()).toEqual(
       [
-        "@/components/landing/LandingBackdrop",
         "@/components/landing/LandingFooter",
         "@/components/landing/LandingOutro",
         "@/components/landing/LandingStory",

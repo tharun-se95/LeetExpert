@@ -6,7 +6,7 @@ import { LandingStory } from "@/components/landing/LandingStory";
 import { MODULES, STAGES } from "@/lib/course/manifest";
 import { curriculumStats, stageCards } from "@/lib/landing/content";
 import { heatYear } from "@/lib/landing/heat";
-import { featureData } from "@/lib/landing/productData";
+import { featureData, stageCardsWithArt } from "@/lib/landing/productData";
 import { RISE_STAGGER_MS, stageMeta } from "@/lib/landing/story";
 
 const src = join(__dirname, "..", "src");
@@ -51,10 +51,13 @@ describe("what's inside: stage cards", () => {
     for (const card of cards) expect(card.href).toBe(`/courses/dsa#stage-${card.number}`);
   });
 
-  it("keeps the section's first line clear of the sticky header when it outgrows the screen", () => {
+  it("is a section of its own height, with no snap offset left over", () => {
+    // It used to snap with its top under the sticky header, so its kicker
+    // carried a mt-8 to clear it; the page scrolls natively now (2026-09-23).
     const story = read("components", "landing", "LandingStory.tsx");
     const inside = story.slice(story.indexOf("function Inside("));
-    expect(inside).toMatch(/<p className=\{cn\(KICKER, "mt-8"\)\}>\{chapter\.kicker\}<\/p>/);
+    expect(inside).toMatch(/id="inside"/);
+    expect(inside).not.toMatch(/"mt-8"/);
   });
 
   it("pluralises the counts", () => {
@@ -80,10 +83,33 @@ describe("what's inside: stage cards", () => {
       expect(link).toContain(stageMeta(card));
     }
     // Stage cards are the story's only list items that rise in.
-    expect(html.match(/<li class="rise-in"/g)).toHaveLength(cards.length);
+    expect(html.match(/<li class="rise-in[ "]/g)).toHaveLength(cards.length);
     expect(html).toContain(`transition-delay:${RISE_STAGGER_MS}ms`);
     // Not lit on the server: the cards rise in when the section arrives.
     expect(html).not.toMatch(/<ol[^>]*data-lit/);
+  });
+
+  it("fans each stage's module art on its card, as decoration, from the server-only reader", () => {
+    const withArt = stageCardsWithArt();
+    expect(withArt.map((c) => c.number)).toEqual(cards.map((c) => c.number));
+    for (const card of withArt) {
+      expect(card.art?.length ?? 0, `stage ${card.number} art`).toBeGreaterThan(0);
+      expect(card.art!.length).toBeLessThanOrEqual(3);
+    }
+    const html = renderToStaticMarkup(
+      <LandingStory
+        counts={{ modules: 1, lessons: 1, problems: 1 }}
+        links={{ start: "/start", curriculum: "/curriculum" }}
+        stages={withArt}
+        features={{ ...featureData(), heat: heatYear("2026-09-14") }}
+      />,
+    );
+    const tiles = withArt.reduce((n, c) => n + c.art!.length, 0);
+    expect(html.match(/class="stage-tile /g)).toHaveLength(tiles);
+    // Decorative: every still is alt="" inside an aria-hidden field.
+    expect(html.match(/<div aria-hidden="true" class="stage-art /g)).toHaveLength(withArt.length);
+    // The art is found on disk, so the client-reachable content.ts must not read it.
+    expect(read("lib", "landing", "content.ts")).not.toContain("getModuleArt");
   });
 
   it("rises in on arrival, and is already in place under reduced motion or without scripts", () => {

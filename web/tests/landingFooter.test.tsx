@@ -70,7 +70,7 @@ describe("landing footer", () => {
     expect(wordmark).toContain(WORDMARK_NOSCRIPT);
   });
 
-  it("is the page's last snap stop", () => {
-    expect(html).toMatch(/<footer\b[^>]*\sclass="snap-end\b/);
+  it("ends the page with no snap stop left over (the page scrolls natively, 2026-09-23)", () => {
+    expect(html).not.toMatch(/\bsnap-/);
   });
 });

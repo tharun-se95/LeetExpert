@@ -7,9 +7,6 @@ import { CourseNavTree } from "@/components/layout/CourseNavTree";
 
 interface SidebarProps {
   open: boolean;
-  onPointerEnter?: () => void;
-  onPointerLeave?: () => void;
-  onFocusCapture?: () => void;
   onClose: () => void;
 }
 
@@ -26,19 +23,16 @@ function clampWidth(px: number): number {
  * Desktop Lessons drawer (≥ lg): a full panel when open, zero-width when not.
  * Mobile uses {@link MobileLessonsSheet} from the header instead.
  *
- * The opener floats at the viewport's bottom-left (FloatingLessonsButton)
- * rather than living in a collapsed rail. A problem page already has the
+ * Open by default; the opener floats at the viewport's bottom-left
+ * (FloatingLessonsButton) rather than living in a collapsed rail, and only
+ * shows once the drawer is closed. A problem page already has the
  * description, the editor, and the coach competing for horizontal space, so a
  * drawer nobody has open should cost none of it. Closing lives in the nav's
- * own pinned header row (CourseNavPanel), which this passes onClose to.
+ * own pinned header row (CourseNavPanel), which this passes onClose to — the
+ * drawer's only ways to close are that button and Escape (AppShell), never a
+ * pointer leaving it.
  */
-export function Sidebar({
-  open,
-  onClose,
-  onPointerEnter,
-  onPointerLeave,
-  onFocusCapture,
-}: SidebarProps) {
+export function Sidebar({ open, onClose }: SidebarProps) {
   // Always starts at the default so the client's first render matches the
   // server's — reading localStorage during init would hydrate a width the
   // server never rendered. The persisted width is applied right after
@@ -104,9 +98,6 @@ export function Sidebar({
 
   return (
     <aside
-      onPointerEnter={onPointerEnter}
-      onPointerLeave={onPointerLeave}
-      onFocusCapture={onFocusCapture}
       id="lessons-sidebar"
       // Stays mounted so the width transition has something to collapse, and
       // inert while closed so the clipped tree leaves the tab order with it.
