@@ -99,7 +99,7 @@ function Providers({ next, failedBefore }: { next: string; failedBefore: boolean
           aria-disabled={busy}
           aria-busy={starting === id}
           onClick={() => void start(id)}
-          className="inline-flex h-11 w-full items-center justify-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated px-4 text-sm font-medium transition hover:bg-surface aria-disabled:cursor-not-allowed aria-disabled:opacity-60 aria-disabled:hover:bg-elevated"
+          className="inline-flex h-11 w-full items-center justify-center gap-3 rounded-full border border-border bg-elevated px-4 text-sm font-medium transition hover:bg-surface aria-disabled:cursor-not-allowed aria-disabled:opacity-60 aria-disabled:hover:bg-elevated"
         >
           {/* Monochrome marks: the lamp stays the only non-steel colour in chrome. */}
           <Icon aria-hidden className="h-5 w-5" />

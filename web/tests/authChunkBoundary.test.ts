@@ -133,3 +133,19 @@ describe("who may import the auth client at all", () => {
     expect(importers.filter((f) => !ALLOWED.has(f))).toEqual([]);
   });
 });
+
+describe("the sign-in page's story", () => {
+  // SignInButtons is the route's one client module that needs the auth client;
+  // the animation and the benefit list must stay light, so the closure is checked.
+  const { files, packages } = closure(["app/sign-in/SignInStory.tsx"]);
+  const rel = [...files].map((f) => f.slice(SRC.length + 1));
+
+  it("finds the graph it is meant to walk", () => {
+    expect(rel).toEqual(expect.arrayContaining(["app/sign-in/SignInStory.tsx", "components/landing/HeroFloor.tsx"]));
+  });
+
+  it("never reaches the auth client or its package", () => {
+    expect(rel).not.toContain("lib/auth/client.ts");
+    expect([...packages].filter((p) => p.startsWith("better-auth"))).toEqual([]);
+  });
+});
