@@ -234,10 +234,15 @@ The content is the product. Code exists to serve it.
   `shadow-edge-bottom` once content scrolls under it — `scrolled` comes from an
   IntersectionObserver on a sentinel at the page top (not a scroll listener),
   and its height is the same either way so nothing jumps; content in a centred
-  `max-w-landing` column (`--container-landing: 88rem`, owner request) with
+  `max-w-landing` column (`--container-landing: var(--landing-max)`, 88rem,
+  widening to 100rem from a 110rem viewport — owner review 2026-09-24; the
+  `@theme` is inline, so a literal would be baked into the utility) with
   `px-6 md:px-16` gutters shared by header and page so they keep one edge.
   Its nav stays Space Grotesk (16px, ink) — the reference's display-face nav
-  was declined to keep the three-faces rule. **The page explains the thesis
+  was declined to keep the three-faces rule. The wordmark shows from a 360px
+  viewport (owner review 2026-09-24; measured to fit beside the nav there with
+  the tighter phone gaps) and is sr-only below it, never removed — the lamp is
+  aria-hidden, so it is the home link's name. **The page explains the thesis
   and markets the product** (owner, 2026-09-15 — an outside review found it
   told the thesis better than the product; it began as "explains rather than
   sells"). In order: a hero (kicker "DSA for the age of AI"; its headline one
@@ -258,7 +263,8 @@ The content is the product. Code exists to serve it.
   highlighter (`features.ts` `mark`; a two-sentence heading sets its first
   sentence muted), and the lede, then **all three features as stacked rows** —
   icon tile, name (`h3`), line, link — beside the real component, the text on
-  alternate sides. There are no tabs, no selected state and nothing `inert`;
+  alternate sides, the component taking two thirds of the row (`1fr:2fr`,
+  owner review 2026-09-24; row titles `text-2xl md:text-3xl`). There are no tabs, no selected state and nothing `inert`;
   each row carries `id={verb.id}`, so a `#verb` link is a plain anchor
   (`scroll-mt-28` clears the sticky header). Each section takes its family's
   colour through `familyCssVars(section.family)` on the section element (marks,
@@ -273,15 +279,22 @@ The content is the product. Code exists to serve it.
   and scroll their own list. The components:
   the **Arrays module's HyperFrames intro video**, the Valid Anagram tracer
   without its code panel (`<Viz code={false}>`), the real Hash Tables
-  `ConceptMindMap`, the live `find_pair` editor, **the real coach panel over a
+  `ConceptMindMap` (`layout="auto"`: an indented outline sized from its
+  canvas below 560px, else the column tree at text-sm fitted at no more than
+  1:1 — fitted to a phone the tree drew 6px labels), the live `find_pair` editor, **the real coach panel over a
   scripted thread** (`ReviewCoach`: `ScriptedCoachProvider` + `CoachPanel
   variant="showcase"`, composer locked with `lockedReason`, no AI calls —
   every visitor would otherwise be a paid request; the thread is computed by
   `reviewThread()`), `BigOObservatory` alone, the real problem list through
   `useProblemFilters` (shared with the practice page), a Hash Tables
   cheatsheet excerpt read whole, without a scroller (`CheatsheetPreview`:
-  the real sheet's first cues, targets, two patterns and a trap through the
-  lesson sheet's own parts, with the full sheet's counts in its footer) and the example-year `HeatMap` without its card. Heavy ones are
+  the real sheet's first three cues, targets, two patterns and a trap through
+  the lesson sheet's own parts, with the full sheet's counts in its footer; a
+  narrow card drops the targets and the second pattern) and the example-year
+  `HeatMap` without its card. Text is never drawn inside a scaled SVG in these
+  windows: the heat map's and the Big-O plot's labels are HTML beside them
+  (they drew at 5-8px), and the heat map fits the whole year without a
+  sideways scroller. Heavy ones are
   `next/dynamic` chunks rendered once their section is active or next. The
   tracer's fullscreen view portals to `<body>`: a transformed slot
   trapped its `fixed inset-0` in the slot. The `#verb` effect is keyed on the

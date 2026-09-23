@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import {
   Background,
   BackgroundVariant,
@@ -34,6 +34,12 @@ interface ConceptMindMapProps {
    * zoom buttons still work.
    */
   scrollThrough?: boolean;
+  /**
+   * "auto" lays the tree out as an indented outline when the canvas is too
+   * narrow for columns, so its text stays readable instead of zooming out to
+   * fit (the landing: ~6px labels on a phone). "tree" always uses columns.
+   */
+  layout?: "tree" | "auto";
 }
 
 const SIZES = {
@@ -57,6 +63,8 @@ type Dims = {
   circleR: number;
   text: "text-xs" | "text-sm" | "text-base";
   viewport: number;
+  /** The root font size over 16px: the per-character estimates assume 16px. */
+  charScale?: number;
 };
 
 const nodeTypes = { concept: ConceptMapNode };
@@ -82,7 +90,7 @@ const CONTROLS_VARS = {
  */
 function estimateNodeWidth(label: string, dims: Dims, hasBadge: boolean): number {
   const perChar =
-    dims.text === "text-base" ? 7.9 : dims.text === "text-sm" ? 6.9 : 6.2;
+    (dims.text === "text-base" ? 7.9 : dims.text === "text-sm" ? 6.9 : 6.2) * (dims.charScale ?? 1);
   const padding = 24;
   const badge = hasBadge ? 30 : 0;
   return Math.min(dims.nodeWidth, Math.ceil(label.length * perChar) + padding + badge);
@@ -91,12 +99,28 @@ function estimateNodeWidth(label: string, dims: Dims, hasBadge: boolean): number
 /** Breathing room between a column's widest card and the next column. */
 const COLUMN_GAP = 56;
 
-function layoutTree(
+/** Outline mode: how far each level steps in, and the canvas width below which "auto" picks it. */
+export const OUTLINE_INDENT = 28;
+const OUTLINE_BELOW = 560;
+const OUTLINE_ROW = 46;
+/** What a second line of label adds to an outline row (text-base leading). */
+const OUTLINE_LINE = 22;
+const AUTO_TREE_ROW = 60;
+const AUTO_TREE_NODE = 320;
+const TREE_FIT = { padding: 0.2 };
+const AUTO_FIT = { padding: 0.08, maxZoom: 1 };
+
+type Mode = "tree" | "outline";
+
+/** Exported for tests. */
+export function layoutTree(
   root: MindMapNode,
   expanded: Set<string>,
   dims: Dims,
   onToggle: (id: string) => void,
+  mode: Mode = "tree",
 ): { nodes: Node<ConceptMapNodeData>[]; edges: Edge[] } {
+  if (mode === "outline") return layoutOutline(root, expanded, dims, onToggle);
   const nodes: Node<ConceptMapNodeData>[] = [];
   const edges: Edge[] = [];
   let row = 0;
@@ -144,6 +168,7 @@ function layoutTree(
           id: `${node.id}->${child.id}`,
           source: node.id,
           target: child.id,
+          sourceHandle: "right",
           type: "default",
           animated: false,
           style: { stroke: "var(--accent)", strokeOpacity: 0.85, strokeWidth: 2 },
@@ -179,17 +204,120 @@ function layoutTree(
   return { nodes, edges };
 }
 
+/**
+ * The same tree as an indented outline: every visible node on its own row in
+ * reading order, each level stepped in, joined by elbows from under its
+ * parent. One column wide, so a narrow canvas can show it at full size.
+ */
+function layoutOutline(
+  root: MindMapNode,
+  expanded: Set<string>,
+  dims: Dims,
+  onToggle: (id: string) => void,
+): { nodes: Node<ConceptMapNodeData>[]; edges: Edge[] } {
+  const nodes: Node<ConceptMapNodeData>[] = [];
+  const edges: Edge[] = [];
+  // Rows are as tall as their card, not all sized for the tallest: a label
+  // that wraps gets a second line's height, the rest stay one line apart, so
+  // the outline fits a phone's canvas at 1:1.
+  let y = 0;
+  const visit = (node: MindMapNode, depth: number) => {
+    const hasChildren = Boolean(node.children && node.children.length > 0);
+    const isExpanded = hasChildren && expanded.has(node.id);
+    const maxWidth = dims.nodeWidth - depth * OUTLINE_INDENT;
+    const wraps = estimateNodeWidth(node.label, { ...dims, nodeWidth: Infinity }, hasChildren && !isExpanded) > maxWidth;
+    nodes.push({
+      id: node.id,
+      type: "concept",
+      position: { x: depth * OUTLINE_INDENT, y },
+      draggable: false,
+      connectable: false,
+      selectable: false,
+      style: { transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)" },
+      data: {
+        label: node.label,
+        isRoot: depth === 0,
+        isLeaf: !hasChildren,
+        isExpanded,
+        childCount: node.children?.length ?? 0,
+        maxWidth,
+        textSize: dims.text,
+        circleSize: dims.circleR * 2,
+        onToggle: () => onToggle(node.id),
+      },
+    });
+    y += dims.rowHeight + (wraps ? OUTLINE_LINE : 0);
+    if (!isExpanded) return;
+    for (const child of node.children!) {
+      edges.push({
+        id: `${node.id}->${child.id}`,
+        source: node.id,
+        sourceHandle: "down",
+        target: child.id,
+        type: "smoothstep",
+        animated: false,
+        style: { stroke: "var(--accent)", strokeOpacity: 0.85, strokeWidth: 2 },
+      });
+      visit(child, depth + 1);
+    }
+  };
+  visit(root, 0);
+  return { nodes, edges };
+}
+
 /** Approximate rendered node height — up to 2 lines of wrapped label, `min-h-9` floor. */
 const NODE_HEIGHT = 56;
 
-function ConceptMindMapInner({ root, label, size = "md", fill = false, scrollThrough = false }: ConceptMindMapProps) {
+function ConceptMindMapInner({
+  root,
+  label,
+  size = "md",
+  fill = false,
+  scrollThrough = false,
+  layout = "tree",
+}: ConceptMindMapProps) {
+  // The canvas's own width decides the layout in "auto": the landing puts this
+  // map in boxes from ~335px (a phone) to ~800px wide.
+  const frame = useRef<HTMLDivElement>(null);
+  const [canvasWidth, setCanvasWidth] = useState(0);
+  // The root is 13-16px by viewport (globals.css); the outline's wrap estimate
+  // has to know which, or a phone's 13px labels were spaced as if they wrapped.
+  const [charScale, setCharScale] = useState(1);
+  useEffect(() => {
+    if (layout !== "auto" || !frame.current) return;
+    setCharScale(parseFloat(getComputedStyle(document.documentElement).fontSize) / 16 || 1);
+    const el = frame.current;
+    const observer = new ResizeObserver(() => setCanvasWidth(el.clientWidth));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [layout]);
+  const mode: Mode = layout === "auto" && canvasWidth > 0 && canvasWidth < OUTLINE_BELOW ? "outline" : "tree";
+
   // nodeWidth is a CAP, not a width: each card hugs its own label (see
   // ConceptMapNode) and only wraps when the text would exceed this. Keeping the
   // cap at the preset stops a long label from running into the next column,
-  // whose x is still depth * colWidth.
-  const dims: Dims = SIZES[size];
+  // whose x is still depth * colWidth. In the outline it is the canvas's own
+  // width, less the toggle's lane and a margin, so the outline fits at 1:1.
+  // "auto" (the landing) reads at text-sm and fits at no more than 1:1 in
+  // either mode: the md preset's text-xs, zoomed out to fit, drew at 10px.
+  // Its columns get a cap wide enough for the longest label on one line and
+  // rows as tight as one-line cards allow, so the tree fits without zooming out.
+  const dims: Dims = useMemo(() => {
+    if (layout !== "auto") return SIZES[size];
+    if (mode === "outline") {
+      return {
+        ...SIZES[size],
+        text: "text-base",
+        rowHeight: OUTLINE_ROW,
+        nodeWidth: Math.max(160, canvasWidth - SIZES[size].circleR * 2 - 6 - 40),
+        charScale,
+      };
+    }
+    return { ...SIZES[size], text: "text-sm", rowHeight: AUTO_TREE_ROW, nodeWidth: AUTO_TREE_NODE };
+  }, [layout, mode, size, canvasWidth, charScale]);
+  const fitOptions = layout === "auto" ? AUTO_FIT : TREE_FIT;
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set([root.id]));
-  const { fitBounds } = useReactFlow();
+  const { fitBounds, fitView } = useReactFlow();
 
   const toggle = useCallback(
     (id: string) => {
@@ -201,7 +329,7 @@ function ConceptMindMapInner({ root, label, size = "md", fill = false, scrollThr
         // Focus the toggled node and whatever is now visible beneath it —
         // not the whole tree — so expanding a deep branch doesn't zoom out
         // to fit unrelated siblings.
-        const { nodes: nextNodes } = layoutTree(root, next, dims, () => {});
+        const { nodes: nextNodes } = layoutTree(root, next, dims, () => {}, mode);
         const nodeBoxWidth = dims.nodeWidth + dims.circleR * 2;
         const targets = nextNodes.filter(
           (n) => n.id === id || n.id.startsWith(`${id}-`),
@@ -239,16 +367,25 @@ function ConceptMindMapInner({ root, label, size = "md", fill = false, scrollThr
         return next;
       });
     },
-    [fitBounds, root, dims],
+    [fitBounds, root, dims, mode],
   );
 
   const { nodes, edges } = useMemo(
-    () => layoutTree(root, expanded, dims, toggle),
-    [root, expanded, dims, toggle],
+    () => layoutTree(root, expanded, dims, toggle, mode),
+    [root, expanded, dims, toggle, mode],
   );
+
+  // fitView on the canvas only runs at mount; a layout switch (a resize across
+  // OUTLINE_BELOW, or the first measurement) has to refit. The outline fits at
+  // no more than 1:1 ("auto"), so its text is never blown up past its own size.
+  useEffect(() => {
+    const id = window.setTimeout(() => fitView(fitOptions), 20);
+    return () => window.clearTimeout(id);
+  }, [mode, dims, fitView, fitOptions]);
 
   return (
     <div
+      ref={frame}
       // A flex child, NOT h-full: the parent's height comes from flex, so its
       // *specified* height is auto and a percentage child resolves to 0.
       className={fill ? "min-h-0 flex-1 overflow-hidden" : "overflow-hidden"}
@@ -269,7 +406,7 @@ function ConceptMindMapInner({ root, label, size = "md", fill = false, scrollThr
         edges={edges}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={fitOptions}
         minZoom={0.4}
         maxZoom={2.2}
         nodesDraggable={false}
@@ -280,11 +417,15 @@ function ConceptMindMapInner({ root, label, size = "md", fill = false, scrollThr
         preventScrolling={!scrollThrough}
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} className="opacity-40" />
-        <Controls
-          showInteractive={false}
-          className="!rounded-[length:var(--radius-md)] !border !border-border !bg-elevated !shadow-none overflow-hidden"
-          style={CONTROLS_VARS}
-        />
+        {/* The outline fits at 1:1 and has nothing to zoom to; its controls
+            sat on the outline's rail. */}
+        {mode === "tree" ? (
+          <Controls
+            showInteractive={false}
+            className="!rounded-[length:var(--radius-md)] !border !border-border !bg-elevated !shadow-none overflow-hidden"
+            style={CONTROLS_VARS}
+          />
+        ) : null}
       </ReactFlow>
     </div>
   );

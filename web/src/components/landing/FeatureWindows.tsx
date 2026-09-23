@@ -91,7 +91,7 @@ export function featureWindows(
           className="dark navy-card flex h-full min-h-0 flex-col"
           style={data.map.family ? familyCssVars(data.map.family) : undefined}
         >
-          <ConceptMindMap root={data.map.root} label={`${data.map.moduleTitle} concept map`} fill scrollThrough />
+          <ConceptMindMap root={data.map.root} label={`${data.map.moduleTitle} concept map`} fill scrollThrough layout="auto" />
         </div>
       ) : (
         <Standin label="Concept map" />

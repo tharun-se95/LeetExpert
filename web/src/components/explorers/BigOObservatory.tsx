@@ -177,9 +177,22 @@ export function BigOObservatory() {
 
       <div className="relative z-[1] grid gap-5 lg:grid-cols-[1fr_220px]">
         <div className="rounded-[length:var(--radius-lg)] border border-border bg-surface p-3">
+          {/*
+            The plot scales with its width, and its height follows (h-auto): a
+            fixed 300px box left the scaled drawing floating in empty space.
+            The axis names are HTML over it, at a real 11px: drawn inside the
+            SVG they scaled down with the plot, to 5-6px on a narrow stage.
+          */}
+          <div className="relative">
+          <span aria-hidden className="pointer-events-none absolute top-0 left-0 text-[11px] leading-none text-muted">
+            ops
+          </span>
+          <span aria-hidden className="pointer-events-none absolute bottom-0 left-[7%] text-[11px] leading-none text-muted">
+            n →
+          </span>
           <svg
             viewBox={`0 0 ${W} ${H}`}
-            className="h-[240px] w-full sm:h-[300px]"
+            className="block h-auto w-full"
             role="img"
             aria-label="Growth curves for common Big O classes"
           >
@@ -218,20 +231,6 @@ export function BigOObservatory() {
               className="text-border"
               strokeWidth={1.25}
             />
-            <text
-              x={PAD.l}
-              y={H - 10}
-              className="fill-[var(--muted)] text-[11px]"
-            >
-              n →
-            </text>
-            <text
-              x={8}
-              y={PAD.t + 10}
-              className="fill-[var(--muted)] text-[11px]"
-            >
-              ops
-            </text>
 
             {paths.map((c) =>
               enabled[c.key] ? (
@@ -264,6 +263,7 @@ export function BigOObservatory() {
               opacity={0.7}
             />
           </svg>
+          </div>
 
           <label className="mt-2 flex flex-col gap-1 px-1">
             <span className="flex justify-between text-xs text-muted">
@@ -299,7 +299,8 @@ export function BigOObservatory() {
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted">
               Curves
             </p>
-            <ul className="space-y-1.5">
+            {/* Two across while the column sits under the plot, one down beside it. */}
+            <ul className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-1">
               {CURVES.map((c) => (
                 <li key={c.key}>
                   <button

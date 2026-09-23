@@ -95,17 +95,19 @@ export function FeatureSection({
               id={verb.id}
               data-flip={flip || undefined}
               className={cn(
-                // The component takes a little over half the row: wider, and a
-                // 16:9 video or a tall instrument dwarfed its line of text.
+                // The component takes two thirds of the row (owner, 2026-09-24:
+                // at 7:5 the real app screens read small beside the headings);
+                // the text column needs no more than its three lines.
                 "grid scroll-mt-28 items-center gap-8 lg:gap-14",
-                flip ? "lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]" : "lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]",
+                flip ? "lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]" : "lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]",
               )}
             >
               <div className={cn("landing-pop min-w-0 max-w-md", flip && "lg:order-2")}>
                 <span className="landing-icon flex h-12 w-12 items-center justify-center rounded-[length:var(--radius-md)]">
                   <VerbIcon weight="bold" className="h-6 w-6 text-accent" aria-hidden />
                 </span>
-                <h3 className="mt-5 font-display text-3xl font-bold tracking-tight">{verb.title}</h3>
+                {/* 2xl below md: at 3xl it sat 24px under the section's 29px heading on a phone. */}
+                <h3 className="mt-5 font-display text-2xl font-bold tracking-tight md:text-3xl">{verb.title}</h3>
                 <p className="mt-3 text-lg leading-relaxed text-foreground">{verb.line}</p>
                 {content.note ? <p className="mt-2 font-display font-bold text-foreground">{content.note}</p> : null}
                 {content.link ? (

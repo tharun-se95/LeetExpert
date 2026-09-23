@@ -485,8 +485,10 @@
 
   /* Landing page column (max-w-landing): one step wider than the reference's
      max-w-7xl, by owner request. One token because header, hero, stat row,
-     sections and the sticky bar must share an edge. */
-  --container-landing: 88rem;
+     sections and the sticky bar must share an edge. Read through
+     --landing-max: this @theme is inline, so a literal here is baked into
+     max-w-landing and no media query could widen it. */
+  --container-landing: var(--landing-max);
 
   --font-display: var(--font-display);
   --font-sans: var(--font-sans-face);
@@ -495,6 +497,20 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* The landing column (max-w-landing). Very wide screens (owner, 2026-09-24):
+   at 1920 the 88rem column left 320px of empty paper each side and the demos
+   stayed ~720px wide. Header, sections and footer all read this one variable,
+   so they widen together. A media query's rem is the initial 16px, whatever
+   the root size. */
+:root {
+  --landing-max: 88rem;
+}
+@media (width >= 110rem) {
+  :root {
+    --landing-max: 100rem;
+  }
 }
 
 /*

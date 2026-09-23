@@ -6,7 +6,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { FeatureSection, type WindowContent } from "@/components/landing/FeatureSection";
 import { featureWindows, type FeatureWindowData } from "@/components/landing/FeatureWindows";
 import { CheatsheetPreview, PREVIEW } from "@/components/landing/CheatsheetPreview";
+import { HeatMap } from "@/components/landing/HeatMap";
 import { LandingOutro } from "@/components/landing/LandingOutro";
+import { OUTLINE_INDENT, layoutTree } from "@/components/course/ConceptMindMap";
 import { LandingStory } from "@/components/landing/LandingStory";
 import { parseSandboxSpec } from "@/components/sandbox/parseSpec";
 import { CHEATSHEETS } from "@/lib/course/cheatsheets/registry";
@@ -250,7 +252,7 @@ describe("Build: the worked problem", () => {
 
   it("lets the wheel scroll past the concept map instead of zooming it (owner, 2026-09-20)", () => {
     // A map that took the wheel would stop the page scrolling while the pointer is over it.
-    expect(read("components", "landing", "FeatureWindows.tsx")).toContain("fill scrollThrough />");
+    expect(read("components", "landing", "FeatureWindows.tsx")).toContain('fill scrollThrough layout="auto" />');
     const map = read("components", "course", "ConceptMindMap.tsx");
     expect(map).toContain("zoomOnScroll={!scrollThrough}");
     expect(map).toContain("preventScrolling={!scrollThrough}");
@@ -387,6 +389,54 @@ describe("Keep: the cheatsheet excerpt (owner, 2026-09-24: no scroll)", () => {
     const rows = Math.min(PREVIEW.complexity, sheet.complexity.length);
     expect(html.match(/class="sr-only">time</g)).toHaveLength(rows);
     expect(html.match(/class="sr-only">space</g)).toHaveLength(rows);
+  });
+});
+
+describe("scale on the landing (owner, 2026-09-24 review)", () => {
+  const root = getConceptMap(MAP_MODULE)!;
+
+  it("lays a narrow map out as an outline: one node per row, each level stepped in, elbows from below", () => {
+    const expanded = new Set([root.id]);
+    const dims = { colWidth: 340, nodeWidth: 300, rowHeight: 56, circleR: 11, text: "text-sm" as const, viewport: 380 };
+    const { nodes, edges } = layoutTree(root, expanded, dims, () => {}, "outline");
+    expect(nodes).toHaveLength(1 + root.children!.length);
+    const ys = nodes.map((n) => n.position.y);
+    expect(new Set(ys).size, "every node on its own row").toBe(nodes.length);
+    // Rows run down in reading order, one card's height apart, more only where a label wraps.
+    const gaps = ys.slice(1).map((y, i) => y - ys[i]!);
+    expect(Math.min(...gaps)).toBeGreaterThanOrEqual(dims.rowHeight);
+    expect(nodes.find((n) => n.id === root.id)!.position).toEqual({ x: 0, y: 0 });
+    for (const child of root.children!) {
+      expect(nodes.find((n) => n.id === child.id)!.position.x).toBe(OUTLINE_INDENT);
+    }
+    expect(edges.every((e) => e.sourceHandle === "down" && e.type === "smoothstep")).toBe(true);
+    // The column layout names its handle too: with two source handles on a
+    // node, an edge that names neither attaches to whichever comes first.
+    const tree = layoutTree(root, expanded, dims, () => {}, "tree");
+    expect(tree.edges.every((e) => e.sourceHandle === "right")).toBe(true);
+  });
+
+  it("draws the heat map's and the Big-O plot's labels as HTML, not inside the scaled SVG", () => {
+    const heat = renderToStaticMarkup(<HeatMap year={heatYear("2026-09-14")} lit />);
+    const svg = heat.match(/<svg[\s\S]*?<\/svg>/)![0];
+    expect(svg).not.toContain("<text");
+    expect(heat).toContain(">Mon<");
+    expect(heat, "no sideways scroller or forced width").not.toMatch(/overflow-x-auto|min-w-\[/);
+    const bigO = read("components", "explorers", "BigOObservatory.tsx");
+    const plot = bigO.slice(bigO.indexOf("<svg"), bigO.indexOf("</svg>"));
+    expect(plot).not.toContain("<text");
+    expect(plot, "height follows width").toContain('className="block h-auto w-full"');
+  });
+
+  it("gives each demo two thirds of its row, and widens the column on very wide screens", () => {
+    const section = read("components", "landing", "FeatureSection.tsx");
+    expect(section).toContain("lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]");
+    expect(section).toContain("lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]");
+    expect(section).toMatch(/<h3 className="[^"]*\btext-2xl\b[^"]*\bmd:text-3xl\b/);
+    const css = read("app", "globals.css");
+    // Through a variable: the @theme is inline, so a literal would be baked into max-w-landing.
+    expect(css).toMatch(/--container-landing: var\(--landing-max\);/);
+    expect(css).toMatch(/@media \(width >= 110rem\) \{\s*:root \{\s*--landing-max: 100rem;/);
   });
 });
 

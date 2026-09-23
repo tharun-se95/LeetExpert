@@ -72,11 +72,14 @@ describe("LandingHeader", () => {
     expect(button!.props.onClick).toBe(onOpenSearch);
   });
 
-  it("keeps a link name at every width — the wordmark is sr-only below sm, never removed", () => {
+  it("shows the wordmark on phones from 360px, sr-only below that, never removed", () => {
+    // Owner, 2026-09-24: a phone visit never saw the name. It is visible from
+    // 360px (measured to fit beside the nav there) and stays the link's
+    // accessible name below, since the lamp is aria-hidden.
     const home = html.match(/<a[^>]*href="\/"[^>]*>[\s\S]*?<\/a>/)![0];
     expect(home).toContain("leet");
-    expect(home).toMatch(/max-sm:sr-only/);
-    expect(home).not.toMatch(/max-sm:hidden/);
+    expect(home).toMatch(/max-\[360px\]:sr-only/);
+    expect(home).not.toMatch(/max-sm:sr-only|:hidden/);
   });
 
   it("renders the theme toggle round even before it mounts", () => {
