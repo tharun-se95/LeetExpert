@@ -3,6 +3,7 @@ import { JetBrains_Mono, Space_Grotesk, Space_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import { LAMP_BOOT_SCRIPT } from "@/components/brand/lampBoot";
+import { isAuthConfigured } from "@/lib/auth/env";
 import { CODE_LANG_CSS, CODE_LANG_INIT_SCRIPT } from "@/lib/codeLangScript";
 import { SITE_ORIGIN } from "@/lib/seo/site";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -112,7 +113,7 @@ export default function RootLayout({
         <JsonLd data={organizationLd()} />
         <JsonLd data={websiteLd()} />
         <ThemeProvider>
-          <AppShell>{children}</AppShell>
+          <AppShell authEnabled={isAuthConfigured()}>{children}</AppShell>
         </ThemeProvider>
         {/*
          * Both are cookieless and collect no personal data, so they need no

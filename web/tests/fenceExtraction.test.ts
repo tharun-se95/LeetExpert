@@ -59,6 +59,9 @@ describe("lifting a fence out of a lesson", () => {
     expect(extractQuizFence(tail).body).toBe("Before\n");
   });
 
+  // It reads and highlights every lesson in the course: ~2s alone, and past
+  // vitest's 5s default when the full suite shares the CPU (seen at 5.96s, and
+  // failing intermittently since 2026-09-21), so it gets an explicit budget.
   it("changes no remaining fence in any lesson", () => {
     const offenders: string[] = [];
     for (const file of markdownFiles(COURSE_ROOT)) {
@@ -79,5 +82,5 @@ describe("lifting a fence out of a lesson", () => {
       }
     }
     expect(offenders).toEqual([]);
-  });
+  }, 30_000);
 });

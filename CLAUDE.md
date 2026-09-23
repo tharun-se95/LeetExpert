@@ -474,6 +474,75 @@ The content is the product. Code exists to serve it.
 - Registry-addressed content (`viz`, `diagram`, `sandbox` ids) must be
   validated by tests — a string id typo must fail CI, not render an error
   card in production.
+- **Accounts are optional and progress is local-first** (spec
+  `docs/superpowers/specs/2026-09-18-accounts-and-progress-sync-design.md`).
+  Signed out, the app is exactly the localStorage app. What every page ships
+  for accounts is three plain client components (`AccountControl`,
+  `AccountRuntime`, `SyncHint`), each rendering a `next/dynamic` chunk through
+  `authChunk`, and the `SyncBridge` context, which holds no runtime until
+  someone signs in. Everything that needs the session sits behind them in
+  chunks fetched only when `authEnabled` is true: the auth client, the account
+  menu and its dialogs (`SessionControl`, with `Dialog`, `signOutDevice`,
+  `localStore` and `sandboxIds.generated.json`), `SessionSync` and
+  `SignedOutLine`; the sync runtime (`SyncProvider`) is a further chunk that
+  `SessionSync` loads only once a session exists. With auth on, every visitor
+  fetches the auth client and control chunks after hydration (something has
+  to ask who is signed in) but only a signed-in one fetches the runtime.
+  Measured 2026-09-19 on a build with no auth variables: none of that is in
+  the initial `<script>` list of a lesson page, whose shared JS fell from
+  1,825,183 to 1,771,480 B raw (531,154 to 511,917 B gzip). That is more than
+  the auth client's own chunk (33.5 KB raw, 12.2 KB gzip) because the menu,
+  dialogs and sign-out code left the shared chunks too and the rest was
+  repacked. A chunk that fails to load (offline, an ad blocker, a deploy that
+  removed its hash) degrades to no control and no sync, never an error page:
+  React.lazy throws a rejected import during render and the app has no error
+  boundary, so `authChunk` catches it, and every auth loader must go through
+  it. `tests/authChunkBoundary.test.ts` checks the static imports of the
+  three components, the root layout and both headers (no auth client or
+  session module), that only the sign-in page and the lazily loaded session
+  modules import the client at all, and that the three loaders use
+  `authChunk`; `authChunkFailure*.test.tsx` reject each chunk and check the
+  page still renders. The built HTML is the final check. Not deferred: the
+  116 problem pages still carry `useDraftSync` and `merge.ts` (about 3.6 KB
+  minified, 1.6 KB gzip, with the `localStore` code the sandbox needs anyway)
+  because `Sandbox` imports the hook statically; without a runtime it does
+  nothing.
+  Sign-in is on only when all seven variables in
+  `web/.env.example` are set, and `authEnabled` is read while pages are
+  prerendered, so changing them needs a rebuild. Pages never read the
+  session on the server — a lesson that turns dynamic is a defect; compare
+  the `next build` route table against the previous one. The API takes the
+  user id only from the session, read with the cookie cache disabled so
+  revocation stops writes at once. Marks are an insert-only set; drafts carry
+  a server `rev`, and on a conflict the client stashes the losing copy rather
+  than overwriting or discarding it. **A draft is judged against its slot's
+  `syncedAt`, never against the queue alone**: an edit typed before the runtime
+  registered is not queued, and the hook's note of it dies with the component,
+  so a draft stamped after the sync point is a local change wherever it came
+  from — reading the queue alone called it clean and let a moved server replace
+  it unstashed. For the same reason a `displaced` stash (what "Use that
+  version" set aside, the only copy of it left) is never overwritten by a
+  409's server copy, which is still on the server. Every tab of an account
+  shares one `sync:v1:<user>` key, so the queue **merges over what is stored
+  rather than writing its whole record**, speaking only for the slots and marks
+  it has touched; `reset()` is the one write-through, because a sign-out must
+  clear the other tabs' entries too. Sign-out clears every synced key,
+  including the legacy `dsa-course-*` keys, or the migration revives them.
+  Only visited, solved and problem-sandbox drafts sync; adding a kind means
+  a merge rule and tests first. Merge rules live in the pure
+  `lib/progress/merge.ts`; SQL guarantees are tested on PGlite with the real
+  migrations. Browser tests sign in through `POST /api/test-login`, which
+  answers only outside a production build and with `AUTH_TEST_LOGIN=1`, and
+  is a 404 otherwise; `e2e/test-login-prod.e2e.mjs` checks that against a
+  real `next build` with the auth variables set (without them the route is a
+  404 whatever `NODE_ENV` does, so the check could not fail).
+  Guarded in the `progressMerge`, `progressStore`, `progressApi`,
+  `syncQueue`, `signInFlow`, `progressLocalStore` and `testLogin` tests, and
+  by `e2e/sync.e2e.mjs`, which needs a Neon development database. That
+  script has NOT yet been run against a real Neon database or real OAuth: it
+  passed (11 of 11, twice) only against a local Neon-compatible HTTP emulator
+  over in-memory PGlite, and neither it nor `e2e/test-login-prod.e2e.mjs`
+  runs in any CI.
 - Accessibility is not optional: real `aria-label`s on diagrams, visible
   focus states, keyboard paths for every interaction, and `prefers-reduced-
   motion` honoured.
@@ -499,6 +568,7 @@ The content is the product. Code exists to serve it.
 | `video/` | Remotion video subproject (see `video/HANDOFF.md`) — legacy; new video work goes to `hyperframes/` |
 | `docs/superpowers/specs/` | Design specs; write one before large work |
 | `web/tests/` | Content validation — runs in CI before build |
+| `web/drizzle/` | Generated Postgres migrations (drizzle-kit); applied by `npm run db:migrate` as a deploy step, never at request time |
 | `hyperframes/` | HyperFrames visual system: seek-safe DSA primitives and explainer videos; one source for lesson art, social stills and video (see its README) |
 | `marketing/` | Instagram post packages; `LEDGER.md` is the append-only record the social-artist agent reads before and appends to after each post |
 | `seo/` | SEO strategy, keywords, technical audit and changelog |

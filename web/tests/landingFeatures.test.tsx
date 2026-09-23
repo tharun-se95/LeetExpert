@@ -341,7 +341,9 @@ describe("feature data", () => {
     for (const gone of ["public/landing/map-light.png", "public/landing/practice-dark.png", "scripts/capture-landing-shots.mjs"])
       expect(existsSync(join(web, gone)), gone).toBe(false);
     expect(read("app", "globals.css")).not.toContain("landing-shot");
-    expect(readFileSync(join(web, "package.json"), "utf8")).not.toContain("playwright-core");
+    // playwright-core itself is fine: it came back for the sync work's
+    // two-device browser checks. What must not return is the landing capture
+    // script that once used it, checked just above.
   });
 
   it("renames the heatmap Burn, labels it an example, and lights it when Keep is near", () => {
