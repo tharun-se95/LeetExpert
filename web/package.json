@@ -74,6 +74,7 @@
     "playwright-core": "^1.63.0",
     "sharp": "0.34.5",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^4.1.10"
   }
