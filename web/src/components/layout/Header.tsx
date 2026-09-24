@@ -12,6 +12,7 @@ import {
   NAV_LINK_ACTIVE,
   ROUND_CONTROL,
   WORDMARK,
+  THEME_TOGGLE,
 } from "@/components/layout/headerChrome";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
@@ -185,7 +186,7 @@ export function Header({
           ) : null}
         </div>
 
-        <ThemeToggle className="h-11 w-11 rounded-full md:h-10 md:w-10" />
+        <ThemeToggle className={THEME_TOGGLE} />
         <AccountControl />
       </div>
     </header>

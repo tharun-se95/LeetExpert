@@ -101,7 +101,10 @@ export function MobileLessonsSheet({
             // sits exactly on the viewport edge — a border or shadow there
             // renders off-screen and is permanently invisible. Confirmed:
             // panel.getBoundingClientRect().right === window.innerWidth.
-            className="absolute inset-0 flex flex-col bg-background before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-accent"
+            // No accent strip down the left edge either (owner, 2026-09-24): in
+            // the dark theme --accent is a light steel, so it read as a stray
+            // white line beside the nav.
+            className="absolute inset-0 flex flex-col bg-background"
             initial={reduceMotion ? false : { x: "-100%" }}
             animate={{ x: 0 }}
             exit={reduceMotion ? undefined : { x: "-100%" }}
@@ -124,7 +127,10 @@ export function MobileLessonsSheet({
                 <X className="h-5 w-5" weight="bold" />
               </button>
             </div>
-            <CourseNavTree compact={false} className="px-4 py-5" />
+            {/* px-6, not px-4: the back row's caret hangs 16px into this gutter
+                (CourseNavPanel), and px-4 is 13px at the phone's 13px root, so
+                it poked 3px past the screen's edge. */}
+            <CourseNavTree compact={false} className="px-6 py-5" />
           </motion.div>
         </div>
       ) : null}
