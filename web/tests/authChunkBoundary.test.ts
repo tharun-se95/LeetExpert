@@ -11,7 +11,13 @@ import { describe, expect, it } from "vitest";
 // is the final word (the initial <script> list of a prerendered page).
 
 const SRC = join(__dirname, "..", "src");
-const SHELLS = ["components/auth/AccountControl.tsx", "components/auth/AccountRuntime.tsx", "components/auth/SyncHint.tsx"];
+const SHELLS = [
+  "components/auth/AccountControl.tsx",
+  "components/auth/AccountRuntime.tsx",
+  "components/auth/SyncHint.tsx",
+  // The once-per-visit sign-in prompt's gate (spec 2026-09-24-sign-in-prompt-design.md).
+  "components/auth/SignInPromptGate.tsx",
+];
 // Everything that renders on every page: the shells' parents and the root
 // layout. A static import from any of them (say, a header reaching for
 // authClient) would bring the auth client back just as surely.
@@ -89,6 +95,7 @@ describe("what the always-loaded auth components pull in statically", () => {
       ["components/auth/AccountControl.tsx", "SessionControl"],
       ["components/auth/AccountRuntime.tsx", "SessionSync"],
       ["components/auth/SyncHint.tsx", "SignedOutLine"],
+      ["components/auth/SignInPromptGate.tsx", "SignInPrompt"],
     ] as const) {
       const source = readFileSync(join(SRC, file), "utf8");
       expect(source, file).toMatch(new RegExp(`authChunk\\(\\(\\) => import\\("@/components/auth/${target}"\\)`));
@@ -108,6 +115,7 @@ describe("who may import the auth client at all", () => {
     "components/auth/SessionControl.tsx",
     "components/auth/SessionSync.tsx",
     "components/auth/SignedOutLine.tsx",
+    "components/auth/SignInPrompt.tsx",
     "lib/auth/endSession.ts",
     "lib/auth/client.ts",
   ]);

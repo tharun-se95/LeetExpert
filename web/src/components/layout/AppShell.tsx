@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AccountRuntime } from "@/components/auth/AccountRuntime";
+import { SignInPromptGate } from "@/components/auth/SignInPromptGate";
 import { Header } from "@/components/layout/Header";
 import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
 import { LandingHeader } from "@/components/landing/LandingHeader";
@@ -241,6 +242,8 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
       <>
         <VisitTracker />
         <AccountRuntime />
+        {/* Once per visit, never on the landing page or /sign-in itself. */}
+        <SignInPromptGate allowed={!landing && !isSignInPath(pathname)} />
         <ScrollbarAutoHide />
         <SidebarProvider open={sidebarOpen} toggle={toggleSidebar}>
           <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
