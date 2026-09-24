@@ -58,9 +58,17 @@ light-mode learner never sees the OS theme flash.
 
 ## Status
 
-Four lessons, a prototype. No sandbox of its own (the workspace's editor is beside it), no progress hook,
-and the page's colours are copied in at build time. The Diameter lesson still carries its own tree
-painter and predict widget beside the kit's.
+Five lessons, a prototype: four problem lessons and one concept lesson, `build-a-linked-list`. No sandbox
+of its own (the workspace's editor is beside it), no progress hook, and the page's colours are copied in at
+build time. The Diameter lesson still carries its own tree painter and predict widget beside the kit's.
+
+- **Code colour** comes from the app's own Shiki setup: `build.py` runs `highlight.ts` (through
+  `web/node_modules/.bin/tsx`, from `web/`) over every code file and embeds the result as `HL`, beside the
+  raw `CODE` strings the tests compare. The build fails if any file comes back uncoloured.
+- **Concept lessons** have no sandbox cases, so `build-a-linked-list/check.py` holds its shown code to the
+  same standard: `code/solution.{py,ts}` must match a plain list on 403 random operation sequences with the
+  list's invariants intact, and `code/mistake.*` must lose data in both runtimes. It is not in CI while the
+  pages are parked; run it after changing that lesson's code.
 
 ## Re-enabling
 

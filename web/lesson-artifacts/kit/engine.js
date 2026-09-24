@@ -8,6 +8,8 @@ function h2r(h){h=h.trim();if(h[0]==='#'){if(h.length===4)h='#'+h[1]+h[1]+h[2]+h
 var mixc=function(a,b,p){return [Math.round(a[0]+(b[0]-a[0])*p),Math.round(a[1]+(b[1]-a[1])*p),Math.round(a[2]+(b[2]-a[2])*p)];};
 var rgb=function(a){return 'rgb('+a[0]+','+a[1]+','+a[2]+')';};
 var fmt=function(n){return n.toLocaleString('en-US');};
+/* a count with its unit: counters animate through 1, where "1 hops" would show */
+var count=function(n,one,many){return fmt(n)+' '+(n===1?one:many);};
 function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
 function icon(id){return '<svg class="i" aria-hidden="true"><use href="#'+id+'"/></svg>';}
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
@@ -21,13 +23,17 @@ function run(from,to,dur,onUpdate,onDone){
   return {stop:function(){dead=true;cancelAnimationFrame(id);}};
 }
 
-/* palette from the page's CSS tokens: light and dark both come from the app */
+/* palette from the page's CSS tokens: light and dark both come from the app.
+   Read inside a .navy probe, not from :root: every painted board sits on a navy
+   instrument card, whose inks differ from the paper's in the light theme. */
 var KINDS=['idle','cur','acc','done','bad','warn','dim','viol','win'];
 var PAL={},EDGE={};
 function readPal(){
-  var cs=getComputedStyle(document.documentElement);
+  var probe=document.createElement('div');probe.className='navy';probe.hidden=true;document.body.appendChild(probe);
+  var cs=getComputedStyle(probe);
   KINDS.forEach(function(k){PAL[k]={f:h2r(cs.getPropertyValue('--k-'+k)),i:h2r(cs.getPropertyValue('--k-'+k+'-ink'))};});
   EDGE.idle=h2r(cs.getPropertyValue('--e-idle'));EDGE.path=h2r(cs.getPropertyValue('--e-path'));EDGE.cur=h2r(cs.getPropertyValue('--e-cur'));
+  probe.remove();
 }
 function styleOf(c){var P=PAL[c.k]||PAL.idle;return {f:P.f,i:P.i};}
 

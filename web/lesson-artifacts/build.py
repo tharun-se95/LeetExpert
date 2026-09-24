@@ -12,7 +12,7 @@ A lesson folder holds:
     python3 web/lesson-artifacts/build.py <module>/<slug>      one lesson
     python3 web/lesson-artifacts/build.py                      all of them
 """
-import json, os, sys
+import re, json, os, subprocess, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.join(ROOT, "kit")
@@ -23,6 +23,26 @@ import shared
 def read(*p):
     with open(os.path.join(*p), encoding="utf-8") as f:
         return f.read()
+
+
+def highlight(bundle):
+    """{source: coloured html} for every code file, from the app's own Shiki setup (highlight.ts)."""
+    jobs = {}
+    for pair in bundle.values():
+        jobs[pair["py"]] = "python"
+        jobs[pair["ts"]] = "typescript"
+    if not jobs:
+        return {}
+    web = os.path.normpath(os.path.join(ROOT, ".."))
+    res = subprocess.run([os.path.join(web, "node_modules", ".bin", "tsx"), os.path.join(ROOT, "highlight.ts")],
+                         input=json.dumps(jobs), capture_output=True, text=True, cwd=web)
+    if res.returncode:
+        raise SystemExit("highlighting failed:\n" + res.stderr)
+    out = json.loads(res.stdout)
+    missing = [lang for src, lang in jobs.items() if src not in out]
+    if missing:
+        raise SystemExit(f"highlighting left {len(missing)} file(s) uncoloured ({', '.join(sorted(set(missing)))})")
+    return out
 
 
 def code_bundle(folder):
@@ -45,20 +65,43 @@ SHELL_TOP = '''<svg width="0" height="0" style="position:absolute" aria-hidden="
 '''
 
 
+# Every lesson has the same seven sections; each heading and contents link wears its icon.
+# An id missing here fails the build rather than rendering a heading without one.
+SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-warn", "insight": "i-s-insight",
+                 "solution": "i-s-solution", "variants": "i-s-variants", "quiz": "i-s-quiz",
+                 # concept lessons
+                 "node": "i-box", "build": "i-stack", "walk": "i-route", "cost": "i-s-cost", "next": "i-s-variants"}
+
+
+def _icon(sec):
+    return f'<svg class="i" aria-hidden="true"><use href="#{SECTION_ICONS[sec]}"/></svg>'
+
+
+def decorate(body):
+    body = re.sub(r'<section class="sec" id="([a-z]+)"><h2>(.*?)</h2>',
+                  lambda m: f'<section class="sec" id="{m[1]}"><h2><span class="sec-ic">{_icon(m[1])}</span><span>{m[2]}</span></h2>', body)
+    nav = re.search(r'<nav class="toc".*?</nav>', body, re.S)
+    toc = re.sub(r'<a href="#([a-z]+)">', lambda m: f'<a href="#{m[1]}">{_icon(m[1])}', nav[0])
+    return body[:nav.start()] + toc + body[nav.end():]
+
+
 def build(module, slug, family, title):
     folder = os.path.join(ROOT, slug)
-    L, D = shared.tokens(family)
-    css = shared.BASE_CSS.replace("@@L@@", L).replace("@@D@@", D) + read(KIT, "kit.css")
+    L, D, N = shared.tokens(family)
+    css = shared.BASE_CSS.replace("@@L@@", L).replace("@@D@@", D).replace("@@N@@", N) + read(KIT, "kit.css")
     extra = os.path.join(folder, "extra.css")
     if os.path.exists(extra):
         css += read(extra)
-    body = read(folder, "body.html")
+    body = decorate(read(folder, "body.html"))
+    code = code_bundle(folder)
     js = "\n".join([
         "(function(){\n'use strict';",
         read(KIT, "engine.js"),
         read(KIT, "trees.js"),
         read(KIT, "kit.js"),
-        "var CODE=" + json.dumps(code_bundle(folder)) + ";",
+        "var CODE=" + json.dumps(code) + ";",
+        # coloured copies keyed by the exact source, so codeBlock can find them from CODE's strings
+        "var HL=" + json.dumps(highlight(code)) + ";",
         read(folder, "lesson.js"),
         "wirePage();",
         "})();",
@@ -86,6 +129,7 @@ LESSONS = [
     ("sliding-window", "longest-substring-without-repeating", "pointer-movement", "Longest Substring Without Repeating Characters"),
     ("dynamic-programming", "coin-change", "state-transition", "Coin Change"),
     ("graphs", "course-schedule", "relationships", "Course Schedule"),
+    ("linked-lists", "build-a-linked-list", "pointer-movement", "Build a Linked List From Scratch"),
 ]
 
 if __name__ == "__main__":

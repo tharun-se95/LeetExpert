@@ -1,9 +1,9 @@
 <div class="wrap"><section class="hero2"><div class="hero-copy"><div class="kick">Longest Substring Without Repeating Characters · Sliding Window module · problem lesson</div>
 <h1 id="h1">How long can traffic run before one server is hit twice?</h1>
 <p class="lede">A load balancer hands each request to one of a few backends. Watch a stretch of that traffic and ask how long it can go on before some backend gets a second request. That longest clean stretch is the longest substring without repeating characters, and finding it needs one idea: never look at the same request twice.</p>
-<div class="chips"><span>needs <b>a set</b></span><span>shape <b>expand, then shrink</b></span><span>cost <b>O(n)</b> time</span></div></div>
-<div class="hero-art"><svg id="heroStream" viewBox="0 0 560 300" role="img" aria-label="Animation: a window slides across a stream of requests, each labelled with the backend that handled it. It widens while every backend is new and shrinks from the left the moment a backend repeats."></svg>
-<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> in a row</div><div id="heroCap"></div></div></div></section></div>
+<div class="chips"><span>needs <b>a set</b></span><span>shape <b>expand, then shrink</b></span><span>time <b>O(n)</b></span></div></div>
+<div class="hero-stage"><div class="hero-art navy"><svg id="heroStream" viewBox="0 0 560 300" role="img" aria-label="Animation: a window slides across a stream of requests, each labelled with the backend that handled it. It widens while every backend is new and shrinks from the left the moment a backend repeats."></svg>
+<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> in a row</div><div id="heroCap"></div></div></div></div></section></div>
 <div class="wrap page">
 <nav class="toc" aria-label="Lesson sections"><div class="kick">On this page</div>
 <a href="#problem">Problem</a><a href="#attempt">Attempt it first</a><a href="#trap">The restart trap</a><a href="#insight">The insight</a><a href="#solution">Solution</a><a href="#variants">Variants</a><a href="#quiz">Check yourself</a></nav>
@@ -14,14 +14,14 @@
 <div class="ex"><div><span>s = "abcabcbb"</span><em>→ 3 ("abc")</em></div><div><span>s = "bbbbb"</span><em>→ 1 ("b")</em></div><div><span>s = "pwwkew"</span><em>→ 3 ("wke", and note "pwke" is not a substring)</em></div></div>
 <div class="callout constraint"><div class="cl"><svg class="i"><use href="#i-warn"/></svg>Constraint</div><p>0 ≤ n ≤ 5·10⁴ characters: letters, digits, symbols and spaces.</p></div>
 <p>Read the string as a log of requests: each character is the backend that served one request, in order. A stretch is clean when no backend appears in it twice, which is what a well-spread burst of traffic looks like. The question is how long the longest clean stretch is. You are choosing two things, where the stretch starts and where it ends, and that is the whole difficulty: there are far too many pairs to try naively.</p>
-<div class="widget" id="explore"><div class="wl">Explore: pick a stretch and see whether it is clean</div><div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 best">Show a longest clean stretch</button><button type="button" class="btn2 clear">Clear</button></div></div>
+<div class="widget navy" id="explore"><div class="wl">Explore: pick a stretch and see whether it is clean</div><div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 best">Show a longest clean stretch</button><button type="button" class="btn2 clear">Clear</button></div></div>
 </section>
 
 <section class="sec" id="attempt"><h2>Attempt it first</h2><div class="banner" data-b="attempt"></div>
 <p>This is the "longest window that stays valid" shape from the dynamic-window lesson, and it is the mirror image of Minimum Size Subarray Sum, which looked for the shortest one. Two questions decide everything, so settle them before opening anything.</p>
 <p>First, what single piece of state answers "is the request that just arrived a repeat of one already in my stretch?" in constant time? Second, when the answer is yes, what must happen to the stretch, and how far must it shrink?</p>
 <p>To get a feel for it, predict the answer for each string, then see the stretch.</p>
-<div class="widget"><div class="wl">Predict the longest clean stretch</div><div id="predict"></div></div>
+<div class="widget navy"><div class="wl">Predict the longest clean stretch</div><div id="predict"></div></div>
 <div id="hint"></div>
 </section>
 
@@ -30,7 +30,7 @@
 <div id="naive-code"></div>
 <p>Look at what it throws away. When the run from start 0 stops at position 5 because position 5 repeats position 2, the run from start 1 will read positions 1 to 4 again, and the run from start 2 will read 2 to 4 once more. Every one of those characters was already checked and known to be clean. The restart forgets everything and re-derives it.</p>
 <p>How much is wasted depends on how long clean stretches run. A stretch can never be longer than the number of distinct characters in play, so each start re-reads at most that many. In a string cycling through 26 letters each start re-reads about 26 characters, so the total is about 26 times the length. If identifiers were unbounded, as request IDs are in a real system, clean stretches could be as long as the log and the cost would be quadratic. Either way the same characters are read again and again.</p>
-<div class="widget"><div class="wl">Characters read as the log grows (a cycle of 26 backends)</div><div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>restart from every position</span><span><i style="background:var(--g-ink)"></i>one pass with a window</span></div><p class="cost-note"></p></div>
+<div class="widget navy"><div class="wl">Characters read as the log grows (a cycle of 26 backends)</div><div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>restart from every position</span><span><i style="background:var(--g-ink)"></i>one pass with a window</span></div><p class="cost-note"></p></div>
 </section>
 
 <section class="sec" id="insight"><h2>The insight</h2><div class="banner" data-b="insight"></div>
@@ -46,7 +46,7 @@
 <div class="ro"><code>right - left + 1</code><span>how many requests the clean stretch spans</span></div>
 <div class="ro"><code>best</code><span>the longest clean stretch on record</span></div></div>
 <p>Watch it happen. The top row is the log. Blue cells are inside the window, the orange cell is the request that just arrived, and a red cell is the earlier copy of a repeated backend. Below it is the set.</p>
-<div class="widget" id="stepper"><div class="wl">Walk the window through a log</div><div class="extabs" role="group" aria-label="Choose a log"></div><div class="plhost"></div></div>
+<div class="widget navy" id="stepper"><div class="wl">Walk the window through a log</div><div class="extabs" role="group" aria-label="Choose a log"></div><div class="plhost"></div></div>
 </section>
 
 <section class="sec" id="solution"><h2>Solution</h2><div class="banner" data-b="solution"></div>

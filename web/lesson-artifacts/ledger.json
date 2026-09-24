@@ -1,0 +1,2025 @@
+{
+ "lessons": {
+  "getting-started/course-introduction": {
+   "evidence": {},
+   "notes": "",
+   "module": "getting-started",
+   "moduleNumber": 1,
+   "type": "concept",
+   "title": "Course Introduction",
+   "family": null
+  },
+  "getting-started/how-lessons-work": {
+   "evidence": {},
+   "notes": "",
+   "module": "getting-started",
+   "moduleNumber": 1,
+   "type": "concept",
+   "title": "How Lessons & Problems Work",
+   "family": null
+  },
+  "getting-started/writing-and-running-code": {
+   "evidence": {},
+   "notes": "",
+   "module": "getting-started",
+   "moduleNumber": 1,
+   "type": "concept",
+   "title": "Writing & Running Code",
+   "family": null
+  },
+  "getting-started/course-roadmap": {
+   "evidence": {},
+   "notes": "",
+   "module": "getting-started",
+   "moduleNumber": 1,
+   "type": "concept",
+   "title": "The Roadmap",
+   "family": null
+  },
+  "big-o/why-efficiency-matters": {
+   "evidence": {},
+   "notes": "",
+   "module": "big-o",
+   "moduleNumber": 2,
+   "type": "concept",
+   "title": "Why Efficiency Matters",
+   "family": null
+  },
+  "big-o/big-o-notation": {
+   "evidence": {},
+   "notes": "",
+   "module": "big-o",
+   "moduleNumber": 2,
+   "type": "concept",
+   "title": "Big O Notation, Precisely",
+   "family": null
+  },
+  "big-o/common-complexity-classes": {
+   "evidence": {},
+   "notes": "",
+   "module": "big-o",
+   "moduleNumber": 2,
+   "type": "concept",
+   "title": "The Common Complexity Classes",
+   "family": null
+  },
+  "big-o/input-dependency-best-worst-average": {
+   "evidence": {},
+   "notes": "",
+   "module": "big-o",
+   "moduleNumber": 2,
+   "type": "concept",
+   "title": "Input Dependency: Best, Worst, & Average",
+   "family": null
+  },
+  "big-o/analyzing-loops-api-complexity": {
+   "evidence": {},
+   "notes": "",
+   "module": "big-o",
+   "moduleNumber": 2,
+   "type": "concept",
+   "title": "Analyzing Loops & API Complexity",
+   "family": null
+  },
+  "big-o/analyzing-recursion-tree-method": {
+   "evidence": {},
+   "notes": "",
+   "module": "big-o",
+   "moduleNumber": 2,
+   "type": "concept",
+   "title": "Analyzing Recursion: The Tree Method",
+   "family": null
+  },
+  "big-o/amortized-analysis-dynamic-arrays": {
+   "evidence": {},
+   "notes": "",
+   "module": "big-o",
+   "moduleNumber": 2,
+   "type": "concept",
+   "title": "Amortized Analysis & Dynamic Arrays",
+   "family": null
+  },
+  "big-o/space-complexity": {
+   "evidence": {},
+   "notes": "",
+   "module": "big-o",
+   "moduleNumber": 2,
+   "type": "concept",
+   "title": "Space Complexity",
+   "family": null
+  },
+  "big-o/complexity-drills": {
+   "evidence": {},
+   "notes": "",
+   "module": "big-o",
+   "moduleNumber": 2,
+   "type": "concept",
+   "title": "Complexity Drills",
+   "family": null
+  },
+  "math-for-dsa/logarithms-and-exponents": {
+   "evidence": {},
+   "notes": "",
+   "module": "math-for-dsa",
+   "moduleNumber": 3,
+   "type": "concept",
+   "title": "Logarithms & Exponents",
+   "family": null
+  },
+  "math-for-dsa/summations-and-series": {
+   "evidence": {},
+   "notes": "",
+   "module": "math-for-dsa",
+   "moduleNumber": 3,
+   "type": "concept",
+   "title": "Summations & Series",
+   "family": null
+  },
+  "math-for-dsa/modular-arithmetic": {
+   "evidence": {},
+   "notes": "",
+   "module": "math-for-dsa",
+   "moduleNumber": 3,
+   "type": "concept",
+   "title": "Modular Arithmetic",
+   "family": null
+  },
+  "math-for-dsa/divisibility-primes-gcd": {
+   "evidence": {},
+   "notes": "",
+   "module": "math-for-dsa",
+   "moduleNumber": 3,
+   "type": "concept",
+   "title": "Divisibility, Primes & GCD",
+   "family": null
+  },
+  "math-for-dsa/counting-and-combinatorics": {
+   "evidence": {},
+   "notes": "",
+   "module": "math-for-dsa",
+   "moduleNumber": 3,
+   "type": "concept",
+   "title": "Counting & Combinatorics",
+   "family": null
+  },
+  "math-for-dsa/math-drills": {
+   "evidence": {},
+   "notes": "",
+   "module": "math-for-dsa",
+   "moduleNumber": 3,
+   "type": "concept",
+   "title": "Math Drills",
+   "family": null
+  },
+  "arrays/contiguous-memory": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "concept",
+   "title": "Arrays in Memory",
+   "family": "linear-traversal"
+  },
+  "arrays/dynamic-arrays": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "concept",
+   "title": "Dynamic Arrays, Built From Scratch",
+   "family": "linear-traversal"
+  },
+  "arrays/in-place-foundations": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "concept",
+   "title": "In-Place Foundations & Symmetric Pointers",
+   "family": "linear-traversal"
+  },
+  "arrays/stable-compaction-cyclic-placement": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "concept",
+   "title": "Stable Compaction & Cyclic Placement",
+   "family": "linear-traversal"
+  },
+  "arrays/remove-duplicates-sorted": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "problem",
+   "title": "Remove Duplicates from Sorted Array",
+   "family": "linear-traversal"
+  },
+  "arrays/move-zeroes": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "problem",
+   "title": "Move Zeroes",
+   "family": "linear-traversal"
+  },
+  "arrays/best-time-to-buy-sell-stock": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "problem",
+   "title": "Best Time to Buy & Sell Stock",
+   "family": "linear-traversal"
+  },
+  "arrays/rotate-array": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "problem",
+   "title": "Rotate Array",
+   "family": "linear-traversal"
+  },
+  "arrays/product-except-self": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "problem",
+   "title": "Product of Array Except Self",
+   "family": "linear-traversal"
+  },
+  "arrays/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "arrays",
+   "moduleNumber": 4,
+   "type": "practice",
+   "title": "Practice",
+   "family": "linear-traversal"
+  },
+  "strings/strings-in-memory": {
+   "evidence": {},
+   "notes": "",
+   "module": "strings",
+   "moduleNumber": 5,
+   "type": "concept",
+   "title": "Strings in Memory & Immutability",
+   "family": "linear-traversal"
+  },
+  "strings/character-arithmetic-count-arrays": {
+   "evidence": {},
+   "notes": "",
+   "module": "strings",
+   "moduleNumber": 5,
+   "type": "concept",
+   "title": "Character Arithmetic & Count Arrays",
+   "family": "linear-traversal"
+  },
+  "strings/string-apis-scan-costs-idioms": {
+   "evidence": {},
+   "notes": "",
+   "module": "strings",
+   "moduleNumber": 5,
+   "type": "concept",
+   "title": "String APIs, Scan Costs & Idioms",
+   "family": "linear-traversal"
+  },
+  "strings/valid-palindrome": {
+   "evidence": {},
+   "notes": "",
+   "module": "strings",
+   "moduleNumber": 5,
+   "type": "problem",
+   "title": "Valid Palindrome",
+   "family": "linear-traversal"
+  },
+  "strings/valid-anagram": {
+   "evidence": {},
+   "notes": "",
+   "module": "strings",
+   "moduleNumber": 5,
+   "type": "problem",
+   "title": "Valid Anagram",
+   "family": "linear-traversal"
+  },
+  "strings/longest-common-prefix": {
+   "evidence": {},
+   "notes": "",
+   "module": "strings",
+   "moduleNumber": 5,
+   "type": "problem",
+   "title": "Longest Common Prefix",
+   "family": "linear-traversal"
+  },
+  "strings/find-the-index": {
+   "evidence": {},
+   "notes": "",
+   "module": "strings",
+   "moduleNumber": 5,
+   "type": "problem",
+   "title": "Find the Index (strStr)",
+   "family": "linear-traversal"
+  },
+  "strings/reverse-words": {
+   "evidence": {},
+   "notes": "",
+   "module": "strings",
+   "moduleNumber": 5,
+   "type": "problem",
+   "title": "Reverse Words in a String",
+   "family": "linear-traversal"
+  },
+  "strings/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "strings",
+   "moduleNumber": 5,
+   "type": "practice",
+   "title": "Practice",
+   "family": "linear-traversal"
+  },
+  "hash-tables/hashing-fundamentals": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "concept",
+   "title": "Hashing Fundamentals",
+   "family": "linear-traversal"
+  },
+  "hash-tables/collision-chaining": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "concept",
+   "title": "Collision Resolution: Separate Chaining",
+   "family": "linear-traversal"
+  },
+  "hash-tables/build-a-hash-map": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "concept",
+   "title": "Build a Hash Map From Scratch",
+   "family": "linear-traversal"
+  },
+  "hash-tables/collision-open-addressing": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "concept",
+   "title": "Collision Resolution: Open Addressing",
+   "family": "linear-traversal"
+  },
+  "hash-tables/keys-immutability-hashing": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "concept",
+   "title": "Keys, Immutability & Cryptographic Hashing",
+   "family": "linear-traversal"
+  },
+  "hash-tables/hash-patterns": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "concept",
+   "title": "The Four Hash Patterns",
+   "family": "linear-traversal"
+  },
+  "hash-tables/two-sum": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "problem",
+   "title": "Two Sum",
+   "family": "linear-traversal"
+  },
+  "hash-tables/contains-duplicate-ii": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "problem",
+   "title": "Contains Duplicate II",
+   "family": "linear-traversal"
+  },
+  "hash-tables/first-unique-character": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "problem",
+   "title": "First Unique Character",
+   "family": "linear-traversal"
+  },
+  "hash-tables/group-anagrams": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "problem",
+   "title": "Group Anagrams",
+   "family": "linear-traversal"
+  },
+  "hash-tables/longest-consecutive-sequence": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "problem",
+   "title": "Longest Consecutive Sequence",
+   "family": "linear-traversal"
+  },
+  "hash-tables/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "hash-tables",
+   "moduleNumber": 6,
+   "type": "practice",
+   "title": "Practice",
+   "family": "linear-traversal"
+  },
+  "linked-lists/nodes-and-pointers": {
+   "evidence": {},
+   "notes": "",
+   "module": "linked-lists",
+   "moduleNumber": 7,
+   "type": "concept",
+   "title": "Nodes & Pointers",
+   "family": "pointer-movement"
+  },
+  "linked-lists/build-a-linked-list": {
+   "evidence": {
+    "build": {
+     "source": "e09df0193ec227dd",
+     "on": "2026-09-24",
+     "commit": "7968310",
+     "result": "linked-lists/build-a-linked-list: 180,238 bytes -> dist/linked-lists/build-a-linked-list.html"
+    },
+    "code": {
+     "source": "e09df0193ec227dd",
+     "on": "2026-09-24",
+     "commit": "7968310",
+     "result": "all claims hold"
+    }
+   },
+   "notes": "",
+   "module": "linked-lists",
+   "moduleNumber": 7,
+   "type": "concept",
+   "title": "Build a Linked List From Scratch",
+   "family": "pointer-movement"
+  },
+  "linked-lists/pointer-surgery": {
+   "evidence": {},
+   "notes": "",
+   "module": "linked-lists",
+   "moduleNumber": 7,
+   "type": "concept",
+   "title": "Pointer Surgery Patterns",
+   "family": "pointer-movement"
+  },
+  "linked-lists/reverse-linked-list": {
+   "evidence": {},
+   "notes": "",
+   "module": "linked-lists",
+   "moduleNumber": 7,
+   "type": "problem",
+   "title": "Reverse Linked List",
+   "family": "pointer-movement"
+  },
+  "linked-lists/middle-of-list": {
+   "evidence": {},
+   "notes": "",
+   "module": "linked-lists",
+   "moduleNumber": 7,
+   "type": "problem",
+   "title": "Middle of the Linked List",
+   "family": "pointer-movement"
+  },
+  "linked-lists/linked-list-cycle": {
+   "evidence": {},
+   "notes": "",
+   "module": "linked-lists",
+   "moduleNumber": 7,
+   "type": "problem",
+   "title": "Linked List Cycle",
+   "family": "pointer-movement"
+  },
+  "linked-lists/merge-two-sorted": {
+   "evidence": {},
+   "notes": "",
+   "module": "linked-lists",
+   "moduleNumber": 7,
+   "type": "problem",
+   "title": "Merge Two Sorted Lists",
+   "family": "pointer-movement"
+  },
+  "linked-lists/remove-nth-from-end": {
+   "evidence": {},
+   "notes": "",
+   "module": "linked-lists",
+   "moduleNumber": 7,
+   "type": "problem",
+   "title": "Remove Nth Node From End",
+   "family": "pointer-movement"
+  },
+  "linked-lists/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "linked-lists",
+   "moduleNumber": 7,
+   "type": "practice",
+   "title": "Practice",
+   "family": "pointer-movement"
+  },
+  "stacks/lifo-and-the-call-stack": {
+   "evidence": {},
+   "notes": "",
+   "module": "stacks",
+   "moduleNumber": 8,
+   "type": "concept",
+   "title": "LIFO & the Call Stack",
+   "family": "priority-structures"
+  },
+  "stacks/matching-and-nesting": {
+   "evidence": {},
+   "notes": "",
+   "module": "stacks",
+   "moduleNumber": 8,
+   "type": "concept",
+   "title": "Matching & Nesting",
+   "family": "priority-structures"
+  },
+  "stacks/monotonic-stack": {
+   "evidence": {},
+   "notes": "",
+   "module": "stacks",
+   "moduleNumber": 8,
+   "type": "concept",
+   "title": "The Monotonic Stack",
+   "family": "priority-structures"
+  },
+  "stacks/valid-parentheses": {
+   "evidence": {},
+   "notes": "",
+   "module": "stacks",
+   "moduleNumber": 8,
+   "type": "problem",
+   "title": "Valid Parentheses",
+   "family": "priority-structures"
+  },
+  "stacks/evaluate-rpn": {
+   "evidence": {},
+   "notes": "",
+   "module": "stacks",
+   "moduleNumber": 8,
+   "type": "problem",
+   "title": "Evaluate Reverse Polish Notation",
+   "family": "priority-structures"
+  },
+  "stacks/min-stack": {
+   "evidence": {},
+   "notes": "",
+   "module": "stacks",
+   "moduleNumber": 8,
+   "type": "problem",
+   "title": "Min Stack",
+   "family": "priority-structures"
+  },
+  "stacks/daily-temperatures": {
+   "evidence": {},
+   "notes": "",
+   "module": "stacks",
+   "moduleNumber": 8,
+   "type": "problem",
+   "title": "Daily Temperatures",
+   "family": "priority-structures"
+  },
+  "stacks/largest-rectangle": {
+   "evidence": {},
+   "notes": "",
+   "module": "stacks",
+   "moduleNumber": 8,
+   "type": "problem",
+   "title": "Largest Rectangle in Histogram",
+   "family": "priority-structures"
+  },
+  "stacks/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "stacks",
+   "moduleNumber": 8,
+   "type": "practice",
+   "title": "Practice",
+   "family": "priority-structures"
+  },
+  "queues/fifo-basics": {
+   "evidence": {},
+   "notes": "",
+   "module": "queues",
+   "moduleNumber": 9,
+   "type": "concept",
+   "title": "FIFO & Queue Mechanics",
+   "family": "priority-structures"
+  },
+  "queues/ring-buffer": {
+   "evidence": {},
+   "notes": "",
+   "module": "queues",
+   "moduleNumber": 9,
+   "type": "concept",
+   "title": "Build a Ring Buffer",
+   "family": "priority-structures"
+  },
+  "queues/deques-and-monotonic": {
+   "evidence": {},
+   "notes": "",
+   "module": "queues",
+   "moduleNumber": 9,
+   "type": "concept",
+   "title": "Deques & the Monotonic Deque",
+   "family": "priority-structures"
+  },
+  "queues/recent-calls": {
+   "evidence": {},
+   "notes": "",
+   "module": "queues",
+   "moduleNumber": 9,
+   "type": "problem",
+   "title": "Number of Recent Calls",
+   "family": "priority-structures"
+  },
+  "queues/queue-using-stacks": {
+   "evidence": {},
+   "notes": "",
+   "module": "queues",
+   "moduleNumber": 9,
+   "type": "problem",
+   "title": "Implement Queue Using Stacks",
+   "family": "priority-structures"
+  },
+  "queues/stream-first-unique": {
+   "evidence": {},
+   "notes": "",
+   "module": "queues",
+   "moduleNumber": 9,
+   "type": "problem",
+   "title": "First Unique in a Stream",
+   "family": "priority-structures"
+  },
+  "queues/sliding-window-maximum": {
+   "evidence": {},
+   "notes": "",
+   "module": "queues",
+   "moduleNumber": 9,
+   "type": "problem",
+   "title": "Sliding Window Maximum",
+   "family": "priority-structures"
+  },
+  "queues/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "queues",
+   "moduleNumber": 9,
+   "type": "practice",
+   "title": "Practice",
+   "family": "priority-structures"
+  },
+  "two-pointers/converging-pointers": {
+   "evidence": {},
+   "notes": "",
+   "module": "two-pointers",
+   "moduleNumber": 10,
+   "type": "concept",
+   "title": "Converging Pointers",
+   "family": "pointer-movement"
+  },
+  "two-pointers/partition-pointers": {
+   "evidence": {},
+   "notes": "",
+   "module": "two-pointers",
+   "moduleNumber": 10,
+   "type": "concept",
+   "title": "Partition Pointers",
+   "family": "pointer-movement"
+  },
+  "two-pointers/two-sum-ii": {
+   "evidence": {},
+   "notes": "",
+   "module": "two-pointers",
+   "moduleNumber": 10,
+   "type": "problem",
+   "title": "Two Sum II (Sorted Input)",
+   "family": "pointer-movement"
+  },
+  "two-pointers/sort-colors": {
+   "evidence": {},
+   "notes": "",
+   "module": "two-pointers",
+   "moduleNumber": 10,
+   "type": "problem",
+   "title": "Sort Colors (Dutch National Flag)",
+   "family": "pointer-movement"
+  },
+  "two-pointers/container-with-most-water": {
+   "evidence": {},
+   "notes": "",
+   "module": "two-pointers",
+   "moduleNumber": 10,
+   "type": "problem",
+   "title": "Container With Most Water",
+   "family": "pointer-movement"
+  },
+  "two-pointers/three-sum": {
+   "evidence": {},
+   "notes": "",
+   "module": "two-pointers",
+   "moduleNumber": 10,
+   "type": "problem",
+   "title": "3Sum",
+   "family": "pointer-movement"
+  },
+  "two-pointers/trapping-rain-water": {
+   "evidence": {},
+   "notes": "",
+   "module": "two-pointers",
+   "moduleNumber": 10,
+   "type": "problem",
+   "title": "Trapping Rain Water",
+   "family": "pointer-movement"
+  },
+  "two-pointers/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "two-pointers",
+   "moduleNumber": 10,
+   "type": "practice",
+   "title": "Practice",
+   "family": "pointer-movement"
+  },
+  "sliding-window/fixed-size-windows": {
+   "evidence": {},
+   "notes": "",
+   "module": "sliding-window",
+   "moduleNumber": 11,
+   "type": "concept",
+   "title": "Fixed-Size Windows",
+   "family": "pointer-movement"
+  },
+  "sliding-window/dynamic-windows": {
+   "evidence": {},
+   "notes": "",
+   "module": "sliding-window",
+   "moduleNumber": 11,
+   "type": "concept",
+   "title": "Dynamic Windows & the Shrink Invariant",
+   "family": "pointer-movement"
+  },
+  "sliding-window/maximum-average-subarray": {
+   "evidence": {},
+   "notes": "",
+   "module": "sliding-window",
+   "moduleNumber": 11,
+   "type": "problem",
+   "title": "Maximum Average Subarray I",
+   "family": "pointer-movement"
+  },
+  "sliding-window/minimum-size-subarray-sum": {
+   "evidence": {},
+   "notes": "",
+   "module": "sliding-window",
+   "moduleNumber": 11,
+   "type": "problem",
+   "title": "Minimum Size Subarray Sum",
+   "family": "pointer-movement"
+  },
+  "sliding-window/longest-substring-without-repeating": {
+   "evidence": {
+    "build": {
+     "source": "e7043c91aeecd147",
+     "on": "2026-09-24",
+     "commit": "7968310",
+     "result": "sliding-window/longest-substring-without-repeating: 132,459 bytes -> dist/sliding-window/longest-substring-without-repeating.html"
+    }
+   },
+   "notes": "",
+   "module": "sliding-window",
+   "moduleNumber": 11,
+   "type": "problem",
+   "title": "Longest Substring Without Repeating Characters",
+   "family": "pointer-movement"
+  },
+  "sliding-window/permutation-in-string": {
+   "evidence": {},
+   "notes": "",
+   "module": "sliding-window",
+   "moduleNumber": 11,
+   "type": "problem",
+   "title": "Permutation in String",
+   "family": "pointer-movement"
+  },
+  "sliding-window/minimum-window-substring": {
+   "evidence": {},
+   "notes": "",
+   "module": "sliding-window",
+   "moduleNumber": 11,
+   "type": "problem",
+   "title": "Minimum Window Substring",
+   "family": "pointer-movement"
+  },
+  "sliding-window/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "sliding-window",
+   "moduleNumber": 11,
+   "type": "practice",
+   "title": "Practice",
+   "family": "pointer-movement"
+  },
+  "prefix-sum/prefix-sum-basics": {
+   "evidence": {},
+   "notes": "",
+   "module": "prefix-sum",
+   "moduleNumber": 12,
+   "type": "concept",
+   "title": "Prefix Sums",
+   "family": "linear-traversal"
+  },
+  "prefix-sum/prefix-sum-hash-map": {
+   "evidence": {},
+   "notes": "",
+   "module": "prefix-sum",
+   "moduleNumber": 12,
+   "type": "concept",
+   "title": "Prefix Sum + Hash Map",
+   "family": "linear-traversal"
+  },
+  "prefix-sum/prefix-sum-2d": {
+   "evidence": {},
+   "notes": "",
+   "module": "prefix-sum",
+   "moduleNumber": 12,
+   "type": "concept",
+   "title": "2D Prefix Sums",
+   "family": "linear-traversal"
+  },
+  "prefix-sum/range-sum-query-immutable": {
+   "evidence": {},
+   "notes": "",
+   "module": "prefix-sum",
+   "moduleNumber": 12,
+   "type": "problem",
+   "title": "Range Sum Query — Immutable",
+   "family": "linear-traversal"
+  },
+  "prefix-sum/subarray-sum-equals-k": {
+   "evidence": {},
+   "notes": "",
+   "module": "prefix-sum",
+   "moduleNumber": 12,
+   "type": "problem",
+   "title": "Subarray Sum Equals K",
+   "family": "linear-traversal"
+  },
+  "prefix-sum/contiguous-array": {
+   "evidence": {},
+   "notes": "",
+   "module": "prefix-sum",
+   "moduleNumber": 12,
+   "type": "problem",
+   "title": "Contiguous Array",
+   "family": "linear-traversal"
+  },
+  "prefix-sum/range-sum-2d-immutable": {
+   "evidence": {},
+   "notes": "",
+   "module": "prefix-sum",
+   "moduleNumber": 12,
+   "type": "problem",
+   "title": "Range Sum Query 2D — Immutable",
+   "family": "linear-traversal"
+  },
+  "prefix-sum/kadanes-algorithm": {
+   "evidence": {},
+   "notes": "",
+   "module": "prefix-sum",
+   "moduleNumber": 12,
+   "type": "problem",
+   "title": "Maximum Subarray (Kadane's Algorithm)",
+   "family": "linear-traversal"
+  },
+  "prefix-sum/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "prefix-sum",
+   "moduleNumber": 12,
+   "type": "practice",
+   "title": "Practice",
+   "family": "linear-traversal"
+  },
+  "binary-search/the-invariant-template": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-search",
+   "moduleNumber": 13,
+   "type": "concept",
+   "title": "The Invariant-Driven Template",
+   "family": "ordering-search"
+  },
+  "binary-search/boundary-search": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-search",
+   "moduleNumber": 13,
+   "type": "concept",
+   "title": "Boundary Search",
+   "family": "ordering-search"
+  },
+  "binary-search/binary-search-on-the-answer": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-search",
+   "moduleNumber": 13,
+   "type": "concept",
+   "title": "Binary Search on the Answer",
+   "family": "ordering-search"
+  },
+  "binary-search/search-insert-position": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-search",
+   "moduleNumber": 13,
+   "type": "problem",
+   "title": "Search Insert Position",
+   "family": "ordering-search"
+  },
+  "binary-search/find-first-and-last": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-search",
+   "moduleNumber": 13,
+   "type": "problem",
+   "title": "Find First and Last Position",
+   "family": "ordering-search"
+  },
+  "binary-search/search-rotated-sorted-array": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-search",
+   "moduleNumber": 13,
+   "type": "problem",
+   "title": "Search in Rotated Sorted Array",
+   "family": "ordering-search"
+  },
+  "binary-search/koko-eating-bananas": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-search",
+   "moduleNumber": 13,
+   "type": "problem",
+   "title": "Koko Eating Bananas",
+   "family": "ordering-search"
+  },
+  "binary-search/find-minimum-in-rotated-sorted-array": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-search",
+   "moduleNumber": 13,
+   "type": "problem",
+   "title": "Find Minimum in Rotated Sorted Array",
+   "family": "ordering-search"
+  },
+  "binary-search/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-search",
+   "moduleNumber": 13,
+   "type": "practice",
+   "title": "Practice",
+   "family": "ordering-search"
+  },
+  "sorting/baseline-sorts": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "concept",
+   "title": "The O(n²) Baseline Sorts",
+   "family": "ordering-search"
+  },
+  "sorting/merge-sort-lower-bound": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "concept",
+   "title": "Merge Sort & the n log n Lower Bound",
+   "family": "ordering-search"
+  },
+  "sorting/quicksort-partitioning": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "concept",
+   "title": "Quicksort & Partitioning",
+   "family": "ordering-search"
+  },
+  "sorting/linear-time-sorts": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "concept",
+   "title": "Linear-Time Sorts",
+   "family": "ordering-search"
+  },
+  "sorting/sort-an-array": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "problem",
+   "title": "Sort an Array",
+   "family": "ordering-search"
+  },
+  "sorting/merge-intervals": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "problem",
+   "title": "Merge Intervals",
+   "family": "ordering-search"
+  },
+  "sorting/largest-number": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "problem",
+   "title": "Largest Number",
+   "family": "ordering-search"
+  },
+  "sorting/meeting-rooms-ii": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "problem",
+   "title": "Meeting Rooms II",
+   "family": "ordering-search"
+  },
+  "sorting/kth-largest-element": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "problem",
+   "title": "Kth Largest Element in an Array",
+   "family": "ordering-search"
+  },
+  "sorting/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "sorting",
+   "moduleNumber": 14,
+   "type": "practice",
+   "title": "Practice",
+   "family": "ordering-search"
+  },
+  "matrix/grid-coordinates": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "concept",
+   "title": "Grid Representation & Coordinates",
+   "family": "ordering-search"
+  },
+  "matrix/traversal-orders": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "concept",
+   "title": "Traversal Orders",
+   "family": "ordering-search"
+  },
+  "matrix/in-place-transformations": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "concept",
+   "title": "In-Place Transformations",
+   "family": "ordering-search"
+  },
+  "matrix/rotate-image": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "problem",
+   "title": "Rotate Image",
+   "family": "ordering-search"
+  },
+  "matrix/spiral-matrix": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "problem",
+   "title": "Spiral Matrix",
+   "family": "ordering-search"
+  },
+  "matrix/set-matrix-zeroes": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "problem",
+   "title": "Set Matrix Zeroes",
+   "family": "ordering-search"
+  },
+  "matrix/search-a-2d-matrix": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "problem",
+   "title": "Search a 2D Matrix",
+   "family": "ordering-search"
+  },
+  "matrix/number-of-islands": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "problem",
+   "title": "Number of Islands",
+   "family": "ordering-search"
+  },
+  "matrix/word-search": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "problem",
+   "title": "Word Search",
+   "family": "ordering-search"
+  },
+  "matrix/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "matrix",
+   "moduleNumber": 15,
+   "type": "practice",
+   "title": "Practice",
+   "family": "ordering-search"
+  },
+  "recursion-backtracking/the-call-stack-and-base-cases": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "concept",
+   "title": "The Call Stack & Base Cases",
+   "family": "recursive-exploration"
+  },
+  "recursion-backtracking/backtracking-choose-explore-unchoose": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "concept",
+   "title": "Backtracking: Choose, Explore, Unchoose",
+   "family": "recursive-exploration"
+  },
+  "recursion-backtracking/recursion-vs-iteration": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "concept",
+   "title": "Recursion vs. Iteration",
+   "family": "recursive-exploration"
+  },
+  "recursion-backtracking/subsets": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "problem",
+   "title": "Subsets",
+   "family": "recursive-exploration"
+  },
+  "recursion-backtracking/permutations": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "problem",
+   "title": "Permutations",
+   "family": "recursive-exploration"
+  },
+  "recursion-backtracking/combination-sum": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "problem",
+   "title": "Combination Sum",
+   "family": "recursive-exploration"
+  },
+  "recursion-backtracking/generate-parentheses": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "problem",
+   "title": "Generate Parentheses",
+   "family": "recursive-exploration"
+  },
+  "recursion-backtracking/palindrome-partitioning": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "problem",
+   "title": "Palindrome Partitioning",
+   "family": "recursive-exploration"
+  },
+  "recursion-backtracking/n-queens": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "problem",
+   "title": "N-Queens",
+   "family": "recursive-exploration"
+  },
+  "recursion-backtracking/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "recursion-backtracking",
+   "moduleNumber": 16,
+   "type": "practice",
+   "title": "Practice",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/tree-terminology-and-representation": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "concept",
+   "title": "Tree Terminology & Representation",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/dfs-traversals": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "concept",
+   "title": "DFS Traversals",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/bfs-level-order": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "concept",
+   "title": "BFS & Level-Order Traversal",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/top-down-vs-bottom-up-recursion": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "concept",
+   "title": "Top-Down vs. Bottom-Up Tree Recursion",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/maximum-depth-of-binary-tree": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "problem",
+   "title": "Maximum Depth of Binary Tree",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/diameter-of-binary-tree": {
+   "evidence": {
+    "build": {
+     "source": "a02164e6861bd057",
+     "on": "2026-09-24",
+     "commit": "7968310",
+     "result": "binary-trees/diameter-of-binary-tree: 135,557 bytes -> dist/binary-trees/diameter-of-binary-tree.html"
+    }
+   },
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "problem",
+   "title": "Diameter of Binary Tree",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/binary-tree-level-order-traversal": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "problem",
+   "title": "Binary Tree Level Order Traversal",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/construct-binary-tree-from-preorder-and-inorder": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "problem",
+   "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/lowest-common-ancestor-of-a-binary-tree": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "problem",
+   "title": "Lowest Common Ancestor of a Binary Tree",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/binary-tree-right-side-view": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "problem",
+   "title": "Binary Tree Right Side View",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/serialize-and-deserialize-binary-tree": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "problem",
+   "title": "Serialize and Deserialize Binary Tree",
+   "family": "recursive-exploration"
+  },
+  "binary-trees/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "binary-trees",
+   "moduleNumber": 17,
+   "type": "practice",
+   "title": "Practice",
+   "family": "recursive-exploration"
+  },
+  "bst/bst-invariant-and-operations": {
+   "evidence": {},
+   "notes": "",
+   "module": "bst",
+   "moduleNumber": 18,
+   "type": "concept",
+   "title": "The BST Invariant & Core Operations",
+   "family": "recursive-exploration"
+  },
+  "bst/balance-and-why-it-matters": {
+   "evidence": {},
+   "notes": "",
+   "module": "bst",
+   "moduleNumber": 18,
+   "type": "concept",
+   "title": "Balance & Why It Matters",
+   "family": "recursive-exploration"
+  },
+  "bst/validate-binary-search-tree": {
+   "evidence": {},
+   "notes": "",
+   "module": "bst",
+   "moduleNumber": 18,
+   "type": "problem",
+   "title": "Validate Binary Search Tree",
+   "family": "recursive-exploration"
+  },
+  "bst/kth-smallest-element-in-a-bst": {
+   "evidence": {},
+   "notes": "",
+   "module": "bst",
+   "moduleNumber": 18,
+   "type": "problem",
+   "title": "Kth Smallest Element in a BST",
+   "family": "recursive-exploration"
+  },
+  "bst/lowest-common-ancestor-of-a-bst": {
+   "evidence": {},
+   "notes": "",
+   "module": "bst",
+   "moduleNumber": 18,
+   "type": "problem",
+   "title": "Lowest Common Ancestor of a BST",
+   "family": "recursive-exploration"
+  },
+  "bst/insert-into-a-binary-search-tree": {
+   "evidence": {},
+   "notes": "",
+   "module": "bst",
+   "moduleNumber": 18,
+   "type": "problem",
+   "title": "Insert into a Binary Search Tree",
+   "family": "recursive-exploration"
+  },
+  "bst/delete-node-in-a-bst": {
+   "evidence": {},
+   "notes": "",
+   "module": "bst",
+   "moduleNumber": 18,
+   "type": "problem",
+   "title": "Delete Node in a BST",
+   "family": "recursive-exploration"
+  },
+  "bst/convert-sorted-array-to-bst": {
+   "evidence": {},
+   "notes": "",
+   "module": "bst",
+   "moduleNumber": 18,
+   "type": "problem",
+   "title": "Convert Sorted Array to Binary Search Tree",
+   "family": "recursive-exploration"
+  },
+  "bst/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "bst",
+   "moduleNumber": 18,
+   "type": "practice",
+   "title": "Practice",
+   "family": "recursive-exploration"
+  },
+  "heaps/heap-property-and-array-representation": {
+   "evidence": {},
+   "notes": "",
+   "module": "heaps",
+   "moduleNumber": 19,
+   "type": "concept",
+   "title": "The Heap Property & Array Representation",
+   "family": "priority-structures"
+  },
+  "heaps/heapify-sift-up-and-sift-down": {
+   "evidence": {},
+   "notes": "",
+   "module": "heaps",
+   "moduleNumber": 19,
+   "type": "concept",
+   "title": "Heapify: Sift-Up & Sift-Down",
+   "family": "priority-structures"
+  },
+  "heaps/kth-largest-element-in-a-stream": {
+   "evidence": {},
+   "notes": "",
+   "module": "heaps",
+   "moduleNumber": 19,
+   "type": "problem",
+   "title": "Kth Largest Element in a Stream",
+   "family": "priority-structures"
+  },
+  "heaps/top-k-frequent-elements": {
+   "evidence": {},
+   "notes": "",
+   "module": "heaps",
+   "moduleNumber": 19,
+   "type": "problem",
+   "title": "Top K Frequent Elements",
+   "family": "priority-structures"
+  },
+  "heaps/k-closest-points-to-origin": {
+   "evidence": {},
+   "notes": "",
+   "module": "heaps",
+   "moduleNumber": 19,
+   "type": "problem",
+   "title": "K Closest Points to Origin",
+   "family": "priority-structures"
+  },
+  "heaps/merge-k-sorted-lists": {
+   "evidence": {},
+   "notes": "",
+   "module": "heaps",
+   "moduleNumber": 19,
+   "type": "problem",
+   "title": "Merge k Sorted Lists",
+   "family": "priority-structures"
+  },
+  "heaps/find-median-from-data-stream": {
+   "evidence": {},
+   "notes": "",
+   "module": "heaps",
+   "moduleNumber": 19,
+   "type": "problem",
+   "title": "Find Median from Data Stream",
+   "family": "priority-structures"
+  },
+  "heaps/task-scheduler": {
+   "evidence": {},
+   "notes": "",
+   "module": "heaps",
+   "moduleNumber": 19,
+   "type": "problem",
+   "title": "Task Scheduler",
+   "family": "priority-structures"
+  },
+  "heaps/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "heaps",
+   "moduleNumber": 19,
+   "type": "practice",
+   "title": "Practice",
+   "family": "priority-structures"
+  },
+  "tries/trie-structure-and-prefix-search": {
+   "evidence": {},
+   "notes": "",
+   "module": "tries",
+   "moduleNumber": 20,
+   "type": "concept",
+   "title": "Trie Structure & Prefix Search",
+   "family": "priority-structures"
+  },
+  "tries/implement-trie": {
+   "evidence": {},
+   "notes": "",
+   "module": "tries",
+   "moduleNumber": 20,
+   "type": "problem",
+   "title": "Implement Trie (Prefix Tree)",
+   "family": "priority-structures"
+  },
+  "tries/design-add-and-search-words": {
+   "evidence": {},
+   "notes": "",
+   "module": "tries",
+   "moduleNumber": 20,
+   "type": "problem",
+   "title": "Design Add and Search Words Data Structure",
+   "family": "priority-structures"
+  },
+  "tries/longest-word-in-dictionary": {
+   "evidence": {},
+   "notes": "",
+   "module": "tries",
+   "moduleNumber": 20,
+   "type": "problem",
+   "title": "Longest Word in Dictionary",
+   "family": "priority-structures"
+  },
+  "tries/word-search-ii": {
+   "evidence": {},
+   "notes": "",
+   "module": "tries",
+   "moduleNumber": 20,
+   "type": "problem",
+   "title": "Word Search II",
+   "family": "priority-structures"
+  },
+  "tries/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "tries",
+   "moduleNumber": 20,
+   "type": "practice",
+   "title": "Practice",
+   "family": "priority-structures"
+  },
+  "intervals/sorting-intervals-and-the-sweep": {
+   "evidence": {},
+   "notes": "",
+   "module": "intervals",
+   "moduleNumber": 21,
+   "type": "concept",
+   "title": "Sorting Intervals & the Sweep",
+   "family": "ordering-search"
+  },
+  "intervals/meeting-rooms": {
+   "evidence": {},
+   "notes": "",
+   "module": "intervals",
+   "moduleNumber": 21,
+   "type": "problem",
+   "title": "Meeting Rooms",
+   "family": "ordering-search"
+  },
+  "intervals/insert-interval": {
+   "evidence": {},
+   "notes": "",
+   "module": "intervals",
+   "moduleNumber": 21,
+   "type": "problem",
+   "title": "Insert Interval",
+   "family": "ordering-search"
+  },
+  "intervals/non-overlapping-intervals": {
+   "evidence": {},
+   "notes": "",
+   "module": "intervals",
+   "moduleNumber": 21,
+   "type": "problem",
+   "title": "Non-overlapping Intervals",
+   "family": "ordering-search"
+  },
+  "intervals/minimum-arrows-to-burst-balloons": {
+   "evidence": {},
+   "notes": "",
+   "module": "intervals",
+   "moduleNumber": 21,
+   "type": "problem",
+   "title": "Minimum Number of Arrows to Burst Balloons",
+   "family": "ordering-search"
+  },
+  "intervals/employee-free-time": {
+   "evidence": {},
+   "notes": "",
+   "module": "intervals",
+   "moduleNumber": 21,
+   "type": "problem",
+   "title": "Employee Free Time",
+   "family": "ordering-search"
+  },
+  "intervals/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "intervals",
+   "moduleNumber": 21,
+   "type": "practice",
+   "title": "Practice",
+   "family": "ordering-search"
+  },
+  "greedy/greedy-choice-and-proving-correctness": {
+   "evidence": {},
+   "notes": "",
+   "module": "greedy",
+   "moduleNumber": 22,
+   "type": "concept",
+   "title": "The Greedy Choice Property & Proving Correctness",
+   "family": "state-transition"
+  },
+  "greedy/jump-game": {
+   "evidence": {},
+   "notes": "",
+   "module": "greedy",
+   "moduleNumber": 22,
+   "type": "problem",
+   "title": "Jump Game",
+   "family": "state-transition"
+  },
+  "greedy/jump-game-ii": {
+   "evidence": {},
+   "notes": "",
+   "module": "greedy",
+   "moduleNumber": 22,
+   "type": "problem",
+   "title": "Jump Game II",
+   "family": "state-transition"
+  },
+  "greedy/gas-station": {
+   "evidence": {},
+   "notes": "",
+   "module": "greedy",
+   "moduleNumber": 22,
+   "type": "problem",
+   "title": "Gas Station",
+   "family": "state-transition"
+  },
+  "greedy/partition-labels": {
+   "evidence": {},
+   "notes": "",
+   "module": "greedy",
+   "moduleNumber": 22,
+   "type": "problem",
+   "title": "Partition Labels",
+   "family": "state-transition"
+  },
+  "greedy/candy": {
+   "evidence": {},
+   "notes": "",
+   "module": "greedy",
+   "moduleNumber": 22,
+   "type": "problem",
+   "title": "Candy",
+   "family": "state-transition"
+  },
+  "greedy/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "greedy",
+   "moduleNumber": 22,
+   "type": "practice",
+   "title": "Practice",
+   "family": "state-transition"
+  },
+  "graphs/graph-representation": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "concept",
+   "title": "Graph Representation",
+   "family": "relationships"
+  },
+  "graphs/dfs-and-bfs-on-graphs": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "concept",
+   "title": "DFS & BFS on Graphs",
+   "family": "relationships"
+  },
+  "graphs/topological-sort": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "concept",
+   "title": "Topological Sort",
+   "family": "relationships"
+  },
+  "graphs/shortest-paths": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "concept",
+   "title": "Shortest Paths (BFS, Dijkstra)",
+   "family": "relationships"
+  },
+  "graphs/union-find": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "concept",
+   "title": "Union-Find (Disjoint Set)",
+   "family": "relationships"
+  },
+  "graphs/minimum-spanning-trees": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "concept",
+   "title": "Minimum Spanning Trees (Kruskal's & Prim's)",
+   "family": "relationships"
+  },
+  "graphs/clone-graph": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "problem",
+   "title": "Clone Graph",
+   "family": "relationships"
+  },
+  "graphs/course-schedule": {
+   "evidence": {
+    "build": {
+     "source": "de2acb1c189dc484",
+     "on": "2026-09-24",
+     "commit": "7968310",
+     "result": "graphs/course-schedule: 154,265 bytes -> dist/graphs/course-schedule.html"
+    }
+   },
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "problem",
+   "title": "Course Schedule",
+   "family": "relationships"
+  },
+  "graphs/course-schedule-ii": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "problem",
+   "title": "Course Schedule II",
+   "family": "relationships"
+  },
+  "graphs/network-delay-time": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "problem",
+   "title": "Network Delay Time",
+   "family": "relationships"
+  },
+  "graphs/number-of-provinces": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "problem",
+   "title": "Number of Provinces",
+   "family": "relationships"
+  },
+  "graphs/redundant-connection": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "problem",
+   "title": "Redundant Connection",
+   "family": "relationships"
+  },
+  "graphs/min-cost-to-connect-all-points": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "problem",
+   "title": "Min Cost to Connect All Points",
+   "family": "relationships"
+  },
+  "graphs/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "graphs",
+   "moduleNumber": 23,
+   "type": "practice",
+   "title": "Practice",
+   "family": "relationships"
+  },
+  "dynamic-programming/from-recursion-to-memoization": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "concept",
+   "title": "From Recursion to Memoization",
+   "family": "state-transition"
+  },
+  "dynamic-programming/tabulation-and-space-optimization": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "concept",
+   "title": "Tabulation & Space Optimization",
+   "family": "state-transition"
+  },
+  "dynamic-programming/1d-dp-patterns": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "concept",
+   "title": "1D DP Patterns",
+   "family": "state-transition"
+  },
+  "dynamic-programming/2d-dp-patterns": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "concept",
+   "title": "2D DP Patterns",
+   "family": "state-transition"
+  },
+  "dynamic-programming/knapsack-style-dp": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "concept",
+   "title": "Knapsack-Style DP",
+   "family": "state-transition"
+  },
+  "dynamic-programming/climbing-stairs": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "Climbing Stairs",
+   "family": "state-transition"
+  },
+  "dynamic-programming/house-robber": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "House Robber",
+   "family": "state-transition"
+  },
+  "dynamic-programming/coin-change": {
+   "evidence": {
+    "build": {
+     "source": "592d8509675a20ed",
+     "on": "2026-09-24",
+     "commit": "7968310",
+     "result": "dynamic-programming/coin-change: 145,315 bytes -> dist/dynamic-programming/coin-change.html"
+    }
+   },
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "Coin Change",
+   "family": "state-transition"
+  },
+  "dynamic-programming/longest-increasing-subsequence": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "Longest Increasing Subsequence",
+   "family": "state-transition"
+  },
+  "dynamic-programming/unique-paths": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "Unique Paths",
+   "family": "state-transition"
+  },
+  "dynamic-programming/longest-common-subsequence": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "Longest Common Subsequence",
+   "family": "state-transition"
+  },
+  "dynamic-programming/edit-distance": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "Edit Distance",
+   "family": "state-transition"
+  },
+  "dynamic-programming/partition-equal-subset-sum": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "Partition Equal Subset Sum",
+   "family": "state-transition"
+  },
+  "dynamic-programming/word-break": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "Word Break",
+   "family": "state-transition"
+  },
+  "dynamic-programming/house-robber-iii": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "problem",
+   "title": "House Robber III",
+   "family": "state-transition"
+  },
+  "dynamic-programming/practice": {
+   "evidence": {},
+   "notes": "",
+   "module": "dynamic-programming",
+   "moduleNumber": 24,
+   "type": "practice",
+   "title": "Practice",
+   "family": "state-transition"
+  }
+ }
+}

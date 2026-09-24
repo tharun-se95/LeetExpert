@@ -1,0 +1,72 @@
+<div class="wrap"><section class="hero2"><div class="hero-copy"><div class="kick">Build a Linked List From Scratch · Linked Lists module · concept lesson</div>
+<h1 id="h1">How do you keep a list in order when nothing sits next to anything?</h1>
+<p class="lede">A file on a busy disk rarely gets one unbroken run of blocks. The FAT file system stores it as a chain instead: each block's entry names the block that comes next, and the directory remembers only the first. That chain is a linked list. Building one by hand shows exactly which pointer every operation has to rewrite, and which ones are easy to forget.</p>
+<div class="chips"><span>needs <b>two fields per node</b></span><span>keeps <b>head, tail, size</b></span><span>time <b>O(1) at the ends</b></span></div></div>
+<div class="hero-stage"><div class="hero-art navy"><svg id="heroDisk" viewBox="0 0 560 300" role="img" aria-label="Animation: five blocks of one file sit at scattered addresses on a disk. Below them the same blocks form a chain in file order, each naming the next block's address. A reader follows the chain from the head, and each block it reads lights up at its scattered place on the disk."></svg>
+<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> <span id="heroUnit">blocks</span> read</div><div id="heroCap"></div></div></div></div></section></div>
+<div class="wrap page">
+<nav class="toc" aria-label="Lesson sections"><div class="kick">On this page</div>
+<a href="#node">The node, then the list</a><a href="#build">Build it</a><a href="#walk">The pair walk</a><a href="#trap">The forgotten tail</a><a href="#insight">The special cases</a><a href="#cost">What it costs</a><a href="#next">Where next</a><a href="#quiz">Check yourself</a></nav>
+<article>
+
+<section class="sec" id="node"><h2>The node, then the list</h2><div class="banner" data-b="node"></div>
+<p>A node is two fields: the value it stores, and <code>next</code>, a reference to the node after it. The last node's <code>next</code> is empty (<code>None</code> in Python, <code>null</code> in TypeScript, drawn here as ∅). A node knows nothing about the nodes before it, only the one after.</p>
+<p>The list itself is a small wrapper around the chain. It keeps three fields: <code>head</code>, the first node, which is the only way in; <code>tail</code>, the last node, kept so adding at the end does not need a walk; and <code>size</code>, the number of nodes, kept so counting does not need one either.</p>
+<div class="rosetta" aria-label="The code, read as a file on disk"><div class="ro-h"><span>In the code</span><span>On the disk</span></div>
+<div class="ro"><code>Node</code><span>one block of the file, wherever the disk had room for it</span></div>
+<div class="ro"><code>value</code><span>the data stored in that block</span></div>
+<div class="ro"><code>next</code><span>the table entry naming the block that comes next</span></div>
+<div class="ro"><code>None</code> / <code>null</code><span>the end-of-chain marker: no block follows</span></div>
+<div class="ro"><code>head</code><span>the directory entry: the file's first block</span></div>
+<div class="ro"><code>tail</code><span>the file's last block, remembered so appending skips the walk</span></div>
+<div class="ro"><code>size</code><span>how many blocks the file uses</span></div></div>
+<p>Keeping <code>tail</code> and <code>size</code> is not free. They are promises the list makes about itself, and every method that changes the chain has to keep them true. There are three:</p>
+<div class="callout key"><div class="cl"><svg class="i"><use href="#i-s-insight"/></svg>Key idea</div><p>Three invariants: following next from head reaches every node and ends at null; tail is the last of those nodes (null only when the list is empty); size is how many there are.</p></div>
+</section>
+
+<section class="sec" id="build"><h2>Build it, one pointer at a time</h2>
+<p>Here is a real list, drawn from its actual pointers. Push values onto either end, or click a node to delete its value. Each operation plays one pointer write at a time, and the panel under it checks the three invariants against the pointers themselves, not against what the list claims.</p>
+<div class="widget navy" id="play"><div class="wl">Build it: every pointer write, one at a time</div>
+<div class="actions"><button type="button" class="btn2 best" id="pf"></button><button type="button" class="btn2" id="pb"></button><button type="button" class="btn2" id="rs">Reset</button><span class="lv-hint" id="playHint">or click a node to delete it</span></div>
+<div class="lvhost"></div></div>
+<p>Watch the invariants while an operation runs. Part way through <span class="c-py"><code>push_front</code></span><span class="c-ts"><code>pushFront</code></span>, <code>head</code> already points at the new node but <code>size</code> has not caught up, so the count is briefly wrong. That is allowed: an invariant only has to hold when a method returns, because in single-threaded code nothing else can look at the list in the middle of a call. The panel marks those moments as mid-operation instead of calling them broken.</p>
+<p>Both pushes are a fixed handful of pointer writes, whatever the length of the list, so both are O(1). Two branches deserve attention. When the list is empty there is no old tail to link onto, so the new node becomes head and tail at once. That branch exists because the pointer the normal path writes, <code>tail.next</code>, does not exist yet.</p>
+<div id="code-full"></div>
+</section>
+
+<section class="sec" id="walk"><h2>Find and delete: walking in pairs</h2><div class="banner" data-b="walk"></div>
+<p>Finding a value means walking from <code>head</code>, one <code>next</code> at a time, until the value turns up or the walk falls off the end. There is no shortcut: a node's position in memory says nothing about its position in the list, so reaching the k-th node costs k steps. Find is O(n).</p>
+<p>Deleting is harder, and the reason is a property of the chain. To remove a node you rewrite the <code>next</code> of the node <em>before</em> it, so that it skips over the one being removed. But a node has no reference to the node before it. By the time the walk is standing on the node to delete, it is too late to reach back. So delete walks two references in step: <code>curr</code>, the node being examined, and <code>prev</code>, the one before it.</p>
+<div class="widget navy" id="walker"><div class="wl">Walk the pair</div><div class="extabs" role="group" aria-label="Choose an operation"></div><div class="lvhost"></div></div>
+<p>The four delete cases split on two questions. Is <code>prev</code> empty? Then the node is the head, and it is <code>head</code> that must skip ahead, not a <code>next</code>. Is <code>curr</code> the tail? Then <code>tail</code> must move back to <code>prev</code>. Finding the node is O(n); once it is found, the splice is at most two pointer writes and a change to <code>size</code>.</p>
+</section>
+
+<section class="sec" id="trap"><h2>The forgotten tail</h2><div class="banner" data-b="trap"></div>
+<p>The branch that moves <code>tail</code> back when the tail is deleted is the one most often left out, and leaving it out does not crash anything. Delete the last node without it and <code>tail</code> still points at the node that was just removed, a node nothing reachable from <code>head</code> leads to. The damage waits for the next append: <span class="c-py"><code>push_back</code></span><span class="c-ts"><code>pushBack</code></span> trusts <code>tail</code>, links the new node onto that removed node, and the new value is gone without an error.</p>
+<div class="widget navy" id="trapper"><div class="wl">Delete the tail, then append</div><div class="extabs" role="group" aria-label="Choose a version"></div><div class="lvhost"></div></div>
+<div id="warnbox"></div>
+</section>
+
+<section class="sec" id="insight"><h2>The special cases are the lesson</h2>
+<p>Count the branches in the class: an empty list in both pushes, deleting the head, deleting the tail. Each one sits at a boundary where the pointer the normal path rewrites does not exist.</p>
+<div class="rosetta" aria-label="Where each special case comes from"><div class="ro-h"><span>The branch</span><span>The pointer that is missing</span></div>
+<div class="ro"><b class="ro-k">push to an empty list</b><span>there is no old tail whose <code>next</code> could be set, so head and tail are set directly</span></div>
+<div class="ro"><b class="ro-k">delete the head</b><span>there is no <code>prev</code>, so <code>head</code> itself skips ahead instead of <code>prev.next</code></span></div>
+<div class="ro"><b class="ro-k">delete the tail</b><span>the node <code>tail</code> names is leaving, so <code>tail</code> must move back to <code>prev</code></span></div></div>
+<div class="callout key"><div class="cl"><svg class="i"><use href="#i-s-insight"/></svg>Key idea</div><p>Every special case in a linked list is a boundary where a pointer you would normally rewrite is missing. Find the boundaries and you have found the bugs.</p></div>
+<p>The next lesson removes most of these branches with one trick: a dummy node that sits in front of the head and is never deleted. With it, every real node has a node before it, so deleting the head becomes an ordinary splice.</p>
+</section>
+
+<section class="sec" id="cost"><h2>What it costs</h2>
+<p>Keeping <code>tail</code> is what makes appending O(1). Without it, appending means walking from <code>head</code> to the last node every time. Appending to a list of k nodes visits all k of them, so appending n values one after another visits 0 + 1 + … + (n − 1) nodes in total, which is n(n − 1) / 2.</p>
+<div class="widget navy"><div class="wl">Nodes visited to append n values</div><div class="chart" id="cost-chart"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>no tail: walk to the end each time</span><span><i style="background:var(--g-ink)"></i>with tail: link on directly</span></div><p class="cost-note" id="cost-note"></p></div>
+<p>Memory is the other cost, and big-O hides it. An array of numbers stores the numbers side by side. A linked list stores each number inside its own node, next to a reference to the following node, and each node is a separate allocation with its own bookkeeping. Both are O(n) space, but the list spends at least twice the slots per value, and its nodes are scattered, so reading them in order does not benefit from the cache the way an array does. A list earns its place where it splices: inserting or removing next to a node you already hold is O(1), which an array cannot do.</p>
+</section>
+
+<section class="sec" id="next"><h2>Where next</h2>
+<p>The rest of the module reuses the moves on this page: rewriting a next pointer, and walking with more than one reference.</p>
+<div class="vgrid" id="vlist"></div>
+</section>
+
+<section class="sec" id="quiz"><h2>Check yourself</h2><div id="qlist"></div></section>
+</article></div>

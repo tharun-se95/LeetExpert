@@ -1,9 +1,9 @@
 <div class="wrap"><section class="hero2"><div class="hero-copy"><div class="kick">Coin Change · Dynamic Programming module · problem lesson</div>
 <h1 id="h1">How few machines add up to exactly this much capacity?</h1>
 <p class="lede">A customer asks for exactly 11 vCPUs. The cloud sells instances in sizes of 1, 2 and 5 vCPUs, in any quantity, and every instance you launch is one more line on the bill. What is the fewest instances that add up to exactly 11? Grabbing the biggest size each time feels right and is sometimes wrong, and finding out why leads to one of the most useful ideas in the course.</p>
-<div class="chips"><span>needs <b>a table of answers</b></span><span>shape <b>try every last piece</b></span><span>cost <b>O(amount × sizes)</b></span></div></div>
-<div class="hero-art"><svg id="heroFleet" viewBox="0 0 560 300" role="img" aria-label="Animation: a row of cells labelled 0 to 11 fills in from left to right. Each cell shows the fewest instances that add up to exactly that many vCPUs, built from the cells behind it."></svg>
-<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> instances</div><div id="heroCap"></div></div></div></section></div>
+<div class="chips"><span>needs <b>a table of answers</b></span><span>shape <b>try every last piece</b></span><span>time <b>O(amount × sizes)</b></span></div></div>
+<div class="hero-stage"><div class="hero-art navy"><svg id="heroFleet" viewBox="0 0 560 300" role="img" aria-label="Animation: a row of cells labelled 0 to 11 fills in from left to right. Each cell shows the fewest instances that add up to exactly that many vCPUs, built from the cells behind it."></svg>
+<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> <span id="heroUnit">instances</span></div><div id="heroCap"></div></div></div></div></section></div>
 <div class="wrap page">
 <nav class="toc" aria-label="Lesson sections"><div class="kick">On this page</div>
 <a href="#problem">Problem</a><a href="#attempt">Attempt it first</a><a href="#trap">Two traps</a><a href="#insight">The insight</a><a href="#solution">Solution</a><a href="#variants">Variants</a><a href="#quiz">Check yourself</a></nav>
@@ -14,13 +14,13 @@
 <div class="ex"><div><span>coins = [1,2,5], amount = 11</span><em>→ 3 (5 + 5 + 1)</em></div><div><span>coins = [2], amount = 3</span><em>→ -1 (only even totals are possible)</em></div></div>
 <div class="callout constraint"><div class="cl"><svg class="i"><use href="#i-warn"/></svg>Constraint</div><p>1 ≤ coins.length ≤ 12, 1 ≤ coins[i] ≤ 2³¹ − 1, 0 ≤ amount ≤ 10⁴.</p></div>
 <p>Read a coin as an instance size and the amount as the capacity a customer asked for. Launching an instance costs one unit no matter how big it is, so the job is to reach the exact capacity with as few launches as possible. It is exact, not "at least": an order that overshoots is not a solution. Sometimes no mix works at all, which is what the <code>-1</code> is for.</p>
-<div class="widget" id="explore"><div class="wl">Explore: build an order by hand</div><div class="extabs" role="group" aria-label="Choose an order"></div><div class="tv-wrap"><div class="fleet"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><span class="picks"></span><button type="button" class="btn2 undo">Undo</button><button type="button" class="btn2 best">Show a fewest order</button></div></div>
+<div class="widget navy" id="explore"><div class="wl">Explore: build an order by hand</div><div class="extabs" role="group" aria-label="Choose an order"></div><div class="tv-wrap"><div class="fleet"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><span class="picks"></span><button type="button" class="btn2 undo">Undo</button><button type="button" class="btn2 best">Show a fewest order</button></div></div>
 </section>
 
 <section class="sec" id="attempt"><h2>Attempt it first</h2><div class="banner" data-b="attempt"></div>
 <p>This is unbounded knapsack: each size can be reused without limit. Before writing any table, think about the greedy rule first, because it is the natural first move and it is worth knowing exactly why it fails. Take sizes <code>{1, 3, 4}</code> and a capacity of 6. Work out what "always launch the biggest size that still fits" does, and compare it with the best possible order.</p>
 <p>Predict the fewest instances for each order, then check.</p>
-<div class="widget"><div class="wl">Predict the fewest instances</div><div id="predict"></div></div>
+<div class="widget navy"><div class="wl">Predict the fewest instances</div><div id="predict"></div></div>
 <div id="hint"></div>
 </section>
 
@@ -28,12 +28,12 @@
 <p><b>The first trap is greedy.</b> Keep launching the biggest size that still fits, and stop when nothing is left:</p>
 <div id="greedy-code"></div>
 <p>It is fast and it is often right, which is what makes it dangerous. The table below runs it next to the true optimum on a few size sets.</p>
-<div class="widget"><div class="wl">Greedy against the true fewest</div><div class="ex" id="greedy-table"></div><p class="cost-note" id="greedy-note"></p></div>
+<div class="widget navy"><div class="wl">Greedy against the true fewest</div><div class="ex" id="greedy-table"></div><p class="cost-note" id="greedy-note"></p></div>
 <p>The reason is that a big size can leave an awkward remainder. With <code>{1, 3, 4}</code> and 6, greedy takes the 4 and is left with 2, which can only be filled by two 1s. The optimum passes on the 4 and takes 3 + 3. One early choice was never revisited.</p>
 <p><b>The second trap is trying everything.</b> Fix greedy by trying every size as the last instance and recursing on what remains:</p>
 <div id="slow-code"></div>
 <p>This is correct, and it is slow for a specific reason. To make 11 it asks about 10, 9 and 6. To make 10 it asks about 9, 8 and 5. Both of those need 9, and both then need 8, so the same question is asked over and over. The chart counts the calls the recursion really makes against the number of different questions, which is only one per amount.</p>
-<div class="widget"><div class="wl">Calls made as the amount grows (sizes 1, 2 and 5)</div><div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>recursion, every call</span><span><i style="background:var(--g-ink)"></i>different questions</span></div><p class="cost-note"></p></div>
+<div class="widget navy"><div class="wl">Calls made as the amount grows (sizes 1, 2 and 5)</div><div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>recursion, every call</span><span><i style="background:var(--g-ink)"></i>different questions</span></div><p class="cost-note"></p></div>
 </section>
 
 <section class="sec" id="insight"><h2>The insight</h2><div class="banner" data-b="insight"></div>
@@ -49,7 +49,7 @@
 <div class="ro"><code>INF</code><span>"no order reaches this capacity yet"</span></div>
 <div class="ro"><code>dp[0] = 0</code><span>zero vCPUs needs zero instances</span></div></div>
 <p>Watch the table fill. The orange cell is the amount being solved. The blue cells are the entries it reads, one for each size that fits.</p>
-<div class="widget" id="stepper"><div class="wl">Fill the table</div><div class="extabs" role="group" aria-label="Choose an order"></div><div class="plhost"></div></div>
+<div class="widget navy" id="stepper"><div class="wl">Fill the table</div><div class="extabs" role="group" aria-label="Choose an order"></div><div class="plhost"></div></div>
 </section>
 
 <section class="sec" id="solution"><h2>Solution</h2><div class="banner" data-b="solution"></div>
