@@ -150,19 +150,19 @@ function mountWalk(host){mountStepper(host,BUILDS,function(i){return buildFrames
 var STALL=BUILDS[2].run;
 var QUIZ=[
  {q:'The queue of ready courses has just run empty. Why is that alone not enough to say the answer is true?',
-  opts:['It happens in two cases: everything was built, or the courses left over are waiting on each other in a loop and never became ready. Only comparing how many were built with the total tells them apart.',
-        'The queue also empties whenever the input contains a duplicate prerequisite pair, so a second check is needed to rule duplicates out.',
-        'It is enough: an empty queue means every course was placed in the queue at some point, so every course was built.'],
+  opts:['It empties in two cases: every course was built, or the rest wait on each other in a loop and were never queued. Only the built count against the total tells them apart.',
+        'An empty queue proves every course was queued at some point: a course enters the queue when its waiting count reaches zero, and every count reaches zero in the end.',
+        'The queue also empties early when the input repeats a prerequisite pair, because the duplicate lowers one count twice; the final check is there to rule those duplicates out.'],
   a:0,why:'A course only enters the queue when its waiting count reaches zero. A course inside a cycle never gets there, so it is never queued and never built, yet the queue still ends up empty. That is why the code ends with <code>built == num_courses</code>. The version that returns true after the loop says true for the loop of three courses as well.'},
  {q:'On the build with prerequisites <code>[[1,0],[2,1],[3,2],[4,3],[2,4]]</code>, which courses get built before the process stalls?',
-  opts:['Courses '+list(STALL.order)+'. Course 2 waits on both 1 and 4, and 4 waits on 3, which waits on 2, so courses '+list(STALL.stuck)+' can never start.',
-        'None. As soon as a cycle exists anywhere in the graph, no course can be built, so the process never starts.',
-        'Courses 0, 1 and 2. Course 2 is built once course 1 is, and the loop only starts after that.'],
+  opts:['Courses '+list(STALL.order)+'. Course 2 waits on 1 and on 4, 4 waits on 3, and 3 waits on 2, so courses '+list(STALL.stuck)+' never start.',
+        'None of them: once the graph holds a cycle anywhere, the waiting counts never all reach zero, so the queue starts out empty and nothing is ever built.',
+        'Courses 0, 1 and 2: course 2 becomes ready once course 1 is built, and the loop through 3 and 4 only blocks the courses that come after it.'],
   a:0,why:'A cycle blocks only what is inside it and what depends on it. Courses 0 and 1 have no prerequisites in the loop, so they are built. Course 2 has two prerequisites, 1 and 4. Course 1 is done, but 4 needs 3, and 3 needs 2, so 2 keeps waiting on 4 forever. The page above runs exactly this build in the third tab.'},
  {q:'Where does the O(V + E) time come from?',
-  opts:['Each course is taken from the queue once, and each arrow is used once, to lower one waiting count when its prerequisite is built. That is V dequeues plus E decrements, plus the pass that builds the tables.',
-        'Each course is visited once for each of its arrows, and an arrow can point to any other course, so every visit may need to look through all V courses.',
-        'The queue holds at most V courses and every one of them is compared with all E arrows to find what it releases.'],
+  opts:['Each course leaves the queue once and each arrow is followed once, lowering one waiting count: V dequeues plus E decrements, plus the pass that builds the tables.',
+        'Each built course scans the list of all E arrows to find the ones leaving it, but the scan stops at the first match, so on average it costs about one step per arrow.',
+        'The queue holds at most V courses, and each is compared with every arrow when it is dequeued, so the work is V for the queue plus E for those comparisons.'],
   a:0,why:'The adjacency list means a built course only looks at the arrows leaving it, not at all E. Summed over every course, those are exactly E looks. Counting on the loop chart above: about 2n work for n courses, while testing every order needs n!.'}
 ];
 
@@ -224,10 +224,13 @@ var QUIZ=[
   var banners={
     problem:function(svg){
       var xs=[110,250,390,530];
+      svg.insertAdjacentHTML('afterbegin','<defs><marker id="bnArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="context-stroke"/></marker></defs>');
       var lines=[0,1,2].map(function(i){return S('line',{x1:xs[i]+22,y1:64,x2:xs[i]+22,y2:64,class:'bn-path'},svg);});
+      // A line of zero length has no direction, so its arrowhead would point anywhere: add it once the line has grown.
+      function grow(l,i,v){l.setAttribute('x2',xs[i]+22+(xs[i+1]-xs[i]-50)*v);if(v>.05)l.setAttribute('marker-end','url(#bnArrow)');}
       xs.forEach(function(x,i){S('rect',{x:x-24,y:44,width:48,height:40,rx:9,class:'bn-mid'},svg);S('text',{x:x,y:70,class:'bn-t','text-anchor':'middle'},svg).textContent=['A','B','C','D'][i];});
       S('text',{x:360,y:110,class:'bn-t','text-anchor':'middle'},svg).textContent='each arrow: must be built before';
-      return function(){lines.forEach(function(l,i){M.animate(0,1,{duration:.5,delay:i*.5,onUpdate:function(v){l.setAttribute('x2',xs[i]+22+(xs[i+1]-xs[i]-44)*v);}});});};
+      return function(){lines.forEach(function(l,i){M.animate(0,1,{duration:.5,delay:i*.5,onUpdate:function(v){grow(l,i,v);}});});};
     },
     attempt:function(svg){
       S('text',{x:180,y:58,class:'bn-big','text-anchor':'middle'},svg).textContent='4 courses, 4 arrows';

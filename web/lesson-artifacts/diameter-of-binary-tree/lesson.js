@@ -152,14 +152,14 @@ function mountWalk(host){mountStepper(host,EXAMPLES,function(i){return diameterF
 /* ---------- quiz (options shuffled with a fixed seed so the answer is not always first) ---------- */
 var QUIZ=[
  {q:'Why can\'t the recursion simply RETURN each subtree\'s diameter to its parent, the way maximum depth returns each subtree\'s depth?',
-  opts:['A parent extending a path through itself needs to know how far its child\'s subtree reaches downward (the child\'s height). A subtree\'s diameter is a path buried inside it that says nothing about downward reach, so the parent would be missing the only quantity it can build on.',
-        'Returning the diameter would double-count edges: if a parent added its own edge to a child\'s already-returned diameter, some edges in the child\'s subtree would be counted twice.',
-        'It can: returning the diameter directly works and is the standard solution, because a parent can always combine its two children\'s diameters with its own bending path.'],
+  opts:['To extend a path through itself, a parent needs how far each child\'s subtree reaches down, its height. A subtree\'s diameter is a path inside it that says nothing about that reach.',
+        'Returning the diameter would count edges twice: when a parent adds its own edge to a child\'s returned diameter, edges already on the child\'s path get counted again at every level.',
+        'It can, and that is the standard solution: a parent combines its two children\'s returned diameters with the path that bends at itself, and keeps the largest of the three.'],
   a:0,why:'The answer (the longest path anywhere) and the value a parent needs (how far the subtree reaches downward) are different quantities. A subtree\'s diameter is an internal path, not a downward one, so a parent cannot stitch it into a path through itself. The returned value must be height, and the diameter is collected separately while both child heights are in hand.'},
  {q:'The "correct but slow" version computes height separately inside the diameter function and runs in O(n²). Where does the quadratic cost come from?',
-  opts:['Each node calls height() on its children, and height() re-walks that whole subtree, so every subtree\'s height is recomputed once for every ancestor it has. Summed over the tree that is O(n) work per node times n nodes, worst on a skewed tree.',
-        'From the two recursive diameter calls doubling the work at each node: every call spawns two more that spawn two more each, and the branching itself produces the quadratic blowup.',
-        'From the max() call, which scans all nodes each time: taking the maximum of the through-path and both subtree diameters needs a full tree scan on every call.'],
+  opts:['Each node calls height() on its children, and height() walks that whole subtree again, so each subtree\'s height is recomputed once per ancestor: O(n) per node, n nodes.',
+        'The two recursive diameter() calls at each node spawn two more each, and that doubling at every level is what makes the work grow with the square of the number of nodes.',
+        'The max() at each node compares the bending path with both subtree diameters, and finding those diameters means scanning every node in the tree again on each call.'],
   a:0,why:'It is the redundant-recompute pattern of naive Fibonacci. A subtree near the root has its height recalculated once per ancestor, so the same nodes are walked again and again. The chart above counts it exactly: n(n + 1) / 2 visits on a skewed tree. Folding height and diameter into one postorder pass computes each height once and drops O(n²) to O(n).'}
 ];
 /* ---------- assemble ---------- */
@@ -224,7 +224,7 @@ var QUIZ=[
     }
     function show(phase,hops){
       cap.innerHTML=phase===0?'A route through the <b>core</b>':'A route that <b>bends at a</b> and never touches the core';
-      num.textContent=hops;ro.dataset.phase=phase;
+      num.textContent=hops;document.getElementById('heroUnit').textContent=hops===1?'hop':'hops';ro.dataset.phase=phase;
     }
     function still(){place(best,1);show(1,best.length-1);}
     var reduceM=window.matchMedia&&matchMedia('(prefers-color-scheme: light)')&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -263,7 +263,7 @@ var QUIZ=[
       var c1=S('text',{x:380,y:64,class:'bn-big red'},svg);c1.textContent='0';
       S('text',{x:380,y:96,class:'bn-t'},svg).textContent='one pass: each switch is visited once, 8';
       return function(){var total=0;rows.forEach(function(r,i){var len=(n-i)*22;M.animate(0,len,{duration:.35,delay:i*.28,ease:'easeOut',onUpdate:function(v){r.setAttribute('width',v);}});M.animate(0,n-i,{duration:.35,delay:i*.28,onUpdate:function(v){}});});
-        var cur=0;M.animate(0,36,{duration:8*.28+.3,ease:'linear',onUpdate:function(v){c1.textContent=Math.round(v)+' visits';}});};
+        var cur=0;M.animate(0,36,{duration:8*.28+.3,ease:'linear',onUpdate:function(v){c1.textContent=count(Math.round(v),'visit','visits');}});};
     },
     insight:function(svg){
       var P=[[300,14],[190,58],[410,58],[130,104],[250,104],[350,104],[470,104]];
@@ -278,7 +278,7 @@ var QUIZ=[
       S('rect',{x:60,y:52,width:520,height:14,rx:7,class:'bn-track'},svg);var fill=S('rect',{x:60,y:52,width:0,height:14,rx:7,class:'bn-bar'},svg);
       for(var i=0;i<=6;i++){S('line',{x1:60+i*520/6,x2:60+i*520/6,y1:70,y2:78,class:'bn-edge'},svg);S('text',{x:60+i*520/6,y:94,class:'bn-t','text-anchor':'middle'},svg).textContent=i;}
       var big=S('text',{x:60,y:36,class:'bn-big'},svg);big.textContent='record: 0 hops';
-      return function(){M.animate(0,6,{duration:3.2,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/6);big.textContent='record: '+Math.round(v)+' hops';}});};
+      return function(){M.animate(0,6,{duration:3.2,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/6);big.textContent='record: '+count(Math.round(v),'hop','hops');}});};
     }
   };
   heroNet();mountBanners(banners);kinetic();riseIn();

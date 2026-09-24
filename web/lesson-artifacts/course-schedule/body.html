@@ -1,9 +1,9 @@
 <div class="wrap"><section class="hero2"><div class="hero-copy"><div class="kick">Course Schedule · Graphs module · problem lesson</div>
 <h1 id="h1">Can this build ever finish, or will it wait on itself forever?</h1>
 <p class="lede">A monorepo has dozens of packages, and each one lists the packages that must be built before it. The build system has to find an order that respects every list. If package A needs B, B needs C and C needs A, no order exists, and the pipeline would sit there forever. Deciding whether an order exists is exactly the Course Schedule problem, with courses as packages and prerequisites as dependencies.</p>
-<div class="chips"><span>needs <b>a directed graph</b></span><span>shape <b>peel off what is ready</b></span><span>cost <b>O(V + E)</b></span></div></div>
-<div class="hero-art"><svg id="heroBuild" viewBox="0 0 560 300" role="img" aria-label="Animation: six packages joined by arrows that mean must be built first. Packages with nothing left to wait on are built one at a time, lighting up the packages they unlock, until all six are built."></svg>
-<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> of 6 built</div><div id="heroCap"></div></div></div></section></div>
+<div class="chips"><span>needs <b>a directed graph</b></span><span>shape <b>peel off what is ready</b></span><span>time <b>O(V + E)</b></span></div></div>
+<div class="hero-stage"><div class="hero-art navy"><svg id="heroBuild" viewBox="0 0 560 300" role="img" aria-label="Animation: six packages joined by arrows that mean must be built first. Packages with nothing left to wait on are built one at a time, lighting up the packages they unlock, until all six are built."></svg>
+<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> of 6 built</div><div id="heroCap"></div></div></div></div></section></div>
 <div class="wrap page">
 <nav class="toc" aria-label="Lesson sections"><div class="kick">On this page</div>
 <a href="#problem">Problem</a><a href="#attempt">Attempt it first</a><a href="#trap">Two traps</a><a href="#insight">The insight</a><a href="#solution">Solution</a><a href="#variants">Variants</a><a href="#quiz">Check yourself</a></nav>
@@ -14,14 +14,14 @@
 <div class="ex"><div><span>numCourses = 2, prerequisites = [[1,0]]</span><em>→ true (take 0, then 1)</em></div><div><span>numCourses = 2, prerequisites = [[1,0],[0,1]]</span><em>→ false (each waits on the other)</em></div></div>
 <div class="callout constraint"><div class="cl"><svg class="i"><use href="#i-warn"/></svg>Constraint</div><p>Up to 2000 courses and up to 5000 prerequisite pairs.</p></div>
 <p>Draw each pair <code>[a, b]</code> as an arrow from <code>b</code> to <code>a</code>, meaning "b must come before a". Now the courses are packages, the arrows are build dependencies, and the question is whether the build can run to the end. The only thing that can stop it is a loop of packages each waiting on the next, so what you are really asking is whether the arrows contain a cycle.</p>
-<div class="widget" id="explore"><div class="wl">Explore: run the build yourself</div><div class="extabs" role="group" aria-label="Choose a build"></div><div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 reset">Reset</button><button type="button" class="btn2 best">Show a valid order</button></div></div>
+<div class="widget navy" id="explore"><div class="wl">Explore: run the build yourself</div><div class="extabs" role="group" aria-label="Choose a build"></div><div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 reset">Reset</button><button type="button" class="btn2 best">Show a valid order</button></div></div>
 </section>
 
 <section class="sec" id="attempt"><h2>Attempt it first</h2><div class="banner" data-b="attempt"></div>
 <p>The module's topological-sort lesson asks one question about a directed graph: does a valid ordering exist at all? Before opening anything, work out what property of the arrows decides it.</p>
 <p>A tempting shortcut is to count: "if there are at least as many arrows as courses, there must be a loop". It does not hold. The diamond in the widget above has 4 courses and 4 arrows and can be built. A different set of 5 courses with 5 arrows cannot. The same counts, opposite answers, so the answer lives in how the arrows connect, not how many there are.</p>
 <p>Predict each build, then check.</p>
-<div class="widget"><div class="wl">Can every course be finished?</div><div id="predict"></div></div>
+<div class="widget navy"><div class="wl">Can every course be finished?</div><div id="predict"></div></div>
 <div id="hint"></div>
 </section>
 
@@ -29,7 +29,7 @@
 <p><b>The first trap is trying every build order.</b> An order is valid if every prerequisite comes before the course that needs it, so generate the orders and test them:</p>
 <div id="slow-code"></div>
 <p>It is correct and it is hopeless. There are n! orders of n courses, and when no valid order exists it has to test every one of them before it can say so. Even 10 courses is 3,628,800 orders. The chart counts the orders it really tests on a loop of n courses, against the work of the method below.</p>
-<div class="widget"><div class="wl">Work to detect a loop of n courses</div><div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>test every order</span><span><i style="background:var(--g-ink)"></i>peel off what is ready</span></div><p class="cost-note"></p></div>
+<div class="widget navy"><div class="wl">Work to detect a loop of n courses</div><div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>test every order</span><span><i style="background:var(--g-ink)"></i>peel off what is ready</span></div><p class="cost-note"></p></div>
 <p><b>The second trap is a good idea used half-way.</b> The approach in the next section builds courses that are ready and stops when nothing is ready. The mistake is to conclude "the queue is empty, so we finished". An empty queue happens in two very different situations: everything was built, or what is left is locked in a loop. The warning at the end of the solution shows the code that mixes them up.</p>
 </section>
 
@@ -46,7 +46,7 @@
 <div class="ro"><code>built</code><span>how many packages the pipeline has completed</span></div>
 <div class="ro"><code>built == num_courses</code><span>the whole repo built, so no dependency loop</span></div></div>
 <p>Watch it run. The arrows read "must be built before". The number under a course counts its unbuilt prerequisites, and a blue course is ready.</p>
-<div class="widget" id="stepper"><div class="wl">Run the build</div><div class="extabs" role="group" aria-label="Choose a build"></div><div class="plhost"></div></div>
+<div class="widget navy" id="stepper"><div class="wl">Run the build</div><div class="extabs" role="group" aria-label="Choose a build"></div><div class="plhost"></div></div>
 </section>
 
 <section class="sec" id="solution"><h2>Solution</h2><div class="banner" data-b="solution"></div>

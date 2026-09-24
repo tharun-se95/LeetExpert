@@ -164,19 +164,19 @@ function mountWalk(host){mountStepper(host,EXAMPLES,function(i){return tableFram
 var OPS=10000*12;
 var QUIZ=[
  {q:'Why is it enough to try every size as the <em>last</em> instance and take the best, when greedy\'s single choice is not?',
-  opts:['Any fewest order for amount a has some last instance c. Removing it leaves an order for a − c that must itself be a fewest one, because a shorter one would make the whole order shorter. So the best answer for a is 1 plus the best of dp[a − c] over all c, and no optimum is missed.',
-        'Trying every size makes the table remember all the orders in which instances could be launched, so it also counts the different arrangements and picks the cheapest arrangement.',
-        'Taking the minimum over all sizes always selects the smallest size, and using the smallest size at each step is what keeps the total low.'],
+  opts:['Any fewest order for a ends in some size c, and what remains must be a fewest order for a − c, or the whole could be shorter. So 1 + the best dp[a − c] over all c misses nothing.',
+        'Trying every size makes the table record every order in which instances could be launched, and taking the minimum then picks the cheapest of those orders once all of them are listed.',
+        'Taking the minimum over every size ends up choosing the smallest size at each step, and building the order from small sizes is what keeps the count of instances as low as it can go.'],
   a:0,why:'This is optimal substructure: the best solution contains a best solution to a smaller version of the same problem. Greedy commits to one candidate without comparing, so a locally big choice can strand an awkward remainder. Trying every last size compares them all, and the order in which instances are launched never matters to the total.'},
  {q:'The table starts with <code>dp[0] = 0</code> and every other entry at <code>amount + 1</code>. Why not start them all at 0?',
-  opts:['A 0 would beat every real count in the minimum, so every cell would claim to need no instances at all. The large placeholder means "not reachable yet": it loses to any real count, and it is what remains in cells that are never reachable, which is why the answer must be checked against it at the end.',
-        'Zero is fine for the minimum, and the large value is only there to stop integer overflow when two entries are added.',
-        'The placeholder makes the loop run faster, because a large starting value lets the inner comparison exit early on most steps.'],
+  opts:['A 0 would win every minimum, so every cell would claim zero instances. amount + 1 means "not reachable yet": any real count beats it, and a cell still holding it at the end is unreachable.',
+        'Zero would give the same answers, since cells that are never reached are never read; the large value only guards against integer overflow when 1 is added to an entry that is already large.',
+        'Starting high lets the inner loop stop early: once one size gives a count below the starting value, the remaining sizes cannot do better, so the comparison exits on most steps.'],
   a:0,why:'Take sizes {2} and capacity 3. With zeros everywhere, dp[1] and dp[3] would stay at their starting 0 and the code would answer 0, claiming no instances are needed. With the placeholder, dp[3] stays at 4 and the check turns it into -1. Forgetting that check, as the warning below shows, returns the placeholder itself.'},
  {q:'For the constraint\'s largest input, an amount of 10⁴ with 12 sizes, roughly how many inner steps does the table version take?',
-  opts:['About '+fmt(OPS)+': one step per amount per size, so 10⁴ × 12. Each amount is solved once, and solving one looks at each size once.',
-        'About 2¹² = 4,096 steps, because there are 12 sizes and each can either be used or not.',
-        'About 10⁴ steps in total, because the table has 10⁴ cells and each cell is filled with a single lookup.'],
+  opts:['About '+fmt(OPS)+' steps: each of the 10⁴ amounts is solved once, and solving one tries each of the 12 sizes once, so 10⁴ × 12.',
+        'About 2¹² = 4,096 steps, since each of the 12 sizes is either used or not, and the table only settles which subset of sizes the best order draws from.',
+        'About 10⁴ steps, since the table has 10⁴ cells and each is filled by one lookup into the cell for the largest size that fits, which keeps the work linear.'],
   a:0,why:'Each of the 10⁴ cells tries every one of the 12 sizes, and a try is one lookup and one comparison. The plain recursion, by contrast, asks the same question again and again, and its call count multiplies at every step: see the chart above. The table is the same recurrence with each answer stored once.'}
 ];
 
@@ -244,8 +244,9 @@ var QUIZ=[
         p[0].setAttribute('class',cls);p[1].textContent=txt;
         p[1].setAttribute('class','hf-ch'+((st&&i===st.a)?' onink':''));
       });
-      if(!st){num.textContent='0';cap.textContent='zero capacity needs zero instances';return;}
-      num.textContent=String(st.best);
+      var unit=document.getElementById('heroUnit');
+      if(!st){num.textContent='0';unit.textContent='instances';cap.textContent='zero capacity needs zero instances';return;}
+      num.textContent=String(st.best);unit.textContent=st.best===1?'instance':'instances';
       cap.innerHTML='dp['+st.a+'] = 1 + min('+st.cands.map(function(x){return 'dp['+x.from+']';}).join(', ')+') = <b>'+st.best+'</b>';
     }
     draw(AMT);
@@ -278,7 +279,7 @@ var QUIZ=[
       S('text',{x:360,y:84,class:'bn-t','text-anchor':'middle'},svg).textContent='to make 25, the recursion asks about the same amounts again and again';
       S('text',{x:360,y:104,class:'bn-t','text-anchor':'middle'},svg).textContent='but there are only 26 different amounts';
       var last=recursionCost([1,2,5],25).calls;
-      return function(){M.animate(1,last,{duration:2.6,ease:'easeIn',onUpdate:function(v){big.textContent=fmt(Math.round(v))+' calls';}});};
+      return function(){M.animate(1,last,{duration:2.6,ease:'easeIn',onUpdate:function(v){big.textContent=count(Math.round(v),'call','calls');}});};
     },
     insight:function(svg){
       var xs=[100,220,340,460,580];S('line',{x1:100,y1:74,x2:580,y2:74,class:'bn-edge'},svg);

@@ -35,14 +35,56 @@ def tokens(family):
         s = ";".join(f"{a}:{t[b]}" for a, b in names.items())
         return s + f";--fam:{fam['--accent']};--fam-on:{fam['--on-accent']};--fam-raw:{fam['--family-accent']};--lamp:{lamp};--lamp-glow:{glow}"
 
-    return page(light, "#2b7a3b", "rgba(43,122,59,.45)"), page(dark, "#5be07a", "rgba(91,224,122,.55)")
+    nv_light, sh_light, sh_dark = app_surfaces()
+    # The navy ladder in the dark theme is that theme's own code paper, as in the app.
+    nv_dark = {"--nv-bg": dark["--code"], "--nv-card": dark["--panel"], "--nv-deep": dark["--surface"],
+               "--nv-hair2": dark["--rule-strong"], "--nv-mut": dark["--line"]}
+
+    def extra(*ds):
+        return "".join(f";{k}:{v}" for d in ds for k, v in d.items())
+
+    L = page(light, "#2b7a3b", "rgba(43,122,59,.45)") + extra(nv_light, sh_light)
+    D = page(dark, "#5be07a", "rgba(91,224,122,.55)")
+    # N is the dark list without the navy ladder: a .navy scope takes the dark inks
+    # but must keep the ladder the page's theme chose for it.
+    return L, D + extra(nv_dark, sh_dark), D
 
 
-# @@L@@ and @@D@@ become the light and dark token lists.
+GLOBALS = os.path.join(HERE, "..", "src", "app", "globals.css")
+
+
+def app_surfaces():
+    """The navy instrument card and the elevation shadow, read from globals.css.
+
+    A navy card in the light theme is the app's `.navy-card`: the dark theme's inks
+    on its own navy ladder (ground, lifted, recessed). Its values are measured for
+    AA in paperContrast.test.ts, so they are read, never retyped here.
+    """
+    css = re.sub(r"/\*.*?\*/", "", open(GLOBALS).read(), flags=re.S)
+    navy = _decls(re.search(r":root:not\(\.dark\) \.navy-card \{([^}]*)\}", css).group(1))
+    ground = re.search(r"--card-navy:\s*([^;]+);", css).group(1).strip()
+    nv_light = {"--nv-bg": ground, "--nv-card": navy["--elevated"], "--nv-deep": navy["--surface"],
+                "--nv-hair2": navy["--border"], "--nv-mut": navy["--muted"]}
+    tint = re.findall(r"--shadow-tint:\s*([^;]+);", css)
+    elev = [re.sub(r"\s+", " ", v).strip() for v in re.findall(r"--shadow-elevation:\s*([^;]+);", css)]
+    # globals.css declares the light theme first and the dark theme second.
+    return (nv_light, {"--shadow-tint": tint[0], "--shadow-elevation": elev[0]},
+            {"--shadow-tint": tint[1], "--shadow-elevation": elev[1]})
+
+
+# The state colours the engine paints cells with. Declared again on .navy: a custom
+# property resolves where it is declared, so the :root copy would keep paper values.
+K = ("--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-ink:var(--bg);--k-acc:var(--fam);--k-acc-ink:var(--fam-on);"
+     "--k-done:var(--g-ink);--k-done-ink:var(--bg);--k-bad:var(--r-ink);--k-bad-ink:var(--bg);--k-warn:var(--y-ink);--k-warn-ink:var(--bg);"
+     "--k-viol:var(--p-ink);--k-viol-ink:var(--bg);--k-dim:var(--well);--k-dim-ink:var(--mut);--k-win:var(--b-1);--k-win-ink:var(--fg);"
+     "--e-idle:var(--mut);--e-path:var(--fam);--e-cur:var(--o-ink)")
+
+# @@L@@ and @@D@@ become the light and dark token lists, @@N@@ the navy card's inks.
 BASE_CSS = r'''
-:root{@@L@@;--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-ink:var(--bg);--k-acc:var(--fam);--k-acc-ink:var(--fam-on);--k-done:var(--g-ink);--k-done-ink:var(--bg);--k-bad:var(--r-ink);--k-bad-ink:var(--bg);--k-warn:var(--y-ink);--k-warn-ink:var(--bg);--k-viol:var(--p-ink);--k-viol-ink:var(--bg);--k-dim:var(--well);--k-dim-ink:var(--mut);--k-win:var(--b-1);--k-win-ink:var(--fg);--e-idle:var(--mut);--e-path:var(--fam);--e-cur:var(--o-ink)}
+:root{@@L@@;@@K@@}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){@@D@@}}
 :root[data-theme="dark"]{@@D@@}
+.navy{@@N@@;--bg:var(--nv-bg);--card:var(--nv-card);--deep:var(--nv-deep);--well:var(--nv-deep);--hair2:var(--nv-hair2);--mut:var(--nv-mut);@@K@@;color:var(--fg)}'''.replace("@@K@@", K) + r'''
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:'Space Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.6;padding-inline:16px;font-variant-ligatures:none}
@@ -68,7 +110,7 @@ svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke
 .hero .kick{margin-bottom:18px}
 .hero-meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:26px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mut)}
 .hero-meta b{color:var(--fg);font-weight:500}
-.idxbox{background:var(--card);border:1px solid var(--hair2);border-radius:14px;padding:18px;box-shadow:0 8px 28px rgba(0,0,0,.12)}
+.idxbox{background:var(--card);border:1px solid var(--hair2);border-radius:14px;padding:18px;box-shadow:var(--shadow-elevation)}
 .idx{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(3,auto);row-gap:34px;column-gap:8px}
 .idx-edges{position:absolute;inset:0;pointer-events:none}
 .idx-edges line{stroke:var(--mut);stroke-width:1.6;opacity:.6}
@@ -109,7 +151,7 @@ main[data-code="py"] .c-ts,main[data-code="ts"] .c-py{display:none}
 .watch{display:flex;gap:12px;font-size:14px;border:1px solid var(--hair2);border-radius:10px;padding:12px 14px;background:var(--card)}
 .watch .i{font-size:20px;color:var(--r-ink);margin-top:1px}
 .watch b{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;color:var(--mut);font-weight:500}
-.player{border:1px solid var(--hair2);border-radius:16px;background:var(--card);box-shadow:0 8px 28px rgba(0,0,0,.12);overflow:hidden;min-width:0}
+.player{border:1px solid var(--hair2);border-radius:16px;background:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden;min-width:0}
 .stage{display:flex;flex-wrap:wrap;gap:20px 24px;justify-content:center;align-items:flex-start;padding:22px 18px;background:var(--deep);;min-height:300px}
 .grp{flex:1 1 0;min-width:210px;display:flex;flex-direction:column;gap:14px;align-items:center}
 .grp.wide{flex-basis:100%}
@@ -167,4 +209,11 @@ ICONS = r'''<symbol id="i-ast" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2
 <symbol id="i-recurse" viewBox="0 0 24 24"><path d="M12 4v6M12 10L6 15M12 10l6 5M6 15v5M18 15v5"/></symbol>
 <symbol id="i-meet" viewBox="0 0 24 24"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="12" cy="5" r="2"/><path d="M6 17.2L11 6.8M18 17.2L13 6.8"/></symbol>
 <symbol id="i-flat" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/><path d="M7 5v6M11 5v6M15 5v6M19 5v6M5 13v6M9 13v6M13 13v6M17 13v6" stroke-width="1.2"/></symbol>
+<symbol id="i-s-problem" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></symbol>
+<symbol id="i-s-attempt" viewBox="0 0 24 24"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M13.5 7l3 3"/></symbol>
+<symbol id="i-s-insight" viewBox="0 0 24 24"><path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1.1 1.3 1.1 2.2h5c0-.9.5-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+<symbol id="i-s-solution" viewBox="0 0 24 24"><circle cx="8" cy="15.5" r="4"/><path d="M11 12.5l8-8M16.5 7l2.5 2.5M14 9.5l2 2"/></symbol>
+<symbol id="i-s-variants" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7v10M18 9c0 4.5-6.5 3.5-11 8.3"/></symbol>
+<symbol id="i-s-quiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.3l2.6 2.6 5-5.2"/></symbol>
+<symbol id="i-s-cost" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M7 16c4 0 7-2.5 11-10"/><path d="M7 17.5h11" stroke-dasharray="1.5 2.5"/></symbol>
 <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></symbol>'''

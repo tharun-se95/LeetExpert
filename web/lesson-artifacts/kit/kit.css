@@ -5,8 +5,22 @@
 .hero2 .lede{font-size:18px;color:var(--mut);max-width:54ch;margin-top:18px}
 .hero2 .chips{margin-top:22px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chips span{font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 10px;border:1px solid var(--hair2);border-radius:99px;background:var(--card);color:var(--mut)} .chips span b{color:var(--fam);font-weight:500}
-.hero-art{background:var(--card);border:1px solid var(--hair2);border-radius:16px;padding:14px;box-shadow:0 8px 28px rgba(0,0,0,.12)}
+.chips span{font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 10px;border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2));border-radius:99px;background:var(--card);color:var(--mut)} .chips span b{color:var(--mk);font-weight:500}
+/* Surfaces. Instruments (the hero, every widget, code) are the app's navy card:
+   its corner glow and top light come from .lab-stage, its ladder and inks from
+   .navy-card (tokens in shared.py). Figures (the section banners) are paper
+   plates. Every surface a diagram is drawn on carries the blueprint dot grid. */
+.navy{border:1px solid var(--hair2);box-shadow:var(--shadow-elevation);background:linear-gradient(to bottom,rgb(255 255 255/.06),transparent 1px),radial-gradient(ellipse 80% 60% at 100% 0%,color-mix(in oklab,var(--fam-raw) 14%,transparent),transparent 55%),var(--bg)}
+.navy .navy,.navy .player{box-shadow:none}
+.code.navy{background:var(--bg);box-shadow:none}
+.code.navy header{background:var(--deep)}
+.navy .player{background:var(--bg)}
+.navy .stats span{background:var(--deep)}
+.navy .btn{background:var(--card)}
+.navy .btn.main{background:var(--fg)}
+.tv-wrap,.stage,.banner{--dot:color-mix(in srgb,var(--fg) 11%,transparent);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0);background-size:18px 18px;background-position:-1px -1px}
+.banner{--dot:color-mix(in srgb,var(--fg) 8%,transparent)}
+.hero-art{border-radius:16px;padding:14px}
 .hero-art svg{width:100%;height:auto;display:block}
 .hn-edge{stroke:var(--mut);stroke-width:2;opacity:.6}
 .hn-node{fill:var(--card);stroke:var(--mut);stroke-width:2} .hn-node.core{stroke:var(--fam);stroke-width:3} .hn-node.on{fill:var(--fam);stroke:var(--fam)}
@@ -14,16 +28,19 @@
 .hn-pk{fill:var(--o-ink)} .hn-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
 .hero-read{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
 .hero-num{font-family:'Space Mono',monospace;font-size:34px;font-weight:700} .hero-num b{color:var(--fam)}
-#heroCap{font-size:14px;color:var(--mut);max-width:32ch} #heroCap b{color:var(--fg);font-weight:500}
-.banner{margin:0 0 22px;border:1px solid var(--hair2);border-radius:12px;background:var(--deep);overflow:hidden}
+/* the caption changes as the hero plays: two lines reserved, so the card never changes height */
+#heroCap{font-size:14px;color:var(--mut);max-width:32ch;min-height:3.2em} #heroCap b{color:var(--fg);font-weight:500}
+.banner{margin:0 0 22px;border:1px solid var(--hair2);border-radius:14px;background-color:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden}
 .banner svg{width:100%;height:auto;display:block}
 .bn-t{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)} .bn-big{font:700 22px 'Space Mono',monospace;fill:var(--fg)} .bn-big.red{fill:var(--r-ink)}
 .bn-path{fill:none;stroke:var(--fam);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round} .bn-path.b2{stroke:var(--o-ink)}
 .bn-end{fill:var(--fam)} .bn-mid{fill:var(--card);stroke:var(--mut);stroke-width:2} .bn-bar{fill:var(--fam)} .bn-track{fill:var(--well)} .bn-edge{stroke:var(--mut);stroke-width:2;opacity:.7}
-.rosetta{border:1px solid var(--hair2);border-radius:12px;background:var(--card);overflow:hidden;margin:20px 0;max-width:66ch}
+.rosetta{border:1px solid var(--hair2);border-radius:14px;background:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden;margin:20px 0;max-width:66ch}
 .ro-h,.ro{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);gap:16px;padding:10px 16px;align-items:baseline}
 .ro-h{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);background:var(--well)}
-.ro{border-top:1px solid var(--hair);font-size:14.5px} .ro code{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--fam);background:none;padding:0}
+.ro{border-top:1px solid var(--hair);font-size:14.5px}
+/* .sec code paints every inline code grey; a grid item would also stretch it into a bar */
+.sec .ro code{justify-self:start;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mk);background:color-mix(in srgb,var(--fam) 8%,var(--card));padding:1px 7px}
 @media (max-width:1000px){.hero2{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:36px 12px}}
 
 .page{display:grid;grid-template-columns:200px minmax(0,760px);gap:56px;justify-content:center;padding-block:44px 96px}
@@ -35,15 +52,13 @@
 .lhead{display:flex;flex-direction:column;gap:14px;padding-bottom:36px}
 .lhead h1{font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em}
 .lhead .lede{font-size:18px;color:var(--mut);max-width:60ch}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chips span{font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 10px;border:1px solid var(--hair2);border-radius:99px;background:var(--card);color:var(--mut)}
-.chips span b{color:var(--fam);font-weight:500}
 .sec{padding-block:44px;border-top:1px solid var(--hair2);scroll-margin-top:64px}
 .sec>h2{font-size:clamp(1.4rem,2.6vw,1.9rem);margin-bottom:18px}
 .sec p{max-width:66ch;margin-bottom:14px}
 .sec p:last-child{margin-bottom:0}
 .sec code,.notes code,.fb code,.pq code{font-family:'JetBrains Mono',monospace;font-size:.88em;background:var(--well);padding:1px 6px;border-radius:5px}
-.ex{border:1px solid var(--hair2);border-radius:12px;background:var(--card);padding:6px 16px;margin:18px 0}
+.ex{border:1px solid var(--hair2);border-radius:12px;background:var(--card);box-shadow:var(--shadow-elevation);padding:6px 16px;margin:18px 0}
+.navy .ex{box-shadow:none}
 .ex div{padding:10px 0;border-bottom:1px solid var(--hair);font-family:'JetBrains Mono',monospace;font-size:13px;display:flex;flex-wrap:wrap;gap:6px 14px}
 .ex div:last-child{border-bottom:0} .ex em{font-style:normal;color:var(--mut)}
 .callout{display:flex;flex-direction:column;gap:6px;border:1px solid var(--hair2);border-left-width:4px;border-radius:10px;padding:14px 16px;margin:20px 0;max-width:66ch;background:var(--card)}
@@ -53,28 +68,34 @@
 .callout.key{border-left-color:var(--y-ink);background:color-mix(in srgb,var(--y-1) 45%,var(--card))} .callout.key .cl{color:var(--y-ink)}
 .callout.warn{border-left-color:var(--r-ink);background:color-mix(in srgb,var(--r-1) 45%,var(--card))} .callout.warn .cl{color:var(--r-ink)}
 .callout.key p{font-size:17px;font-family:'Space Mono',monospace;font-weight:700;line-height:1.4}
-.widget{border:1px solid var(--hair2);border-radius:14px;background:var(--card);padding:16px;margin:20px 0;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 28px rgba(0,0,0,.08)}
+.widget{--pad:16px;border-radius:16px;padding:var(--pad);margin:20px 0;display:flex;flex-direction:column;gap:12px}
 .widget .wl{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
-.tv-wrap{display:flex;justify-content:center;background:var(--deep);border-radius:10px;padding:14px 8px;overflow-x:auto}
+.tv-wrap{display:flex;justify-content:center;background-color:var(--deep);border:1px solid var(--hair);border-radius:12px;padding:14px 8px;overflow-x:auto}
 .readout{min-height:24px;font-size:14.5px}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn2{border:1px solid var(--hair2);background:var(--bg);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px}
-.btn2:hover{border-color:var(--mk)}
+.btn2,.reveal-btn,.choice,.qopt,.tab{transition:border-color .15s,background-color .15s,color .15s,transform .15s}
+.btn2{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border:1px solid var(--hair2);border-radius:9px;background:var(--card);color:var(--fg);cursor:pointer;font-size:12.5px;font-weight:500}
+.btn2:hover:not(:disabled){border-color:var(--mut);background:color-mix(in srgb,var(--fg) 7%,var(--card))}
+.btn2.best{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.btn2.best:hover:not(:disabled){background:color-mix(in srgb,var(--fg) 86%,var(--bg));border-color:transparent}
+.btn2:active:not(:disabled),.reveal-btn:active,.choice:active:not(:disabled){transform:translateY(1px)}
 button.cell.node{cursor:pointer;border:0}
-.pcard{border:1px solid var(--hair2);border-radius:12px;background:var(--bg);padding:14px;display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.pcard{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:14px;display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.pcard:last-child{margin-bottom:0}
 .pq{font-size:15px}
 .choices{display:flex;gap:8px;flex-wrap:wrap}
-.choice{min-width:52px;height:40px;border:1px solid var(--hair2);border-radius:9px;background:var(--card);cursor:pointer;font:500 15px 'JetBrains Mono',monospace}
-.choice:hover:not(:disabled){border-color:var(--mk)}
+.choice{min-width:48px;height:36px;padding:0 12px;border:1px solid var(--hair2);border-radius:9px;background:color-mix(in srgb,var(--fg) 7%,var(--card));cursor:pointer;font:500 13.5px 'JetBrains Mono',monospace}
+.choice:hover:not(:disabled){border-color:var(--fam);transform:translateY(-1px)}
 .choice.good{background:var(--g-ink);color:var(--bg);border-color:var(--g-ink)}
 .choice.bad{background:var(--r-ink);color:var(--bg);border-color:var(--r-ink)}
 .choice:disabled{cursor:default}
-.fb{display:none;font-size:14.5px;line-height:1.55;padding:10px 12px;border-radius:8px;background:var(--well)} .fb.on{display:block}
-.reveal-btn{display:flex;align-items:center;gap:10px;border:1px dashed var(--mk);background:var(--card);border-radius:10px;padding:10px 14px;cursor:pointer;font-size:15px;margin-top:8px}
-.reveal-btn .i{font-size:18px;color:var(--fam)} .reveal-btn[aria-expanded="true"]{border-style:solid}
+.fb{display:none;font-size:14.5px;line-height:1.55;padding:10px 12px;border-radius:10px;background:var(--well);border:1px solid var(--hair)} .fb.on{display:block}
+.reveal-btn{display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 15px;border:1px solid var(--hair2);background:var(--card);box-shadow:var(--shadow-elevation);border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:500;margin-top:8px}
+.reveal-btn:hover{border-color:var(--mut)}
+.reveal-btn .i{font-size:16px;color:var(--fam)} .reveal-btn[aria-expanded="true"]{box-shadow:none;background:transparent}
 .reveal-body{margin-top:14px;display:flex;flex-direction:column;gap:14px}
 .reveal-body p{max-width:66ch;margin:0}
-.chart{background:var(--deep);border-radius:10px;padding:10px}
+.chart{background:var(--deep);border:1px solid var(--hair);border-radius:12px;padding:10px}
 .chart svg{width:100%;height:auto;display:block}
 .chart .grid{stroke:var(--hair2);stroke-width:1} .chart .ax{fill:var(--mut);font:11px 'JetBrains Mono',monospace}
 .chart .ln{fill:none;stroke-width:2.6;stroke-linejoin:round} .chart .ln.naive{stroke:var(--r-ink)} .chart .ln.once{stroke:var(--g-ink)}
@@ -83,21 +104,23 @@ button.cell.node{cursor:pointer;border:0}
 .legend{display:flex;gap:18px;font:12px 'JetBrains Mono',monospace;color:var(--mut);flex-wrap:wrap}
 .legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
 .cost-note{font-size:14.5px}
-.extabs{display:flex;gap:8px;flex-wrap:wrap}
-.tab{border:1px solid var(--hair2);background:var(--bg);border-radius:99px;padding:5px 14px;cursor:pointer;font-size:13.5px}
-.tab[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.complexity{border:1px solid var(--hair2);border-radius:10px;padding:14px 16px;background:var(--card);display:flex;flex-direction:column;gap:10px}
+.extabs{display:inline-flex;flex-wrap:wrap;align-self:flex-start;gap:2px;padding:3px;border:1px solid var(--hair);border-radius:11px;background:var(--deep)}
+.tab{border:0;background:none;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12.5px;color:var(--mut)}
+.tab:hover{color:var(--fg)}
+.tab[aria-pressed="true"]{background:var(--card);color:var(--fg);font-weight:500}
+.complexity{border:1px solid var(--hair2);border-radius:12px;padding:14px 16px;background:var(--card);box-shadow:var(--shadow-elevation);display:flex;flex-direction:column;gap:10px}
 .cx-h{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
 .complexity p{margin:0}
 .vgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
-.vcard{border:1px solid var(--hair2);border-radius:12px;padding:16px;background:var(--card);display:flex;flex-direction:column;gap:6px}
-.vcard .vt{font-family:'Space Mono',monospace;font-weight:700;font-size:15px} .vcard .vs{font:12px 'JetBrains Mono',monospace;color:var(--fam)} .vcard p{font-size:14px;color:var(--mut);margin:0!important}
-.qcard{border:1px solid var(--hair2);border-radius:12px;background:var(--card);padding:16px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px}
+.vcard{border:1px solid var(--hair2);border-radius:14px;padding:16px;background:var(--card);box-shadow:var(--shadow-elevation);display:flex;flex-direction:column;gap:6px}
+.vcard .vt{font-family:'Space Mono',monospace;font-weight:700;font-size:15px} .vcard .vs{font:12px 'JetBrains Mono',monospace;color:var(--mk)} .vcard p{font-size:14px;color:var(--mut);margin:0!important}
+.qcard{border:1px solid var(--hair2);border-radius:14px;background:var(--card);box-shadow:var(--shadow-elevation);padding:16px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px}
 .qq{font-weight:500;font-size:16px}
 .qopts{display:flex;flex-direction:column;gap:8px}
-.qopt{display:flex;gap:12px;text-align:left;border:1px solid var(--hair2);border-radius:10px;background:var(--bg);padding:12px 14px;cursor:pointer;font-size:14.5px;line-height:1.5}
-.qopt:hover:not(:disabled){border-color:var(--mk)}
-.qopt .ql{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;background:var(--well);font:500 12px 'JetBrains Mono',monospace}
+.qopt{display:flex;gap:12px;text-align:left;border:1px solid var(--hair2);border-radius:10px;background:var(--card);padding:12px 14px;cursor:pointer;font-size:14.5px;line-height:1.5}
+.qopt:hover:not(:disabled){border-color:var(--fam);background:color-mix(in srgb,var(--fam) 5%,var(--card))}
+.qopt .ql{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;border:1px solid var(--hair2);background:var(--bg);font:500 12px 'JetBrains Mono',monospace}
+.qopt:hover:not(:disabled) .ql{border-color:var(--fam);color:var(--fam)}
 .qopt.good{border-color:var(--g-ink);background:color-mix(in srgb,var(--g-1) 40%,var(--card))} .qopt.bad{border-color:var(--r-ink);background:color-mix(in srgb,var(--r-1) 40%,var(--card))}
 .qopt:disabled{cursor:default}
 @media (max-width:1000px){.page{grid-template-columns:minmax(0,1fr)}.toc{display:none}.vgrid{grid-template-columns:minmax(0,1fr)}}
@@ -110,26 +133,24 @@ button.cell.node{cursor:pointer;border:0}
 /* scaled down: smaller type and tighter spacing throughout */
 body{font-size:13.5px;line-height:1.55}
 .top{padding:8px 16px} .mark{font-size:15px} .lamp{width:9px;height:9px} .seg button{padding:5px 10px;font-size:11px}
-.page{grid-template-columns:170px minmax(0,660px);gap:36px;padding-block:28px 64px}
+.page{grid-template-columns:180px minmax(0,780px);gap:52px;padding-block:28px 72px}
 .toc{font-size:12.5px;top:60px} .toc a{padding:4px 0 4px 10px}
-.hero2{gap:32px;padding-block:36px 8px}
-.hero2 h1{font-size:clamp(1.6rem,3.6vw,2.4rem);margin-top:10px}
+.hero2{gap:56px;padding-block:52px 40px}
+.hero2 h1{font-size:clamp(1.8rem,4vw,2.9rem);margin-top:12px}
 .hero2 .lede{font-size:15px;margin-top:14px} .hero2 .chips{margin-top:16px}
 .kick{font-size:10.5px}
 .chips span{font-size:10.5px;padding:3px 8px}
-.hero-art{padding:10px;border-radius:12px} .hero-num{font-size:26px} #heroCap{font-size:12.5px}
+.hero-art{padding:10px} .hero-num{font-size:26px} #heroCap{font-size:12.5px}
 .sec{padding-block:30px} .sec>h2{font-size:clamp(1.15rem,2vw,1.45rem);margin-bottom:12px}
 .sec p{margin-bottom:10px;font-size:14px}
 .sec code,.notes code,.fb code,.pq code{font-size:.86em;padding:0 5px}
 .ex{padding:2px 12px;margin:12px 0} .ex div{padding:7px 0;font-size:11.5px}
 .callout{padding:10px 12px;margin:14px 0} .callout .cl{font-size:10px} .callout.key p{font-size:14px}
-.widget{padding:12px;margin:14px 0;gap:9px;border-radius:12px} .widget .wl{font-size:10px}
-.tv-wrap{padding:10px 6px} .readout{font-size:13px;min-height:20px} .btn2{font-size:12.5px;padding:5px 10px}
+.widget{--pad:14px;margin:18px 0;gap:10px} .widget .wl{font-size:10px}
+.tv-wrap{padding:10px 6px} .readout{font-size:13px;min-height:20px}
 .pcard{padding:11px;gap:9px;margin-bottom:10px} .pq{font-size:13px}
-.choice{min-width:44px;height:34px;font-size:13px} .fb{font-size:13px;padding:8px 10px}
-.reveal-btn{font-size:13.5px;padding:8px 12px} .reveal-btn .i{font-size:16px}
+.fb{font-size:13px;padding:8px 10px}
 .cost-note{font-size:13px} .legend{font-size:11px}
-.tab{font-size:12px;padding:4px 11px}
 .code header{font-size:10px;padding:6px 10px} .code pre{font-size:11.5px;padding:10px 12px}
 .complexity{padding:11px 13px} .cx-h{font-size:10px}
 .vcard{padding:12px} .vcard .vt{font-size:13px} .vcard .vs{font-size:10.5px} .vcard p{font-size:12.5px}
@@ -138,4 +159,60 @@ body{font-size:13.5px;line-height:1.55}
 .banner{margin-bottom:16px}
 .stage{padding:16px 12px;min-height:240px} .note{font-size:12.5px;padding:10px 14px;min-height:64px} .stats span{font-size:11px} .btn{width:32px;height:32px;font-size:15px} .spd{font-size:11px} .cnt{font-size:11px} .bl{font-size:10.5px}
 .player{border-radius:12px}
+@media (prefers-reduced-motion:reduce){.btn2,.reveal-btn,.choice,.qopt,.tab{transition:none}.choice:hover:not(:disabled),.btn2:active,.reveal-btn:active,.choice:active{transform:none}}
 @media (max-width:1000px){.page{grid-template-columns:minmax(0,1fr)}}
+
+/* ---- Richer layer: the hero stage, section marks, instrument title bars ---- */
+/* The hero glow reaches past the column. clip, not hidden, so the sticky header keeps
+   working; on body too, because the root's own overflow is handed to the viewport. */
+html,body{overflow-x:clip}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* The hero card rests tilted and floats, as the landing's feature cards do; the
+   floor shadow and the family glow stay put beneath it. */
+.hero2{position:relative;isolation:isolate}
+.hero2::before{content:"";position:absolute;z-index:-1;inset:-12% -8% -6% 38%;pointer-events:none;background:radial-gradient(closest-side,color-mix(in oklab,var(--fam-raw) 16%,transparent),transparent)}
+.hero-stage{position:relative;perspective:1600px}
+.hero-stage::after{content:"";position:absolute;z-index:-1;left:10%;right:10%;bottom:-30px;height:24px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in oklab,var(--fg) 24%,transparent),transparent);filter:blur(6px)}
+.hero-art{transform:rotateX(5deg) rotateY(-9deg);transform-origin:40% 50%;animation:hero-float 7s ease-in-out infinite alternate}
+@keyframes hero-float{from{translate:0 -6px}to{translate:0 8px}}
+.hero2 .lede{font-size:16px;line-height:1.6}
+
+/* The three hero facts as a spec strip: label over value, hairline between. */
+.hero2 .chips{gap:0;margin-top:26px;max-width:560px;border-block:1px solid var(--hair2)}
+.hero2 .chips span{flex:1 1 0;display:flex;flex-direction:column;gap:4px;padding:11px 14px 11px 0;border:0;border-radius:0;background:none;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.hero2 .chips span+span{padding-left:14px;border-left:1px solid var(--hair2)}
+.hero2 .chips span b{font:700 14px/1.25 'Space Mono',monospace;letter-spacing:0;text-transform:none;color:var(--fg)}
+
+/* Section marks: one icon per section, the same in the heading and the contents. */
+.sec{border-top:0;background:linear-gradient(90deg,transparent,var(--hair2) 10%,var(--hair2) 90%,transparent) top/100% 1px no-repeat}
+.sec>h2{display:flex;align-items:center;gap:12px}
+.sec-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;font-size:18px;color:var(--fam);background:color-mix(in srgb,var(--fam) 11%,var(--card));border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2))}
+.toc a{display:flex;align-items:center;gap:9px}
+.toc a .i{font-size:14px;color:var(--mut);transition:color .2s}
+.toc a[aria-current="true"] .i{color:var(--fam)}
+
+/* An instrument's label is its title bar. */
+.widget .wl{display:flex;align-items:center;gap:9px;margin:calc(-1*var(--pad)) calc(-1*var(--pad)) 2px;padding:12px var(--pad);border-bottom:1px solid var(--hair)}
+.widget .wl::before{content:"";flex:none;width:7px;height:7px;border-radius:2px;background:var(--fam)}
+
+.banner{padding:6px 10px}
+.callout.key{padding:16px 18px;gap:8px} .callout.key p{font-size:15.5px}
+
+/* Variant cards carry the family edge the course's module cards do. */
+.vcard{position:relative;overflow:hidden;padding-top:19px}
+.vcard::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,var(--fam),color-mix(in oklab,var(--fam) 15%,transparent))}
+
+.qq{display:flex;gap:12px;align-items:flex-start;line-height:1.45}
+.qn.navy{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;box-shadow:none;font:700 13px 'Space Mono',monospace;margin-top:-3px}
+
+@media (max-width:1000px){.hero2{gap:36px;padding-block:32px 28px}.hero-art{transform:rotateX(4deg) rotateY(-4deg)}.hero2::before{inset:30% -20% -10% -20%}}
+@media (max-width:520px){.hero2 .chips span{padding-right:8px}.hero2 .chips span+span{padding-left:8px}.hero2 .chips span b{font-size:12px}.sec-ic{width:30px;height:30px;font-size:16px}}
+@media (prefers-reduced-motion:reduce){.hero-art{animation:none}}
+.embed .hero-art{transform:none;animation:none}
+
+/* Syntax colour: Shiki's dark-well ink. These code blocks are navy in both themes, so they
+   take the variant the app uses on its dark code well (globals.css ".handbook-prose .shiki"). */
+.code pre.shiki,.code pre.shiki span{color:var(--shiki-dark)}
+/* the inline-code chip (.sec code) must not reach a block's <code>: it boxed every line */
+.code pre.shiki code{font:inherit;background:none;padding:0;border-radius:0}

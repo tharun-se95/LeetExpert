@@ -131,19 +131,19 @@ var abbaBad=jumpLongest('abba',false),abbaOk=jumpLongest('abba',true);
 if(abbaOk!==bruteLongest('abba').len||abbaBad===abbaOk)throw new Error('abba guard example failed');
 var QUIZ=[
  {q:'A faster version stores each backend\'s last position and, on a repeat, jumps the left edge to one past it. Why must the jump be guarded with <code>last[c] >= left</code>?',
-  opts:['The map remembers positions from before the window began. Without the guard, an old position can pull the left edge backward past where it already advanced, so on <code>abba</code> the window grows to include a repeat and the code answers '+abbaBad+' instead of '+abbaOk+'.',
-        'Without the guard a backend that has never appeared would be looked up in the map and throw an error, so the check exists only to avoid that.',
-        'It is a small speed-up: it skips a map lookup when the jump would not change the result, and removing it would leave every answer correct.'],
+  opts:['The map keeps positions from before the window began. Unguarded, an old one drags the left edge back, so on <code>abba</code> the window holds a repeat and the answer is '+abbaBad+', not '+abbaOk+'.',
+        'Without it, a backend that has never appeared is looked up in the map and the lookup throws, so the guard exists only to protect the first appearance of each backend.',
+        'It is only a speed-up: it skips moving the left edge when the jump would not change the answer, and removing it would leave every result the same, just a little slower.'],
   a:0,why:'The map never forgets. In <code>abba</code>, when the last <code>a</code> arrives the map still says <code>a</code> was at position 0, but the window has already moved past it. Jumping to position 1 moves the left edge backward and the window <code>bba</code> contains a repeat. The guard separates "a repeat inside my window" from "a backend I saw long ago", and the left edge must only ever move forward.'},
  {q:'The loop has a <code>while</code> inside a <code>for</code>. Why is the total still O(n) and not O(n²)?',
-  opts:['The left edge only moves forward and never past the right edge, so across the entire run all the while-loop iterations together drop at most n requests. Each request is added once and dropped at most once.',
-        'The while loop runs at most 26 times per step, so the work per step is constant and the total is 26 times n.',
-        'The while loop only fires when a repeat occurs, and repeats are rare in real logs, so on average it does almost nothing.'],
+  opts:['The left edge only moves forward, so over the whole run the while loop drops at most n requests: each request is added once and dropped at most once.',
+        'The while loop runs at most 26 times per step, once per letter, so each step costs a constant amount and the total is 26 × n, which is still O(n).',
+        'The while loop only fires when a request repeats, and repeats are rare in real traffic logs, so on average the inner loop does almost no work per step.'],
   a:0,why:'This is an amortised count: the cost of the inner loop is paid for by the requests it removes, and each request can be removed only once. The 26-per-step argument gives a weaker bound that fails when identifiers are unbounded, and a log such as <code>bbbbb</code> repeats on every step, so "repeats are rare" is not true.'},
  {q:'Where must <code>best</code> be updated?',
-  opts:['After the while loop, once the window is clean again. Only then does <code>right - left + 1</code> measure a stretch with no repeat.',
-        'At the top of the loop body, before looking at the newcomer, so the record includes the request that just arrived.',
-        'Inside the while loop, on every step of the shrinking, so no intermediate window is missed.'],
+  opts:['After the while loop, once the window is clean again: only then does <code>right - left + 1</code> measure a stretch with no repeat in it.',
+        'At the top of the loop body, as soon as the newcomer arrives, so the record counts the request that just came in before anything is removed.',
+        'Inside the while loop, on every step of the shrinking, so that each smaller window the left edge passes through is compared with the record.'],
   a:0,why:'Before the shrink the window may still hold a repeat. Counting it credits a stretch that is not clean: the version that records first answers '+mistakeLongest('bbbbb')+' on <code>bbbbb</code>, where the answer is 1. Inside the while loop every window is still invalid, so nothing there qualifies.'}
 ];
 
@@ -253,7 +253,7 @@ var QUIZ=[
       S('rect',{x:60,y:52,width:520,height:14,rx:7,class:'bn-track'},svg);var fill=S('rect',{x:60,y:52,width:0,height:14,rx:7,class:'bn-bar'},svg);
       for(var i=0;i<=6;i++){S('line',{x1:60+i*520/6,x2:60+i*520/6,y1:70,y2:78,class:'bn-edge'},svg);S('text',{x:60+i*520/6,y:94,class:'bn-t','text-anchor':'middle'},svg).textContent=i;}
       var big=S('text',{x:60,y:36,class:'bn-big'},svg);big.textContent='record: 0 requests';
-      return function(){M.animate(0,3,{duration:2.6,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/6);big.textContent='record: '+Math.round(v)+' requests';}});};
+      return function(){M.animate(0,3,{duration:2.6,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/6);big.textContent='record: '+count(Math.round(v),'request','requests');}});};
     }
   };
   heroStream();mountBanners(banners);kinetic();riseIn();

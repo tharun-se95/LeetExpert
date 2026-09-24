@@ -44,8 +44,11 @@ function reveal(host,label,build){
 
 /* code blocks: Python and TypeScript follow the page's language switch */
 function codeBlock(py,ts,title){
-  var d=el('div','code');d.innerHTML='<header><span>'+title+'</span><span class="c-py">Python</span><span class="c-ts">TypeScript</span></header><pre class="c-py"></pre><pre class="c-ts"></pre>';
-  d.querySelector('pre.c-py').textContent=py;d.querySelector('pre.c-ts').textContent=ts;return d;
+  var d=el('div','code navy');d.innerHTML='<header><span>'+title+'</span><span class="c-py">Python</span><span class="c-ts">TypeScript</span></header><pre class="c-py"></pre><pre class="c-ts"></pre>';
+  /* HL holds build-time Shiki colouring keyed by the exact source; without it, plain text */
+  [['pre.c-py',py],['pre.c-ts',ts]].forEach(function(p){var pre=d.querySelector(p[0]),h=typeof HL!=='undefined'&&HL[p[1]];
+    if(h){pre.classList.add('shiki');pre.innerHTML='<code>'+h+'</code>';}else pre.textContent=p[1];});
+  return d;
 }
 
 function callout(kind,label,iconId,html){
@@ -56,14 +59,22 @@ function mountVariants(host,list){
   list.forEach(function(v){host.appendChild(el('div','vcard','<div class="vt">'+v[0]+'</div><div class="vs">'+v[1]+'</div><p>'+v[2]+'</p>'));});
 }
 
-/* quiz: options shuffled with a fixed seed so the answer is not always first */
-function seeded(seed){var s=seed;return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+/* quiz: each answer's slot comes from a hash of its question, so it moves between
+   questions with no pattern to learn. The fixed-seed shuffle this replaced put every
+   answer third. The checks throw at load, as the frame checks do: an
+   answer longer than every distractor, or every answer in one slot, gives it away. */
+function slotOf(text,n){var h=2166136261;for(var i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h%n;}
+function plainLen(html){var d=document.createElement('div');d.innerHTML=html;return d.textContent.length;}
 function mountQuiz(host,QUIZ){
+  var slots=QUIZ.map(function(item,qi){
+    var len=item.opts.map(plainLen),rest=len.filter(function(_,i){return i!==item.a;});
+    if(len[item.a]>Math.max.apply(null,rest))throw new Error('quiz '+(qi+1)+': the answer is longer than every other option ('+len.join(', ')+')');
+    return slotOf(item.q,item.opts.length);
+  });
+  if(QUIZ.length>1&&slots.every(function(x){return x===slots[0];}))throw new Error('quiz: every answer sits in slot '+slots[0]);
   QUIZ.forEach(function(item,qi){
-    var idx=item.opts.map(function(_,i){return i;}),rnd=seeded(7+qi*13);
-    for(var i=idx.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1));var t=idx[i];idx[i]=idx[j];idx[j]=t;}
-    if(idx[0]===item.a&&idx.length>1){var t2=idx[0];idx[0]=idx[1];idx[1]=t2;}
-    var card=el('div','qcard');card.appendChild(el('div','qq',(qi+1)+'. '+item.q));
+    var idx=item.opts.map(function(_,i){return i;}).filter(function(i){return i!==item.a;});idx.splice(slots[qi],0,item.a);
+    var card=el('div','qcard');card.appendChild(el('div','qq','<span class="qn navy" aria-hidden="true">'+(qi+1)+'</span><span><span class="sr">Question '+(qi+1)+'. </span>'+item.q+'</span>'));
     var opts=el('div','qopts'),fb=el('div','fb');card.appendChild(opts);card.appendChild(fb);
     idx.forEach(function(oi,pos){
       var b=el('button','qopt','<span class="ql">'+String.fromCharCode(65+pos)+'</span><span>'+item.opts[oi]+'</span>');b.type='button';opts.appendChild(b);
@@ -99,9 +110,17 @@ function mountBanners(kinds){
     var kind=host.dataset.b;if(!kinds[kind])return;
     var svg=S('svg',{viewBox:'0 0 720 120','aria-hidden':'true'},host);
     var run=kinds[kind](svg),done=false;
-    if(!M||!M.animate)return;
-    inView(host,function(){if(done)return;done=true;if(!reduce)run();});
+    if(reduce||!M||!M.animate){settle(run);return;}
+    inView(host,function(){if(done)return;done=true;run();});
   });
+}
+/* Without motion a banner shows its last frame, never its first: a start frame reads
+   "record: 0 hops" or draws no arrows at all. Every banner animates numbers through
+   M.animate, so each call jumps to its end value. */
+function settle(run){
+  var real=M;
+  M={animate:function(from,to,o){if(o&&o.onUpdate)o.onUpdate(to);if(o&&o.onComplete)o.onComplete();return {stop:function(){},cancel:function(){}};}};
+  try{run();}finally{M=real;}
 }
 function kinetic(){
   var h=$('#h1');if(!h||!M||!M.animate||reduce)return;
