@@ -34,3 +34,11 @@ export const ROUND_CONTROL =
  * Spec: docs/superpowers/specs/2026-09-15-translucent-chrome-and-pane-grain-design.md
  */
 export const TRANSLUCENT_PAPER = "bg-background/90 backdrop-blur-md";
+
+/**
+ * The theme toggle in both headers. Hidden below sm, where the phone follows
+ * its system light/dark (owner, 2026-09-24): with sign-in live the account
+ * button joined search and the toggle, and at 375px that row ran 8.7px into
+ * "Practice" in the landing header (1px short of it in the app header).
+ */
+export const THEME_TOGGLE = "h-11 w-11 rounded-full max-sm:hidden md:h-10 md:w-10";

@@ -242,7 +242,10 @@ The content is the product. Code exists to serve it.
   was declined to keep the three-faces rule. The wordmark shows from a 360px
   viewport (owner review 2026-09-24; measured to fit beside the nav there with
   the tighter phone gaps) and is sr-only below it, never removed — the lamp is
-  aria-hidden, so it is the home link's name. **The page explains the thesis
+  aria-hidden, so it is the home link's name. Below sm both headers drop the
+  theme toggle (`headerChrome.ts` `THEME_TOGGLE`, `max-sm:hidden`; phones follow
+  the system theme, owner 2026-09-24): with sign-in live, search, toggle and
+  account ran 8.7px into "Practice" at 375px. **The page explains the thesis
   and markets the product** (owner, 2026-09-15 — an outside review found it
   told the thesis better than the product; it began as "explains rather than
   sells"). In order: a hero (kicker "DSA for the age of AI"; its headline one
