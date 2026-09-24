@@ -1,6 +1,6 @@
 # Lesson artifacts for every lesson: rollout design
 
-Status: draft for owner review · 2026-09-24 · owner goal set 2026-09-24
+Status: approved with decisions D1 to D5 (section 9) · 2026-09-24
 
 ## 1. Goal
 
@@ -101,7 +101,7 @@ hold the bar. Before any batch:
    invariants panel) moves into the kit, and the same contract is built for arrays/strings,
    grids, trees, graphs, stacks/queues, heaps and tables, so a module's lessons reuse one player.
 3. **Family colour for every module.** `big-o`, `getting-started` and `math-for-dsa` have no
-   family in `moduleFamily`; the kit needs one to paint. Decision D4.
+   family in `moduleFamily`; the kit needs one to paint. Decision D4: new family hues, designed in the app.
 4. **Dark mode settled.** The kit's code blocks stay navy in the dark theme while the app's own
    dark-theme code well is light. Decision D5. The linked-list page has never been checked in
    dark mode; the browser gate is where that happens, for every page.
@@ -132,7 +132,7 @@ generated view. Tool: `web/lesson-artifacts/ledger.py`.
 
 | Phase | Scope | Exit |
 |---|---|---|
-| 0 (this spec) | spec, ledger, CI ledger check | owner approves the spec and decisions D1 to D5 |
+| 0 (this spec) | spec, ledger, CI ledger check | done 2026-09-24 (PR #10); decisions D1 to D5 taken |
 | 1 foundations | content-as-data kit; `ListPlayer` and new players into `kit/`; browser gate; problem code gate without the Lesson tab; D4 and D5 applied; the 5 existing lessons migrated to data and **verified** | 5 verified in the ledger, gates in CI |
 | 2 pilot module | Linked Lists complete (9 lessons: 3 concept, 5 problem, 1 practice) | 9 verified; time per lesson measured, which sets the batch plan |
 | 3 batches | module by module in course order, one module per fresh chat; review per module | all 220 verified |
@@ -155,20 +155,24 @@ set from that measurement, not guessed.
 - **Context and cost.** Work happens one module per fresh chat, with a handoff, never in one long
   chat.
 
-## 9. Decisions for the owner
+## 9. Decisions (owner, 2026-09-24)
 
-- **D1. Replace or sit beside?** Does an artifact replace the markdown lesson, or sit beside it
-  (the Lesson tab)? *Proposed:* beside it until a module is verified end to end, then decide per
-  module; the markdown stays the source of the sandbox cases either way.
-- **D2. Practice lessons.** The 21 practice lessons are problem sets. *Proposed:* one artifact per
-  practice lesson that maps the module's problems to the patterns they use, rather than 21 more
-  single-problem pages.
-- **D3. When to wire into the app.** *Proposed:* re-enable the Lesson tab per module as each module
-  is verified, so learners get finished modules early and nothing half-done ships.
-- **D4. Family colour for big-o, getting-started, math-for-dsa.** *Proposed:* steel (the monochrome
-  base) for all three, through the same family scope, so no new hue is introduced.
-- **D5. Code blocks in the dark theme.** *Proposed:* follow the app (light well, `--shiki-light`)
-  so one code look runs through the product; the alternative is to keep the navy well in both.
+- **D1. Beside, decide later.** An artifact sits beside the markdown lesson as the Lesson tab. Once a
+  whole module is verified, the owner decides per module whether the artifact replaces the markdown.
+  The markdown stays the source of the sandbox cases either way.
+- **D2. Practice lessons deferred.** The 21 practice lessons are not converted until the 199 problem and
+  concept lessons are verified. This is a recorded deferral, not a silent exclusion (CLAUDE.md §1): each
+  practice row in the ledger carries the note "deferred (D2)", and the end condition is the 199th
+  verified lesson, when their format is decided and they join the rollout. The goal remains all 220.
+- **D3. Live per module.** The Lesson tab is re-enabled, and a module turned on for learners, as soon as
+  every lesson in it (practice aside, per D2) is verified in both themes. Nothing half-done ships.
+- **D4. New family colours.** `big-o`, `getting-started` and `math-for-dsa` get family hues of their own,
+  designed through the existing system: one `accent` hex each in `web/src/lib/visual/familyTheme.ts`,
+  `uiAccent()` deriving the UI fill, the contrast and palette tests holding them to their floors, and
+  `moduleFamily` mapping the three modules. Phase 1 work, in the app, with its own review.
+- **D5. Code follows the app.** In the dark theme the artifacts' code blocks use the app's light code
+  well and `--shiki-light` colours, as the app's lessons do; in the light theme they stay on the navy
+  well with `--shiki-dark`. Phase 1 work in `kit/kit.css`, checked by the browser gate in both themes.
 
 ## 10. Out of scope
 

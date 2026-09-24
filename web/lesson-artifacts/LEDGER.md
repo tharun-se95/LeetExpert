@@ -55,7 +55,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Best Time to Buy & Sell Stock (`arrays/best-time-to-buy-sell-stock`) | problem | - |  |
 | · | Rotate Array (`arrays/rotate-array`) | problem | - |  |
 | · | Product of Array Except Self (`arrays/product-except-self`) | problem | - |  |
-| · | Practice (`arrays/practice`) | practice | - |  |
+| · | Practice (`arrays/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 5. strings (0/9)
 
@@ -69,7 +69,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Longest Common Prefix (`strings/longest-common-prefix`) | problem | - |  |
 | · | Find the Index (strStr) (`strings/find-the-index`) | problem | - |  |
 | · | Reverse Words in a String (`strings/reverse-words`) | problem | - |  |
-| · | Practice (`strings/practice`) | practice | - |  |
+| · | Practice (`strings/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 6. hash-tables (0/12)
 
@@ -86,7 +86,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | First Unique Character (`hash-tables/first-unique-character`) | problem | - |  |
 | · | Group Anagrams (`hash-tables/group-anagrams`) | problem | - |  |
 | · | Longest Consecutive Sequence (`hash-tables/longest-consecutive-sequence`) | problem | - |  |
-| · | Practice (`hash-tables/practice`) | practice | - |  |
+| · | Practice (`hash-tables/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 7. linked-lists (1/9)
 
@@ -100,7 +100,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Linked List Cycle (`linked-lists/linked-list-cycle`) | problem | - |  |
 | · | Merge Two Sorted Lists (`linked-lists/merge-two-sorted`) | problem | - |  |
 | · | Remove Nth Node From End (`linked-lists/remove-nth-from-end`) | problem | - |  |
-| · | Practice (`linked-lists/practice`) | practice | - |  |
+| · | Practice (`linked-lists/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 8. stacks (0/9)
 
@@ -114,7 +114,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Min Stack (`stacks/min-stack`) | problem | - |  |
 | · | Daily Temperatures (`stacks/daily-temperatures`) | problem | - |  |
 | · | Largest Rectangle in Histogram (`stacks/largest-rectangle`) | problem | - |  |
-| · | Practice (`stacks/practice`) | practice | - |  |
+| · | Practice (`stacks/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 9. queues (0/8)
 
@@ -127,7 +127,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Implement Queue Using Stacks (`queues/queue-using-stacks`) | problem | - |  |
 | · | First Unique in a Stream (`queues/stream-first-unique`) | problem | - |  |
 | · | Sliding Window Maximum (`queues/sliding-window-maximum`) | problem | - |  |
-| · | Practice (`queues/practice`) | practice | - |  |
+| · | Practice (`queues/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 10. two-pointers (0/8)
 
@@ -140,7 +140,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Container With Most Water (`two-pointers/container-with-most-water`) | problem | - |  |
 | · | 3Sum (`two-pointers/three-sum`) | problem | - |  |
 | · | Trapping Rain Water (`two-pointers/trapping-rain-water`) | problem | - |  |
-| · | Practice (`two-pointers/practice`) | practice | - |  |
+| · | Practice (`two-pointers/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 11. sliding-window (1/8)
 
@@ -153,7 +153,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | ◐ | Longest Substring Without Repeating Characters (`sliding-window/longest-substring-without-repeating`) | problem | build |  |
 | · | Permutation in String (`sliding-window/permutation-in-string`) | problem | - |  |
 | · | Minimum Window Substring (`sliding-window/minimum-window-substring`) | problem | - |  |
-| · | Practice (`sliding-window/practice`) | practice | - |  |
+| · | Practice (`sliding-window/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 12. prefix-sum (0/9)
 
@@ -167,7 +167,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Contiguous Array (`prefix-sum/contiguous-array`) | problem | - |  |
 | · | Range Sum Query 2D — Immutable (`prefix-sum/range-sum-2d-immutable`) | problem | - |  |
 | · | Maximum Subarray (Kadane's Algorithm) (`prefix-sum/kadanes-algorithm`) | problem | - |  |
-| · | Practice (`prefix-sum/practice`) | practice | - |  |
+| · | Practice (`prefix-sum/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 13. binary-search (0/9)
 
@@ -181,7 +181,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Search in Rotated Sorted Array (`binary-search/search-rotated-sorted-array`) | problem | - |  |
 | · | Koko Eating Bananas (`binary-search/koko-eating-bananas`) | problem | - |  |
 | · | Find Minimum in Rotated Sorted Array (`binary-search/find-minimum-in-rotated-sorted-array`) | problem | - |  |
-| · | Practice (`binary-search/practice`) | practice | - |  |
+| · | Practice (`binary-search/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 14. sorting (0/10)
 
@@ -196,7 +196,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Largest Number (`sorting/largest-number`) | problem | - |  |
 | · | Meeting Rooms II (`sorting/meeting-rooms-ii`) | problem | - |  |
 | · | Kth Largest Element in an Array (`sorting/kth-largest-element`) | problem | - |  |
-| · | Practice (`sorting/practice`) | practice | - |  |
+| · | Practice (`sorting/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 15. matrix (0/10)
 
@@ -211,7 +211,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Search a 2D Matrix (`matrix/search-a-2d-matrix`) | problem | - |  |
 | · | Number of Islands (`matrix/number-of-islands`) | problem | - |  |
 | · | Word Search (`matrix/word-search`) | problem | - |  |
-| · | Practice (`matrix/practice`) | practice | - |  |
+| · | Practice (`matrix/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 16. recursion-backtracking (0/10)
 
@@ -226,7 +226,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Generate Parentheses (`recursion-backtracking/generate-parentheses`) | problem | - |  |
 | · | Palindrome Partitioning (`recursion-backtracking/palindrome-partitioning`) | problem | - |  |
 | · | N-Queens (`recursion-backtracking/n-queens`) | problem | - |  |
-| · | Practice (`recursion-backtracking/practice`) | practice | - |  |
+| · | Practice (`recursion-backtracking/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 17. binary-trees (1/12)
 
@@ -243,7 +243,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Lowest Common Ancestor of a Binary Tree (`binary-trees/lowest-common-ancestor-of-a-binary-tree`) | problem | - |  |
 | · | Binary Tree Right Side View (`binary-trees/binary-tree-right-side-view`) | problem | - |  |
 | · | Serialize and Deserialize Binary Tree (`binary-trees/serialize-and-deserialize-binary-tree`) | problem | - |  |
-| · | Practice (`binary-trees/practice`) | practice | - |  |
+| · | Practice (`binary-trees/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 18. bst (0/9)
 
@@ -257,7 +257,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Insert into a Binary Search Tree (`bst/insert-into-a-binary-search-tree`) | problem | - |  |
 | · | Delete Node in a BST (`bst/delete-node-in-a-bst`) | problem | - |  |
 | · | Convert Sorted Array to Binary Search Tree (`bst/convert-sorted-array-to-bst`) | problem | - |  |
-| · | Practice (`bst/practice`) | practice | - |  |
+| · | Practice (`bst/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 19. heaps (0/9)
 
@@ -271,7 +271,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Merge k Sorted Lists (`heaps/merge-k-sorted-lists`) | problem | - |  |
 | · | Find Median from Data Stream (`heaps/find-median-from-data-stream`) | problem | - |  |
 | · | Task Scheduler (`heaps/task-scheduler`) | problem | - |  |
-| · | Practice (`heaps/practice`) | practice | - |  |
+| · | Practice (`heaps/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 20. tries (0/6)
 
@@ -282,7 +282,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Design Add and Search Words Data Structure (`tries/design-add-and-search-words`) | problem | - |  |
 | · | Longest Word in Dictionary (`tries/longest-word-in-dictionary`) | problem | - |  |
 | · | Word Search II (`tries/word-search-ii`) | problem | - |  |
-| · | Practice (`tries/practice`) | practice | - |  |
+| · | Practice (`tries/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 21. intervals (0/7)
 
@@ -294,7 +294,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Non-overlapping Intervals (`intervals/non-overlapping-intervals`) | problem | - |  |
 | · | Minimum Number of Arrows to Burst Balloons (`intervals/minimum-arrows-to-burst-balloons`) | problem | - |  |
 | · | Employee Free Time (`intervals/employee-free-time`) | problem | - |  |
-| · | Practice (`intervals/practice`) | practice | - |  |
+| · | Practice (`intervals/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 22. greedy (0/7)
 
@@ -306,7 +306,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Gas Station (`greedy/gas-station`) | problem | - |  |
 | · | Partition Labels (`greedy/partition-labels`) | problem | - |  |
 | · | Candy (`greedy/candy`) | problem | - |  |
-| · | Practice (`greedy/practice`) | practice | - |  |
+| · | Practice (`greedy/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 23. graphs (1/14)
 
@@ -325,7 +325,7 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Number of Provinces (`graphs/number-of-provinces`) | problem | - |  |
 | · | Redundant Connection (`graphs/redundant-connection`) | problem | - |  |
 | · | Min Cost to Connect All Points (`graphs/min-cost-to-connect-all-points`) | problem | - |  |
-| · | Practice (`graphs/practice`) | practice | - |  |
+| · | Practice (`graphs/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |
 
 ## 24. dynamic-programming (1/16)
 
@@ -346,4 +346,4 @@ Key: · to do, ◐ built, ● verified (code, light, dark), ✔ shipped in the a
 | · | Partition Equal Subset Sum (`dynamic-programming/partition-equal-subset-sum`) | problem | - |  |
 | · | Word Break (`dynamic-programming/word-break`) | problem | - |  |
 | · | House Robber III (`dynamic-programming/house-robber-iii`) | problem | - |  |
-| · | Practice (`dynamic-programming/practice`) | practice | - |  |
+| · | Practice (`dynamic-programming/practice`) | practice | - | deferred (D2): after the 199 problem and concept lessons |

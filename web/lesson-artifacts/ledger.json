@@ -254,7 +254,7 @@
   },
   "arrays/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "arrays",
    "moduleNumber": 4,
    "type": "practice",
@@ -335,7 +335,7 @@
   },
   "strings/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "strings",
    "moduleNumber": 5,
    "type": "practice",
@@ -443,7 +443,7 @@
   },
   "hash-tables/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "hash-tables",
    "moduleNumber": 6,
    "type": "practice",
@@ -537,7 +537,7 @@
   },
   "linked-lists/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "linked-lists",
    "moduleNumber": 7,
    "type": "practice",
@@ -618,7 +618,7 @@
   },
   "stacks/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "stacks",
    "moduleNumber": 8,
    "type": "practice",
@@ -690,7 +690,7 @@
   },
   "queues/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "queues",
    "moduleNumber": 9,
    "type": "practice",
@@ -762,7 +762,7 @@
   },
   "two-pointers/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "two-pointers",
    "moduleNumber": 10,
    "type": "practice",
@@ -841,7 +841,7 @@
   },
   "sliding-window/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "sliding-window",
    "moduleNumber": 11,
    "type": "practice",
@@ -922,7 +922,7 @@
   },
   "prefix-sum/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "prefix-sum",
    "moduleNumber": 12,
    "type": "practice",
@@ -1003,7 +1003,7 @@
   },
   "binary-search/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "binary-search",
    "moduleNumber": 13,
    "type": "practice",
@@ -1093,7 +1093,7 @@
   },
   "sorting/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "sorting",
    "moduleNumber": 14,
    "type": "practice",
@@ -1183,7 +1183,7 @@
   },
   "matrix/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "matrix",
    "moduleNumber": 15,
    "type": "practice",
@@ -1273,7 +1273,7 @@
   },
   "recursion-backtracking/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "recursion-backtracking",
    "moduleNumber": 16,
    "type": "practice",
@@ -1388,7 +1388,7 @@
   },
   "binary-trees/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "binary-trees",
    "moduleNumber": 17,
    "type": "practice",
@@ -1469,7 +1469,7 @@
   },
   "bst/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "bst",
    "moduleNumber": 18,
    "type": "practice",
@@ -1550,7 +1550,7 @@
   },
   "heaps/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "heaps",
    "moduleNumber": 19,
    "type": "practice",
@@ -1604,7 +1604,7 @@
   },
   "tries/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "tries",
    "moduleNumber": 20,
    "type": "practice",
@@ -1667,7 +1667,7 @@
   },
   "intervals/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "intervals",
    "moduleNumber": 21,
    "type": "practice",
@@ -1730,7 +1730,7 @@
   },
   "greedy/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "greedy",
    "moduleNumber": 22,
    "type": "practice",
@@ -1863,7 +1863,7 @@
   },
   "graphs/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "graphs",
    "moduleNumber": 23,
    "type": "practice",
@@ -2014,7 +2014,7 @@
   },
   "dynamic-programming/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "dynamic-programming",
    "moduleNumber": 24,
    "type": "practice",
