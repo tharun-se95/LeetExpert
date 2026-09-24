@@ -35,7 +35,7 @@ def tokens(family):
         s = ";".join(f"{a}:{t[b]}" for a, b in names.items())
         return s + f";--fam:{fam['--accent']};--fam-on:{fam['--on-accent']};--fam-raw:{fam['--family-accent']};--lamp:{lamp};--lamp-glow:{glow}"
 
-    nv_light, sh_light, sh_dark = app_surfaces()
+    nv_light, sh_light, sh_dark, well = app_surfaces()
     # The navy ladder in the dark theme is that theme's own code paper, as in the app.
     nv_dark = {"--nv-bg": dark["--code"], "--nv-card": dark["--panel"], "--nv-deep": dark["--surface"],
                "--nv-hair2": dark["--rule-strong"], "--nv-mut": dark["--line"]}
@@ -43,11 +43,15 @@ def tokens(family):
     def extra(*ds):
         return "".join(f";{k}:{v}" for d in ds for k, v in d.items())
 
-    L = page(light, "#2b7a3b", "rgba(43,122,59,.45)") + extra(nv_light, sh_light)
+    # Code blocks sit on the app's code well (D5): navy in the light theme, light in the dark theme,
+    # so each well takes the OTHER theme's inks, exactly as the app's own code surfaces do.
+    cw_light = {"--cw-bg": well[0][0], "--cw-border": well[0][1], "--cw-ink": dark["--ink"], "--cw-mut": dark["--line"]}
+    cw_dark = {"--cw-bg": well[1][0], "--cw-border": well[1][1], "--cw-ink": light["--ink"], "--cw-mut": light["--line"]}
+    L = page(light, "#2b7a3b", "rgba(43,122,59,.45)") + extra(nv_light, sh_light, cw_light)
     D = page(dark, "#5be07a", "rgba(91,224,122,.55)")
     # N is the dark list without the navy ladder: a .navy scope takes the dark inks
     # but must keep the ladder the page's theme chose for it.
-    return L, D + extra(nv_dark, sh_dark), D
+    return L, D + extra(nv_dark, sh_dark, cw_dark), D
 
 
 GLOBALS = os.path.join(HERE, "..", "src", "app", "globals.css")
@@ -68,8 +72,13 @@ def app_surfaces():
     tint = re.findall(r"--shadow-tint:\s*([^;]+);", css)
     elev = [re.sub(r"\s+", " ", v).strip() for v in re.findall(r"--shadow-elevation:\s*([^;]+);", css)]
     # globals.css declares the light theme first and the dark theme second.
+    # the code well (--code-editor) and its border, light theme first, dark second
+    wells = list(zip(re.findall(r"--code-editor:\s*([^;]+);", css), re.findall(r"--code-editor-border:\s*([^;]+);", css)))
+    if len(wells) < 2:
+        raise SystemExit("globals.css: expected --code-editor and --code-editor-border in both themes")
     return (nv_light, {"--shadow-tint": tint[0], "--shadow-elevation": elev[0]},
-            {"--shadow-tint": tint[1], "--shadow-elevation": elev[1]})
+            {"--shadow-tint": tint[1], "--shadow-elevation": elev[1]},
+            [tuple(v.strip() for v in w) for w in wells[:2]])
 
 
 # The state colours the engine paints cells with. Declared again on .navy: a custom

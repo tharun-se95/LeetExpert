@@ -12,8 +12,8 @@
    plates. Every surface a diagram is drawn on carries the blueprint dot grid. */
 .navy{border:1px solid var(--hair2);box-shadow:var(--shadow-elevation);background:linear-gradient(to bottom,rgb(255 255 255/.06),transparent 1px),radial-gradient(ellipse 80% 60% at 100% 0%,color-mix(in oklab,var(--fam-raw) 14%,transparent),transparent 55%),var(--bg)}
 .navy .navy,.navy .player{box-shadow:none}
-.code.navy{background:var(--bg);box-shadow:none}
-.code.navy header{background:var(--deep)}
+.code.navy{background:var(--cw-bg);border-color:var(--cw-border);box-shadow:none;color:var(--cw-ink)}
+.code.navy header{background:color-mix(in srgb,var(--cw-ink) 6%,var(--cw-bg));border-color:var(--cw-border);color:var(--cw-mut)}
 .navy .player{background:var(--bg)}
 .navy .stats span{background:var(--deep)}
 .navy .btn{background:var(--card)}
@@ -29,7 +29,7 @@
 .hero-read{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
 .hero-num{font-family:'Space Mono',monospace;font-size:34px;font-weight:700} .hero-num b{color:var(--fam)}
 /* the caption changes as the hero plays: two lines reserved, so the card never changes height */
-#heroCap{font-size:14px;color:var(--mut);max-width:32ch;min-height:3.2em} #heroCap b{color:var(--fg);font-weight:500}
+#heroCap{font-size:14px;color:var(--mut);width:min(32ch,100%);min-height:3.2em;text-align:right} #heroCap b{color:var(--fg);font-weight:500}
 .banner{margin:0 0 22px;border:1px solid var(--hair2);border-radius:14px;background-color:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden}
 .banner svg{width:100%;height:auto;display:block}
 .bn-t{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)} .bn-big{font:700 22px 'Space Mono',monospace;fill:var(--fg)} .bn-big.red{fill:var(--r-ink)}
@@ -211,8 +211,11 @@ html,body{overflow-x:clip}
 @media (prefers-reduced-motion:reduce){.hero-art{animation:none}}
 .embed .hero-art{transform:none;animation:none}
 
-/* Syntax colour: Shiki's dark-well ink. These code blocks are navy in both themes, so they
-   take the variant the app uses on its dark code well (globals.css ".handbook-prose .shiki"). */
+/* Syntax colour follows the well (D5): the light theme's well is navy, so it takes Shiki's dark
+   variant; the dark theme's well is light, so it takes the light variant, as globals.css
+   ".handbook-prose .shiki" does for the app's own code. */
 .code pre.shiki,.code pre.shiki span{color:var(--shiki-dark)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .code pre.shiki,:root:not([data-theme="light"]) .code pre.shiki span{color:var(--shiki-light)}}
+:root[data-theme="dark"] .code pre.shiki,:root[data-theme="dark"] .code pre.shiki span{color:var(--shiki-light)}
 /* the inline-code chip (.sec code) must not reach a block's <code>: it boxed every line */
 .code pre.shiki code{font:inherit;background:none;padding:0;border-radius:0}

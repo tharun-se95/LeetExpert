@@ -124,7 +124,7 @@ function settle(run){
 }
 function kinetic(){
   var h=$('#h1');if(!h||!M||!M.animate||reduce)return;
-  var words=h.textContent.split(' ');h.innerHTML=words.map(function(w){return '<span class="kw">'+w+'</span>';}).join(' ');
+  if(!h.querySelector('.kw')){var words=h.textContent.split(' ');h.innerHTML=words.map(function(w){return '<span class="kw">'+w+'</span>';}).join(' ');}
   M.animate('.kw',{opacity:[0.15,1],y:[26,0]},{duration:.7,delay:M.stagger(.09),ease:'easeOut'});
   M.animate('.hero-art',{opacity:[.3,1],x:[24,0]},{duration:.8,ease:'easeOut'});
 }

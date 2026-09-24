@@ -181,10 +181,16 @@ def run_gate(lesson_id, gate):
             raise SystemExit(f"build failed:\n{r.stdout}{r.stderr}")
         return r.stdout.strip().splitlines()[-1]
     if gate == "code":
-        check = os.path.join(folder_of(lesson_id), "check.py")
-        if not os.path.exists(check):
-            raise SystemExit(f"no code check for {lesson_id}: add {os.path.relpath(check, WEB)} (spec section 4.1)")
-        r = subprocess.run([sys.executable, check], capture_output=True, text=True)
+        # problem lessons: the shown code against the lesson's own sandbox cases (code-gate.ts);
+        # concept lessons have no cases, so their own check.py model check (spec section 4.1)
+        if load()["lessons"][lesson_id]["type"] == "problem":
+            cmd = [os.path.join(WEB, "node_modules", ".bin", "tsx"), os.path.join(HERE, "code-gate.ts"), lesson_id]
+        else:
+            check = os.path.join(folder_of(lesson_id), "check.py")
+            if not os.path.exists(check):
+                raise SystemExit(f"no code check for {lesson_id}: add {os.path.relpath(check, WEB)} (spec section 4.1)")
+            cmd = [sys.executable, check]
+        r = subprocess.run(cmd, capture_output=True, text=True, cwd=WEB)
         if r.returncode:
             raise SystemExit(f"code check failed:\n{r.stdout}{r.stderr}")
         return r.stdout.strip().splitlines()[-1]

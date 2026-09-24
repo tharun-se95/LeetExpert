@@ -462,16 +462,28 @@
   "linked-lists/build-a-linked-list": {
    "evidence": {
     "build": {
-     "source": "e09df0193ec227dd",
-     "on": "2026-09-24",
-     "commit": "7968310",
-     "result": "linked-lists/build-a-linked-list: 180,238 bytes -> dist/linked-lists/build-a-linked-list.html"
+     "source": "01b3d2da5af09dfa",
+     "on": "2026-09-25",
+     "commit": "43d36c1",
+     "result": "linked-lists/build-a-linked-list: 182,641 bytes -> dist/linked-lists/build-a-linked-list.html"
     },
     "code": {
-     "source": "e09df0193ec227dd",
-     "on": "2026-09-24",
-     "commit": "7968310",
+     "source": "01b3d2da5af09dfa",
+     "on": "2026-09-25",
+     "commit": "43d36c1",
      "result": "all claims hold"
+    },
+    "light": {
+     "source": "01b3d2da5af09dfa",
+     "on": "2026-09-25",
+     "commit": "43d36c1",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0001 · contrast AA · names · reveals hidden · reduced motion still"
+    },
+    "dark": {
+     "source": "01b3d2da5af09dfa",
+     "on": "2026-09-25",
+     "commit": "43d36c1",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0001 · contrast AA · names · reveals hidden · reduced motion still"
     }
    },
    "notes": "",
@@ -812,6 +824,12 @@
      "on": "2026-09-24",
      "commit": "7968310",
      "result": "sliding-window/longest-substring-without-repeating: 132,459 bytes -> dist/sliding-window/longest-substring-without-repeating.html"
+    },
+    "code": {
+     "source": "e7043c91aeecd147",
+     "on": "2026-09-25",
+     "commit": "43d36c1",
+     "result": "code: 3 file(s) × 2 runtimes (6 runs) held to their names against 8 sandbox cases"
     }
    },
    "notes": "",
@@ -1332,6 +1350,12 @@
      "on": "2026-09-24",
      "commit": "7968310",
      "result": "binary-trees/diameter-of-binary-tree: 135,557 bytes -> dist/binary-trees/diameter-of-binary-tree.html"
+    },
+    "code": {
+     "source": "a02164e6861bd057",
+     "on": "2026-09-25",
+     "commit": "43d36c1",
+     "result": "code: 3 file(s) × 2 runtimes (6 runs) held to their names against 6 sandbox cases"
     }
    },
    "notes": "",
@@ -1807,6 +1831,12 @@
      "on": "2026-09-24",
      "commit": "7968310",
      "result": "graphs/course-schedule: 154,265 bytes -> dist/graphs/course-schedule.html"
+    },
+    "code": {
+     "source": "de2acb1c189dc484",
+     "on": "2026-09-25",
+     "commit": "43d36c1",
+     "result": "code: 3 file(s) × 2 runtimes (6 runs) held to their names against 7 sandbox cases"
     }
    },
    "notes": "",
@@ -1940,6 +1970,12 @@
      "on": "2026-09-24",
      "commit": "7968310",
      "result": "dynamic-programming/coin-change: 145,315 bytes -> dist/dynamic-programming/coin-change.html"
+    },
+    "code": {
+     "source": "592d8509675a20ed",
+     "on": "2026-09-25",
+     "commit": "43d36c1",
+     "result": "code: 4 file(s) × 2 runtimes (8 runs) held to their names against 8 sandbox cases"
     }
    },
    "notes": "",

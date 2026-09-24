@@ -82,13 +82,30 @@ def decorate(body):
                   lambda m: f'<section class="sec" id="{m[1]}"><h2><span class="sec-ic">{_icon(m[1])}</span><span>{m[2]}</span></h2>', body)
     nav = re.search(r'<nav class="toc".*?</nav>', body, re.S)
     toc = re.sub(r'<a href="#([a-z]+)">', lambda m: f'<a href="#{m[1]}">{_icon(m[1])}', nav[0])
-    return body[:nav.start()] + toc + body[nav.end():]
+    body = body[:nav.start()] + toc + body[nav.end():]
+    # The kinetic headline's word spans are made here, not in the browser, where the split re-broke
+    # the heading's lines after load and moved the hero card (layout shift). It runs after the
+    # contents splice above, whose offsets were taken on the unsplit body.
+    body = re.sub(r'<h1 id="h1">(.*?)</h1>', lambda m: '<h1 id="h1">' + ' '.join(
+        f'<span class="kw">{w}</span>' for w in m[1].split(' ')) + '</h1>', body, count=1)
+    return body
+
+
+# Kit modules only some lessons need, with the names that show a lesson uses them. A lesson that
+# does not name them does not ship them (CLAUDE.md §5: 220 lessons must not pay for five).
+KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun(")}
+
+
+def optional_kit(lesson_js):
+    return [name for name, marks in KIT_OPTIONAL.items() if any(m in lesson_js for m in marks)]
 
 
 def build(module, slug, family, title):
     folder = os.path.join(ROOT, slug)
     L, D, N = shared.tokens(family)
+    uses = optional_kit(read(folder, "lesson.js"))
     css = shared.BASE_CSS.replace("@@L@@", L).replace("@@D@@", D).replace("@@N@@", N) + read(KIT, "kit.css")
+    css += "".join(read(KIT, m + ".css") for m in uses if os.path.exists(os.path.join(KIT, m + ".css")))
     extra = os.path.join(folder, "extra.css")
     if os.path.exists(extra):
         css += read(extra)
@@ -99,6 +116,7 @@ def build(module, slug, family, title):
         read(KIT, "engine.js"),
         read(KIT, "trees.js"),
         read(KIT, "kit.js"),
+        *[read(KIT, m + ".js") for m in uses],
         "var CODE=" + json.dumps(code) + ";",
         # coloured copies keyed by the exact source, so codeBlock can find them from CODE's strings
         "var HL=" + json.dumps(highlight(code)) + ";",
@@ -110,6 +128,11 @@ def build(module, slug, family, title):
 <title>{title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
+<script>/* the page stays invisible until its three faces are in (capped at 2.5 s), so a font arriving
+   never re-wraps text the reader can see; hidden content cannot shift. Without JS nothing is hidden. */
+(function(){{var d=document.documentElement,done=function(){{d.classList.remove('fl');}};d.classList.add('fl');setTimeout(done,2500);
+if(document.fonts&&document.fonts.load)Promise.all(['400 16px "Space Grotesk"','700 16px "Space Mono"','400 13px "JetBrains Mono"'].map(function(f){{return document.fonts.load(f);}})).then(done,done);else done();}})();</script>
+<style>html.fl body{{visibility:hidden}}</style>
 <style>{css}</style></head><body>
 {SHELL_TOP.replace("@@ICONS@@", shared.ICONS)}{body}</main>
 <script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>

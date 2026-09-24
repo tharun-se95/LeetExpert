@@ -105,6 +105,13 @@ hold the bar. Before any batch:
 4. **Dark mode settled.** The kit's code blocks stay navy in the dark theme while the app's own
    dark-theme code well is light. Decision D5. The linked-list page has never been checked in
    dark mode; the browser gate is where that happens, for every page.
+5. **Fonts without layout shift.** A font arriving after first paint re-wrapped the hero and moved
+   the page (measured by the browser gate, with `swap` and with `optional` alike). The page now stays
+   invisible until its three faces have loaded, capped at 2.5 s, so no visible text re-wraps; without
+   JavaScript nothing is hidden. The gate's layout-shift floor is 0.001: Chrome reports sub-pixel text
+   re-layout whose rectangles do not move as tiny shifts, and the exact value is stored as evidence. When the pages are served by the app
+   (phase 4) they use the app's self-hosted `next/font` files instead. The kinetic headline is split
+   into words at build time for the same reason.
 
 ## 6. The ledger
 
