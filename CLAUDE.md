@@ -534,6 +534,19 @@ The content is the product. Code exists to serve it.
   minified, 1.6 KB gzip, with the `localStore` code the sandbox needs anyway)
   because `Sandbox` imports the hook statically; without a runtime it does
   nothing.
+  **A signed-out visitor is asked to sign in once per visit** (owner,
+  2026-09-24; spec `docs/superpowers/specs/2026-09-24-sign-in-prompt-design.md`):
+  `SignInPromptGate`, a fourth always-loaded shell in `AppShell`, loads the
+  `SignInPrompt` chunk through `authChunk` on every route but `/` and
+  `/sign-in`; it opens the shared `Dialog` only once the session is known and
+  empty, with the sign-in page's own `Providers` and "Continue without signing
+  in". That, Esc or the backdrop sets a `sessionStorage` flag
+  (`lib/auth/signInPrompt.ts`), so the visit is not asked again and a new tab or
+  window is; a deferred visit never downloads the chunk. A dialog, not a
+  redirect, so pages stay static and indexable. With sign-in configured (read at
+  build in the server `HomePage`) the landing's calls to action go to
+  `/sign-in?next=…`, which offers the same way on. Guarded in
+  `signInPrompt.test.tsx`, `homeSignInLinks.test.tsx` and `authChunkBoundary`.
   Sign-in is on only when all seven variables in
   `web/.env.example` are set, and `authEnabled` is read while pages are
   prerendered, so changing them needs a rebuild. Pages never read the

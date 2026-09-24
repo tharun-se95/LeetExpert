@@ -242,6 +242,10 @@ describe("landing page", () => {
     const imports = [...home.matchAll(/from "([^"]+)"/g)].map((m) => m[1]);
     expect(imports.sort()).toEqual(
       [
+        // Whether sign-in is configured, read at build, routes the calls to
+        // action through /sign-in (spec 2026-09-24-sign-in-prompt-design.md).
+        "@/lib/auth/env",
+        "@/lib/auth/signInPrompt",
         "@/components/landing/LandingFooter",
         "@/components/landing/LandingOutro",
         "@/components/landing/LandingStory",

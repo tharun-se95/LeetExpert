@@ -1,6 +1,8 @@
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingOutro } from "@/components/landing/LandingOutro";
 import { LandingStory } from "@/components/landing/LandingStory";
+import { isAuthConfigured } from "@/lib/auth/env";
+import { viaSignIn } from "@/lib/auth/signInPrompt";
 import { CURRICULUM, FIRST_LESSON, curriculumStats } from "@/lib/landing/content";
 import { heatYear } from "@/lib/landing/heat";
 import { featureData, stageCardsWithArt } from "@/lib/landing/productData";
@@ -24,6 +26,12 @@ import { featureData, stageCardsWithArt } from "@/lib/landing/productData";
  */
 export default function HomePage() {
   const { modules, lessons, problems } = curriculumStats();
+  // With sign-in configured, the calls to action ask first (owner, 2026-09-24;
+  // spec 2026-09-24-sign-in-prompt-design.md): /sign-in offers "Continue without
+  // signing in" and forwards a signed-in visitor straight on. Without it they stay
+  // direct, since /sign-in would only say sign-in isn't available. Read at build,
+  // like the root layout's authEnabled, so the two always agree.
+  const ask = isAuthConfigured() ? viaSignIn : (href: string) => href;
 
   return (
     // overflow-x clip, not hidden: the floating cards tilt past the column's
@@ -32,13 +40,13 @@ export default function HomePage() {
     <div className="mx-auto max-w-landing overflow-x-clip px-6 md:px-16">
       <LandingStory
         counts={{ modules, lessons, problems }}
-        links={{ start: FIRST_LESSON, curriculum: CURRICULUM }}
+        links={{ start: ask(FIRST_LESSON), curriculum: ask(CURRICULUM) }}
         stages={stageCardsWithArt()}
         // The example year ends on the render date; built here so the client
         // receives plain data and all 364 days are identical on hydration.
         features={{ ...featureData(), heat: heatYear(new Date().toISOString().slice(0, 10)) }}
       />
-      <LandingOutro firstLessonHref={FIRST_LESSON} />
+      <LandingOutro firstLessonHref={ask(FIRST_LESSON)} />
       <LandingFooter year={new Date().getFullYear()} />
     </div>
   );

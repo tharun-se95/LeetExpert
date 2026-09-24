@@ -52,7 +52,7 @@ export default function SignInPage() {
         <h2 id="sign-in-heading" className="font-display text-2xl font-bold tracking-tight">
           Sign in
         </h2>
-        <Suspense fallback={<div className="mt-6 h-[6.25rem]" aria-hidden />}>
+        <Suspense fallback={<div className="mt-6 h-[9.75rem]" aria-hidden />}>
           <SignInButtons />
         </Suspense>
         <p className="mt-6 text-xs text-muted">{SIGN_IN_COPY.stored}</p>

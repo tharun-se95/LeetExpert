@@ -13,6 +13,8 @@ export const SIGN_IN_COPY = {
   /** Drawn over by hand, as the landing's section headings mark their key word. */
   mark: "any device",
   subline: "The course works signed out too. Sign in only to sync.",
+  /** The prompt's and the page's way on without an account (spec 2026-09-24-sign-in-prompt-design.md). */
+  later: "Continue without signing in",
   benefits: [
     {
       id: "place",

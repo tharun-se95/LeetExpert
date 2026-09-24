@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { GithubLogo, GoogleLogo } from "@phosphor-icons/react";
 import { authClient } from "@/lib/auth/client";
 import { safeNext } from "@/lib/auth/redirect";
+import { SIGN_IN_COPY } from "@/lib/auth/signInCopy";
 
 const PROVIDERS = [
   { id: "github", name: "GitHub", Icon: GithubLogo },
@@ -24,9 +25,20 @@ export function SignInButtons() {
 
   // Nothing to choose between until the session is known, and nothing to
   // choose at all once it is: a signed-in learner is sent on.
-  if (isPending) return <div className="mt-6 h-[6.25rem]" aria-hidden />;
+  if (isPending) return <div className="mt-6 h-[9.75rem]" aria-hidden />;
   if (data) return <SignedIn next={next} />;
-  return <Providers next={next} failedBefore={params.get("error") !== null} />;
+  return (
+    <>
+      <Providers next={next} failedBefore={params.get("error") !== null} />
+      {/* Accounts are optional: the landing's links arrive here first (spec 2026-09-24-sign-in-prompt-design.md). */}
+      <Link
+        href={next}
+        className="mt-3 inline-flex h-11 w-full items-center justify-center rounded-full text-sm font-medium text-muted transition hover:bg-surface hover:text-foreground"
+      >
+        {SIGN_IN_COPY.later}
+      </Link>
+    </>
+  );
 }
 
 function SignedIn({ next }: { next: string }) {
@@ -44,7 +56,7 @@ function SignedIn({ next }: { next: string }) {
   );
 }
 
-function Providers({ next, failedBefore }: { next: string; failedBefore: boolean }) {
+export function Providers({ next, failedBefore }: { next: string; failedBefore: boolean }) {
   const [starting, setStarting] = useState<ProviderId | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
 
