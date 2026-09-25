@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import type { ThemedToken } from "shiki";
 import { cn } from "@/lib/utils";
 import { CodeLangMenu } from "@/components/code/CodeLangMenu";
-import { tokenizeVizCode, type VizLang } from "@/lib/viz/highlightVizCode";
+import { tokenizeVizCode, vizTokenStyle, type VizLang } from "@/lib/viz/highlightVizCode";
 import { useCodeLang } from "@/lib/codeLang";
 import { resolveCodeLang } from "@/lib/codeLanguages";
 import type { VizCode, VizLineRef } from "@/components/viz/types";
@@ -108,7 +108,7 @@ export function CodePanel({
               <span className="relative pr-4 whitespace-pre">
                 {tokensForLine && tokensForLine.length > 0
                   ? tokensForLine.map((tok, ti) => (
-                      <span key={ti} className="viz-code-token" style={tok.htmlStyle}>
+                      <span key={ti} className="viz-code-token" style={vizTokenStyle(tok)}>
                         {tok.content}
                       </span>
                     ))

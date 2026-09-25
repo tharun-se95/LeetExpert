@@ -455,8 +455,9 @@ The content is the product. Code exists to serve it.
   surface (sunk) `#101A26`: elevated/paper 1.25, code/elevated 1.15,
   code/paper 1.09, paper/surface 1.07. The code well is dark in both themes
   (dark: the sunk navy framed by the Grid's rule `#2E3B4A`), so both paint
-  code with the one dark ink set — `--tok-*` in `:root`, Shiki's dark
-  variant — and nothing swaps it per theme. The static brand tiles use the same paper, so
+  code with the one dark ink set — `--tok-*` in `:root`, and Shiki's one
+  theme (`codePalette.ts` `CODE_DARK`, colours inline; no light variant
+  since #19) — and nothing swaps it per theme. The static brand tiles use the same paper, so
   changing it means updating `assets/brand/mark-tile*.svg` and rerunning
   `node scripts/generate-icons.mjs`. Every text ink (ink, muted, and every status ink incl. info) clears
   AA 4.5:1 on the deepest surface it can render on — the sandbox paints

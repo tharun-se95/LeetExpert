@@ -335,7 +335,8 @@ describe("design tokens", () => {
     // The code well is dark in BOTH themes since 2026-09-25 (the light
     // theme's navy #14202e, the dark theme's Grid sunk #101a26), so both
     // themes paint code with CODE_DARK's ink: :root carries it, nothing
-    // overrides it in the dark theme, and Shiki's dark ink is never swapped.
+    // overrides it in the dark theme, and Shiki has one theme whose colours
+    // it writes inline (tests/codeHighlight.test.ts checks its output).
     const css = readFileSync(GLOBALS, "utf8");
     const root = blockBody(css, ":root");
     const dark = blockBody(css, ".dark");
@@ -357,7 +358,7 @@ describe("design tokens", () => {
     expect(tokIn("tok-variable")).toBe(CODE_DARK.variable);
     expect(tokIn("tok-name")).toBe(CODE_DARK.fg);
     expect(tokSection, "the dark theme must not swap the code ink").not.toMatch(/\.dark\s*\{/);
-    expect(css, "Shiki's light ink is never painted").not.toMatch(/var\(--shiki-light\)/);
+    expect(css, "no stylesheet picks a Shiki theme variant").not.toMatch(/--shiki-/);
 
     for (const [theme, editor] of Object.entries(editors)) {
       for (const [name, hex] of Object.entries(CODE_DARK)) {
