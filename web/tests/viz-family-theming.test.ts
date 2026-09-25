@@ -55,16 +55,17 @@ describe("viz family theming", () => {
   });
 
   it("onAccent clears the contrast floor against its own family accent, computed not assumed", () => {
+    // Viz cells set bold ~14px text on the solid fill. Each theme has its own
+    // fill and ink (familyTheme.ts), and both are held to AA 4.5:1.
     for (const theme of FAMILY_THEMES) {
-      const ratio = contrastRatio(theme.onAccent, theme.accent);
-      // White-on-fill text is bold ~14px on the active cell — AA large-text
-      // floor (3:1). Families using the #111827 dark-ink fallback clear the
-      // full normal-text floor (4.5:1) comfortably, so hold them to that.
-      const floor = theme.onAccent.toLowerCase() === "#ffffff" ? 3 : 4.5;
-      expect(
-        ratio,
-        `${theme.id}: ${theme.onAccent} on ${theme.accent} is ${ratio.toFixed(2)}:1, needs >= ${floor}:1`,
-      ).toBeGreaterThanOrEqual(floor);
+      for (const t of ["light", "dark"] as const) {
+        const { accent, onAccent } = theme[t];
+        const ratio = contrastRatio(onAccent, accent);
+        expect(
+          ratio,
+          `${theme.id} ${t}: ${onAccent} on ${accent} is ${ratio.toFixed(2)}:1, needs >= 4.5:1`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
     }
   });
 });

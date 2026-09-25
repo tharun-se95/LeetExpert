@@ -3,9 +3,8 @@ import type { FamilyTheme } from "./familyTheme";
 
 /**
  * The colour tokens HyperFrames compositions draw with, derived from the app
- * so a video can never drift from the site again (the old hand-kept copy had
- * a navy ground and raw family accents after the app moved to space black and
- * `accentUi`). `hyperframes/assets/brand.css` holds hand-written component
+ * so a video can never drift from the site again (an old hand-kept copy kept
+ * its own ground and raw family accents after the app's tokens moved on). `hyperframes/assets/brand.css` holds hand-written component
  * rules around one generated block; `tests/hyperframesBrand.test.ts` fails
  * when the block differs from what this module produces, and rewrites it when
  * run with UPDATE_HYPERFRAMES_BRAND=1.
@@ -100,9 +99,11 @@ export function buildTokenBlock(globalsCss: string, families: FamilyTheme[]): st
   const dark = themeTokens(globalsCss, "dark");
   const light = themeTokens(globalsCss, "light");
 
-  const measured = (label: string, t: Tokens, themeName: string) => {
+  const measured = (label: string, t: Tokens, themeName: "light" | "dark") => {
     const uiFloor = Math.min(
-      ...families.flatMap((f) => ["--background", "--elevated", "--code", "--surface"].map((s) => contrastRatio(f.accentUi, t[s]))),
+      ...families.flatMap((f) =>
+        ["--background", "--elevated", "--code", "--surface"].map((s) => contrastRatio(f[themeName].accentUi, t[s])),
+      ),
     );
     return (
       `   ${label} ink/ground ${ratio(t, "--foreground", "--background")} · ` +
@@ -111,19 +112,28 @@ export function buildTokenBlock(globalsCss: string, families: FamilyTheme[]): st
     );
   };
 
-  const family = families
-    .map(
-      (f) =>
-        `[data-family="${f.id}"] {\n  --accent: ${lower(f.accentUi)}; /* accentUi: 3:1 on every surface, both themes */\n` +
-        `  --family-accent: ${lower(f.accent)};\n  --on-accent: ${lower(f.onAccentUi)};\n}`,
-    )
-    .join("\n");
+  // Each theme has its own family colours now (familyTheme.ts): dark is the
+  // Grid hue, light its derived variant. Videos render dark by default.
+  const familyBlock = (selector: (id: string) => string, theme: "light" | "dark") =>
+    families
+      .map((f) => {
+        const ink = f[theme];
+        return (
+          `${selector(f.id)} {\n  --accent: ${lower(ink.accentUi)}; /* accentUi: 3:1 on every ${theme} surface */\n` +
+          `  --family-accent: ${lower(ink.accent)};\n  --on-accent: ${lower(ink.onAccentUi)};\n}`
+        );
+      })
+      .join("\n");
+  const family = [
+    familyBlock((id) => `[data-family="${id}"]`, "dark"),
+    familyBlock((id) => `[data-theme="light"] [data-family="${id}"],\n[data-theme="light"][data-family="${id}"]`, "light"),
+  ].join("\n");
 
   return [
     BRAND_BEGIN,
     "/* Read from web/src/app/globals.css and web/src/lib/visual/familyTheme.ts.",
-    "   The base theme is monochrome steel; a family colour is scoped to content with",
-    "   data-family, never used for chrome. Body-size accent text uses --mark, not --accent.",
+    "   Chrome is steel in light and the Grid's blue in dark; a family colour is scoped to",
+    "   content with data-family, never used for chrome. Body-size accent text uses --mark.",
     "   Measured WCAG contrast:",
     measured("dark ", dark, "dark"),
     measured("light", light, "light") + " */",

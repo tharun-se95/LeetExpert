@@ -1,12 +1,15 @@
 import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, posix, relative } from "node:path";
-import { CODE_LIGHT, CODE_DARK } from "../src/lib/content/codePalette";
+import { CODE_DARK } from "../src/lib/content/codePalette";
 import {
+  FAMILY_SURFACES,
   FAMILY_THEMES,
   familyCssVars,
-  uiAccent,
+  lightVariant,
+  uiAccentFor,
 } from "../src/lib/visual/familyTheme";
+import { hexToOklch } from "../src/lib/visual/palette";
 import { MODULES, moduleFamily } from "../src/lib/course/manifest";
 import { contrastRatio, relativeLuminance } from "./helpers/contrast";
 
@@ -262,14 +265,16 @@ describe("design tokens", () => {
   it("dark mode defines layered surfaces and soft borders", () => {
     const css = readFileSync(GLOBALS, "utf8");
     const dark = css.slice(css.indexOf(".dark"));
-    expect(firstHexVar(dark, "press-paper")).toBe("#060607");
-    expect(firstHexVar(dark, "elevated")).toBe("#26262a");
-    expect(firstHexVar(dark, "code")).toBe("#19191d");
-    expect(firstHexVar(dark, "surface")).toBe("#000000");
-    expect(firstHexVar(dark, "press-lime")).toBe("#cbd5e1");
-    expect(firstHexVar(dark, "press-blue")).toBe("#cbd5e1");
+    // The Grid Underneath's navy ladder and blue (spec 2026-09-25-grid-app-theme-design.md).
+    expect(firstHexVar(dark, "press-paper")).toBe("#15202e");
+    expect(firstHexVar(dark, "elevated")).toBe("#223145");
+    expect(firstHexVar(dark, "code")).toBe("#1b2735");
+    expect(firstHexVar(dark, "surface")).toBe("#101a26");
+    expect(firstHexVar(dark, "press-lime")).toBe("#5c8fff");
+    expect(firstHexVar(dark, "press-olive")).toBe("#8db0ff");
+    expect(firstHexVar(dark, "press-blue")).toBe("#8db0ff");
     expect(dark).toMatch(
-      /--press-rule:\s*rgba\(\s*244\s*,\s*244\s*,\s*245\s*,\s*0\.09\s*\)/,
+      /--press-rule:\s*rgba\(\s*163\s*,\s*174\s*,\s*188\s*,\s*0\.19\s*\)/,
     );
   });
 
@@ -278,7 +283,7 @@ describe("design tokens", () => {
     // relative order — elevated brightest, surface deepest, never an
     // inversion. Light: white cards pop off a cool-gray page, editor and
     // test wells step down. Measured light 1.10 / 1.11 / 1.12 / 1.36; dark
-    // 1.34 / 1.16 / 1.16 / 1.04 (see globals.css comments).
+    // (the Grid's navy) 1.25 / 1.15 / 1.09 / 1.07 (see globals.css comments).
     const css = readFileSync(GLOBALS, "utf8");
     const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
     const dark = css.slice(css.indexOf(".dark"));
@@ -327,62 +332,40 @@ describe("design tokens", () => {
     // CLAUDE.md: "Code colour has one source." codePalette.ts feeds Shiki;
     // --tok-* in globals.css feeds CodeMirror. They must not drift.
     //
-    // The code-editor surface (--code-editor) is DELIBERATELY inverted from
-    // the page theme — a dark editor on the light site theme, a light one
-    // on the dark site theme (see the --code-editor comment in globals.css)
-    // — so it's :root that carries CODE_DARK's ink and .dark that carries
-    // CODE_LIGHT's, not the other way around. Every token must still clear
-    // 4.5:1 against whichever --code-editor background it actually paints
-    // on.
+    // The code well is dark in BOTH themes since 2026-09-25 (the light
+    // theme's navy #14202e, the dark theme's Grid sunk #101a26), so both
+    // themes paint code with CODE_DARK's ink: :root carries it, nothing
+    // overrides it in the dark theme, and Shiki's dark ink is never swapped.
     const css = readFileSync(GLOBALS, "utf8");
-    const ladderRoot = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    const ladderDark = css.slice(
-      css.indexOf(".dark"),
-      css.indexOf("@theme inline"),
-    );
-    const codeEditorLight = firstHexVar(ladderRoot, "code-editor")!; // :root's editor bg (dark)
-    const codeEditorDark = firstHexVar(ladderDark, "code-editor")!; // .dark's editor bg (light)
+    const root = blockBody(css, ":root");
+    const dark = blockBody(css, ".dark");
+    const editors = {
+      light: firstHexVar(root, "code-editor")!,
+      dark: firstHexVar(dark, "code-editor")!,
+    };
 
     const tokSection = css.slice(
       css.indexOf("Editor token palette"),
       css.indexOf("Visual OS / PatternLab"),
     );
-    const tokRoot = tokSection.slice(
-      tokSection.indexOf(":root"),
-      tokSection.indexOf(".dark"),
-    );
-    const tokDark = tokSection.slice(tokSection.indexOf(".dark"));
-    const tokIn = (region: string, name: string) => firstHexVar(region, name);
+    const tokIn = (name: string) => firstHexVar(tokSection, name);
+    expect(tokIn("tok-comment")).toBe(CODE_DARK.comment);
+    expect(tokIn("tok-keyword")).toBe(CODE_DARK.keyword);
+    expect(tokIn("tok-string")).toBe(CODE_DARK.string);
+    expect(tokIn("tok-constant")).toBe(CODE_DARK.constant);
+    expect(tokIn("tok-entity")).toBe(CODE_DARK.entity);
+    expect(tokIn("tok-variable")).toBe(CODE_DARK.variable);
+    expect(tokIn("tok-name")).toBe(CODE_DARK.fg);
+    expect(tokSection, "the dark theme must not swap the code ink").not.toMatch(/\.dark\s*\{/);
+    expect(css, "Shiki's light ink is never painted").not.toMatch(/var\(--shiki-light\)/);
 
-    // :root's editor is dark -> CODE_DARK's ink.
-    expect(tokIn(tokRoot, "tok-comment")).toBe(CODE_DARK.comment);
-    expect(tokIn(tokRoot, "tok-keyword")).toBe(CODE_DARK.keyword);
-    expect(tokIn(tokRoot, "tok-string")).toBe(CODE_DARK.string);
-    expect(tokIn(tokRoot, "tok-constant")).toBe(CODE_DARK.constant);
-    expect(tokIn(tokRoot, "tok-entity")).toBe(CODE_DARK.entity);
-    expect(tokIn(tokRoot, "tok-variable")).toBe(CODE_DARK.variable);
-    expect(tokIn(tokRoot, "tok-name")).toBe(CODE_DARK.fg);
-
-    // .dark's editor is light -> CODE_LIGHT's ink.
-    expect(tokIn(tokDark, "tok-comment")).toBe(CODE_LIGHT.comment);
-    expect(tokIn(tokDark, "tok-keyword")).toBe(CODE_LIGHT.keyword);
-    expect(tokIn(tokDark, "tok-string")).toBe(CODE_LIGHT.string);
-    expect(tokIn(tokDark, "tok-constant")).toBe(CODE_LIGHT.constant);
-    expect(tokIn(tokDark, "tok-entity")).toBe(CODE_LIGHT.entity);
-    expect(tokIn(tokDark, "tok-variable")).toBe(CODE_LIGHT.variable);
-    expect(tokIn(tokDark, "tok-name")).toBe(CODE_LIGHT.fg);
-
-    for (const [name, hex] of Object.entries(CODE_DARK)) {
-      expect(
-        contrastRatio(hex, codeEditorLight),
-        `${name} vs :root's code-editor`,
-      ).toBeGreaterThanOrEqual(4.5);
-    }
-    for (const [name, hex] of Object.entries(CODE_LIGHT)) {
-      expect(
-        contrastRatio(hex, codeEditorDark),
-        `${name} vs .dark's code-editor`,
-      ).toBeGreaterThanOrEqual(4.5);
+    for (const [theme, editor] of Object.entries(editors)) {
+      for (const [name, hex] of Object.entries(CODE_DARK)) {
+        expect(
+          contrastRatio(hex, editor),
+          `${name} vs the ${theme} theme's code-editor ${editor}`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
     }
   });
 
@@ -410,54 +393,63 @@ describe("design tokens", () => {
     expect(css).toMatch(/--color-info:\s*var\(--info\)/);
   });
 
-  it("family accentUi clears the UI floor on every surface it can render on, in both themes", () => {
-    // uiAccent() used to check only one surface per theme (the page
-    // background/paper). But --pop/--accent render on --elevated, --code,
-    // and --surface too — and in dark mode --elevated is the BRIGHTEST
-    // surface (opposite of light mode), so it is the true worst case, not
-    // the paper. Checking only paper let linear-traversal and
-    // recursive-exploration ship at 2.7-2.9:1 against --elevated, well under
-    // the 3:1 floor, on the two families covering most of the course.
-    const lightSurfaces = {
-      background: "#f1f4f9",
-      elevated: "#ffffff",
-      code: "#e4e9f2",
-      surface: "#d8dde8",
-    };
-    const darkSurfaces = {
-      background: "#060607",
-      elevated: "#26262a",
-      code: "#19191d",
-      surface: "#000000",
-    };
+  it("family accentUi clears the UI floor on every surface of its own theme", () => {
+    // --pop/--accent render on --elevated, --code and --surface too, not only
+    // the page, so every surface is checked. Each theme has its own value
+    // now (spec 2026-09-25-grid-app-theme-design.md §5), so each is held to
+    // its own theme's surfaces — and FAMILY_SURFACES must be those surfaces.
+    const css = readFileSync(GLOBALS, "utf8");
+    const root = blockBody(css, ":root");
+    const dark = blockBody(css, ".dark");
+    for (const [theme, body] of [["light", null], ["dark", dark]] as const) {
+      const actual = ["background", "elevated", "code", "surface"].map((n) =>
+        resolveToken(root, body, n).toLowerCase(),
+      );
+      expect([...FAMILY_SURFACES[theme]], `${theme} FAMILY_SURFACES vs globals.css`).toEqual(actual);
+    }
     for (const theme of FAMILY_THEMES) {
-      for (const [name, hex] of Object.entries(lightSurfaces)) {
-        const ratio = contrastRatio(theme.accentUi, hex);
-        expect(
-          ratio,
-          `${theme.id} accentUi ${theme.accentUi} on light ${name} (${hex}) is ${ratio.toFixed(2)}:1, needs >= 3:1`,
-        ).toBeGreaterThanOrEqual(3);
+      for (const t of ["light", "dark"] as const) {
+        const ink = theme[t];
+        for (const hex of FAMILY_SURFACES[t]) {
+          const ratio = contrastRatio(ink.accentUi, hex);
+          expect(
+            ratio,
+            `${theme.id} ${t} accentUi ${ink.accentUi} on ${hex} is ${ratio.toFixed(2)}:1, needs >= 3:1`,
+          ).toBeGreaterThanOrEqual(3);
+        }
+        // Viz cells and --pop chips carry text on the solid fill: AA, both fills.
+        for (const [fill, on] of [
+          [ink.accent, ink.onAccent],
+          [ink.accentUi, ink.onAccentUi],
+        ]) {
+          const ratio = contrastRatio(on!, fill!);
+          expect(ratio, `${theme.id} ${t} ${on} on ${fill} is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5);
+        }
       }
-      for (const [name, hex] of Object.entries(darkSurfaces)) {
-        const ratio = contrastRatio(theme.accentUi, hex);
-        expect(
-          ratio,
-          `${theme.id} accentUi ${theme.accentUi} on dark ${name} (${hex}) is ${ratio.toFixed(2)}:1, needs >= 3:1`,
-        ).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("family hues stay told apart from each other and from the brand lamp", () => {
+    // The 7th hue (relationships, magenta) was chosen by distance; a recolor
+    // must not let two families, or a family and the lamp/--good green,
+    // collapse into one colour.
+    const ok = (hex: string) => {
+      const { L, C, H } = hexToOklch(hex);
+      return [L, C * Math.cos((H * Math.PI) / 180), C * Math.sin((H * Math.PI) / 180)];
+    };
+    const dE = (a: string, b: string) => {
+      const [p, q] = [ok(a), ok(b)];
+      return Math.hypot(p[0]! - q[0]!, p[1]! - q[1]!, p[2]! - q[2]!);
+    };
+    for (const [i, a] of FAMILY_THEMES.entries()) {
+      for (const b of FAMILY_THEMES.slice(i + 1)) {
+        // The Grid's own blue and violet are the closest pair (0.080).
+        expect(dE(a.grid, b.grid), `${a.id} vs ${b.id}`).toBeGreaterThanOrEqual(0.075);
       }
-      // onAccentUi pairs with accentUi specifically (--pop/--on-pop, e.g. the
-      // coach masthead mark) — a DIFFERENT fill from onAccent's pairing with
-      // the raw --family-accent (viz cells), and the two can require
-      // different ink: darkening accentUi enough to clear the light floor
-      // above pushed state-transition/relationships past the point where
-      // their dark onAccent ink stays AA-legible on it, even though that
-      // same dark ink is comfortably legible on the (brighter) raw accent.
-      const onFill = contrastRatio(theme.onAccentUi, theme.accentUi);
-      const floor = theme.onAccentUi.toLowerCase() === "#ffffff" ? 3 : 4.5;
-      expect(
-        onFill,
-        `${theme.id} onAccentUi ${theme.onAccentUi} on accentUi ${theme.accentUi} is ${onFill.toFixed(2)}:1, needs >= ${floor}:1`,
-      ).toBeGreaterThanOrEqual(floor);
+      for (const green of ["#5be07a", "#39d353"]) {
+        // Teal (linear traversal) is the nearest, at 0.125 from the lamp.
+        expect(dE(a.grid, green), `${a.id} vs ${green}`).toBeGreaterThanOrEqual(0.1);
+      }
     }
   });
 
@@ -511,12 +503,16 @@ describe("design tokens", () => {
     }
   });
 
-  it("family colors derive from a single authored accent", () => {
-    // "One place to update the colors": recoloring a family means editing the
-    // `accent` hex in familyTheme.ts — accentUi must be its derived variant,
-    // never a hand-maintained twin that can drift. No accentSoft leftovers.
+  it("family colors derive from a single authored Grid hue", () => {
+    // "One place to update the colors": recoloring a family means editing its
+    // `grid` hex in familyTheme.ts. The dark accent IS that hex, the light one
+    // its derived variant, accentUi each theme's push — never a hand-kept twin.
     for (const theme of FAMILY_THEMES) {
-      expect(theme.accentUi).toBe(uiAccent(theme.accent));
+      expect(theme.dark.accent).toBe(theme.grid);
+      expect(theme.light.accent).toBe(lightVariant(theme.grid));
+      expect(theme.light.accentUi).toBe(uiAccentFor(theme.light.accent, "light"));
+      expect(theme.dark.accentUi).toBe(uiAccentFor(theme.dark.accent, "dark"));
+      expect(theme.accent).toBe(`light-dark(${theme.light.accent}, ${theme.dark.accent})`);
       expect(
         (theme as unknown as Record<string, unknown>).accentSoft,
       ).toBeUndefined();
@@ -916,7 +912,7 @@ describe("type system", () => {
       /border-top:\s*1px solid var\(--rule-strong\)/,
     );
     expect(css).toMatch(/--press-rule-strong:\s*rgba\(22, 32, 46, 0\.18\)/);
-    expect(css).toMatch(/--press-rule-strong:\s*rgba\(244, 244, 245, 0\.18\)/);
+    expect(css).toMatch(/--press-rule-strong:\s*rgba\(163, 174, 188, 0\.38\)/);
     expect(css).toMatch(/--rule-strong:\s*var\(--press-rule-strong\)/);
   });
 

@@ -133,7 +133,7 @@ function maxChroma(L: number, H: number): number {
 }
 
 /** Keep L and H; lower chroma only as far as the screen needs. */
-function gamutMapped(L: number, C: number, H: number): string {
+export function gamutMapped(L: number, C: number, H: number): string {
   if (inGamut(oklchToLinearRgb(L, C, H))) return oklchToHex(L, C, H);
   let lo = 0;
   let hi = C;

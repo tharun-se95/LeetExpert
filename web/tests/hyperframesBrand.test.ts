@@ -17,12 +17,19 @@ describe("hyperframes brand tokens follow the app", () => {
     else expect(BRAND, "run: UPDATE_HYPERFRAMES_BRAND=1 npx vitest run tests/hyperframesBrand.test.ts").toBe(expected);
   });
 
-  it("carries every family with its accentUi, raw accent and ink", () => {
+  it("carries every family with its accentUi, raw accent and ink, per theme", () => {
+    // Videos have no light-dark(): the dark block is the default, the light
+    // one is scoped under [data-theme="light"].
     for (const f of FAMILY_THEMES) {
-      const block = BRAND.match(new RegExp(`\\[data-family="${f.id}"\\] \\{([^}]*)\\}`))?.[1] ?? "";
-      expect(block, f.id).toContain(`--accent: ${f.accentUi.toLowerCase()}`);
-      expect(block, f.id).toContain(`--family-accent: ${f.accent.toLowerCase()}`);
-      expect(block, f.id).toContain(`--on-accent: ${f.onAccentUi.toLowerCase()}`);
+      const blocks = {
+        dark: BRAND.match(new RegExp(`\\n\\[data-family="${f.id}"\\] \\{([^}]*)\\}`))?.[1] ?? "",
+        light: BRAND.match(new RegExp(`\\[data-theme="light"\\]\\[data-family="${f.id}"\\] \\{([^}]*)\\}`))?.[1] ?? "",
+      };
+      for (const t of ["light", "dark"] as const) {
+        expect(blocks[t], `${f.id} ${t}`).toContain(`--accent: ${f[t].accentUi.toLowerCase()}`);
+        expect(blocks[t], `${f.id} ${t}`).toContain(`--family-accent: ${f[t].accent.toLowerCase()}`);
+        expect(blocks[t], `${f.id} ${t}`).toContain(`--on-accent: ${f[t].onAccentUi.toLowerCase()}`);
+      }
     }
   });
 
@@ -35,7 +42,7 @@ describe("hyperframes brand tokens follow the app", () => {
       }
       for (const f of FAMILY_THEMES) {
         for (const surface of ["--background", "--elevated", "--code", "--surface"]) {
-          expect(contrastRatio(f.accentUi, t[surface]), `${theme} ${f.id} on ${surface}`).toBeGreaterThanOrEqual(3);
+          expect(contrastRatio(f[theme].accentUi, t[surface]), `${theme} ${f.id} on ${surface}`).toBeGreaterThanOrEqual(3);
         }
       }
     }

@@ -12,8 +12,11 @@ export function MotifMark({
   accent: string;
   className?: string;
 }) {
-  const stroke = accent;
-  const fill = accent;
+  // The accent is a light-dark() CSS value (familyTheme.ts), which SVG
+  // presentation attributes do not resolve: it goes on the root as CSS
+  // `color`, and every stroke and fill inside reads it as currentColor.
+  const stroke = "currentColor";
+  const fill = "currentColor";
   const common = {
     fill: "none",
     stroke,
@@ -24,7 +27,7 @@ export function MotifMark({
   const soft = { fill, fillOpacity: 0.12 };
 
   return (
-    <svg viewBox="0 0 160 160" className={className} aria-hidden>
+    <svg viewBox="0 0 160 160" className={className} style={{ color: accent }} aria-hidden>
       {motif === "tiles" && (
         <>
           <rect

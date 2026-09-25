@@ -109,11 +109,13 @@ function MiniMap({
             ? getFamilyTheme(n.familyId).accent
             : "var(--accent)";
         return (
-          <g key={n.id} transform={`translate(${p.x}, ${p.y})`}>
+          // A family accent is a light-dark() CSS value: set it as CSS
+          // `color` and paint with currentColor, which attributes resolve.
+          <g key={n.id} transform={`translate(${p.x}, ${p.y})`} style={{ color: accent }}>
             <circle
               r={active ? 7 : 4.5}
-              fill={n.kind === "leaf" ? accent : "var(--background)"}
-              stroke={accent}
+              fill={n.kind === "leaf" ? "currentColor" : "var(--background)"}
+              stroke="currentColor"
               strokeWidth={active ? 2.5 : 1.25}
               opacity={active || onTrail ? 1 : 0.4}
             />
@@ -121,7 +123,7 @@ function MiniMap({
               <circle
                 r={12}
                 fill="none"
-                stroke={accent}
+                stroke="currentColor"
                 strokeWidth={1}
                 opacity={0.45}
               />
