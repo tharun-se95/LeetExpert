@@ -43,6 +43,37 @@ they disagree. Then:
   case; `slow*` (correct but exponential) must pass the first five; `mistake*` must fail at least one, so a
   "Watch out" is only ever printed if it is true.
 
+## Gates and the ledger
+
+Rollout spec: `docs/superpowers/specs/2026-09-24-lesson-artifacts-rollout-design.md`. Every lesson in the app
+has a row in `ledger.json` (view: `LEDGER.md`), and a lesson's status comes only from gate evidence:
+
+```bash
+python3 web/lesson-artifacts/ledger.py record <module/slug> build|code|light|dark
+python3 web/lesson-artifacts/ledger.py check      # also run in CI (tests/lessonArtifactsLedger.test.ts)
+python3 web/lesson-artifacts/ledger.py render     # rewrite LEDGER.md
+```
+
+- `code` runs `code-gate.ts` for a problem lesson (the shown code against the lesson's sandbox cases, both
+  runtimes, held to its file names, and the built page must embed exactly those files) and the lesson's own
+  `check.py` for a concept lesson.
+- `light` / `dark` run `browser-gate.mjs` (real Chrome, 1366 and 375 px): console and page errors, layout
+  shift (floor 0.001), sideways scroll, AA contrast against what is painted, accessible names, reveals hidden,
+  and a still page under reduced motion. Screenshots land in `dist/_gate/`.
+- Evidence is tied to a hash of the lesson's folder, so editing a lesson makes it stale.
+
+## Optional kit modules
+
+`kit/lists.js` + `kit/lists.css` (the linked list model and `ListPlayer`) ship only in lessons whose
+`lesson.js` names them (`KIT_OPTIONAL` in `build.py`). Every kit file and the lesson share one scope, so
+module functions carry a prefix (`listRun`, `listLayout`): an unprefixed `run` in a lesson once replaced
+`engine.js`'s.
+
+## Fonts
+
+The page stays invisible until its three faces load (capped at 2.5 s) so a late font never re-wraps visible
+text; without JavaScript nothing is hidden. The kinetic headline is split into words at build time.
+
 ## Embedding contract
 
 The frame loads `?embed=1`, which hides the page's own top bar and rail. The page cannot see the app's

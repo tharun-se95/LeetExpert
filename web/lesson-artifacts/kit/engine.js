@@ -5,7 +5,23 @@ var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)')
 var clamp=function(x,a,b){a=a==null?0:a;b=b==null?1:b;return Math.min(b,Math.max(a,x));};
 var ease=function(p){return p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;};
 function h2r(h){h=h.trim();if(h[0]==='#'){if(h.length===4)h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];return [1,3,5].map(function(i){return parseInt(h.slice(i,i+2),16);});}var m=h.match(/[\d.]+/g)||[0,0,0];return m.slice(0,3).map(Number);}
+/* relative luminance, for picking the readable ink over a fill that is mid-transition */
+var lumc=function(c){var f=function(v){v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);};return .2126*f(c[0])+.7152*f(c[1])+.0722*f(c[2]);};
+var crat=function(a,b){var x=lumc(a),y=lumc(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
 var mixc=function(a,b,p){return [Math.round(a[0]+(b[0]-a[0])*p),Math.round(a[1]+(b[1]-a[1])*p),Math.round(a[2]+(b[2]-a[2])*p)];};
+/* the ink for a fill that is mid-transition: the endpoint ink that reads better, or, when neither
+   clears AA, one pushed toward whichever of black and white contrasts more with this fill, only as far
+   as AA needs. Each state clears 4.5:1 with its own ink, but tints tuned close to that floor
+   (accent_cell) left both inks at 4.1-4.4:1 over a blend of two of them: a white ink cannot be pushed
+   whiter, so the direction comes from the fill, never the ink. One extreme always reaches 4.58:1
+   (sqrt 21, where black and white tie), so the push always lands. */
+var WHITE=[255,255,255],BLACK=[0,0,0];
+function legible(f,ia,ib){
+  var ink=crat(f,ia)>=crat(f,ib)?ia:ib;if(crat(f,ink)>=4.5)return ink;
+  var to=crat(f,WHITE)>=crat(f,BLACK)?WHITE:BLACK,from=(lumc(ia)>lumc(f))===(to===WHITE)?ia:ib;
+  for(var p=.1;p<1;p+=.1){var t=mixc(from,to,p);if(crat(f,t)>=4.5)return t;}
+  return to;
+}
 var rgb=function(a){return 'rgb('+a[0]+','+a[1]+','+a[2]+')';};
 var fmt=function(n){return n.toLocaleString('en-US');};
 /* a count with its unit: counters animate through 1, where "1 hops" would show */
@@ -67,6 +83,16 @@ function Scene(def,root){
   frames.forEach(function(f,i){var tk=el('i',f.ev||'');tk.title='Frame '+(i+1);tk.addEventListener('click',function(){pause();t=i*step+step*.5;render();});ticks.appendChild(tk);});
   var tickEls=ticks.children;
 
+  function statsHtml(f){return (f.stats||[]).map(function(s){return '<span>'+s[0]+' <b>'+s[1]+'</b></span>';}).join('');}
+  /* Hold the caption and the stats row at the tallest any frame needs, measured at this width:
+     they change length every frame, and a row that wraps moved everything below the player. */
+  function reserveText(){
+    [[note,function(f){var d=document.createElement('div');d.textContent=f.note||'';return d.innerHTML;}],[stats,statsHtml]].forEach(function(p){
+      var box=p[0],probe=box.cloneNode(false),h=0;probe.removeAttribute('aria-live');probe.setAttribute('aria-hidden','true');
+      probe.style.cssText='position:absolute;visibility:hidden;left:0;top:0;min-height:0;width:'+box.clientWidth+'px';box.parentNode.appendChild(probe);
+      frames.forEach(function(f){probe.innerHTML=p[1](f);h=Math.max(h,probe.offsetHeight);});probe.remove();
+      if(h)box.style.minHeight=h+'px';});
+  }
   function fit(){
     def.boards.forEach(function(b){
       var g=b.el.closest('.grp'),gw=g.clientWidth||260;
@@ -87,7 +113,7 @@ function Scene(def,root){
         b.el.style.setProperty('--cs',cs+'px');b.el.style.setProperty('--fs',Math.max(9,Math.round(cs*.4))+'px');
       }
     });
-    last={};render();
+    last={};reserveText();render();
   }
   function render(){
     var fi=Math.min(n-1,Math.floor(t/step+1e-9)),loc=(t-fi*step)/step,p=fi===0?1:ease(clamp(loc/.45));
@@ -95,7 +121,9 @@ function Scene(def,root){
     def.boards.forEach(function(b){
       var a=prev.b[b.id],c=cur.b[b.id],els=cells[b.id];
       for(var i=0;i<els.length;i++){
-        var sa=styleOf(a[i]),sb=styleOf(c[i]),f=rgb(mixc(sa.f,sb.f,p)),ink=rgb(mixc(sa.i,sb.i,p));
+        var sa=styleOf(a[i]),sb=styleOf(c[i]),fm=mixc(sa.f,sb.f,p),f=rgb(fm),ink=rgb(legible(fm,sa.i,sb.i));
+        // the ink never blends: half-way between two states both fill and ink sat mid-tone and the
+        // letter nearly vanished (the browser gate measured 1.47:1), so it takes whichever reads better
         var changed=a[i].k!==c[i].k||a[i].t!==c[i].t;
         var sc=changed&&p<1?1+.12*Math.sin(Math.PI*p):1,tx=(p<.3?a[i].t:c[i].t)||'';
         var key=f+ink+sc.toFixed(3)+tx,e=els[i],id=b.id+i;
@@ -113,7 +141,7 @@ function Scene(def,root){
       }
     });
     if(note.dataset.f!==String(fi)){note.dataset.f=fi;note.textContent=cur.note||'';
-      stats.innerHTML=(cur.stats||[]).map(function(s){return '<span>'+s[0]+' <b>'+s[1]+'</b></span>';}).join('');
+      stats.innerHTML=statsHtml(cur);
       for(var k=0;k<tickEls.length;k++)tickEls[k].classList.toggle('on',k<=fi&&!tickEls[k].classList.contains('key')&&!tickEls[k].classList.contains('bad'));}
     cnt.textContent=(fi+1)+' / '+n;
     var pct=total?clamp(t/total)*100:0;head.style.left=pct+'%';
@@ -121,14 +149,19 @@ function Scene(def,root){
     range.setAttribute('aria-valuetext','Frame '+(fi+1)+' of '+n);
   }
   function ui(){var again=t>=total-step*.6;playB.innerHTML=icon(playing?'i-pause':(again?'i-replay':'i-play'));playB.setAttribute('aria-label',playing?'Pause':(again?'Replay':'Play'));}
-  function pause(){if(ctl){ctl.stop();ctl=null;}playing=false;ui();}
+  /* def.loop: hold the last frame, then play again, until the learner takes the controls */
+  var touched=false,loopT=0;
+  function pause(){clearTimeout(loopT);if(ctl){ctl.stop();ctl=null;}playing=false;ui();}
   function play(){
     if(playing)return;
     if(t>=total-step*.6)t=0;
     playing=true;ui();
     var from=t,dur=(total-step*.5-from)/speed;
-    ctl=run(from,total-step*.5,Math.max(.05,dur),function(v){t=v;render();},function(){playing=false;ctl=null;t=total-step*.5;render();ui();});
+    ctl=run(from,total-step*.5,Math.max(.05,dur),function(v){t=v;render();},function(){playing=false;ctl=null;t=total-step*.5;render();ui();
+      if(def.loop&&!touched&&!reduce)loopT=setTimeout(function(){if(!touched){t=0;play();}},2400);});
   }
+  ['.pp','.pv','.nx'].forEach(function(sel){root.querySelector(sel).addEventListener('pointerdown',function(){touched=true;});});
+  range.addEventListener('pointerdown',function(){touched=true;});
   playB.addEventListener('click',function(){playing?pause():play();});
   root.querySelector('.pv').addEventListener('click',function(){pause();var fi=Math.min(n-1,Math.floor(t/step));t=Math.max(0,fi-1)*step+step*.5;render();ui();});
   root.querySelector('.nx').addEventListener('click',function(){pause();var fi=Math.min(n-1,Math.floor(t/step));t=Math.min(n-1,fi+1)*step+step*.5;render();ui();});

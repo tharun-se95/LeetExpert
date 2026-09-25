@@ -12,7 +12,7 @@ A lesson folder holds:
     python3 web/lesson-artifacts/build.py <module>/<slug>      one lesson
     python3 web/lesson-artifacts/build.py                      all of them
 """
-import re, json, os, subprocess, sys
+import re, json, os, shutil, subprocess, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.join(ROOT, "kit")
@@ -70,7 +70,9 @@ SHELL_TOP = '''<svg width="0" height="0" style="position:absolute" aria-hidden="
 SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-warn", "insight": "i-s-insight",
                  "solution": "i-s-solution", "variants": "i-s-variants", "quiz": "i-s-quiz",
                  # concept lessons
-                 "node": "i-box", "build": "i-stack", "walk": "i-route", "cost": "i-s-cost", "next": "i-s-variants"}
+                 "node": "i-box", "build": "i-stack", "walk": "i-route", "cost": "i-s-cost", "next": "i-s-variants",
+                 # overview pages
+                 "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight"}
 
 
 def _icon(sec):
@@ -82,13 +84,35 @@ def decorate(body):
                   lambda m: f'<section class="sec" id="{m[1]}"><h2><span class="sec-ic">{_icon(m[1])}</span><span>{m[2]}</span></h2>', body)
     nav = re.search(r'<nav class="toc".*?</nav>', body, re.S)
     toc = re.sub(r'<a href="#([a-z]+)">', lambda m: f'<a href="#{m[1]}">{_icon(m[1])}', nav[0])
-    return body[:nav.start()] + toc + body[nav.end():]
+    body = body[:nav.start()] + toc + body[nav.end():]
+    # The kinetic headline's word spans are made here, not in the browser, where the split re-broke
+    # the heading's lines after load and moved the hero card (layout shift). It runs after the
+    # contents splice above, whose offsets were taken on the unsplit body.
+    body = re.sub(r'<h1 id="h1">(.*?)</h1>', lambda m: '<h1 id="h1">' + ' '.join(
+        f'<span class="kw">{w}</span>' for w in m[1].split(' ')) + '</h1>', body, count=1)
+    return body
+
+
+# Kit modules only some lessons need, with the names that show a lesson uses them. A lesson that
+# does not name them does not ship them (CLAUDE.md §5: 220 lessons must not pay for five).
+KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun(")}
+
+
+def optional_kit(lesson_js):
+    return [name for name, marks in KIT_OPTIONAL.items() if any(m in lesson_js for m in marks)]
+
+
+# the latin files every page needs before it can be shown; the rest load on demand
+PRELOAD = sorted(f for f in os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts"))
+                 if f.endswith(".woff2") and "-latin-" in f and "-latin-ext-" not in f)
 
 
 def build(module, slug, family, title):
     folder = os.path.join(ROOT, slug)
-    L, D, N = shared.tokens(family)
-    css = shared.BASE_CSS.replace("@@L@@", L).replace("@@D@@", D).replace("@@N@@", N) + read(KIT, "kit.css")
+    L, D, N, ND = shared.tokens(family)
+    uses = optional_kit(read(folder, "lesson.js"))
+    css = shared.BASE_CSS.replace("@@L@@", L).replace("@@D@@", D).replace("@@ND@@", ND).replace("@@N@@", N) + read(KIT, "kit.css")
+    css += "".join(read(KIT, m + ".css") for m in uses if os.path.exists(os.path.join(KIT, m + ".css")))
     extra = os.path.join(folder, "extra.css")
     if os.path.exists(extra):
         css += read(extra)
@@ -99,17 +123,27 @@ def build(module, slug, family, title):
         read(KIT, "engine.js"),
         read(KIT, "trees.js"),
         read(KIT, "kit.js"),
+        *[read(KIT, m + ".js") for m in uses],
         "var CODE=" + json.dumps(code) + ";",
         # coloured copies keyed by the exact source, so codeBlock can find them from CODE's strings
         "var HL=" + json.dumps(highlight(code)) + ";",
         read(folder, "lesson.js"),
         "wirePage();",
+        "window.__built&&window.__built();",
         "})();",
     ])
     html = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../fonts/fonts.css">
+{"".join(f'<link rel="preload" href="../fonts/{f}" as="font" type="font/woff2" crossorigin>' for f in PRELOAD)}
+<script>/* the page stays invisible until every weight it requests is in AND the page script has built its
+   scenes (capped at 2.5 s), because hidden content cannot shift. Waiting on one weight per face let the
+   others arrive late and re-wrap text; waiting on fonts alone revealed the page ~300 ms before motion.js
+   arrived and the script drew the hero, which then pushed the text down. Without JS nothing is hidden. */
+(function(){{var d=document.documentElement,need=2,reveal=function(){{d.classList.remove('fl');}},done=function(){{if(--need===0)reveal();}};
+d.classList.add('fl');setTimeout(reveal,2500);window.__built=done;
+if(document.fonts&&document.fonts.load)Promise.all(['400 16px "Space Grotesk"','500 16px "Space Grotesk"','700 16px "Space Grotesk"','400 16px "Space Mono"','700 16px "Space Mono"','400 13px "JetBrains Mono"','500 13px "JetBrains Mono"'].map(function(f){{return document.fonts.load(f);}})).then(done,done);else done();}})();</script>
+<style>html.fl body{{visibility:hidden}}</style>
 <style>{css}</style></head><body>
 {SHELL_TOP.replace("@@ICONS@@", shared.ICONS)}{body}</main>
 <script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
@@ -117,6 +151,8 @@ def build(module, slug, family, title):
 {js}
 </script></body></html>'''
     out = os.path.join(ROOT, "dist", module, slug + ".html")
+    # the page's faces sit beside it, one level up (every page is dist/<module>/<slug>.html)
+    shutil.copytree(os.path.join(ROOT, "fonts"), os.path.join(ROOT, "dist", "fonts"), dirs_exist_ok=True)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         f.write(html)
@@ -130,6 +166,8 @@ LESSONS = [
     ("dynamic-programming", "coin-change", "state-transition", "Coin Change"),
     ("graphs", "course-schedule", "relationships", "Course Schedule"),
     ("linked-lists", "build-a-linked-list", "pointer-movement", "Build a Linked List From Scratch"),
+    # overviews: one page across several modules (not a lesson, so not a ledger row; spec §2)
+    ("overviews", "linear-structures", "linear-traversal", "The Line Underneath"),
 ]
 
 if __name__ == "__main__":

@@ -1,0 +1,50 @@
+/* kit/lists.css: the list player (kit/lists.js). Included only with it. */
+/* the list player: minimal. One card surface, soft nodes, names as plain labels on a
+   stem, one quiet line of fields, a slim step track. */
+.lvhost{display:block}
+.lp{display:flex;flex-direction:column;gap:12px}
+.lp-stage{overflow-x:auto;overflow-y:hidden;padding:4px 0 2px;border-radius:14px;background:radial-gradient(ellipse 70% 90% at 50% 40%,color-mix(in srgb,var(--fg) 4%,transparent),transparent 70%)}
+.lp-stage svg{display:block;width:100%;height:auto;max-height:290px;overflow:visible}
+.lp-box{fill:color-mix(in srgb,var(--card) 88%,var(--fg));stroke:color-mix(in srgb,var(--fg) 14%,transparent);stroke-width:1}
+.lp-port{fill:color-mix(in srgb,var(--bg) 55%,transparent)}
+.lp-val{font:600 17px 'JetBrains Mono',monospace;fill:var(--fg)}
+.lp-nil{font:500 12px 'JetBrains Mono',monospace;fill:var(--mut)}
+.lp-dot{fill:var(--fg)}
+.lp-arrow{fill:none;stroke:color-mix(in srgb,var(--fg) 42%,transparent);stroke-width:1.6;stroke-linecap:round}
+.lp-arrow.hi{stroke:var(--fam);stroke-width:2.2;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--fam) 55%,transparent))}
+.lp-node.off .lp-box{stroke-dasharray:4 4;fill:transparent;stroke:color-mix(in srgb,var(--fg) 45%,transparent);stroke-width:1.3}
+.lp-node.hi .lp-box{stroke:var(--fam);stroke-width:1.6}
+.lp-node[role="button"]{cursor:pointer}
+.lp-node[role="button"] .lp-box{transition:stroke .2s}
+.lp-node[role="button"]:hover .lp-box{stroke:var(--fam)}
+.lp-node:focus{outline:none} .lp-node:focus-visible .lp-box{stroke:var(--mk);stroke-width:2.5}
+/* the family colour is a 3:1 UI ink: the label text takes --mark (AA), its stem keeps the family */
+.lp-tag text{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;fill:var(--mk)}
+.lp-tag line{stroke:var(--fam);stroke-width:1.2;stroke-linecap:round;opacity:.7}
+.lp-tag.walk text{fill:var(--b-ink)} .lp-tag.walk line{stroke:var(--b-ink)}
+.lp-tag.hi text{font-weight:700;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--fam) 70%,transparent))}
+.lp-meta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px}
+.lp-fields{display:flex;gap:16px;font:12.5px 'JetBrains Mono',monospace;color:var(--mut)}
+.lp-fields b{display:inline-block;min-width:4ch;color:var(--fg);font-weight:500;margin-left:4px;transition:color .4s}
+.lp-fields .hi b{color:var(--fam)}
+.lp-inv{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--mut)}
+.lp-inv span{display:inline-flex;align-items:center;gap:6px;transition:color .4s}
+.lp-inv i{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--mut);transition:background-color .4s,border-color .4s}
+.lp-inv .ok i{background:var(--g-ink);border-color:var(--g-ink)}
+.lp-inv .bad{color:var(--fg)} .lp-inv .bad i{background:var(--r-ink);border-color:var(--r-ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--r-ink) 22%,transparent)}
+.lp-inv .mid i{border-style:dashed}
+.lp-note{margin:0;font-size:15px;line-height:1.55;min-height:48px;color:var(--fg)}
+.lp-note code{font-family:'JetBrains Mono',monospace;font-size:.86em;background:color-mix(in srgb,var(--fg) 8%,transparent);padding:1px 6px;border-radius:5px}
+.lp-bar{display:flex;align-items:center;gap:6px}
+.lp-btn{display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:50%;background:none;color:var(--mut);cursor:pointer;font-size:15px;transition:background-color .2s,color .2s}
+.lp-btn:hover:not(:disabled){background:color-mix(in srgb,var(--fg) 9%,transparent);color:var(--fg)}
+.lp-btn:disabled{opacity:.35;cursor:default}
+.lp-main{width:36px;height:36px;background:var(--fg);color:var(--bg)}
+.lp-main:hover:not(:disabled){background:color-mix(in srgb,var(--fg) 85%,var(--bg));color:var(--bg)}
+.lp-track{flex:1;display:flex;gap:3px;margin:0 8px;min-width:0}
+.lp-seg{flex:1;height:4px;min-width:4px;padding:0;border:0;border-radius:2px;background:color-mix(in srgb,var(--fg) 14%,transparent);cursor:pointer;transition:background-color .45s}
+.lp-seg.on{background:var(--fam)}
+.lp-seg:hover{background:color-mix(in srgb,var(--fam) 60%,transparent)}
+.lp-seg:focus-visible{outline:2px solid var(--mk);outline-offset:3px}
+.lp-count{font:11.5px 'JetBrains Mono',monospace;color:var(--mut);min-width:7ch;text-align:right;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.lp-seg,.lp-inv i,.lp-fields b,.lp-btn{transition:none}}

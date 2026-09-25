@@ -254,7 +254,7 @@
   },
   "arrays/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "arrays",
    "moduleNumber": 4,
    "type": "practice",
@@ -335,7 +335,7 @@
   },
   "strings/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "strings",
    "moduleNumber": 5,
    "type": "practice",
@@ -443,7 +443,7 @@
   },
   "hash-tables/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "hash-tables",
    "moduleNumber": 6,
    "type": "practice",
@@ -462,16 +462,28 @@
   "linked-lists/build-a-linked-list": {
    "evidence": {
     "build": {
-     "source": "e09df0193ec227dd",
-     "on": "2026-09-24",
-     "commit": "7968310",
-     "result": "linked-lists/build-a-linked-list: 180,238 bytes -> dist/linked-lists/build-a-linked-list.html"
+     "source": "b248d90946d6d0fb",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "linked-lists/build-a-linked-list: 190,935 bytes -> lesson-artifacts/dist/linked-lists/build-a-linked-list.html"
     },
     "code": {
-     "source": "e09df0193ec227dd",
-     "on": "2026-09-24",
-     "commit": "7968310",
+     "source": "b248d90946d6d0fb",
+     "on": "2026-09-25",
+     "commit": "7311a20",
      "result": "all claims hold"
+    },
+    "light": {
+     "source": "b248d90946d6d0fb",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0001 · contrast AA · names · reveals hidden · reduced motion still"
+    },
+    "dark": {
+     "source": "b248d90946d6d0fb",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0001 · contrast AA · names · reveals hidden · reduced motion still"
     }
    },
    "notes": "",
@@ -537,7 +549,7 @@
   },
   "linked-lists/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "linked-lists",
    "moduleNumber": 7,
    "type": "practice",
@@ -618,7 +630,7 @@
   },
   "stacks/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "stacks",
    "moduleNumber": 8,
    "type": "practice",
@@ -690,7 +702,7 @@
   },
   "queues/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "queues",
    "moduleNumber": 9,
    "type": "practice",
@@ -762,7 +774,7 @@
   },
   "two-pointers/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "two-pointers",
    "moduleNumber": 10,
    "type": "practice",
@@ -808,10 +820,28 @@
   "sliding-window/longest-substring-without-repeating": {
    "evidence": {
     "build": {
-     "source": "e7043c91aeecd147",
-     "on": "2026-09-24",
-     "commit": "7968310",
-     "result": "sliding-window/longest-substring-without-repeating: 132,459 bytes -> dist/sliding-window/longest-substring-without-repeating.html"
+     "source": "eb19e5ab2cdfcbc5",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "sliding-window/longest-substring-without-repeating: 140,677 bytes -> lesson-artifacts/dist/sliding-window/longest-substring-without-repeating.html"
+    },
+    "code": {
+     "source": "eb19e5ab2cdfcbc5",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "code: 3 file(s) × 2 runtimes (6 runs) held to their names against 8 sandbox cases"
+    },
+    "light": {
+     "source": "eb19e5ab2cdfcbc5",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still"
+    },
+    "dark": {
+     "source": "eb19e5ab2cdfcbc5",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still"
     }
    },
    "notes": "",
@@ -841,7 +871,7 @@
   },
   "sliding-window/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "sliding-window",
    "moduleNumber": 11,
    "type": "practice",
@@ -922,7 +952,7 @@
   },
   "prefix-sum/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "prefix-sum",
    "moduleNumber": 12,
    "type": "practice",
@@ -1003,7 +1033,7 @@
   },
   "binary-search/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "binary-search",
    "moduleNumber": 13,
    "type": "practice",
@@ -1093,7 +1123,7 @@
   },
   "sorting/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "sorting",
    "moduleNumber": 14,
    "type": "practice",
@@ -1183,7 +1213,7 @@
   },
   "matrix/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "matrix",
    "moduleNumber": 15,
    "type": "practice",
@@ -1273,7 +1303,7 @@
   },
   "recursion-backtracking/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "recursion-backtracking",
    "moduleNumber": 16,
    "type": "practice",
@@ -1328,10 +1358,28 @@
   "binary-trees/diameter-of-binary-tree": {
    "evidence": {
     "build": {
-     "source": "a02164e6861bd057",
-     "on": "2026-09-24",
-     "commit": "7968310",
-     "result": "binary-trees/diameter-of-binary-tree: 135,557 bytes -> dist/binary-trees/diameter-of-binary-tree.html"
+     "source": "bce2bd2269349da8",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "binary-trees/diameter-of-binary-tree: 143,751 bytes -> lesson-artifacts/dist/binary-trees/diameter-of-binary-tree.html"
+    },
+    "code": {
+     "source": "bce2bd2269349da8",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "code: 3 file(s) × 2 runtimes (6 runs) held to their names against 6 sandbox cases"
+    },
+    "light": {
+     "source": "bce2bd2269349da8",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still"
+    },
+    "dark": {
+     "source": "bce2bd2269349da8",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still"
     }
    },
    "notes": "",
@@ -1388,7 +1436,7 @@
   },
   "binary-trees/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "binary-trees",
    "moduleNumber": 17,
    "type": "practice",
@@ -1469,7 +1517,7 @@
   },
   "bst/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "bst",
    "moduleNumber": 18,
    "type": "practice",
@@ -1550,7 +1598,7 @@
   },
   "heaps/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "heaps",
    "moduleNumber": 19,
    "type": "practice",
@@ -1604,7 +1652,7 @@
   },
   "tries/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "tries",
    "moduleNumber": 20,
    "type": "practice",
@@ -1667,7 +1715,7 @@
   },
   "intervals/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "intervals",
    "moduleNumber": 21,
    "type": "practice",
@@ -1730,7 +1778,7 @@
   },
   "greedy/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "greedy",
    "moduleNumber": 22,
    "type": "practice",
@@ -1803,10 +1851,28 @@
   "graphs/course-schedule": {
    "evidence": {
     "build": {
-     "source": "de2acb1c189dc484",
-     "on": "2026-09-24",
-     "commit": "7968310",
-     "result": "graphs/course-schedule: 154,265 bytes -> dist/graphs/course-schedule.html"
+     "source": "61a8bccd921fd628",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "graphs/course-schedule: 162,563 bytes -> lesson-artifacts/dist/graphs/course-schedule.html"
+    },
+    "code": {
+     "source": "61a8bccd921fd628",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "code: 3 file(s) × 2 runtimes (6 runs) held to their names against 7 sandbox cases"
+    },
+    "light": {
+     "source": "61a8bccd921fd628",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still"
+    },
+    "dark": {
+     "source": "61a8bccd921fd628",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still"
     }
    },
    "notes": "",
@@ -1863,7 +1929,7 @@
   },
   "graphs/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "graphs",
    "moduleNumber": 23,
    "type": "practice",
@@ -1936,10 +2002,28 @@
   "dynamic-programming/coin-change": {
    "evidence": {
     "build": {
-     "source": "592d8509675a20ed",
-     "on": "2026-09-24",
-     "commit": "7968310",
-     "result": "dynamic-programming/coin-change: 145,315 bytes -> dist/dynamic-programming/coin-change.html"
+     "source": "b29017c7e6f79d59",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "dynamic-programming/coin-change: 153,943 bytes -> lesson-artifacts/dist/dynamic-programming/coin-change.html"
+    },
+    "code": {
+     "source": "b29017c7e6f79d59",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "code: 4 file(s) × 2 runtimes (8 runs) held to their names against 8 sandbox cases"
+    },
+    "light": {
+     "source": "b29017c7e6f79d59",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still"
+    },
+    "dark": {
+     "source": "b29017c7e6f79d59",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still"
     }
    },
    "notes": "",
@@ -2014,12 +2098,46 @@
   },
   "dynamic-programming/practice": {
    "evidence": {},
-   "notes": "",
+   "notes": "deferred (D2): after the 199 problem and concept lessons",
    "module": "dynamic-programming",
    "moduleNumber": 24,
    "type": "practice",
    "title": "Practice",
    "family": "state-transition"
+  }
+ },
+ "overviews": {
+  "overviews/linear-structures": {
+   "evidence": {
+    "build": {
+     "source": "ed92e8c4ca1cd19b",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "overviews/linear-structures: 252,893 bytes -> lesson-artifacts/dist/overviews/linear-structures.html"
+    },
+    "code": {
+     "source": "ed92e8c4ca1cd19b",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "all claims hold"
+    },
+    "light": {
+     "source": "ed92e8c4ca1cd19b",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0003 · contrast AA · names · reveals hidden · reduced motion still"
+    },
+    "dark": {
+     "source": "ed92e8c4ca1cd19b",
+     "on": "2026-09-25",
+     "commit": "7311a20",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0003 · contrast AA · names · reveals hidden · reduced motion still"
+    }
+   },
+   "notes": "",
+   "type": "overview",
+   "title": "The Line Underneath",
+   "family": "linear-traversal"
   }
  }
 }
