@@ -3,6 +3,7 @@ import { JetBrains_Mono, Space_Grotesk, Space_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import { LAMP_BOOT_SCRIPT } from "@/components/brand/lampBoot";
+import { ACCOUNT_HINT_SCRIPT } from "@/lib/auth/accountHint";
 import { isAuthConfigured } from "@/lib/auth/env";
 import { CODE_LANG_CSS, CODE_LANG_INIT_SCRIPT } from "@/lib/codeLangScript";
 import { SITE_ORIGIN } from "@/lib/seo/site";
@@ -107,6 +108,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: CODE_LANG_INIT_SCRIPT }}
         />
         <style id="code-lang-rules" dangerouslySetInnerHTML={{ __html: CODE_LANG_CSS }} />
+        {/* Sets <html data-account> from this device's last visit while the
+            HTML parses, so the header paints the avatar or Sign in at once
+            (lib/auth/accountHint.ts). Only where sign-in exists. */}
+        {isAuthConfigured() ? <script id="account-hint" dangerouslySetInnerHTML={{ __html: ACCOUNT_HINT_SCRIPT }} /> : null}
         {/* Site-wide entity graph. Both carry stable @ids so the per-page
             Course and LearningResource nodes can reference them instead of
             re-declaring a second, unlinked publisher. */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { AccountPlaceholder } from "@/components/auth/AccountPlaceholder";
+import { AccountPlaceholder, AccountPlaceholderBare } from "@/components/auth/AccountPlaceholder";
 import { authChunk } from "@/components/auth/lazyAuthChunk";
 import { useSyncBridge } from "@/components/providers/SyncBridge";
 
@@ -9,9 +9,10 @@ import { useSyncBridge } from "@/components/providers/SyncBridge";
 // auth unconfigured (or before it is enabled) none of that should download.
 // The loading state is the pending placeholder, which is also what the server
 // renders for it, so the header does not move. If the chunk cannot load, the
-// placeholder stays: the same box, and no control.
+// placeholder stays: the same box, and no control — bare, since a hinted
+// avatar would otherwise stay up for good.
 const SessionControl = authChunk(() => import("@/components/auth/SessionControl").then((m) => m.SessionControl), {
-  failed: AccountPlaceholder,
+  failed: AccountPlaceholderBare,
   loading: () => <AccountPlaceholder />,
 });
 
