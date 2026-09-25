@@ -56,6 +56,26 @@ This is a **commercial course**. Every change ships to paying learners.
 - Never leak solutions: reveal content is conditionally rendered so Ctrl+F
   cannot surface it.
 
+## Planning and tracking (CLAUDE.md §7)
+
+Planned work is GitHub issues on `tharun-se95/LeetExpert`, read and written
+with `gh`, on the board https://github.com/users/tharun-se95/projects/1
+(CLAUDE.md §7 has the commands to move a card).
+
+- Work from an issue: `gh issue view N --comments` before you start. If the
+  task you were given names none, say so in your report.
+- Before starting, check the issue's comments for someone else's claim, and
+  its blocked-by list for open issues; if either, stop and report.
+- Record findings, blockers and the checks you ran as a comment on the issue
+  (`gh issue comment N --body-file -`), not only in your reply.
+- End every issue, comment and PR body you write with the provenance line
+  the dispatching session gave you in your task (`<sub>Agent: Antigravity
+  agy …</sub>`), verbatim. If the task carries none, write
+  `<sub>Agent: Antigravity agy (<your agent>, <your model>) · dispatcher unknown · <date></sub>`
+  and say in your report that it was missing.
+- Never decide an `owner-decision` issue, and never close an issue yourself:
+  the PR's `Closes #N` does that, or the session that dispatched you.
+
 ## Where things are
 
 | Path | What it is |

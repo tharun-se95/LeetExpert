@@ -636,6 +636,76 @@ The content is the product. Code exists to serve it.
 - Surface defects found in passing, including your own from earlier work.
 - Never describe partial work as complete.
 
+## 7. Planning and tracking
+
+Planned work lives in **GitHub issues** on `tharun-se95/LeetExpert` (owner,
+2026-09-25), not in chat, handoff notes or a spec's follow-up list. `gh` is
+the interface because every worker here has it: Claude sessions and the
+Antigravity agents alike. The rollout epic is #14; its phases are
+sub-issues with GitHub's own blocked-by links. The board is the
+**leetExpert roadmap** project (https://github.com/users/tharun-se95/projects/1):
+Backlog → Ready → In progress → In review → Done, ordered by the agreed
+implementation order. A new issue joins it at creation
+(`gh issue create … --project "leetExpert roadmap"`); a sub-issue joins it
+on its own. The project's built-in "Item closed" and "Pull request merged"
+workflows move a card to Done; after a merge, check the card got there and
+move it if not. Move a card by hand when you claim it (In progress) and when
+its PR opens (In review):
+
+```bash
+ITEM=$(gh project item-list 1 --owner tharun-se95 --format json --limit 200 \
+  -q '.items[] | select(.content.number==N) | .id')
+gh project item-edit --project-id PVT_kwHOCzF4v84Bkqlf --id "$ITEM" \
+  --field-id PVTSSF_lAHOCzF4v84BkqlfzhjaYpk --single-select-option-id <option>
+```
+
+Status option ids: Backlog `1a154fe8`, Ready `e9c94490`, In progress
+`7d06d30b`, In review `de4800e1`, Done `ac636bb6`.
+
+- **Start from an issue.** Before non-trivial work, find its issue
+  (`gh issue list --state open`, `gh issue view N --comments`). If none
+  exists, open one first with an `area:*` label. A one-line fix inside a
+  change already under way needs no issue of its own.
+- **Claim it, and check nobody else has.** Several sessions share one
+  checkout. Read the comments for an open claim, then comment one line:
+  what you are starting and on which branch. An issue has one branch, named
+  with its number (`feat/21-lessons-as-data`).
+- **Blocked work waits.** Do not start an issue whose blocked-by list is
+  still open (`gh api repos/tharun-se95/LeetExpert/issues/N/dependencies/blocked_by`).
+- **Progress goes on the issue.** Findings, blockers, the decisions taken
+  and the verification you ran (what passed, what was not checked) are issue
+  comments, so the next session can read them without the chat. New work
+  found in passing becomes a new issue, not a note in a reply.
+- **Close through the PR.** The PR body carries `Closes #N`; the merge
+  closes the issue. Close an issue by hand only with a comment saying why.
+- **Owner decisions are the owner's.** An `owner-decision` issue is never
+  decided by an agent. Put the options on the issue, ask in chat, record the
+  owner's answer as a comment, then close it.
+- **Evidence has one home.** The lesson-artifacts ledger stays the proof of
+  each lesson's status (§1: status derived from gates, never set by hand).
+  Issues link `LEDGER.md` and never copy its counts, which would drift.
+- **Handoffs cite issues.** A handoff names the issue numbers it touched and
+  leaves their state to the issues.
+- **Sign what you write.** Every agent posts as the owner's GitHub account,
+  so the account says nothing about who wrote a post. Every issue, comment
+  and PR body an agent writes ends with one provenance line; a post without
+  one is the owner's. A Claude session builds it from its environment
+  (`CLAUDE_CODE_HOST_SESSION_ID` is the desktop session, whose
+  `claude://claude.ai/epitaxy/<id>` link opens the chat; it is unset outside
+  the desktop app, so leave it out there. `CLAUDE_CODE_SESSION_ID` names the
+  transcript in `~/.claude/projects/`), plus its title (`get_session("self")`,
+  where that tool exists) and its model:
+
+  ```bash
+  echo "<sub>Agent: Claude Code (<model id>) · session \"<title>\" \`$CLAUDE_CODE_HOST_SESSION_ID\` · transcript \`$CLAUDE_CODE_SESSION_ID\` · branch \`$(git branch --show-current)\` · $(date +%F)</sub>"
+  ```
+
+  An Antigravity agent cannot know its own conversation id while it runs, so
+  the dispatching session puts the line in the prompt for it:
+  `<sub>Agent: Antigravity agy (<agent name>, <model>) · dispatched by Claude Code session "<title>" \`<host id>\` · <date></sub>`,
+  and once the run returns it records the `conversation_id` from `agy`'s JSON
+  in its own comment on the issue.
+
 ---
 
 ## Repo map
