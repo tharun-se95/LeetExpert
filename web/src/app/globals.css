@@ -1021,6 +1021,37 @@ body {
 @keyframes landing-recede { to { transform: scale(0.97); } }
 @keyframes landing-dim { to { opacity: 1; } }
 
+/*
+  Account hint (AccountPlaceholder, lib/auth/accountHint.ts): what the header's
+  account control showed on this device last time, set on <html> by an inline
+  script before the header is parsed. Signed in: the box shows the avatar, or
+  the initials. Signed out: the working Sign in links replace the box. No
+  attribute: the empty box. The real control replaces all of it once loaded.
+*/
+[data-account-hint-out] {
+  display: none;
+}
+html[data-account="out"] [data-account-hint-out] {
+  display: contents;
+}
+/* The hinted box only (the one a hint follows): the failed chunk's bare box stays. */
+html[data-account="out"] [data-account-placeholder]:has(+ [data-account-hint-out]) {
+  display: none;
+}
+html[data-account="in"] [data-account-placeholder] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--account-avatar, none) center / cover no-repeat, var(--surface);
+  color: var(--foreground);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+html[data-account="in"] [data-account-placeholder]::after {
+  content: var(--account-initials, "");
+}
+
 /* Lenis (useSmoothScroll) writes scrollTop every frame; a smooth
    scroll-behavior on its wrapper would animate each write and lag it. */
 .lenis.lenis-smooth {

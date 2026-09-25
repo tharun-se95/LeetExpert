@@ -1,15 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { UserCircle } from "@phosphor-icons/react";
 import sandboxIds from "@/lib/sandbox/sandboxIds.generated.json";
 import { DeleteAccountDialog } from "@/components/auth/DeleteAccountDialog";
 import { UnmergedSignOutDialog } from "@/components/auth/UnmergedSignOutDialog";
-import { AccountPlaceholder, CONTROL_SIZE } from "@/components/auth/AccountPlaceholder";
-import { NAV_LINK, ROUND_CONTROL } from "@/components/layout/headerChrome";
+import { AccountPlaceholder, CONTROL_SIZE, SignInLinks } from "@/components/auth/AccountPlaceholder";
+import { writeAccountHint } from "@/lib/auth/accountHint";
+import { ROUND_CONTROL } from "@/components/layout/headerChrome";
 import { useSyncBridge, type SyncIssue, type SyncRuntime } from "@/components/providers/SyncBridge";
 import { authClient } from "@/lib/auth/client";
 import { endSession } from "@/lib/auth/endSession";
@@ -86,18 +85,15 @@ function broadcastSignedOut(): void {
 export function SessionControl() {
   const { data, isPending } = authClient.useSession();
   const pathname = usePathname();
+  const user = data?.user;
+  // Remember what this control shows, so the next page paints it before any
+  // script runs (lib/auth/accountHint.ts). A sign-out lands here as "out".
+  useEffect(() => {
+    if (isPending) return;
+    writeAccountHint(user ? { signedIn: true, image: user.image, initials: initials(user.name) } : { signedIn: false });
+  }, [isPending, user?.image, user?.name, user]);
   if (isPending) return <AccountPlaceholder />;
-  if (!data) {
-    const href = `/sign-in?next=${encodeURIComponent(pathname)}`;
-    return (
-      <>
-        <Link href={href} className={cn(NAV_LINK, "hidden md:inline-flex")}>Sign in</Link>
-        <Link href={href} aria-label="Sign in" className={cn(ROUND_CONTROL, CONTROL_SIZE, "md:hidden")}>
-          <UserCircle className="h-5 w-5" aria-hidden />
-        </Link>
-      </>
-    );
-  }
+  if (!data) return <SignInLinks href={`/sign-in?next=${encodeURIComponent(pathname)}`} />;
   return <AccountMenu user={data.user} sessionId={data.session.id} />;
 }
 

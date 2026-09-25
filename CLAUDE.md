@@ -575,6 +575,18 @@ The content is the product. Code exists to serve it.
   build in the server `HomePage`) the landing's calls to action go to
   `/sign-in?next=…`, which offers the same way on. Guarded in
   `signInPrompt.test.tsx`, `homeSignInLinks.test.tsx` and `authChunkBoundary`.
+  **The header's account control paints from this device's last visit**
+  (owner, 2026-09-24: it appeared about 1.8s after navigation, behind
+  hydration, the session chunk and the session request). `SessionControl`
+  writes `leetexpert:account` (`lib/auth/accountHint.ts`: "out", or the avatar
+  URL, https only, and initials, never the email or ids) whenever the session
+  is known; an inline script in the root layout, only where sign-in exists,
+  sets `<html data-account>` and `--account-avatar`/`--account-initials`
+  before the header is parsed, and `AccountPlaceholder`'s CSS ("Account hint"
+  in `globals.css`) paints the avatar, the initials or the working Sign in
+  links from the first frame. The real control still replaces it and corrects a
+  stale hint; the failed-chunk state is the bare box. Guarded in
+  `accountHint.test.tsx`.
   Sign-in is on only when all seven variables in
   `web/.env.example` are set, and `authEnabled` is read while pages are
   prerendered, so changing them needs a rebuild. Pages never read the
