@@ -140,13 +140,12 @@
   --code: #e4e9f2; /* editor / code chrome — recessed below the page */
   /*
     The actual code-block/sandbox-editor canvas is deliberately NOT part of
-    the light/dark paper ladder above — it's always a dark "editor" surface
-    in the light theme and always a light one in the dark theme (an
-    intentional inversion the user chose, not a bug: the code well reads as
-    its own fixed instrument regardless of which theme the surrounding page
-    is in, the way a terminal or IDE panel often does). --tok-* below is
-    swapped the same way. Never used for anything but the code surface —
-    see `.code-surface` and every `bg-code-editor` site.
+    the light/dark paper ladder above — it is a dark "editor" surface in both
+    themes (navy here, the Grid's sunk navy in the dark block), so the code
+    well reads as its own fixed instrument, the way a terminal or IDE panel
+    does, and one ink set (--tok-*, CODE_DARK) serves both. Never used for
+    anything but the code surface — see `.code-surface` and every
+    `bg-code-editor` site.
   */
   --code-editor: #14202e;
   /* The landing's dark cards (see navy-card below): the navy the module art and the
@@ -156,8 +155,7 @@
   /* Hairline gutter border + active-line tint, tuned for THIS (dark) bg —
      reusing the site's own dark-theme --border/--editor-active-line
      formulas below, since those were already proven legible on a dark
-     surface; swapped below (in the dark-theme block) for the same reason
-     in reverse. */
+     surface; the dark-theme block sets the Grid's own rule for its well. */
   --code-editor-border: rgba(244, 244, 245, 0.09);
   --editor-active-line: rgb(255 255 255 / 0.045);
   --elevated: #ffffff; /* sidebar, lesson panel, cards — brightest lift */
@@ -1588,15 +1586,6 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   content: none;
 }
 
-/* Swapped: the light theme's code well is dark (Shiki's "dark" variant
-   ink), the dark theme's is light (Shiki's "light" variant ink) — see the
-   --code-editor comment in :root. */
-.handbook-prose .shiki,
-.handbook-prose .shiki span {
-  color: var(--shiki-dark);
-}
-
-
 .handbook-prose .shiki {
   background-color: transparent !important;
 }
@@ -1700,13 +1689,6 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   color: var(--tok-name);
 }
 
-/* Swapped — see the .handbook-prose .shiki comment above. */
-.code-body .shiki,
-.code-body .shiki span {
-  color: var(--shiki-dark);
-}
-
-
 .code-body .shiki {
   background-color: transparent !important;
 }
@@ -1736,12 +1718,6 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   user-select: none;
 }
 
-/* Swapped — see the .handbook-prose .shiki comment above. */
-.viz-shiki .viz-code-token {
-  color: var(--shiki-dark);
-}
-
-
 .code-gutter {
   width: 2.25rem;
   flex-shrink: 0;
@@ -1764,15 +1740,9 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
  * CodeMirror client-side for the sandbox editor); the only thing keeping
  * them identical is that both read the same values. Change one, change both.
  *
- * Swapped from what you'd expect: the code surface (--code-editor) is
- * inverted from the page theme (dark editor on the light site theme, light
- * editor on the dark site theme — see --code-editor above), so the ink
- * that goes with it is inverted too. The block below headed by the plain
- * root selector (light page, dark editor) carries CODE_DARK's ink; the
- * block headed by the dark-mode class selector (dark page, light editor)
- * carries CODE_LIGHT's. Neither corresponds to its own name's ink anymore —
- * read it as "ink for whichever code-editor brightness this page theme
- * gets," not "ink for this theme."
+ * The code well (--code-editor) is dark in both site themes, so one ink set
+ * serves both: CODE_DARK's, in :root only. Shiki writes the same values
+ * inline, so nothing here swaps per theme.
  */
 :root {
   --tok-comment: #94a3b8;

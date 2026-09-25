@@ -1,5 +1,5 @@
 import { createHighlighter, type Highlighter, type ThemeRegistrationRaw } from "shiki";
-import { PRESS_LIGHT, PRESS_DARK } from "@/lib/content/codePalette";
+import { PRESS_DARK } from "@/lib/content/codePalette";
 
 export const SUPPORTED_LANGS = [
   "typescript",
@@ -36,18 +36,18 @@ function canonicalLang(lang: string): string {
   reads as borrowed, and — more concretely — the sandbox editor paints from
   `--tok-*` in globals.css, so a stock theme here would put the code block
   and the editor beside each other in two different colour systems.
+  One theme: the code well is dark in both site themes, so Shiki writes the
+  colours inline and no stylesheet has to pick a variant.
 */
-const LIGHT_THEME = PRESS_LIGHT as unknown as ThemeRegistrationRaw;
-const DARK_THEME = PRESS_DARK as unknown as ThemeRegistrationRaw;
-const LIGHT_NAME = PRESS_LIGHT.name;
-const DARK_NAME = PRESS_DARK.name;
+const THEME = PRESS_DARK as unknown as ThemeRegistrationRaw;
+const THEME_NAME = PRESS_DARK.name;
 
 let highlighterPromise: Promise<Highlighter> | null = null;
 
 function getHighlighter(): Promise<Highlighter> {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
-      themes: [LIGHT_THEME, DARK_THEME],
+      themes: [THEME],
       langs: [...SUPPORTED_LANGS],
     });
   }
@@ -55,10 +55,9 @@ function getHighlighter(): Promise<Highlighter> {
 }
 
 /**
- * Highlights `code` as `lang` using both the light and dark Shiki themes in
- * one pass (via CSS variables). Returns `null` for unsupported languages or
- * if Shiki fails to tokenize the code — callers must fall back to plain
- * text in that case, never throw.
+ * Highlights `code` as `lang` with the code palette, colours inline.
+ * Returns `null` for unsupported languages or if Shiki fails to tokenize
+ * the code — callers must fall back to plain text in that case, never throw.
  */
 export async function highlightCode(
   code: string,
@@ -72,8 +71,7 @@ export async function highlightCode(
     const highlighter = await getHighlighter();
     return highlighter.codeToHtml(code, {
       lang: resolvedLang,
-      themes: { light: LIGHT_NAME, dark: DARK_NAME },
-      defaultColor: false,
+      theme: THEME_NAME,
     });
   } catch {
     return null;

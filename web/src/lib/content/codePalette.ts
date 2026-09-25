@@ -4,7 +4,9 @@
  * Shiki renders code blocks + viz panes; CodeMirror renders the sandbox
  * editor. They paint from these values / mirrored `--tok-*` in globals.css.
  *
- * Tuned for Indigo Modern (Primary #5B5CEB).
+ * One ink set: the code well is dark in both site themes (navy in each), so
+ * there is no light variant. A light one existed until 2026-09-25 and was
+ * never painted after the dark theme's well turned dark (#19).
  */
 
 export interface CodeInk {
@@ -17,17 +19,6 @@ export interface CodeInk {
   type: string;
   variable: string;
 }
-
-export const CODE_LIGHT: CodeInk = {
-  fg: "#111827",
-  comment: "#5c6573",
-  keyword: "#4f46e5",
-  string: "#047857",
-  constant: "#4338ca",
-  entity: "#3730a3",
-  type: "#92400e",
-  variable: "#111827",
-};
 
 export const CODE_DARK: CodeInk = {
   // Cooler, sky/mint family (was indigo/violet) — matches the ink already
@@ -46,7 +37,7 @@ export const CODE_DARK: CodeInk = {
 /** Minimal TextMate theme shape — enough for Shiki, without pulling its types. */
 interface RawTheme {
   name: string;
-  type: "light" | "dark";
+  type: "dark";
   colors: Record<string, string>;
   tokenColors: {
     scope: string | string[];
@@ -54,10 +45,10 @@ interface RawTheme {
   }[];
 }
 
-function buildTheme(name: string, type: "light" | "dark", ink: CodeInk): RawTheme {
+function buildTheme(name: string, ink: CodeInk): RawTheme {
   return {
     name,
-    type,
+    type: "dark",
     colors: { "editor.background": "#00000000", "editor.foreground": ink.fg },
     tokenColors: [
       {
@@ -99,5 +90,4 @@ function buildTheme(name: string, type: "light" | "dark", ink: CodeInk): RawThem
   };
 }
 
-export const PRESS_LIGHT = buildTheme("press-light", "light", CODE_LIGHT);
-export const PRESS_DARK = buildTheme("press-dark", "dark", CODE_DARK);
+export const PRESS_DARK = buildTheme("press-dark", CODE_DARK);

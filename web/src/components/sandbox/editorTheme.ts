@@ -6,19 +6,18 @@ import { tags as t } from "@lezer/highlight";
  * CodeMirror styling for the sandbox editor.
  *
  * Every colour is a CSS custom property defined in globals.css, which means:
- *   1. light/dark switching happens in CSS, with no React re-render and no
- *      second theme object to keep in sync, and
+ *   1. the editor follows the site theme in CSS, with no React re-render and
+ *      no second theme object to keep in sync, and
  *   2. the palette mirrors `codePalette.ts` (same ink as Shiki handbook + viz),
  *      so all three code surfaces stay identical.
  *
- * The editor's own canvas (--code-editor) is deliberately inverted from the
- * page theme — dark editor on the light site theme, light editor on the
- * dark one (see the comment on --code-editor in globals.css). That means
- * every colour below reads from a --tok- or --code-editor- prefixed token,
- * NEVER from a page-theme token like --accent, --foreground, --muted or
- * --border: those are tuned for the PAGE's brightness, which no longer
- * matches the editor's once the two are decoupled, and would go
- * low-contrast or invisible in exactly one theme.
+ * The editor's own canvas (--code-editor) is decoupled from the page theme:
+ * a dark well in both themes, including on the light site theme (see the
+ * comment on --code-editor in globals.css). That means every colour below
+ * reads from a --tok- or --code-editor- prefixed token, NEVER from a
+ * page-theme token like --accent, --foreground, --muted or --border: those
+ * are tuned for the PAGE's brightness, which does not match the editor's,
+ * and would go low-contrast or invisible on the light theme.
  *
  * `basicSetup.syntaxHighlighting` MUST stay false where this is used.
  * CodeMirror's built-in defaultHighlightStyle is tuned for light
