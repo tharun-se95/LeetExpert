@@ -55,6 +55,20 @@ function callout(kind,label,iconId,html){
   return el('div','callout '+kind,'<div class="cl"><svg class="i"><use href="#'+iconId+'"/></svg>'+label+'</div><p>'+html+'</p>');
 }
 
+/* Hold an element at the tallest of the contents it will ever show, measured at its width now:
+   a caption that grows to a third line mid-animation moves everything below it. */
+function reserveHeight(el,htmls){
+  var probe=el.cloneNode(false),h=0;probe.removeAttribute('id');probe.setAttribute('aria-hidden','true');
+  probe.style.cssText='position:absolute;visibility:hidden;left:0;top:0;min-height:0;width:'+el.clientWidth+'px';el.parentNode.appendChild(probe);
+  htmls.forEach(function(x){probe.innerHTML=x;h=Math.max(h,probe.offsetHeight);});probe.remove();
+  if(h)el.style.minHeight=h+'px';
+  return h;
+}
+
+/* fact strip: [{v: a number the lesson computed, l: what it means}] */
+function mountFacts(host,items){var d=el('div','factstrip');items.forEach(function(f){
+  d.appendChild(el('div','fact','<b>'+(typeof f.v==='number'?fmt(f.v):f.v)+'</b><span>'+f.l+'</span>'));});host.appendChild(d);}
+
 function mountVariants(host,list){
   list.forEach(function(v){host.appendChild(el('div','vcard','<div class="vt">'+v[0]+'</div><div class="vs">'+v[1]+'</div><p>'+v[2]+'</p>'));});
 }

@@ -248,7 +248,7 @@ var QUIZ=[
       var nums=[0,1,2].map(function(i){var t=S('text',{x:160+i*200,y:62,class:'bn-big','text-anchor':'middle'},svg);t.textContent=String(2-i>0?2-i:0);return t;});
       S('text',{x:360,y:108,class:'bn-t','text-anchor':'middle'},svg).textContent='a course is ready when its waiting count reaches 0';
       var vals=[2,1,0];
-      return function(){[0,1,2].forEach(function(i){M.animate(0,1,{duration:.4,delay:i*.6,onUpdate:function(v){nums[i].textContent=String(Math.max(0,Math.round(vals[i]+(0-vals[i])*v)));cs[i].setAttribute('class',v>.9?'bn-end':'bn-mid');}});});};
+      return function(){[0,1,2].forEach(function(i){M.animate(0,1,{duration:.4,delay:i*.6,onUpdate:function(v){nums[i].textContent=String(Math.max(0,Math.round(vals[i]+(0-vals[i])*v)));cs[i].setAttribute('class',v>.9?'bn-end':'bn-mid');nums[i].setAttribute('class',v>.9?'bn-big on':'bn-big');}});});};
     },
     solution:function(svg){
       var cells=R.order.map(function(c,i){var r=S('rect',{x:120+i*80,y:44,width:60,height:40,rx:9,class:'bn-mid'},svg);var t=S('text',{x:150+i*80,y:70,class:'bn-t','text-anchor':'middle'},svg);return t;});

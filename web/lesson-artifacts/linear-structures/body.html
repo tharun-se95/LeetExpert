@@ -1,0 +1,36 @@
+<div class="wrap"><section class="hero2"><div class="hero-copy"><div class="kick">Linear structures · Arrays, Linked Lists, Stacks, Queues · overview</div>
+<h1 id="h1">Four ways to keep things in a <em>line</em>, and the systems that run on each.</h1>
+<p class="lede">Arrays, linked lists, stacks and queues all hold items in order. What sets them apart is which end you may touch and what one step costs. Eight systems, two for each structure, show the difference in software you use every day.</p>
+<div class="chips"><span>structures <b>4</b></span><span>systems <b>8</b></span><span>every frame <b>run, not drawn</b></span></div></div>
+<div class="hero-stage"><div class="hero-art navy li-index" id="liIndex" aria-label="Index of the eight systems. It is itself an array: each row sits at a fixed offset from the first."></div></div></section></div>
+<div class="wrap page">
+<nav class="toc" aria-label="Sections"><div class="kick">On this page</div>
+<a href="#arrays">Arrays</a><a href="#lists">Linked lists</a><a href="#stacks">Stacks</a><a href="#queues">Queues</a><a href="#shape">Recognise the shape</a></nav>
+<article>
+
+<section class="sec" id="arrays"><h2>Arrays: one block, found by arithmetic</h2>
+<p>An array is one unbroken run of memory. Item i sits exactly i items past the start, so reaching it is a multiplication, whatever i is. The price is paid when the block fills up: nothing can be squeezed in, so growing means moving.</p>
+<div class="sysgroup" data-s="audio,growth"></div>
+</section>
+
+<section class="sec" id="lists"><h2>Linked lists: nodes that point onward</h2>
+<p>A linked list gives up the single block. Each node lives wherever there was room and holds a reference to the next. Finding the k-th item means walking k steps, but inserting or removing next to a node you already hold is a few pointer writes.</p>
+<div class="sysgroup" data-s="history,lru"></div>
+</section>
+
+<section class="sec" id="stacks"><h2>Stacks: the last in is the first out</h2>
+<p>A stack lets you touch one end only. What went on last comes off first, which is exactly the shape of anything nested: a function waiting on the one it called, an opening bracket waiting for its close.</p>
+<div class="sysgroup" data-s="calls,brackets"></div>
+</section>
+
+<section class="sec" id="queues"><h2>Queues: the first in is the first out</h2>
+<p>A queue adds at one end and removes at the other, so items leave in the order they arrived. It is the shape of anything that is served in turn: packets off a wire, requests against a limit.</p>
+<div class="sysgroup" data-s="ring,limiter"></div>
+</section>
+
+<section class="sec" id="shape"><h2>Recognise the shape</h2>
+<p>Four questions point at the right structure before any code is written.</p>
+<div class="vgrid" id="shapes"></div>
+<div class="practice-row" id="practice"></div>
+</section>
+</article></div>

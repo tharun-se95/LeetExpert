@@ -72,9 +72,15 @@ follow the callout rules, and solutions never reach the DOM before the reveal.
 - a cumulative layout shift above 0 while every player and banner plays one full cycle;
 - horizontal page overflow at either width;
 - any text below WCAG AA contrast against the surface it renders on (computed colours on the
-  rendered DOM, including SVG text on navy cards);
+  rendered DOM, including SVG text on navy cards), mid-animation included: a scene cell between two
+  states is a blend of their fills, and its ink is never blended but chosen by `legible()` in
+  `kit/engine.js` (the endpoint ink that reads better, else one pushed toward whichever of black and
+  white contrasts more with that blend, only as far as 4.5:1);
 - missing accessible names on interactive controls and diagrams;
 - a solution in the DOM before its reveal is opened;
+- text on a solid family fill: the family colours are mid-tone 3:1 UI fills, and no ink reaches AA on
+  most of them, so an accent cell's fill is chosen per family at build time (`accent_cell` in
+  `shared.py`): solid where its own ink clears 4.5:1, else a tint with the normal ink;
 - with `prefers-reduced-motion: reduce`: any banner or hero not on its finished frame, or any
   autoplay.
 
@@ -102,13 +108,20 @@ hold the bar. Before any batch:
    grids, trees, graphs, stacks/queues, heaps and tables, so a module's lessons reuse one player.
 3. **Family colour for every module.** `big-o`, `getting-started` and `math-for-dsa` have no
    family in `moduleFamily`; the kit needs one to paint. Decision D4: new family hues, designed in the app.
-4. **Dark mode settled.** The kit's code blocks stay navy in the dark theme while the app's own
-   dark-theme code well is light. Decision D5. The linked-list page has never been checked in
-   dark mode; the browser gate is where that happens, for every page.
+4. **Dark mode settled.** The dark theme is The Grid Underneath's palette, with a navy code well
+   (decision D6, which replaced D5). The browser gate checks every page in both themes; each
+   verified lesson's ledger evidence holds a passing dark run.
 5. **Fonts without layout shift.** A font arriving after first paint re-wrapped the hero and moved
-   the page (measured by the browser gate, with `swap` and with `optional` alike). The page now stays
-   invisible until its three faces have loaded, capped at 2.5 s, so no visible text re-wraps; without
-   JavaScript nothing is hidden. The gate's layout-shift floor is 0.001: Chrome reports sub-pixel text
+   the page (measured by the browser gate, with `swap` and with `optional` alike). The three faces are
+   self-hosted in `lesson-artifacts/fonts/` (OFL, latin and latin-ext) and the latin files preloaded.
+   The page stays invisible until every weight it uses has loaded **and** the page script has built
+   its scenes (`window.__built`, called after `wirePage()`), capped at 2.5 s, so no visible text
+   re-wraps; without JavaScript nothing is hidden. Waiting on fonts alone was not enough: once they
+   were local they arrived in ~20 ms, the page was revealed ~200-300 ms before `motion.js` came from
+   the CDN and the script drew the hero, and the hero pushed the text down (measured 2026-09-25: CLS
+   0.29 at 1366 px and 0.41 at 375 px on the linear-structures overview, 0.03-0.04 on lessons; after the fix, 0.0003 at most). The browser
+   gate serves `dist/` over its own local HTTP server, as a page is really served; over `file://` the
+   fonts were slow enough to hide that race. The gate's layout-shift floor is 0.001: Chrome reports sub-pixel text
    re-layout whose rectangles do not move as tiny shifts, and the exact value is stored as evidence. When the pages are served by the app
    (phase 4) they use the app's self-hosted `next/font` files instead. The kinetic headline is split
    into words at build time for the same reason.
@@ -129,6 +142,12 @@ generated view. Tool: `web/lesson-artifacts/ledger.py`.
   the lesson falls back to the last stage whose evidence is still fresh. `LEDGER.md` marks stale
   gates. (Proven: an added line dropped `build-a-linked-list` from built to todo; removing it
   restored built.)
+- **Overviews have their own table.** A page across several modules (`overviews/linear-structures`,
+  "The Line Underneath") is not a lesson in the app's manifest, so its row is declared by `build.py`
+  (`LESSONS` entries under `overviews`), not by `sync` from the manifest; `sync` keeps the two in
+  step and `check` fails when they differ. An overview passes the same `build`, `code` (its
+  `check.py`) and theme gates and goes stale the same way, but is not counted in the 220 and holds
+  no `app` gate until it is decided where an overview lives in the app (open, owner).
 - **Notes** carry what the gates cannot prove (section 3) and any kit extension a lesson waits on.
 - **End condition.** The ledger is rollout scaffolding (CLAUDE.md §1). When all 220 lessons are
   `shipped`, the evidence tracking is retired: `ledger.json` is reduced to the registry the app
@@ -156,9 +175,17 @@ set from that measurement, not guessed.
   selectivity (owner feedback on analogies): a full analogy only where it is true and helps.
 - **Page weight.** Pages are 130 to 180 KB each (mostly inline code colouring). They load one per
   lesson, not all at once; the browser gate can budget it if it grows.
-- **Kit changes stale everything.** A kit change does not touch a lesson's hash, so its evidence
-  stays fresh while the page may have changed. Phase 1's CI gates close this: verified lessons are
-  re-gated on every kit change.
+- **Kit changes stale everything.** Evidence is fingerprinted on the lesson's folder *and* the shared
+  kit and build files (`SHARED` in `ledger.py`), so any kit change makes every lesson's evidence stale
+  and it must be re-recorded. This is deliberate: a kit change can never leave a lesson "verified" on
+  a page nobody re-checked. Re-recording all lessons after a kit change is the cost, and it grows
+  with the rollout; batching kit changes keeps it bounded.
+- **The browser gate does not interact.** It plays what runs by itself (players, banners, the hero)
+  and measures every stop, but it does not click widgets, answer predict questions or open quizzes,
+  so states reached only by interaction are not measured. Found in passing: coin change's order
+  builder painted its segments with text on the solid family fill, the pairing that fails AA, and the
+  gate never saw it. Closing this means the gate driving each widget through its states; until then,
+  interactive states are reviewed by hand and noted in the ledger.
 - **Context and cost.** Work happens one module per fresh chat, with a handoff, never in one long
   chat.
 
@@ -177,9 +204,20 @@ set from that measurement, not guessed.
   designed through the existing system: one `accent` hex each in `web/src/lib/visual/familyTheme.ts`,
   `uiAccent()` deriving the UI fill, the contrast and palette tests holding them to their floors, and
   `moduleFamily` mapping the three modules. Phase 1 work, in the app, with its own review.
-- **D5. Code follows the app.** In the dark theme the artifacts' code blocks use the app's light code
-  well and `--shiki-light` colours, as the app's lessons do; in the light theme they stay on the navy
-  well with `--shiki-dark`. Phase 1 work in `kit/kit.css`, checked by the browser gate in both themes.
+- **D5. Code follows the app.** *Replaced by D6 on 2026-09-25.* In the dark theme the artifacts' code
+  blocks used the app's light code well and `--shiki-light` colours, as the app's lessons do.
+- **D6. The dark theme is The Grid Underneath's (owner, 2026-09-25).** The owner preferred the Grid's
+  dark look to the app-derived one. Every artifact's dark theme now takes the Grid's own palette: the
+  navy ladder (ground `#15202E`, panel, raise, sunk), the page dot grid, a fixed blue accent in place
+  of the family colour (text and icons `#8DB0FF`; the mid blue `#5C8FFF` only as the accent cell's
+  fill with its dark ink), the Grid's state hues, its soft black shadow, and a **navy code well** with
+  `--shiki-dark` colours, which reverses D5. One table, `GRID_DARK` in `shared.py`, is the only source,
+  and the build fails if any ink in it falls below AA on a surface it can sit on (its first run caught
+  the mid blue at 4.29:1 on the raise, which is why text uses the lighter blue). The light theme is
+  unchanged: the app's tokens and family colour. Consequence: in the app's dark theme the Lesson tab
+  (D1) will sit a navy page inside the app's black chrome; accepted with this decision. The overview
+  also takes the Grid's components: the accented headline word, an index whose lit row is the Grid's
+  orange "current" tile, big stats in the accent, and a spot drawing beside each system heading.
 
 ## 10. Out of scope
 

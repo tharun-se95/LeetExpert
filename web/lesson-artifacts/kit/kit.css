@@ -3,6 +3,8 @@
 .hero2{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:44px;align-items:center;padding-block:56px 20px}
 .hero2 h1{font-size:clamp(2rem,4.8vw,3.4rem);letter-spacing:-.02em;margin-top:14px} .kw{display:inline-block}
 .hero2 .lede{font-size:18px;color:var(--mut);max-width:54ch;margin-top:18px}
+/* the headline's key word, in the accent (The Grid Underneath's "matrix"); large text, so 3:1 */
+.hero2 h1 em{font-style:normal;color:var(--fam)}
 .hero2 .chips{margin-top:22px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chips span{font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 10px;border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2));border-radius:99px;background:var(--card);color:var(--mut)} .chips span b{color:var(--mk);font-weight:500}
@@ -33,6 +35,8 @@
 .banner{margin:0 0 22px;border:1px solid var(--hair2);border-radius:14px;background-color:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden}
 .banner svg{width:100%;height:auto;display:block}
 .bn-t{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)} .bn-big{font:700 22px 'Space Mono',monospace;fill:var(--fg)} .bn-big.red{fill:var(--r-ink)}
+/* a number drawn on an accent fill (.bn-end) takes the accent's own ink: --fg on the dark theme's light blue read 1.79:1 */
+.bn-big.on{fill:var(--fam-on)}
 .bn-path{fill:none;stroke:var(--fam);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round} .bn-path.b2{stroke:var(--o-ink)}
 .bn-end{fill:var(--fam)} .bn-mid{fill:var(--card);stroke:var(--mut);stroke-width:2} .bn-bar{fill:var(--fam)} .bn-track{fill:var(--well)} .bn-edge{stroke:var(--mut);stroke-width:2;opacity:.7}
 .rosetta{border:1px solid var(--hair2);border-radius:14px;background:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden;margin:20px 0;max-width:66ch}
@@ -96,7 +100,7 @@ button.cell.node{cursor:pointer;border:0}
 .reveal-body{margin-top:14px;display:flex;flex-direction:column;gap:14px}
 .reveal-body p{max-width:66ch;margin:0}
 .chart{background:var(--deep);border:1px solid var(--hair);border-radius:12px;padding:10px}
-.chart svg{width:100%;height:auto;display:block}
+.chart svg{width:100%;height:auto;display:block;max-height:340px}
 .chart .grid{stroke:var(--hair2);stroke-width:1} .chart .ax{fill:var(--mut);font:11px 'JetBrains Mono',monospace}
 .chart .ln{fill:none;stroke-width:2.6;stroke-linejoin:round} .chart .ln.naive{stroke:var(--r-ink)} .chart .ln.once{stroke:var(--g-ink)}
 .chart .dot.naive{fill:var(--r-ink)} .chart .dot.once{fill:var(--g-ink)}
@@ -133,7 +137,8 @@ button.cell.node{cursor:pointer;border:0}
 /* scaled down: smaller type and tighter spacing throughout */
 body{font-size:13.5px;line-height:1.55}
 .top{padding:8px 16px} .mark{font-size:15px} .lamp{width:9px;height:9px} .seg button{padding:5px 10px;font-size:11px}
-.page{grid-template-columns:180px minmax(0,780px);gap:52px;padding-block:28px 72px}
+.page{grid-template-columns:180px minmax(0,940px);gap:48px;padding-block:28px 72px}
+.sec>.ex,.sec>.rosetta,.sec>.code{max-width:780px}
 .toc{font-size:12.5px;top:60px} .toc a{padding:4px 0 4px 10px}
 .hero2{gap:56px;padding-block:52px 40px}
 .hero2 h1{font-size:clamp(1.8rem,4vw,2.9rem);margin-top:12px}
@@ -211,11 +216,26 @@ html,body{overflow-x:clip}
 @media (prefers-reduced-motion:reduce){.hero-art{animation:none}}
 .embed .hero-art{transform:none;animation:none}
 
-/* Syntax colour follows the well (D5): the light theme's well is navy, so it takes Shiki's dark
-   variant; the dark theme's well is light, so it takes the light variant, as globals.css
-   ".handbook-prose .shiki" does for the app's own code. */
+/* Syntax colour follows the well: navy in both themes (the app's navy well in the light theme,
+   the Grid's sunk navy in the dark one, D6 replacing D5), so it is always Shiki's dark variant. */
 .code pre.shiki,.code pre.shiki span{color:var(--shiki-dark)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .code pre.shiki,:root:not([data-theme="light"]) .code pre.shiki span{color:var(--shiki-light)}}
-:root[data-theme="dark"] .code pre.shiki,:root[data-theme="dark"] .code pre.shiki span{color:var(--shiki-light)}
 /* the inline-code chip (.sec code) must not reach a block's <code>: it boxed every line */
 .code pre.shiki code{font:inherit;background:none;padding:0;border-radius:0}
+
+/* ---- Explain beside the scene (from the Matrix overview): the prose scrolls on the left while its
+   live scene stays pinned on the right, so no one reads about a scene they cannot see. ---- */
+.duo{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:36px;align-items:start;margin:22px 0}
+.duo-text{display:flex;flex-direction:column;gap:12px}
+.duo-text p{max-width:none;margin:0}
+.duo-scene{position:sticky;top:72px}
+.duo-scene .widget{margin:0}
+/* beside its prose a scene is only as tall as its boards: the 240px floor left one-row scenes mostly empty */
+.duo-scene .stage{min-height:0}
+@media (max-width:1100px){.duo{grid-template-columns:minmax(0,1fr);gap:18px}.duo-scene{position:static}}
+
+/* ---- Fact strip: big computed numbers, each with a one-line meaning. ---- */
+.factstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 22px;margin:22px 0;padding:16px 0;border-block:1px solid var(--hair2)}
+.factstrip .fact{display:flex;flex-direction:column;gap:6px;padding:0}
+.factstrip .fact::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--fam)}
+.factstrip .fact b{font:700 clamp(1.35rem,2.4vw,1.85rem)/1.1 'Space Mono',monospace;color:var(--mk);letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.factstrip .fact span{font-size:13px;color:var(--mut);line-height:1.45}

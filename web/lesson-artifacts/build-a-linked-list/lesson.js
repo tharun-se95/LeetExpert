@@ -165,6 +165,19 @@ var QUIZ=[
   $('#warnbox').appendChild(w);
   mountBanners(banners);
   mountCost();
+  /* every number here is run, not typed: the walk count by appendVisits (checked against
+     n(n - 1)/2 in mountCost), the writes by recording a real push_back */
+  var writes=listRun(listOf([7,3,12]),'push_back',5).filter(function(st){return st.hi.some(function(h){return h==='head'||h==='tail'||h.indexOf('next:')===0;});}).length;
+  var fsteps=listRun(listOf([7,3,12]),'find',12),hops=0;
+  for(var q=1;q<fsteps.length;q++)if(fsteps[q].tags.curr!==null&&fsteps[q].tags.curr!==fsteps[q-1].tags.curr)hops++;
+  if(hops!==2)throw new Error('fact check failed: moves to the third node');
+  var big=10000,probe=appendVisits(64,false);
+  if(probe!==64*63/2)throw new Error('fact check failed: append visits');
+  mountFacts($('#cost-facts'),[
+    {v:big*(big-1)/2,l:'nodes visited to append '+fmt(big)+' values with no tail pointer'},
+    {v:writes,l:'pointer writes per append with a tail, counted on a real list: link on, then move tail'},
+    {v:hops,l:'moves along next to reach the third node: a walk, never a jump'}
+  ]);
   mountVariants($('#vlist'),[
     ['Pointer Surgery Patterns','next lesson','A dummy node in front of the head: every real node then has a node before it, so deleting the head becomes an ordinary splice and most branches here disappear.'],
     ['Reverse Linked List','problem','Turn every next pointer to face backwards, holding three references at once so no part of the list is lost halfway through the flip.'],

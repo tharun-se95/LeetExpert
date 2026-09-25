@@ -7,6 +7,11 @@ Spec: docs/superpowers/specs/2026-09-24-lesson-artifacts-rollout-design.md (sect
     python3 web/lesson-artifacts/ledger.py render            # rewrite LEDGER.md from ledger.json
     python3 web/lesson-artifacts/ledger.py record ID GATE    # run one gate for one lesson and store its evidence
 
+Overviews (pages across several modules, e.g. overviews/linear-structures) are not lessons in the app's
+manifest, so they sit in their own table, declared by build.py LESSONS under "overviews". They pass the
+same build, code and theme gates and go stale the same way, but are not counted in the lessons' totals
+and have no app gate until it is decided where an overview lives in the app (spec section 6).
+
 ledger.json is the record; LEDGER.md is a view of it and is never edited by hand. Status is
 derived, never set: a row's status is the furthest stage whose gates all hold evidence recorded by
 `record` against the current source of that lesson. Evidence goes stale when the lesson's files
@@ -38,7 +43,19 @@ def manifest():
 
 
 def load():
-    return json.load(open(LEDGER)) if os.path.exists(LEDGER) else {"lessons": {}}
+    led = json.load(open(LEDGER)) if os.path.exists(LEDGER) else {"lessons": {}}
+    led.setdefault("overviews", {})
+    return led
+
+
+def row_of(led, lesson_id):
+    """A lesson's or an overview's row, or None."""
+    return led["lessons"].get(lesson_id) or led["overviews"].get(lesson_id)
+
+
+def build_overviews():
+    """(id, family, title) for every overview build.py makes: the overviews table's source of truth."""
+    return [(f"{m}/{slug}", fam, title) for m, slug, fam, title in build_lessons() if m == "overviews"]
 
 
 def save(led):
@@ -53,12 +70,34 @@ def folder_of(lesson_id):
     return os.path.join(HERE, slug if slug != "practice" else lesson_id.replace("/", "--"))
 
 
+# Everything outside the lesson folder that shapes its page: a change to any of these re-stales every
+# lesson's evidence, so a kit change can never leave a lesson "verified" on a page nobody re-checked.
+SHARED = ["kit", "fonts", "build.py", "shared.py", "highlight.ts", "code-gate.ts", "browser-gate.mjs"]
+
+
+def _feed(h, path, rel_to):
+    if os.path.isdir(path):
+        for root, _, files in sorted(os.walk(path)):
+            if "__pycache__" in root:
+                continue
+            for f in sorted(files):
+                p = os.path.join(root, f)
+                h.update(os.path.relpath(p, rel_to).encode())
+                h.update(open(p, "rb").read())
+    elif os.path.exists(path):
+        h.update(os.path.relpath(path, rel_to).encode())
+        h.update(open(path, "rb").read())
+
+
 def source_hash(lesson_id):
-    """A hash of the lesson's artifact files, so evidence is tied to the exact source it was recorded on."""
+    """A hash of the lesson's artifact files and the shared kit, so evidence is tied to the exact
+    source it was recorded on."""
     d = folder_of(lesson_id)
     if not os.path.isdir(d):
         return None
     h = hashlib.sha256()
+    for s in SHARED:
+        _feed(h, os.path.join(HERE, s), HERE)
     for root, _, files in sorted(os.walk(d)):
         if "__pycache__" in root:
             continue
@@ -94,8 +133,15 @@ def cmd_sync():
         del lessons[k]
     # manifest order, so the ledger reads like the course
     led["lessons"] = {r["id"]: lessons[r["id"]] for r in rows}
+    ovs, old = {}, led["overviews"]
+    for oid, fam, title in build_overviews():
+        ovs[oid] = old.get(oid, {"evidence": {}, "notes": ""})
+        ovs[oid].update({"type": "overview", "title": title, "family": fam})
+    gone = [k for k in old if k not in ovs]
+    led["overviews"] = ovs
     save(led)
-    print(f"{len(rows)} lessons; retired {len(retired)}" + (f": {', '.join(retired)}" if retired else ""))
+    print(f"{len(rows)} lessons, {len(ovs)} overview(s); retired {len(retired) + len(gone)}"
+          + (f": {', '.join(retired + gone)}" if retired or gone else ""))
 
 
 def problems(led, rows):
@@ -110,6 +156,15 @@ def problems(led, rows):
     if extra:
         out.append(f"{len(extra)} row(s) for lessons the app does not have: {', '.join(extra[:5])}")
     built = {l[1] for l in build_lessons()}
+    declared = {o[0] for o in build_overviews()}
+    if set(led["overviews"]) != declared:
+        out.append(f"overviews table differs from build.py (run sync): has {sorted(led['overviews'])}, build.py makes {sorted(declared)}")
+    for oid, row in led["overviews"].items():
+        for g in row.get("evidence", {}):
+            if g not in ALL_GATES or g == "app":
+                out.append(f"{oid}: gate '{g}' is not one an overview can hold")
+        if not os.path.isdir(folder_of(oid)):
+            out.append(f"{oid}: has no artifact folder")
     for lid, row in led["lessons"].items():
         for g in row.get("evidence", {}):
             if g not in ALL_GATES:
@@ -139,7 +194,11 @@ def cmd_check():
     counts = {s: 0 for s in STAGES}
     for lid, row in led["lessons"].items():
         counts[status(row, lid)] += 1
-    print("ledger ok: " + ", ".join(f"{counts[s]} {s}" for s in STAGES) + f" of {len(led['lessons'])}")
+    ov = {s: 0 for s in STAGES}
+    for oid, row in led["overviews"].items():
+        ov[status(row, oid)] += 1
+    print("ledger ok: " + ", ".join(f"{counts[s]} {s}" for s in STAGES) + f" of {len(led['lessons'])}"
+          + f"; overviews: " + ", ".join(f"{ov[s]} {s}" for s in STAGES if ov[s]))
 
 
 def cmd_render():
@@ -168,6 +227,15 @@ def cmd_render():
             gates = " ".join(g + ("" if ev[g].get("source") == cur else " (stale)") for g in ALL_GATES if g in ev) or "-"
             lines.append(f"| {mark[st]} | {row['title']} (`{lid}`) | {row['type']} | {gates} | {row.get('notes', '')} |")
         lines.append("")
+    if led["overviews"]:
+        lines += ["## Overviews", "", "Pages across several modules, built by `build.py` but not lessons in the app, so not in the",
+                  "totals above. They stop at verified: no app gate until it is decided where an overview lives.", "",
+                  "| | Overview | Gates with evidence | Notes |", "|---|---|---|---|"]
+        for oid, row in led["overviews"].items():
+            cur, ev = source_hash(oid), row.get("evidence", {})
+            gates = " ".join(g + ("" if ev[g].get("source") == cur else " (stale)") for g in ALL_GATES if g in ev) or "-"
+            lines.append(f"| {mark[status(row, oid)]} | {row['title']} (`{oid}`) | {gates} | {row.get('notes', '')} |")
+        lines.append("")
     open(VIEW, "w").write("\n".join(lines))
     print(f"wrote {os.path.relpath(VIEW, WEB)}")
 
@@ -183,7 +251,7 @@ def run_gate(lesson_id, gate):
     if gate == "code":
         # problem lessons: the shown code against the lesson's own sandbox cases (code-gate.ts);
         # concept lessons have no cases, so their own check.py model check (spec section 4.1)
-        if load()["lessons"][lesson_id]["type"] == "problem":
+        if row_of(load(), lesson_id)["type"] == "problem":
             cmd = [os.path.join(WEB, "node_modules", ".bin", "tsx"), os.path.join(HERE, "code-gate.ts"), lesson_id]
         else:
             check = os.path.join(folder_of(lesson_id), "check.py")
@@ -209,14 +277,17 @@ def run_gate(lesson_id, gate):
 
 def cmd_record(lesson_id, gate):
     led = load()
-    if lesson_id not in led["lessons"]:
-        raise SystemExit(f"{lesson_id} is not a lesson in the app (run sync?)")
+    row = row_of(led, lesson_id)
+    if row is None:
+        raise SystemExit(f"{lesson_id} is not a lesson in the app or an overview in build.py (run sync?)")
+    if gate == "app" and row["type"] == "overview":
+        raise SystemExit("an overview has no app gate until it is decided where overviews live (spec section 6)")
     result = run_gate(lesson_id, gate)
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, cwd=WEB).stdout.strip()
-    led["lessons"][lesson_id].setdefault("evidence", {})[gate] = {
+    row.setdefault("evidence", {})[gate] = {
         "source": source_hash(lesson_id), "on": datetime.date.today().isoformat(), "commit": commit, "result": result}
     save(led)
-    print(f"{lesson_id}: {gate} passed ({result}); status now {status(led['lessons'][lesson_id], lesson_id)}")
+    print(f"{lesson_id}: {gate} passed ({result}); status now {status(row, lesson_id)}")
 
 
 if __name__ == "__main__":

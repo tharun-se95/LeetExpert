@@ -1,10 +1,14 @@
 """Shared parts of the lesson artifacts: the page CSS, the icon sprite and the
 app's colour tokens.
 
-The tokens are read from hyperframes/assets/brand.css, whose generated block
+The light theme's tokens are read from hyperframes/assets/brand.css, whose generated block
 comes from globals.css and familyTheme.ts (see web/src/lib/visual/hyperframesBrand.ts),
-so an artifact wears the same light and dark themes and the same family colour
-as the app without a hand-kept copy. Rebuild an artifact after regenerating them.
+so an artifact wears the app's light theme and family colour without a hand-kept copy.
+Rebuild an artifact after regenerating them.
+
+The dark theme is The Grid Underneath's own (owner, 2026-09-25, D6 in the rollout spec): its
+navy ladder, dot grid, fixed blue accent and state hues, and a navy code well. It is one table,
+GRID_DARK, and every ink in it is held to AA on every surface it can sit on at build time.
 """
 import os, re
 
@@ -14,6 +18,80 @@ BRAND = os.path.join(HERE, "..", "..", "hyperframes", "assets", "brand.css")
 
 def _decls(block):
     return {m.group(1): m.group(2).strip() for m in re.finditer(r"(--[\w-]+):\s*([^;]+);", block)}
+
+
+def _rgb(h):
+    h = h.strip().lstrip("#")
+    return [int(h[i:i + 2], 16) for i in (0, 2, 4)]
+
+
+def contrast(a, b):
+    def lum(c):
+        f = lambda v: v / 12.92 if (v := v / 255) <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+        r, g, b_ = (f(x) for x in _rgb(c))
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b_
+    x, y = sorted((lum(a), lum(b)), reverse=True)
+    return (x + 0.05) / (y + 0.05)
+
+
+def mix(a, b, t):
+    """a mixed into b at weight t, as a hex the engine can read (it cannot parse color-mix())."""
+    return "#" + "".join(f"{round(p * t + q * (1 - t)):02x}" for p, q in zip(_rgb(a), _rgb(b)))
+
+
+def accent_cell(fam_hex, on_hex, card_hex, ink_hex):
+    """The fill and ink of an 'acc' cell. The family colours are mid-tone UI fills (3:1), so small
+    text on them rarely reaches AA: keep the solid fill only where its own on-accent ink clears
+    4.5:1, else a tint of the family on the card with the normal ink. Measured, per family."""
+    if contrast(fam_hex, on_hex) >= 4.5:
+        return fam_hex, on_hex
+    # the most saturated tint that still clears AA with the ink: as much family colour as reads
+    for pct in range(90, 20, -2):
+        tint = mix(fam_hex, card_hex, pct / 100)
+        if contrast(tint, ink_hex) >= 4.5:
+            return tint, ink_hex
+    raise SystemExit(f"no AA pairing for accent {fam_hex} on card {card_hex} with ink {ink_hex}")
+
+
+# The Grid Underneath's dark theme (D6): one table, the only source of the artifacts' dark colours.
+GRID_DARK = {
+    "ground": "#15202E", "panel": "#1B2735", "raise": "#223145", "sunk": "#101A26", "rule": "#2E3B4A", "dot": "#202C3A",
+    "ink": "#E5EBF2", "dim": "#A3AEBC", "acc": "#5C8FFF", "acc-raw": "#2F6FED", "acc-ink": "#8DB0FF", "acc-on": "#0E1726",
+    "cur": "#F08A4B", "done": "#3CC3AE", "bad": "#FF6B8B", "warn": "#E3BD3F", "viol": "#9B86FF", "win": "#24406F",
+    "shadow": "0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35)",
+}
+
+
+def grid_dark():
+    """The dark token lists from GRID_DARK: (page, navy-card inks). Fails the build on any ink below AA."""
+    g = GRID_DARK
+    # level-1 tints (callout grounds, the win cell) are each hue mixed into the ground, as the Grid's win is
+    tint = lambda h: mix(h, g["ground"], 0.2)
+    inks = {"--fg": g["ink"], "--mk": g["acc-ink"], "--hair": g["rule"],
+            "--o-ink": g["cur"], "--g-ink": g["done"], "--r-ink": g["bad"], "--y-ink": g["warn"], "--p-ink": g["viol"], "--b-ink": g["acc-ink"],
+            "--g-1": tint(g["done"]), "--r-1": tint(g["bad"]), "--b-1": g["win"], "--y-1": tint(g["warn"]),
+            # --fam is text and icons as well as bars in the kit, so it is the Grid's text accent (acc-ink);
+            # the mid blue (acc) is only ever a cell fill, paired with its own dark ink below
+            "--fam": g["acc-ink"], "--fam-on": g["acc-on"], "--fam-raw": g["acc-raw"], "--lamp": "#5be07a", "--lamp-glow": "rgba(91,224,122,.55)"}
+    page = {"--bg": g["ground"], "--card": g["panel"], "--well": g["sunk"], "--deep": g["sunk"], "--mut": g["dim"], "--hair2": g["rule"],
+            "--pdot": g["dot"], **inks,
+            # the instrument ladder: the card is the panel, cells idle on the raise, the stage is sunk
+            "--nv-bg": g["panel"], "--nv-card": g["raise"], "--nv-deep": g["sunk"], "--nv-hair2": g["rule"], "--nv-mut": g["dim"],
+            "--cw-bg": g["sunk"], "--cw-border": g["rule"], "--cw-ink": g["ink"], "--cw-mut": g["dim"],
+            "--k-acc-fill": g["acc"], "--k-acc-on": g["acc-on"],
+            "--shadow-tint": "rgba(0,0,0,.4)", "--shadow-elevation": g["shadow"]}
+    # every text ink against every surface it is drawn on; the state fills against their inks, as the
+    # engine's K list pairs them inside a navy card (ink = the card, --nv-bg), and callout grounds
+    surfaces = [g["ground"], g["panel"], g["raise"], g["sunk"]]
+    pairs = [(i, s_) for i in (g["ink"], g["dim"], g["acc-ink"], g["cur"], g["done"], g["bad"], g["warn"], g["viol"]) for s_ in surfaces]
+    pairs += [(f, g["panel"]) for f in (g["cur"], g["done"], g["bad"], g["warn"], g["viol"])]
+    pairs += [(g["acc"], g["acc-on"]), (g["win"], g["ink"]), (g["raise"], g["ink"]), (g["sunk"], g["dim"])]
+    pairs += [(mix(tint(h), g["panel"], 0.45), c) for h in (g["done"], g["bad"], g["warn"]) for c in (g["ink"], h)]
+    bad = [f"{a} on {b}: {contrast(a, b):.2f}:1" for a, b in pairs if contrast(a, b) < 4.5]
+    if bad:
+        raise SystemExit("GRID_DARK below AA: " + "; ".join(bad))
+    fmt = lambda d: ";".join(f"{k}:{v}" for k, v in d.items())
+    return fmt(page), fmt(inks)
 
 
 def tokens(family):
@@ -35,23 +113,23 @@ def tokens(family):
         s = ";".join(f"{a}:{t[b]}" for a, b in names.items())
         return s + f";--fam:{fam['--accent']};--fam-on:{fam['--on-accent']};--fam-raw:{fam['--family-accent']};--lamp:{lamp};--lamp-glow:{glow}"
 
-    nv_light, sh_light, sh_dark, well = app_surfaces()
-    # The navy ladder in the dark theme is that theme's own code paper, as in the app.
-    nv_dark = {"--nv-bg": dark["--code"], "--nv-card": dark["--panel"], "--nv-deep": dark["--surface"],
-               "--nv-hair2": dark["--rule-strong"], "--nv-mut": dark["--line"]}
+    nv_light, sh_light, _, well = app_surfaces()
 
     def extra(*ds):
         return "".join(f";{k}:{v}" for d in ds for k, v in d.items())
 
-    # Code blocks sit on the app's code well (D5): navy in the light theme, light in the dark theme,
-    # so each well takes the OTHER theme's inks, exactly as the app's own code surfaces do.
+    # The light theme's code blocks sit on the app's navy code well, with the dark theme's inks.
     cw_light = {"--cw-bg": well[0][0], "--cw-border": well[0][1], "--cw-ink": dark["--ink"], "--cw-mut": dark["--line"]}
-    cw_dark = {"--cw-bg": well[1][0], "--cw-border": well[1][1], "--cw-ink": light["--ink"], "--cw-mut": light["--line"]}
-    L = page(light, "#2b7a3b", "rgba(43,122,59,.45)") + extra(nv_light, sh_light, cw_light)
-    D = page(dark, "#5be07a", "rgba(91,224,122,.55)")
-    # N is the dark list without the navy ladder: a .navy scope takes the dark inks
-    # but must keep the ladder the page's theme chose for it.
-    return L, D + extra(nv_dark, sh_dark, cw_dark), D
+    # cells are painted on navy cards, whose card and ink are the navy ladder's in the light theme
+    acc_l = accent_cell(fam["--accent"], fam["--on-accent"], nv_light["--nv-card"], dark["--ink"])
+    ka_l = {"--k-acc-fill": acc_l[0], "--k-acc-on": acc_l[1]}
+    L = page(light, "#2b7a3b", "rgba(43,122,59,.45)") + extra(nv_light, sh_light, cw_light, ka_l) + ";--pdot:transparent"
+    # N: the light theme's navy card takes the app's dark inks but keeps the navy ladder .navy maps.
+    N = page(dark, "#5be07a", "rgba(91,224,122,.55)")
+    # The dark theme is the Grid's (D6): D for the page, ND for its navy cards (inks only, so
+    # .navy's own ladder mapping still applies).
+    D, ND = grid_dark()
+    return L, D, N, ND
 
 
 GLOBALS = os.path.join(HERE, "..", "src", "app", "globals.css")
@@ -83,20 +161,23 @@ def app_surfaces():
 
 # The state colours the engine paints cells with. Declared again on .navy: a custom
 # property resolves where it is declared, so the :root copy would keep paper values.
-K = ("--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-ink:var(--bg);--k-acc:var(--fam);--k-acc-ink:var(--fam-on);"
+K = ("--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-ink:var(--bg);--k-acc:var(--k-acc-fill);--k-acc-ink:var(--k-acc-on);"
      "--k-done:var(--g-ink);--k-done-ink:var(--bg);--k-bad:var(--r-ink);--k-bad-ink:var(--bg);--k-warn:var(--y-ink);--k-warn-ink:var(--bg);"
      "--k-viol:var(--p-ink);--k-viol-ink:var(--bg);--k-dim:var(--well);--k-dim-ink:var(--mut);--k-win:var(--b-1);--k-win-ink:var(--fg);"
      "--e-idle:var(--mut);--e-path:var(--fam);--e-cur:var(--o-ink)")
 
-# @@L@@ and @@D@@ become the light and dark token lists, @@N@@ the navy card's inks.
+# @@L@@ and @@D@@ become the light and dark token lists, @@N@@ the navy card's inks in the light
+# theme and @@ND@@ in the dark one. The dark .navy rules outrank .navy (0,3,0 against 0,1,0).
 BASE_CSS = r'''
 :root{@@L@@;@@K@@}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){@@D@@}}
 :root[data-theme="dark"]{@@D@@}
-.navy{@@N@@;--bg:var(--nv-bg);--card:var(--nv-card);--deep:var(--nv-deep);--well:var(--nv-deep);--hair2:var(--nv-hair2);--mut:var(--nv-mut);@@K@@;color:var(--fg)}'''.replace("@@K@@", K) + r'''
+.navy{@@N@@;--bg:var(--nv-bg);--card:var(--nv-card);--deep:var(--nv-deep);--well:var(--nv-deep);--hair2:var(--nv-hair2);--mut:var(--nv-mut);@@K@@;color:var(--fg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .navy{@@ND@@}}
+:root[data-theme="dark"] .navy{@@ND@@}'''.replace("@@K@@", K) + r'''
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:'Space Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.6;padding-inline:16px;font-variant-ligatures:none}
+body{margin:0;background:var(--bg);background-image:radial-gradient(var(--pdot) 1.4px,transparent 1.4px);background-size:26px 26px;background-position:13px 13px;color:var(--fg);font-family:'Space Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.6;padding-inline:16px;font-variant-ligatures:none}
 h1,h2,h3{font-family:'Space Mono',ui-monospace,monospace;font-weight:700;margin:0;text-wrap:balance;line-height:1.12}
 p{margin:0} a{color:inherit} button{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--mk);outline-offset:2px}
@@ -140,7 +221,7 @@ svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke
 .sys-title .kick .i{font-size:20px;color:var(--fam)}
 .vig{width:260px;max-width:100%;height:auto;color:var(--fg)}
 .vig .st{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.vig .fa{fill:var(--fam);opacity:.3} .vig .fb{fill:var(--fam)} .vig .fc{fill:var(--o-ink)} .vig .fr{fill:var(--r-ink)} .vig .fp{fill:var(--card)}
+.vig .fa{fill:var(--fam);opacity:.3} .vig .fk{fill:var(--fam)} .vig .fc{fill:var(--o-ink)} .vig .fr{fill:var(--r-ink)} .vig .fp{fill:var(--card)}
 .vig .sc{stroke:var(--o-ink);fill:none;stroke-width:2.6;stroke-linecap:round}
 .vig .tx{font:700 11px 'Space Mono',monospace;text-anchor:middle;fill:var(--bg)}
 .sys-body{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:start}

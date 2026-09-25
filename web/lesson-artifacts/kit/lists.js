@@ -136,7 +136,14 @@ function ListPlayer(host,o){
   /* One canvas size for the player's whole life (o.slots wide, both rows tall): the list is
      centred inside it and glides to its new centre, so nothing around the stage ever moves. */
   var VBW=(o.slots||6)*SLOT+40,VBH=262;
-  svg.setAttribute('viewBox','0 0 '+VBW+' '+VBH);svg.style.minWidth=Math.round(VBW*.72)+'px';
+  function setBox(){svg.setAttribute('viewBox','0 0 '+VBW+' '+VBH);svg.style.minWidth=Math.round(VBW*.72)+'px';}
+  setBox();
+  /* Size the canvas to the largest frame this player will ever show (every tab's steps), so a
+     short walkthrough does not float in an empty stage and switching tabs never resizes it. */
+  this.sizeTo=function(all){if(o.slots)return;var n=4,low=false;
+    all.forEach(function(st){var pos=listLayout(st),sp=listSpan(pos);n=Math.max(n,sp[1]-sp[0]+2);
+      for(var k in pos)if(pos[k].y===1)low=true;});
+    VBW=n*SLOT+40;VBH=low?262:150;setBox();};
   function geo(pos){var sp=listSpan(pos),n=sp[1]-sp[0]+2,vbw=VBW;
     return {vbw:vbw,ox:-(40+sp[0]*SLOT+SLOT/2)+20+(vbw-(n*SLOT+40))/2,low:Object.keys(pos).some(function(k){return pos[k].y===1;})};}
   function at(g,p){return {x:g.ox+40+(p.x+1)*SLOT,y:ROWY[0]+(ROWY[1]-ROWY[0])*p.y};}
@@ -259,7 +266,9 @@ function mountTabs(w,examples,id){
   var tabs=w.querySelector('.extabs'),player=new ListPlayer(w.querySelector('.lvhost'),{id:id,loop:true,autoplay:true});
   function load(k){tabs.querySelectorAll('button').forEach(function(b,j){b.setAttribute('aria-pressed',j===k);});player.touched=false;player.load(examples[k].steps());}
   examples.forEach(function(e,k){var b=el('button','tab',e.name);b.type='button';b.addEventListener('click',function(){load(k);});tabs.appendChild(b);});
-  player.reserve([].concat.apply([],examples.map(function(e){return e.steps().map(function(x){return x.note;});})));
+  var every=[].concat.apply([],examples.map(function(e){return e.steps();}));
+  player.sizeTo(every);
+  player.reserve(every.map(function(x){return x.note;}));
   onRepaint(player.redraw);load(0);
 }
 function scripted(start,ops,intro,leaky,outro){

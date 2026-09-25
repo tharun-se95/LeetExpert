@@ -233,6 +233,9 @@ var QUIZ=[
       cells.push([r,t]);
     }
     var num=$('#heroNum'),cap=$('#heroCap');
+    function capOf(st){return !st?'zero capacity needs zero instances':'dp['+st.a+'] = 1 + min('+st.cands.map(function(x){return 'dp['+x.from+']';}).join(', ')+') = <b>'+st.best+'</b>';}
+    var reserveCap=function(){reserveHeight(cap,[capOf(null)].concat(tr.steps.map(capOf)));};
+    reserveCap();if('ResizeObserver' in window)new ResizeObserver(reserveCap).observe(cap.parentNode);
     function draw(k){
       var st=k===0?null:tr.steps[k-1];
       cells.forEach(function(p,i){
@@ -245,9 +248,9 @@ var QUIZ=[
         p[1].setAttribute('class','hf-ch'+((st&&i===st.a)?' onink':''));
       });
       var unit=document.getElementById('heroUnit');
-      if(!st){num.textContent='0';unit.textContent='instances';cap.textContent='zero capacity needs zero instances';return;}
+      if(!st){num.textContent='0';unit.textContent='instances';cap.innerHTML=capOf(null);return;}
       num.textContent=String(st.best);unit.textContent=st.best===1?'instance':'instances';
-      cap.innerHTML='dp['+st.a+'] = 1 + min('+st.cands.map(function(x){return 'dp['+x.from+']';}).join(', ')+') = <b>'+st.best+'</b>';
+      cap.innerHTML=capOf(st);
     }
     draw(AMT);
     if(M&&M.animate&&!reduce){
@@ -283,7 +286,7 @@ var QUIZ=[
     },
     insight:function(svg){
       var xs=[100,220,340,460,580];S('line',{x1:100,y1:74,x2:580,y2:74,class:'bn-edge'},svg);
-      var cs=xs.map(function(x,i){return S('circle',{cx:x,cy:74,r:14,class:i===4?'bn-end':'bn-mid'},svg);});
+      var cs=xs.map(function(x,i){return S('circle',{cx:x,cy:74,r:14,class:i===4?'bn-mid bn-ring':'bn-mid'},svg);});
       xs.forEach(function(x,i){S('text',{x:x,y:78,class:'bn-t','text-anchor':'middle'},svg).textContent=i===4?'a':'a−'+(4-i);});
       var arcs=[3,2,0].map(function(i){var p=S('path',{d:'M580,60 Q'+((xs[i]+580)/2)+',6 '+xs[i]+',60',class:'bn-path',fill:'none'},svg);p.style.opacity=0;return p;});
       S('text',{x:360,y:112,class:'bn-t','text-anchor':'middle'},svg).textContent='dp[a] reads the cells one size behind it';

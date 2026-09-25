@@ -1,5 +1,5 @@
 .fleet{display:flex;gap:4px;width:min(560px,100%);min-height:44px;align-items:stretch}
-.fleet .seg{display:flex;align-items:center;justify-content:center;min-width:26px;border-radius:9px;background:var(--fam);color:var(--fam-on);font:500 13px 'JetBrains Mono',monospace}
+.fleet .seg{display:flex;align-items:center;justify-content:center;min-width:26px;border-radius:9px;background:var(--k-acc);color:var(--k-acc-ink);font:500 13px 'JetBrains Mono',monospace}
 .fleet .gap{display:flex;align-items:center;justify-content:center;border-radius:9px;border:1.5px dashed var(--hair2);color:var(--mut);font:12px 'JetBrains Mono',monospace}
 .picks{display:flex;gap:8px;flex-wrap:wrap;margin-right:auto}
 .btn2:disabled{opacity:.4;cursor:not-allowed}
@@ -11,3 +11,6 @@
 .hf-cell.base{fill:var(--g-ink);stroke:var(--g-ink)} .hf-cell.src{fill:var(--b-1);stroke:var(--fam)} .hf-cell.cur{fill:var(--o-ink);stroke:var(--o-ink)}
 .hf-ch{font:500 14px 'JetBrains Mono',monospace;fill:var(--fg)}
 .hf-cell.base+.hf-ch,.hf-cell.cur+.hf-ch{fill:var(--bg)}
+
+/* the insight banner's end cell: a ring, so its label stays ink on card (text on the solid family fill fell below AA) */
+.bn-ring{stroke:var(--fam);stroke-width:2.5}

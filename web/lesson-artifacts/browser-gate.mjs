@@ -12,9 +12,11 @@
   output is the one-line result ledger.py stores as evidence; exit 1 on any failure.
 */
 import { chromium } from "playwright-core";
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { createServer } from "node:http";
+import { extname } from "node:path";
 import { dirname, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const [id, theme] = process.argv.slice(2);
@@ -137,6 +139,20 @@ function inPage() {
   return out;
 }
 
+/* Served over HTTP, as a page really is: over file:// Chrome can refuse the self-hosted fonts as
+   cross-origin, and the gate would measure a page nobody sees. */
+const TYPES = { ".html": "text/html", ".css": "text/css", ".woff2": "font/woff2", ".js": "text/javascript", ".png": "image/png" };
+const server = createServer((req, res) => {
+  /* Chrome asks any HTTP origin for /favicon.ico (never over file://). The host that publishes a page
+     serves its own icon, so a 404 here is this server's, not the page's: answer it empty. */
+  if (req.url === "/favicon.ico") { res.writeHead(204); res.end(); return; }
+  const file = join(HERE, "dist", decodeURIComponent(new URL(req.url, "http://x").pathname));
+  if (!file.startsWith(join(HERE, "dist")) || !existsSync(file)) { res.writeHead(404); res.end(); return; }
+  res.writeHead(200, { "content-type": TYPES[extname(file)] || "application/octet-stream" });
+  res.end(readFileSync(file));
+});
+await new Promise((ok) => server.listen(0, "127.0.0.1", ok));
+const URL_ = `http://127.0.0.1:${server.address().port}/${id}.html`;
 const browser = await chromium.launch({ channel: "chrome" });
 let shifted = 0;
 try {
@@ -154,7 +170,7 @@ try {
         window.__shifts.push(e.value.toFixed(4) + " @" + Math.round(e.startTime) + "ms " + (e.sources || []).map((s) => name(s.node)).join(","));
       })).observe({ type: "layout-shift", buffered: true });
     });
-    await page.goto(pathToFileURL(page_).href, { waitUntil: "load" });
+    await page.goto(URL_, { waitUntil: "load" });
     await page.waitForTimeout(1500);
     const before = await page.evaluate(() => document.querySelectorAll(".reveal-body").length &&
       [...document.querySelectorAll(".reveal-body")].filter((b) => b.innerHTML.trim()).length);
@@ -183,7 +199,7 @@ try {
     const rctx = await browser.newContext({ viewport: { width: w, height: h }, colorScheme: theme, reducedMotion: "reduce" });
     const rp = await rctx.newPage();
     rp.on("pageerror", (e) => note(w, "reduced-motion page error: " + String(e.message).slice(0, 160)));
-    await rp.goto(pathToFileURL(page_).href, { waitUntil: "load" });
+    await rp.goto(URL_, { waitUntil: "load" });
     await rp.waitForTimeout(800);
     const snap = () => rp.evaluate(() => [...document.querySelectorAll(".banner svg, .hero-art svg, .lp-count, .cnt")].map((e) => e.innerHTML || e.textContent).join("|"));
     const a = await snap();
@@ -195,6 +211,7 @@ try {
   }
 } finally {
   await browser.close();
+  server.close();
 }
 
 if (failures.length) {
