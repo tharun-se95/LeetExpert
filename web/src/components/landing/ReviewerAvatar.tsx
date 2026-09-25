@@ -13,7 +13,8 @@ export function nameHash(name: string): number {
 
 /**
  * The two family colours a reviewer's avatar and card band are drawn in, and
- * the ink the family table picks for text on the first.
+ * the ink the family table picks for text on the first. They are light-dark()
+ * CSS values, so the SVG takes them through `style`, never as attributes.
  */
 export function reviewerColours(name: string): { a: string; b: string; ink: string } {
   const h = nameHash(name);
@@ -47,8 +48,8 @@ export function ReviewerAvatar({ name, size = 56 }: { name: string; size?: numbe
     <svg aria-hidden width={size} height={size} viewBox="0 0 64 64" className="shrink-0">
       <defs>
         <linearGradient id={`${id}-g`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={a} />
-          <stop offset="100%" stopColor={b} />
+          <stop offset="0%" style={{ stopColor: a }} />
+          <stop offset="100%" style={{ stopColor: b }} />
         </linearGradient>
         <clipPath id={`${id}-c`}>
           <circle cx="32" cy="32" r="32" />
@@ -56,8 +57,8 @@ export function ReviewerAvatar({ name, size = 56 }: { name: string; size?: numbe
       </defs>
       <g clipPath={`url(#${id}-c)`}>
         <rect width="64" height="64" fill={`url(#${id}-g)`} />
-        <rect x="22" y="-6" width="52" height="52" rx="16" fill={a} opacity="0.55" transform={`rotate(${turn} 32 32)`} />
-        <circle cx={16 + (turn % 32)} cy="54" r="18" fill={b} opacity="0.5" />
+        <rect x="22" y="-6" width="52" height="52" rx="16" style={{ fill: a }} opacity="0.55" transform={`rotate(${turn} 32 32)`} />
+        <circle cx={16 + (turn % 32)} cy="54" r="18" style={{ fill: b }} opacity="0.5" />
       </g>
       <text
         x="32"
@@ -67,7 +68,7 @@ export function ReviewerAvatar({ name, size = 56 }: { name: string; size?: numbe
         fontFamily="var(--font-display), monospace"
         fontWeight="700"
         fontSize="22"
-        fill={ink}
+        style={{ fill: ink }}
       >
         {initials(name)}
       </text>

@@ -1,13 +1,26 @@
 import type { CSSProperties } from "react";
 import type { FamilyId } from "@/lib/content/manifest";
 import { FAMILIES } from "@/lib/content/manifest";
+import { contrastRatio, gamutMapped, hexToOklch, hexToRgb, rgbToHex } from "./palette";
 
 /**
- * SINGLE SOURCE for family colours. To recolor a family, edit the `accent`
- * hex in THEME_BY_ID below — every derived value (accentUi, hover, washes,
- * highlights, module cards, sidebar chips, chapter bars) updates from that
- * one change. onAccent stays authored: it is a semantic choice (white vs
- * dark ink on a solid fill), not something a luminance formula can decide.
+ * SINGLE SOURCE for family colours. Each family authors ONE hex, its hue
+ * from The Grid Underneath (owner, 2026-09-25; spec
+ * docs/superpowers/specs/2026-09-25-grid-app-theme-design.md §5): that hex
+ * is the dark theme's colour, and every other value — the light variant,
+ * both themes' UI accent, the inks on each fill — is derived from it here.
+ * To recolor a family, edit its `grid` hex in THEME_BY_ID.
+ *
+ * The two themes need different values (a Grid hue is bright enough for
+ * navy but ~2.6:1 on white paper), and familyCssVars writes inline style,
+ * which no theme stylesheet can override. So the CSS values are
+ * `light-dark(<light>, <dark>)`, resolved where the colour is used by
+ * `color-scheme` (set on :root and .dark in globals.css): a `.dark` subtree
+ * — the dark theme, or a navy instrument card inside the light theme —
+ * gets the dark hue it needs on navy. Anything that paints without CSS (a
+ * video's brand tokens, a test) reads the concrete `light` / `dark` inks.
+ * An SVG presentation attribute is not CSS either: pass these colours
+ * through `style` or `currentColor`, never as `fill=`/`stroke=`.
  */
 export type FamilyMotif =
   | "tiles"
@@ -18,98 +31,66 @@ export type FamilyMotif =
   | "constellation"
   | "podium";
 
-export interface FamilyTheme {
-  id: FamilyId;
+export type ThemeName = "light" | "dark";
+
+/** One theme's concrete family colours, all hex. */
+export interface FamilyInk {
+  /** The family's fill (viz cells, dots, --family-accent). */
   accent: string;
   /**
    * The accent used for UI chrome (--accent / --pop / --highlight) when the
-   * family becomes a page's primary. Derived from `accent` by uiAccent() —
-   * the smallest push (toward black OR white, whichever direction the
-   * failing side needs) that clears the 3:1 non-text floor against every
-   * surface the chrome can render on — --background, --elevated, --code,
-   * --surface — in BOTH themes. Most families pass as-is.
+   * family becomes a scope's primary: the smallest push (toward black in
+   * light, white in dark) that clears the 3:1 non-text floor on every
+   * surface of that theme. The Grid hues and their light variants already
+   * clear it, so today this equals `accent`; the push stays so a recolor
+   * cannot ship chrome under the floor.
    */
   accentUi: string;
-  motif: FamilyMotif;
-  label: string;
-  /**
-   * Text colour for content sitting on a *solid raw accent* fill (e.g. an
-   * active viz cell, --family-accent). Computed via WCAG contrast, not
-   * assumed white — white-on-#C9A227 (state-transition) is ~2.42:1 and
-   * white-on-#1F9D8A (relationships) is a marginal ~3.36:1; both get a
-   * fixed dark ink instead. The other five families clear >=4.28:1 with
-   * white.
-   */
+  /** Text on a solid `accent` fill, computed by pickInk. */
   onAccent: string;
-  /**
-   * Text colour for content on a solid *accentUi* fill (--pop/--on-pop —
-   * e.g. the coach masthead mark). A DIFFERENT pairing from onAccent on
-   * purpose: accentUi and the raw accent are different colours once
-   * uiAccent() has pushed one of them, so the ink that reads well on one
-   * does not necessarily read well on the other. Concretely,
-   * state-transition and relationships need dark ink on their bright raw
-   * accent but white on their (darkened) accentUi — forcing one ink to
-   * serve both fills is what silently shipped ~4.34:1 dark-on-dark here
-   * against the 4.5:1 floor. Computed by pickInk(), not authored.
-   */
+  /** Text on a solid `accentUi` fill (--on-pop), computed by pickInk. */
   onAccentUi: string;
 }
 
-// Every surface the UI accent can actually render on in each theme —
-// --pop/--accent paint chrome across the sidebar (elevated), editor (code),
-// tests rail (surface) and the page itself (background), not just the page.
-const LIGHT_SURFACES = ["#F1F4F9", "#ffffff", "#e4e9f2", "#d8dde8"];
-const DARK_SURFACES = ["#060607", "#26262a", "#19191d", "#000000"];
-const DARK_INK = "#111827";
-
-function hexRgb(hex: string): [number, number, number] {
-  const h = hex.replace("#", "");
-  return [
-    parseInt(h.slice(0, 2), 16),
-    parseInt(h.slice(2, 4), 16),
-    parseInt(h.slice(4, 6), 16),
-  ];
+export interface FamilyTheme extends FamilyInk {
+  id: FamilyId;
+  motif: FamilyMotif;
+  label: string;
+  /** The authored Grid hue — the dark theme's accent. */
+  grid: string;
+  light: FamilyInk;
+  dark: FamilyInk;
+  // The inherited FamilyInk fields are `light-dark(<light>, <dark>)` CSS values.
 }
 
-function toLinear(channel: number): number {
-  const s = channel / 255;
-  return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
-}
-
-function luminance(hex: string): number {
-  const [r, g, b] = hexRgb(hex).map(toLinear);
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-/** WCAG 2.x contrast ratio (1–21). */
-function contrastRatio(a: string, b: string): number {
-  const [la, lb] = [luminance(a), luminance(b)];
-  const [hi, lo] = la >= lb ? [la, lb] : [lb, la];
-  return (hi + 0.05) / (lo + 0.05);
-}
+// Every surface the UI accent can render on in each theme — --pop/--accent
+// paint chrome across the sidebar (elevated), editor (code), tests rail
+// (surface) and the page itself (background), not just the page. Order:
+// background, elevated, code, surface. design-tokens.test.ts checks these
+// against globals.css, so a surface change cannot leave them stale.
+export const FAMILY_SURFACES: Record<ThemeName, readonly string[]> = {
+  light: ["#f1f4f9", "#ffffff", "#e4e9f2", "#d8dde8"],
+  dark: ["#15202e", "#223145", "#1b2735", "#101a26"],
+};
+// The Grid's ink on its bright fills (5.84:1 on its blue, the tightest).
+const DARK_INK = "#0e1726";
 
 /** Linear RGB interpolation: t=0 → a, t=1 → b. */
 function mixHex(a: string, b: string, t: number): string {
-  const ca = hexRgb(a);
-  const cb = hexRgb(b);
-  return (
-    "#" +
-    ca
-      .map((c, i) => Math.round(c + (cb[i] - c) * t).toString(16).padStart(2, "0"))
-      .join("")
-  );
+  const ca = hexToRgb(a);
+  const cb = hexToRgb(b);
+  return rgbToHex(ca.map((c, i) => c + (cb[i] - c) * t) as [number, number, number]);
 }
 
-function clearsAll(hex: string, surfaces: string[], floor = 3): boolean {
+function clearsAll(hex: string, surfaces: readonly string[], floor = 3): boolean {
   return surfaces.every((s) => contrastRatio(hex, s) >= floor);
 }
 
 /**
  * Push `hex` toward `target` (mix ratio 0→1) until `clears` is satisfied,
- * taking the SMALLEST push that does — mirrors the old single-surface
- * binary search, just against an arbitrary predicate. Returns the original
- * colour unchanged if even a full push to `target` cannot satisfy it,
- * rather than shipping the extreme (pure black/white) silently.
+ * taking the SMALLEST push that does. Returns the original colour unchanged
+ * if even a full push cannot satisfy it, so the token test fails loudly
+ * rather than shipping pure black/white silently.
  */
 function pushToward(
   hex: string,
@@ -129,173 +110,139 @@ function pushToward(
 }
 
 /**
- * The smallest push — toward black OR white, whichever the FAILING side
- * needs — that clears the 3:1 non-text floor against every surface in both
- * themes. Light surfaces are all brighter than any reasonably-saturated
- * accent, so darkening only ever helps light-mode contrast and only ever
- * hurts dark-mode contrast (and vice versa for lightening) — the two floors
- * pull in opposite directions along the SAME axis, so a family can need
- * either move, never both. If a family somehow failed both sides at once,
- * a single hue-preserving push cannot fix it; this returns the accent
- * unchanged so the token test fails loudly rather than shipping a silent
- * gap that needs an authored exception.
+ * The UI accent for one theme: the smallest push that clears 3:1 on every
+ * surface of that theme — darker on the light papers, lighter on navy.
+ * Each theme has its own value now, so the two floors no longer pull one
+ * hex in opposite directions.
  */
-export function uiAccent(accent: string): string {
-  const clearsLight = (hex: string) => clearsAll(hex, LIGHT_SURFACES);
-  const clearsDark = (hex: string) => clearsAll(hex, DARK_SURFACES);
-  if (clearsLight(accent) && clearsDark(accent)) return accent;
-
-  const lightOk = clearsLight(accent);
-  const darkOk = clearsDark(accent);
-
-  if (!lightOk && darkOk) {
-    const darkened = pushToward(accent, "#000000", clearsLight);
-    return clearsDark(darkened) ? darkened : accent;
-  }
-  if (lightOk && !darkOk) {
-    const lightened = pushToward(accent, "#ffffff", clearsDark);
-    return clearsLight(lightened) ? lightened : accent;
-  }
-  return accent;
+export function uiAccentFor(accent: string, theme: ThemeName): string {
+  const surfaces = FAMILY_SURFACES[theme];
+  return pushToward(accent, theme === "light" ? "#000000" : "#ffffff", (h) => clearsAll(h, surfaces));
 }
 
 /**
- * Best ink for text on a solid `fill`, computed rather than assumed. Prefers
- * white (the convention for nearly every accent in this palette); falls
- * back to a fixed dark steel ink only when white can't clear even the
- * large-text 3:1 floor. If genuinely neither clears its own floor, returns
- * whichever is relatively better so the caller's own AA test fails loudly
- * rather than this function silently picking a value that still fails.
+ * The light theme's variant of a Grid hue: the same OKLCH hue, lightness
+ * lowered (chroma only as far as the screen needs) until white text on it
+ * clears AA 4.5:1. Viz cells carry text on the solid fill, so that is the
+ * binding floor; it also lands every variant >= 3.3:1 on the four light
+ * surfaces, so one value serves fills and chrome.
+ */
+export function lightVariant(grid: string): string {
+  const { L, C, H } = hexToOklch(grid);
+  for (let l = L; l > 0.2; l -= 0.001) {
+    const candidate = gamutMapped(l, C, H);
+    if (contrastRatio("#ffffff", candidate) >= 4.5) return candidate;
+  }
+  return grid;
+}
+
+/**
+ * Best ink for text on a solid `fill`, computed rather than assumed: white
+ * or the Grid's dark ink, whichever clears AA 4.5:1 (white first). If
+ * neither does, the better of the two, so the caller's AA test fails loudly.
  */
 function pickInk(fill: string): string {
   const white = contrastRatio("#ffffff", fill);
   const dark = contrastRatio(DARK_INK, fill);
-  if (white >= 3) return "#ffffff";
+  if (white >= 4.5) return "#ffffff";
   if (dark >= 4.5) return DARK_INK;
   return white >= dark ? "#ffffff" : DARK_INK;
 }
 
-const THEME_BY_ID: Record<
-  FamilyId,
-  Omit<FamilyTheme, "label" | "accentUi" | "onAccentUi">
-> = {
-  "linear-traversal": {
-    id: "linear-traversal",
-    accent: "#0A7A6A",
-    motif: "tiles",
-    onAccent: "#ffffff", // 5.24:1
-  },
-  "pointer-movement": {
-    id: "pointer-movement",
-    accent: "#C45C26",
-    motif: "cursors",
-    onAccent: "#ffffff", // 4.28:1
-  },
-  "ordering-search": {
-    id: "ordering-search",
-    accent: "#2F6FED",
-    motif: "ruler",
-    onAccent: "#ffffff", // 4.55:1
-  },
-  "recursive-exploration": {
-    id: "recursive-exploration",
-    accent: "#6B4CE6",
-    motif: "tree",
-    onAccent: "#ffffff", // 5.52:1
-  },
-  "state-transition": {
-    id: "state-transition",
-    accent: "#C9A227",
-    motif: "switchboard",
-    onAccent: "#111827", // white fails at 2.42:1; dark ink is 7.33:1
-  },
-  relationships: {
-    id: "relationships",
-    accent: "#1F9D8A",
-    motif: "constellation",
-    onAccent: "#111827", // white is a marginal 3.36:1; dark ink is 5.28:1
-  },
-  "priority-structures": {
-    id: "priority-structures",
-    accent: "#E11D48",
-    motif: "podium",
-    onAccent: "#ffffff", // 4.70:1
-  },
+function inkFor(accent: string, theme: ThemeName): FamilyInk {
+  const accentUi = uiAccentFor(accent, theme);
+  return { accent, accentUi, onAccent: pickInk(accent), onAccentUi: pickInk(accentUi) };
+}
+
+const lightDark = (light: string, dark: string) => (light === dark ? light : `light-dark(${light}, ${dark})`);
+
+/** Both themes' inks for one authored dark hex, and their light-dark() CSS values. */
+function themed(grid: string): Pick<FamilyTheme, "grid" | "light" | "dark" | keyof FamilyInk> {
+  const light = inkFor(lightVariant(grid), "light");
+  const dark = inkFor(grid, "dark");
+  return {
+    grid,
+    light,
+    dark,
+    accent: lightDark(light.accent, dark.accent),
+    accentUi: lightDark(light.accentUi, dark.accentUi),
+    onAccent: lightDark(light.onAccent, dark.onAccent),
+    onAccentUi: lightDark(light.onAccentUi, dark.onAccentUi),
+  };
+}
+
+/**
+ * The Grid's state hues (owner, 2026-09-25). Relationships had shared teal
+ * with linear traversal; magenta #E07BE0 is a 7th hue in the Grid's band
+ * (OKLCH L0.67-0.81, C0.12-0.18), chosen by distance: 0.120 dE-OK from its
+ * nearest Grid hue, far from the brand lamp and --good (spec §5).
+ */
+const THEME_BY_ID: Record<FamilyId, { grid: string; motif: FamilyMotif }> = {
+  "linear-traversal": { grid: "#3CC3AE", motif: "tiles" }, // teal
+  "pointer-movement": { grid: "#F08A4B", motif: "cursors" }, // orange
+  "ordering-search": { grid: "#5C8FFF", motif: "ruler" }, // blue
+  "recursive-exploration": { grid: "#9B86FF", motif: "tree" }, // violet
+  "state-transition": { grid: "#E3BD3F", motif: "switchboard" }, // yellow
+  relationships: { grid: "#E07BE0", motif: "constellation" }, // magenta
+  "priority-structures": { grid: "#FF6B8B", motif: "podium" }, // pink
 };
 
 function labelFor(id: FamilyId): string {
   return FAMILIES.find((f) => f.id === id)?.shortTitle ?? id;
 }
 
-export const FAMILY_THEMES: FamilyTheme[] = (
-  Object.keys(THEME_BY_ID) as FamilyId[]
-).map((id) => {
-  const accentUi = uiAccent(THEME_BY_ID[id].accent);
-  return {
-    ...THEME_BY_ID[id],
-    accentUi,
-    onAccentUi: pickInk(accentUi),
-    label: labelFor(id),
-  };
-});
-
-export function getFamilyTheme(id: FamilyId | string): FamilyTheme {
-  const theme = THEME_BY_ID[id as FamilyId];
-  if (!theme) {
-    return {
-      id: "linear-traversal",
-      accent: "#0A7A6A",
-      accentUi: "#0A7A6A",
-      motif: "tiles",
-      onAccent: "#ffffff",
-      onAccentUi: "#ffffff",
-      label: "Linear",
-    };
-  }
-  const accentUi = uiAccent(theme.accent);
-  return {
-    ...theme,
-    accentUi,
-    onAccentUi: pickInk(accentUi),
-    label: labelFor(theme.id),
-  };
+function build(id: FamilyId): FamilyTheme {
+  const { grid, motif } = THEME_BY_ID[id];
+  return { id, motif, label: labelFor(id), ...themed(grid) };
 }
 
-function accentCssVars(accent: string, accentUi: string, onAccentUi: string): CSSProperties {
+export const FAMILY_THEMES: FamilyTheme[] = (Object.keys(THEME_BY_ID) as FamilyId[]).map(build);
+
+const BY_ID = new Map(FAMILY_THEMES.map((t) => [t.id, t]));
+
+/** A family's theme; an unknown id falls back to linear traversal. */
+export function getFamilyTheme(id: FamilyId | string): FamilyTheme {
+  return BY_ID.get(id as FamilyId) ?? BY_ID.get("linear-traversal")!;
+}
+
+function accentCssVars(t: Pick<FamilyTheme, keyof FamilyInk>): CSSProperties {
   return {
-    "--family-accent": accent,
-    "--family-on-accent": pickInk(accent),
-    "--family-wash": `color-mix(in oklab, ${accent} 12%, transparent)`,
-    // The family becomes the page's primary inside this scope. accentUi is
-    // the 3:1-on-every-surface-safe variant; on-pop is onAccentUi (paired
-    // with accentUi specifically, NOT onAccent — see the FamilyTheme
-    // comment for why the two fills need different ink). --mark is
-    // deliberately NOT remapped — it stays the steel body ink everywhere.
-    "--accent": accentUi,
-    "--accent-hover": `color-mix(in oklab, ${accentUi} 85%, white)`,
-    "--accent-active": accentUi,
-    "--pop": accentUi,
-    "--on-pop": onAccentUi,
-    "--highlight": `color-mix(in oklab, ${accentUi} 14%, transparent)`,
+    "--family-accent": t.accent,
+    "--family-on-accent": t.onAccent,
+    "--family-wash": `color-mix(in oklab, ${t.accent} 12%, transparent)`,
+    // The family becomes the scope's primary. accentUi is the
+    // 3:1-on-every-surface variant; on-pop is onAccentUi (paired with
+    // accentUi, NOT onAccent — the two fills can need different ink).
+    // --mark is deliberately NOT remapped: it stays the body accent ink.
+    "--accent": t.accentUi,
+    "--accent-hover": `color-mix(in oklab, ${t.accentUi} 85%, white)`,
+    "--accent-active": t.accentUi,
+    "--pop": t.accentUi,
+    "--on-pop": t.onAccentUi,
+    "--highlight": `color-mix(in oklab, ${t.accentUi} 14%, transparent)`,
   } as CSSProperties;
 }
 
 export function familyCssVars(id: FamilyId | string): CSSProperties {
-  const theme = getFamilyTheme(id);
-  return accentCssVars(theme.accent, theme.accentUi, theme.onAccentUi);
+  return accentCssVars(getFamilyTheme(id));
 }
 
 /**
  * The single-course-wide-accent option the multi-course design doc
  * explicitly allows as an alternative to DSA's per-module family system
  * (see docs/superpowers/specs/2026-08-31-multi-course-platform-design.md).
- * Reuses the exact same contrast math as `familyCssVars` (`uiAccent`,
- * `pickInk`) rather than the DSA-specific `FAMILIES` lookup table, since a
- * course using this option authors ONE accent hex, not seven named
- * families — `getFamilyTheme` has no entry for it and would silently fall
- * back to DSA's "linear-traversal" green instead.
+ * Reuses the same contrast math as `familyCssVars`, but the course authors
+ * ONE accent hex for both themes — `getFamilyTheme` has no entry for it and
+ * would silently fall back to DSA's linear traversal. The raw accent stays
+ * as authored; only the chrome variant is pushed per theme.
  */
 export function singleAccentCssVars(accent: string): CSSProperties {
-  const accentUi = uiAccent(accent);
-  return accentCssVars(accent, accentUi, pickInk(accentUi));
+  const light = inkFor(accent, "light");
+  const dark = inkFor(accent, "dark");
+  return accentCssVars({
+    accent,
+    accentUi: lightDark(light.accentUi, dark.accentUi),
+    onAccent: lightDark(light.onAccent, dark.onAccent),
+    onAccentUi: lightDark(light.onAccentUi, dark.onAccentUi),
+  });
 }

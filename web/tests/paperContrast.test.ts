@@ -67,6 +67,22 @@ describe("text on the desk and the problem panes", () => {
   }
 });
 
+describe("text over the dark desk's dot grid", () => {
+  // The dark desk carries The Grid Underneath's dots (spec
+  // 2026-09-25-grid-app-theme-design.md §4). Text on the desk can land on a
+  // dot, so every desk ink must clear AA over the dot colour too.
+  it("clears AA on --desk-dot", () => {
+    const dot = rgb(resolve(dark, "desk-dot"));
+    for (const ink of ["foreground", "muted", "mark", "accent", "good", "bad", "warn", "info"]) {
+      expect(contrast(rgb(resolve(dark, ink)), dot), `dark --${ink} on a dot`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+  it("paints the dots on the desk wrapper, in the dark theme only", () => {
+    expect(css).toMatch(/\.dark \.desk \{\s*background-image: radial-gradient\(var\(--desk-dot\) 1\.4px, transparent 1\.4px\);\s*background-size: 26px 26px;/);
+    expect(css).not.toMatch(/(^|\n):root[^{]*\{[^}]*--desk-dot/);
+  });
+});
+
 describe("the landing's dark cards resolve every token again", () => {
   // A token :root defines by reference (--foreground: var(--press-ink)) is
   // computed at :root and inherited already resolved, so .dark on a subtree

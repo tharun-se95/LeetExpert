@@ -103,7 +103,7 @@ describe("AppShell landing branch", () => {
   });
 
   it("renders one desk wrapper inside <main> for every route, LandingHeader inside it on /", () => {
-    const wrapper = main.indexOf(`"relative isolate"`);
+    const wrapper = main.indexOf(`"desk relative isolate"`);
     const header = main.indexOf("<LandingHeader");
     const page = main.indexOf("<PageEnter", wrapper);
     expect(wrapper, "desk wrapper inside <main>").toBeGreaterThan(0);
@@ -127,7 +127,7 @@ describe("AppShell landing branch", () => {
   it("tells the header it is scrolled by observing the page top, not by listening for scroll", () => {
     // A landing page restored mid-scroll fires no scroll event.
     const sentinel = main.indexOf("ref={landingTop}");
-    expect(sentinel, "sentinel inside the desk wrapper").toBeGreaterThan(main.indexOf('"relative isolate"'));
+    expect(sentinel, "sentinel inside the desk wrapper").toBeGreaterThan(main.indexOf('"desk relative isolate"'));
     expect(sentinel).toBeLessThan(main.indexOf("<LandingHeader"));
     expect(main).toMatch(/scrolled=\{landingScrolled\}/);
     expect(shell).toMatch(/new IntersectionObserver\(\s*\(\[entry\]\) => setLandingScrolled\(!\(entry\?\.isIntersecting \?\? true\)\)/);

@@ -16,6 +16,10 @@
    ============================================================ */
 
 :root {
+  /* Native controls, scrollbars and light-dark() follow the theme; family
+     colours resolve through light-dark() (familyTheme.ts), so a dark-class
+     subtree — the dark theme or a navy card — picks each family's dark hue. */
+  color-scheme: light;
   /* --- tier 1: ground (Blueprint light) ------------------- */
   /*
     Light surfaces are a real paper ladder, not a flat white stack. Elevated
@@ -290,32 +294,36 @@
 }
 
 .dark {
-  /* Space black (owner, 2026-09-19: "make the background like space"),
-     neutral — no blue cast. Was #121214. */
-  --press-paper: #060607;
+  color-scheme: dark;
   /*
-    Dark is the theme where the layer ladder is real — light is capped at
-    ~1.03:1 by muted-AA, dark has room. Same relative order as light, never
-    an inversion: elevated (cards) brightest, code above the page, background
-    the sheet, surface recessed deepest. Measured adjacent deltas:
-    surface/paper 1.04, paper/code 1.16, code/elevated 1.16, elevated/paper
-    1.34 — visible steps; on the space-black page the page-to-recess step is
-    the smallest the ladder test allows, with the recess at pure black.
-    Muted #9ca9b8 ≥8:1 everywhere (8.47 on the page, 8.78 on the recess).
+    The Grid Underneath's navy (owner, 2026-09-25; spec
+    2026-09-25-grid-app-theme-design.md) — replaced the space-black page of
+    2026-09-19. Same relative order as light, never an inversion: elevated
+    (cards, the Grid's raise) brightest, code (panel) above the page (ground),
+    surface (sunk) recessed deepest. Measured adjacent steps:
+    elevated/paper 1.25, code/elevated 1.15, code/paper 1.09,
+    paper/surface 1.07. Worst case for every ink is the raise (#223145):
+    ink 10.98, muted 5.86.
   */
-  --press-paper-sunk: #000000; /* recessed — tests / muted, deepest */
-  --press-ink: #e6edf4; /* 17.1:1 — sheet Text Primary */
-  --press-ink-soft: #9ca9b8; /* 8.19:1 — sheet Text Muted */
-  --press-rule: rgba(244, 244, 245, 0.09); /* soft rule */
-  --press-rule-strong: rgba(244, 244, 245, 0.18); /* chapter hairline — twice the soft rule */
+  --press-paper: #15202e; /* ground — 13.69:1 ink */
+  --press-paper-sunk: #101a26; /* sunk — recessed, deepest */
+  --press-ink: #e5ebf2; /* 13.69:1 on the page, 10.98 on elevated */
+  --press-ink-soft: #a3aebc; /* 7.31:1 on the page, 5.86 on elevated */
+  /* The Grid's rule #2e3b4a, as muted ink at alpha so it adapts to each step */
+  --press-rule: rgba(163, 174, 188, 0.19); /* soft rule */
+  --press-rule-strong: rgba(163, 174, 188, 0.38); /* chapter hairline — twice the soft rule */
 
-  --press-lime: #cbd5e1; /* pop — light-steel chip (dark CTA fill) */
-  --press-olive: #cbd5e1; /* accent — light steel on charcoal */
-  --press-blue: #cbd5e1; /* mark == accent in dark (steel) */
-  /* Brand lamp, dark — 3:1 floor: 8.89 elevated · 11.04 paper · 10.34 code · 11.53 surface; 1.17:1 from --good #39d353 */
+  /* The Grid's blue is the dark theme's primary (owner, 2026-09-25), split as
+     the Grid splits it: its fill blue for pop (CTA and chip fills; 3:1 UI,
+     4.29 on elevated), its text blue for accent and mark, since text-accent
+     sets text (6.14 on elevated, 4.93 on the navy card's lifted step). */
+  --press-lime: #5c8fff; /* pop — fill */
+  --press-olive: #8db0ff; /* accent — text-safe blue */
+  --press-blue: #8db0ff; /* mark — text-safe blue */
+  /* Brand lamp, dark — 3:1 floor: 7.78 elevated · 9.69 paper · 8.92 code · 10.34 surface; 1.17:1 from --good #39d353 */
   --press-lamp: #5be07a;
   --press-lamp-hi: #cfffd8;
-  --press-lamp-lo: #2fb455; /* shaded edge — 5.59 elevated */
+  --press-lamp-lo: #2fb455; /* shaded edge — 4.88 elevated */
   --lamp-halo-a: 0.85;
   --lamp-halo-b: 0.42;
   --lamp-halo-c: 0.11;
@@ -370,46 +378,49 @@
   --hue-pink-ink: #ff80c1;
   --hue-pink-line: #ff80c1;
 
-  /* Callout tints, dark: the same mix at 70% (spec 2026-09-13 §5). */
-  --callout-tint-understanding: color-mix(in srgb, var(--hue-yellow-1) 70%, var(--elevated));
-  --callout-tint-mistake: color-mix(in srgb, var(--hue-red-1) 70%, var(--elevated));
-  --callout-tint-context: color-mix(in srgb, var(--hue-blue-1) 70%, var(--elevated));
-  --callout-tint-requirement: color-mix(in srgb, var(--hue-green-1) 70%, var(--elevated));
-  --callout-tint-advice: color-mix(in srgb, #3a3f48 70%, var(--elevated));
-  /* 7.93:1 on its own tint. */
+  /* Callout tints, dark (spec 2026-09-13 §5): on the Grid's navy card level 1
+     is as dark as the card itself (at 100% it steps only 1.11), so dark mixes
+     level 2 at 40%. Steps off the card: understanding 1.26, mistake 1.18,
+     context 1.27, requirement 1.29, advice 1.21; labels >= 4.88, body >= 8.53. */
+  --callout-tint-understanding: color-mix(in srgb, var(--hue-yellow-2) 40%, var(--elevated));
+  --callout-tint-mistake: color-mix(in srgb, var(--hue-red-2) 40%, var(--elevated));
+  --callout-tint-context: color-mix(in srgb, var(--hue-blue-2) 40%, var(--elevated));
+  --callout-tint-requirement: color-mix(in srgb, var(--hue-green-2) 40%, var(--elevated));
+  --callout-tint-advice: color-mix(in srgb, #3a4a60 50%, var(--elevated));
+  /* 7.33:1 on its own tint, 8.88 on the card. */
   --advice-line: #cbd5e1;
 
   --press-highlight: color-mix(in oklab, var(--press-olive) 22%, transparent);
   --press-halftone: rgba(244, 244, 245, 0.09);
-  /* The hero floor on the space-black page: stronger lines, grey blocks
-     (the dark --elevated), sides shaded toward black. */
+  /* The hero floor on the navy page: stronger lines, blocks in the dark
+     --elevated, sides shaded toward the recess. */
   --floor-line: color-mix(in oklab, var(--press-ink) 9%, transparent);
   --floor-line-major: color-mix(in oklab, var(--press-ink) 20%, transparent);
-  --floor-block: #26262a;
+  --floor-block: #223145;
   --floor-edge: color-mix(in oklab, var(--press-ink) 16%, transparent);
-  --floor-shade: #000000;
+  --floor-shade: #0b121c;
   --hero-dim: rgb(0 0 0 / 0.42);
   /* Heat ramp on the dark --elevated card (#26262a): 1.22, 1.35, 2.32,
      4.75, 7.62 — adjacent steps 1.11-2.05. Level 0 is lifted off the card
      so an empty day still reads as a square. */
-  --heat-0: #34343a;
+  --heat-0: #34455e;
   --heat-1: #0e4429;
   --heat-2: #006d32;
   --heat-3: #26a641;
   --heat-4: #39d353;
-  --on-pop: #16202e; /* dark ink on the light-steel chip */
+  --on-pop: #0e1726; /* the Grid's ink on its blue — 5.84:1 */
 
-  --surface: #000000; /* tests / muted — recess, deepest tier */
-  --elevated: #26262a; /* sidebar / lesson / cards — brightest lift */
-  --code: #19191d; /* editor — above the page, below elevated */
-  /* Code surface inverts relative to the page here too: dark theme gets a
-     LIGHT code well. Reuses the light theme's original --code value — see
-     the long comment on --code-editor in :root. */
-  --code-editor: #e4e9f2;
-  --code-editor-border: rgba(22, 32, 46, 0.09);
-  /* Flipped for the same reason the shadow tint is: a dark ink at low alpha
-     would do nothing over an already-dark editor, so the band lightens. */
-  --editor-active-line: rgb(22 32 46 / 0.055);
+  --surface: #101a26; /* tests / muted — recess, deepest tier (sunk) */
+  --elevated: #223145; /* sidebar / lesson / cards — brightest lift (raise) */
+  --code: #1b2735; /* editor chrome — above the page, below elevated (panel) */
+  /* The Grid's code well: its sunk navy with its rule as the frame (owner,
+     2026-09-25), the same dark well the light theme has, so both themes
+     paint code with one ink set (the :root --tok-* and Shiki's dark ink). */
+  --code-editor: #101a26;
+  --code-editor-border: #2e3b4a;
+  --editor-active-line: rgb(255 255 255 / 0.045);
+  /* The desk's dot grid (spec §4) — the Grid's own dots. */
+  --desk-dot: #202c3a;
 
   /* A light ink at low alpha LIGHTENS a dark surface instead of shadowing
      it, so dark mode drops the ink tint and uses near-black instead —
@@ -426,8 +437,8 @@
   --shadow-edge-right: 4px 0 20px rgb(var(--shadow-tint) / 0.35);
   --shadow-edge-left: -4px 0 20px rgb(var(--shadow-tint) / 0.35);
 
-  --accent-hover: #e2e8f0;
-  --accent-active: #cbd5e1;
+  --accent-hover: #a9c4ff; /* lighter; 7.55 on elevated, on-pop 10.29 */
+  --accent-active: #7aa2ff; /* pressed; on-pop 7.22 */
 
   --tone-rose: #fb7185;
 }
@@ -600,6 +611,18 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans-face), ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+  The dark desk carries The Grid Underneath's dot grid (owner, 2026-09-25;
+  spec 2026-09-25-grid-app-theme-design.md §4). On the desk wrapper, not
+  body: the wrapper is inside the scroller, so the dots move with the page
+  as they do in the Grid. Cards, sheets, code, the IDE and dialogs paint
+  solid over it. paperContrast.test.ts holds muted ink to AA over a dot.
+*/
+.dark .desk {
+  background-image: radial-gradient(var(--desk-dot) 1.4px, transparent 1.4px);
+  background-size: 26px 26px;
 }
 
 /*
@@ -1542,10 +1565,6 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   color: var(--shiki-dark);
 }
 
-.dark .handbook-prose .shiki,
-.dark .handbook-prose .shiki span {
-  color: var(--shiki-light);
-}
 
 .handbook-prose .shiki {
   background-color: transparent !important;
@@ -1656,10 +1675,6 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   color: var(--shiki-dark);
 }
 
-.dark .code-body .shiki,
-.dark .code-body .shiki span {
-  color: var(--shiki-light);
-}
 
 .code-body .shiki {
   background-color: transparent !important;
@@ -1695,9 +1710,6 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   color: var(--shiki-dark);
 }
 
-.dark .viz-shiki .viz-code-token {
-  color: var(--shiki-light);
-}
 
 .code-gutter {
   width: 2.25rem;
@@ -1743,17 +1755,6 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   --tok-invalid: #ef4444;
 }
 
-.dark {
-  --tok-comment: #5c6573;
-  --tok-keyword: #4f46e5;
-  --tok-string: #047857;
-  --tok-constant: #4338ca;
-  --tok-entity: #3730a3;
-  --tok-variable: #111827;
-  --tok-name: #111827;
-  --tok-tag: #065f46;
-  --tok-invalid: #b91c1c;
-}
 
 /*
   Visual OS / PatternLab stage + family scope.
@@ -1912,7 +1913,7 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 }
 .dark .floating-invert:hover {
   border-color: rgba(22, 32, 46, 0.35);
-  color: #060607;
+  color: #0e1726;
 }
 
 .lab-mesh::before {

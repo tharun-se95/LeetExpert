@@ -77,8 +77,14 @@ The content is the product. Code exists to serve it.
 ## 4. Design system
 
 - **Handbook press inks** in `web/src/app/globals.css` — **Blueprint,
-  monochrome base** (accent/pop/mark all steel: light `#1E293B`, dark
-  `#CBD5E1`). Fill-in map:
+  monochrome base in light** (accent/pop/mark all steel `#1E293B`). **The dark
+  theme is The Grid Underneath's** (owner, 2026-09-25; spec
+  `docs/superpowers/specs/2026-09-25-grid-app-theme-design.md`): its navy
+  ladder, a navy code well, and its blue as the primary, split as the Grid
+  splits it — `--pop` is the fill blue `#5C8FFF` (buttons, chips; 3:1 UI, 4.29
+  on elevated) and `--accent`/`--mark` the text blue `#8DB0FF` (`text-accent`
+  sets text, so it must clear AA; 6.14 on elevated), with `--on-pop` the Grid's
+  ink `#0E1726`. Fill-in map (light):
   `docs/superpowers/specs/2026-07-31-theme-palette-fill-in.md`.
 - **Type system: three faces, three jobs.** Space Mono (`--font-display`)
   for the wordmark and every heading; Space Grotesk (`--font-sans-face`) —
@@ -93,14 +99,15 @@ The content is the product. Code exists to serve it.
 - **All colour goes through tokens.** No hardcoded Tailwind palette values
   (`emerald-500`, `red-400`) in components — they survive a palette change
   and silently break the theme.
-- **The brand lamp is the one non-steel ink in chrome.** The logo is a
+- **The brand lamp is the one non-steel ink in chrome** (in dark, the one
+  non-blue ink). The logo is a
   soft-glowing grass-green dot (`components/brand/Lamp.tsx`) painted from
   `--lamp` / `--press-lamp*` in `globals.css`. It ends the wordmark —
   `leetExpert ●`, the green signal last (owner, 2026-09-14) — in both the
   app `Header` and `LandingHeader`, at the shared `LOGO_LAMP_SIZE`, inside
   the home link's `.lamp-link` so hover and focus replay its bloom. Each page
   renders one header, so one lamp blooms. It is a deliberate exception
-  to the monochrome base and covers the mark only — never a button, focus,
+  to the chrome colour and covers the mark only — never a button, focus,
   status, or accent colour. It sits 1.16:1 from `--good` in light (1.17:1
   dark), so the two are told apart by form (a glowing dot in chrome vs a flat
   tick in content) and must stay separate tokens. `tests/brandLamp.test.tsx`
@@ -111,12 +118,12 @@ The content is the product. Code exists to serve it.
   (`tests/brandSvgXml.test.ts`) because a favicon is loaded as XML — never
   write `--` inside an SVG comment, which is how the old `icon.svg` shipped
   malformed. Spec: `docs/superpowers/specs/2026-09-13-lamp-logo-design.md`.
-- **Primary is steel/indigo everywhere; family colour is scoped to content,
-  never lifted to chrome.** This reverses the original design (below is what
-  changed, kept for context): AppShell no longer applies `familyCssVars`/
-  `singleAccentCssVars` on a page-wide wrapper, so the header, sidebar,
-  buttons, and focus rings stay one steel/indigo design across every course
-  and module — they do not tint per lesson. `activeThemeFor` in
+- **Chrome is one primary per theme (steel in light, the Grid's blue in dark);
+  family colour is scoped to content, never lifted to chrome.** This reverses
+  the original design (below is what changed, kept for context): AppShell no
+  longer applies `familyCssVars`/`singleAccentCssVars` on a page-wide wrapper,
+  so the header, sidebar, buttons, and focus rings stay one design across
+  every course and module — they do not tint per lesson. `activeThemeFor` in
   `AppShell.tsx` still resolves which family a route belongs to (tested in
   `appShellRouting.test.ts`), but only as a lookup for the specific
   components that legitimately want it: viz tracers (`VizPlayer`, `Diagram`,
@@ -124,14 +131,26 @@ The content is the product. Code exists to serve it.
   hub and module-page cards in `app/courses/dsa/`), which call
   `familyCssVars(family)` themselves, scoped to their own element. Guarded
   by `design-tokens.test.ts`'s "AppShell resolves the route's family but
-  does not tint chrome with it". Family colours are still authored as ONE
-  `accent` hex per family in
-  `web/src/lib/visual/familyTheme.ts`; `accentUi` (the 3:1-on-both-papers UI
-  fill, gold darkened to `#AB8921`) is derived by `uiAccent()` — recolor a
-  family by changing one hex. `accentUi` clears only the 3:1 UI floor on
-  paper, so **body-size accent text uses `--mark`, never `--accent`**
+  does not tint chrome with it". **Family colours are The Grid Underneath's
+  state hues** (owner, 2026-09-25, both themes): teal, orange, blue, violet,
+  yellow, pink, and a 7th, magenta `#E07BE0` for relationships, chosen by
+  measured distance from the other six and the lamp. Each family authors ONE
+  `grid` hex in `web/src/lib/visual/familyTheme.ts` — the dark theme's colour;
+  the light variant (`lightVariant()`: same OKLCH hue, darkened until white
+  text on it clears 4.5:1), each theme's `accentUi` (`uiAccentFor()`) and the
+  inks on each fill are derived — recolor a family by changing one hex.
+  `familyCssVars` writes inline style, which no theme stylesheet can override,
+  so its values are `light-dark(<light>, <dark>)`, resolved by `color-scheme`
+  (`:root` light, `.dark` dark): a `.dark` subtree — the dark theme, or a navy
+  card inside the light theme — gets the dark hue. **An SVG presentation
+  attribute is not CSS**: pass a family colour through `style` or CSS
+  `color` + `currentColor`, never `fill=`/`stroke=`/`stopColor=`; videos
+  (`hyperframesBrand.ts`) read the concrete `.light`/`.dark` inks. Guarded in
+  `design-tokens.test.ts` (derivation, AA per theme, hue distance) and
+  `viz-family-theming.test.ts`. `accentUi` clears only the 3:1 UI floor, so
+  **body-size accent text uses `--mark`, never a family `--accent`**
   (`text-mark`) — `--mark` is never remapped by a family scope and stays AA
-  steel in both themes (the wordmark uses it too). Chapter headings are a
+  in both themes (the wordmark uses it too). Chapter headings are a
   1px `--rule-strong` hairline (a decorative `// 01` counter label sat above
   it until 2026-09-12, removed on request); component sections
   share it through `.chapter-rule` + `.chapter-heading`, never a copied bar.
@@ -390,11 +409,14 @@ The content is the product. Code exists to serve it.
   (lamp size, wordmark, nav link, round control) and keeps its own `h-14`,
   which the drawer geometry above reads. The desk is its own rule below.
   Guarded in `landingHeader.test.tsx` and `appHeader.test.tsx`.
-- **The desk is flat paper, on every route** (owner, 2026-09-21: the paper
-  grain shipped 2026-09-14 was removed — tile, generator, `--grain-opacity`,
-  `.paper-grain` and `.grain-paper` are gone, and the specs that introduced them
-  are history, not rules). The ONE transparent desk wrapper inside `<main>` is
-  `relative isolate`: `isolate` is load-bearing, since the landing backdrop's
+- **The desk is flat paper in light and the Grid's dot grid in dark** (owner,
+  2026-09-21: the paper grain shipped 2026-09-14 was removed — tile, generator,
+  `--grain-opacity`, `.paper-grain` and `.grain-paper` are gone, and the specs
+  that introduced them are history, not rules; owner, 2026-09-25: the dark desk
+  carries The Grid Underneath's dots, `--desk-dot` `#202C3A`, 1.4px every 26px,
+  painted by `.dark .desk` on the desk wrapper so they scroll with the page;
+  `paperContrast.test.ts` holds every desk ink to AA over a dot). The ONE
+  transparent desk wrapper inside `<main>` is `desk relative isolate`: `isolate` is load-bearing, since the landing backdrop's
   `-z-1` layer must sit above the root's paper but beneath every in-flow child,
   and without a stacking context it would fall behind the root. The app header
   overlays the page (spec
@@ -419,7 +441,7 @@ The content is the product. Code exists to serve it.
   (`--foreground: var(--press-ink)`), computed there and inherited resolved, so
   `.navy-card` re-declares them; `paperContrast.test.ts` fails when one is
   missing, and holds every ink to AA on all three steps. The dark theme keeps
-  its own surfaces. Not the pattern: the cheatsheet in a lesson and the problem
+  its own surfaces, which are the Grid's navy ladder themselves. Not the pattern: the cheatsheet in a lesson and the problem
   page's panes, which stay on the paper ladder. A new instrument surface
   gets the two classes, never its own colours.
 - **Surfaces combine a paper ladder with soft elevation shadow.**
@@ -427,11 +449,14 @@ The content is the product. Code exists to serve it.
   brightness ladder in BOTH themes — elevated brightest, surface deepest,
   never an inversion. Light: white cards on a cool-gray page (measured
   elevated/background 1.10, background/code 1.11, code/surface 1.12,
-  elevated/surface 1.36). Dark: a space-black page (`#060607`, owner
-  2026-09-19 — "make the background like space") under neutral-grey
-  surfaces (no blue cast), the recess pure black — elevated/paper 1.34,
-  code/elevated 1.16, code/paper 1.16, paper/surface 1.04 (the smallest step
-  the ladder test allows). The static brand tiles use the same paper, so
+  elevated/surface 1.36). Dark: The Grid Underneath's navy (owner,
+  2026-09-25; it replaced the space-black page of 2026-09-19) — page
+  (ground) `#15202E`, elevated (raise) `#223145`, code (panel) `#1B2735`,
+  surface (sunk) `#101A26`: elevated/paper 1.25, code/elevated 1.15,
+  code/paper 1.09, paper/surface 1.07. The code well is dark in both themes
+  (dark: the sunk navy framed by the Grid's rule `#2E3B4A`), so both paint
+  code with the one dark ink set — `--tok-*` in `:root`, Shiki's dark
+  variant — and nothing swaps it per theme. The static brand tiles use the same paper, so
   changing it means updating `assets/brand/mark-tile*.svg` and rerunning
   `node scripts/generate-icons.mjs`. Every text ink (ink, muted, and every status ink incl. info) clears
   AA 4.5:1 on the deepest surface it can render on — the sandbox paints
@@ -460,8 +485,8 @@ The content is the product. Code exists to serve it.
   Yellow = understanding (Key idea, Mental model), red = a mistake (Watch
   out), blue = context (Goal, Aside), green = a requirement (Constraints),
   steel = advice (Tip). Every labelled callout carries a tint
-  (`--callout-tint-*`: palette level 1 mixed into `--elevated`, 50% light /
-  70% dark), a 3px `*-line` rule and a label in its text colour; the owner's
+  (`--callout-tint-*`: palette level 1 mixed into `--elevated` at 50% in
+  light; in dark level 2 at 40%, since level 1 is as dark as the navy card), a 3px `*-line` rule and a label in its text colour; the owner's
   declared fallback is treatment A — set the five tint tokens to
   `transparent`. Callout body inherits the prose size. Guarded in
   `design-tokens.test.ts` ("callout tints…", "Callout: treatment B…") and

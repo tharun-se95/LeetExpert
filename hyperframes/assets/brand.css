@@ -7,28 +7,28 @@
 
 /* BEGIN GENERATED tokens: web/src/lib/visual/hyperframesBrand.ts (do not edit) */
 /* Read from web/src/app/globals.css and web/src/lib/visual/familyTheme.ts.
-   The base theme is monochrome steel; a family colour is scoped to content with
-   data-family, never used for chrome. Body-size accent text uses --mark, not --accent.
+   Chrome is steel in light and the Grid's blue in dark; a family colour is scoped to
+   content with data-family, never used for chrome. Body-size accent text uses --mark.
    Measured WCAG contrast:
-   dark  ink/ground 17.15 · muted/ground 8.47 · muted/panel 6.30 · muted/code 7.33 · family accents on every dark surface >= 3.00
-   light ink/ground 14.88 · muted/ground 5.78 · muted/panel 6.38 · muted/code 5.23 · family accents on every light surface >= 3.00 */
+   dark  ink/ground 13.69 · muted/ground 7.31 · muted/panel 5.86 · muted/code 6.73 · family accents on every dark surface >= 4.29
+   light ink/ground 14.88 · muted/ground 5.78 · muted/panel 6.38 · muted/code 5.23 · family accents on every light surface >= 3.31 */
 
 :root,
 [data-theme="dark"] {
-  --ground: #060607; /* --background */
-  --panel: #26262a; /* --elevated */
-  --code: #19191d; /* --code */
-  --surface: #000000; /* --surface */
-  --ink: #e6edf4; /* --foreground */
-  --line: #9ca9b8; /* --muted */
-  --dim: #9ca9b8; /* --muted */
-  --rule: rgba(244, 244, 245, 0.09); /* --border */
-  --rule-strong: rgba(244, 244, 245, 0.18); /* --rule-strong */
-  --dot: rgba(244, 244, 245, 0.09); /* --border */
-  --muted-fill: #19191d; /* --code */
-  --on-ink: #060607; /* --background */
-  --mark: #cbd5e1; /* --mark */
-  --accent: #cbd5e1; /* --accent */
+  --ground: #15202e; /* --background */
+  --panel: #223145; /* --elevated */
+  --code: #1b2735; /* --code */
+  --surface: #101a26; /* --surface */
+  --ink: #e5ebf2; /* --foreground */
+  --line: #a3aebc; /* --muted */
+  --dim: #a3aebc; /* --muted */
+  --rule: rgba(163, 174, 188, 0.19); /* --border */
+  --rule-strong: rgba(163, 174, 188, 0.38); /* --rule-strong */
+  --dot: rgba(163, 174, 188, 0.19); /* --border */
+  --muted-fill: #1b2735; /* --code */
+  --on-ink: #15202e; /* --background */
+  --mark: #8db0ff; /* --mark */
+  --accent: #8db0ff; /* --accent */
   --good: #39d353; /* --good */
   --bad: #ff8b83; /* --bad */
   --warn: #ff923a; /* --warn */
@@ -155,38 +155,80 @@
 }
 
 [data-family="linear-traversal"] {
-  --accent: #107d6e; /* accentUi: 3:1 on every surface, both themes */
-  --family-accent: #0a7a6a;
-  --on-accent: #ffffff;
+  --accent: #3cc3ae; /* accentUi: 3:1 on every dark surface */
+  --family-accent: #3cc3ae;
+  --on-accent: #0e1726;
 }
 [data-family="pointer-movement"] {
-  --accent: #c45c26; /* accentUi: 3:1 on every surface, both themes */
-  --family-accent: #c45c26;
-  --on-accent: #ffffff;
+  --accent: #f08a4b; /* accentUi: 3:1 on every dark surface */
+  --family-accent: #f08a4b;
+  --on-accent: #0e1726;
 }
 [data-family="ordering-search"] {
-  --accent: #2f6fed; /* accentUi: 3:1 on every surface, both themes */
-  --family-accent: #2f6fed;
-  --on-accent: #ffffff;
+  --accent: #5c8fff; /* accentUi: 3:1 on every dark surface */
+  --family-accent: #5c8fff;
+  --on-accent: #0e1726;
 }
 [data-family="recursive-exploration"] {
-  --accent: #7355e7; /* accentUi: 3:1 on every surface, both themes */
-  --family-accent: #6b4ce6;
-  --on-accent: #ffffff;
+  --accent: #9b86ff; /* accentUi: 3:1 on every dark surface */
+  --family-accent: #9b86ff;
+  --on-accent: #0e1726;
 }
 [data-family="state-transition"] {
-  --accent: #987a1d; /* accentUi: 3:1 on every surface, both themes */
-  --family-accent: #c9a227;
-  --on-accent: #ffffff;
+  --accent: #e3bd3f; /* accentUi: 3:1 on every dark surface */
+  --family-accent: #e3bd3f;
+  --on-accent: #0e1726;
 }
 [data-family="relationships"] {
-  --accent: #1c8c7b; /* accentUi: 3:1 on every surface, both themes */
-  --family-accent: #1f9d8a;
-  --on-accent: #ffffff;
+  --accent: #e07be0; /* accentUi: 3:1 on every dark surface */
+  --family-accent: #e07be0;
+  --on-accent: #0e1726;
 }
 [data-family="priority-structures"] {
-  --accent: #e11d48; /* accentUi: 3:1 on every surface, both themes */
-  --family-accent: #e11d48;
+  --accent: #ff6b8b; /* accentUi: 3:1 on every dark surface */
+  --family-accent: #ff6b8b;
+  --on-accent: #0e1726;
+}
+[data-theme="light"] [data-family="linear-traversal"],
+[data-theme="light"][data-family="linear-traversal"] {
+  --accent: #008575; /* accentUi: 3:1 on every light surface */
+  --family-accent: #008575;
+  --on-accent: #ffffff;
+}
+[data-theme="light"] [data-family="pointer-movement"],
+[data-theme="light"][data-family="pointer-movement"] {
+  --accent: #bc5b11; /* accentUi: 3:1 on every light surface */
+  --family-accent: #bc5b11;
+  --on-accent: #ffffff;
+}
+[data-theme="light"] [data-family="ordering-search"],
+[data-theme="light"][data-family="ordering-search"] {
+  --accent: #4171de; /* accentUi: 3:1 on every light surface */
+  --family-accent: #4171de;
+  --on-accent: #ffffff;
+}
+[data-theme="light"] [data-family="recursive-exploration"],
+[data-theme="light"][data-family="recursive-exploration"] {
+  --accent: #7b63d9; /* accentUi: 3:1 on every light surface */
+  --family-accent: #7b63d9;
+  --on-accent: #ffffff;
+}
+[data-theme="light"] [data-family="state-transition"],
+[data-theme="light"][data-family="state-transition"] {
+  --accent: #907300; /* accentUi: 3:1 on every light surface */
+  --family-accent: #907300;
+  --on-accent: #ffffff;
+}
+[data-theme="light"] [data-family="relationships"],
+[data-theme="light"][data-family="relationships"] {
+  --accent: #b14fb2; /* accentUi: 3:1 on every light surface */
+  --family-accent: #b14fb2;
+  --on-accent: #ffffff;
+}
+[data-theme="light"] [data-family="priority-structures"],
+[data-theme="light"][data-family="priority-structures"] {
+  --accent: #d14165; /* accentUi: 3:1 on every light surface */
+  --family-accent: #d14165;
   --on-accent: #ffffff;
 }
 /* END GENERATED tokens */

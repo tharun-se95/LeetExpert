@@ -312,7 +312,7 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
                 */}
                 <div
                   className={cn(
-                    "relative isolate",
+                    "desk relative isolate",
                     fillMain ? "flex min-h-0 flex-1 flex-col" : "min-h-full",
                     !landing && "pt-14",
                   )}
