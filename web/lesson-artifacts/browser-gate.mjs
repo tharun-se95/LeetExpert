@@ -202,8 +202,11 @@ async function drive(page, w, issues) {
       if (!st.locked) fail(`${where}: options still open after an answer`);
       if (st.good !== 1) fail(`${where}: ${st.good} options marked right after an answer`);
       if (pickedGood === pickedBad) fail(`${where}: the picked option is marked ${pickedGood ? "both right and wrong" : "neither right nor wrong"}`);
-      const expect = pickedGood ? right : "Not quite.";
-      if (!st.fb.startsWith(expect) || st.fb.length <= expect.length + 1) fail(`${where}: feedback "${st.fb.slice(0, 40)}" does not follow a ${pickedGood ? "right" : "wrong"} pick with its reason`);
+      // A lesson may write its own feedback (the diameter lesson names the exact slip behind each wrong
+      // choice), so the words are not fixed. What is: an explanation, and never the kit's verdict for
+      // the other side ("Correct." on a wrong pick, "Not quite." on a right one).
+      const contradicts = pickedGood ? /^Not quite\b/.test(st.fb) : new RegExp(`^(${right.replace(".", "\\.")}|Correct\\.|Yes\\b)`).test(st.fb);
+      if (contradicts || st.fb.length < 20) fail(`${where}: feedback "${st.fb.slice(0, 40)}" does not explain a ${pickedGood ? "right" : "wrong"} pick`);
       await measure(card);
     }
   };
