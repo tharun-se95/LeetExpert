@@ -7,8 +7,10 @@ so an artifact wears the app's light theme and family colour without a hand-kept
 Rebuild an artifact after regenerating them.
 
 The dark theme is The Grid Underneath's own (owner, 2026-09-25, D6 in the rollout spec): its
-navy ladder, dot grid, fixed blue accent and state hues, and a navy code well. It is one table,
-GRID_DARK, and every ink in it is held to AA on every surface it can sit on at build time.
+navy ladder, dot grid, fixed blue accent and state hues, and a navy code well. Since the app took
+the same theme (#12), every value is read from the app: the dark block of globals.css and the
+Grid's hues in familyTheme.ts (#20; a hand-kept table here, GRID_DARK, came first). Every ink is
+held to AA on every surface it can sit on at build time.
 """
 import os, re
 
@@ -53,18 +55,37 @@ def accent_cell(fam_hex, on_hex, card_hex, ink_hex):
     raise SystemExit(f"no AA pairing for accent {fam_hex} on card {card_hex} with ink {ink_hex}")
 
 
-# The Grid Underneath's dark theme (D6): one table, the only source of the artifacts' dark colours.
-GRID_DARK = {
-    "ground": "#15202E", "panel": "#1B2735", "raise": "#223145", "sunk": "#101A26", "rule": "#2E3B4A", "dot": "#202C3A",
-    "ink": "#E5EBF2", "dim": "#A3AEBC", "acc": "#5C8FFF", "acc-raw": "#2F6FED", "acc-ink": "#8DB0FF", "acc-on": "#0E1726",
-    "cur": "#F08A4B", "done": "#3CC3AE", "bad": "#FF6B8B", "warn": "#E3BD3F", "viol": "#9B86FF", "win": "#24406F",
-    "shadow": "0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35)",
-}
+FAMILY_THEME = os.path.join(HERE, "..", "src", "lib", "visual", "familyTheme.ts")
+
+
+def app_dark():
+    """The Grid dark theme (D6) as the app defines it: the `.dark` block of globals.css, and the
+    Grid's hues by name from familyTheme.ts GRID_HUES. Cell states take the Grid's hues, not the
+    app's status palette, as D6 decided for the artifacts."""
+    css = re.sub(r"/\*.*?\*/", "", open(GLOBALS).read(), flags=re.S)
+    d = {}
+    for block in re.findall(r"^\.dark \{([^}]*)\}", css, re.M):
+        d.update(_decls(block))
+    hues = re.search(r"GRID_HUES = \{([^}]*)\}", open(FAMILY_THEME).read())
+    if not hues:
+        raise SystemExit("familyTheme.ts: GRID_HUES not found")
+    hue = dict(re.findall(r'(\w+): "(#[0-9A-Fa-f]{6})"', hues.group(1)))
+    shadow = app_surfaces()[2]
+    return {
+        "ground": d["--press-paper"], "panel": d["--code"], "raise": d["--elevated"], "sunk": d["--press-paper-sunk"],
+        "rule": d["--code-editor-border"], "dot": d["--desk-dot"], "ink": d["--press-ink"], "dim": d["--press-ink-soft"],
+        # the blue fill and its ink; the glow tint (--fam-raw) uses the same fill blue
+        "acc": d["--press-lime"], "acc-raw": d["--press-lime"], "acc-ink": d["--press-olive"], "acc-on": d["--on-pop"],
+        "cur": hue["orange"], "done": hue["teal"], "bad": hue["pink"], "warn": hue["yellow"], "viol": hue["violet"],
+        # the window cell, level 1 of the blue ramp, as the light theme's --b-1 is
+        "win": d["--hue-blue-1"], "lamp": d["--press-lamp"], "shadow-tint": shadow["--shadow-tint"],
+        "shadow": shadow["--shadow-elevation"],
+    }
 
 
 def grid_dark():
-    """The dark token lists from GRID_DARK: (page, navy-card inks). Fails the build on any ink below AA."""
-    g = GRID_DARK
+    """The dark token lists: (page, navy-card inks). Fails the build on any ink below AA."""
+    g = app_dark()
     # level-1 tints (callout grounds, the win cell) are each hue mixed into the ground, as the Grid's win is
     tint = lambda h: mix(h, g["ground"], 0.2)
     inks = {"--fg": g["ink"], "--mk": g["acc-ink"], "--hair": g["rule"],
@@ -72,14 +93,15 @@ def grid_dark():
             "--g-1": tint(g["done"]), "--r-1": tint(g["bad"]), "--b-1": g["win"], "--y-1": tint(g["warn"]),
             # --fam is text and icons as well as bars in the kit, so it is the Grid's text accent (acc-ink);
             # the mid blue (acc) is only ever a cell fill, paired with its own dark ink below
-            "--fam": g["acc-ink"], "--fam-on": g["acc-on"], "--fam-raw": g["acc-raw"], "--lamp": "#5be07a", "--lamp-glow": "rgba(91,224,122,.55)"}
+            "--fam": g["acc-ink"], "--fam-on": g["acc-on"], "--fam-raw": g["acc-raw"], "--lamp": g["lamp"],
+            "--lamp-glow": "rgba({},{},{},.55)".format(*_rgb(g["lamp"]))}
     page = {"--bg": g["ground"], "--card": g["panel"], "--well": g["sunk"], "--deep": g["sunk"], "--mut": g["dim"], "--hair2": g["rule"],
             "--pdot": g["dot"], **inks,
             # the instrument ladder: the card is the panel, cells idle on the raise, the stage is sunk
             "--nv-bg": g["panel"], "--nv-card": g["raise"], "--nv-deep": g["sunk"], "--nv-hair2": g["rule"], "--nv-mut": g["dim"],
             "--cw-bg": g["sunk"], "--cw-border": g["rule"], "--cw-ink": g["ink"], "--cw-mut": g["dim"],
             "--k-acc-fill": g["acc"], "--k-acc-on": g["acc-on"],
-            "--shadow-tint": "rgba(0,0,0,.4)", "--shadow-elevation": g["shadow"]}
+            "--shadow-tint": g["shadow-tint"], "--shadow-elevation": g["shadow"]}
     # every text ink against every surface it is drawn on; the state fills against their inks, as the
     # engine's K list pairs them inside a navy card (ink = the card, --nv-bg), and callout grounds
     surfaces = [g["ground"], g["panel"], g["raise"], g["sunk"]]
@@ -89,7 +111,7 @@ def grid_dark():
     pairs += [(mix(tint(h), g["panel"], 0.45), c) for h in (g["done"], g["bad"], g["warn"]) for c in (g["ink"], h)]
     bad = [f"{a} on {b}: {contrast(a, b):.2f}:1" for a, b in pairs if contrast(a, b) < 4.5]
     if bad:
-        raise SystemExit("GRID_DARK below AA: " + "; ".join(bad))
+        raise SystemExit("dark theme below AA: " + "; ".join(bad))
     fmt = lambda d: ";".join(f"{k}:{v}" for k, v in d.items())
     return fmt(page), fmt(inks)
 
@@ -103,15 +125,22 @@ def tokens(family):
         return g[i + len(sel) + 2:g.index("}", i)]
 
     dark, light = _decls(block(':root,\n[data-theme="dark"]')), _decls(block('[data-theme="light"]'))
-    fam = _decls(re.search(r'\[data-family="%s"\] \{([^}]*)\}' % family, g).group(1))
+    # Each family has two blocks since #12: the first is the dark theme's colour, the
+    # [data-theme="light"] one the light theme's. The light page must take the light block: the
+    # dark hue on white paper is ~2:1 (the overview's teal headline word measured 1.98:1).
+    fam = _decls(re.search(r'^\[data-family="%s"\] \{([^}]*)\}' % family, g, re.M).group(1))
+    fam_light = re.search(r'\[data-theme="light"\]\[data-family="%s"\] \{([^}]*)\}' % family, g)
+    if not fam_light:
+        raise SystemExit(f"brand.css: no light-theme block for family {family}")
+    fam_light = _decls(fam_light.group(1))
     names = {"--bg": "--ground", "--card": "--panel", "--well": "--code", "--deep": "--surface", "--fg": "--ink", "--mut": "--line",
              "--hair": "--rule", "--hair2": "--rule-strong", "--mk": "--mark", "--o-ink": "--hue-orange-ink", "--g-ink": "--hue-green-ink",
              "--r-ink": "--hue-red-ink", "--y-ink": "--hue-yellow-ink", "--p-ink": "--hue-purple-ink", "--b-ink": "--hue-blue-ink",
              "--g-1": "--hue-green-1", "--r-1": "--hue-red-1", "--b-1": "--hue-blue-1", "--y-1": "--hue-yellow-1"}
 
-    def page(t, lamp, glow):
+    def page(t, f, lamp, glow):
         s = ";".join(f"{a}:{t[b]}" for a, b in names.items())
-        return s + f";--fam:{fam['--accent']};--fam-on:{fam['--on-accent']};--fam-raw:{fam['--family-accent']};--lamp:{lamp};--lamp-glow:{glow}"
+        return s + f";--fam:{f['--accent']};--fam-on:{f['--on-accent']};--fam-raw:{f['--family-accent']};--lamp:{lamp};--lamp-glow:{glow}"
 
     nv_light, sh_light, _, well = app_surfaces()
 
@@ -123,9 +152,10 @@ def tokens(family):
     # cells are painted on navy cards, whose card and ink are the navy ladder's in the light theme
     acc_l = accent_cell(fam["--accent"], fam["--on-accent"], nv_light["--nv-card"], dark["--ink"])
     ka_l = {"--k-acc-fill": acc_l[0], "--k-acc-on": acc_l[1]}
-    L = page(light, "#2b7a3b", "rgba(43,122,59,.45)") + extra(nv_light, sh_light, cw_light, ka_l) + ";--pdot:transparent"
-    # N: the light theme's navy card takes the app's dark inks but keeps the navy ladder .navy maps.
-    N = page(dark, "#5be07a", "rgba(91,224,122,.55)")
+    L = page(light, fam_light, "#2b7a3b", "rgba(43,122,59,.45)") + extra(nv_light, sh_light, cw_light, ka_l) + ";--pdot:transparent"
+    # N: the light theme's navy card takes the app's dark inks and the family's dark hue (as a navy
+    # card in the app does), but keeps the navy ladder .navy maps.
+    N = page(dark, fam, "#5be07a", "rgba(91,224,122,.55)")
     # The dark theme is the Grid's (D6): D for the page, ND for its navy cards (inks only, so
     # .navy's own ladder mapping still applies).
     D, ND = grid_dark()

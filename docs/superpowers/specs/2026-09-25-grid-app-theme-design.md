@@ -144,9 +144,9 @@ sign-in. Contrast is measured on the rendered page, not only in tests.
 ## 9. Follow-ups
 
 - `CODE_LIGHT` in `codePalette.ts` (Shiki's light variant) is no longer painted anywhere:
-  both wells are dark. It can be removed along with the dual-theme Shiki config.
+  both wells are dark. It can be removed along with the dual-theme Shiki config. Done in #19.
 - Lesson artifacts: retire `GRID_DARK` in `web/lesson-artifacts/shared.py` so the kit reads
-  these tokens (on the artifacts branch, PR #11).
+  these tokens (on the artifacts branch, PR #11). Done in #20.
 
 ## 10. Open
 
