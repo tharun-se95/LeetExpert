@@ -149,7 +149,8 @@ generated view. Tool: `web/lesson-artifacts/ledger.py`.
   gates. (Proven: an added line dropped `build-a-linked-list` from built to todo; removing it
   restored built.)
 - **Overviews have their own table.** A page across several modules (`overviews/linear-structures`,
-  "The Line Underneath") is not a lesson in the app's manifest, so its row is declared by `build.py`
+  "The Line Underneath", and `overviews/grid-structures`, "The Grid Underneath", rebuilt on the kit
+  from its standalone original in #25) is not a lesson in the app's manifest, so its row is declared by `build.py`
   (`LESSONS` entries under `overviews`), not by `sync` from the manifest; `sync` keeps the two in
   step and `check` fails when they differ. An overview passes the same `build`, `code` (its
   `check.py`) and theme gates and goes stale the same way, but is not counted in the 220 and holds

@@ -16,11 +16,15 @@
 .gi-tile{display:flex;flex-direction:column;gap:8px;min-height:112px;padding:10px;border-radius:10px;border:1px solid var(--hair2);background:var(--card);text-decoration:none;transition:background-color .35s,border-color .35s}
 .gi-tile b{font:700 12.5px/1.3 'Space Mono',monospace;color:var(--fg)}
 .gi-rc{font:500 11px 'JetBrains Mono',monospace;color:var(--mut)}
-.gi-ic{font-size:20px;color:var(--fam);transition:color .35s}
+.gi-ic{display:grid;place-items:start;font-size:20px;color:var(--fam);transition:color .35s}
+/* the hero art sizes its drawings to the card; a tile's mark is an icon, 1em square */
+.gi-ic .i{width:1em;height:1em}
 /* the lit tile: the "current" state's fill and ink */
 .gi-tile[data-on="1"]{background:var(--k-cur);border-color:var(--k-cur)}
 .gi-tile[data-on="1"] b,.gi-tile[data-on="1"] .gi-rc,.gi-tile[data-on="1"] .gi-ic{color:var(--k-cur-ink)}
-@media (max-width:560px){.gi-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.gi-tile{min-height:0}}
+/* a phone keeps the 2 × 4 shape the caption names: each tile shows its icon and (row, column), and
+   its title stays the link's accessible name */
+@media (max-width:560px){.gi-tile{min-height:0;align-items:center;padding:10px 4px}.gi-tile b{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.gi-tile{position:relative}}
 /* each system's heading with its spot drawing beside it, as The Grid Underneath's are */
 .sys-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
 .sys-head .vig{width:210px;flex:none;color:var(--mut)}
