@@ -216,9 +216,8 @@ html,body{overflow-x:clip}
 @media (prefers-reduced-motion:reduce){.hero-art{animation:none}}
 .embed .hero-art{transform:none;animation:none}
 
-/* Syntax colour follows the well: navy in both themes (the app's navy well in the light theme,
-   the Grid's sunk navy in the dark one, D6 replacing D5), so it is always Shiki's dark variant. */
-.code pre.shiki,.code pre.shiki span{color:var(--shiki-dark)}
+/* Syntax colour follows the well: navy in both themes, so the app's Shiki has one theme and
+   writes each token's colour inline (#19); nothing here picks a variant. */
 /* the inline-code chip (.sec code) must not reach a block's <code>: it boxed every line */
 .code pre.shiki code{font:inherit;background:none;padding:0;border-radius:0}
 

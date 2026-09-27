@@ -134,11 +134,15 @@ The content is the product. Code exists to serve it.
   does not tint chrome with it". **Family colours are The Grid Underneath's
   state hues** (owner, 2026-09-25, both themes): teal, orange, blue, violet,
   yellow, pink, and a 7th, magenta `#E07BE0` for relationships, chosen by
-  measured distance from the other six and the lamp. Each family authors ONE
-  `grid` hex in `web/src/lib/visual/familyTheme.ts` — the dark theme's colour;
-  the light variant (`lightVariant()`: same OKLCH hue, darkened until white
-  text on it clears 4.5:1), each theme's `accentUi` (`uiAccentFor()`) and the
-  inks on each fill are derived — recolor a family by changing one hex.
+  measured distance from the other six and the lamp. The hues are one named
+  table, `GRID_HUES` in `web/src/lib/visual/familyTheme.ts`, and each family
+  picks ONE of them as its `grid` hex — the dark theme's colour; the light
+  variant (`lightVariant()`: same OKLCH hue, darkened until white text on it
+  clears 4.5:1), each theme's `accentUi` (`uiAccentFor()`) and the inks on each
+  fill are derived — recolor a family by pointing it at another hue, or adding
+  one. The lesson artifacts' dark theme reads the same table by name for its
+  cell states, and the rest of its colours from the `.dark` block of
+  `globals.css` (`shared.py` `app_dark()`), so neither keeps a copy.
   `familyCssVars` writes inline style, which no theme stylesheet can override,
   so its values are `light-dark(<light>, <dark>)`, resolved by `color-scheme`
   (`:root` light, `.dark` dark): a `.dark` subtree — the dark theme, or a navy

@@ -211,9 +211,13 @@ set from that measurement, not guessed.
   navy ladder (ground `#15202E`, panel, raise, sunk), the page dot grid, a fixed blue accent in place
   of the family colour (text and icons `#8DB0FF`; the mid blue `#5C8FFF` only as the accent cell's
   fill with its dark ink), the Grid's state hues, its soft black shadow, and a **navy code well** with
-  `--shiki-dark` colours, which reverses D5. One table, `GRID_DARK` in `shared.py`, is the only source,
+  `--shiki-dark` colours, which reverses D5. One table, `GRID_DARK` in `shared.py`, was the only source,
   and the build fails if any ink in it falls below AA on a surface it can sit on (its first run caught
-  the mid blue at 4.29:1 on the raise, which is why text uses the lighter blue). The light theme is
+  the mid blue at 4.29:1 on the raise, which is why text uses the lighter blue). Since the app took the
+  same theme (#12), the table is retired (#20): `shared.py` `app_dark()` reads every value from the
+  app's `.dark` block in globals.css and the Grid's hues from familyTheme.ts `GRID_HUES`, with the same
+  AA check. Three values had no app counterpart and now take the app's: the window cell is the blue
+  ramp's level 1 (`#1d3a5e`, as the light theme's), the glow tint the fill blue, the shadow the app's. The light theme is
   unchanged: the app's tokens and family colour. Consequence: in the app's dark theme the Lesson tab
   (D1) will sit a navy page inside the app's black chrome; accepted with this decision. The overview
   also takes the Grid's components: the accented headline word, an index whose lit row is the Grid's

@@ -9,7 +9,8 @@ import { contrastRatio, gamutMapped, hexToOklch, hexToRgb, rgbToHex } from "./pa
  * docs/superpowers/specs/2026-09-25-grid-app-theme-design.md §5): that hex
  * is the dark theme's colour, and every other value — the light variant,
  * both themes' UI accent, the inks on each fill — is derived from it here.
- * To recolor a family, edit its `grid` hex in THEME_BY_ID.
+ * To recolor a family, point it at another hue in THEME_BY_ID, or add a
+ * hue to GRID_HUES (the lesson artifacts read that table by name too).
  *
  * The two themes need different values (a Grid hue is bright enough for
  * navy but ~2.6:1 on white paper), and familyCssVars writes inline style,
@@ -177,14 +178,24 @@ function themed(grid: string): Pick<FamilyTheme, "grid" | "light" | "dark" | key
  * (OKLCH L0.67-0.81, C0.12-0.18), chosen by distance: 0.120 dE-OK from its
  * nearest Grid hue, far from the brand lamp and --good (spec §5).
  */
+export const GRID_HUES = {
+  teal: "#3CC3AE",
+  orange: "#F08A4B",
+  blue: "#5C8FFF",
+  violet: "#9B86FF",
+  yellow: "#E3BD3F",
+  magenta: "#E07BE0",
+  pink: "#FF6B8B",
+} as const;
+
 const THEME_BY_ID: Record<FamilyId, { grid: string; motif: FamilyMotif }> = {
-  "linear-traversal": { grid: "#3CC3AE", motif: "tiles" }, // teal
-  "pointer-movement": { grid: "#F08A4B", motif: "cursors" }, // orange
-  "ordering-search": { grid: "#5C8FFF", motif: "ruler" }, // blue
-  "recursive-exploration": { grid: "#9B86FF", motif: "tree" }, // violet
-  "state-transition": { grid: "#E3BD3F", motif: "switchboard" }, // yellow
-  relationships: { grid: "#E07BE0", motif: "constellation" }, // magenta
-  "priority-structures": { grid: "#FF6B8B", motif: "podium" }, // pink
+  "linear-traversal": { grid: GRID_HUES.teal, motif: "tiles" },
+  "pointer-movement": { grid: GRID_HUES.orange, motif: "cursors" },
+  "ordering-search": { grid: GRID_HUES.blue, motif: "ruler" },
+  "recursive-exploration": { grid: GRID_HUES.violet, motif: "tree" },
+  "state-transition": { grid: GRID_HUES.yellow, motif: "switchboard" },
+  relationships: { grid: GRID_HUES.magenta, motif: "constellation" },
+  "priority-structures": { grid: GRID_HUES.pink, motif: "podium" },
 };
 
 function labelFor(id: FamilyId): string {
