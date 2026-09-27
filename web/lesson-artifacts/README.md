@@ -95,11 +95,15 @@ with what it needs before it (`KIT_DEPS`):
   motion). A player is a view object it runs; the contract is at the top of the file.
   `mountPlayerTabs` gives any player tabbed walkthroughs.
 - `kit/lists.js` + `lists.css`: the linked list model and `ListPlayer` (`mountTabs` for its tabs).
-- `kit/stacks.js` + `stacks.css`: the lane model (`new Lanes(...)`) and `LanePlayer` (`mountLaneTabs`).
-  One model for every stack and queue shape: stacks (a column, top up), queues and deques (a row, front
-  left), fixed rows written by slot (a ring buffer's array, an input, an answer), and call frames (items
-  with a second line of locals, changed in place with `set`). An item moved between lanes (`move`) keeps
-  its identity and glides; `mark` places a named index (`i`, `head`); `snap` records a step.
+- `kit/lanes.js` + `lanes.css`: the lane model (`new Lanes(...)`) and `LanePlayer` (`mountLaneTabs`).
+  One model for every linear shape: arrays and strings (a row; `idx` labels its slots), stacks (a
+  column, top up), queues and deques (a row, front left), fixed rows written by slot (a ring buffer's
+  array, an answer, a count per letter named by `keys`), and call frames (items with a second line of
+  locals, changed in place with `set`). An item keeps its identity as it moves, so `move` between lanes,
+  `swap`, `insert` and `remove` glide; `copy` makes a new item that enters from the slot it was read
+  from; `mark` places a named index (`i`, `l`, `head`); `span` names a range over a row (a window, the
+  sorted part); `tone` is `cur`, `good`, `bad` or `dim`; `snap` records a step. Spec:
+  `docs/superpowers/specs/2026-09-27-array-string-player-design.md`.
 
 `kit-players/` is a specimen, not a lesson: `build.py` declares it under `specimens` and the ledger does
 not count it. It runs `LanePlayer` through every shape, so the browser gate holds a new player to the

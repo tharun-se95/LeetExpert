@@ -1,15 +1,24 @@
 ---
 title: "Kit Players"
 kicker: "Kit specimen · not a lesson · every shape the lane player draws"
-headline: "One player for every stack and queue in the course."
-lede: "This page is a test fixture for the lesson kit, not course content. It runs the lane player (kit/stacks.js) through every shape the stacks and queues lessons need, so the browser gate can hold it to the same bar as a lesson, in both themes, before any lesson depends on it."
+headline: "One player for every array, string, stack and queue in the course."
+lede: "This page is a test fixture for the lesson kit, not course content. It runs the lane player (kit/lanes.js) through every shape the arrays, strings, stacks and queues lessons need, so the browser gate can hold it to the same bar as a lesson, in both themes, before any lesson depends on it."
 chips:
+  - "arrays **named indices and ranges**"
   - "stacks **top up**"
   - "queues **front left**"
   - "items **glide between lanes**"
 hero: |
   <div class="hero-stage"><div class="hero-art navy"><svg viewBox="0 0 560 300" role="img" aria-label="Three boxes stacked in an open-topped column, with the name top pointing at the highest one."><g fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5"><path d="M220,70 V250 H340 V70"/></g><g fill="currentColor" opacity=".16"><rect x="232" y="196" width="96" height="42" rx="10"/><rect x="232" y="148" width="96" height="42" rx="10"/><rect x="232" y="100" width="96" height="42" rx="10"/></g><text x="354" y="125" fill="currentColor" font-family="JetBrains Mono,monospace" font-size="14">← top</text></svg></div></div>
 ---
+
+## Arrays and strings {#arrays}
+
+An array is a row whose slots carry their indices. Named indices such as `l` and `r` glide between slots, a named range such as `window` is a bracket over the slots it covers, and a swap moves both values so each one can be followed. A copy enters from the slot it was read from, which is what makes a resize visible.
+
+```widget #atabs "Four array walkthroughs"
+<div class="extabs" role="group" aria-label="Choose an array walkthrough"></div><div class="lvhost"></div>
+```
 
 ## A stack {#stacks}
 
