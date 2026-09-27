@@ -14,7 +14,7 @@
 .lp-inv .ok i{background:var(--g-ink);border-color:var(--g-ink)}
 .lp-inv .bad{color:var(--fg)} .lp-inv .bad i{background:var(--r-ink);border-color:var(--r-ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--r-ink) 22%,transparent)}
 .lp-inv .mid i{border-style:dashed}
-.lp-note{margin:0;font-size:15px;line-height:1.55;min-height:48px;color:var(--fg)}
+.lp-note{margin:0;font-size:15px;line-height:1.55;min-height:48px;color:color-mix(in srgb,var(--fg) 45%,transparent)}
 .lp-note code{font-family:'JetBrains Mono',monospace;font-size:.86em;background:color-mix(in srgb,var(--fg) 8%,transparent);padding:1px 6px;border-radius:5px}
 .lp-bar{display:flex;align-items:center;gap:6px}
 .lp-btn{display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:50%;background:none;color:var(--mut);cursor:pointer;font-size:15px;transition:background-color .2s,color .2s}
