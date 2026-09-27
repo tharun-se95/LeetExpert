@@ -25,6 +25,12 @@
       "port": 3001
     },
     {
+      "name": "lesson-artifacts",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4777", "--directory", "web/lesson-artifacts/dist"],
+      "port": 4777
+    },
+    {
       "name": "web-prod",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
