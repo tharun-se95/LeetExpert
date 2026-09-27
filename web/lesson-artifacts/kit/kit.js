@@ -74,7 +74,9 @@ function mountVariants(host,list){
 }
 
 /* lesson.md's data (build.py sets LESSON): code placeholders, reveals, variants and the quiz.
-   A reveal's text is inserted only on click; `hooks[id](body)` adds what the lesson computes. */
+   A reveal's text is inserted only on click; `hooks[id](body)` adds what the lesson computes.
+   FACTS is optional: lesson.js defines it only when its lesson.md uses {{name}} placeholders. */
+/* global FACTS */
 function fillFacts(html){
   return html.replace(/\{\{(\w+)\}\}/g,function(_,k){
     if(typeof FACTS==='undefined'||!(k in FACTS))throw new Error('lesson.md uses {{'+k+'}} but lesson.js sets no FACTS.'+k);

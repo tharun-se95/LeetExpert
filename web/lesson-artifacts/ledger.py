@@ -6,6 +6,8 @@ Spec: docs/superpowers/specs/2026-09-24-lesson-artifacts-rollout-design.md (sect
     python3 web/lesson-artifacts/ledger.py check             # the invariants; non-zero exit on any breach
     python3 web/lesson-artifacts/ledger.py render            # rewrite LEDGER.md from ledger.json
     python3 web/lesson-artifacts/ledger.py record ID GATE    # run one gate for one lesson and store its evidence
+    python3 web/lesson-artifacts/ledger.py gated             # JSON list of the pages CI gates (see cmd_gated)
+    python3 web/lesson-artifacts/ledger.py gate ID           # run every gate a page holds, recording nothing (CI)
 
 Overviews (pages across several modules, e.g. overviews/linear-structures) are not lessons in the app's
 manifest, so they sit in their own table, declared by build.py LESSONS under "overviews". They pass the
@@ -72,11 +74,13 @@ def folder_of(lesson_id):
 
 # Everything outside the lesson folder that shapes its page: a change to any of these re-stales every
 # lesson's evidence, so a kit change can never leave a lesson "verified" on a page nobody re-checked.
-# The last three are what shared.py reads the page's colours from (the light tokens, the dark theme and
-# the Grid's cell hues); lessonMd.ts renders every lesson.md.
+# The brand, globals and family files are what shared.py reads the page's colours from (the light tokens,
+# the dark theme and the Grid's cell hues); lessonMd.ts renders every lesson.md; highlight.ts colours the
+# shown code through the app's own highlighter and palette, so those two app modules are here too (#23).
 SHARED = ["kit", "fonts", "build.py", "shared.py", "highlight.ts", "code-gate.ts", "browser-gate.mjs",
           "lessonMd.ts", "render-lesson.ts",
-          "../../hyperframes/assets/brand.css", "../src/app/globals.css", "../src/lib/visual/familyTheme.ts"]
+          "../../hyperframes/assets/brand.css", "../src/app/globals.css", "../src/lib/visual/familyTheme.ts",
+          "../src/lib/content/highlight.ts", "../src/lib/content/codePalette.ts"]
 
 
 def _feed(h, path, rel_to):
@@ -244,6 +248,35 @@ def cmd_render():
     print(f"wrote {os.path.relpath(VIEW, WEB)}")
 
 
+def specimens():
+    """Kit fixtures build.py makes under "specimens": gated like a lesson's page, never ledger rows."""
+    return [f"{m}/{slug}" for m, slug, *_ in build_lessons() if m == "specimens"]
+
+
+def gates_for(page_id):
+    """The gates CI runs on a page: its build, its code check where it has one, and both themes."""
+    if page_id in specimens():
+        return ["build", "light", "dark"]
+    return ["build", "code", "light", "dark"]
+
+
+def cmd_gated():
+    """The pages CI re-runs the gates on: every row that holds evidence for every verified gate, fresh or
+    stale, and every specimen. Stale is included on purpose: a kit change stales every page, and the point
+    is to learn in CI whether the change broke one, not to skip it because the ledger stopped vouching."""
+    led = load()
+    rows = list(led["lessons"].items()) + list(led["overviews"].items())
+    ids = [i for i, row in rows if all(g in row.get("evidence", {}) for g in GATES["verified"])]
+    print(json.dumps(ids + specimens()))
+
+
+def cmd_gate(page_id):
+    if page_id not in specimens() and row_of(load(), page_id) is None:
+        raise SystemExit(f"{page_id} is not a lesson, an overview or a specimen in build.py")
+    for g in gates_for(page_id):
+        print(f"{page_id}: {g}: {run_gate(page_id, g)}", flush=True)
+
+
 def run_gate(lesson_id, gate):
     """Run one gate. Returns a one-line result; raises SystemExit if the gate fails."""
     slug = lesson_id.split("/")[1]
@@ -304,5 +337,9 @@ if __name__ == "__main__":
         cmd_render()
     elif a[:1] == ["record"] and len(a) == 3:
         cmd_record(a[1], a[2])
+    elif a[:1] == ["gated"]:
+        cmd_gated()
+    elif a[:1] == ["gate"] and len(a) == 2:
+        cmd_gate(a[1])
     else:
         raise SystemExit(__doc__)

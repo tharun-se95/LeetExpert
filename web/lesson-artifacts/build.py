@@ -132,10 +132,20 @@ PRELOAD = sorted(f for f in os.listdir(os.path.join(os.path.dirname(os.path.absp
                  if f.endswith(".woff2") and "-latin-" in f and "-latin-ext-" not in f)
 
 
+def page_parts(slug):
+    """The page script's files in the order build() joins them, as (name, text). The data lines
+    (CODE, LESSON, HL) go between the kit and lesson.js. tests/lessonArtifactsScript.test.ts lints
+    this same list as one script, so what it checks is what ships."""
+    folder = os.path.join(ROOT, slug)
+    kit = ["engine", "trees", "kit", *optional_kit(read(folder, "lesson.js"))]
+    return [(f"kit/{m}.js", read(KIT, m + ".js")) for m in kit] + [("lesson.js", read(folder, "lesson.js"))]
+
+
 def build(module, slug, family, title):
     folder = os.path.join(ROOT, slug)
     L, D, N, ND = shared.tokens(family)
     uses = optional_kit(read(folder, "lesson.js"))
+    parts = [text for _, text in page_parts(slug)]
     css = shared.BASE_CSS.replace("@@L@@", L).replace("@@D@@", D).replace("@@ND@@", ND).replace("@@N@@", N) + read(KIT, "kit.css")
     css += "".join(read(KIT, m + ".css") for m in uses if os.path.exists(os.path.join(KIT, m + ".css")))
     extra = os.path.join(folder, "extra.css")
@@ -148,15 +158,12 @@ def build(module, slug, family, title):
     code = code_bundle(folder)
     js = "\n".join([
         "(function(){\n'use strict';",
-        read(KIT, "engine.js"),
-        read(KIT, "trees.js"),
-        read(KIT, "kit.js"),
-        *[read(KIT, m + ".js") for m in uses],
+        *parts[:-1],
         "var CODE=" + json.dumps(code) + ";",
         "var LESSON=" + json.dumps(lesson["data"] if lesson else {"quiz": [], "variants": [], "reveals": {}}) + ";",
         # coloured copies keyed by the exact source, so codeBlock can find them from CODE's strings
         "var HL=" + json.dumps(highlight(code)) + ";",
-        read(folder, "lesson.js"),
+        parts[-1],
         "wirePage();",
         "window.__built&&window.__built();",
         "})();",

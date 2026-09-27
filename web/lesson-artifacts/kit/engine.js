@@ -32,7 +32,7 @@ function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localSto
 function run(from,to,dur,onUpdate,onDone){
   if(M&&M.animate){
     var c=M.animate(from,to,{duration:dur,ease:'linear',onUpdate:onUpdate,onComplete:onDone});
-    return {stop:function(){try{c.stop();}catch(e){try{c.cancel();}catch(e2){}}}};
+    return {stop:function(){try{c.stop();}catch(e){try{c.cancel();}catch(e2){/* already finished: neither call is needed */}}}};
   }
   var t0=performance.now(),id=0,dead=false;
   (function tick(now){if(dead)return;var p=clamp((now-t0)/(dur*1000));onUpdate(from+(to-from)*p);if(p<1)id=requestAnimationFrame(tick);else if(onDone)onDone();})(t0);

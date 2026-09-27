@@ -150,7 +150,7 @@ function tableFrames(coins,amount){
   });
   var path=orderOf(tr,amount),onPath=[];
   if(tr.ans>=0){var a=amount;onPath.push(a);while(a>0&&tr.par[a]>0){a-=tr.par[a];onPath.push(a);}}
-  var fin=[];for(var i=0;i<n;i++){var k=onPath.indexOf(i)>=0?'done':(tr.dp[i]===INF?'dim':'idle');fin.push({k:k,t:val(tr.dp[i])});}
+  var fin=[];for(var j=0;j<n;j++){var k=onPath.indexOf(j)>=0?'done':(tr.dp[j]===INF?'dim':'idle');fin.push({k:k,t:val(tr.dp[j])});}
   frames.push({b:{ix:ix,dp:fin},note:tr.ans<0?'Done: dp['+amount+'] is ∞, so no order adds up to exactly '+amount+'. The answer is -1.':'Done: dp['+amount+'] = '+tr.ans+'. Following the winning last size back from '+amount+' gives '+path.join(' + ')+' = '+amount+'.',stats:[['answer',tr.ans]],ev:'key'});
   var ref=bfsFewest(coins,amount);if(ref!==tr.ans)throw new Error('frames disagree with breadth-first search');
   return {frames:frames,step:1.0,poster:frames.length-1,
