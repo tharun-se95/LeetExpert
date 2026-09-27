@@ -46,6 +46,23 @@ def highlight(bundle):
     return out
 
 
+def render_lesson(folder):
+    """lesson.md rendered by the app's own markdown stack (render-lesson.ts), or None for a lesson
+    still written as body.html. Spec 2026-09-26-lesson-content-as-data-design.md."""
+    src = os.path.join(folder, "lesson.md")
+    if not os.path.exists(src):
+        return None
+    web = os.path.normpath(os.path.join(ROOT, ".."))
+    res = subprocess.run([os.path.join(web, "node_modules", ".bin", "tsx"), os.path.join(ROOT, "render-lesson.ts"), src],
+                         capture_output=True, text=True, cwd=web)
+    if res.returncode:
+        raise SystemExit("lesson.md: " + res.stderr.strip())
+    out = json.loads(res.stdout)
+    if out["rawBlocks"]:
+        print(f"  {os.path.basename(folder)}: {out['rawBlocks']} html fence(s)")
+    return out
+
+
 def code_bundle(folder):
     """{name: {py, ts}} from code/*.py and code/*.ts; a name needs both languages."""
     d = os.path.join(folder, "code")
@@ -117,7 +134,10 @@ def build(module, slug, family, title):
     extra = os.path.join(folder, "extra.css")
     if os.path.exists(extra):
         css += read(extra)
-    body = decorate(read(folder, "body.html"))
+    lesson = render_lesson(folder)
+    if lesson and lesson["data"]["title"] != title:
+        raise SystemExit(f"{slug}: lesson.md title {lesson['data']['title']!r} differs from build.py's {title!r}")
+    body = decorate(lesson["html"] if lesson else read(folder, "body.html"))
     code = code_bundle(folder)
     js = "\n".join([
         "(function(){\n'use strict';",
@@ -126,6 +146,7 @@ def build(module, slug, family, title):
         read(KIT, "kit.js"),
         *[read(KIT, m + ".js") for m in uses],
         "var CODE=" + json.dumps(code) + ";",
+        "var LESSON=" + json.dumps(lesson["data"] if lesson else {"quiz": [], "variants": [], "reveals": {}}) + ";",
         # coloured copies keyed by the exact source, so codeBlock can find them from CODE's strings
         "var HL=" + json.dumps(highlight(code)) + ";",
         read(folder, "lesson.js"),

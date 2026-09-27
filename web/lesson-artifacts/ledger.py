@@ -72,7 +72,11 @@ def folder_of(lesson_id):
 
 # Everything outside the lesson folder that shapes its page: a change to any of these re-stales every
 # lesson's evidence, so a kit change can never leave a lesson "verified" on a page nobody re-checked.
-SHARED = ["kit", "fonts", "build.py", "shared.py", "highlight.ts", "code-gate.ts", "browser-gate.mjs"]
+# The last three are what shared.py reads the page's colours from (the light tokens, the dark theme and
+# the Grid's cell hues); lessonMd.ts renders every lesson.md.
+SHARED = ["kit", "fonts", "build.py", "shared.py", "highlight.ts", "code-gate.ts", "browser-gate.mjs",
+          "lessonMd.ts", "render-lesson.ts",
+          "../../hyperframes/assets/brand.css", "../src/app/globals.css", "../src/lib/visual/familyTheme.ts"]
 
 
 def _feed(h, path, rel_to):

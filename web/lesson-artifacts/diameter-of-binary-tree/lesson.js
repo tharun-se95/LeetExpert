@@ -149,55 +149,24 @@ function diameterFrames(a){
 }
 var EXAMPLES=[{name:'The lesson\'s first example',a:[1,2,3,4,5]},{name:'A bend below the root',a:BEND.a},{name:'A deeper tree',a:CASES[4].a}];
 function mountWalk(host){mountStepper(host,EXAMPLES,function(i){return diameterFrames(EXAMPLES[i].a);},'walk');}
-/* ---------- quiz (options shuffled with a fixed seed so the answer is not always first) ---------- */
-var QUIZ=[
- {q:'Why can\'t the recursion simply RETURN each subtree\'s diameter to its parent, the way maximum depth returns each subtree\'s depth?',
-  opts:['To extend a path through itself, a parent needs how far each child\'s subtree reaches down, its height. A subtree\'s diameter is a path inside it that says nothing about that reach.',
-        'Returning the diameter would count edges twice: when a parent adds its own edge to a child\'s returned diameter, edges already on the child\'s path get counted again at every level.',
-        'It can, and that is the standard solution: a parent combines its two children\'s returned diameters with the path that bends at itself, and keeps the largest of the three.'],
-  a:0,why:'The answer (the longest path anywhere) and the value a parent needs (how far the subtree reaches downward) are different quantities. A subtree\'s diameter is an internal path, not a downward one, so a parent cannot stitch it into a path through itself. The returned value must be height, and the diameter is collected separately while both child heights are in hand.'},
- {q:'The "correct but slow" version computes height separately inside the diameter function and runs in O(n²). Where does the quadratic cost come from?',
-  opts:['Each node calls height() on its children, and height() walks that whole subtree again, so each subtree\'s height is recomputed once per ancestor: O(n) per node, n nodes.',
-        'The two recursive diameter() calls at each node spawn two more each, and that doubling at every level is what makes the work grow with the square of the number of nodes.',
-        'The max() at each node compares the bending path with both subtree diameters, and finding those diameters means scanning every node in the tree again on each call.'],
-  a:0,why:'It is the redundant-recompute pattern of naive Fibonacci. A subtree near the root has its height recalculated once per ancestor, so the same nodes are walked again and again. The chart above counts it exactly: n(n + 1) / 2 visits on a skewed tree. Folding height and diameter into one postorder pass computes each height once and drops O(n²) to O(n).'}
-];
+/* ---------- the numbers lesson.md quotes as {{name}}: computed here, never typed ---------- */
+var FACTS=(function(){
+  var calls=countCalls(fromLevels([1,2,3,4,5]));
+  if(calls!==2*5+1)throw new Error('call count check failed');
+  var res=CASES.concat([BEND]).map(function(c){return diameterMistake(fromLevels(c.a));});
+  var wrongAll=res.every(function(v){return v===0;});
+  return {calls:calls,balancedFrames:Math.ceil(Math.log2(10001)),
+    mistakeAnswers:wrongAll?'0 on all '+res.length+' trees tested here':res.join(', ')};
+})();
 /* ---------- assemble ---------- */
 (function(){
   readPal();
   var $=function(s){return document.querySelector(s);};
   mountExplore($('#explore'));
   mountDiameterPredict($('#predict'),[CASES[0],BEND,CASES[4]]);
-  reveal($('#hint'),'Hint: separate two quantities that want to be one',function(b){
-    b.innerHTML='<p>At each node two different numbers are in play.</p><p><b>1.</b> The longest path that <em>bends</em> here is <code>leftHeight + rightHeight</code>: down the left as far as possible, back up, down the right as far as possible. That is a candidate for the answer.</p><p><b>2.</b> The node\'s <em>height</em> is <code>1 + max(leftHeight, rightHeight)</code>: one straight downward path, because a parent can only extend a straight path.</p><p>The answer is the maximum of number 1 over all nodes. The value returned upward is number 2. Do not return number 1.</p>';
-  });
-  $('#naive-code').appendChild(codeBlock(CODE.naive.py,CODE.naive.ts,'The correct but slow version'));
+  mountLesson();
   mountCost($('#cost'));
   mountWalk($('#stepper'));
-  reveal($('#solbox'),'Show the solution',function(b){
-    b.appendChild(codeBlock(CODE.solution.py,CODE.solution.ts,'Return height, accumulate the diameter'));
-    var notes=el('div','notes');
-    notes.innerHTML='<p>The two lines after the recursive calls do the two jobs. <code>best = max(best, left + right)</code> considers the path that bends at this node: <code>left</code> edges down one side, up through the node, <code>right</code> edges down the other. <code>return 1 + max(left, right)</code> gives the parent the one thing it can extend: how far straight down this subtree reaches.</p><p>Every node\'s bending path is considered exactly once, so <code>best</code> ends as the maximum over all nodes, which is the diameter.</p>';
-    b.appendChild(notes);
-    var five=fromLevels([1,2,3,4,5]),calls=countCalls(five);
-    if(calls!==2*5+1)throw new Error('call count check failed');
-    var cx=el('div','complexity');
-    cx.innerHTML='<div class="cx-h">Complexity, derived</div><p><b>Time O(n).</b> A binary tree with n nodes has n + 1 empty child slots, and the recursion is called exactly once for each node and each empty slot: n + (n + 1) = 2n + 1 calls. Counting them on the five-node example gives '+calls+', as predicted. Each call does a constant amount of work besides its recursive calls, so the total is O(n). The naive version could not say this: it called height again on every subtree.</p><p><b>Space O(h).</b> The only extra memory is the call stack, as deep as the tree is tall: about '+Math.ceil(Math.log2(10001))+' frames for a balanced tree of the constraint\'s 10⁴ nodes, and 10,000 for a skewed one. CPython\'s default recursion limit is 1,000, so a 10⁴-deep skewed tree needs the limit raised or an explicit stack.</p>';
-    b.appendChild(cx);
-    var w=el('div','callout warn');
-    var res=CASES.concat([BEND]).map(function(c){return diameterMistake(fromLevels(c.a));});
-    var wrongAll=res.every(function(v){return v===0;});
-    w.innerHTML='<div class="cl"><svg class="i"><use href="#i-warn"/></svg>Watch out</div><p>Do not return the bending path. If <code>height</code> ends with <code>return left + right</code>, every leaf returns 0, so every parent sees two zero arms and nothing ever grows. The function then answers <b>'+(wrongAll?'0 on all '+res.length+' trees tested here':res.join(', '))+'</b>, including the lesson\'s first example, where the answer is 3.</p>';
-    w.appendChild(codeBlock(CODE.mistake.py,CODE.mistake.ts,'The mistake'));
-    b.appendChild(w);
-  });
-  var vs=$('#vlist');
-  [['Binary Tree Maximum Path Sum','LeetCode 124','Same shape, higher stakes. Return the best downward path sum for the parent to extend, and accumulate the best bending path sum globally. The extra twist: a negative subtree contributes max(0, childSum), because you may choose not to include it.'],
-   ['Balanced Binary Tree','LeetCode 110','Another return-height problem with a side answer. Return the height, and flag any node whose two subtree heights differ by more than 1.'],
-   ['Maximum Depth','previous lesson','The plain height recursion this problem wraps. Diameter is height plus one accumulator line, which is worth seeing by re-reading it.']].forEach(function(v){
-    vs.appendChild(el('div','vcard','<div class="vt">'+v[0]+'</div><div class="vs">'+v[1]+'</div><p>'+v[2]+'</p>'));
-  });
-  mountQuiz($('#qlist'),QUIZ);
 })();
 
 /* ================= systems layer: network hero, animated banners ================= */

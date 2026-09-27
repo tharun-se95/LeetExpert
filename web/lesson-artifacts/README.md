@@ -25,9 +25,32 @@ python3 web/lesson-artifacts/build.py coin-change            # rebuild one
   - `kit.js`: reveals, code blocks, quiz, predict widget, stepper, cost chart, letter strip, graph view,
     banners, contents rail, language switch, theme repaint and the embedding contract.
   - `kit.css`: layout, widgets and the scaled-down type scale.
-- `<lesson>/`: `body.html` (the page), `lesson.js` (its own widgets and checks), optional `extra.css`,
-  and `code/<name>.py` + `code/<name>.ts`, the code the page shows. There is one copy: the page reads it
-  as `CODE.<name>.py` / `.ts`.
+- `<lesson>/`: `lesson.md` (the page's content), `lesson.js` (its own widgets, animation, checks and
+  `FACTS`), optional `extra.css`, and `code/<name>.py` + `code/<name>.ts`, the code the page shows.
+  There is one copy: the page reads it as `CODE.<name>.py` / `.ts`. The overview still has a
+  hand-written `body.html`, which `build.py` uses when a folder has no `lesson.md`.
+- `lessonMd.ts` / `render-lesson.ts`: parse `lesson.md` with the app's own gray-matter + remark and
+  enforce the dialect's rules; `build.py` runs the CLI through `tsx`, as it runs `highlight.ts`.
+- `dom-compare.mjs`: the migration proof. It compares two builds' DOM after the scripts ran.
+
+## Writing lesson.md
+
+Spec: `docs/superpowers/specs/2026-09-26-lesson-content-as-data-design.md`. The dialect is the course's:
+YAML front matter (`title`, `kicker`, `headline`, `lede`, `chips`, `hero`) and fenced directives.
+`## Heading {#id toc="Short" banner}` opens a section, and the contents rail is built from them.
+
+- The course's own fences keep their course meaning: `examples` (`input → output  (note)`),
+  `constraint`/`key`/`warn` callouts, and `quiz` (the course's JSON:
+  `question`/`options`/`answer`/`explanation`).
+- Artifact fences: `rosetta "label"`, `widget #id "Label"`, `mount #id [classes]`,
+  `code <file> "title"`, `notes`, `derivation`, `duo` (markdown, `---`, then the scene),
+  `variants` (JSON `title`/`source`/`text`), `reveal #id "Button label"` and `html` (counted).
+- A reveal is data, not DOM: its text reaches the page only when it is opened. A fence that holds
+  fences takes more backticks than the fences inside it.
+- A number the prose shows is written `{{name}}` and computed in `lesson.js` as `FACTS.name`.
+- The build refuses what the rules forbid: adjacent callouts, a quiz without 3-5 options, an answer
+  or explanation missing, half of a `c-py`/`c-ts` pair, duplicate ids, and raw HTML outside `html`.
+  `brain`, `tip`, `goal` and `aside` have no artifact styling yet, so they are refused too.
 
 ## How a lesson is tested
 
@@ -83,7 +106,7 @@ light-mode learner never sees the OS theme flash.
 
 ## Adding a lesson
 
-1. Copy a lesson folder that resembles it, write `body.html`, `lesson.js` and the `code/` files.
+1. Copy a lesson folder that resembles it, write `lesson.md`, `lesson.js` and the `code/` files.
 2. Add it to `LESSONS` in `build.py` (family colour ids are in `familyTheme.ts`) and to `LESSON_ARTIFACTS`.
 3. Build and run the two test files. Plant a fault in a solution and see it fail before trusting them.
 
