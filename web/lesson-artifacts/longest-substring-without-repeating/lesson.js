@@ -126,59 +126,25 @@ function windowFrames(s){
 var EXAMPLES=[{name:'abcabcbb (the lesson\'s first example)',s:'abcabcbb'},{name:'pwwkew',s:'pwwkew'},{name:'abba (a repeat far back)',s:'abba'}];
 function mountWalk(host){mountStepper(host,EXAMPLES,function(i){return windowFrames(EXAMPLES[i].s);},'walk');}
 
-/* ---------- 5. quiz ---------- */
+/* ---------- the abba case the quiz quotes: an unguarded jump drags the left edge back ---------- */
 var abbaBad=jumpLongest('abba',false),abbaOk=jumpLongest('abba',true);
 if(abbaOk!==bruteLongest('abba').len||abbaBad===abbaOk)throw new Error('abba guard example failed');
-var QUIZ=[
- {q:'A faster version stores each backend\'s last position and, on a repeat, jumps the left edge to one past it. Why must the jump be guarded with <code>last[c] >= left</code>?',
-  opts:['The map keeps positions from before the window began. Unguarded, an old one drags the left edge back, so on <code>abba</code> the window holds a repeat and the answer is '+abbaBad+', not '+abbaOk+'.',
-        'Without it, a backend that has never appeared is looked up in the map and the lookup throws, so the guard exists only to protect the first appearance of each backend.',
-        'It is only a speed-up: it skips moving the left edge when the jump would not change the answer, and removing it would leave every result the same, just a little slower.'],
-  a:0,why:'The map never forgets. In <code>abba</code>, when the last <code>a</code> arrives the map still says <code>a</code> was at position 0, but the window has already moved past it. Jumping to position 1 moves the left edge backward and the window <code>bba</code> contains a repeat. The guard separates "a repeat inside my window" from "a backend I saw long ago", and the left edge must only ever move forward.'},
- {q:'The loop has a <code>while</code> inside a <code>for</code>. Why is the total still O(n) and not O(n²)?',
-  opts:['The left edge only moves forward, so over the whole run the while loop drops at most n requests: each request is added once and dropped at most once.',
-        'The while loop runs at most 26 times per step, once per letter, so each step costs a constant amount and the total is 26 × n, which is still O(n).',
-        'The while loop only fires when a request repeats, and repeats are rare in real traffic logs, so on average the inner loop does almost no work per step.'],
-  a:0,why:'This is an amortised count: the cost of the inner loop is paid for by the requests it removes, and each request can be removed only once. The 26-per-step argument gives a weaker bound that fails when identifiers are unbounded, and a log such as <code>bbbbb</code> repeats on every step, so "repeats are rare" is not true.'},
- {q:'Where must <code>best</code> be updated?',
-  opts:['After the while loop, once the window is clean again: only then does <code>right - left + 1</code> measure a stretch with no repeat in it.',
-        'At the top of the loop body, as soon as the newcomer arrives, so the record counts the request that just came in before anything is removed.',
-        'Inside the while loop, on every step of the shrinking, so that each smaller window the left edge passes through is compared with the record.'],
-  a:0,why:'Before the shrink the window may still hold a repeat. Counting it credits a stretch that is not clean: the version that records first answers '+mistakeLongest('bbbbb')+' on <code>bbbbb</code>, where the answer is 1. Inside the while loop every window is still invalid, so nothing there qualifies.'}
-];
-
+/* ---------- the numbers lesson.md quotes as {{name}}: computed here, never typed ---------- */
+var FACTS=(function(){
+  var tr=windowTrace('abcabcbb'),allOk=SANDBOX.every(function(s){var t=windowTrace(s);return t.adds===s.length&&t.removes<=s.length;});
+  if(!allOk)throw new Error('add/remove bound failed');
+  var wrong=SANDBOX.filter(function(s){return mistakeLongest(s)!==bruteLongest(s).len;});
+  return {abbaBad:abbaBad,abbaOk:abbaOk,mistakeLongest_bbbbb:mistakeLongest('bbbbb'),adds:tr.adds,removes:tr.removes,
+    wrongCases:wrong.map(function(s){return '<code>'+(s===' '?'" "':s)+'</code> (gives '+mistakeLongest(s)+', answer '+bruteLongest(s).len+')';}).join(', ')};
+})();
 /* ---------- assemble ---------- */
 (function(){
   readPal();
   mountExplore($('#explore'));
   mountGuess($('#predict'));
-  reveal($('#hint'),'Hint: one set and one rule',function(b){
-    b.innerHTML='<p>Keep a set of the characters in the current window. When the next character is already in the set, the window is invalid.</p><p>A window that is invalid stays invalid as it grows, so extending is pointless: remove characters from the left, one at a time, until the earlier copy of the newcomer is gone. Then add the newcomer.</p><p>Record the length only once the window is clean.</p>';
-  });
-  $('#naive-code').appendChild(codeBlock(CODE.naive.py,CODE.naive.ts,'Restart from every position'));
+  mountLesson();
   mountCost($('#cost'));
   mountWalk($('#stepper'));
-  reveal($('#solbox'),'Show the solution',function(b){
-    b.appendChild(codeBlock(CODE.solution.py,CODE.solution.ts,'Expand, shrink until clean, then record'));
-    var notes=el('div','notes');
-    notes.innerHTML='<p>The <code>while</code> loop is the shrink: while the newcomer is already in the set, drop the leftmost character and move <code>left</code> forward. When it stops, the window is clean, so the newcomer is added and the length is measured. <code>best</code> is read once per request, after the repair, which is the only moment the window is guaranteed to be a clean stretch.</p>';
-    b.appendChild(notes);
-    var tr=windowTrace('abcabcbb'),allOk=SANDBOX.every(function(s){var t=windowTrace(s);return t.adds===s.length&&t.removes<=s.length;});
-    if(!allOk)throw new Error('add/remove bound failed');
-    var cx=el('div','complexity');
-    cx.innerHTML='<div class="cx-h">Complexity, derived</div><p><b>Time O(n).</b> The right edge visits each of the n requests once, and each request is added to the set once. The left edge only moves forward and never passes the right edge, so it drops each request at most once. Counting on <code>abcabcbb</code> gives '+tr.adds+' adds and '+tr.removes+' drops for a log of 8, and on every string tested here the adds equal n and the drops never exceed n. That is at most 2n set operations, each constant time. The restart version could not say this: it re-read characters it had already cleared.</p><p><b>Space O(min(n, σ)).</b> The set holds only characters inside the window, all distinct, so it can never be larger than the number of distinct characters σ that can occur, or than n.</p>';
-    b.appendChild(cx);
-    var wrong=SANDBOX.filter(function(s){return mistakeLongest(s)!==bruteLongest(s).len;});
-    var w=el('div','callout warn');
-    w.innerHTML='<div class="cl"><svg class="i"><use href="#i-warn"/></svg>Watch out</div><p>Do not record the length before the shrink. Counting <code>right - left + 1</code> while a repeat is still inside the window credits a stretch that is not clean. On this lesson\'s own cases that version is wrong for '+wrong.map(function(s){return '<code>'+(s===' '?'" "':s)+'</code> (gives '+mistakeLongest(s)+', answer '+bruteLongest(s).len+')';}).join(', ')+'.</p>';
-    w.appendChild(codeBlock(CODE.mistake.py,CODE.mistake.ts,'The mistake'));
-    b.appendChild(w);
-  });
-  mountVariants($('#vlist'),[
-    ['Longest Substring with At Most K Distinct','same window, new rule','Valid now means the window holds at most k different characters. A set is no longer enough: you need a count per character, so that dropping one copy of a character does not remove it while other copies remain.'],
-    ['Longest Repeating Character Replacement','same window, new rule','Valid means the window length minus the count of its most frequent character is at most k, because that many characters can be replaced. The rule is still monotonic, so the window still only shrinks from the left.'],
-    ['Permutation in String','fixed size instead','The window never changes size: it slides one step at a time and compares its letter counts with the target\'s. It is the same two edges moving together, with a different question at each stop.']]);
-  mountQuiz($('#qlist'),QUIZ);
 })();
 
 /* ================= systems layer: the stream hero and the animated banners ================= */

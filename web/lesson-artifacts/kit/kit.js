@@ -73,6 +73,28 @@ function mountVariants(host,list){
   list.forEach(function(v){host.appendChild(el('div','vcard','<div class="vt">'+v[0]+'</div><div class="vs">'+v[1]+'</div><p>'+v[2]+'</p>'));});
 }
 
+/* lesson.md's data (build.py sets LESSON): code placeholders, reveals, variants and the quiz.
+   A reveal's text is inserted only on click; `hooks[id](body)` adds what the lesson computes. */
+function fillFacts(html){
+  return html.replace(/\{\{(\w+)\}\}/g,function(_,k){
+    if(typeof FACTS==='undefined'||!(k in FACTS))throw new Error('lesson.md uses {{'+k+'}} but lesson.js sets no FACTS.'+k);
+    return String(FACTS[k]);});
+}
+function mountCode(root){
+  root.querySelectorAll('[data-code-file]').forEach(function(p){var c=CODE[p.dataset.codeFile];
+    if(!c)throw new Error('lesson.md shows code "'+p.dataset.codeFile+'" but code/ has no such file');
+    p.replaceWith(codeBlock(c.py,c.ts,p.dataset.title));});
+}
+function mountLesson(hooks){
+  hooks=hooks||{};
+  mountCode(document);
+  Object.keys(LESSON.reveals).forEach(function(id){var r=LESSON.reveals[id];
+    reveal($('#'+id),r.label,function(b){b.innerHTML=fillFacts(r.html);mountCode(b);if(hooks[id])hooks[id](b);});});
+  if(LESSON.variants.length)mountVariants($('#vlist'),LESSON.variants.map(function(v){return [fillFacts(v.title),fillFacts(v.source),fillFacts(v.text)];}));
+  if(LESSON.quiz.length)mountQuiz($('#qlist'),LESSON.quiz.map(function(x){return {q:fillFacts(x.q),opts:x.opts.map(fillFacts),a:x.a,why:fillFacts(x.why)};}));
+  Object.keys(hooks).forEach(function(id){if(!LESSON.reveals[id])throw new Error('lesson.js hooks reveal #'+id+' but lesson.md has none');});
+}
+
 /* quiz: each answer's slot comes from a hash of its question, so it moves between
    questions with no pattern to learn. The fixed-seed shuffle this replaced put every
    answer third. The checks throw at load, as the frame checks do: an
