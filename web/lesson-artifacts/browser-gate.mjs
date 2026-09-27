@@ -186,6 +186,26 @@ try {
       r.names.forEach((c) => issues.names.add(c));
       if (r.overflow > 0) note(w, `page scrolls sideways by ${r.overflow}px`);
     }
+    // Every step of every step player (kit/player.js), each tab, settled. The stop above samples a
+    // player once, on its first step, which is mostly the empty structure: the text of every later
+    // step (a stack's values, a frame's locals, a list's names) was never measured.
+    const players = page.locator(".lp");
+    for (let p = 0; p < (await players.count()); p++) {
+      const lp = players.nth(p), tabs = lp.locator("xpath=ancestor::div[contains(@class,'widget')][1]").locator(".extabs button");
+      const nTabs = (await lp.locator("xpath=ancestor::div[contains(@class,'widget')][1]").count()) ? await tabs.count() : 0;
+      for (let t = 0; t < Math.max(1, nTabs); t++) {
+        if (nTabs) await tabs.nth(t).click();
+        const segs = lp.locator(".lp-seg");
+        for (let k = 0; k < (await segs.count()); k++) {
+          await segs.nth(k).click();  // a real pointer: it marks the player touched, so autoplay stays off
+          await lp.evaluate((e) => e.scrollIntoView({ block: "center" }));
+          await page.waitForTimeout(800);  // the 720 ms tween, settled
+          const r = await page.evaluate(inPage);
+          r.contrast.forEach((c) => issues.contrast.add(c));
+          r.names.forEach((c) => issues.names.add(c));
+        }
+      }
+    }
     await page.screenshot({ path: join(shots, `${id.replace("/", "--")}-${theme}-${w}.png`) });
     const cls = await page.evaluate(() => window.__cls);
     shifted = Math.max(shifted, cls);

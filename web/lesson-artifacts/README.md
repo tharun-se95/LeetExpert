@@ -87,10 +87,26 @@ python3 web/lesson-artifacts/ledger.py render     # rewrite LEDGER.md
 
 ## Optional kit modules
 
-`kit/lists.js` + `kit/lists.css` (the linked list model and `ListPlayer`) ship only in lessons whose
-`lesson.js` names them (`KIT_OPTIONAL` in `build.py`). Every kit file and the lesson share one scope, so
-module functions carry a prefix (`listRun`, `listLayout`): an unprefixed `run` in a lesson once replaced
-`engine.js`'s.
+Structure players ship only in lessons whose `lesson.js` names them (`KIT_OPTIONAL` in `build.py`), each
+with what it needs before it (`KIT_DEPS`):
+
+- `kit/player.js` + `player.css`: `StepPlayer`, the chrome and clock every structure player shares (stage,
+  fields and invariants line, caption, step track; soft motion, loop while on screen, still under reduced
+  motion). A player is a view object it runs; the contract is at the top of the file.
+  `mountPlayerTabs` gives any player tabbed walkthroughs.
+- `kit/lists.js` + `lists.css`: the linked list model and `ListPlayer` (`mountTabs` for its tabs).
+- `kit/stacks.js` + `stacks.css`: the lane model (`new Lanes(...)`) and `LanePlayer` (`mountLaneTabs`).
+  One model for every stack and queue shape: stacks (a column, top up), queues and deques (a row, front
+  left), fixed rows written by slot (a ring buffer's array, an input, an answer), and call frames (items
+  with a second line of locals, changed in place with `set`). An item moved between lanes (`move`) keeps
+  its identity and glides; `mark` places a named index (`i`, `head`); `snap` records a step.
+
+`kit-players/` is a specimen, not a lesson: `build.py` declares it under `specimens` and the ledger does
+not count it. It runs `LanePlayer` through every shape, so the browser gate holds a new player to the
+lesson bar before a lesson depends on it: `node lesson-artifacts/browser-gate.mjs specimens/kit-players dark`.
+
+Every kit file and the lesson share one scope, so module functions carry a prefix (`listRun`,
+`listLayout`, `laneHi`): an unprefixed `run` in a lesson once replaced `engine.js`'s.
 
 ## Fonts
 
