@@ -30,7 +30,8 @@ export type FamilyMotif =
   | "tree"
   | "switchboard"
   | "constellation"
-  | "podium";
+  | "podium"
+  | "curves";
 
 export type ThemeName = "light" | "dark";
 
@@ -177,6 +178,9 @@ function themed(grid: string): Pick<FamilyTheme, "grid" | "light" | "dark" | key
  * with linear traversal; magenta #E07BE0 is a 7th hue in the Grid's band
  * (OKLCH L0.67-0.81, C0.12-0.18), chosen by distance: 0.120 dE-OK from its
  * nearest Grid hue, far from the brand lamp and --good (spec §5).
+ * Olive #959E03 (OKLCH L0.67 C0.15 h114) is the 8th, for the foundations
+ * family (owner, #15): the colour in the band whose nearest neighbour is
+ * farthest away — 0.152 from yellow, 0.148 from the greens (#40).
  */
 export const GRID_HUES = {
   teal: "#3CC3AE",
@@ -186,6 +190,7 @@ export const GRID_HUES = {
   yellow: "#E3BD3F",
   magenta: "#E07BE0",
   pink: "#FF6B8B",
+  olive: "#959E03",
 } as const;
 
 const THEME_BY_ID: Record<FamilyId, { grid: string; motif: FamilyMotif }> = {
@@ -196,6 +201,7 @@ const THEME_BY_ID: Record<FamilyId, { grid: string; motif: FamilyMotif }> = {
   "state-transition": { grid: GRID_HUES.yellow, motif: "switchboard" },
   relationships: { grid: GRID_HUES.magenta, motif: "constellation" },
   "priority-structures": { grid: GRID_HUES.pink, motif: "podium" },
+  foundations: { grid: GRID_HUES.olive, motif: "curves" },
 };
 
 function labelFor(id: FamilyId): string {

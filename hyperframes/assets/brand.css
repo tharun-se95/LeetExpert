@@ -189,6 +189,11 @@
   --family-accent: #ff6b8b;
   --on-accent: #0e1726;
 }
+[data-family="foundations"] {
+  --accent: #959e03; /* accentUi: 3:1 on every dark surface */
+  --family-accent: #959e03;
+  --on-accent: #0e1726;
+}
 [data-theme="light"] [data-family="linear-traversal"],
 [data-theme="light"][data-family="linear-traversal"] {
   --accent: #008575; /* accentUi: 3:1 on every light surface */
@@ -229,6 +234,12 @@
 [data-theme="light"][data-family="priority-structures"] {
   --accent: #d14165; /* accentUi: 3:1 on every light surface */
   --family-accent: #d14165;
+  --on-accent: #ffffff;
+}
+[data-theme="light"] [data-family="foundations"],
+[data-theme="light"][data-family="foundations"] {
+  --accent: #757c00; /* accentUi: 3:1 on every light surface */
+  --family-accent: #757c00;
   --on-accent: #ffffff;
 }
 /* END GENERATED tokens */

@@ -133,8 +133,10 @@ The content is the product. Code exists to serve it.
   by `design-tokens.test.ts`'s "AppShell resolves the route's family but
   does not tint chrome with it". **Family colours are The Grid Underneath's
   state hues** (owner, 2026-09-25, both themes): teal, orange, blue, violet,
-  yellow, pink, and a 7th, magenta `#E07BE0` for relationships, chosen by
-  measured distance from the other six and the lamp. The hues are one named
+  yellow, pink, a 7th, magenta `#E07BE0` for relationships, and an 8th,
+  olive `#959E03` for foundations (getting-started, big-o, math-for-dsa;
+  owner, #15), each chosen by measured distance from the others, the lamp
+  and `--good`; every module has a family. The hues are one named
   table, `GRID_HUES` in `web/src/lib/visual/familyTheme.ts`, and each family
   picks ONE of them as its `grid` hex — the dark theme's colour; the light
   variant (`lightVariant()`: same OKLCH hue, darkened until white text on it

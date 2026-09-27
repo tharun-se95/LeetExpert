@@ -431,7 +431,7 @@ describe("design tokens", () => {
   });
 
   it("family hues stay told apart from each other and from the brand lamp", () => {
-    // The 7th hue (relationships, magenta) was chosen by distance; a recolor
+    // The 7th and 8th hues (magenta, olive) were chosen by distance; a recolor
     // must not let two families, or a family and the lamp/--good green,
     // collapse into one colour.
     const ok = (hex: string) => {
@@ -578,16 +578,18 @@ describe("design tokens", () => {
     expect(flatList).toMatch(/getFamilyTheme\(p\.familyId\)\.accent/);
   });
 
-  it("every module declares a valid family or none", () => {
+  it("every module declares a valid family", () => {
+    // The three opening modules had none until the foundations family (#15,
+    // #40); a module without one falls back to chrome and loses its colour.
     const valid = new Set(FAMILY_THEMES.map((f) => f.id));
+    expect(MODULES).toHaveLength(24);
     for (const mod of MODULES) {
       const family = moduleFamily(mod);
-      if (family !== null) {
-        expect(
-          valid.has(family as never),
-          `module ${mod.slug} maps to unknown family ${family}`,
-        ).toBe(true);
-      }
+      expect(family, `module ${mod.slug} has no family`).not.toBeNull();
+      expect(
+        valid.has(family as never),
+        `module ${mod.slug} maps to unknown family ${family}`,
+      ).toBe(true);
     }
   });
 

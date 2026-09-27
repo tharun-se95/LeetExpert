@@ -154,6 +154,16 @@ export function MotifMark({
           <path d="M28 120 L132 120" {...common} />
         </>
       )}
+      {motif === "curves" && (
+        <>
+          {/* growth curves on a plot: linear and quadratic, the picture Big-O is read from */}
+          <path d="M32 32 L32 128 L136 128" {...common} />
+          <path d="M32 128 L128 72" {...common} />
+          <path d="M32 128 Q88 124 112 36" {...common} />
+          <circle cx="112" cy="36" r="6" {...common} {...soft} />
+          <circle cx="128" cy="72" r="6" {...common} />
+        </>
+      )}
     </svg>
   );
 }
