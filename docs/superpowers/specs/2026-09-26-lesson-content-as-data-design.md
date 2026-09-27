@@ -35,8 +35,9 @@ the body, the versions the app ships), which `build.py` runs through `tsx`, as i
 | `kicker`, `headline`, `lede` | the hero's copy; inline markdown |
 | `chips` | list of short facts under the lede; inline markdown |
 | `hero` | the topic's hero stage, raw markup (a block scalar): it is drawn by `lesson.js`, so it is a mount with structure, not prose |
-| `quiz` | list of `{question, options, answer, explanation}`, the course's own quiz keys |
-| `variants` | list of `{title, source, text}` |
+
+The quiz and the variants are fences in the body, not front matter, so they sit where they render
+(as the course's ` ```quiz ` does).
 
 **Body.** Markdown paragraphs with inline `` `code` ``, `**bold**` (rendered `<b>`, as the kit
 styles it), `*em*` and links. Inline HTML passes through, which is how a dual-language pair is
@@ -49,7 +50,10 @@ written (`<span class="c-py">…</span><span class="c-ts">…</span>`); the buil
 **Fences.** The course's own fences keep their course meaning and syntax:
 
 - `examples`: one `input → output  (note)` per line, as in the course.
-- `constraint`, `key`, `brain`, `warn`, `tip`, `goal`, `aside`: callouts; the body is markdown.
+- `constraint`, `key`, `warn`: callouts; the body is markdown. The course's `brain`, `tip`, `goal`
+  and `aside` have no artifact styling yet, so the build refuses them rather than render them
+  unstyled; each gets its look when a lesson first needs it.
+- `quiz`: the course's JSON, `{"questions": [{question, options, answer, explanation}]}`.
 
 New fences, for what a course lesson does not have. The info string carries the attributes:
 
@@ -65,7 +69,10 @@ New fences, for what a course lesson does not have. The info string carries the 
   click. The body is markdown and may hold fences, so the reveal fence is written with four
   backticks. `lesson.js` may register a hook for the id, to add what must be computed (a code
   block, a scene).
+- `code <file> "title"`: a code block for `code/<file>.py` + `.ts`, placed by the kit.
+- `notes`: prose grouped under a code block, as the solution reveals have it.
 - `derivation`: the "Complexity, derived" box; markdown body.
+- `variants`: JSON, `[{title, source, text}]`.
 - `html`: markup passed through untouched, for a topic-specific piece no fence covers. Its uses
   are counted per lesson in the build output, so it cannot quietly become the default.
 
@@ -98,7 +105,8 @@ Each of the five verified lessons moves in turn:
    lesson must be verified again on the new evidence.
 
 `tests/lessonArtifactsData.test.ts` holds the §2 rules for every lesson with a `lesson.md`, and
-renders each fence kind against a fixture.
+renders each fence kind against a fixture. The DOM comparison is the migration's proof, not a
+standing test: once `body.html` is deleted there is nothing old to compare with.
 
 ## 5. Out of scope
 
