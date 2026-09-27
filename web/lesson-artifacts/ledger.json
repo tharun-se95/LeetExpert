@@ -2138,6 +2138,13 @@
    "type": "overview",
    "title": "The Line Underneath",
    "family": "linear-traversal"
+  },
+  "overviews/grid-structures": {
+   "evidence": {},
+   "notes": "",
+   "type": "overview",
+   "title": "The Grid Underneath",
+   "family": "ordering-search"
   }
  }
 }

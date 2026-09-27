@@ -90,7 +90,8 @@ SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-
                  # concept lessons
                  "node": "i-box", "build": "i-stack", "walk": "i-route", "cost": "i-s-cost", "next": "i-s-variants",
                  # overview pages
-                 "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight"}
+                 "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight",
+                 "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral"}
 
 
 def _icon(sec):
@@ -209,6 +210,7 @@ LESSONS = [
     ("linked-lists", "build-a-linked-list", "pointer-movement", "Build a Linked List From Scratch"),
     # overviews: one page across several modules (not a lesson, so not a ledger row; spec §2)
     ("overviews", "linear-structures", "linear-traversal", "The Line Underneath"),
+    ("overviews", "grid-structures", "ordering-search", "The Grid Underneath"),
     # specimens: kit fixtures, not lessons or overviews, so not ledger rows. The browser gate runs them so a
     # player is held to the lesson bar before any lesson depends on it (#22).
     ("specimens", "kit-players", "linear-traversal", "Kit Players"),

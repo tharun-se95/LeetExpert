@@ -51,21 +51,26 @@ function readPal(){
   EDGE.idle=h2r(cs.getPropertyValue('--e-idle'));EDGE.path=h2r(cs.getPropertyValue('--e-path'));EDGE.cur=h2r(cs.getPropertyValue('--e-cur'));
   probe.remove();
 }
-function styleOf(c){var P=PAL[c.k]||PAL.idle;return {f:P.f,i:P.i};}
+/* s (0 to 1) shades a cell by value, from the idle fill toward the accent: a pixel's brightness,
+   a tile's place in an image. Its ink is whichever of the two reads better on that exact fill. */
+function styleOf(c){
+  if(c.s!=null){var f=mixc(PAL.idle.f,PAL.acc.f,clamp(c.s));return {f:f,i:legible(f,PAL.idle.i,PAL.acc.i)};}
+  var P=PAL[c.k]||PAL.idle;return {f:P.f,i:P.i};
+}
 
 var mk=function(n,f){var a=[];for(var i=0;i<n;i++)a.push(f(i));return a;};
-var cp=function(a){return a.map(function(x){return {k:x.k,t:x.t};});};
+var cp=function(a){return a.map(function(x){return {k:x.k,t:x.t,s:x.s};});};
 function zeros(n){return mk(n,function(){return 0;});}
 
 /* ---------- Scene player ---------- */
 var SCENES=[];
 function Scene(def,root){
-  var self=this,frames=def.frames,n=frames.length,step=def.step,total=n*step,t=def.poster*step+step*.5,speed=1,playing=false,ctl=null,cells={},edgeEls={},last={};
+  var self=this,frames=def.frames,n=frames.length,step=def.step,total=n*step,t=def.poster*step+step*.5,speed=1,playing=false,ctl=null,cells={},edgeEls={},ovs={},last={};
   var stage=root.querySelector('.stage'),note=root.querySelector('.note'),stats=root.querySelector('.stats'),cnt=root.querySelector('.cnt'),head=root.querySelector('.head'),range=root.querySelector('input[type=range]'),ticks=root.querySelector('.ticks'),playB=root.querySelector('.pp'),spdB=root.querySelector('.spd');
   var groups=[];
   def.boards.forEach(function(b){
     if(!groups[b.g]){groups[b.g]=el('div','grp'+(b.wide?' wide':''));stage.appendChild(groups[b.g]);}
-    var w=el('div','bw'),lab=el('div','bl',b.label),brd=el('div','brd'+(b.tree?' tree':''));
+    var w=el('div','bw'),lab=el('div','bl',b.label),brd=el('div','brd'+(b.tree?' tree':'')+(b.strip?' strip':''));
     cells[b.id]=[];
     if(b.tree){
       var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','edges');brd.appendChild(svg);b.svg=svg;
@@ -77,6 +82,9 @@ function Scene(def,root){
     }else{
       brd.style.gridTemplateColumns='repeat('+b.cols+',var(--cs))';
       for(var i=0;i<b.rows*b.cols;i++){var c2=el('div','cell');brd.appendChild(c2);cells[b.id].push(c2);}
+      /* a rectangle over cells (a filter's window, a spiral's untouched bounds), made only for a board
+         a frame draws one on, so no other board's markup changes; it follows the cells' tween */
+      if(frames.some(function(f){return f.ov&&f.ov[b.id];})){var ov=el('div','ov');ov.setAttribute('aria-hidden','true');brd.appendChild(ov);ovs[b.id]=ov;brd.classList.add('has-ov');}
     }
     w.appendChild(lab);w.appendChild(brd);groups[b.g].appendChild(w);b.el=brd;
   });
@@ -109,11 +117,20 @@ function Scene(def,root){
           if(b.tree.directed){var len=Math.hypot(x2-x1,y2-y1)||1,back=d/2+3;x2-=(x2-x1)/len*back;y2-=(y2-y1)/len*back;}
           ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);});
       }else{
-        var cap=b.cap||56,gap=3,cs=Math.floor(Math.min(cap,(gw-8-(b.cols-1)*gap)/b.cols));cs=Math.max(cs,20);
+        /* a strip is memory: narrow cells in one row, a wider gap every 4 (one cache line), no text */
+        var cap=b.cap||(b.strip?18:56),gap=b.strip?2:3,extra=b.strip?Math.floor(b.cols/4)*3:0;
+        var cs=Math.floor(Math.min(cap,(gw-8-(b.cols-1)*gap-extra)/b.cols));cs=Math.max(cs,b.strip?5:20);
         b.el.style.setProperty('--cs',cs+'px');b.el.style.setProperty('--fs',Math.max(9,Math.round(cs*.4))+'px');
       }
     });
     last={};reserveText();render();
+  }
+  /* o: {r0,c0,r1,c1} in cells, both corners included; measured from the laid-out cells, so it
+     follows whatever size fit() gave them */
+  function ovRect(b,o){
+    var cs=cells[b.id],c0=cs[0],stepX=cs.length>1&&b.cols>1?cs[1].offsetLeft-c0.offsetLeft:c0.offsetWidth,
+        stepY=b.rows>1?cs[b.cols].offsetTop-c0.offsetTop:c0.offsetHeight,gapX=stepX-c0.offsetWidth,gapY=stepY-c0.offsetHeight;
+    return {x:c0.offsetLeft+o.c0*stepX-3,y:c0.offsetTop+o.r0*stepY-3,w:(o.c1-o.c0+1)*stepX-gapX+6,h:(o.r1-o.r0+1)*stepY-gapY+6};
   }
   function render(){
     var fi=Math.min(n-1,Math.floor(t/step+1e-9)),loc=(t-fi*step)/step,p=fi===0?1:ease(clamp(loc/.45));
@@ -124,13 +141,21 @@ function Scene(def,root){
         var sa=styleOf(a[i]),sb=styleOf(c[i]),fm=mixc(sa.f,sb.f,p),f=rgb(fm),ink=rgb(legible(fm,sa.i,sb.i));
         // the ink never blends: half-way between two states both fill and ink sat mid-tone and the
         // letter nearly vanished (the browser gate measured 1.47:1), so it takes whichever reads better
-        var changed=a[i].k!==c[i].k||a[i].t!==c[i].t;
+        var changed=a[i].k!==c[i].k||a[i].t!==c[i].t||a[i].s!==c[i].s;
         var sc=changed&&p<1?1+.12*Math.sin(Math.PI*p):1,tx=(p<.3?a[i].t:c[i].t)||'';
         var key=f+ink+sc.toFixed(3)+tx,e=els[i],id=b.id+i;
         if(last[id]===key)continue;last[id]=key;
         e.style.background=f;e.style.color=ink;e.style.transform=sc===1?'':'scale('+sc.toFixed(3)+')';
         if(e.textContent!==tx)e.textContent=tx;
       }
+      var o=ovs[b.id];
+      if(o){var oc=cur.ov&&cur.ov[b.id],op=prev.ov&&prev.ov[b.id];
+        if(oc){var r1=ovRect(b,oc),r0=op?ovRect(b,op):r1,q=op?p:1;
+          o.className='ov'+(oc.cls==='bounds'?' bounds':'');
+          // moved by transform from a fixed box: a changing left/top is a layout shift at every frame
+          o.style.transform='translate('+(r0.x+(r1.x-r0.x)*q).toFixed(1)+'px,'+(r0.y+(r1.y-r0.y)*q).toFixed(1)+'px)';
+          o.style.width=(r0.w+(r1.w-r0.w)*q)+'px';o.style.height=(r0.h+(r1.h-r0.h)*q)+'px';o.style.opacity=op?1:p;}
+        else o.style.opacity=0;}
       if(b.tree){
         var ea=prev.e&&prev.e[b.id],ec=cur.e&&cur.e[b.id];
         edgeEls[b.id].forEach(function(ln,i){

@@ -1,0 +1,33 @@
+/* the overview: one block per system, two per section (the Line Underneath's layout) */
+.sys{padding-block:30px 8px;border-top:1px dashed var(--hair2);margin-top:26px}
+.sys:first-of-type{border-top:0;margin-top:8px}
+.sys-kick{display:flex;align-items:center;gap:10px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.sys-n{display:grid;place-items:center;width:22px;height:22px;border-radius:7px;font:700 12px 'Space Mono',monospace;color:var(--fg);border:1px solid color-mix(in srgb,var(--fam) 45%,var(--hair2));background:color-mix(in srgb,var(--fam) 10%,var(--card))}
+.sys h3{font-size:clamp(1.2rem,2.2vw,1.55rem);margin:10px 0 0;letter-spacing:-.01em}
+.sys .duo{margin-top:16px}
+.sys-when{color:var(--mut)} .sys-when b{color:var(--fg);font-weight:500}
+.seen{display:flex;flex-wrap:wrap;gap:6px}
+.seen span{font:11.5px 'JetBrains Mono',monospace;padding:3px 9px;border:1px solid var(--hair2);border-radius:99px;background:var(--card);color:var(--mut)}
+.duo-text .factstrip{margin:4px 0}
+.duo-text .code,.duo-text .callout{max-width:none;margin:0}
+/* the index is a matrix: 2 rows of 4 tiles, one reading its own offset */
+.gi-index{padding:16px}
+.gi-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.gi-tile{display:flex;flex-direction:column;gap:8px;min-height:112px;padding:10px;border-radius:10px;border:1px solid var(--hair2);background:var(--card);text-decoration:none;transition:background-color .35s,border-color .35s}
+.gi-tile b{font:700 12.5px/1.3 'Space Mono',monospace;color:var(--fg)}
+.gi-rc{font:500 11px 'JetBrains Mono',monospace;color:var(--mut)}
+.gi-ic{font-size:20px;color:var(--fam);transition:color .35s}
+/* the lit tile: the "current" state's fill and ink */
+.gi-tile[data-on="1"]{background:var(--k-cur);border-color:var(--k-cur)}
+.gi-tile[data-on="1"] b,.gi-tile[data-on="1"] .gi-rc,.gi-tile[data-on="1"] .gi-ic{color:var(--k-cur-ink)}
+@media (max-width:560px){.gi-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.gi-tile{min-height:0}}
+/* each system's heading with its spot drawing beside it, as The Grid Underneath's are */
+.sys-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.sys-head .vig{width:210px;flex:none;color:var(--mut)}
+.vig .gl{font:700 26px 'Space Mono',monospace;fill:var(--fg);text-anchor:middle}
+@media (max-width:760px){.sys-head .vig{display:none}}
+.gi-read{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;font:12px 'JetBrains Mono',monospace;color:var(--mut)}
+.gi-read b{color:var(--fg);font-weight:500}
+.practice-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:22px;font:12.5px 'JetBrains Mono',monospace;color:var(--mut)}
+.practice-row .pill{padding:5px 11px;border:1px solid var(--hair2);border-radius:99px;background:var(--card);color:var(--fg)}
+@media (prefers-reduced-motion:reduce){.gi-tile,.gi-ic{transition:none}}
