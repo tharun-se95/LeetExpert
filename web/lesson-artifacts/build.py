@@ -16,6 +16,7 @@ import re, json, os, shutil, subprocess, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.join(ROOT, "kit")
+MOTION_JS = os.path.join(ROOT, "..", "node_modules", "motion", "dist", "motion.js")
 sys.path.insert(0, ROOT)
 import shared
 
@@ -146,13 +147,18 @@ if(document.fonts&&document.fonts.load)Promise.all(['400 16px "Space Grotesk"','
 <style>html.fl body{{visibility:hidden}}</style>
 <style>{css}</style></head><body>
 {SHELL_TOP.replace("@@ICONS@@", shared.ICONS)}{body}</main>
-<script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script src="../vendor/motion.js"></script>
 <script>
 {js}
 </script></body></html>'''
     out = os.path.join(ROOT, "dist", module, slug + ".html")
     # the page's faces sit beside it, one level up (every page is dist/<module>/<slug>.html)
     shutil.copytree(os.path.join(ROOT, "fonts"), os.path.join(ROOT, "dist", "fonts"), dirs_exist_ok=True)
+    # motion.js is served beside the page too, never from a CDN: the reveal is capped at 2.5 s, so a slow CDN
+    # showed the page before its scenes were built and the hero then shifted the layout (#42). It is the app's
+    # own installed copy, so the artifacts and the app run one version and no copy lives in git.
+    os.makedirs(os.path.join(ROOT, "dist", "vendor"), exist_ok=True)
+    shutil.copyfile(MOTION_JS, os.path.join(ROOT, "dist", "vendor", "motion.js"))
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         f.write(html)
