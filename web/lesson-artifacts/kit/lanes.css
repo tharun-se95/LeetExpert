@@ -1,5 +1,6 @@
-/* kit/stacks.css: the lane view (kit/stacks.js); the chrome around it is kit/player.css.
-   Items are the list player's soft boxes; a lane is a quiet outline that says which ends are open. */
+/* kit/lanes.css: the lane view (kit/lanes.js); the chrome around it is kit/player.css.
+   Items are the list player's soft boxes; a lane is a quiet outline that says which ends are open.
+   Tones are strokes, never fills: an item's text keeps the body ink, so no state costs contrast. */
 .lp-stage .ln-svg{width:auto;height:auto;max-height:none;margin:0 auto}
 .ln-wall{fill:none;stroke:color-mix(in srgb,var(--fg) 30%,transparent);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .ln-lane.hi .ln-wall{stroke:var(--fam);stroke-width:2}
@@ -15,9 +16,15 @@
 /* done with: the box empties to a dashed outline, the text keeps an AA ink */
 .ln-item.dim .ln-box{fill:transparent;stroke-dasharray:4 4;stroke:color-mix(in srgb,var(--fg) 40%,transparent)}
 .ln-item.dim .ln-val{fill:var(--mut)}
+.ln-item.cur .ln-box{stroke:var(--o-ink);stroke-width:1.8}
 .ln-item.good .ln-box{stroke:var(--g-ink);stroke-width:1.8}
 .ln-item.bad .ln-box{stroke:var(--r-ink);stroke-width:1.8}
 /* the family colour is a 3:1 UI ink: the name takes --mark (AA), its stem keeps the family */
 .ln-mark text{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;fill:var(--mk)}
 .ln-mark line{stroke:var(--fam);stroke-width:1.2;stroke-linecap:round;opacity:.7}
 .ln-mark.hi text{font-weight:700;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--fam) 70%,transparent))}
+/* a range over a row: a bracket open toward the cells, named above it */
+.ln-span path,.ln-span line{fill:none;stroke:var(--fam);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.ln-span text{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;fill:var(--mk)}
+.ln-span.hi path,.ln-span.hi line{stroke-width:2.2;opacity:1}
+.ln-span.hi text{font-weight:700}

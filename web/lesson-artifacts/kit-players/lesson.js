@@ -1,4 +1,4 @@
-/* kit-players: a specimen of every shape kit/stacks.js draws. Not a lesson: a fixture the browser
+/* kit-players: a specimen of every shape kit/lanes.js draws. Not a lesson: a fixture the browser
    gate runs so the lane player is held to the lesson bar before a lesson depends on it. */
 function recorder(M){var steps=[];return {steps:steps,rec:function(note,o){steps.push(M.snap(note,o));}};}
 var sizeOk=function(lane){return function(s){var l=s.lanes.filter(function(x){return x.id===lane;})[0],f=s.fields.filter(function(x){return x[0]==='size';})[0];
@@ -65,8 +65,58 @@ function monoSteps(){
   return R.steps;
 }
 
+function reverseSteps(){
+  var A=[1,2,3,4,5,6,7],M=new Lanes([{id:'a',kind:'row',label:'array',idx:true}]),R=recorder(M),l=0,r=A.length-1;
+  A.forEach(function(v){M.push('a',v);});
+  function at(){M.mark('a','l',l<=r?l:null);M.mark('a','r',l<=r?r:null);}
+  at();R.rec('Reverse in place: <code>l</code> starts at the first slot and <code>r</code> at the last.',{hi:['l','r'],done:true});
+  while(l<r){var x=M.lane('a').items[l],y=M.lane('a').items[r];M.swap('a',l,r);
+    R.rec('Swap slots '+l+' and '+r+': '+x.v+' and '+y.v+' trade places.',{hi:[laneHi(x),laneHi(y),'l','r']});
+    l++;r--;at();R.rec(l<r?'Step both inward. They have not met, so there is more to swap.':(l===r?'<code>l</code> and <code>r</code> meet on the middle slot, which stays where it is. Done.':'<code>l</code> has passed <code>r</code>. Every pair is swapped. Done.'),{hi:['l','r'],done:l>=r});}
+  return R.steps;
+}
+function windowSteps(){
+  var A=[2,1,5,1,3,2],K=3,M=new Lanes([{id:'a',kind:'row',label:'array',idx:true}],{fields:function(){return [['sum',sum],['best',best]];}}),R=recorder(M),sum=0,best=0,cells=[];
+  A.forEach(function(v){cells.push(M.push('a',v));});
+  M.span('a','window',0,-1);R.rec('Find the largest sum of '+K+' neighbours. The window starts empty.',{hi:['window'],done:true});
+  for(var r=0;r<A.length;r++){
+    sum+=A[r];var lo=Math.max(0,r-K+1);
+    if(r>=K){sum-=A[r-K];M.tone(cells[r-K],'dim');}
+    M.span('a','window',lo,r);M.tone(cells[r],'cur');
+    if(r>=K-1)best=Math.max(best,sum);
+    R.rec(r<K?'Add '+A[r]+'. The window holds '+(r+1)+' of '+K+'.':'Add '+A[r]+' and drop '+A[r-K]+': the window slides one slot, and its sum changes by two values, not '+K+'.',{hi:['window','sum','best'].concat([laneHi(cells[r])])});
+    M.tone(cells[r],null);
+  }
+  var bf=0;for(var i=0;i+K<=A.length;i++){var t=0;for(var j=i;j<i+K;j++)t+=A[j];bf=Math.max(bf,t);}
+  if(bf!==best)throw new Error('window sum disagrees with brute force');
+  R.rec('Done: the largest window sum is '+best+'.',{hi:['best'],done:true});
+  return R.steps;
+}
+function resizeSteps(){
+  var M=new Lanes([{id:'old',kind:'row',label:'array, capacity 2',cap:2},{id:'big',kind:'row',label:'new array, capacity 4',cap:4}],{fields:function(){return [['size',size],['capacity',cap]];}}),R=recorder(M),size=0,cap=2;
+  R.rec('A dynamic array with room for 2.',{done:true});
+  [7,3].forEach(function(v){var it=M.put('old',size,v);size++;R.rec('Append '+v+' into slot '+(size-1)+'.',{hi:[laneHi(it),'size'],done:true});});
+  R.rec('Append 9, but all 2 slots are full. Allocate an array twice the size.',{hi:['lane:big','capacity']});cap=4;
+  for(var k=0;k<2;k++){var c=M.copy('old',k,'big',k);R.rec('Copy slot '+k+', '+c.v+', into the new array.',{hi:[laneHi(c)]});}
+  M.lane('old').items.forEach(function(x){if(x)M.tone(x,'dim');});
+  var n=M.put('big',size,9);size++;R.rec('Write 9 into slot 2. The old array is no longer used. The copy cost 2 writes; the next append needs no copy.',{hi:[laneHi(n),'size','capacity'],done:true});
+  return R.steps;
+}
+function countSteps(){
+  var S='anagram',keys=S.split('').filter(function(c,i,a){return a.indexOf(c)===i;}).sort(),
+      M=new Lanes([{id:'s',kind:'row',label:'string',idx:true,w:36},{id:'n',kind:'row',label:'count per letter',cap:keys.length,keys:keys,w:36}]),R=recorder(M),n={},cells=[];
+  S.split('').forEach(function(c){cells.push(M.push('s',c));});
+  keys.forEach(function(k,i){n[k]=0;M.put('n',i,0);});
+  R.rec('Count each letter of "'+S+'" into one slot per letter.',{done:true});
+  S.split('').forEach(function(c,i){n[c]++;var slot=keys.indexOf(c),it=M.lane('n').items[slot];M.set(it,n[c]);M.mark('s','i',i);M.tone(cells[i],'cur');
+    R.rec('Read '+c+' at index '+i+'. Its count becomes '+n[c]+'.',{hi:['i',laneHi(it)]});M.tone(cells[i],'dim');});
+  M.mark('s','i',null);R.rec('Every letter read once. Two strings are anagrams exactly when these counts match.',{done:true});
+  return R.steps;
+}
+
 mountLesson();
 new LanePlayer($('#stackw .lvhost'),{id:'stk',loop:true,autoplay:true,inv:[['size matches','size equals the number of items',sizeOk('s')]]}).load(stackSteps());
 mountLaneTabs($('#qtabs'),[{name:'Queue from two stacks',steps:twoStackSteps},{name:'Deque',steps:dequeSteps},{name:'Ring buffer',steps:ringSteps}],{id:'q'});
 new LanePlayer($('#frames .lvhost'),{id:'fr',loop:true,autoplay:true}).load(frameSteps());
 new LanePlayer($('#mono .lvhost'),{id:'mono',loop:true,autoplay:true}).load(monoSteps());
+mountLaneTabs($('#atabs'),[{name:'Reverse in place',steps:reverseSteps},{name:'Sliding window',steps:windowSteps},{name:'Resize',steps:resizeSteps},{name:'Count letters',steps:countSteps}],{id:'a'});

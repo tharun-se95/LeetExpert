@@ -109,8 +109,8 @@ hold the bar. Before any batch:
    invariants panel) moves into the kit, and the same contract is built for arrays/strings,
    grids, trees, graphs, stacks/queues, heaps and tables, so a module's lessons reuse one player.
    The contract is `StepPlayer` in `kit/player.js` (#22): the chrome and clock, with a view per
-   structure. `ListPlayer` and `LanePlayer` (`kit/stacks.js`: stacks, queues, deques, ring buffers,
-   call frames, several lanes at once) are views on it; the `kit-players` specimen holds each new
+   structure. `ListPlayer` and `LanePlayer` (`kit/lanes.js`: arrays and strings with named indices
+   and ranges, stacks, queues, deques, ring buffers, call frames, several lanes at once) are views on it; the `kit-players` specimen holds each new
    player to the browser gate before a lesson depends on it.
 3. **Family colour for every module.** `big-o`, `getting-started` and `math-for-dsa` have no
    family in `moduleFamily`; the kit needs one to paint. Decision D4: new family hues, designed in the app.

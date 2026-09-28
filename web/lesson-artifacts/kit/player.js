@@ -1,4 +1,4 @@
-/* kit/player.js: the step player every structure player shares (lists.js, stacks.js). It owns the
+/* kit/player.js: the step player every structure player shares (lists.js, lanes.js). It owns the
    chrome and the clock: a stage, one quiet line of fields and invariants, a caption, and a slim step
    track; soft motion between snapshots, a loop while on screen, nothing moving under reduced motion.
    What a snapshot looks like and how it is drawn belongs to a view:
@@ -82,14 +82,22 @@ function StepPlayer(host,o,view){
   if(o.loop&&'IntersectionObserver' in window){new IntersectionObserver(function(es){es.forEach(function(e){visible=e.isIntersecting;
     if(visible&&o.autoplay&&!self.touched&&!playing&&!reduce)play();});},{threshold:.35}).observe(host);}
   host.addEventListener('pointerdown',function(e){if(e.target.closest('.lp-bar'))self.touched=true;});
-  /* reserve the caption's height for the longest caption given, so a wrap never moves the controls */
-  var reserveNotes=[];
-  function reserve(){var probe=note.cloneNode(false);probe.removeAttribute('aria-live');probe.setAttribute('aria-hidden','true');
-    probe.style.cssText='position:absolute;visibility:hidden;left:0;top:0;min-height:0;width:'+note.clientWidth+'px';note.parentNode.appendChild(probe);
-    var h=0;reserveNotes.concat(steps.map(function(x){return x.note;})).forEach(function(t){probe.innerHTML=t;h=Math.max(h,probe.offsetHeight);});
-    probe.remove();if(h)note.style.minHeight=h+'px';}
+  /* reserve the caption's height for the longest caption given, and the fields line's for the
+     fullest one, so neither a wrap nor a tab whose walkthrough has no fields moves the controls */
+  var reserveNotes=[],reserveSteps=[];
+  function probeOf(n){var p=n.cloneNode(false);p.removeAttribute('aria-live');p.setAttribute('aria-hidden','true');
+    p.style.cssText='position:absolute;visibility:hidden;left:0;top:0;min-height:0;width:'+n.clientWidth+'px';n.parentNode.appendChild(p);return p;}
+  function reserve(){
+    var probe=probeOf(note),h=0;
+    reserveNotes.concat(steps.map(function(x){return x.note;})).forEach(function(t){probe.innerHTML=t;h=Math.max(h,probe.offsetHeight);});
+    probe.remove();if(h)note.style.minHeight=h+'px';
+    var meta=fields.parentNode,mp=probeOf(meta),mh=0,none=function(){return '';};
+    mp.innerHTML='<span class="lp-fields"></span>'+inv.outerHTML.replace(' aria-label="Invariants"','');
+    reserveSteps.concat(steps).forEach(function(x){mp.firstChild.innerHTML=view.fields(x,none);mh=Math.max(mh,mp.offsetHeight);});
+    mp.remove();if(mh)meta.style.minHeight=mh+'px';}
   if('ResizeObserver' in window)new ResizeObserver(function(){reserve();}).observe(host);
-  this.reserve=function(notes){reserveNotes=notes;reserve();};
+  /* notes: captions the player may show later; all: the snapshots behind them, when known */
+  this.reserve=function(notes,all){reserveNotes=notes;reserveSteps=all||[];reserve();};
   this.load=function(list){stop();steps=list;shown=null;shownL={};if(!sized&&view.sizeTo)view.sizeTo(list);buildTrack();show(0,false);reserve();centre();
     if(o.autoplay&&visible&&!reduce&&!self.touched&&o.loop)play();};
   /* the playground: append one operation and play it through once */
@@ -108,7 +116,7 @@ function mountPlayerTabs(w,examples,make,o){
   examples.forEach(function(e,k){var b=el('button','tab',e.name);b.type='button';b.addEventListener('click',function(){load(k);});tabs.appendChild(b);});
   var every=[].concat.apply([],examples.map(function(e){return e.steps();}));
   player.sizeTo(every);
-  player.reserve(every.map(function(x){return x.note;}));
+  player.reserve(every.map(function(x){return x.note;}),every);
   onRepaint(player.redraw);load(0);
   return player;
 }
