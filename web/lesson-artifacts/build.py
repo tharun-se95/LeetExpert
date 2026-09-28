@@ -159,23 +159,38 @@ def split_section(inner):
     """One section's content (after its h2) as beats: each visual beside the prose that introduces
     it. A visual joins the text run just before it; visuals that open a section, before any prose,
     join the first text run and are marked .lead, so a stacked (narrow) page still shows them first.
-    Reading order within a beat is unchanged: the text, then what it points at."""
+    Reading order within a beat is unchanged: the text, then what it points at.
+
+    The beats and loose prose between two full-width rows share one .flow: on a wide page kit.js
+    lays its text out as one unbroken column and hangs each scene beside its own paragraph, so a
+    short paragraph beside a tall scene no longer leaves a gap under it (owner, 2026-09-28).
+    A visual with no prose anywhere around it spans the page, like a full row."""
     parts = [(_kind(a), inner[s:e]) for s, e, _, a in _top_level(inner)]
-    rows, lead, text, vis = [], [], [], []
+    rows, flow, lead, text, vis = [], [], [], [], []
+
+    def close():
+        nonlocal flow
+        if flow:
+            rows.append('<div class="flow">' + "".join(flow) + "</div>")
+        flow = []
 
     def flush():
         nonlocal lead, text, vis
         scene = [f'<div class="lead">{h}</div>' for h in lead] + vis
         if text and scene:
-            rows.append('<div class="duo beat"><div class="duo-text">' + "".join(text) +
+            flow.append('<div class="duo beat"><div class="duo-text">' + "".join(text) +
                         '</div><div class="duo-scene">' + "".join(scene) + "</div></div>")
-        else:
-            rows.extend(text + scene)
+        elif text:
+            flow.extend(text)
+        elif scene:
+            close()
+            rows.extend(lead + vis)
         lead, text, vis = [], [], []
 
     for kind, h in parts:
         if kind == "full":
             flush()
+            close()
             rows.append(h)
         elif kind == "vis":
             if text:
@@ -187,6 +202,7 @@ def split_section(inner):
                 flush()
             text.append(h)
     flush()
+    close()
     return "".join(rows)
 
 

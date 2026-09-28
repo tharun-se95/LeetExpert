@@ -178,14 +178,35 @@ function wirePage(){
   var links=[].slice.call(document.querySelectorAll('.toc a')),secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
   var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var i=secs.indexOf(e.target);links.forEach(function(a){a.removeAttribute('aria-current');});if(i>=0)links[i].setAttribute('aria-current','true');}});},{rootMargin:'-30% 0px -60% 0px'}):null;
   if(io)secs.forEach(function(s){if(s)io.observe(s);});
-  /* the split layout (#63): the contents rail appears once the hero is out of view, and a scene too
-     tall to stick whole scrolls with its text instead */
+  /* the split layout (#63): the contents rail appears once the hero is out of view, and each flow
+     hangs its scenes beside the prose (kit.css "the flow") */
   var split=$('.page.split');
   if(split){
     var toc=$('.split .toc'),hero=$('.hero2');
     if(toc&&hero&&io){toc.classList.add('auto');new IntersectionObserver(function(es){toc.classList.toggle('on',!es[0].isIntersecting);}).observe(hero);}
-    var fit=function(){[].forEach.call(document.querySelectorAll('.split .beat .duo-scene'),function(sc){sc.classList.toggle('tall',sc.offsetHeight>innerHeight-96);});};
-    fit();addEventListener('resize',fit);
+    var flows=[].slice.call(split.querySelectorAll('.flow')),wide=matchMedia('(min-width:1101px)'),GAP=18,REACH=72,queued=0;
+    /* each scene wants its own paragraph's top; it may not start before the scene above ends, and it
+       gives up as much of that as keeps the last scene from ending below the prose, but always
+       reaches REACH px past its paragraph's top, so it never parts from the words that introduce it (a backward pass
+       for the latest top each can take, then a forward one). A flow grows only when its scenes
+       together are taller than its prose. */
+    var lay=function(){
+      queued=0;split.classList.toggle('flowing',wide.matches);
+      flows.forEach(function(f){
+        var scs=[].slice.call(f.querySelectorAll(':scope>.beat>.duo-scene'));f.style.minHeight='';
+        if(!wide.matches){scs.forEach(function(sc){sc.style.top='';});return;}
+        var top=f.getBoundingClientRect().top,it=scs.map(function(sc){return {sc:sc,a:sc.previousElementSibling.getBoundingClientRect().top-top,h:sc.offsetHeight};});
+        var end=Math.max(f.offsetHeight,it.reduce(function(s,x){return s+x.h+GAP;},-GAP)),late=end,prev=0;
+        for(var i=it.length-1;i>=0;i--){it[i].late=Math.max(late-it[i].h,it[i].a+REACH-it[i].h);late=it[i].late-GAP;}
+        it.forEach(function(x){var t=Math.max(prev,Math.min(x.a,x.late));x.sc.style.top=t+'px';prev=t+x.h+GAP;});
+        if(it.length)f.style.minHeight=(prev-GAP)+'px';
+      });
+    };
+    var again=function(){if(!queued)queued=requestAnimationFrame(lay);};
+    lay();wide.addEventListener('change',again);addEventListener('resize',again);
+    /* prose re-wraps when a face arrives or a reveal opens; a scene changes height when a widget does.
+       Watch those, never the flow itself, whose min-height lay() sets. */
+    if('ResizeObserver' in window){var ro=new ResizeObserver(again);flows.forEach(function(f){[].forEach.call(f.querySelectorAll(':scope>:not(.beat),:scope>.beat>*'),function(el){ro.observe(el);});});}
   }
   var mainEl=$('main'),bpy=$('#lang-py'),bts=$('#lang-ts');
   function setLang(l){mainEl.dataset.code=l;bpy.setAttribute('aria-pressed',l==='py');bts.setAttribute('aria-pressed',l==='ts');store('lesson-lang',l);}

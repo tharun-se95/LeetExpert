@@ -250,8 +250,14 @@ html,body{overflow-x:clip}
 .split .beat:last-child{margin-bottom:0}
 .split .beat .duo-scene{display:flex;flex-direction:column;gap:18px}
 .split .beat .duo-scene>*,.split .beat .lead>*{margin:0}
-/* a scene taller than the window would stick with its foot out of reach: kit.js marks it and it scrolls */
-.split .beat .duo-scene.tall{position:static}
+/* the flow (#63, owner 2026-09-28: no gap under a short paragraph beside a tall scene). kit.js sets
+   .flowing on a wide page: a .flow's prose is one unbroken column and each scene hangs at its own
+   paragraph's top, pushed down past the scene above, pulled up only as far as keeps it from outrunning
+   the prose. Without the script the beats keep the paired rows above. */
+.split.flowing .flow{position:relative}
+.split.flowing .flow>:not(.beat),.split.flowing .flow .duo-text{width:calc((100% - 36px) * 5 / 12)}
+.split.flowing .flow .beat{display:block;margin:0 0 12px}
+.split.flowing .flow .duo-scene{position:absolute;right:0;top:0;width:calc((100% - 36px) * 7 / 12)}
 .split .toc{position:fixed;z-index:15;top:50%;left:max(12px,calc((100vw - 1180px) / 2 - 72px));transform:translateY(-50%);
   padding:8px;gap:2px;background:var(--card);border:1px solid var(--hair2);border-radius:14px;box-shadow:var(--shadow-elevation);
   transition:opacity .25s,transform .25s,visibility .25s}
