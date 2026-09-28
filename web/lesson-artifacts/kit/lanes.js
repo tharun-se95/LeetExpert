@@ -14,7 +14,8 @@ var laneUid=0;
    draws none of them does not ship them. A kind may supply: fixed (written by slot), init(l,d),
    mark(l,name,slot), snap(l,out), and for the view measure(m,l), block(m), box(m,x,y), slotAt(b,k),
    svg(id,b,l,s), layout(l,b,out), under/over(L,fromL,t,s) (drawing layers below and above the items),
-   focus(s,L,first,then), rest(L,first) and describe(l). */
+   focus(s,L,first,then), rest(L,first), describe(l), and rowMarks (its slots sit in a row, so the
+   generic named indices, which glide, are drawn under them). */
 var LANE_KINDS={};
 function laneKind(k){return LANE_KINDS[k]||null;}
 function laneEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
@@ -175,7 +176,7 @@ function LanePlayer(host,o){
     ensure(s);var items={},marks={},spans={},enter={},extra={},bx=boxesFor(s);
     s.lanes.forEach(function(l){var b=bx[l.id];if(!b)return;
       l.items.forEach(function(it,k){if(!it)return;var c=slotAt(b,k);items[it.id]={x:c.x,y:c.y,w:b.cw,h:b.ch,kind:b.kind};});
-      var K=laneKind(l.kind);if(K){if(K.layout)K.layout(l,b,extra);return;}
+      var K=laneKind(l.kind);if(K){if(K.layout)K.layout(l,b,extra);if(!K.rowMarks)return;}
       /* names on one slot share it: one under another below a row's cell, one over another beside a column's */
       var at={};Object.keys(l.marks).sort().forEach(function(n){var k=l.marks[n];(at[k]=at[k]||[]).push(n);});
       Object.keys(at).forEach(function(k){var c=slotAt(b,+k),names=at[k];

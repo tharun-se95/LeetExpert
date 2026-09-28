@@ -23,6 +23,9 @@ function heapHolds(l){
 }
 
 LANE_KINDS.heap={
+  /* i, l, r are named under the array cells by the generic row marks, so they glide between steps
+     (drawn here as chrome, they jumped: found in review) */
+  rowMarks:true,
   init:function(l,d){if(d.cmp&&d.cmp!=='min'&&d.cmp!=='max')throw new Error(l.id+": cmp is 'min' or 'max', not "+d.cmp);l.cmp=d.cmp||'min';},
   span:function(l){throw new Error(l.id+' is a heap: name a slot with mark(), not span()');},
   snap:function(l,out){out.cmp=l.cmp;},
@@ -63,12 +66,6 @@ LANE_KINDS.heap={
     var K=LANE_KINDS.heap,n=l.items.length;
     for(var k=0;k<n;k++){var c=K.slotAt(b,k);
       h+='<text class="ln-idx" x="'+c.x+'" y="'+(b.arrTop-b.ch/2-7)+'" text-anchor="middle">'+k+'</text>';}
-    /* a named slot sits below the array cell it names, exactly as a plain row's marks do */
-    var at={};Object.keys(l.marks).sort().forEach(function(nm){var kk=l.marks[nm];(at[kk]=at[kk]||[]).push(nm);});
-    Object.keys(at).forEach(function(kk){var c=K.slotAt(b,+kk),names=at[kk];
-      names.forEach(function(nm,j){var hi=s.hi.indexOf(nm)>=0?' hi':'';
-        h+='<g class="ln-mark hp-mark'+hi+'"><line x1="'+c.x+'" x2="'+c.x+'" y1="'+(c.y+b.ch/2+6)+'" y2="'+(c.y+b.ch/2+14)+'"/>'+
-          '<text x="'+c.x+'" y="'+(c.y+b.ch/2+29+j*15)+'" text-anchor="middle">'+laneEsc(nm)+'</text></g>';});});
     return h+'</g>';
   },
   /* node k's position: above the leaf span its own subtree owns, the derivation
