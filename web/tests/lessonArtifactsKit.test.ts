@@ -180,6 +180,128 @@ describe("lesson artifacts kit: the lane model", () => {
   });
 });
 
+/* grids.js registers the grid lane kind on lanes.js's seam, so the two load together, in build order */
+type GridLane = Lane & { rows: number; cols: number; rkeys: string[] | null; ckeys: string[] | null;
+  axes: Record<string, { ax: "r" | "c"; i: number }>; rects: Record<string, { r0: number; c0: number; r1: number; c1: number }>; paths: Record<string, number[]> };
+interface GridModel extends Model {
+  at(id: string, r: number, c: number): number;
+  cell(id: string, r: number, c: number): { id: number; v: unknown } | null;
+  fill(id: string, rows: unknown[][]): void;
+  axis(id: string, name: string, ax: "r" | "c" | null, i?: number): void;
+  rect(id: string, name: string, r0: number | null, c0?: number, r1?: number, c1?: number): void;
+  path(id: string, name: string, slots: number[] | null): void;
+  tone(it: object, t: string | null): object;
+}
+function gridKit(): { Lanes: new (defs: object[], o?: object) => GridModel } {
+  const ctx: Record<string, unknown> = {};
+  const src = ["lanes.js", "grids.js"].map((f) => readFileSync(join(ARTIFACTS, "kit", f), "utf8")).join("\n");
+  runInNewContext(src + "\nthis.Lanes=Lanes;", ctx);
+  return ctx as unknown as { Lanes: new (defs: object[], o?: object) => GridModel };
+}
+const grid = (s: Snap, id: string) => s.lanes.find((l) => l.id === id)! as GridLane;
+
+describe("lesson artifacts kit: the grid lane (grids.js)", () => {
+  it("a grid is row-major slots: at(r, c) is r * cols + c, and fill puts every value there", () => {
+    const { Lanes } = gridKit();
+    const M = new Lanes([{ id: "g", kind: "grid", rows: 3, cols: 4 }]);
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) expect(M.at("g", r, c)).toBe(r * 4 + c);
+    expect(() => M.at("g", 3, 0)).toThrow(/out of range/);
+    expect(() => M.at("g", 0, 4)).toThrow(/out of range/);
+    const rows = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]];
+    M.fill("g", rows);
+    const s = M.snap("filled"), g = grid(s, "g");
+    expect(g.rows).toBe(3);
+    expect(g.cols).toBe(4);
+    expect(g.items.map((x) => (x ? x.v : null))).toEqual(rows.flat().map(String));
+    expect(M.cell("g", 2, 1)!.v).toBe(10);
+    expect(() => M.fill("g", [[1, 2]])).toThrow(/3 rows of 4/);
+  });
+
+  it("matches a plain 2D array over random puts, clears, swaps and four-way cycles, keeping identity", () => {
+    const { Lanes } = gridKit();
+    let seed = 20260928;
+    const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0), seed / 4294967296);
+    const R = 4, C = 5;
+    for (let t = 0; t < 150; t++) {
+      const M = new Lanes([{ id: "g", kind: "grid", rows: R, cols: C }]);
+      const A: (string | null)[][] = Array.from({ length: R }, () => Array(C).fill(null));
+      const ids: (number | null)[][] = Array.from({ length: R }, () => Array(C).fill(null));
+      const pick = () => [Math.floor(rnd() * R), Math.floor(rnd() * C)] as const;
+      for (let k = 0; k < 30; k++) {
+        const x = rnd();
+        if (x < 0.4) { const [r, c] = pick(), v = String(Math.floor(rnd() * 99)); ids[r][c] = M.put("g", M.at("g", r, c), v).id; A[r][c] = v; }
+        else if (x < 0.55) { const [r, c] = pick(); M.clear("g", M.at("g", r, c)); A[r][c] = null; ids[r][c] = null; }
+        else if (x < 0.8) {
+          const [r1, c1] = pick(), [r2, c2] = pick();
+          M.swap("g", M.at("g", r1, c1), M.at("g", r2, c2));
+          [A[r1][c1], A[r2][c2]] = [A[r2][c2], A[r1][c1]];
+          [ids[r1][c1], ids[r2][c2]] = [ids[r2][c2], ids[r1][c1]];
+        } else {
+          /* rotate image's step: four cells a quarter-turn apart trade places by three swaps */
+          const i = Math.floor(rnd() * (R - 1)), n = R - 1;
+          const ring = [[0, i], [i, n], [n, n - i], [n - i, 0]].map(([r, c]) => M.at("g", r, c));
+          for (let j = 3; j > 0; j--) M.swap("g", ring[j], ring[j - 1]);
+          const cs = [[0, i], [i, n], [n, n - i], [n - i, 0]];
+          const va = cs.map(([r, c]) => A[r][c]), ia = cs.map(([r, c]) => ids[r][c]);
+          cs.forEach(([r, c], j) => { A[r][c] = va[(j + 3) % 4]; ids[r][c] = ia[(j + 3) % 4]; });
+        }
+      }
+      const g = grid(M.snap("t"), "g");
+      expect(g.items.map((x) => (x ? x.v : null))).toEqual(A.flat());
+      expect(g.items.map((x) => (x ? x.id : null))).toEqual(ids.flat());
+    }
+  });
+
+  it("axes, rectangles and trails are snapshotted, removable, and isolated from later moves", () => {
+    const { Lanes } = gridKit();
+    const M = new Lanes([{ id: "g", kind: "grid", rows: 3, cols: 3, rkeys: ["a", "b", "c"] }]);
+    M.axis("g", "top", "r", 0); M.axis("g", "left", "c", 0);
+    M.rect("g", "bounds", 0, 0, 2, 2);
+    M.path("g", "order", [0, 1, 2]);
+    const a = M.snap("a");
+    M.axis("g", "top", "r", 1); M.rect("g", "bounds", 1, 0, 2, 1);
+    const trail = [0, 1, 2, 5]; M.path("g", "order", trail); trail.push(8);
+    const b = M.snap("b");
+    M.axis("g", "left", null); M.rect("g", "bounds", null); M.path("g", "order", null);
+    const c = M.snap("c");
+    expect(grid(a, "g").axes).toEqual({ top: { ax: "r", i: 0 }, left: { ax: "c", i: 0 } });
+    expect(grid(a, "g").rects).toEqual({ bounds: { r0: 0, c0: 0, r1: 2, c1: 2 } });
+    expect(grid(a, "g").paths).toEqual({ order: [0, 1, 2] });
+    expect(grid(b, "g").axes.top).toEqual({ ax: "r", i: 1 });
+    expect(grid(b, "g").rects.bounds).toEqual({ r0: 1, c0: 0, r1: 2, c1: 1 });
+    expect(grid(b, "g").paths.order).toEqual([0, 1, 2, 5]);
+    expect(grid(c, "g").axes).toEqual({ top: { ax: "r", i: 1 } });
+    expect(grid(c, "g").rects).toEqual({});
+    expect(grid(c, "g").paths).toEqual({});
+    expect(grid(a, "g").rkeys).toEqual(["a", "b", "c"]);
+    expect(() => M.axis("g", "r", "r", 3)).toThrow(/out of range/);
+    expect(() => M.axis("g", "c", "x" as "r", 0)).toThrow(/'r' or 'c'/);
+    expect(() => M.path("g", "p", [9])).toThrow(/out of range/);
+  });
+
+  it("a grid is written by slot and named by its axes: push and mark throw", () => {
+    const { Lanes } = gridKit();
+    const M = new Lanes([{ id: "g", kind: "grid", rows: 2, cols: 2 }, { id: "q", kind: "queue" }]);
+    expect(() => M.push("g", 1)).toThrow(/fixed slots/);
+    expect(() => M.mark("g", "i", 0)).toThrow(/axis/);
+    expect(() => M.put("g", 4, 1)).toThrow(/out of range/);
+    expect(() => new Lanes([{ id: "h", kind: "grid", rows: 0, cols: 2 }])).toThrow(/rows and cols/);
+    /* a cell read onto the queue enters from that cell */
+    M.put("g", M.at("g", 1, 0), "(1,0)");
+    const it = M.copy("g", M.at("g", 1, 0), "q");
+    const s = M.snap("copied");
+    expect(s.from[it.id]).toEqual({ lane: "g", slot: 2 });
+    expect(values(s, "q")).toEqual(["(1,0)"]);
+  });
+
+  it("lanes without a grid are unchanged by the seam", () => {
+    const { Lanes } = gridKit();
+    const M = new Lanes([{ id: "a", kind: "row", cap: 2 }]);
+    M.put("a", 0, 1);
+    expect(Object.keys(lane(M.snap("row"), "a")).sort()).toEqual(["cap", "id", "idx", "items", "keys", "kind", "label", "marks", "spans", "w"]);
+  });
+});
+
 describe("lesson artifacts kit: build.py ships a player with its chrome", () => {
   const optional = (js: string) => {
     const run = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(json.dumps(build.optional_kit(sys.stdin.read())))`], { input: js, encoding: "utf8" });
@@ -190,6 +312,8 @@ describe("lesson artifacts kit: build.py ships a player with its chrome", () => 
     expect(optional("var M=new Lanes([])")).toEqual(["player", "lanes"]);
     expect(optional("new ListPlayer(h)")).toEqual(["player", "lists"]);
     expect(optional("new ListPlayer(h);new LanePlayer(h)")).toEqual(["player", "lists", "lanes"]);
+    expect(optional("var M=new Lanes([{id:'g',kind:'grid',rows:2,cols:2}])")).toEqual(["player", "lanes", "grids"]);
+    expect(optional('new Lanes([{id:"g",kind:"grid"}]);new ListPlayer(h)')).toEqual(["player", "lists", "lanes", "grids"]);
     expect(optional("drawTheHero()")).toEqual([]);
   });
 });

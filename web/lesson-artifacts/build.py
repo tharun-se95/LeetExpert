@@ -115,9 +115,10 @@ def decorate(body):
 # Kit modules only some lessons need, with the names that show a lesson uses them. A lesson that
 # does not name them does not ship them (CLAUDE.md §5: 220 lessons must not pay for five).
 KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun("),
-                "lanes": ("LanePlayer", "new Lanes(", "mountLaneTabs(")}
+                "lanes": ("LanePlayer", "new Lanes(", "mountLaneTabs("),
+                "grids": ("kind:'grid'", 'kind:"grid"')}
 # what a module needs loaded before it, in the order the page must read them
-KIT_DEPS = {"lists": ["player"], "lanes": ["player"]}
+KIT_DEPS = {"lists": ["player"], "lanes": ["player"], "grids": ["player", "lanes"]}
 
 
 def optional_kit(lesson_js):

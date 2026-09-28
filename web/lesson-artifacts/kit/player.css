@@ -22,8 +22,11 @@
 .lp-btn:disabled{opacity:.35;cursor:default}
 .lp-main{width:36px;height:36px;background:var(--fg);color:var(--bg)}
 .lp-main:hover:not(:disabled){background:color-mix(in srgb,var(--fg) 85%,var(--bg));color:var(--bg)}
-.lp-track{flex:1;display:flex;gap:3px;margin:0 8px;min-width:0}
-.lp-seg{flex:1;height:4px;min-width:4px;padding:0;border:0;border-radius:2px;background:color-mix(in srgb,var(--fg) 14%,transparent);cursor:pointer;transition:background-color .45s}
+/* segments shrink with the room they get: at 4px apiece a 21-step walkthrough overflowed a phone's
+   track and slid its last steps under the counter. Each draws a 4px bar inside 5px of clear padding,
+   so it looks the same but takes a 14px tall tap. */
+.lp-track{flex:1;display:flex;gap:2px;margin:0 8px;min-width:0}
+.lp-seg{flex:1;height:14px;min-width:0;padding:5px 0;border:0;border-radius:7px;background:color-mix(in srgb,var(--fg) 14%,transparent);background-clip:content-box;cursor:pointer;transition:background-color .45s}
 .lp-seg.on{background:var(--fam)}
 .lp-seg:hover{background:color-mix(in srgb,var(--fam) 60%,transparent)}
 .lp-seg:focus-visible{outline:2px solid var(--mk);outline-offset:3px}
