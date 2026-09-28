@@ -355,5 +355,5 @@ totals above. They stop at verified: no app gate until it is decided where an ov
 
 | | Overview | Gates with evidence | Notes |
 |---|---|---|---|
-| ● | The Line Underneath (`overviews/linear-structures`) | build code light dark |  |
-| ● | The Grid Underneath (`overviews/grid-structures`) | build code light dark |  |
+| · | The Line Underneath (`overviews/linear-structures`) | build (stale) code (stale) light (stale) dark (stale) |  |
+| · | The Grid Underneath (`overviews/grid-structures`) | build (stale) code (stale) light (stale) dark (stale) |  |
