@@ -1,6 +1,6 @@
 # Graphs in the lane player
 
-Status: proposed for #22 (the graphs item, the last player on the issue)
+Status: implemented for #22 (the graphs item, the last player on the issue)
 
 ## 1. Problem
 
@@ -57,8 +57,10 @@ changed; migrating `course-schedule` onto the player is follow-up work, not this
 ## 4. The model
 
 - Lane definition: `{id, kind:'graph', label, nodes:[{x, d, l}], edges:[[a, b, w?]], directed}`.
-  `cap` is the node count, set by `init`. `put` writes each node's item on first use (`init` may
-  do it from `l`). Undirected edges are stored with `a < b`; the lookup accepts either order.
+  `cap` is the node count, set by `init` (`Lanes` then opens the slots, as for every fixed lane).
+  `Lanes#nodes(id)` writes every node's label `l` into its slot and returns the items, as grids'
+  `fill` does. Undirected edges are stored with `a < b`; the lookup accepts either order. Two nodes
+  on one position, a self-loop, or an endpoint out of range throw.
 - `Lanes#edge(id, a, b, state)`: an edge's state is one of `idle` (default), `seen` (examined),
   `tree` (chosen: BFS/DFS tree, MST, shortest-path tree), `cur` (the one this step examines) and
   `bad` (the edge that closes a cycle; a rejected relaxation). Throws on an edge the graph does not
@@ -67,9 +69,13 @@ changed; migrating `course-schedule` onto the player is follow-up work, not this
   for structures whose edges ARE the state (a union-find forest re-points a root's parent pointer;
   a clone graph grows its copy). Linking an edge the graph already has throws.
 - `Lanes#weight(id, a, b, w)`: change a weight label (rarely needed; declared weights are drawn).
+- `Lanes#adj(id, a)`: `[{to, w}]`, the edges out of `a` (directed) or at `a` (undirected), in the
+  order they were added, so a walkthrough iterates the graph it draws instead of a second copy.
+  `Lanes#hasEdge(id, a, b)` asks without throwing.
 - `span` throws (a graph has no range). `mark(id, name, k)` names a node (`u`, `v`, `src`), drawn
   below the node circle.
-- `snap` copies edges (endpoints, weight, state) so snapshots stay isolated, as every kind's does.
+- `snap` copies edges into an array (`{key, a, b, w, state}`) so snapshots stay isolated, as every
+  kind's does. The view reads only snapshots, so `layout` and `describe` read that array.
 - A tone on an item marks node state. Lessons use the existing tones (`cur`, `done`, `bad`...); the
   kind adds none.
 
@@ -82,12 +88,17 @@ changed; migrating `course-schedule` onto the player is follow-up work, not this
   lanes, so the palette and the contrast gate need nothing new.
 - `under`: each edge as a line trimmed to the two node boxes' borders (as the DP arrows are, border
   to border), with an arrowhead when `directed`. A state change cross-fades with `t`; a `link`
-  fades in and an `unlink` fades out. Weight labels sit at the midpoint, offset off the line, on a
-  paper plate so they stay legible where lines cross.
+  fades in and an `unlink` fades out. Edges are keyed by lane and endpoints, never by position in
+  the list, so an `unlink` fades only its own line. Weight labels sit on a card-coloured plate
+  centred on the edge's midpoint, so they stay legible where lines cross. A directed pair drawn both
+  ways is pulled 5px apart so the two arrows do not overlap.
 - Edge colours go through CSS classes (`gr-edge idle|seen|tree|cur|bad`), never presentation
   attributes (CLAUDE.md §4: an SVG presentation attribute is not CSS). `tree` and `cur` are drawn
   thicker, so state is told by weight as well as colour.
-- `focus` (phone): the nodes named by highlighted marks and the endpoints of `cur` edges.
+- Marks are the generic row marks (`rowMarks`), drawn under the node and gliding between steps;
+  node boxes are the ordinary lane items, never redrawn by the kind.
+- `focus` (phone): the nodes named by highlighted marks (the player's own focus) and the endpoints
+  of `cur` edges.
 - `describe`: nodes with their labels and tones, then edges with their states, e.g.
   `Graph g: nodes 0 (A, visited), 1 (B)...; edges 0–1 tree, 1–2 current.` Screen readers get the
   step's graph state, as every other kind already provides.
@@ -99,8 +110,9 @@ changed; migrating `course-schedule` onto the player is follow-up work, not this
   duplicate links; snapshot isolation; `build.py` dependency order includes `graphs`. Plant faults
   (a missed state copy in `snap`, a directed edge found in reverse) and see each fail.
 - `kit-players` specimen gains graph tabs: BFS (graph + queue), Kahn (directed graph + in-degree row
-  + ready queue + order row), union-find (forest re-pointed by `link`/`unlink` + parent row) and
-  Dijkstra (weighted graph + distance row + min-heap lane). Every step's expected state is computed
+  + ready queue + order row), union-find (redundant connection: an edge row, a forest re-pointed by
+  `link` + parent row) and Dijkstra (weighted graph whose nodes carry their distance as the second
+  line, + a min-heap lane of (distance, node) with stale entries skipped). Every step's expected state is computed
   by running the algorithm in the specimen's own code, not typed in.
 - The browser gate passes light and dark at 1366 and 375 with layout shift 0.
 

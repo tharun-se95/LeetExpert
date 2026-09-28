@@ -377,52 +377,164 @@ function topKSteps(){
   return R.steps;
 }
 
+
 /* ---------- graphs (kit/graphs.js) ---------- */
-function bfsSteps() {
-  var NODES = [{x: 0, d: 0, l: 'A'}, {x: 2, d: 0, l: 'B'}, {x: 0, d: 1, l: 'C'}, {x: 2, d: 1, l: 'D'}];
-  var EDGES = [[0, 1], [0, 2], [1, 3], [2, 3]];
-  var M = new Lanes([{id: 'g', kind: 'graph', label: 'graph', nodes: NODES, edges: EDGES}, {id: 'q', kind: 'queue', label: 'queue'}]), R = recorder(M);
-  for(var i=0;i<NODES.length;i++)M.put('g',i,NODES[i].l);
-  R.rec('BFS from A: explore by levels.', {done: true});
-  M.edge('g', 0, 1, 'tree');
-  M.copy('g', 1, 'q');
-  R.rec('Discover B via edge 0-1.', {hi: ['front'], done: true});
-  return R.steps;
-}
-function kahnSteps() {
-  var NODES = [{x: 0, d: 1, l: '0'}, {x: 1, d: 0, l: '1'}, {x: 2, d: 1, l: '2'}];
-  var EDGES = [[0, 1], [0, 2]];
-  var M = new Lanes([{id: 'g', kind: 'graph', label: 'DAG', directed: true, nodes: NODES, edges: EDGES}, {id: 'order', kind: 'row', cap: 3, label: 'topo order', idx: true}]), R = recorder(M);
-  for(var i=0;i<3;i++)M.put('g',i,NODES[i].l);
-  R.rec('Kahn topological sort: process nodes in dependency order.', {done: true});
-  M.copy('g', 0, 'order', 0);
-  R.rec('Process node 0.', {done: true});
-  return R.steps;
-}
-function unionFindSteps() {
-  var NODES = [{x: 0, d: 0, l: '0'}, {x: 1, d: 0, l: '1'}, {x: 2, d: 0, l: '2'}];
-  var M = new Lanes([{id: 'forest', kind: 'graph', label: 'forest', directed: true, nodes: NODES}, {id: 'parent', kind: 'row', cap: 3, label: 'parent', idx: true}]), R = recorder(M);
-  for(var i=0;i<3;i++){M.put('forest',i,i);M.put('parent',i,i);}
-  R.rec('Union-find: each node is its own parent.', {done: true});
-  M.link('forest', 0, 1);
-  M.put('parent', 0, 1);
-  R.rec('Union: make 1 the parent of 0.', {done: true});
-  return R.steps;
-}
-function dijkstraSteps() {
-  var NODES = [{x: 0, d: 0, l: 'A'}, {x: 2, d: 0, l: 'B'}, {x: 0, d: 1, l: 'C'}];
-  var EDGES = [[0, 1, 4], [0, 2, 2], [2, 1, 1]];
-  var M = new Lanes([{id: 'g', kind: 'graph', label: 'weighted', nodes: NODES, edges: EDGES}, {id: 'dist', kind: 'row', cap: 3, label: 'distance', keys: ['A', 'B', 'C']}]), R = recorder(M);
-  for(var i=0;i<3;i++){M.put('g',i,NODES[i].l);M.put('dist',i,i===0?'0':'∞');}
-  R.rec('Dijkstra: shortest paths from A.', {hi: ['lane:dist'], done: true});
-  M.put('dist', 2, 2);
-  R.rec('Relax edge A-C (weight 2).', {hi: ['lane:dist'], done: true});
+/* Each walkthrough runs its algorithm on the model and records as it goes, then checks its answer
+   against a reference that shares no code with it, so a wrong step fails on load, not in a reader's
+   head. Edges a step examines are drawn 'cur' and settle at the next step into what they turned out
+   to be, so the step that decides an edge is the step that shows it. */
+function grSettle(M,id,cur){cur.forEach(function(e){M.edge(id,e[0],e[1],e[2]);});cur.length=0;}
+function grNames(G,ks){return ks.map(function(k){return G.nodes[k].l;}).join(' and ');}
+
+var BFS_G={nodes:[{x:0,d:0,l:'A'},{x:2,d:0,l:'B'},{x:4,d:0,l:'C'},{x:1,d:1,l:'D'},{x:3,d:1,l:'E'},{x:2,d:2,l:'F'}],
+  edges:[[0,1],[0,3],[1,3],[1,4],[2,4],[3,5],[4,5]]};
+function bfsSteps(){
+  var G=BFS_G,dist={},Q=[],cur=[],
+      M=new Lanes([{id:'g',kind:'graph',label:'graph',nodes:G.nodes,edges:G.edges},{id:'q',kind:'queue',label:'queue'}],
+        {fields:function(){return [['seen',Object.keys(dist).length]];}}),
+      R=recorder(M),node=M.nodes('g');
+  function see(v,d){dist[v]=d;Q.push(v);M.set(node[v],undefined,'d '+d);M.tone(node[v],'cur');return M.copy('g',v,'q');}
+  var first=see(0,0);
+  R.rec('Breadth-first search from A. A is at distance 0: mark it seen and queue it.',{hi:[laneHi(first),'seen'],done:true});
+  while(Q.length){
+    grSettle(M,'g',cur);
+    var u=Q.shift();M.popFront('q');M.tone(node[u],'good');M.mark('g','u',u);
+    var found=[],again=[],hi=['u'];
+    M.adj('g',u).forEach(function(n){var v=n.to;
+      if(dist[v]===undefined){M.edge('g',u,v,'cur');cur.push([u,v,'tree']);hi.push(laneHi(see(v,dist[u]+1)));found.push(v);}
+      else if(M.edge('g',u,v).state==='idle'){M.edge('g',u,v,'cur');cur.push([u,v,'seen']);again.push(v);}});
+    R.rec('Take '+G.nodes[u].l+' off the front (distance '+dist[u]+'). '+
+      (found.length?'Unseen neighbour'+(found.length>1?'s ':' ')+grNames(G,found)+' '+(found.length>1?'are':'is')+' one step further, at distance '+(dist[u]+1)+': mark and queue.':'It has no unseen neighbours.')+
+      (again.length?' '+grNames(G,again)+(again.length>1?' were':' was')+' already seen, so '+(again.length>1?'those edges add':'that edge adds')+' nothing.':''),{hi:hi});
+  }
+  grSettle(M,'g',cur);M.mark('g','u',null);
+  /* reference: relax every edge, both ways, once per node; unit weights make that the shortest hop count */
+  var ref=G.nodes.map(function(_,k){return k===0?0:Infinity;});
+  G.nodes.forEach(function(){G.edges.forEach(function(e){ref[e[1]]=Math.min(ref[e[1]],ref[e[0]]+1);ref[e[0]]=Math.min(ref[e[0]],ref[e[1]]+1);});});
+  G.nodes.forEach(function(_,k){if(ref[k]!==dist[k])throw new Error('BFS distance to '+G.nodes[k].l+' disagrees with relaxing every edge n times');});
+  R.rec('The queue is empty. The queue hands out nodes in the order they were seen, so every node at distance d is taken before any at d + 1, and each node was first seen from one a step nearer. The solid edges are the shortest-path tree.',{done:true});
   return R.steps;
 }
 
-mountLaneTabs($('#grtabs'),[
-  {name:'Breadth-first search',steps:bfsSteps},
-  {name:'Topological sort (Kahn)',steps:kahnSteps},
-  {name:'Union-find',steps:unionFindSteps},
-  {name:'Shortest paths (Dijkstra)',steps:dijkstraSteps}
-],{id:'gr'});
+var KAHN_G={nodes:[{x:0,d:0,l:'0'},{x:0,d:2,l:'1'},{x:1,d:0,l:'2'},{x:1,d:2,l:'3'},{x:2,d:1,l:'4'},{x:3,d:1,l:'5'}],
+  edges:[[0,2],[1,2],[1,3],[2,4],[3,4],[4,5]]};
+function kahnSteps(){
+  var G=KAHN_G,n=G.nodes.length,deg=[],cell=[],order=[],Q=[],cur=[],
+      M=new Lanes([{id:'g',kind:'graph',label:'prerequisites',directed:true,nodes:G.nodes,edges:G.edges},
+        {id:'deg',kind:'row',label:'in-degree',cap:n,keys:G.nodes.map(function(x){return x.l;})},
+        {id:'q',kind:'queue',label:'ready'},{id:'out',kind:'row',label:'order',idx:true}]),
+      R=recorder(M),node=M.nodes('g');
+  G.nodes.forEach(function(_,k){deg[k]=0;});G.edges.forEach(function(e){deg[e[1]]++;});
+  G.nodes.forEach(function(_,k){cell[k]=M.put('deg',k,deg[k]);});
+  R.rec('An edge a → b means a must come before b. Count each node\'s incoming edges: its in-degree, the prerequisites it still waits for.',{hi:['lane:deg'],done:true});
+  var ready=[];
+  G.nodes.forEach(function(_,k){if(!deg[k]){Q.push(k);ready.push(k);M.tone(node[k],'cur');M.copy('g',k,'q');}});
+  R.rec('In-degree 0 means nothing is left to wait for: '+grNames(G,ready)+' join the ready queue.',{hi:['lane:q']});
+  while(Q.length){
+    grSettle(M,'g',cur);
+    var u=Q.shift(),it=M.move('q','out',true);order.push(u);M.tone(node[u],'good');M.mark('g','u',u);
+    var outs=M.adj('g',u),freed=[],hi=['u',laneHi(it)];
+    outs.forEach(function(e){var v=e.to;deg[v]--;M.set(cell[v],deg[v]);M.edge('g',u,v,'cur');cur.push([u,v,'seen']);hi.push(laneHi(cell[v]));
+      if(!deg[v]){Q.push(v);freed.push(v);M.tone(node[v],'cur');hi.push(laneHi(M.copy('g',v,'q')));}});
+    R.rec('Take '+G.nodes[u].l+' from the ready queue and append it to the order. '+
+      (outs.length?'Its edge'+(outs.length>1?'s':'')+' to '+grNames(G,outs.map(function(e){return e.to;}))+' '+(outs.length>1?'are':'is')+' now satisfied, so '+(outs.length>1?'each in-degree drops':'that in-degree drops')+' by 1'+
+        (freed.length?'; '+grNames(G,freed)+' reach'+(freed.length>1?'':'es')+' 0 and '+(freed.length>1?'are':'is')+' ready.':'.'):'Nothing depends on it.'),{hi:hi});
+  }
+  grSettle(M,'g',cur);M.mark('g','u',null);
+  /* reference: the definition itself. Every node placed once, and every edge runs forward in the order. */
+  var at={};order.forEach(function(k,i){at[k]=i;});
+  if(order.length!==n)throw new Error('Kahn placed '+order.length+' of '+n+' nodes in an acyclic graph');
+  G.edges.forEach(function(e){if(!(at[e[0]]<at[e[1]]))throw new Error('order puts '+e[1]+' before its prerequisite '+e[0]);});
+  R.rec('Every node was placed, so the graph has no cycle (a node on a cycle never reaches in-degree 0). Every edge points forward in the order: '+order.map(function(k){return G.nodes[k].l;}).join(', ')+'.',{hi:['lane:out'],done:true});
+  return R.steps;
+}
+
+var UF_G={nodes:[{x:0,d:0,l:'1'},{x:2,d:0,l:'2'},{x:2,d:2,l:'3'},{x:0,d:2,l:'4'},{x:1,d:3,l:'5'}],
+  input:[[0,1],[1,2],[2,3],[0,3],[0,4]]};
+function unionFindSteps(){
+  var G=UF_G,n=G.nodes.length,parent=[],cell=[],cur=[],redundant=null,name=function(k){return G.nodes[k].l;},
+      M=new Lanes([{id:'in',kind:'row',label:'edges',idx:true},
+        {id:'f',kind:'graph',label:'parent pointers',directed:true,nodes:G.nodes},
+        {id:'par',kind:'row',label:'parent',cap:n,keys:G.nodes.map(function(x){return x.l;})}]),
+      R=recorder(M),node=M.nodes('f'),edges=G.input.map(function(e){return M.push('in',name(e[0])+'–'+name(e[1]));});
+  G.nodes.forEach(function(_,k){parent[k]=k;cell[k]=M.put('par',k,name(k));});
+  R.rec('Find the edge that closes a cycle. Every node starts as its own set: its parent is itself, so it is its own root.',{hi:['lane:par'],done:true});
+  function find(k){var path=[k];while(parent[k]!==k){k=parent[k];path.push(k);}return path;}
+  G.input.forEach(function(e,i){
+    grSettle(M,'f',cur);if(i&&edges[i-1].tone!=='bad')M.tone(edges[i-1],'dim');
+    var a=find(e[0]),b=find(e[1]),ra=a[a.length-1],rb=b[b.length-1];
+    M.tone(edges[i],'cur');M.mark('f','root '+name(e[0]),ra);M.mark('f','root '+name(e[1]),rb);
+    var walk=function(p){return p.length>1?p.map(name).join(' → '):name(p[0])+' (a root already)';},
+        note='Edge '+name(e[0])+'–'+name(e[1])+'. Follow parents to each root: '+walk(a)+', and '+walk(b)+'. ';
+    if(ra===rb){redundant=i;M.tone(edges[i],'bad');
+      if(!M.hasEdge('f',e[0],e[1])&&!M.hasEdge('f',e[1],e[0])){M.link('f',e[0],e[1]);M.edge('f',e[0],e[1],'bad');}
+      R.rec(note+'Both reach '+name(ra)+': they are already connected, so this edge closes a cycle. It is the redundant one.',{hi:[laneHi(edges[i]),'root '+name(e[0]),'root '+name(e[1])]});}
+    else{parent[ra]=rb;M.link('f',ra,rb);M.edge('f',ra,rb,'cur');cur.push([ra,rb,'idle']);M.set(cell[ra],name(rb));
+      R.rec(note+'Different roots, so the edge joins two sets: point root '+name(ra)+' at root '+name(rb)+'.',{hi:[laneHi(edges[i]),laneHi(cell[ra]),'root '+name(e[0]),'root '+name(e[1])]});}
+    Object.keys(M.lane('f').marks).forEach(function(nm){M.mark('f',nm,null);});
+  });
+  grSettle(M,'f',cur);M.tone(edges[G.input.length-1],redundant===G.input.length-1?'bad':'dim');
+  /* reference: the last edge whose removal leaves n nodes connected by n - 1 edges, a tree */
+  var want=null;
+  for(var r=G.input.length-1;r>=0&&want===null;r--){
+    var rest=G.input.filter(function(_,j){return j!==r;}),seen={0:1},stack=[0];
+    while(stack.length){var x=stack.pop();rest.forEach(function(e){var y=e[0]===x?e[1]:(e[1]===x?e[0]:-1);if(y>=0&&!seen[y]){seen[y]=1;stack.push(y);}});}
+    if(rest.length===n-1&&Object.keys(seen).length===n)want=r;}
+  if(want!==redundant)throw new Error('union-find picked edge '+redundant+'; removing edge '+want+' is what leaves a tree');
+  R.rec('Every edge read. Only '+G.input[redundant].map(name).join('–')+' joined two nodes that were already connected; without it the rest form a tree.',{hi:[laneHi(edges[redundant])],done:true});
+  return R.steps;
+}
+
+/* a min-heap of (distance, node): distance is the value it orders by, the node its second line */
+function grHeapIn(M,id,v,sub){var it=M.push(id,v,sub),i=M.lane(id).items.length-1;
+  while(i>0){var p=(i-1)>>1,xs=M.lane(id).items;if(+xs[p].v<=+xs[i].v)break;M.swap(id,i,p);i=p;}return it;}
+function grHeapOut(M,id){var n=M.lane(id).items.length;M.swap(id,0,n-1);var top=M.remove(id,n-1),i=0;
+  for(;;){var xs=M.lane(id).items,l=2*i+1,r=l+1,b=i;n=xs.length;
+    if(l<n&&+xs[l].v<+xs[b].v)b=l;if(r<n&&+xs[r].v<+xs[b].v)b=r;if(b===i)return top;M.swap(id,i,b);i=b;}}
+var DIJ_G={nodes:[{x:0,d:1,l:'A'},{x:1,d:0,l:'B'},{x:1,d:2,l:'C'},{x:2,d:1,l:'D'},{x:3,d:2,l:'E'}],
+  edges:[[0,1,4],[0,2,1],[1,2,2],[1,3,1],[2,3,5],[2,4,8],[3,4,3]]};
+function dijkstraSteps(){
+  var G=DIJ_G,dist=G.nodes.map(function(_,k){return k?Infinity:0;}),done={},via={},cur=[],byName={},
+      M=new Lanes([{id:'g',kind:'graph',label:'weighted graph',nodes:G.nodes,edges:G.edges},{id:'pq',kind:'heap',label:'frontier'}]),
+      R=recorder(M),node=M.nodes('g'),fmt=function(d){return d===Infinity?'∞':String(d);};
+  G.nodes.forEach(function(x,k){byName[x.l]=k;M.set(node[k],undefined,'d '+fmt(dist[k]));});
+  grHeapIn(M,'pq',0,'A');
+  R.rec('Shortest distances from A. A is 0 and every other node ∞ until a path is found. The frontier is a min-heap of (distance, node).',{hi:['lane:pq'],done:true});
+  while(M.size('pq')){
+    grSettle(M,'g',cur);
+    var top=grHeapOut(M,'pq'),u=byName[top.sub],d=+top.v;
+    if(done[u]){M.mark('g','u',null);
+      R.rec('Pop ('+d+', '+top.sub+'). '+top.sub+' was already settled at '+dist[u]+', so this entry went stale when a shorter path replaced it. Skip it.',{});continue;}
+    done[u]=1;M.tone(node[u],'good');M.mark('g','u',u);
+    var better=[],worse=[],hi=['u'];
+    M.adj('g',u).forEach(function(e){var v=e.to,nd=d+e.w,x=G.nodes[v].l;if(done[v])return;M.edge('g',u,v,'cur');
+      if(nd<dist[v]){if(via[v]!=null)M.edge('g',via[v],v,'seen');
+        better.push(x+' '+fmt(dist[v])+' → '+nd);dist[v]=nd;via[v]=u;cur.push([u,v,'tree']);
+        M.set(node[v],undefined,'d '+nd);M.tone(node[v],'cur');hi.push(laneHi(node[v]),laneHi(grHeapIn(M,'pq',nd,x)));}
+      else{worse.push(x+' ('+d+' + '+e.w+' = '+nd+' is not below '+dist[v]+')');cur.push([u,v,'seen']);}});
+    R.rec('Pop ('+d+', '+top.sub+'): the smallest distance left. Weights are never negative, so no path through a node still waiting can come back shorter: '+top.sub+' is settled. '+
+      (better.length?'Its edges improve '+better.join(', ')+', and each new distance joins the frontier.':'')+(worse.length?(better.length?' ':'')+'No better way to '+worse.join(', ')+'.':'')+(!better.length&&!worse.length?'Every neighbour is already settled.':''),{hi:hi});
+  }
+  grSettle(M,'g',cur);M.mark('g','u',null);
+  /* reference: Bellman-Ford, relaxing every edge both ways n - 1 times; it needs no heap and no order */
+  var ref=G.nodes.map(function(_,k){return k?Infinity:0;});
+  for(var r=1;r<G.nodes.length;r++)G.edges.forEach(function(e){ref[e[1]]=Math.min(ref[e[1]],ref[e[0]]+e[2]);ref[e[0]]=Math.min(ref[e[0]],ref[e[1]]+e[2]);});
+  G.nodes.forEach(function(x,k){if(ref[k]!==dist[k])throw new Error('Dijkstra distance to '+x.l+' disagrees with Bellman-Ford');});
+  R.rec('The frontier is empty. Distances from A: '+G.nodes.map(function(x,k){return x.l+' '+dist[k];}).join(', ')+'. The solid edges are the shortest-path tree.',{done:true});
+  return R.steps;
+}
+
+
+mountLesson();
+new LanePlayer($('#stackw .lvhost'),{id:'stk',loop:true,autoplay:true,inv:[['size matches','size equals the number of items',sizeOk('s')]]}).load(stackSteps());
+mountLaneTabs($('#qtabs'),[{name:'Queue from two stacks',steps:twoStackSteps},{name:'Deque',steps:dequeSteps},{name:'Ring buffer',steps:ringSteps}],{id:'q'});
+new LanePlayer($('#frames .lvhost'),{id:'fr',loop:true,autoplay:true}).load(frameSteps());
+new LanePlayer($('#mono .lvhost'),{id:'mono',loop:true,autoplay:true}).load(monoSteps());
+mountLaneTabs($('#atabs'),[{name:'Reverse in place',steps:reverseSteps},{name:'Sliding window',steps:windowSteps},{name:'Resize',steps:resizeSteps},{name:'Count letters',steps:countSteps}],{id:'a'});
+mountLaneTabs($('#gtabs'),[{name:'Spiral order',steps:spiralSteps},{name:'Transpose',steps:transposeSteps},{name:'Number of islands',steps:islandsSteps}],{id:'g'});
+new LanePlayer($('#prefix .lvhost'),{id:'pfx',loop:true,autoplay:true,inv:[['prefix holds','every filled prefix cell equals the sum of its block',prefixHolds]]}).load(prefixSteps());
+mountLaneTabs($('#ttabs'),[{name:'Chaining',steps:chainingSteps},{name:'Resize',steps:resizeChainSteps},{name:'LCS table',steps:lcsSteps}],{id:'t'});
+mountLaneTabs($('#htabs'),[{name:'Push and pop',steps:pushPopSteps},{name:'Heapify',steps:heapifySteps},{name:'Top k',steps:topKSteps}],
+  {id:'h',inv:[['heap holds','every parent dominates both children',heapInv]]});
+mountLaneTabs($('#grtabs'),[{name:'Breadth-first search',steps:bfsSteps},{name:'Topological sort',steps:kahnSteps},{name:'Union-find',steps:unionFindSteps},{name:'Dijkstra',steps:dijkstraSteps}],
+  {id:'gr',inv:[['heap holds','every parent in the frontier is no larger than its children',heapInv]]});

@@ -1,78 +1,19 @@
-/* kit/graphs.css: the graph lane (kit/graphs.js). Nodes and tones reuse kit/lanes.css.
-   Edges run in the under layer, coloured through CSS classes, never presentation attributes.
-   Weight is told by stroke width as well as colour so state does not depend on colour alone. */
-
-.gr-edge line {
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-}
-.gr-edge path {
-  stroke: none;
-}
-
-/* idle: quiet hairline */
-.gr-edge.idle line {
-  stroke: color-mix(in srgb, var(--fg) 28%, transparent);
-  stroke-width: 1.4px;
-}
-.gr-edge.idle path {
-  fill: color-mix(in srgb, var(--fg) 28%, transparent);
-}
-
-/* seen: examined, mid tone */
-.gr-edge.seen line {
-  stroke: var(--mut);
-  stroke-width: 1.8px;
-}
-.gr-edge.seen path {
-  fill: var(--mut);
-}
-
-/* tree: chosen edge (BFS/DFS tree, MST, shortest path) - green ink, thicker */
-.gr-edge.tree line {
-  stroke: var(--g-ink);
-  stroke-width: 2.8px;
-}
-.gr-edge.tree path {
-  fill: var(--g-ink);
-}
-
-/* cur: currently examined edge - orange ink, thicker */
-.gr-edge.cur line {
-  stroke: var(--o-ink);
-  stroke-width: 2.8px;
-}
-.gr-edge.cur path {
-  fill: var(--o-ink);
-}
-
-/* bad: rejected edge, cycle closer - red ink */
-.gr-edge.bad line {
-  stroke: var(--r-ink);
-  stroke-width: 2px;
-}
-.gr-edge.bad path {
-  fill: var(--r-ink);
-}
-
-/* hi: highlighted edge */
-.gr-edge.hi line {
-  stroke: var(--fam);
-  stroke-width: 3px;
-}
-.gr-edge.hi path {
-  fill: var(--fam);
-}
-
-/* weight label paper plate: card surface ensures AA contrast */
-.gr-plate {
-  fill: var(--card);
-  stroke: color-mix(in srgb, var(--fg) 16%, transparent);
-  stroke-width: 1px;
-}
-/* --mk ink on --card clears 4.5:1 WCAG AA */
-.gr-weight {
-  font: 600 11px 'JetBrains Mono', monospace;
-  fill: var(--mk);
-}
+/* kit/graphs.css: the graph lane (kit/graphs.js). Nodes are ordinary lane items, so they take
+   kit/lanes.css's box, value, tone and highlight styling unchanged; this file adds the edges and
+   their weight plates. A state is told by weight and dash as well as colour, so it never rests on
+   colour alone: idle a hairline, seen dashed, tree and cur thick, bad dashed and red. */
+.gr-edge line{fill:none;stroke-linecap:round}
+.gr-edge path{stroke:none}
+.gr-edge.idle line{stroke:color-mix(in srgb,var(--fg) 34%,transparent);stroke-width:1.4}
+.gr-edge.idle path{fill:color-mix(in srgb,var(--fg) 34%,transparent)}
+.gr-edge.seen line{stroke:color-mix(in srgb,var(--fg) 30%,transparent);stroke-width:1.4;stroke-dasharray:4 4}
+.gr-edge.seen path{fill:color-mix(in srgb,var(--fg) 30%,transparent)}
+.gr-edge.tree line{stroke:var(--g-ink);stroke-width:3}
+.gr-edge.tree path{fill:var(--g-ink)}
+.gr-edge.cur line{stroke:var(--o-ink);stroke-width:3}
+.gr-edge.cur path{fill:var(--o-ink)}
+.gr-edge.bad line{stroke:var(--r-ink);stroke-width:2.2;stroke-dasharray:6 4}
+.gr-edge.bad path{fill:var(--r-ink)}
+/* the plate is the card, so the weight's ink is measured against the card, where --fg is AA */
+.gr-plate{fill:var(--card);stroke:color-mix(in srgb,var(--fg) 18%,transparent);stroke-width:1}
+.gr-weight{font:600 11px 'JetBrains Mono',monospace;fill:var(--fg)}

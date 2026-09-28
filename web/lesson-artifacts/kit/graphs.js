@@ -1,156 +1,152 @@
-/* kit/graphs.js: the graph lane, registered on lanes.js's seam (LANE_KINDS). A graph is a fixed lane
-   of nodes (items) drawn at author-specified positions, with edges between them. Nodes have fixed
-   positions on a grid; edges have states and can be added or removed while the player runs.
+/* kit/graphs.js: the graph lane, registered on lanes.js's seam (LANE_KINDS). A graph is a FIXED lane
+   whose slot k is node k: its item carries the node's label, so tone, highlight, mark and copy work
+   through the generic lane API unchanged, and a traversal's copy(graph, k, 'q') enters the queue from
+   the node itself. What a graph adds is its edges, held on the lane with a state each (idle, seen,
+   tree, cur, bad) and drawn in the under layer, border to border, so the nodes sit on top of them.
+   Node positions are authored by the lesson in grid units ({x, d}, the shape scene boards and
+   graphView already use) and fixed for the player's life: a layout that moved when an edge was added
+   would break the rule every player keeps, that only the items move.
    Spec: docs/superpowers/specs/2026-09-28-graph-player-design.md. Included by build.py only in
-   lessons that use kind:'graph' (KIT_OPTIONAL), always after lanes.js. */
+   lessons that draw a graph (KIT_OPTIONAL), always after lanes.js. */
 
-var GXUNIT=48,GYUNIT=48,GNODEW=32,GNODEH=32,GPADX=16,GPADY=16;
-/* store edges by (min, max) key for undirected, or directed key for directed */
+/* room between neighbouring nodes: enough for a weight plate on a straight edge between them */
+var GRGAPX=34,GRGAPY=30,GRPAD=6,GRLABEL=24,GRMARKS=34,GREDGE_STATES=['idle','seen','tree','cur','bad'];
 function graphOf(M,id){var l=M.lane(id);if(l.kind!=='graph')throw new Error(id+' is not a graph');return l;}
-function graphKey(a,b,directed){return directed?a+'>'+b:(a<b?a+','+b:b+','+a);}
+/* an undirected edge is stored once, lower endpoint first; a directed one as written */
+function graphKey(l,a,b){return l.directed?a+'>'+b:(a<b?a+'-'+b:b+'-'+a);}
+function graphNode(l,k,what){if(!(k>=0&&k<l.cap&&k===Math.floor(k)))throw new Error(l.id+': '+what+' node '+k+' is out of range');}
+function graphAdd(l,a,b,w){
+  graphNode(l,a,'edge');graphNode(l,b,'edge');
+  if(a===b)throw new Error(l.id+': edge ('+a+', '+b+') is a self-loop');
+  var key=graphKey(l,a,b);if(l.edges[key])throw new Error(l.id+': edge ('+a+', '+b+') already exists');
+  var lo=l.directed?a:Math.min(a,b),hi=l.directed?b:Math.max(a,b);
+  l.edges[key]={a:lo,b:hi,w:w==null?null:w,state:'idle'};l.edgeOrder.push(key);
+  return l.edges[key];
+}
+function graphEdge(l,a,b){var e=l.edges[graphKey(l,a,b)];if(!e)throw new Error(l.id+': no edge ('+a+', '+b+')');return e;}
 
 LANE_KINDS.graph={
   fixed:true,
-  key:function(l){return l.nodes.length+'n';},
+  /* its marks name nodes and sit under them, drawn (and glided) by the generic row marks */
+  rowMarks:true,
+  /* two tabs that each call their graph 'g' but draw different shapes are measured apart */
+  key:function(l){return l.nodes.map(function(n){return n.x+','+n.d;}).join(' ');},
   init:function(l,d){
-    if(!d.nodes||!Array.isArray(d.nodes))throw new Error(l.id+': graph needs nodes array');
-    if(!d.edges||!Array.isArray(d.edges))throw new Error(l.id+': graph needs edges array');
-    l.nodes=d.nodes.slice();l.directed=!!d.directed;l.cap=l.nodes.length;
-    l.edgeMap={};l.edgeList=[];
-    d.edges.forEach(function(e){
-      var a=e[0],b=e[1],w=e[2];
-      if(!(a>=0&&a<l.cap&&b>=0&&b<l.cap))throw new Error(l.id+': edge ('+a+', '+b+') endpoint out of range');
-      var key=graphKey(a,b,l.directed);
-      if(l.edgeMap[key]!==undefined)throw new Error(l.id+': duplicate edge ('+a+', '+b+')');
-      l.edgeMap[key]={state:'idle',a:l.directed?a:Math.min(a,b),b:l.directed?b:Math.max(a,b),w:w,directed:l.directed};
-      l.edgeList.push(l.edgeMap[key]);
-    });
-    for(var k=0;k<l.cap;k++)l.items.push(null);
+    if(!Array.isArray(d.nodes)||!d.nodes.length)throw new Error(l.id+': a graph needs nodes');
+    var seen={};
+    l.nodes=d.nodes.map(function(n,k){
+      if(!(n.x>=0&&n.d>=0))throw new Error(l.id+': node '+k+' needs a position {x, d}');
+      var at=n.x+','+n.d;if(seen[at])throw new Error(l.id+': nodes '+seen[at][0]+' and '+k+' share the position ('+at+')');
+      seen[at]=[k];return {x:n.x,d:n.d,l:n.l==null?String(k):String(n.l)};});
+    /* Lanes pushes the cap empty slots after init, as for every fixed lane */
+    l.cap=l.nodes.length;l.directed=!!d.directed;l.edges={};l.edgeOrder=[];
+    (d.edges||[]).forEach(function(e){graphAdd(l,e[0],e[1],e[2]);});
   },
   mark:function(l,name,slot){
-    if(slot===null||slot===undefined)delete l.marks[name];
-    else{if(!(slot>=0&&slot<l.cap))throw new Error(l.id+': node '+slot+' is out of range');l.marks[name]=slot;}
+    if(slot===null||slot===undefined){delete l.marks[name];return;}
+    graphNode(l,slot,'marked');l.marks[name]=slot;
   },
-  span:function(l){throw new Error(l.id+' is a graph: span() does not apply');},
+  span:function(l){throw new Error(l.id+' is a graph: name a node with mark(), not span()');},
+  /* edges are copied, so a later state change or unlink never reaches an earlier snapshot */
   snap:function(l,out){
-    out.nodes=l.nodes.slice();out.directed=l.directed;
-    out.edgeMap={};out.edgeList=[];
-    Object.keys(l.edgeMap).forEach(function(k){var e=l.edgeMap[k];out.edgeMap[k]={state:e.state,a:e.a,b:e.b,w:e.w,directed:e.directed};});
-    l.edgeList.forEach(function(e){out.edgeList.push(out.edgeMap[graphKey(e.a,e.b,l.directed)]);});
+    out.nodes=l.nodes.map(function(n){return {x:n.x,d:n.d,l:n.l};});out.directed=l.directed;
+    out.edges=l.edgeOrder.map(function(k){var e=l.edges[k];return {key:k,a:e.a,b:e.b,w:e.w,state:e.state};});
   },
 
   /* ---------- the view ---------- */
+  /* fixed for the player's life: cell size from every label and second line any snapshot shows */
   measure:function(m,l){
-    m.cw=GNODEW;m.ch=GNODEH;m.nodes=l.nodes.length;
-    if(l.items.some(function(x){return x&&x.sub;}))m.ch=50;
-    var maxX=0,maxD=0;
-    l.nodes.forEach(function(n){maxX=Math.max(maxX,n.x||0);maxD=Math.max(maxD,n.d||0);});
-    m.maxX=maxX;m.maxD=maxD;
+    /* the generic measure has already widened cw to a row cell's 56; a node box is its own size */
+    m.gcw=Math.max(m.gcw||0,laneCellW(l.items,l.w||40));m.cw=m.gcw;
+    if(l.items.some(function(x){return x&&x.sub;}))m.ch=LCH2;
+    m.nodes=l.nodes;
   },
   block:function(m){
-    var w=(m.maxX+1)*GXUNIT+2*GPADX,h=(m.maxD+1)*GYUNIT+2*GPADY;
-    return {w:Math.max(w,100),h:Math.max(h,100)};
+    var mx=0,md=0;m.nodes.forEach(function(n){mx=Math.max(mx,n.x);md=Math.max(md,n.d);});
+    m.ux=m.cw+GRGAPX;m.uy=m.ch+GRGAPY;
+    m.gw=mx*m.ux+m.cw+2*GRPAD;m.gh=GRLABEL+md*m.uy+m.ch+GRMARKS;
+    return {w:m.gw,h:m.gh};
   },
   box:function(m,x0,y){
-    var w=(m.maxX+1)*GXUNIT+2*GPADX,h=(m.maxD+1)*GYUNIT+2*GPADY;
-    return {kind:'graph',x:x0,y:y,w:Math.max(w,100),h:Math.max(h,100),cw:m.cw,ch:m.ch,
-      left:x0+GPADX,top:y+GPADY,xunit:GXUNIT,yunit:GYUNIT,label:m.label,nodes:m.nodes};
+    return {kind:'graph',x:x0,y:y,w:m.gw,h:m.gh,cw:m.cw,ch:m.ch,label:m.label,nodes:m.nodes,ux:m.ux,uy:m.uy,
+      left:x0+GRPAD+m.cw/2,top:y+GRLABEL+m.ch/2};
   },
-  slotAt:function(b,k){
-    var n=b.nodes[k];if(!n)return {x:b.left,y:b.top};
-    return {x:b.left+(n.x||0)*b.xunit+b.xunit/2,y:b.top+(n.d||0)*b.yunit+b.yunit/2};
-  },
+  slotAt:function(b,k){var n=b.nodes[k];return {x:b.left+n.x*b.ux,y:b.top+n.d*b.uy};},
 
   svg:function(id,b,l,s){
-    var h='<g class="ln-lane gr-lane'+(s.hi.indexOf('lane:'+id)>=0?' hi':'')+'">';
-    h+='<text class="ln-label" x="'+b.x+'" y="'+(b.y+14)+'">'+laneEsc(b.label)+'</text>';
-    return h+'</g>';
+    return '<g class="ln-lane gr-lane'+(s.hi.indexOf('lane:'+id)>=0?' hi':'')+'">'+
+      '<text class="ln-label" x="'+b.x+'" y="'+(b.y+12)+'">'+laneEsc(b.label)+(l.directed?' (directed)':'')+'</text></g>';
   },
-  layout:function(l,b,out){
-    var nodes=out.grNodes||(out.grNodes={}),edges=out.grEdges||(out.grEdges={});
-    var K=LANE_KINDS.graph;
-    l.items.forEach(function(it,k){if(!it)return;
-      var c=K.slotAt(b,k);
-      nodes[it.id]={x:c.x,y:c.y,w:b.cw,h:b.ch,v:it.v,sub:it.sub,tone:it.tone,idx:k};
-    });
-    l.edgeList.forEach(function(e,i){
-      var apos=K.slotAt(b,e.a),bpos=K.slotAt(b,e.b);
-      edges[l.id+'#'+i]={a:apos,b:bpos,w:e.w,state:e.state,directed:e.directed};
-    });
+  /* (layout and describe read a snapshot, whose edges are an array: see snap) each edge's two node centres, keyed by lane and endpoints so an unlink fades only its own line;
+     a directed pair drawn both ways is pulled apart so the two arrows do not lie on one another */
+  layout:function(l,b,extra){
+    var edges=extra.grEdges||(extra.grEdges={}),K=LANE_KINDS.graph,has={};
+    l.edges.forEach(function(e){has[e.key]=1;});
+    l.edges.forEach(function(e){var k=e.key,p=K.slotAt(b,e.a),q=K.slotAt(b,e.b),off=0;
+      if(l.directed&&has[e.b+'>'+e.a])off=5;
+      if(off){var dx=q.x-p.x,dy=q.y-p.y,n=Math.sqrt(dx*dx+dy*dy)||1,ox=-dy/n*off,oy=dx/n*off;p={x:p.x+ox,y:p.y+oy};q={x:q.x+ox,y:q.y+oy};}
+      edges[l.id+':'+k]={a:p,b:q,w:e.w,state:e.state,directed:l.directed,hw:b.cw/2,hh:b.ch/2};});
   },
+  /* edges under the nodes, trimmed to the node boxes' borders (as the DP arrows are), so an arrowhead
+     touches the box it points at; a state change crossfades, a link fades in and an unlink out */
   under:function(L,fromL,t,s){
     var to=L.extra.grEdges||{},from=fromL&&fromL.extra.grEdges||{},keys={},h=[];
     Object.keys(to).forEach(function(k){keys[k]=1;});Object.keys(from).forEach(function(k){keys[k]=1;});
-    var lerp=function(a,b){return a+(b-a)*t;};
-    Object.keys(keys).forEach(function(k){var e=to[k],f=fromL?from[k]:null,op,state;
-      if(e&&f){op=1;state=e.state;}else if(e){op=fromL?t:1;state=e.state;}else{op=1-t;state=f.state;}
-      if(!e&&!f)return;
-      var ea=e?e.a:f.a,eb=e?e.b:f.b;
-      if(f&&e){ea={x:lerp(f.a.x,e.a.x),y:lerp(f.a.y,e.a.y)};eb={x:lerp(f.b.x,e.b.x),y:lerp(f.b.y,e.b.y)};}
-      var dx=eb.x-ea.x,dy=eb.y-ea.y,len=Math.sqrt(dx*dx+dy*dy)||1,ux=dx/len,uy=dy/len;
-      var r=GNODEW/2,x0=ea.x+ux*r,y0=ea.y+uy*r,x1=eb.x-ux*r,y1=eb.y-uy*r;
-      var cls='gr-edge '+state+(s.hi.indexOf(k)>=0?' hi':'');
-      h.push('<line class="'+cls+'" style="opacity:'+op.toFixed(3)+'" x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+x1.toFixed(1)+'" y2="'+y1.toFixed(1)+'"/>');
-      if((e||f).directed){
-        var ah=6,aw=4,bx=x1-ux*ah,by=y1-uy*ah,nx=-uy*aw,ny=ux*aw;
-        h.push('<path class="'+cls+'" style="opacity:'+op.toFixed(3)+'" d="M'+x1.toFixed(1)+','+y1.toFixed(1)+' L'+(bx+nx).toFixed(1)+','+(by+ny).toFixed(1)+' L'+(bx-nx).toFixed(1)+','+(by-ny).toFixed(1)+' Z"/>');
-      }
-      if((e||f).w){
-        var mx=(x0+x1)/2,my=(y0+y1)/2,wtext=laneEsc((e||f).w);
-        h.push('<g style="opacity:'+op.toFixed(3)+'"><rect class="gr-wplate" x="'+(mx-18)+'" y="'+(my-8)+'" width="36" height="16" rx="4"/>'+
-          '<text class="gr-wtext" x="'+mx.toFixed(1)+'" y="'+(my+4)+'" text-anchor="middle">'+wtext+'</text></g>');
-      }
-    });
+    Object.keys(keys).forEach(function(k){var e=to[k],f=from[k];
+      if(e&&f&&e.state!==f.state){h.push(graphEdgeSvg(f,1-t));h.push(graphEdgeSvg(e,t));}
+      else if(e)h.push(graphEdgeSvg(e,f||!fromL?1:t));
+      else h.push(graphEdgeSvg(f,1-t));});
     return h.join('');
   },
-  over:function(L,fromL,t,s){
-    var to=L.extra.grNodes||{},from=fromL&&fromL.extra.grNodes||{},keys={},h=[];
-    Object.keys(to).forEach(function(k){keys[k]=1;});Object.keys(from).forEach(function(k){keys[k]=1;});
-    var lerp=function(a,b){return a+(b-a)*t;};
-    Object.keys(keys).forEach(function(k){var n=to[k]||from[k],op=(to[k]&&from[k])?1:(to[k]?(fromL?t:1):1-t);
-      if(!n)return;
-      var pos=n,tone=n.tone?' '+n.tone:'';
-      h.push('<g class="ln-item gr-node'+tone+(s.hi.indexOf('item:'+k)>=0?' hi':'')+'" style="opacity:'+op.toFixed(3)+'">'+
-        '<circle class="gr-nodecircle" cx="'+pos.x.toFixed(1)+'" cy="'+pos.y.toFixed(1)+'" r="'+GNODEW/2+'"/>'+
-        '<text class="ln-val" x="'+pos.x.toFixed(1)+'" y="'+(pos.y+5.5)+'" text-anchor="middle">'+laneEsc(n.v)+'</text>'+
-        (n.sub?'<text class="ln-sub" x="'+pos.x.toFixed(1)+'" y="'+(pos.y+19)+'" text-anchor="middle">'+laneEsc(n.sub)+'</text>':'')+'</g>');
-    });
-    return h.join('');
-  },
+  /* on a phone: the endpoints of the edge a step is examining (its highlighted names are the
+     generic row marks, which the player's own focus already reads) */
   focus:function(s,L,first){
-    s.lanes.forEach(function(l){if(l.kind!=='graph')return;
-      Object.keys(l.marks).forEach(function(nm){if(s.hi.indexOf(nm)<0)return;var n=l.items[l.marks[nm]];if(!n)return;
-        var a=L.items[n.id];if(a)first.push([a.x-20,a.x+20]);});});
+    var E=L.extra.grEdges||{};
+    Object.keys(E).forEach(function(k){var e=E[k];if(e.state!=='cur')return;
+      first.push([Math.min(e.a.x,e.b.x)-e.hw,Math.max(e.a.x,e.b.x)+e.hw]);});
   },
   describe:function(l){
-    var nodes=[];for(var k=0;k<l.items.length;k++){var n=l.items[k];nodes.push((k+': '+(n?n.v+(n.sub?' ('+n.sub+')':''):'empty')));}
-    var edges=[];l.edgeList.forEach(function(e){edges.push(e.a+'–'+e.b+' '+e.state+(e.w?' weight '+e.w:''));});
-    var ms=Object.keys(l.marks).map(function(nm){return nm+' at '+l.marks[nm];});
-    return 'Graph '+l.label+(l.directed?' (directed)':'')+'.\nNodes: '+nodes.join(', ')+'.\nEdges: '+edges.join(', ')+(ms.length?'.\nMarks: '+ms.join(', '):'')+'.';}
+    var TONE={cur:'current',good:'done',bad:'rejected',dim:'finished'},STATE={idle:'',seen:'examined',tree:'chosen',cur:'current',bad:'rejected'};
+    var name=function(k){var it=l.items[k];return it?it.v:l.nodes[k].l;};
+    var nodes=l.items.map(function(it,k){var t=it&&it.tone&&TONE[it.tone];return name(k)+(it&&it.sub?' ('+it.sub+')':'')+(t?', '+t:'');});
+    var edges=l.edges.map(function(e){var st=STATE[e.state];return name(e.a)+(l.directed?' to ':'–')+name(e.b)+(e.w!=null?' weight '+e.w:'')+(st?', '+st:'');});
+    var ms=Object.keys(l.marks).map(function(n){return n+' at '+name(l.marks[n]);});
+    return 'Graph '+l.label+(l.directed?' (directed)':'')+'. Nodes: '+nodes.join('; ')+'. Edges: '+(edges.length?edges.join('; '):'none')+(ms.length?'. '+ms.join(', '):'')+'.';
+  }
 };
+/* one edge at opacity op: a line whose ends stop at the two node boxes, an arrowhead when directed,
+   and the weight on a plate over its midpoint so it stays legible where lines cross. State is a
+   class, never a presentation attribute (CLAUDE.md §4), and tree and cur also draw thicker. */
+function graphEdgeSvg(e,op){
+  var dx=e.b.x-e.a.x,dy=e.b.y-e.a.y,n=Math.sqrt(dx*dx+dy*dy)||1,ux=dx/n,uy=dy/n;
+  /* distance from a box's centre to its border along (ux, uy), plus a hair of air */
+  var r=Math.min(ux?e.hw/Math.abs(ux):1e9,uy?e.hh/Math.abs(uy):1e9)+3;
+  var x0=e.a.x+ux*r,y0=e.a.y+uy*r,x1=e.b.x-ux*r,y1=e.b.y-uy*r,cls='gr-edge '+e.state,h='<g class="'+cls+'" style="opacity:'+op.toFixed(3)+'">';
+  if(e.directed){var ah=8,aw=4.5,bx=x1-ux*ah,by=y1-uy*ah;
+    h+='<line x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+bx.toFixed(1)+'" y2="'+by.toFixed(1)+'"/>'+
+      '<path d="M'+x1.toFixed(1)+','+y1.toFixed(1)+' L'+(bx-uy*aw).toFixed(1)+','+(by+ux*aw).toFixed(1)+' L'+(bx+uy*aw).toFixed(1)+','+(by-ux*aw).toFixed(1)+' Z"/>';}
+  else h+='<line x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+x1.toFixed(1)+'" y2="'+y1.toFixed(1)+'"/>';
+  if(e.w!=null){var tx=String(e.w),pw=tx.length*7.2+10,mx=(x0+x1)/2,my=(y0+y1)/2;
+    h+='<rect class="gr-plate" x="'+(mx-pw/2).toFixed(1)+'" y="'+(my-9).toFixed(1)+'" width="'+pw.toFixed(1)+'" height="18" rx="5"/>'+
+      '<text class="gr-weight" x="'+mx.toFixed(1)+'" y="'+(my+4).toFixed(1)+'" text-anchor="middle">'+laneEsc(tx)+'</text>';}
+  return h+'</g>';
+}
 
+/* write every node's label into its slot (the lane's items, in node order), as grids' fill does */
+Lanes.prototype.nodes=function(id){var l=graphOf(this,id),self=this;return l.nodes.map(function(n,k){return self.put(id,k,n.l);});};
+/* an edge's record; with state, set it first. A typo'd edge throws rather than drawing nothing. */
 Lanes.prototype.edge=function(id,a,b,state){
-  var l=graphOf(this,id);
-  var key=graphKey(a,b,l.directed);if(!l.edgeMap[key])throw new Error(id+': no edge ('+a+', '+b+')');
-  if(state!==undefined)l.edgeMap[key].state=state;
-  return l.edgeMap[key];
+  var l=graphOf(this,id),e=graphEdge(l,a,b);
+  if(state!==undefined){if(GREDGE_STATES.indexOf(state)<0)throw new Error(id+": edge state is one of "+GREDGE_STATES.join(', ')+", not "+state);e.state=state;}
+  return e;
 };
-Lanes.prototype.link=function(id,a,b,w){
-  var l=graphOf(this,id);
-  if(!(a>=0&&a<l.cap&&b>=0&&b<l.cap))throw new Error(id+': node out of range');
-  var key=graphKey(a,b,l.directed);if(l.edgeMap[key]!==undefined)throw new Error(id+': edge ('+a+', '+b+') already exists');
-  l.edgeMap[key]={state:'idle',a:l.directed?a:Math.min(a,b),b:l.directed?b:Math.max(a,b),w:w,directed:l.directed};
-  l.edgeList.push(l.edgeMap[key]);return l.edgeMap[key];
-};
-Lanes.prototype.unlink=function(id,a,b){
-  var l=graphOf(this,id);
-  var key=graphKey(a,b,l.directed);if(l.edgeMap[key]===undefined)throw new Error(id+': no edge ('+a+', '+b+')');
-  var e=l.edgeMap[key];
-  l.edgeList=l.edgeList.filter(function(x){return x!==e;});
-  delete l.edgeMap[key];
-};
-Lanes.prototype.weight=function(id,a,b,w){
-  var l=graphOf(this,id);
-  var key=graphKey(a,b,l.directed);if(!l.edgeMap[key])throw new Error(id+': no edge ('+a+', '+b+')');
-  l.edgeMap[key].w=w;
-};
+Lanes.prototype.hasEdge=function(id,a,b){var l=graphOf(this,id);return !!l.edges[graphKey(l,a,b)];};
+/* the edges out of node a (directed) or at node a (undirected), in the order they were added */
+Lanes.prototype.adj=function(id,a){var l=graphOf(this,id);graphNode(l,a,'asked');
+  return l.edgeOrder.map(function(k){return l.edges[k];}).filter(function(e){return e.a===a||(!l.directed&&e.b===a);})
+    .map(function(e){return {to:e.a===a?e.b:e.a,w:e.w};});};
+/* structures whose edges ARE the state: a union-find forest re-points a parent, a clone grows */
+Lanes.prototype.link=function(id,a,b,w){return graphAdd(graphOf(this,id),a,b,w);};
+Lanes.prototype.unlink=function(id,a,b){var l=graphOf(this,id),k=graphKey(l,a,b);graphEdge(l,a,b);
+  delete l.edges[k];l.edgeOrder.splice(l.edgeOrder.indexOf(k),1);};
+Lanes.prototype.weight=function(id,a,b,w){graphEdge(graphOf(this,id),a,b).w=w;};

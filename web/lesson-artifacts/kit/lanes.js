@@ -271,11 +271,12 @@ function LanePlayer(host,o){
         '<path d="M'+q.x0+','+(q.y+6)+' V'+q.y+' H'+q.x1+' V'+(q.y+6)+'"/>';
     return '<g class="'+cls+'" style="opacity:'+op.toFixed(3)+'">'+mark+'<text x="'+mid+'" y="'+(q.y-5)+'" text-anchor="middle">'+esc(q.name)+'</text></g>';
   }
+  /* a kind's own description may end its sentence; the join adds every full stop itself */
   function describe(s){
     return s.lanes.map(function(l){var K=laneKind(l.kind);if(K&&K.describe)return K.describe(l);var vs=l.items.map(function(x){return x?x.v+(x.sub?' ('+x.sub+')':''):'empty';});
       var what=l.kind==='stack'?'Stack '+l.label+(vs.length?', bottom to top: ':' is empty'):(l.kind==='queue'?'Queue '+l.label+(vs.length?', front to back: ':' is empty'):'Row '+l.label+': ');
       var ms=Object.keys(l.marks).map(function(n){return n+' at '+l.marks[n];}).concat(Object.keys(l.spans||{}).map(function(n){var r=l.spans[n];return n+(r.lo>r.hi?' empty':' from '+r.lo+' to '+r.hi);}));
-      return what+vs.join(', ')+(ms.length?'; '+ms.join(', '):'');}).join('. ')+'.';
+      return what+vs.join(', ')+(ms.length?'; '+ms.join(', '):'');}).map(function(x){return x.replace(/\.$/,'');}).join('. ')+'.';
   }
   return new StepPlayer(host,o,{
     mount:function(stage){svg=S('svg',{role:'img','class':'ln-svg'},stage);svg.innerHTML='<g class="lp-root"></g>';root=svg.querySelector('.lp-root');},
