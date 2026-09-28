@@ -65,12 +65,23 @@ export function fenceAttrs(meta: string | null | undefined) {
   return out;
 }
 
+// `==window==` marks a key term: the word a paragraph turns on, set in the family's ink so the eye
+// finds it again (owner, 2026-09-28, after The Grid Underneath's coloured headline word). Plain text
+// only, and the marks hug the words, as in Markdown's own emphasis: a spaced `a == b` is prose about
+// equality (a quiz says "built == num_courses"), while an opened `==word` never closed is a typo, so it
+// fails the build instead of showing its marks.
+function term(html: string): string {
+  const out = html.replace(/==(\S(?:[^=\n]*?\S)?)==/g, '<span class="term">$1</span>');
+  if (/==[^\s=]/.test(out)) fail(`unclosed ==term== in: ${html}`);
+  return out;
+}
+
 function inline(nodes: PhrasingContent[]): string {
   return nodes
     .map((n) => {
       switch (n.type) {
         case "text":
-          return esc(n.value);
+          return term(esc(n.value));
         case "inlineCode":
           return `<code>${esc(n.value)}</code>`;
         case "strong":
@@ -218,6 +229,31 @@ function fence(node: Code, ctx: Ctx): string {
   }
 }
 
+// A section's vignette (owner, 2026-09-28, after The Grid Underneath's `.vig` spot drawings): a small
+// line drawing beside its heading, in the kit's .vig classes so it repaints with the theme. The markup
+// is checked here rather than trusted: drawing elements only, and colour only through a class (an SVG
+// presentation attribute is not CSS, so a fill= would survive a theme change; CLAUDE.md §4).
+const VIG_TAGS = new Set(["g", "rect", "circle", "ellipse", "line", "path", "polyline", "polygon"]);
+const VIG_ATTRS = new Set(["class", "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r", "d", "points", "x1", "y1", "x2", "y2", "transform", "stroke-dasharray"]);
+const VIG_CLASSES = new Set(["st", "sc", "fa", "fk", "fc", "fr", "fg", "fp"]);
+
+function vignette(a: ReturnType<typeof fenceAttrs>, body: string): string {
+  if (!a.label.trim()) fail("a vig fence needs a quoted description");
+  const box = a.kv.viewBox ?? "0 0 240 112";
+  if (!/^0 0 \d+ \d+$/.test(box)) fail(`vig viewBox must be "0 0 w h": ${box}`);
+  const rest = body.replace(/<(\/?)([a-z]+)((?:\s+[\w-]+="[^"<>]*")*)\s*(\/?)>/g, (_, close: string, tag: string, attrs: string) => {
+    if (!VIG_TAGS.has(tag)) fail(`vig: <${tag}> is not a drawing element`);
+    if (close) return "";
+    for (const [, k, v] of attrs.matchAll(/([\w-]+)="([^"]*)"/g)) {
+      if (!VIG_ATTRS.has(k!)) fail(`vig: attribute ${k} on <${tag}> (colour goes through a class)`);
+      if (k === "class") for (const c of v!.split(/\s+/)) if (!VIG_CLASSES.has(c)) fail(`vig: class "${c}" is not a vignette class`);
+    }
+    return "";
+  });
+  if (rest.trim()) fail(`vig: text or markup outside drawing elements: ${rest.trim().slice(0, 60)}`);
+  return `<svg class="vig" viewBox="${box}" role="img" aria-label="Illustration: ${attr(a.label)}">${body.trim()}</svg>`;
+}
+
 const isCallout = (html: string) => html.startsWith('<div class="callout ');
 
 function blocks(nodes: RootContent[], ctx: Ctx): string {
@@ -261,9 +297,13 @@ export function renderLesson(source: string): Rendered {
     if (!open) return;
     const { head, nodes } = open;
     claimId(ctx, head.id, "section");
+    const vigs = nodes.filter((n) => n.type === "code" && n.lang === "vig");
+    if (vigs.length > 1 || (vigs.length && nodes[0] !== vigs[0])) fail(`#${head.id}: one vig fence, straight after the heading`);
+    const vig = vigs.length ? vignette(fenceAttrs((vigs[0] as Code).meta), (vigs[0] as Code).value) : "";
+    if (vig) nodes.shift();
     const banner = head.banner ? `<div class="banner" data-b="${head.id}"></div>` : "";
     const plain = head.title.replace(/<[^>]+>/g, "");
-    sections.push({ id: head.id, toc: head.toc ?? plain, html: `<section class="sec" id="${head.id}"><h2>${head.title}</h2>${banner}\n${blocks(nodes, ctx)}\n</section>` });
+    sections.push({ id: head.id, toc: head.toc ?? plain, html: `<section class="sec" id="${head.id}"><h2>${head.title}</h2>${vig}${banner}\n${blocks(nodes, ctx)}\n</section>` });
   };
   for (const n of root.children) {
     if (n.type === "heading" && n.depth === 2) {

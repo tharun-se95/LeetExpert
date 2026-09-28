@@ -57,7 +57,7 @@
 .lhead h1{font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em}
 .lhead .lede{font-size:18px;color:var(--mut);max-width:60ch}
 .sec{padding-block:44px;border-top:1px solid var(--hair2);scroll-margin-top:64px}
-.sec>h2{font-size:clamp(1.4rem,2.6vw,1.9rem);margin-bottom:18px}
+.sec>h2,.sec-head>h2{font-size:clamp(1.4rem,2.6vw,1.9rem);margin-bottom:18px}
 .sec p{max-width:66ch;margin-bottom:14px}
 .sec p:last-child{margin-bottom:0}
 .sec code,.notes code,.fb code,.pq code{font-family:'JetBrains Mono',monospace;font-size:.88em;background:var(--well);padding:1px 6px;border-radius:5px}
@@ -147,7 +147,7 @@ body{font-size:13.5px;line-height:1.55}
 .kick{font-size:10.5px}
 .chips span{font-size:10.5px;padding:3px 8px}
 .hero-art{padding:10px} .hero-num{font-size:26px} #heroCap{font-size:12.5px}
-.sec{padding-block:30px} .sec>h2{font-size:clamp(1.15rem,2vw,1.45rem);margin-bottom:12px}
+.sec{padding-block:30px} .sec>h2,.sec-head>h2{font-size:clamp(1.15rem,2vw,1.45rem);margin-bottom:12px}
 .sec p{margin-bottom:10px;font-size:14px}
 .sec code,.notes code,.fb code,.pq code{font-size:.86em;padding:0 5px}
 .ex{padding:2px 12px;margin:12px 0} .ex div{padding:7px 0;font-size:11.5px}
@@ -192,7 +192,7 @@ html,body{overflow-x:clip}
 
 /* Section marks: one icon per section, the same in the heading and the contents. */
 .sec{border-top:0;background:linear-gradient(90deg,transparent,var(--hair2) 10%,var(--hair2) 90%,transparent) top/100% 1px no-repeat}
-.sec>h2{display:flex;align-items:center;gap:12px}
+.sec>h2,.sec-head>h2{display:flex;align-items:center;gap:12px}
 .sec-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;font-size:18px;color:var(--fam);background:color-mix(in srgb,var(--fam) 11%,var(--card));border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2))}
 .toc a{display:flex;align-items:center;gap:9px}
 .toc a .i{font-size:14px;color:var(--mut);transition:color .2s}
@@ -276,3 +276,14 @@ html,body{overflow-x:clip}
   .split .beat .lead{order:-1}
 }
 @media (prefers-reduced-motion:reduce){.split .toc{transition:none}}
+
+/* a section's vignette (lessonMd.ts vignette): a spot drawing on the heading's row, as The Grid
+   Underneath sets one beside each system's title. Decoration beside the heading, so it gives way
+   first: gone on a phone, where it would push the heading's first line down. */
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:18px}
+.sec-head>h2{margin-bottom:0}
+.sec-head .vig{width:220px;flex:none;color:var(--mut)}
+@media (max-width:760px){.sec-head .vig{display:none}.sec-head{display:block}}
+/* a key term (lessonMd.ts term): the family's colour as a text ink (shared.py text_ink), AA on
+   every surface prose sits on; weight, not a slant, since Space Grotesk has no italic */
+.term{color:var(--fam-ink);font-weight:500}

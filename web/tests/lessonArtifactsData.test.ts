@@ -147,6 +147,24 @@ Text.
     expect(page("## S {#s}\n\n`a >= b` and a < b.\n").html).toContain("<p><code>a >= b</code> and a &lt; b.</p>");
   });
 
+  it("marks ==key terms== in the family's ink, in prose and table cells alike", () => {
+    const r = page("## S {#s}\n\nHold a ==window== and a **==set==**.\n");
+    expect(r.html).toContain('<p>Hold a <span class="term">window</span> and a <b><span class="term">set</span></b>.</p>');
+    expect(page("## S {#s}\n\nStop when built == n.\n").html).toContain("<p>Stop when built == n.</p>");
+  });
+
+  it("draws a section's vignette beside its heading, named for a screen reader", () => {
+    const r = page('## S {#s banner}\n\n```vig "Tiles in a row"\n<rect class="fa" x="1" y="2" width="3" height="4" rx="1"/><path class="sc" d="M0 0H9"/>\n```\n\nText.\n');
+    expect(r.html).toContain('<section class="sec" id="s"><h2>S</h2><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Tiles in a row"><rect class="fa" x="1" y="2" width="3" height="4" rx="1"/><path class="sc" d="M0 0H9"/></svg><div class="banner" data-b="s"></div>');
+  });
+
+  it("the split-layout lesson draws a vignette for every section (#63)", () => {
+    const r = renderLesson(readFileSync(join(ARTIFACTS, "longest-substring-without-repeating", "lesson.md"), "utf8"));
+    const secs = [...r.html.matchAll(/<section class="sec" id="(\w+)"><h2>.*?<\/h2>(<svg class="vig")?/g)];
+    expect(secs.length).toBeGreaterThan(5);
+    for (const [, id, vig] of secs) expect(vig, `#${id}`).toBeTruthy();
+  });
+
   describe("rejects what the rules forbid", () => {
     const cases: [string, string, RegExp][] = [
       ["two adjacent callouts", "```key\nA.\n```\n\n```warn\nB.\n```", /adjacent/],
@@ -160,6 +178,13 @@ Text.
       ["raw HTML outside an html fence", "<div>raw</div>", /raw HTML block/],
       ["a reveal with no button label", "```reveal #r\nA.\n```", /button label/],
       ["an examples line without →", "```examples\nno arrow\n```", /no →/],
+      ["an unclosed key term", "A ==window without its end.", /==term==/],
+      ["a vignette with no description", '```vig\n<rect class="fa"/>\n```', /quoted description/],
+      ["a vignette below the section's prose", 'Text.\n\n```vig "x"\n<rect class="fa"/>\n```', /straight after the heading/],
+      ["a vignette coloured by attribute", '```vig "x"\n<rect fill="#f00"/>\n```', /colour goes through a class/],
+      ["a vignette class the kit does not paint", '```vig "x"\n<rect class="hot"/>\n```', /not a vignette class/],
+      ["text drawn inside a vignette", '```vig "x"\n<text>hi</text>\n```', /not a drawing element/],
+      ["loose words in a vignette", '```vig "x"\nhello <rect class="fa"/>\n```', /outside drawing elements/],
     ];
     it.each(cases)("%s", (_, body, err) => {
       expect(() => page("## S {#s}\n\n" + body + "\n")).toThrow(err);

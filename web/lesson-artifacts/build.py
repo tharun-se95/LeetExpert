@@ -150,7 +150,7 @@ def _kind(attrs):
     cls = set((attrs.get("class") or "").split())
     if cls & {"ex", "widget", "rosetta"} or "data-code-file" in attrs or attrs.get("id") == "solbox":
         return "vis"
-    if cls & {"banner", "duo", "vgrid"} or attrs.get("id") == "qlist":
+    if cls & {"banner", "duo", "vgrid", "vig"} or attrs.get("id") == "qlist":
         return "full"
     return "text"
 
@@ -216,6 +216,8 @@ def decorate(body, split=False):
     nav = re.search(r'<nav class="toc".*?</nav>', body, re.S)
     toc = re.sub(r'<a href="#([a-z]+)">', lambda m: f'<a href="#{m[1]}">{_icon(m[1])}', nav[0])
     body = body[:nav.start()] + toc + body[nav.end():]
+    # a vignette shares its heading's row; wrapped last, since every splice above keys on <section><h2>
+    body = re.sub(r'(<h2>.*?</h2>)(<svg class="vig".*?</svg>)', r'<div class="sec-head">\1\2</div>', body, flags=re.S)
     # The kinetic headline's word spans are made here, not in the browser, where the split re-broke
     # the heading's lines after load and moved the hero card (layout shift). It runs after the
     # contents splice above, whose offsets were taken on the unsplit body.
