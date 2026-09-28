@@ -1,0 +1,78 @@
+/* kit/graphs.css: the graph lane (kit/graphs.js). Nodes and tones reuse kit/lanes.css.
+   Edges run in the under layer, coloured through CSS classes, never presentation attributes.
+   Weight is told by stroke width as well as colour so state does not depend on colour alone. */
+
+.gr-edge line {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+.gr-edge path {
+  stroke: none;
+}
+
+/* idle: quiet hairline */
+.gr-edge.idle line {
+  stroke: color-mix(in srgb, var(--fg) 28%, transparent);
+  stroke-width: 1.4px;
+}
+.gr-edge.idle path {
+  fill: color-mix(in srgb, var(--fg) 28%, transparent);
+}
+
+/* seen: examined, mid tone */
+.gr-edge.seen line {
+  stroke: var(--mut);
+  stroke-width: 1.8px;
+}
+.gr-edge.seen path {
+  fill: var(--mut);
+}
+
+/* tree: chosen edge (BFS/DFS tree, MST, shortest path) - green ink, thicker */
+.gr-edge.tree line {
+  stroke: var(--g-ink);
+  stroke-width: 2.8px;
+}
+.gr-edge.tree path {
+  fill: var(--g-ink);
+}
+
+/* cur: currently examined edge - orange ink, thicker */
+.gr-edge.cur line {
+  stroke: var(--o-ink);
+  stroke-width: 2.8px;
+}
+.gr-edge.cur path {
+  fill: var(--o-ink);
+}
+
+/* bad: rejected edge, cycle closer - red ink */
+.gr-edge.bad line {
+  stroke: var(--r-ink);
+  stroke-width: 2px;
+}
+.gr-edge.bad path {
+  fill: var(--r-ink);
+}
+
+/* hi: highlighted edge */
+.gr-edge.hi line {
+  stroke: var(--fam);
+  stroke-width: 3px;
+}
+.gr-edge.hi path {
+  fill: var(--fam);
+}
+
+/* weight label paper plate: card surface ensures AA contrast */
+.gr-plate {
+  fill: var(--card);
+  stroke: color-mix(in srgb, var(--fg) 16%, transparent);
+  stroke-width: 1px;
+}
+/* --mk ink on --card clears 4.5:1 WCAG AA */
+.gr-weight {
+  font: 600 11px 'JetBrains Mono', monospace;
+  fill: var(--mk);
+}

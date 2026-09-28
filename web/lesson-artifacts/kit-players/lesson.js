@@ -377,14 +377,52 @@ function topKSteps(){
   return R.steps;
 }
 
-mountLesson();
-new LanePlayer($('#stackw .lvhost'),{id:'stk',loop:true,autoplay:true,inv:[['size matches','size equals the number of items',sizeOk('s')]]}).load(stackSteps());
-mountLaneTabs($('#qtabs'),[{name:'Queue from two stacks',steps:twoStackSteps},{name:'Deque',steps:dequeSteps},{name:'Ring buffer',steps:ringSteps}],{id:'q'});
-new LanePlayer($('#frames .lvhost'),{id:'fr',loop:true,autoplay:true}).load(frameSteps());
-new LanePlayer($('#mono .lvhost'),{id:'mono',loop:true,autoplay:true}).load(monoSteps());
-mountLaneTabs($('#atabs'),[{name:'Reverse in place',steps:reverseSteps},{name:'Sliding window',steps:windowSteps},{name:'Resize',steps:resizeSteps},{name:'Count letters',steps:countSteps}],{id:'a'});
-mountLaneTabs($('#gtabs'),[{name:'Spiral order',steps:spiralSteps},{name:'Transpose',steps:transposeSteps},{name:'Number of islands',steps:islandsSteps}],{id:'g'});
-new LanePlayer($('#prefix .lvhost'),{id:'pfx',loop:true,autoplay:true,inv:[['prefix holds','every filled prefix cell equals the sum of its block',prefixHolds]]}).load(prefixSteps());
-mountLaneTabs($('#ttabs'),[{name:'Chaining',steps:chainingSteps},{name:'Resize',steps:resizeChainSteps},{name:'LCS table',steps:lcsSteps}],{id:'t'});
-mountLaneTabs($('#htabs'),[{name:'Push and pop',steps:pushPopSteps},{name:'Heapify',steps:heapifySteps},{name:'Top k',steps:topKSteps}],
-  {id:'h',inv:[['heap holds','every parent dominates both children',heapInv]]});
+/* ---------- graphs (kit/graphs.js) ---------- */
+function bfsSteps() {
+  var NODES = [{x: 0, d: 0, l: 'A'}, {x: 2, d: 0, l: 'B'}, {x: 0, d: 1, l: 'C'}, {x: 2, d: 1, l: 'D'}];
+  var EDGES = [[0, 1], [0, 2], [1, 3], [2, 3]];
+  var M = new Lanes([{id: 'g', kind: 'graph', label: 'graph', nodes: NODES, edges: EDGES}, {id: 'q', kind: 'queue', label: 'queue'}]), R = recorder(M);
+  for(var i=0;i<NODES.length;i++)M.put('g',i,NODES[i].l);
+  R.rec('BFS from A: explore by levels.', {done: true});
+  M.edge('g', 0, 1, 'tree');
+  M.copy('g', 1, 'q');
+  R.rec('Discover B via edge 0-1.', {hi: ['front'], done: true});
+  return R.steps;
+}
+function kahnSteps() {
+  var NODES = [{x: 0, d: 1, l: '0'}, {x: 1, d: 0, l: '1'}, {x: 2, d: 1, l: '2'}];
+  var EDGES = [[0, 1], [0, 2]];
+  var M = new Lanes([{id: 'g', kind: 'graph', label: 'DAG', directed: true, nodes: NODES, edges: EDGES}, {id: 'order', kind: 'row', cap: 3, label: 'topo order', idx: true}]), R = recorder(M);
+  for(var i=0;i<3;i++)M.put('g',i,NODES[i].l);
+  R.rec('Kahn topological sort: process nodes in dependency order.', {done: true});
+  M.copy('g', 0, 'order', 0);
+  R.rec('Process node 0.', {done: true});
+  return R.steps;
+}
+function unionFindSteps() {
+  var NODES = [{x: 0, d: 0, l: '0'}, {x: 1, d: 0, l: '1'}, {x: 2, d: 0, l: '2'}];
+  var M = new Lanes([{id: 'forest', kind: 'graph', label: 'forest', directed: true, nodes: NODES}, {id: 'parent', kind: 'row', cap: 3, label: 'parent', idx: true}]), R = recorder(M);
+  for(var i=0;i<3;i++){M.put('forest',i,i);M.put('parent',i,i);}
+  R.rec('Union-find: each node is its own parent.', {done: true});
+  M.link('forest', 0, 1);
+  M.put('parent', 0, 1);
+  R.rec('Union: make 1 the parent of 0.', {done: true});
+  return R.steps;
+}
+function dijkstraSteps() {
+  var NODES = [{x: 0, d: 0, l: 'A'}, {x: 2, d: 0, l: 'B'}, {x: 0, d: 1, l: 'C'}];
+  var EDGES = [[0, 1, 4], [0, 2, 2], [2, 1, 1]];
+  var M = new Lanes([{id: 'g', kind: 'graph', label: 'weighted', nodes: NODES, edges: EDGES}, {id: 'dist', kind: 'row', cap: 3, label: 'distance', keys: ['A', 'B', 'C']}]), R = recorder(M);
+  for(var i=0;i<3;i++){M.put('g',i,NODES[i].l);M.put('dist',i,i===0?'0':'∞');}
+  R.rec('Dijkstra: shortest paths from A.', {hi: ['lane:dist'], done: true});
+  M.put('dist', 2, 2);
+  R.rec('Relax edge A-C (weight 2).', {hi: ['lane:dist'], done: true});
+  return R.steps;
+}
+
+mountLaneTabs($('#grtabs'),[
+  {name:'Breadth-first search',steps:bfsSteps},
+  {name:'Topological sort (Kahn)',steps:kahnSteps},
+  {name:'Union-find',steps:unionFindSteps},
+  {name:'Shortest paths (Dijkstra)',steps:dijkstraSteps}
+],{id:'gr'});

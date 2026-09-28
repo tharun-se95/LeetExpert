@@ -86,3 +86,12 @@ The tree IS the array: node `i`'s children sit at `2i+1` and `2i+2`, its parent 
 ```widget #htabs "Three heap walkthroughs"
 <div class="extabs" role="group" aria-label="Choose a heap walkthrough"></div><div class="lvhost"></div>
 ```
+
+## Graphs {#graphs}
+
+A graph is a fixed lane where each slot is a node. Edges run in the under layer from border to border, each with a state: idle, seen, current, tree or bad. Directed edges carry arrowheads, and weights sit on paper plates.
+
+```widget #grtabs "Four graph walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a graph walkthrough"></div><div class="lvhost"></div>
+```
+

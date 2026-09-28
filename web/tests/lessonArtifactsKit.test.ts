@@ -15,7 +15,7 @@ import { runInNewContext } from "node:vm";
 const ARTIFACTS = join(__dirname, "..", "lesson-artifacts");
 
 type Item = { id: number; v: string; sub: string | null; tone: string | null } | null;
-type Lane = { id: string; kind: string; items: Item[]; marks: Record<string, number>; spans: Record<string, { lo: number; hi: number }> };
+type Lane = { id: string; kind: string; items: Item[]; marks: Record<string, number>; spans: Record<string, { lo: number; hi: number }>; nodes?: unknown[]; edgeMap?: Record<string, unknown>; edgeList?: unknown[] };
 type Snap = { note: string; lanes: Lane[]; ends: Record<string, string>; from: Record<number, { lane: string; slot: number }>; fields: [string, unknown][] };
 interface Model {
   push(id: string, v: unknown, sub?: unknown): { id: number; v: unknown };
@@ -34,6 +34,11 @@ interface Model {
   mark(id: string, name: string, slot: number | null): void;
   size(id: string): number;
   snap(note: string, o?: object): Snap;
+  edge(id: string, a: number, b: number, state?: string): { state?: string; w?: unknown };
+  link(id: string, a: number, b: number, w?: unknown): { state?: string; w?: unknown };
+  unlink(id: string, a: number, b: number): void;
+  weight(id: string, a: number, b: number, w: unknown): void;
+  lane(id: string): Lane;
 }
 type Kit = { Lanes: new (defs: object[], o?: object) => Model };
 
@@ -464,5 +469,122 @@ describe("lesson artifacts kit: build.py ships a player with its chrome", () => 
     expect(optional("var d={kind:'heap'};")).toEqual(["player", "lanes", "heaps"]);
     expect(optional('new Lanes([{id:"g",kind:"grid"}]);var d={kind:"heap"};')).toEqual(["player", "lanes", "grids", "heaps"]);
     expect(optional("drawTheHero()")).toEqual([]);
+    expect(optional("var g={kind:'graph'};")).toEqual(["player", "lanes", "graphs"]);
+    expect(optional('new Lanes([{id:"g",kind:"graph",nodes:[],edges:[]}])')).toEqual(["player", "lanes", "graphs"]);
+  });
+});
+
+describe("lesson artifacts kit: the graph lane", () => {
+  const graphKit = () => {
+    const ctx: Record<string, unknown> = {};
+    const lanes = readFileSync(join(ARTIFACTS, "kit", "lanes.js"), "utf8");
+    const graphs = readFileSync(join(ARTIFACTS, "kit", "graphs.js"), "utf8");
+    runInNewContext(lanes + "\n" + graphs + "\nthis.Lanes=Lanes;", ctx);
+    return ctx as unknown as Kit;
+  };
+
+  it("creates a graph with nodes and edges", () => {
+    const { Lanes } = graphKit();
+    const M = new Lanes([{
+      id: "g", kind: "graph", label: "Test",
+      nodes: [{ x: 0, d: 0 }, { x: 1, d: 0 }, { x: 2, d: 0 }],
+      edges: [[0, 1], [1, 2, 5]]
+    }]);
+    M.put("g", 0, "A");
+    M.put("g", 1, "B");
+    M.put("g", 2, "C");
+    expect(M.size("g")).toBe(3);
+    const s = M.snap("init");
+    expect(s.lanes[0]!.nodes).toHaveLength(3);
+  });
+
+  it("edge() gets and sets edge state", () => {
+    const { Lanes } = graphKit();
+    const M = new Lanes([{
+      id: "g", kind: "graph", label: "Test",
+      nodes: [{ x: 0, d: 0 }, { x: 1, d: 0 }],
+      edges: [[0, 1]]
+    }]);
+    M.put("g", 0, "A");
+    M.put("g", 1, "B");
+    expect(M.edge("g", 0, 1).state).toBe("idle");
+    M.edge("g", 0, 1, "seen");
+    expect(M.edge("g", 0, 1).state).toBe("seen");
+    M.edge("g", 1, 0, "tree");
+    expect(M.edge("g", 0, 1).state).toBe("tree");
+  });
+
+  it("link() adds an edge, unlink() removes it", () => {
+    const { Lanes } = graphKit();
+    const M = new Lanes([{
+      id: "g", kind: "graph", label: "Test",
+      nodes: [{ x: 0, d: 0 }, { x: 1, d: 0 }, { x: 2, d: 0 }],
+      edges: [[0, 1]]
+    }]);
+    M.put("g", 0, "A");
+    M.put("g", 1, "B");
+    M.put("g", 2, "C");
+    M.link("g", 1, 2, 3);
+    expect(M.edge("g", 1, 2).w).toBe(3);
+    M.unlink("g", 1, 2);
+    expect(() => M.edge("g", 1, 2)).toThrow(/no edge/);
+  });
+
+  it("undirected edges lookup in both orders", () => {
+    const { Lanes } = graphKit();
+    const M = new Lanes([{
+      id: "g", kind: "graph", label: "Test",
+      nodes: [{ x: 0, d: 0 }, { x: 1, d: 0 }],
+      edges: [[0, 1]], directed: false
+    }]);
+    M.put("g", 0, "A");
+    M.put("g", 1, "B");
+    expect(M.edge("g", 0, 1).state).toBe("idle");
+    expect(M.edge("g", 1, 0).state).toBe("idle");
+  });
+
+  it("directed edges find only in stored order", () => {
+    const { Lanes } = graphKit();
+    const M = new Lanes([{
+      id: "g", kind: "graph", label: "Test",
+      nodes: [{ x: 0, d: 0 }, { x: 1, d: 0 }],
+      edges: [[0, 1]], directed: true
+    }]);
+    M.put("g", 0, "A");
+    M.put("g", 1, "B");
+    expect(M.edge("g", 0, 1).state).toBe("idle");
+    expect(() => M.edge("g", 1, 0)).toThrow(/no edge/);
+  });
+
+  it("snapshot isolates edges", () => {
+    const { Lanes } = graphKit();
+    const M = new Lanes([{
+      id: "g", kind: "graph", label: "Test",
+      nodes: [{ x: 0, d: 0 }, { x: 1, d: 0 }, { x: 2, d: 0 }],
+      edges: [[0, 1]]
+    }]);
+    M.put("g", 0, "A");
+    M.put("g", 1, "B");
+    M.put("g", 2, "C");
+    const before = M.snap("before");
+    M.edge("g", 0, 1, "seen");
+    M.link("g", 1, 2, 7);
+    const after = M.snap("after");
+    expect(lane(before, "g").edgeList).toHaveLength(1);
+    expect(lane(after, "g").edgeList).toHaveLength(2);
+  });
+
+  it("rejects out-of-range and duplicate edges", () => {
+    const { Lanes } = graphKit();
+    const M = new Lanes([{
+      id: "g", kind: "graph", label: "Test",
+      nodes: [{ x: 0, d: 0 }, { x: 1, d: 0 }],
+      edges: []
+    }]);
+    M.put("g", 0, "A");
+    M.put("g", 1, "B");
+    expect(() => M.link("g", 0, 2)).toThrow(/out of range/);
+    M.link("g", 0, 1);
+    expect(() => M.link("g", 0, 1)).toThrow(/already exists/);
   });
 });
