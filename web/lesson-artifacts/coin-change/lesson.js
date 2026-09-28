@@ -154,6 +154,7 @@ function tableFrames(coins,amount){
   frames.push({b:{ix:ix,dp:fin},note:tr.ans<0?'Done: dp['+amount+'] is ∞, so no order adds up to exactly '+amount+'. The answer is -1.':'Done: dp['+amount+'] = '+tr.ans+'. Following the winning last size back from '+amount+' gives '+path.join(' + ')+' = '+amount+'.',stats:[['answer',tr.ans]],ev:'key'});
   var ref=bfsFewest(coins,amount);if(ref!==tr.ans)throw new Error('frames disagree with breadth-first search');
   return {frames:frames,step:1.0,poster:frames.length-1,
+    legend:[['cur','amount being solved'],['win','an entry it reads'],['dim','unreachable, ∞'],['done','cell 0, then the sizes used']],
     boards:[{id:'ix',label:'amount',g:0,cols:n,rows:1,cap:44,wide:true},{id:'dp',label:'fewest instances',g:0,cols:n,rows:1,cap:44,wide:true}],
     label:'Filling the table for sizes '+inputFor(coins)+' and capacity '+amount+'.'};
 }

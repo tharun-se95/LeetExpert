@@ -97,7 +97,7 @@ In the code | In the system
 `dp[0] = 0` | zero vCPUs needs zero instances
 ```
 
-Watch the table fill. The orange cell is the amount being solved. The blue cells are the entries it reads, one for each size that fits.
+Watch the table fill. At each step one cell is the amount being solved, and the entries it reads are marked beside it, one for each size that fits. The key above the table tells them apart.
 
 ```widget #stepper "Fill the table"
 <div class="extabs" role="group" aria-label="Choose an order"></div><div class="plhost"></div>

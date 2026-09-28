@@ -249,6 +249,7 @@ function renderSystem(host,id,n){
   text.appendChild(w);
   var wid=el('div','widget navy');wid.innerHTML='<div class="wl">'+def.label+'</div>'+playerHtml('p-'+id,def.label);
   scene.appendChild(wid);duo.appendChild(text);duo.appendChild(scene);sec.appendChild(duo);host.appendChild(sec);
+  if(def.legend)stateKey(wid,def.legend,wid.querySelector('.player'));
   var sc=new Scene(def,wid.querySelector('.player'));onRepaint(function(){sc.refresh();});
   inView(wid,function(){sc.start();});
 }

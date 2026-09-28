@@ -114,13 +114,13 @@ function sceneAlerts(){
   var st=mk(R*C,function(i){return {k:G[Math.floor(i/C)][i%C]?'bad':'idle',t:''};});
   var land=0;G.forEach(function(row){row.forEach(function(v){land+=v;});});
   var frames=[],count=0,kind='acc',first=false,prev=-1;
-  frames.push({b:{g:cp(st)},note:'A thermal map of a server floor. Red cells are racks over their temperature limit, and each one would page someone on its own.',stats:[['hot racks',land],['incidents',0]]});
+  frames.push({b:{g:cp(st)},note:'A thermal map of a server floor. The hot cells are racks over their temperature limit, and each one would page someone on its own.',stats:[['hot racks',land],['incidents',0]]});
   function sink(r,c){
     if(r<0||r>=R||c<0||c>=C||g[r][c]!==1)return;
     g[r][c]=2;
     if(prev>=0)st[prev]={k:kind,t:''};
     var i=r*C+c;st[i]={k:'cur',t:''};prev=i;
-    frames.push({b:{g:cp(st)},note:first?'Hot and not yet visited at ('+r+', '+c+'): incident '+count+' starts here. Mark it, then sink every hot neighbour.':'('+r+', '+c+') touches the region, so it joins incident '+count+'.',
+    frames.push({b:{g:cp(st)},note:first?'Hot and not yet visited at ('+r+', '+c+'): incident '+count+' starts here, in a shade of its own. Mark it, then sink every hot neighbour.':'('+r+', '+c+') touches the region, so it joins incident '+count+'.',
       stats:[['hot racks',land],['incidents',count]],ev:first?'key':null});
     first=false;
     [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){sink(r+d[0],c+d[1]);});
@@ -129,7 +129,7 @@ function sceneAlerts(){
   if(prev>=0)st[prev]={k:kind,t:''};
   if(count!==unionIslands(G))throw new Error('alerts scene check failed');
   frames.push({b:{g:cp(st)},note:'Scan finished: '+land+' hot racks are '+count+' incidents. Each cell was visited once, so the cost grows with the grid, O(m · n).',stats:[['hot racks',land],['incidents',count]],ev:'key'});
-  return {frames:frames,step:.2,poster:frames.length-1,loop:true,boards:[{id:'g',rows:R,cols:C,g:0,label:'rack temperature map, 7 × 10'}],meta:{land:land,count:count},label:'A flood fill grouping hot racks into incidents'};
+  return {frames:frames,step:.2,poster:frames.length-1,loop:true,legend:[['bad','hot, not yet grouped'],['cur','visiting now']],boards:[{id:'g',rows:R,cols:C,g:0,label:'rack temperature map, 7 × 10'}],meta:{land:land,count:count},label:'A flood fill grouping hot racks into incidents'};
 }
 
 /* 5. camera: transpose, then reverse each row, inside one grid */
@@ -334,6 +334,7 @@ function renderSystem(host,id,n){
   text.appendChild(w);
   var wid=el('div','widget navy');wid.innerHTML='<div class="wl">'+def.label+'</div>'+playerHtml('p-'+id,def.label);
   scene.appendChild(wid);duo.appendChild(text);duo.appendChild(scene);sec.appendChild(duo);host.appendChild(sec);
+  if(def.legend)stateKey(wid,def.legend,wid.querySelector('.player'));
   var sc=new Scene(def,wid.querySelector('.player'));onRepaint(function(){sc.refresh();});
   inView(wid,function(){sc.start();});
   return title;
