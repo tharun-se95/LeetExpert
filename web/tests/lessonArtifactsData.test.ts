@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readdirSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { spawnSync } from "node:child_process";
 import { renderLesson } from "../lesson-artifacts/lessonMd";
 
 /**
@@ -26,8 +27,22 @@ const page = (body: string) => renderLesson(FRONT + body);
 const QUIZ = (q: object) => "```quiz\n" + JSON.stringify({ questions: [q] }) + "\n```";
 const Q = { question: "Why?", options: ["a", "b", "c"], answer: 1, explanation: "Because." };
 
+/* kit fixtures build.py declares under "specimens": written in the same dialect, but not lessons */
+const SPECIMENS: string[] = JSON.parse(spawnSync("python3", ["-c",
+  `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(json.dumps([s for m,s,*_ in build.LESSONS if m=="specimens"]))`],
+  { encoding: "utf8" }).stdout);
+
 describe("lesson artifacts: lesson.md", () => {
-  const lessons = readdirSync(ARTIFACTS).filter((d) => existsSync(join(ARTIFACTS, d, "lesson.md")));
+  const written = readdirSync(ARTIFACTS).filter((d) => existsSync(join(ARTIFACTS, d, "lesson.md")));
+  const lessons = written.filter((d) => !SPECIMENS.includes(d));
+
+  it("kit specimens render in the dialect too, with no raw html fences", () => {
+    expect(SPECIMENS).toEqual(["kit-players"]);
+    for (const s of SPECIMENS) {
+      expect(written).toContain(s);
+      expect(renderLesson(readFileSync(join(ARTIFACTS, s, "lesson.md"), "utf8")).rawBlocks).toBe(0);
+    }
+  });
 
   it("the five verified lessons are written as lesson.md, with no body.html left", () => {
     expect(lessons.sort()).toEqual([

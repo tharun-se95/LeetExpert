@@ -72,7 +72,9 @@ follow the callout rules, and solutions never reach the DOM before the reveal.
 - a cumulative layout shift above 0 while every player and banner plays one full cycle;
 - horizontal page overflow at either width;
 - any text below WCAG AA contrast against the surface it renders on (computed colours on the
-  rendered DOM, including SVG text on navy cards), mid-animation included: a scene cell between two
+  rendered DOM, including SVG text on navy cards), on every step of every step player (`kit/player.js`),
+  each tab, settled — until #22 the gate sampled a player once, on its first step, which is mostly the empty
+  structure, so no later step's text had ever been measured — and mid-animation included: a scene cell between two
   states is a blend of their fills, and its ink is never blended but chosen by `legible()` in
   `kit/engine.js` (the endpoint ink that reads better, else one pushed toward whichever of black and
   white contrasts more with that blend, only as far as 4.5:1);
@@ -106,6 +108,10 @@ hold the bar. Before any batch:
 2. **Shared players in `kit/`.** The linked-list `ListPlayer` (fixed canvas, soft motion, loop,
    invariants panel) moves into the kit, and the same contract is built for arrays/strings,
    grids, trees, graphs, stacks/queues, heaps and tables, so a module's lessons reuse one player.
+   The contract is `StepPlayer` in `kit/player.js` (#22): the chrome and clock, with a view per
+   structure. `ListPlayer` and `LanePlayer` (`kit/stacks.js`: stacks, queues, deques, ring buffers,
+   call frames, several lanes at once) are views on it; the `kit-players` specimen holds each new
+   player to the browser gate before a lesson depends on it.
 3. **Family colour for every module.** `big-o`, `getting-started` and `math-for-dsa` have no
    family in `moduleFamily`; the kit needs one to paint. Decision D4: new family hues, designed in the app.
 4. **Dark mode settled.** The dark theme is The Grid Underneath's palette, with a navy code well

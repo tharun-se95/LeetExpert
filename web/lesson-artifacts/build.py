@@ -113,11 +113,18 @@ def decorate(body):
 
 # Kit modules only some lessons need, with the names that show a lesson uses them. A lesson that
 # does not name them does not ship them (CLAUDE.md §5: 220 lessons must not pay for five).
-KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun(")}
+KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun("),
+                "stacks": ("LanePlayer", "new Lanes(", "mountLaneTabs(")}
+# what a module needs loaded before it, in the order the page must read them
+KIT_DEPS = {"lists": ["player"], "stacks": ["player"]}
 
 
 def optional_kit(lesson_js):
-    return [name for name, marks in KIT_OPTIONAL.items() if any(m in lesson_js for m in marks)]
+    out = []
+    for name, marks in KIT_OPTIONAL.items():
+        if any(m in lesson_js for m in marks):
+            out += [d for d in KIT_DEPS.get(name, []) + [name] if d not in out]
+    return out
 
 
 # the latin files every page needs before it can be shown; the rest load on demand
@@ -195,6 +202,9 @@ LESSONS = [
     ("linked-lists", "build-a-linked-list", "pointer-movement", "Build a Linked List From Scratch"),
     # overviews: one page across several modules (not a lesson, so not a ledger row; spec §2)
     ("overviews", "linear-structures", "linear-traversal", "The Line Underneath"),
+    # specimens: kit fixtures, not lessons or overviews, so not ledger rows. The browser gate runs them so a
+    # player is held to the lesson bar before any lesson depends on it (#22).
+    ("specimens", "kit-players", "linear-traversal", "Kit Players"),
 ]
 
 if __name__ == "__main__":
