@@ -89,7 +89,11 @@ it writes the ledger.
   `check.py` for a concept lesson.
 - `light` / `dark` run `browser-gate.mjs` (real Chrome, 1366 and 375 px): console and page errors, layout
   shift (floor 0.001), sideways scroll, AA contrast against what is painted, accessible names, reveals hidden,
-  and a still page under reduced motion. Screenshots land in `dist/_gate/`.
+  and a still page under reduced motion. It then drives every widget and asserts where each lands (#24):
+  reveals open with content and close empty; a quiz or predict answer locks the options, marks one right
+  and gives matching feedback; a step player's counter and current step follow each click; a walkthrough's
+  next and speed work; tabs press; every other widget button is clicked once with no error. Hovered and
+  answered states are measured for contrast too. Screenshots land in `dist/_gate/`.
 - Evidence is tied to a hash of the lesson's folder, so editing a lesson makes it stale.
 
 ## Optional kit modules

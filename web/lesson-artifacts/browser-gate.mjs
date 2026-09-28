@@ -8,7 +8,9 @@
   load checks), layout shift while every widget and banner plays, horizontal page overflow, text
   below WCAG AA against what is actually painted behind it, a control or diagram without an
   accessible name, a revealed solution in the DOM before its reveal is opened, and, under reduced
-  motion, anything still animating or autoplaying. Screenshots go to dist/_gate/. The last line of
+  motion, anything still animating or autoplaying. It then drives every widget (reveals, quiz and predict
+  answers, step players, walkthroughs, tabs, and every other widget button) and fails on a state the
+  interaction should not leave (#24). Screenshots go to dist/_gate/. The last line of
   output is the one-line result ledger.py stores as evidence; exit 1 on any failure.
 */
 import { chromium } from "playwright-core";
@@ -139,6 +141,129 @@ function inPage() {
   return out;
 }
 
+/* Drive every widget the kit makes and assert the state it lands in (#24). Runs after the layout-shift
+   reading, since opening a reveal or answering a question is meant to move what is below it. Each
+   answered state is measured too: its good/bad colours were never on screen while the page only played.
+   Lesson-specific playgrounds have no contract the gate can know, so their other buttons are each
+   clicked once, and any page or console error they raise fails the gate through the listeners. */
+async function drive(page, w, issues) {
+  // the pointer rests where the last click was, so after a scroll it hovers whatever moved under it:
+  // move it off the page, and measure a hover state only on purpose (see answer)
+  const measure = async (loc, { keepPointer = false } = {}) => {
+    if (!keepPointer) {
+      await loc.evaluate((e) => e.scrollIntoView({ block: "center" }));
+      await page.mouse.move(0, 0);
+    }
+    await page.waitForTimeout(250);
+    const r = await page.evaluate(inPage);
+    r.contrast.forEach((c) => issues.contrast.add(c));
+    r.names.forEach((c) => issues.names.add(c));
+  };
+  const shown = async (loc) => (await loc.count()) > 0 && (await loc.isVisible());
+  const fail = (what) => note(w, "drive: " + what);
+
+  // reveals open with their content, and close empty again (Ctrl+F must not find a closed one)
+  const reveals = page.locator(".reveal-btn");
+  for (let i = 0; i < (await reveals.count()); i++) {
+    const btn = reveals.nth(i), body = btn.locator("xpath=following-sibling::div[contains(@class,'reveal-body')][1]");
+    if (!(await shown(btn))) continue;
+    const label = (await btn.textContent()).trim().slice(0, 40);
+    await btn.click();
+    await page.waitForTimeout(300);
+    const open = await body.evaluate((b) => ({ hidden: b.hidden, text: b.textContent.trim().length }));
+    if ((await btn.getAttribute("aria-expanded")) !== "true" || open.hidden || !open.text) fail(`reveal "${label}" did not open with content`);
+    else await measure(body);
+    await btn.click();
+    await page.waitForTimeout(200);
+    const shut = await body.evaluate((b) => ({ hidden: b.hidden, html: b.innerHTML.trim().length }));
+    if ((await btn.getAttribute("aria-expanded")) !== "false" || !shut.hidden || shut.html) fail(`reveal "${label}" did not close empty`);
+  }
+
+  // a quiz or predict answer: every option locks, exactly one is marked right, the pick is marked, and
+  // the feedback agrees with it. Card k picks option k mod n, so a page exercises right and wrong picks
+  // without the gate knowing the answers.
+  const answer = async (cards, optSel, right, kind) => {
+    for (let i = 0; i < (await cards.count()); i++) {
+      const card = cards.nth(i), opts = card.locator(optSel), n = await opts.count();
+      if (!n || !(await shown(card))) continue;
+      const pick = opts.nth(i % n);
+      await card.evaluate((e) => e.scrollIntoView({ block: "center" }));
+      await pick.hover();  // an open option under the pointer: its hover colours are text too
+      await measure(card, { keepPointer: true });
+      await pick.click();
+      await page.waitForTimeout(250);
+      const st = await card.evaluate((c, sel) => {
+        const o = [...c.querySelectorAll(sel)];
+        return { locked: o.every((x) => x.disabled), good: o.filter((x) => x.classList.contains("good")).length,
+          fb: (c.querySelector(".fb.on") || { textContent: "" }).textContent.trim() };
+      }, optSel);
+      const pickedGood = await pick.evaluate((x) => x.classList.contains("good")), pickedBad = await pick.evaluate((x) => x.classList.contains("bad"));
+      const where = `${kind} ${i + 1}`;
+      if (!st.locked) fail(`${where}: options still open after an answer`);
+      if (st.good !== 1) fail(`${where}: ${st.good} options marked right after an answer`);
+      if (pickedGood === pickedBad) fail(`${where}: the picked option is marked ${pickedGood ? "both right and wrong" : "neither right nor wrong"}`);
+      // A lesson may write its own feedback (the diameter lesson names the exact slip behind each wrong
+      // choice), so the words are not fixed. What is: an explanation, and never the kit's verdict for
+      // the other side ("Correct." on a wrong pick, "Not quite." on a right one).
+      const contradicts = pickedGood ? /^Not quite\b/.test(st.fb) : new RegExp(`^(${right.replace(".", "\\.")}|Correct\\.|Yes\\b)`).test(st.fb);
+      if (contradicts || st.fb.length < 20) fail(`${where}: feedback "${st.fb.slice(0, 40)}" does not explain a ${pickedGood ? "right" : "wrong"} pick`);
+      await measure(card);
+    }
+  };
+  await answer(page.locator(".qcard"), ".qopt", "Correct.", "quiz question");
+  await answer(page.locator(".pcard"), ".choice", "Yes.", "predict case");
+
+  // a Scene walkthrough: previous pauses it, next moves one frame on, speed cycles
+  const scenes = page.locator(".player");
+  for (let i = 0; i < (await scenes.count()); i++) {
+    const sc = scenes.nth(i);
+    if (!(await shown(sc))) continue;
+    await sc.evaluate((e) => e.scrollIntoView({ block: "center" }));
+    await sc.locator(".pv").click();
+    await page.waitForTimeout(300);
+    const read = async () => (await sc.locator(".cnt").textContent()).split("/").map((x) => Number(x.trim()));
+    const [a, n] = await read();
+    await sc.locator(".nx").click();
+    await page.waitForTimeout(400);
+    const [b] = await read();
+    if (b !== Math.min(n, a + 1)) fail(`walkthrough ${i + 1}: next from frame ${a} of ${n} shows frame ${b}`);
+    const spd = sc.locator(".spd"), s0 = await spd.textContent();
+    await spd.click();
+    if ((await spd.textContent()) === s0) fail(`walkthrough ${i + 1}: speed stays ${s0} when pressed`);
+    await spd.click(); await spd.click();  // back round to where it was
+  }
+
+  // tabs: the one pressed is the one shown pressed, and only it
+  const groups = page.locator(".extabs");
+  for (let g = 0; g < (await groups.count()); g++) {
+    const tabs = groups.nth(g).locator("button");
+    if (!(await shown(groups.nth(g)))) continue;
+    for (let t = 0; t < (await tabs.count()); t++) {
+      await tabs.nth(t).click();
+      await page.waitForTimeout(200);
+      const pressed = await tabs.evaluateAll((bs) => bs.map((b) => b.getAttribute("aria-pressed")));
+      if (pressed.some((v, k) => (v === "true") !== (k === t))) fail(`tab group ${g + 1}: pressing tab ${t + 1} leaves [${pressed.join(", ")}]`);
+    }
+    await tabs.first().click();
+  }
+
+  // everything else in a widget: each button once, in page order; the error listeners do the asserting
+  const KNOWN = ".reveal-btn, .qopt, .choice, .lp-btn, .lp-seg, .player button, .extabs button";
+  const widgets = page.locator(".widget");
+  for (let i = 0; i < (await widgets.count()); i++) {
+    const wd = widgets.nth(i), rest = wd.locator("button, [role=button]");
+    let clicked = 0;
+    for (let k = 0; k < (await rest.count()); k++) {
+      const b = rest.nth(k);
+      if ((await b.evaluate((x, sel) => x.matches(sel) || x.disabled, KNOWN)) || !(await b.isVisible())) continue;
+      await b.click();
+      await page.waitForTimeout(150);
+      clicked++;
+    }
+    if (clicked) await measure(wd);
+  }
+}
+
 /* Served over HTTP, as a page really is: over file:// Chrome can refuse the self-hosted fonts as
    cross-origin, and the gate would measure a page nobody sees. */
 const TYPES = { ".html": "text/html", ".css": "text/css", ".woff2": "font/woff2", ".js": "text/javascript", ".png": "image/png" };
@@ -200,6 +325,12 @@ try {
           await segs.nth(k).click();  // a real pointer: it marks the player touched, so autoplay stays off
           await lp.evaluate((e) => e.scrollIntoView({ block: "center" }));
           await page.waitForTimeout(800);  // the 720 ms tween, settled
+          const n = await segs.count(), at = await lp.evaluate((e) => ({
+            count: e.querySelector(".lp-count").textContent,
+            current: [...e.querySelectorAll(".lp-seg")].findIndex((b) => b.getAttribute("aria-current") === "step"),
+          }));
+          if (at.count !== `${k + 1} / ${n}` || at.current !== k)
+            note(w, `step player ${p + 1}${nTabs ? `, tab ${t + 1}` : ""}: step ${k + 1} of ${n} clicked, but it shows "${at.count}" with step ${at.current + 1} current`);
           const r = await page.evaluate(inPage);
           r.contrast.forEach((c) => issues.contrast.add(c));
           r.names.forEach((c) => issues.names.add(c));
@@ -211,6 +342,7 @@ try {
     shifted = Math.max(shifted, cls);
     // Chrome reports sub-pixel text re-layout as tiny shifts whose rects do not move; 0.001 is that floor
     if (cls >= 0.001) note(w, `layout shift ${cls.toFixed(4)}: ` + (await page.evaluate(() => window.__shifts.slice(0, 6).join(" | "))));
+    await drive(page, w, issues);
     issues.contrast.forEach((c) => note(w, "contrast " + c));
     issues.names.forEach((c) => note(w, "no accessible name: " + c));
     await ctx.close();
@@ -241,4 +373,4 @@ if (failures.length) {
   console.log(`${theme}: FAILED ${uniq.length} check(s) on ${id}`);
   process.exit(1);
 }
-console.log(`${theme}: ok at ${WIDTHS.map((x) => x[0]).join("px and ")}px · layout shift ${shifted.toFixed(4)} · contrast AA · names · reveals hidden · reduced motion still`);
+console.log(`${theme}: ok at ${WIDTHS.map((x) => x[0]).join("px and ")}px · layout shift ${shifted.toFixed(4)} · contrast AA · names · reveals hidden · reduced motion still · widgets driven`);

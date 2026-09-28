@@ -186,12 +186,13 @@ set from that measurement, not guessed.
   and it must be re-recorded. This is deliberate: a kit change can never leave a lesson "verified" on
   a page nobody re-checked. Re-recording all lessons after a kit change is the cost, and it grows
   with the rollout; batching kit changes keeps it bounded.
-- **The browser gate does not interact.** It plays what runs by itself (players, banners, the hero)
-  and measures every stop, but it does not click widgets, answer predict questions or open quizzes,
-  so states reached only by interaction are not measured. Found in passing: coin change's order
-  builder painted its segments with text on the solid family fill, the pairing that fails AA, and the
-  gate never saw it. Closing this means the gate driving each widget through its states; until then,
-  interactive states are reviewed by hand and noted in the ledger.
+- **What the browser gate drives, and what it cannot assert.** It plays what runs by itself, then
+  (#24) drives every widget kind the kit makes and asserts the state each interaction lands in:
+  reveals, quiz and predict answers (including the hovered option), step players, walkthroughs and
+  tabs, with every answered state measured for contrast. Its first run found the quiz letter's hover
+  colour at 4.11:1 (a family accent on 12px text). A lesson's own playground has no contract the gate
+  can know, so its buttons are each clicked once and only errors, contrast and names are checked: that
+  a playground computes the right thing stays the lesson's own load check and the code gate's job.
 - **Context and cost.** Work happens one module per fresh chat, with a handoff, never in one long
   chat.
 

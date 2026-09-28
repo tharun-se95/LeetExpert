@@ -124,7 +124,8 @@ button.cell.node{cursor:pointer;border:0}
 .qopt{display:flex;gap:12px;text-align:left;border:1px solid var(--hair2);border-radius:10px;background:var(--card);padding:12px 14px;cursor:pointer;font-size:14.5px;line-height:1.5}
 .qopt:hover:not(:disabled){border-color:var(--fam);background:color-mix(in srgb,var(--fam) 5%,var(--card))}
 .qopt .ql{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;border:1px solid var(--hair2);background:var(--bg);font:500 12px 'JetBrains Mono',monospace}
-.qopt:hover:not(:disabled) .ql{border-color:var(--fam);color:var(--fam)}
+/* the letter is 12px text, so it takes --mk (AA in both themes), never a family accent (3:1 only) */
+.qopt:hover:not(:disabled) .ql{border-color:var(--fam);color:var(--mk)}
 .qopt.good{border-color:var(--g-ink);background:color-mix(in srgb,var(--g-1) 40%,var(--card))} .qopt.bad{border-color:var(--r-ink);background:color-mix(in srgb,var(--r-1) 40%,var(--card))}
 .qopt:disabled{cursor:default}
 @media (max-width:1000px){.page{grid-template-columns:minmax(0,1fr)}.toc{display:none}.vgrid{grid-template-columns:minmax(0,1fr)}}
