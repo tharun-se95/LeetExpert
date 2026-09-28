@@ -209,3 +209,31 @@ Text.
     });
   });
 });
+
+/**
+ * #64: a cell state's hue differs by theme (bad is red in light and pink in dark, the accent steel in
+ * light and blue in dark), so a colour word in a lesson is wrong in at least one theme. Prose and
+ * widget strings name the state; the widget's state key (kit.js stateKey) shows how it is drawn.
+ */
+describe("lesson artifacts: states are named, never coloured (#64)", () => {
+  const COLOUR = /\b(red|green|blue|orange|yellow|pink|violet|purple|teal|magenta|cyan|amber)\b/gi;
+  const sources = readdirSync(ARTIFACTS).flatMap((d) =>
+    ["lesson.md", "lesson.js", "body.html"].map((f) => join(d, f)).filter((p) => existsSync(join(ARTIFACTS, p))));
+  const KINDS: string[] = JSON.parse(
+    /var KINDS=(\[[^\]]*\])/.exec(readFileSync(join(ARTIFACTS, "kit", "engine.js"), "utf8"))![1].replace(/'/g, '"'));
+
+  it("no lesson source names a colour", () => {
+    expect(sources.length).toBeGreaterThan(8);
+    const hits = sources.flatMap((p) => readFileSync(join(ARTIFACTS, p), "utf8").split("\n")
+      .flatMap((line, i) => [...line.matchAll(COLOUR)].map((m) => `${p}:${i + 1}: "${m[0]}"`)));
+    expect(hits).toEqual([]);
+  });
+
+  it("every state key names a state the engine paints", () => {
+    const pairs = sources.filter((p) => p.endsWith(".js")).flatMap((p) =>
+      [...readFileSync(join(ARTIFACTS, p), "utf8").matchAll(/(?:legend:|stateKey\([^,]+,)\s*(\[\[.*?\]\])/g)]
+        .flatMap((m) => [...m[1].matchAll(/\['([a-z]+)'/g)].map((k) => `${p}: ${k[1]}`)));
+    expect(pairs.length).toBeGreaterThan(10);
+    expect(pairs.filter((x) => !KINDS.includes(x.split(": ")[1]))).toEqual([]);
+  });
+});

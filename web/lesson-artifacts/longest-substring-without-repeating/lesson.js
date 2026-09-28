@@ -120,6 +120,7 @@ function windowFrames(s){
   frames.push({b:{s:cellsFor({mode:'end'}),u:setCells([])},note:'Done. The longest clean stretch is '+s.slice(t.bl,t.br+1)+', so the answer is '+t.best+'. The right edge moved '+n+' times and the left edge '+t.removes+' times, and neither ever moved backward.',stats:[['answer',t.best]],ev:'key'});
   if(t.best!==bruteLongest(s).len)throw new Error('frames disagree with brute force');
   return {frames:frames,step:1.0,poster:frames.length-1,
+    legend:[['win','in the window'],['cur','just arrived'],['bad','its earlier copy'],['warn','leaving'],['acc','the longest window'],['dim','already left']],
     boards:[{id:'s',label:'the log',g:0,cols:n,rows:1,cap:46,wide:true},{id:'u',label:'backends in the window',g:1,cols:order.length,rows:1,cap:40,wide:true}],
     label:'The window over the log "'+s+'": expand on a new backend, shrink on a repeat.'};
 }

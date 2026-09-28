@@ -116,7 +116,7 @@ In the code | In the system
 `built == num_courses` | the whole repo built, so no dependency loop
 ```
 
-Watch it run. The arrows read "must be built before". The number under a course counts its unbuilt prerequisites, and a blue course is ready.
+Watch it run. The arrows read "must be built before". The number under a course counts its unbuilt prerequisites, and a course whose count is 0 is ready. The key above the board shows how each state is marked.
 
 ```widget #stepper "Run the build"
 <div class="extabs" role="group" aria-label="Choose a build"></div><div class="plhost"></div>
