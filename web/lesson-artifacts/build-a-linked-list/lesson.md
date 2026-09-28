@@ -12,7 +12,7 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> <span id="heroUnit">blocks</span> read</div><div id="heroCap"></div></div></div></div>
 ---
 
-## The node, then the list {#node banner}
+## The node, then the list {#node}
 
 A node is two fields: the value it stores, and `next`, a reference to the node after it. The last node's `next` is empty (`None` in Python, `null` in TypeScript, drawn here as ∅). A node knows nothing about the nodes before it, only the one after.
 
@@ -51,7 +51,7 @@ Both pushes are a fixed handful of pointer writes, whatever the length of the li
 ```code solution "The whole class"
 ```
 
-## Find and delete: walking in pairs {#walk toc="The pair walk" banner}
+## Find and delete: walking in pairs {#walk toc="The pair walk"}
 
 ```duo
 Finding a value means walking from `head`, one `next` at a time, until the value turns up or the walk falls off the end. There is no shortcut: a node's position in memory says nothing about its position in the list, so reaching the k-th node costs k steps. Find is O(n).
@@ -63,7 +63,7 @@ The four delete cases split on two questions. Is `prev` empty? Then the node is 
 <div class="widget navy" id="walker"><div class="wl">Walk the pair</div><div class="extabs" role="group" aria-label="Choose an operation"></div><div class="lvhost"></div></div>
 ```
 
-## The forgotten tail {#trap banner}
+## The forgotten tail {#trap}
 
 ```duo
 The branch that moves `tail` back when the tail is deleted is the one most often left out, and leaving it out does not crash anything. Delete the last node without it and `tail` still points at the node that was just removed, a node nothing reachable from `head` leads to. The damage waits for the next append: <span class="c-py">`push_back`</span><span class="c-ts">`pushBack`</span> trusts `tail`, links the new node onto that removed node, and the new value is gone without an error.

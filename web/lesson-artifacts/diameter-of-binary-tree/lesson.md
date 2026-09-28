@@ -12,7 +12,11 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">6</b> <span id="heroUnit">hops</span></div><div id="heroCap"></div></div></div></div>
 ---
 
-## Problem {#problem banner}
+## Problem {#problem}
+
+```caption
+The longest path joins two servers and bends where their two branches meet.
+```
 
 Given the `root` of a binary tree, return the length of its **diameter**: the number of **edges** on the longest path between *any two nodes*. The path may or may not pass through the root.
 
@@ -31,7 +35,11 @@ Read the tree as a network: nodes are switches and servers, edges are cables, an
 <div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 best">Show a longest route</button><button type="button" class="btn2 clear">Clear</button></div>
 ```
 
-## Attempt it first {#attempt banner}
+## Attempt it first {#attempt}
+
+```caption
+Where the path bends it adds `left + right`; heading straight down it takes `1 + max(left, right)`.
+```
 
 This is where bottom-up recursion first bites back. It looks like maximum depth, and the height recursion from the last lesson really is the engine, but the answer you want and the value each call must return are two different things. Mixing them up gives a wrong answer that survives small symmetric trees.
 
@@ -53,7 +61,11 @@ At each node two different numbers are in play.
 The answer is the maximum of number 1 over all nodes. The value returned upward is number 2. Do not return number 1.
 ```
 
-## The naive trap: "just return the diameter" {#trap toc="The naive trap" banner}
+## The naive trap: "just return the diameter" {#trap toc="The naive trap"}
+
+```caption
+The naive version re-walks everything below every switch. One pass visits each switch once.
+```
 
 The tempting first attempt is a function `diameter(node)` that returns the diameter of the subtree at `node`, recursing on children like maximum depth did. Try to write its combine step and you hit a wall. The diameter at a node depends on the two subtrees' **heights**, which measure the path that bends through the node. It does not depend on the two subtrees' diameters. A subtree's diameter is the longest path *somewhere inside* it, and says nothing about how far down the subtree reaches, which is what a parent needs to extend a path through itself.
 
@@ -68,7 +80,11 @@ This is correct but slow. In network terms, every switch asks everything below i
 <div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>naive: diameter with a separate height call</span><span><i style="background:var(--g-ink)"></i>one pass</span></div><p class="cost-note"></p>
 ```
 
-## The insight {#insight banner}
+## The insight {#insight}
+
+```caption
+Heights flow up.
+```
 
 Both numbers a node needs, its height and the best path bending through it, can be computed from the *same two child heights*. So make the recursion return **height**, the one value a parent can truly extend. And while both child heights are in hand, compute the bending path `left + right` and fold it into a single shared answer kept outside the recursion. One postorder pass computes each subtree's height exactly once, and the diameter is collected on the way.
 
@@ -92,7 +108,7 @@ Watch it happen. Each node shows its height once its call has returned. The thre
 <div class="extabs" role="group" aria-label="Choose a tree"></div><div class="plhost"></div>
 ```
 
-## Solution {#solution banner}
+## Solution {#solution}
 
 Attempt it on paper first: write the recursion, decide what it returns, and say where `best` is updated. Then compare. Read it as a fleet report: every switch tells the switch above it one number, how deep it goes, and keeps the record hop count on the side.
 

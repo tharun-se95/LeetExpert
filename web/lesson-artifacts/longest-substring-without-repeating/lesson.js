@@ -147,7 +147,7 @@ var FACTS=(function(){
   mountWalk($('#stepper'));
 })();
 
-/* ================= systems layer: the stream hero and the animated banners ================= */
+/* ================= systems layer: the stream hero ================= */
 (function(){
   var HERO='abcabcbb',tr=windowTrace(HERO),TILE=54,X0=(560-8*TILE)/2+2;
   function heroStream(){
@@ -184,43 +184,5 @@ var FACTS=(function(){
       M.animate(0,tr.steps.length,{duration:tr.steps.length*.8,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(tr.steps.length-1,Math.floor(v));if(k!==lastK){lastK=k;draw(k);}}});
     }
   }
-  var banners={
-    problem:function(svg){
-      'abcabcbb'.split('').forEach(function(c,i){S('rect',{x:60+i*74,y:36,width:60,height:44,rx:9,class:'bn-mid'},svg);S('text',{x:90+i*74,y:65,class:'bn-big','text-anchor':'middle'},svg).textContent=c;});
-      var win=S('rect',{x:56,y:30,width:0,height:56,rx:12,class:'bn-path','fill':'none'},svg);
-      S('text',{x:360,y:108,class:'bn-t','text-anchor':'middle'},svg).textContent='one request per tile: the window grows while every backend is new';
-      return function(){M.animate(0,3,{duration:2.2,ease:'easeOut',onUpdate:function(v){win.setAttribute('width',Math.max(0,v*74));}});};
-    },
-    attempt:function(svg){
-      S('text',{x:180,y:64,class:'bn-big','text-anchor':'middle'},svg).textContent='seen it?';
-      S('text',{x:540,y:64,class:'bn-big','text-anchor':'middle'},svg).textContent='how far to shrink?';
-      S('text',{x:180,y:96,class:'bn-t','text-anchor':'middle'},svg).textContent='what state answers this in O(1)';
-      S('text',{x:540,y:96,class:'bn-t','text-anchor':'middle'},svg).textContent='and what makes the window valid again';
-      var q=S('circle',{cx:360,cy:60,r:5,class:'bn-end'},svg);
-      return function(){M.animate(0,1,{duration:1.6,repeat:2,repeatType:'reverse',ease:'easeInOut',onUpdate:function(v){q.setAttribute('cx',330+60*v);}});};
-    },
-    trap:function(svg){
-      var rows=[];for(var i=0;i<5;i++){S('text',{x:40,y:24+i*20,class:'bn-t','text-anchor':'end'},svg).textContent='start '+i;var bar=S('rect',{x:52,y:14+i*20,width:0,height:11,rx:3,class:'bn-bar'},svg);rows.push(bar);}
-      S('text',{x:430,y:36,class:'bn-t'},svg).textContent='each restart re-reads the same requests';
-      var c=S('text',{x:430,y:74,class:'bn-big red'},svg);c.textContent='0 reads';
-      return function(){rows.forEach(function(r,i){M.animate(0,(5-i)*26,{duration:.4,delay:i*.3,ease:'easeOut',onUpdate:function(v){r.setAttribute('width',v);}});});
-        M.animate(0,15,{duration:5*.3+.4,ease:'linear',onUpdate:function(v){c.textContent=Math.round(v)+' reads';}});};
-    },
-    insight:function(svg){
-      S('rect',{x:60,y:50,width:600,height:14,rx:7,class:'bn-track'},svg);
-      var w=S('rect',{x:60,y:44,width:0,height:26,rx:9,class:'bn-path','fill':'none'},svg);
-      var r=S('circle',{cx:60,cy:57,r:8,class:'bn-end'},svg),l=S('circle',{cx:60,cy:57,r:8,class:'bn-mid'},svg);
-      S('text',{x:360,y:104,class:'bn-t','text-anchor':'middle'},svg).textContent='the right edge advances every step; the left edge only ever chases it';
-      return function(){M.animate(0,1,{duration:3.2,ease:'linear',onUpdate:function(v){
-        var rp=60+540*v,lp=60+540*Math.max(0,v-.28)*(1+(v>.5?.1:0));if(lp>rp)lp=rp;
-        r.setAttribute('cx',rp);l.setAttribute('cx',lp);w.setAttribute('x',lp-8);w.setAttribute('width',Math.max(0,rp-lp+16));}});};
-    },
-    solution:function(svg){
-      S('rect',{x:60,y:52,width:520,height:14,rx:7,class:'bn-track'},svg);var fill=S('rect',{x:60,y:52,width:0,height:14,rx:7,class:'bn-bar'},svg);
-      for(var i=0;i<=6;i++){S('line',{x1:60+i*520/6,x2:60+i*520/6,y1:70,y2:78,class:'bn-edge'},svg);S('text',{x:60+i*520/6,y:94,class:'bn-t','text-anchor':'middle'},svg).textContent=i;}
-      var big=S('text',{x:60,y:36,class:'bn-big'},svg);big.textContent='record: 0 requests';
-      return function(){M.animate(0,3,{duration:2.6,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/6);big.textContent='record: '+count(Math.round(v),'request','requests');}});};
-    }
-  };
-  heroStream();mountBanners(banners);kinetic();riseIn();
+  heroStream();kinetic();riseIn();
 })();

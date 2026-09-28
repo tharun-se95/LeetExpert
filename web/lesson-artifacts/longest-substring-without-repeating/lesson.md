@@ -12,7 +12,11 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> in a row</div><div id="heroCap"></div></div></div></div>
 ---
 
-## Problem {#problem banner}
+## Problem {#problem}
+
+```caption
+One request per tile: the window grows while every backend is new.
+```
 
 ```vig "A log of eight requests with its longest clean stretch bracketed, and a curve joining the first backend to its repeat"
 <rect class="fk" x="12" y="44" width="24" height="24" rx="4"/><rect class="fk" x="40" y="44" width="24" height="24" rx="4"/><rect class="fk" x="68" y="44" width="24" height="24" rx="4"/><rect class="fr" x="96" y="44" width="24" height="24" rx="4"/><rect class="fa" x="124" y="44" width="24" height="24" rx="4"/><rect class="fa" x="152" y="44" width="24" height="24" rx="4"/><rect class="fa" x="180" y="44" width="24" height="24" rx="4"/><rect class="fa" x="208" y="44" width="24" height="24" rx="4"/><path class="sc" d="M12 34V26H92V34"/><path class="st" stroke-dasharray="3 4" d="M24 76C24 98 108 98 108 76"/>
@@ -36,7 +40,7 @@ Read the string as a log of requests: each character is the backend that served 
 <div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 best">Show a longest clean stretch</button><button type="button" class="btn2 clear">Clear</button></div>
 ```
 
-## Attempt it first {#attempt banner}
+## Attempt it first {#attempt}
 
 ```vig "A dashed stretch over a log, with one marker where it might start and another where it might end"
 <rect class="st fp" x="12" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="40" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="68" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="96" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="124" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="152" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="180" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="208" y="44" width="24" height="24" rx="4"/><rect class="st" stroke-dasharray="4 4" x="64" y="38" width="116" height="36" rx="7"/><polygon class="fk" points="74,18 86,18 80,29"/><polygon class="fc" points="158,18 170,18 164,29"/><path class="st" d="M80 84V94M164 84V94M80 89H164"/>
@@ -60,7 +64,11 @@ A window that is invalid stays invalid as it grows, so extending is pointless: r
 Record the length only once the window is clean.
 ```
 
-## The restart trap {#trap banner}
+## The restart trap {#trap}
+
+```caption
+Each restart re-reads the same requests.
+```
 
 ```vig "Five reads of the log, each restarting one step later and running over the same characters again"
 <rect class="fa" x="20" y="10" width="100" height="10" rx="5"/><circle class="fr" cx="120" cy="15" r="4.5"/><rect class="fa" x="40" y="29" width="100" height="10" rx="5"/><circle class="fr" cx="140" cy="34" r="4.5"/><rect class="fa" x="60" y="48" width="100" height="10" rx="5"/><circle class="fr" cx="160" cy="53" r="4.5"/><rect class="fa" x="80" y="67" width="100" height="10" rx="5"/><circle class="fr" cx="180" cy="72" r="4.5"/><rect class="fa" x="100" y="86" width="100" height="10" rx="5"/><circle class="fr" cx="200" cy="91" r="4.5"/><path class="st" stroke-dasharray="3 4" d="M100 4V108"/>
@@ -79,7 +87,11 @@ How much is wasted depends on how long clean stretches run. A stretch can never 
 <div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>restart from every position</span><span><i style="background:var(--g-ink)"></i>one pass with a window</span></div><p class="cost-note"></p>
 ```
 
-## The insight {#insight banner}
+## The insight {#insight}
+
+```caption
+The right edge advances every step; the left edge only ever chases it.
+```
 
 ```vig "A window over the log whose right edge advances while its left edge follows, with the set of backends inside it below"
 <rect class="fa" x="12" y="44" width="24" height="24" rx="4"/><rect class="fa" x="40" y="44" width="24" height="24" rx="4"/><rect class="fa" x="68" y="44" width="24" height="24" rx="4"/><rect class="fa" x="96" y="44" width="24" height="24" rx="4"/><rect class="fa" x="124" y="44" width="24" height="24" rx="4"/><rect class="fa" x="152" y="44" width="24" height="24" rx="4"/><rect class="fa" x="180" y="44" width="24" height="24" rx="4"/><rect class="fa" x="208" y="44" width="24" height="24" rx="4"/><rect class="sc" x="64" y="38" width="88" height="36" rx="8"/><path class="st" d="M152 24H176M170 18L176 24L170 30"/><path class="st" d="M64 24H78M73 19L78 24L73 29"/><rect class="st" x="78" y="84" width="64" height="22" rx="11"/><circle class="fk" cx="94" cy="95" r="4.5"/><circle class="fk" cx="110" cy="95" r="4.5"/><circle class="fk" cx="126" cy="95" r="4.5"/>
@@ -111,7 +123,7 @@ Watch it happen. The top row is the log. Blue cells are inside the window, the o
 <div class="extabs" role="group" aria-label="Choose a log"></div><div class="plhost"></div>
 ```
 
-## Solution {#solution banner}
+## Solution {#solution}
 
 ```vig "Bars for the clean window's length at each step, and a line marking the record they reach"
 <path class="st" d="M14 96H226"/><rect class="fa" x="22" y="74" width="16" height="22" rx="3"/><rect class="fa" x="48" y="52" width="16" height="44" rx="3"/><rect class="fk" x="74" y="30" width="16" height="66" rx="3"/><rect class="fa" x="100" y="30" width="16" height="66" rx="3"/><rect class="fa" x="126" y="30" width="16" height="66" rx="3"/><rect class="fa" x="152" y="30" width="16" height="66" rx="3"/><rect class="fa" x="178" y="52" width="16" height="44" rx="3"/><rect class="fa" x="204" y="74" width="16" height="22" rx="3"/><path class="sc" stroke-dasharray="6 5" d="M14 30H226"/>

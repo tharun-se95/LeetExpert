@@ -275,7 +275,7 @@ function blocks(nodes: RootContent[], ctx: Ctx): string {
 
 interface Section { id: string; toc: string; html: string }
 
-/** `## Heading {#id toc="Short" banner}` */
+/** `## Heading {#id toc="Short"}` */
 function sectionHead(h: Heading) {
   const last = h.children[h.children.length - 1];
   const m = last?.type === "text" ? last.value.match(/\s*\{([^}]*)\}\s*$/) : null;
@@ -283,7 +283,32 @@ function sectionHead(h: Heading) {
   const kids = [...h.children];
   kids[kids.length - 1] = { ...(last as { type: "text"; value: string }), value: (last as { value: string }).value.slice(0, m!.index) };
   const a = fenceAttrs(m![1]);
-  return { id: a.id, toc: a.kv.toc, banner: a.words.includes("banner"), title: inline(kids as PhrasingContent[]) };
+  // The animated banners were removed (owner, 2026-09-28, #63): drawn text in a scaled SVG, ~6px on a
+  // phone, hidden from screen readers, and mostly repeating a widget beside them. What they said in a
+  // line is a caption fence now; say so rather than dropping the flag silently.
+  if (a.words.includes("banner")) fail(`#${a.id}: banners were removed (#63); put its one line in a caption fence`);
+  return { id: a.id, toc: a.kv.toc, title: inline(kids as PhrasingContent[]) };
+}
+
+/* The fences that belong to a section's heading rather than its body: its one-line caption (the
+   sentence the section concludes, as real text) and its vignette. Each at most once, straight after
+   the heading, in either order. */
+function headFences(id: string, nodes: RootContent[]) {
+  const isHead = (n: RootContent | undefined): n is Code => n?.type === "code" && (n.lang === "caption" || n.lang === "vig");
+  const lead: Code[] = [];
+  while (isHead(nodes[0])) lead.push(nodes.shift() as Code);
+  if (nodes.some(isHead)) fail(`#${id}: a caption or vig fence goes straight after the heading`);
+  const one = (lang: string) => {
+    const f = lead.filter((n) => n.lang === lang);
+    if (f.length > 1) fail(`#${id}: one ${lang} fence per section`);
+    return f[0];
+  };
+  const cap = one("caption"), vig = one("vig");
+  if (cap && !cap.value.trim()) fail(`#${id}: an empty caption`);
+  return {
+    caption: cap ? `<p class="sec-sub">${inlineMd(cap.value.trim())}</p>` : "",
+    vig: vig ? vignette(fenceAttrs(vig.meta), vig.value) : "",
+  };
 }
 
 export function renderLesson(source: string): Rendered {
@@ -297,13 +322,9 @@ export function renderLesson(source: string): Rendered {
     if (!open) return;
     const { head, nodes } = open;
     claimId(ctx, head.id, "section");
-    const vigs = nodes.filter((n) => n.type === "code" && n.lang === "vig");
-    if (vigs.length > 1 || (vigs.length && nodes[0] !== vigs[0])) fail(`#${head.id}: one vig fence, straight after the heading`);
-    const vig = vigs.length ? vignette(fenceAttrs((vigs[0] as Code).meta), (vigs[0] as Code).value) : "";
-    if (vig) nodes.shift();
-    const banner = head.banner ? `<div class="banner" data-b="${head.id}"></div>` : "";
+    const { caption, vig } = headFences(head.id, nodes);
     const plain = head.title.replace(/<[^>]+>/g, "");
-    sections.push({ id: head.id, toc: head.toc ?? plain, html: `<section class="sec" id="${head.id}"><h2>${head.title}</h2>${vig}${banner}\n${blocks(nodes, ctx)}\n</section>` });
+    sections.push({ id: head.id, toc: head.toc ?? plain, html: `<section class="sec" id="${head.id}"><h2>${head.title}</h2>${caption}${vig}\n${blocks(nodes, ctx)}\n</section>` });
   };
   for (const n of root.children) {
     if (n.type === "heading" && n.depth === 2) {

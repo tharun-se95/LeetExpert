@@ -65,13 +65,13 @@ describe("lesson artifacts: lesson.md", () => {
     for (const [, name] of text.matchAll(/\{\{(\w+)\}\}/g)) expect(js, `FACTS.${name}`).toMatch(new RegExp(`\\b${name}:`));
   });
 
-  it("builds the page frame: hero copy, contents rail from the sections, banners", () => {
-    const r = page("## The long title {#trap toc=\"Short\" banner}\n\nText with `code`, **bold** and *em*.\n\n## Plain {#next}\n\nMore.\n");
+  it("builds the page frame: hero copy, contents rail from the sections", () => {
+    const r = page("## The long title {#trap toc=\"Short\"}\n\nText with `code`, **bold** and *em*.\n\n## Plain {#next}\n\nMore.\n");
     expect(r.html).toContain('<div class="kick">K</div>');
     expect(r.html).toContain('<h1 id="h1">H</h1>');
     expect(r.html).toContain('<div class="chips"><span>time <b>O(n)</b></span></div>');
     expect(r.html).toContain('<a href="#trap">Short</a><a href="#next">Plain</a>');
-    expect(r.html).toContain('<section class="sec" id="trap"><h2>The long title</h2><div class="banner" data-b="trap"></div>');
+    expect(r.html).toContain('<section class="sec" id="trap"><h2>The long title</h2>\n<p>');
     expect(r.html).toContain('<section class="sec" id="next"><h2>Plain</h2>\n');
     expect(r.html).toContain("<p>Text with <code>code</code>, <b>bold</b> and <em>em</em>.</p>");
   });
@@ -154,13 +154,18 @@ Text.
   });
 
   it("draws a section's vignette beside its heading, named for a screen reader", () => {
-    const r = page('## S {#s banner}\n\n```vig "Tiles in a row"\n<rect class="fa" x="1" y="2" width="3" height="4" rx="1"/><path class="sc" d="M0 0H9"/>\n```\n\nText.\n');
-    expect(r.html).toContain('<section class="sec" id="s"><h2>S</h2><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Tiles in a row"><rect class="fa" x="1" y="2" width="3" height="4" rx="1"/><path class="sc" d="M0 0H9"/></svg><div class="banner" data-b="s"></div>');
+    const r = page('## S {#s}\n\n```vig "Tiles in a row"\n<rect class="fa" x="1" y="2" width="3" height="4" rx="1"/><path class="sc" d="M0 0H9"/>\n```\n\nText.\n');
+    expect(r.html).toContain('<section class="sec" id="s"><h2>S</h2><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Tiles in a row"><rect class="fa" x="1" y="2" width="3" height="4" rx="1"/><path class="sc" d="M0 0H9"/></svg>\n<p>Text.</p>');
+  });
+
+  it("sets a section's caption as real text under its heading, before its vignette", () => {
+    const r = page('## S {#s}\n\n```vig "x"\n<rect class="fa"/>\n```\n\n```caption\nThe ==left edge== only chases `right`.\n```\n\nText.\n');
+    expect(r.html).toContain('<h2>S</h2><p class="sec-sub">The <span class="term">left edge</span> only chases <code>right</code>.</p><svg class="vig"');
   });
 
   it("the split-layout lesson draws a vignette for every section (#63)", () => {
     const r = renderLesson(readFileSync(join(ARTIFACTS, "longest-substring-without-repeating", "lesson.md"), "utf8"));
-    const secs = [...r.html.matchAll(/<section class="sec" id="(\w+)"><h2>.*?<\/h2>(<svg class="vig")?/g)];
+    const secs = [...r.html.matchAll(/<section class="sec" id="(\w+)"><h2>.*?<\/h2>(?:<p class="sec-sub">.*?<\/p>)?(<svg class="vig")?/g)];
     expect(secs.length).toBeGreaterThan(5);
     for (const [, id, vig] of secs) expect(vig, `#${id}`).toBeTruthy();
   });
@@ -179,6 +184,10 @@ Text.
       ["a reveal with no button label", "```reveal #r\nA.\n```", /button label/],
       ["an examples line without →", "```examples\nno arrow\n```", /no →/],
       ["an unclosed key term", "A ==window without its end.", /==term==/],
+      ["a banner, which was removed (#63)", "", /banners were removed/],
+      ["a caption below the section's prose", "Text.\n\n```caption\nA line.\n```", /straight after the heading/],
+      ["two captions", "```caption\nA.\n```\n\n```caption\nB.\n```", /one caption fence/],
+      ["an empty caption", "```caption\n \n```", /empty caption/],
       ["a vignette with no description", '```vig\n<rect class="fa"/>\n```', /quoted description/],
       ["a vignette below the section's prose", 'Text.\n\n```vig "x"\n<rect class="fa"/>\n```', /straight after the heading/],
       ["a vignette coloured by attribute", '```vig "x"\n<rect fill="#f00"/>\n```', /colour goes through a class/],
@@ -187,7 +196,8 @@ Text.
       ["loose words in a vignette", '```vig "x"\nhello <rect class="fa"/>\n```', /outside drawing elements/],
     ];
     it.each(cases)("%s", (_, body, err) => {
-      expect(() => page("## S {#s}\n\n" + body + "\n")).toThrow(err);
+      const head = err.source.includes("banners") ? "## S {#s banner}" : "## S {#s}";
+      expect(() => page(head + "\n\n" + body + "\n")).toThrow(err);
     });
 
     it("a section heading without an id", () => {

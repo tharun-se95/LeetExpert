@@ -12,7 +12,7 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> <span id="heroUnit">instances</span></div><div id="heroCap"></div></div></div></div>
 ---
 
-## Problem {#problem banner}
+## Problem {#problem}
 
 You are given a list of `coins`, the sizes available, all different, and a target `amount`. Return the **fewest** coins that add up to exactly `amount`, using each size as many times as you like, or `-1` if no combination adds up to it.
 
@@ -31,7 +31,11 @@ Read a coin as an instance size and the amount as the capacity a customer asked 
 <div class="extabs" role="group" aria-label="Choose an order"></div><div class="tv-wrap"><div class="fleet"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><span class="picks"></span><button type="button" class="btn2 undo">Undo</button><button type="button" class="btn2 best">Show a fewest order</button></div>
 ```
 
-## Attempt it first {#attempt banner}
+## Attempt it first {#attempt}
+
+```caption
+Greedy grabs the biggest size first, and that is not always the fewest instances.
+```
 
 This is unbounded knapsack: each size can be reused without limit. Before writing any table, think about the greedy rule first, because it is the natural first move and it is worth knowing exactly why it fails. Take sizes `{1, 3, 4}` and a capacity of 6. Work out what "always launch the biggest size that still fits" does, and compare it with the best possible order.
 
@@ -49,7 +53,11 @@ Whatever the best order is, one instance was launched last, and it had some size
 You do not know which c was last, so try each size that fits and keep the smallest result.
 ```
 
-## Two traps {#trap banner}
+## Two traps {#trap}
+
+```caption
+The recursion asks about the same amounts again and again, and there are only `amount + 1` of them.
+```
 
 **The first trap is greedy.** Keep launching the biggest size that still fits, and stop when nothing is left:
 
@@ -75,7 +83,11 @@ This is correct, and it is slow for a specific reason. To make 11 it asks about 
 <div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>recursion, every call</span><span><i style="background:var(--g-ink)"></i>different questions</span></div><p class="cost-note"></p>
 ```
 
-## The insight {#insight banner}
+## The insight {#insight}
+
+```caption
+`dp[a]` reads the cells one size behind it.
+```
 
 Look at an optimal order for some amount `a` and ask only about its **last** instance, whatever its size `c`. Remove it, and what is left adds up to exactly `a − c`. That leftover order must itself be a fewest order for `a − c`: if a shorter one existed, putting the last instance back on it would give a shorter order for `a`, and we assumed ours was the fewest. So the best answer for `a` is built from the best answer for some smaller amount.
 
@@ -103,7 +115,11 @@ Watch the table fill. The orange cell is the amount being solved. The blue cells
 <div class="extabs" role="group" aria-label="Choose an order"></div><div class="plhost"></div>
 ```
 
-## Solution {#solution banner}
+## Solution {#solution}
+
+```caption
+Each cell is filled once, from the ones before it.
+```
 
 Attempt it on paper first: decide what the table holds, what goes in cell 0, what unreachable cells start as, and what the answer is once it is full. Then compare. Read it as a capacity planner who fills a price sheet from the smallest order upward, so that pricing any order only needs a lookup in cells already filled.
 

@@ -143,14 +143,13 @@ def _top_level(fragment):
 
 def _kind(attrs):
     """What a top-level element of a section is to the split layout: 'vis' (a picture the prose
-    points at, drawn beside it), 'full' (spans both columns: the section's banner, which is drawn
-    for the full width and whose labels fell to 9px in the right column (owner, 2026-09-28), a grid
-    of cards, the quiz, an authored duo) or 'text' (prose, callouts and anything unknown, which
+    points at, drawn beside it), 'full' (spans both columns: the heading's caption and vignette, a
+    grid of cards, the quiz, an authored duo) or 'text' (prose, callouts and anything unknown, which
     keeps the reading column)."""
     cls = set((attrs.get("class") or "").split())
     if cls & {"ex", "widget", "rosetta"} or "data-code-file" in attrs or attrs.get("id") == "solbox":
         return "vis"
-    if cls & {"banner", "duo", "vgrid", "vig"} or attrs.get("id") == "qlist":
+    if cls & {"sec-sub", "duo", "vgrid", "vig"} or attrs.get("id") == "qlist":
         return "full"
     return "text"
 
@@ -216,8 +215,10 @@ def decorate(body, split=False):
     nav = re.search(r'<nav class="toc".*?</nav>', body, re.S)
     toc = re.sub(r'<a href="#([a-z]+)">', lambda m: f'<a href="#{m[1]}">{_icon(m[1])}', nav[0])
     body = body[:nav.start()] + toc + body[nav.end():]
-    # a vignette shares its heading's row; wrapped last, since every splice above keys on <section><h2>
-    body = re.sub(r'(<h2>.*?</h2>)(<svg class="vig".*?</svg>)', r'<div class="sec-head">\1\2</div>', body, flags=re.S)
+    # the heading, its caption and its vignette share one row; wrapped last, since every splice above
+    # keys on <section><h2>
+    body = re.sub(r'(<h2>.*?</h2>(?:<p class="sec-sub">.*?</p>)?)(<svg class="vig".*?</svg>)',
+                  r'<div class="sec-head"><div class="sec-title">\1</div>\2</div>', body, flags=re.S)
     # The kinetic headline's word spans are made here, not in the browser, where the split re-broke
     # the heading's lines after load and moved the hero card (layout shift). It runs after the
     # contents splice above, whose offsets were taken on the unsplit body.

@@ -12,7 +12,11 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> of 6 built</div><div id="heroCap"></div></div></div></div>
 ---
 
-## Problem {#problem banner}
+## Problem {#problem}
+
+```caption
+Each arrow means “must be built before”.
+```
 
 There are `numCourses` courses, numbered `0` to `numCourses - 1`. The list `prerequisites` holds pairs `[a, b]`, each meaning: to take course `a` you must first take course `b`. Return `true` if it is possible to take every course, and `false` if not.
 
@@ -31,7 +35,7 @@ Draw each pair `[a, b]` as an arrow from `b` to `a`, meaning "b must come before
 <div class="extabs" role="group" aria-label="Choose a build"></div><div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 reset">Reset</button><button type="button" class="btn2 best">Show a valid order</button></div>
 ```
 
-## Attempt it first {#attempt banner}
+## Attempt it first {#attempt}
 
 The module's topological-sort lesson asks one question about a directed graph: does a valid ordering exist at all? Before opening anything, work out what property of the arrows decides it.
 
@@ -51,7 +55,11 @@ Keep, for every course, the number of prerequisites not yet taken. When it reach
 Then ask how many courses you managed to take, and what it means if that is fewer than all of them.
 ```
 
-## Two traps {#trap banner}
+## Two traps {#trap}
+
+```caption
+Trying every build order grows factorially with the number of courses.
+```
 
 **The first trap is trying every build order.** An order is valid if every prerequisite comes before the course that needs it, so generate the orders and test them:
 
@@ -66,7 +74,11 @@ It is correct and it is hopeless. There are n! orders of n courses, and when no 
 
 **The second trap is a good idea used half-way.** The approach in the next section builds courses that are ready and stops when nothing is ready. The mistake is to conclude "the queue is empty, so we finished". An empty queue happens in two very different situations: everything was built, or what is left is locked in a loop. The warning at the end of the solution shows the code that mixes them up.
 
-## The insight {#insight banner}
+## The insight {#insight}
+
+```caption
+A course is ready when its waiting count reaches 0.
+```
 
 Think about how a real build starts. Some packages depend on nothing, so they can be built immediately. Once they are built, some other packages have had all their prerequisites satisfied, and those can be built next. Keep going: build whatever is ready, and record what it releases.
 
@@ -94,7 +106,7 @@ Watch it run. The arrows read "must be built before". The number under a course 
 <div class="extabs" role="group" aria-label="Choose a build"></div><div class="plhost"></div>
 ```
 
-## Solution {#solution banner}
+## Solution {#solution}
 
 Attempt it on paper first: decide what you keep per course, how a course becomes ready, and exactly what the final answer compares. Then compare. Read it as the build scheduler: a table of unmet dependencies, a queue of ready packages, and a count of what actually shipped.
 

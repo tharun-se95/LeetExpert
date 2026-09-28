@@ -169,7 +169,7 @@ var FACTS=(function(){
   mountWalk($('#stepper'));
 })();
 
-/* ================= systems layer: network hero, animated banners ================= */
+/* ================= systems layer: the network hero ================= */
 (function(){
   var NETH=B('core',B('a',B('a1',B('a11',B('a111'))),B('a2',B('a21',B('a211')))),B('b'));
   function heroNet(){
@@ -207,48 +207,5 @@ var FACTS=(function(){
     }});
   }
 
-  var banners={
-    problem:function(svg){
-      var P=[[70,92],[160,64],[250,38],[340,64],[430,92]],line=S('polyline',{points:P.map(function(p){return p.join(',');}).join(' '),class:'bn-path'},svg);
-      P.forEach(function(p,i){S('circle',{cx:p[0],cy:p[1],r:i===0||i===4?11:8,class:i===0||i===4?'bn-end':'bn-mid'},svg);});
-      var pk=S('circle',{r:6,class:'hn-pk',cx:P[0][0],cy:P[0][1]},svg),t=S('text',{x:560,y:64,class:'bn-big','text-anchor':'middle'},svg);t.textContent='4 hops';
-      S('text',{x:70,y:114,class:'bn-t','text-anchor':'middle'},svg).textContent='server';S('text',{x:430,y:114,class:'bn-t','text-anchor':'middle'},svg).textContent='server';S('text',{x:250,y:16,class:'bn-t','text-anchor':'middle'},svg).textContent='where the two branches meet';
-      return function(){M.animate(0,1,{duration:3.4,ease:'linear',repeat:Infinity,onUpdate:function(v){var f=v*4,k=Math.min(3,Math.floor(f)),u=f-k;pk.setAttribute('cx',P[k][0]+(P[k+1][0]-P[k][0])*u);pk.setAttribute('cy',P[k][1]+(P[k+1][1]-P[k][1])*u);}});};
-    },
-    attempt:function(svg){
-      var a=[[70,20],[130,90],[190,20]],b=[[420,10],[420,100]];
-      var pa=S('polyline',{points:'70,20 130,90 190,20',class:'bn-path',fill:'none'},svg);
-      S('polyline',{points:'70,20 130,90 190,20',class:'bn-path',fill:'none','stroke-dasharray':'0'},svg);
-      S('text',{x:130,y:112,class:'bn-t','text-anchor':'middle'},svg).textContent='bends here: left + right';
-      var pb=S('line',{x1:420,y1:10,x2:420,y2:92,class:'bn-path b2'},svg);
-      S('text',{x:420,y:112,class:'bn-t','text-anchor':'middle'},svg).textContent='straight down: 1 + max(left, right)';
-      S('text',{x:300,y:60,class:'bn-big','text-anchor':'middle'},svg).textContent='≠';
-      return function(){[pa,pb].forEach(function(p,i){var L=p.getTotalLength?p.getTotalLength():200;p.style.strokeDasharray=L;M.animate(L,0,{duration:1.4,delay:i*.5,ease:'easeOut',onUpdate:function(v){p.style.strokeDashoffset=v;}});});};
-    },
-    trap:function(svg){
-      var n=8,rows=[];
-      for(var i=0;i<n;i++){S('circle',{cx:40,cy:12+i*14,r:5,class:'bn-mid'},svg);var bar=S('rect',{x:60,y:8+i*14,width:0,height:8,rx:2,class:'bn-bar'},svg);rows.push(bar);}
-      S('text',{x:380,y:30,class:'bn-t'},svg).textContent='naive: every switch re-walks everything below it';
-      var c1=S('text',{x:380,y:64,class:'bn-big red'},svg);c1.textContent='0';
-      S('text',{x:380,y:96,class:'bn-t'},svg).textContent='one pass: each switch is visited once, 8';
-      return function(){var total=0;rows.forEach(function(r,i){var len=(n-i)*22;M.animate(0,len,{duration:.35,delay:i*.28,ease:'easeOut',onUpdate:function(v){r.setAttribute('width',v);}});M.animate(0,n-i,{duration:.35,delay:i*.28,onUpdate:function(v){}});});
-        var cur=0;M.animate(0,36,{duration:8*.28+.3,ease:'linear',onUpdate:function(v){c1.textContent=count(Math.round(v),'visit','visits');}});};
-    },
-    insight:function(svg){
-      var P=[[300,14],[190,58],[410,58],[130,104],[250,104],[350,104],[470,104]];
-      [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]].forEach(function(e){S('line',{x1:P[e[0]][0],y1:P[e[0]][1],x2:P[e[1]][0],y2:P[e[1]][1],class:'bn-edge'},svg);});
-      P.forEach(function(p){S('circle',{cx:p[0],cy:p[1],r:9,class:'bn-mid'},svg);});
-      var chips=[3,4,5,6].map(function(i){var g=S('g',{},svg);S('circle',{r:7,cx:P[i][0],cy:P[i][1],class:'hn-pk'},g);return g.firstChild;});
-      var lab=S('text',{x:600,y:60,class:'bn-big','text-anchor':'middle'},svg);lab.textContent='';
-      S('text',{x:600,y:88,class:'bn-t','text-anchor':'middle'},svg).textContent='heights flow up';
-      return function(){var par=[1,1,2,2];chips.forEach(function(c,k){var from=P[[3,4,5,6][k]],to=P[par[k]];M.animate(0,1,{duration:1.2,delay:k*.35,ease:'easeInOut',repeat:Infinity,repeatDelay:1.6,onUpdate:function(v){c.setAttribute('cx',from[0]+(to[0]-from[0])*v);c.setAttribute('cy',from[1]+(to[1]-from[1])*v);c.setAttribute('opacity',v>.98?0:1);}});});};
-    },
-    solution:function(svg){
-      S('rect',{x:60,y:52,width:520,height:14,rx:7,class:'bn-track'},svg);var fill=S('rect',{x:60,y:52,width:0,height:14,rx:7,class:'bn-bar'},svg);
-      for(var i=0;i<=6;i++){S('line',{x1:60+i*520/6,x2:60+i*520/6,y1:70,y2:78,class:'bn-edge'},svg);S('text',{x:60+i*520/6,y:94,class:'bn-t','text-anchor':'middle'},svg).textContent=i;}
-      var big=S('text',{x:60,y:36,class:'bn-big'},svg);big.textContent='record: 0 hops';
-      return function(){M.animate(0,6,{duration:3.2,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/6);big.textContent='record: '+count(Math.round(v),'hop','hops');}});};
-    }
-  };
-  heroNet();mountBanners(banners);kinetic();riseIn();
+  heroNet();kinetic();riseIn();
 })();

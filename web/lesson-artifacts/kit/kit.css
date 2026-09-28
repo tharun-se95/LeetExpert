@@ -10,8 +10,8 @@
 .chips span{font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 10px;border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2));border-radius:99px;background:var(--card);color:var(--mut)} .chips span b{color:var(--mk);font-weight:500}
 /* Surfaces. Instruments (the hero, every widget, code) are the app's navy card:
    its corner glow and top light come from .lab-stage, its ladder and inks from
-   .navy-card (tokens in shared.py). Figures (the section banners) are paper
-   plates. Every surface a diagram is drawn on carries the blueprint dot grid. */
+   .navy-card (tokens in shared.py). Every surface a diagram is drawn on carries
+   the blueprint dot grid. */
 .navy{border:1px solid var(--hair2);box-shadow:var(--shadow-elevation);background:linear-gradient(to bottom,rgb(255 255 255/.06),transparent 1px),radial-gradient(ellipse 80% 60% at 100% 0%,color-mix(in oklab,var(--fam-raw) 14%,transparent),transparent 55%),var(--bg)}
 .navy .navy,.navy .player{box-shadow:none}
 .code.navy{background:var(--cw-bg);border-color:var(--cw-border);box-shadow:none;color:var(--cw-ink)}
@@ -20,8 +20,7 @@
 .navy .stats span{background:var(--deep)}
 .navy .btn{background:var(--card)}
 .navy .btn.main{background:var(--fg)}
-.tv-wrap,.stage,.banner{--dot:color-mix(in srgb,var(--fg) 11%,transparent);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0);background-size:18px 18px;background-position:-1px -1px}
-.banner{--dot:color-mix(in srgb,var(--fg) 8%,transparent)}
+.tv-wrap,.stage{--dot:color-mix(in srgb,var(--fg) 11%,transparent);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0);background-size:18px 18px;background-position:-1px -1px}
 .hero-art{border-radius:16px;padding:14px}
 .hero-art svg{width:100%;height:auto;display:block}
 .hn-edge{stroke:var(--mut);stroke-width:2;opacity:.6}
@@ -32,13 +31,6 @@
 .hero-num{font-family:'Space Mono',monospace;font-size:34px;font-weight:700} .hero-num b{color:var(--fam)}
 /* the caption changes as the hero plays: two lines reserved, so the card never changes height */
 #heroCap{font-size:14px;color:var(--mut);width:min(32ch,100%);min-height:3.2em;text-align:right} #heroCap b{color:var(--fg);font-weight:500}
-.banner{margin:0 0 22px;border:1px solid var(--hair2);border-radius:14px;background-color:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden}
-.banner svg{width:100%;height:auto;display:block}
-.bn-t{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)} .bn-big{font:700 22px 'Space Mono',monospace;fill:var(--fg)} .bn-big.red{fill:var(--r-ink)}
-/* a number drawn on an accent fill (.bn-end) takes the accent's own ink: --fg on the dark theme's light blue read 1.79:1 */
-.bn-big.on{fill:var(--fam-on)}
-.bn-path{fill:none;stroke:var(--fam);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round} .bn-path.b2{stroke:var(--o-ink)}
-.bn-end{fill:var(--fam)} .bn-mid{fill:var(--card);stroke:var(--mut);stroke-width:2} .bn-bar{fill:var(--fam)} .bn-track{fill:var(--well)} .bn-edge{stroke:var(--mut);stroke-width:2;opacity:.7}
 .rosetta{border:1px solid var(--hair2);border-radius:14px;background:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden;margin:20px 0;max-width:66ch}
 .ro-h,.ro{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);gap:16px;padding:10px 16px;align-items:baseline}
 .ro-h{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);background:var(--well)}
@@ -57,7 +49,7 @@
 .lhead h1{font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em}
 .lhead .lede{font-size:18px;color:var(--mut);max-width:60ch}
 .sec{padding-block:44px;border-top:1px solid var(--hair2);scroll-margin-top:64px}
-.sec>h2,.sec-head>h2{font-size:clamp(1.4rem,2.6vw,1.9rem);margin-bottom:18px}
+.sec>h2,.sec-title>h2{font-size:clamp(1.4rem,2.6vw,1.9rem);margin-bottom:18px}
 .sec p{max-width:66ch;margin-bottom:14px}
 .sec p:last-child{margin-bottom:0}
 .sec code,.notes code,.fb code,.pq code{font-family:'JetBrains Mono',monospace;font-size:.88em;background:var(--well);padding:1px 6px;border-radius:5px}
@@ -147,7 +139,7 @@ body{font-size:13.5px;line-height:1.55}
 .kick{font-size:10.5px}
 .chips span{font-size:10.5px;padding:3px 8px}
 .hero-art{padding:10px} .hero-num{font-size:26px} #heroCap{font-size:12.5px}
-.sec{padding-block:30px} .sec>h2,.sec-head>h2{font-size:clamp(1.15rem,2vw,1.45rem);margin-bottom:12px}
+.sec{padding-block:30px} .sec>h2,.sec-title>h2{font-size:clamp(1.15rem,2vw,1.45rem);margin-bottom:12px}
 .sec p{margin-bottom:10px;font-size:14px}
 .sec code,.notes code,.fb code,.pq code{font-size:.86em;padding:0 5px}
 .ex{padding:2px 12px;margin:12px 0} .ex div{padding:7px 0;font-size:11.5px}
@@ -162,7 +154,6 @@ body{font-size:13.5px;line-height:1.55}
 .vcard{padding:12px} .vcard .vt{font-size:13px} .vcard .vs{font-size:10.5px} .vcard p{font-size:12.5px}
 .qcard{padding:12px;gap:9px;margin-bottom:10px} .qq{font-size:14px} .qopt{font-size:13px;padding:9px 11px} .qopt .ql{width:20px;height:20px;font-size:11px}
 .rosetta{margin:14px 0} .ro-h,.ro{padding:8px 12px;font-size:13px} .ro-h{font-size:10px} .ro code{font-size:12px}
-.banner{margin-bottom:16px}
 .stage{padding:16px 12px;min-height:240px} .note{font-size:12.5px;padding:10px 14px;min-height:64px} .stats span{font-size:11px} .btn{width:32px;height:32px;font-size:15px} .spd{font-size:11px} .cnt{font-size:11px} .bl{font-size:10.5px}
 .player{border-radius:12px}
 @media (prefers-reduced-motion:reduce){.btn2,.reveal-btn,.choice,.qopt,.tab{transition:none}.choice:hover:not(:disabled),.btn2:active,.reveal-btn:active,.choice:active{transform:none}}
@@ -192,7 +183,7 @@ html,body{overflow-x:clip}
 
 /* Section marks: one icon per section, the same in the heading and the contents. */
 .sec{border-top:0;background:linear-gradient(90deg,transparent,var(--hair2) 10%,var(--hair2) 90%,transparent) top/100% 1px no-repeat}
-.sec>h2,.sec-head>h2{display:flex;align-items:center;gap:12px}
+.sec>h2,.sec-title>h2{display:flex;align-items:center;gap:12px}
 .sec-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;font-size:18px;color:var(--fam);background:color-mix(in srgb,var(--fam) 11%,var(--card));border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2))}
 .toc a{display:flex;align-items:center;gap:9px}
 .toc a .i{font-size:14px;color:var(--mut);transition:color .2s}
@@ -202,7 +193,6 @@ html,body{overflow-x:clip}
 .widget .wl{display:flex;align-items:center;gap:9px;margin:calc(-1*var(--pad)) calc(-1*var(--pad)) 2px;padding:12px var(--pad);border-bottom:1px solid var(--hair)}
 .widget .wl::before{content:"";flex:none;width:7px;height:7px;border-radius:2px;background:var(--fam)}
 
-.banner{padding:6px 10px}
 .callout.key{padding:16px 18px;gap:8px} .callout.key p{font-size:15.5px}
 
 /* Variant cards carry the family edge the course's module cards do. */
@@ -280,8 +270,13 @@ html,body{overflow-x:clip}
 /* a section's vignette (lessonMd.ts vignette): a spot drawing on the heading's row, as The Grid
    Underneath sets one beside each system's title. Decoration beside the heading, so it gives way
    first: gone on a phone, where it would push the heading's first line down. */
-.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:18px}
-.sec-head>h2{margin-bottom:0}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:22px}
+.sec-title{min-width:0}
+.sec-title>h2{margin-bottom:0}
+/* a section's caption (lessonMd.ts headFences): the one sentence it concludes, set as real text under
+   the heading. It replaced the animated banners, whose words were drawn in a scaled SVG (#63). */
+.sec-sub{font-size:17px;line-height:1.45;color:var(--mut);max-width:62ch;margin:8px 0 0}
+.sec>.sec-sub{margin:-10px 0 22px}
 .sec-head .vig{width:220px;flex:none;color:var(--mut)}
 @media (max-width:760px){.sec-head .vig{display:none}.sec-head{display:block}}
 /* a key term (lessonMd.ts term): the family's colour as a text ink (shared.py text_ink), AA on

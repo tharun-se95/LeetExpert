@@ -1,5 +1,5 @@
 /* kit/kit.js: everything a lesson page needs that is not about its own topic.
-   Reveals, code blocks, players, quiz, variant cards, animated banners, kinetic
+   Reveals, code blocks, players, quiz, variant cards, kinetic
    headline, scroll reveals, contents rail, code-language switch, theme repaint and
    the embedding contract with the app. Concatenated after engine.js in one closure. */
 
@@ -142,24 +142,6 @@ function mountPredict(host,cases,opts){
   });
 }
 
-/* animated banners: one small SVG scene per section, played when it scrolls into view */
-function mountBanners(kinds){
-  document.querySelectorAll('.banner').forEach(function(host){
-    var kind=host.dataset.b;if(!kinds[kind])return;
-    var svg=S('svg',{viewBox:'0 0 720 120','aria-hidden':'true'},host);
-    var run=kinds[kind](svg),done=false;
-    if(reduce||!M||!M.animate){settle(run);return;}
-    inView(host,function(){if(done)return;done=true;run();});
-  });
-}
-/* Without motion a banner shows its last frame, never its first: a start frame reads
-   "record: 0 hops" or draws no arrows at all. Every banner animates numbers through
-   M.animate, so each call jumps to its end value. */
-function settle(run){
-  var real=M;
-  M={animate:function(from,to,o){if(o&&o.onUpdate)o.onUpdate(to);if(o&&o.onComplete)o.onComplete();return {stop:function(){},cancel:function(){}};}};
-  try{run();}finally{M=real;}
-}
 function kinetic(){
   var h=$('#h1');if(!h||!M||!M.animate||reduce)return;
   if(!h.querySelector('.kw')){var words=h.textContent.split(' ');h.innerHTML=words.map(function(w){return '<span class="kw">'+w+'</span>';}).join(' ');}
