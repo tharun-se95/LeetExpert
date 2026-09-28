@@ -1,0 +1,36 @@
+<div class="wrap"><section class="hero2"><div class="hero-copy"><div class="kick">Matrix · grid algorithms in production · overview</div>
+<h1 id="h1">Anything laid out in rows and columns is a <em>matrix</em>. Your systems are full of them.</h1>
+<p class="lede">Eight lessons of grid algorithms, and eight systems that run them every second: the memory your screen is drawn from, the alert grouping that wakes you at 3 a.m., the router that lays out the wires on a chip.</p>
+<div class="chips"><span>systems <b>8</b></span><span>scenes <b>8</b></span><span>every frame <b>run, not drawn</b></span></div></div>
+<div class="hero-stage"><div class="hero-art navy gi-index" id="giIndex" aria-label="Index of the eight systems. It is itself a 2 by 4 matrix: each tile's offset is its row times 4 plus its column."></div></div></section></div>
+<div class="wrap page">
+<nav class="toc" aria-label="Sections"><div class="kick">On this page</div>
+<a href="#cells">Where a cell lives</a><a href="#neighbours">Neighbours</a><a href="#inplace">Working in place</a><a href="#walks">Walking a grid</a><a href="#shape">Recognise the shape</a></nav>
+<article>
+
+<section class="sec" id="cells"><h2>Where a cell lives: one line of arithmetic</h2>
+<p>A grid is drawn in rows and columns, but memory is one line. In a grid with C columns, cell (r, c) sits at r × C + c: skip r whole rows, then step c into the row. The first system reads memory in that order and the second runs the arithmetic backwards, from a flat position to a row and a column.</p>
+<div class="sysgroup" data-s="framebuffer,pages"></div>
+</section>
+
+<section class="sec" id="neighbours"><h2>Neighbours: a list of offsets and one bounds check</h2>
+<p>Many grid questions are about a cell and the cells touching it. Writing the touching cells as a short list of offsets, with one bounds check, turns the corners and edges from special cases into cells that simply have fewer neighbours.</p>
+<div class="sysgroup" data-s="filter,alerts"></div>
+</section>
+
+<section class="sec" id="inplace"><h2>Working in place: the order of the writes</h2>
+<p>Some grids are too large to copy. Working in place means no write may destroy something a later step still has to read, so the order of the writes is the whole technique.</p>
+<div class="sysgroup" data-s="camera,mask"></div>
+</section>
+
+<section class="sec" id="walks"><h2>Walking a grid: a little state, kept exact</h2>
+<p>Some problems fix the order the cells are visited in: a spiral from the outside in, or a path that has to spell something. The state that tracks the walk is small, four bounds or one mark per cell on the path, and keeping it exact is what makes the walk correct.</p>
+<div class="sysgroup" data-s="cnc,route"></div>
+</section>
+
+<section class="sec" id="shape"><h2>Recognise the shape</h2>
+<p>Four questions point you at the right grid technique before any code is written.</p>
+<div class="vgrid" id="shapes"></div>
+<div class="practice-row" id="practice"></div>
+</section>
+</article></div>

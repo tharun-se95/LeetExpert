@@ -251,7 +251,8 @@ svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke
 .sys-title .kick .i{font-size:20px;color:var(--fam)}
 .vig{width:260px;max-width:100%;height:auto;color:var(--fg)}
 .vig .st{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.vig .fa{fill:var(--fam);opacity:.3} .vig .fk{fill:var(--fam)} .vig .fc{fill:var(--o-ink)} .vig .fr{fill:var(--r-ink)} .vig .fp{fill:var(--card)}
+.vig .fa{fill:var(--fam);opacity:.3} .vig .fk{fill:var(--fam)} .vig .fc{fill:var(--o-ink)} .vig .fr{fill:var(--r-ink)}
+.vig .fg{fill:var(--g-ink)} .vig .fp{fill:var(--card)}
 .vig .sc{stroke:var(--o-ink);fill:none;stroke-width:2.6;stroke-linecap:round}
 .vig .tx{font:700 11px 'Space Mono',monospace;text-anchor:middle;fill:var(--bg)}
 .sys-body{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:start}
@@ -279,6 +280,10 @@ main[data-code="py"] .c-ts,main[data-code="ts"] .c-py{display:none}
 .bl{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);text-align:center;line-height:1.35}
 .brd{display:grid;gap:3px;position:relative;margin:4px}
 .brd.tree{display:block}
+.brd.strip{gap:2px} .brd.strip .cell{border-radius:2px;height:22px} .brd.strip .cell:nth-child(4n+1):not(:first-child){margin-left:5px}
+/* behind the cells, so its tint shows only in the gaps and never under a cell's text */
+.brd.has-ov{isolation:isolate} .ov{position:absolute;left:0;top:0;z-index:-1;pointer-events:none;border-radius:8px;border:2px solid var(--k-cur);background:color-mix(in srgb,var(--k-cur) 14%,transparent);opacity:0}
+.ov.bounds{border:2px dashed var(--mk);background:transparent;border-radius:6px}
 .edges{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
 .edges line{stroke:var(--e-idle);stroke-width:2;stroke-linecap:round}
 .cell{width:var(--cs);height:var(--cs);border-radius:calc(var(--cs)*.16);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:var(--fs);line-height:1;will-change:transform;user-select:none;box-shadow:inset 0 0 0 1px var(--hair2)}
@@ -329,6 +334,10 @@ ICONS = r'''<symbol id="i-ast" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2
 <symbol id="i-recurse" viewBox="0 0 24 24"><path d="M12 4v6M12 10L6 15M12 10l6 5M6 15v5M18 15v5"/></symbol>
 <symbol id="i-meet" viewBox="0 0 24 24"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="12" cy="5" r="2"/><path d="M6 17.2L11 6.8M18 17.2L13 6.8"/></symbol>
 <symbol id="i-flat" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/><path d="M7 5v6M11 5v6M15 5v6M19 5v6M5 13v6M9 13v6M13 13v6M17 13v6" stroke-width="1.2"/></symbol>
+<symbol id="i-g-cell" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/><rect x="9.2" y="9.2" width="5.6" height="5.6" fill="currentColor" stroke="none" opacity=".45"/></symbol>
+<symbol id="i-g-kernel" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16"/><rect x="9.6" y="9.6" width="4.8" height="4.8" fill="currentColor" stroke="none" opacity=".35"/></symbol>
+<symbol id="i-g-rotate" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><path d="M20.5 3.5v5h-5"/><rect x="9" y="8" width="6" height="8" rx="1.4"/></symbol>
+<symbol id="i-g-spiral" viewBox="0 0 24 24"><path d="M12 12h2.2v-2.2H9.8v4.4h6.6V7.6H7.6v8.8H18.6V5.4H5.4v13.2h15.2"/></symbol>
 <symbol id="i-s-problem" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></symbol>
 <symbol id="i-s-attempt" viewBox="0 0 24 24"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M13.5 7l3 3"/></symbol>
 <symbol id="i-s-insight" viewBox="0 0 24 24"><path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1.1 1.3 1.1 2.2h5c0-.9.5-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>

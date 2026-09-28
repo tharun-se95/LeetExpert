@@ -4,8 +4,9 @@ Status: approved by owner and implemented 2026-09-25 · branch `feat/grid-app-th
 
 ## 1. Owner direction
 
-"Take all from The Grid Underneath artifact" (`web/lesson-artifacts/dist/_grid-underneath.html`,
-its tokens in `web/lesson-artifacts/shared.py` `GRID_DARK`). Owner chose, 2026-09-25:
+"Take all from The Grid Underneath artifact" (then the untracked `web/lesson-artifacts/dist/_grid-underneath.html`;
+since #25 the source-controlled `web/lesson-artifacts/grid-structures/`, built on the kit; its tokens in
+`web/lesson-artifacts/shared.py` `GRID_DARK`). Owner chose, 2026-09-25:
 
 - the Grid's **navy ladder** and **navy code well** for the app's dark theme;
 - the Grid's **blue accent** on buttons, focus rings and header in dark;
