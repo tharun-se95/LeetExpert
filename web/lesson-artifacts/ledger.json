@@ -462,27 +462,27 @@
   "linked-lists/build-a-linked-list": {
    "evidence": {
     "build": {
-     "source": "a5b6bbae9a2f55e9",
+     "source": "f155e36f957fa4d0",
      "on": "2026-09-28",
-     "commit": "52a0ace",
-     "result": "linked-lists/build-a-linked-list: 177,379 bytes -> lesson-artifacts/dist/linked-lists/build-a-linked-list.html"
+     "commit": "3bb088d",
+     "result": "linked-lists/build-a-linked-list: 180,798 bytes -> lesson-artifacts/dist/linked-lists/build-a-linked-list.html"
     },
     "code": {
-     "source": "a5b6bbae9a2f55e9",
+     "source": "f155e36f957fa4d0",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "all claims hold"
     },
     "light": {
-     "source": "a5b6bbae9a2f55e9",
+     "source": "f155e36f957fa4d0",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "light: ok at 1366px and 375px · layout shift 0.0001 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     },
     "dark": {
-     "source": "a5b6bbae9a2f55e9",
+     "source": "f155e36f957fa4d0",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "dark: ok at 1366px and 375px · layout shift 0.0001 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     }
    },
@@ -820,27 +820,27 @@
   "sliding-window/longest-substring-without-repeating": {
    "evidence": {
     "build": {
-     "source": "457094a7ac38e1a6",
+     "source": "0c0a483481b5df1a",
      "on": "2026-09-28",
-     "commit": "52a0ace",
-     "result": "sliding-window/longest-substring-without-repeating: 132,279 bytes -> lesson-artifacts/dist/sliding-window/longest-substring-without-repeating.html"
+     "commit": "3bb088d",
+     "result": "sliding-window/longest-substring-without-repeating: 135,698 bytes -> lesson-artifacts/dist/sliding-window/longest-substring-without-repeating.html"
     },
     "code": {
-     "source": "457094a7ac38e1a6",
+     "source": "0c0a483481b5df1a",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "code: 3 file(s) × 2 runtimes (6 runs) held to their names against 8 sandbox cases"
     },
     "light": {
-     "source": "457094a7ac38e1a6",
+     "source": "0c0a483481b5df1a",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     },
     "dark": {
-     "source": "457094a7ac38e1a6",
+     "source": "0c0a483481b5df1a",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     }
    },
@@ -1358,27 +1358,27 @@
   "binary-trees/diameter-of-binary-tree": {
    "evidence": {
     "build": {
-     "source": "e834e76233e366fd",
+     "source": "e1f6d9936f8900c9",
      "on": "2026-09-28",
-     "commit": "52a0ace",
-     "result": "binary-trees/diameter-of-binary-tree: 135,172 bytes -> lesson-artifacts/dist/binary-trees/diameter-of-binary-tree.html"
+     "commit": "3bb088d",
+     "result": "binary-trees/diameter-of-binary-tree: 138,591 bytes -> lesson-artifacts/dist/binary-trees/diameter-of-binary-tree.html"
     },
     "code": {
-     "source": "e834e76233e366fd",
+     "source": "e1f6d9936f8900c9",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "code: 3 file(s) × 2 runtimes (6 runs) held to their names against 6 sandbox cases"
     },
     "light": {
-     "source": "e834e76233e366fd",
+     "source": "e1f6d9936f8900c9",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     },
     "dark": {
-     "source": "e834e76233e366fd",
+     "source": "e1f6d9936f8900c9",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     }
    },
@@ -1851,27 +1851,27 @@
   "graphs/course-schedule": {
    "evidence": {
     "build": {
-     "source": "190ce995080a725e",
+     "source": "39a2cc8cbcb904f1",
      "on": "2026-09-28",
-     "commit": "52a0ace",
-     "result": "graphs/course-schedule: 147,884 bytes -> lesson-artifacts/dist/graphs/course-schedule.html"
+     "commit": "3bb088d",
+     "result": "graphs/course-schedule: 151,303 bytes -> lesson-artifacts/dist/graphs/course-schedule.html"
     },
     "code": {
-     "source": "190ce995080a725e",
+     "source": "39a2cc8cbcb904f1",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "code: 3 file(s) × 2 runtimes (6 runs) held to their names against 7 sandbox cases"
     },
     "light": {
-     "source": "190ce995080a725e",
+     "source": "39a2cc8cbcb904f1",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     },
     "dark": {
-     "source": "190ce995080a725e",
+     "source": "39a2cc8cbcb904f1",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     }
    },
@@ -2002,27 +2002,27 @@
   "dynamic-programming/coin-change": {
    "evidence": {
     "build": {
-     "source": "97ddc5faa1c9eec3",
+     "source": "d6ef0e4cf3f7990e",
      "on": "2026-09-28",
-     "commit": "52a0ace",
-     "result": "dynamic-programming/coin-change: 141,293 bytes -> lesson-artifacts/dist/dynamic-programming/coin-change.html"
+     "commit": "3bb088d",
+     "result": "dynamic-programming/coin-change: 144,712 bytes -> lesson-artifacts/dist/dynamic-programming/coin-change.html"
     },
     "code": {
-     "source": "97ddc5faa1c9eec3",
+     "source": "d6ef0e4cf3f7990e",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "code: 4 file(s) × 2 runtimes (8 runs) held to their names against 8 sandbox cases"
     },
     "light": {
-     "source": "97ddc5faa1c9eec3",
+     "source": "d6ef0e4cf3f7990e",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     },
     "dark": {
-     "source": "97ddc5faa1c9eec3",
+     "source": "d6ef0e4cf3f7990e",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     }
    },
@@ -2110,27 +2110,27 @@
   "overviews/linear-structures": {
    "evidence": {
     "build": {
-     "source": "0487a341e0901a57",
+     "source": "9ca4b9bb78ae815e",
      "on": "2026-09-28",
-     "commit": "52a0ace",
-     "result": "overviews/linear-structures: 208,702 bytes -> lesson-artifacts/dist/overviews/linear-structures.html"
+     "commit": "3bb088d",
+     "result": "overviews/linear-structures: 212,121 bytes -> lesson-artifacts/dist/overviews/linear-structures.html"
     },
     "code": {
-     "source": "0487a341e0901a57",
+     "source": "9ca4b9bb78ae815e",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "all claims hold"
     },
     "light": {
-     "source": "0487a341e0901a57",
+     "source": "9ca4b9bb78ae815e",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "light: ok at 1366px and 375px · layout shift 0.0003 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     },
     "dark": {
-     "source": "0487a341e0901a57",
+     "source": "9ca4b9bb78ae815e",
      "on": "2026-09-28",
-     "commit": "52a0ace",
+     "commit": "3bb088d",
      "result": "dark: ok at 1366px and 375px · layout shift 0.0003 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     }
    },
@@ -2140,7 +2140,32 @@
    "family": "linear-traversal"
   },
   "overviews/grid-structures": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "66211d35ca4488d5",
+     "on": "2026-09-28",
+     "commit": "3bb088d",
+     "result": "overviews/grid-structures: 300,342 bytes -> lesson-artifacts/dist/overviews/grid-structures.html"
+    },
+    "code": {
+     "source": "66211d35ca4488d5",
+     "on": "2026-09-28",
+     "commit": "3bb088d",
+     "result": "all claims hold"
+    },
+    "light": {
+     "source": "66211d35ca4488d5",
+     "on": "2026-09-28",
+     "commit": "3bb088d",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0004 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "66211d35ca4488d5",
+     "on": "2026-09-28",
+     "commit": "3bb088d",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0004 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "type": "overview",
    "title": "The Grid Underneath",
