@@ -79,7 +79,8 @@ follow the callout rules, and solutions never reach the DOM before the reveal.
   `kit/engine.js` (the endpoint ink that reads better, else one pushed toward whichever of black and
   white contrasts more with that blend, only as far as 4.5:1). A text element's own `opacity` thins
   its ink and is measured; only a fading ancestor (mid-animation) is exempt. Until #22's grid player
-  the element itself was exempted too, and a planted 45% rectangle name passed;
+  the element itself was exempted too, and a planted 45% rectangle name passed. Text inside a disabled
+  control is exempt, as WCAG 1.4.3 exempts inactive components;
 - missing accessible names on interactive controls and diagrams;
 - a solution in the DOM before its reveal is opened;
 - text on a solid family fill: the family colours are mid-tone 3:1 UI fills, and no ink reaches AA on

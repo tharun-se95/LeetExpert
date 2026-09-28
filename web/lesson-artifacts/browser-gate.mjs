@@ -107,6 +107,9 @@ function inPage() {
   }
   for (const el of texts) {
     if (el.closest("[aria-hidden='true'] .kw, script, style, .sr")) continue;
+    // an inactive control is exempt from contrast (WCAG 1.4.3): coin-change dims the coins that no
+    // longer fit to 40%, which the gate first saw once a text's own opacity counted
+    if (el.closest(":disabled, [aria-disabled='true']")) continue;
     const r = el.getBoundingClientRect();
     if (r.width < 1 || r.height < 1 || r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth) continue;
     const cs = getComputedStyle(el);
