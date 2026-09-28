@@ -212,6 +212,76 @@ function prefixSteps(){
 function prefixHolds(s){var p=s.lanes.filter(function(l){return l.id==='p';})[0];
   return p.items.every(function(x,k){return !x||+x.v===pfxBlock(Math.floor(k/p.cols),k%p.cols);});}
 
+/* a bucket is a small stack, open at the top; several buckets, consecutive in one Lanes(), stand
+   side by side as one block (lanes.js's own "several stacks" case) — no new lane kind needed */
+function bucketDefs(idPrefix,labelPrefix,cap){var defs=[];for(var k=0;k<cap;k++)defs.push({id:idPrefix+k,kind:'stack',label:labelPrefix+k});return defs;}
+function hashOf(str,cap){var h=0;for(var i=0;i<str.length;i++)h+=str.charCodeAt(i);return h%cap;}
+
+function chainingSteps(){
+  var CAP=4,KEYS=['cat','dog','god','emu'],
+      M=new Lanes(bucketDefs('b','',CAP),{fields:function(){return [['capacity',CAP],['entries',KEYS.length]];}}),
+      R=recorder(M),put={};
+  R.rec('Four buckets, all empty. A key’s bucket is the sum of its character codes, mod '+CAP+'.',{done:true});
+  KEYS.forEach(function(k){var b=hashOf(k,CAP),already=M.lane('b'+b).items.length,it=M.push('b'+b,k);put[k]=b;
+    R.rec('Hash “'+k+'” to bucket '+b+'. '+(already?'“'+M.lane('b'+b).items[0].v+'” is already there: it hangs behind it.':'It lands alone.'),{hi:[laneHi(it),'lane:b'+b]});});
+  var lookK='god',lb=put[lookK],chain=M.lane('b'+lb).items.slice(),found=null;
+  R.rec('Look up “'+lookK+'”: hash it to bucket '+lb+', then walk the chain from the bottom.',{hi:['lane:b'+lb]});
+  chain.forEach(function(it){if(found)return;M.tone(it,'cur');
+    if(it.v===lookK){M.tone(it,'good');found=it;R.rec('“'+it.v+'” matches.',{hi:[laneHi(it)],done:true});}
+    else{R.rec('“'+it.v+'” does not match. Keep walking the chain.',{hi:[laneHi(it)]});M.tone(it,null);}});
+  var ref={};for(var k=0;k<CAP;k++)ref[k]=[];
+  KEYS.forEach(function(x){ref[hashOf(x,CAP)].push(x);});
+  for(k=0;k<CAP;k++){var got=M.lane('b'+k).items.map(function(x){return x.v;});
+    if(got.join(',')!==ref[k].join(','))throw new Error('bucket '+k+' disagrees with a plain hash map built the same way');}
+  R.rec('The finished buckets match a plain hash map built with the same rule.',{done:true});
+  return R.steps;
+}
+function resizeChainSteps(){
+  var OLD=2,NEW=4,KEYS=['a','b','c'],
+      M=new Lanes(bucketDefs('o','old ',OLD).concat(bucketDefs('n','new ',NEW)),{fields:function(){return [['load factor',lf.toFixed(2)]];}}),
+      R=recorder(M),lf=0,n=0;
+  R.rec('A 2-bucket table. A key’s bucket is its character code mod the capacity.',{done:true});
+  KEYS.forEach(function(k){var b=hashOf(k,OLD),it=M.push('o'+b,k);n++;lf=n/OLD;
+    R.rec('Hash “'+k+'” to bucket '+b+' (mod '+OLD+').',{hi:[laneHi(it),'lane:o'+b,'load factor']});});
+  R.rec('Load factor '+lf.toFixed(2)+' crosses the resize threshold. Allocate 4 buckets and recompute every key’s bucket mod '+NEW+'.',
+    {hi:['lane:n0','lane:n1','lane:n2','lane:n3']});
+  for(var b=0;b<OLD;b++)M.lane('o'+b).items.forEach(function(it,idx){var nb=hashOf(it.v,NEW),c=M.copy('o'+b,idx,'n'+nb);
+    R.rec('Copy “'+it.v+'” into bucket '+nb+' of the new table.',{hi:[laneHi(c),'lane:n'+nb]});});
+  for(b=0;b<OLD;b++)M.lane('o'+b).items.forEach(function(it){M.tone(it,'dim');});
+  var ref={};for(var k=0;k<NEW;k++)ref[k]=[];
+  KEYS.forEach(function(x){ref[hashOf(x,NEW)].push(x);});
+  for(k=0;k<NEW;k++){var got=M.lane('n'+k).items.map(function(x){return x.v;});
+    if(got.join(',')!==ref[k].join(','))throw new Error('resized bucket '+k+' disagrees with rehashing at the new capacity');}
+  R.rec('The table is rehashed: '+KEYS.length+' entries across '+NEW+' buckets, none sharing one.',{done:true});
+  return R.steps;
+}
+/* a brute-force LCS, sharing nothing with the tabulation above, to check dp[m][n] against */
+function lcsRef(a,b){function rec(i,j){if(i===0||j===0)return 0;
+  if(a[i-1]===b[j-1])return 1+rec(i-1,j-1);return Math.max(rec(i-1,j),rec(i,j-1));}return rec(a.length,b.length);}
+function lcsSteps(){
+  var X='ABC',Y='AC',m=X.length,n=Y.length,
+      M=new Lanes([{id:'dp',kind:'grid',label:'dp',rows:m+1,cols:n+1,rkeys:['∅'].concat(X.split('')),ckeys:['∅'].concat(Y.split('')),w:34}]),
+      R=recorder(M),cells=[];
+  for(var r=0;r<=m;r++){cells.push([]);for(var c=0;c<=n;c++)cells[r].push(null);}
+  for(r=0;r<=m;r++)cells[r][0]=M.put('dp',M.at('dp',r,0),0);
+  for(c=1;c<=n;c++)cells[0][c]=M.put('dp',M.at('dp',0,c),0);
+  R.rec('An empty prefix of either string shares nothing: row ∅ and column ∅ hold 0.',{done:true});
+  for(r=1;r<=m;r++)for(c=1;c<=n;c++){
+    var match=X[r-1]===Y[c-1],to=M.at('dp',r,c),v,srcs,note;
+    if(match){v=cells[r-1][c-1].v+1;srcs=[M.at('dp',r-1,c-1)];
+      note='“'+X[r-1]+'” matches “'+Y[c-1]+'”: extend the diagonal, dp['+(r-1)+']['+(c-1)+'] + 1 = '+v+'.';}
+    else{var up=cells[r-1][c].v,left=cells[r][c-1].v;v=Math.max(up,left);srcs=[M.at('dp',r-1,c),M.at('dp',r,c-1)];
+      note='“'+X[r-1]+'” and “'+Y[c-1]+'” differ: the better of dp['+(r-1)+']['+c+']='+up+' and dp['+r+']['+(c-1)+']='+left+' is '+v+'.';}
+    M.deps('dp','d',to,srcs);var it=M.put('dp',to,v);cells[r][c]=it;M.tone(it,'cur');
+    R.rec(note,{hi:[laneHi(it),'d']});M.tone(it,'good');
+  }
+  M.deps('dp','d',null);
+  var got=cells[m][n].v,want=lcsRef(X,Y);
+  if(got!==want)throw new Error('LCS table disagrees with a brute-force recursion');
+  R.rec('dp['+m+']['+n+'] = '+got+': the length of the longest common subsequence, checked against a brute-force recursion.',{hi:[laneHi(cells[m][n])],done:true});
+  return R.steps;
+}
+
 mountLesson();
 new LanePlayer($('#stackw .lvhost'),{id:'stk',loop:true,autoplay:true,inv:[['size matches','size equals the number of items',sizeOk('s')]]}).load(stackSteps());
 mountLaneTabs($('#qtabs'),[{name:'Queue from two stacks',steps:twoStackSteps},{name:'Deque',steps:dequeSteps},{name:'Ring buffer',steps:ringSteps}],{id:'q'});
@@ -220,3 +290,4 @@ new LanePlayer($('#mono .lvhost'),{id:'mono',loop:true,autoplay:true}).load(mono
 mountLaneTabs($('#atabs'),[{name:'Reverse in place',steps:reverseSteps},{name:'Sliding window',steps:windowSteps},{name:'Resize',steps:resizeSteps},{name:'Count letters',steps:countSteps}],{id:'a'});
 mountLaneTabs($('#gtabs'),[{name:'Spiral order',steps:spiralSteps},{name:'Transpose',steps:transposeSteps},{name:'Number of islands',steps:islandsSteps}],{id:'g'});
 new LanePlayer($('#prefix .lvhost'),{id:'pfx',loop:true,autoplay:true,inv:[['prefix holds','every filled prefix cell equals the sum of its block',prefixHolds]]}).load(prefixSteps());
+mountLaneTabs($('#ttabs'),[{name:'Chaining',steps:chainingSteps},{name:'Resize',steps:resizeChainSteps},{name:'LCS table',steps:lcsSteps}],{id:'t'});

@@ -68,3 +68,13 @@ A 2D prefix sum is a second grid, one row and one column larger, where each cell
 ```widget #prefix "Build a 2D prefix sum, then answer one query"
 <div class="lvhost"></div>
 ```
+
+## Tables {#tables}
+
+A hash table's buckets are a row of small stacks: each bucket is open at the top, exactly like the call-frame stack above, and several buckets side by side are still just consecutive stack lanes. A collision is a second entry landing on the same bucket, on top of the first. A resize declares the larger table alongside the old one and copies each entry into its recomputed bucket, so it glides from the bucket it left.
+
+A DP table is a grid whose cells carry string headers, filled one cell at a time from the cells it depends on — a diagonal match, or the better of two neighbours — drawn as arrows into the cell being filled.
+
+```widget #ttabs "Three table walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a table walkthrough"></div><div class="lvhost"></div>
+```

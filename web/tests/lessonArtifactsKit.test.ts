@@ -182,7 +182,8 @@ describe("lesson artifacts kit: the lane model", () => {
 
 /* grids.js registers the grid lane kind on lanes.js's seam, so the two load together, in build order */
 type GridLane = Lane & { rows: number; cols: number; rkeys: string[] | null; ckeys: string[] | null;
-  axes: Record<string, { ax: "r" | "c"; i: number }>; rects: Record<string, { r0: number; c0: number; r1: number; c1: number }>; paths: Record<string, number[]> };
+  axes: Record<string, { ax: "r" | "c"; i: number }>; rects: Record<string, { r0: number; c0: number; r1: number; c1: number }>; paths: Record<string, number[]>;
+  deps: Record<string, { to: number; from: number[] }> };
 interface GridModel extends Model {
   at(id: string, r: number, c: number): number;
   cell(id: string, r: number, c: number): { id: number; v: unknown } | null;
@@ -190,6 +191,7 @@ interface GridModel extends Model {
   axis(id: string, name: string, ax: "r" | "c" | null, i?: number): void;
   rect(id: string, name: string, r0: number | null, c0?: number, r1?: number, c1?: number): void;
   path(id: string, name: string, slots: number[] | null): void;
+  deps(id: string, name: string, toSlot: number | null, fromSlots?: number[]): void;
   tone(it: object, t: string | null): object;
 }
 function gridKit(): { Lanes: new (defs: object[], o?: object) => GridModel } {
@@ -299,6 +301,53 @@ describe("lesson artifacts kit: the grid lane (grids.js)", () => {
     const M = new Lanes([{ id: "a", kind: "row", cap: 2 }]);
     M.put("a", 0, 1);
     expect(Object.keys(lane(M.snap("row"), "a")).sort()).toEqual(["cap", "id", "idx", "items", "keys", "kind", "label", "marks", "spans", "w"]);
+  });
+});
+
+/*
+ * The DP dependency-arrow layer (kit/grids.js `deps`, #22's tables item): a named set of arrows
+ * into one target cell from one or more source cells, the same shape as `rect`/`path` but
+ * directional. Held to a plain Map<name, {to, from}> reference over random operations, the way
+ * the grid's own random test above holds `put`/`swap`/`clear` to a plain 2D array.
+ */
+describe("lesson artifacts kit: the DP dependency-arrow layer (grids.js deps())", () => {
+  it("is a named {to, from} set, snapshotted, removable, and isolated from later moves", () => {
+    const { Lanes } = gridKit();
+    const M = new Lanes([{ id: "g", kind: "grid", rows: 3, cols: 3 }]);
+    M.deps("g", "cell", M.at("g", 1, 1), [M.at("g", 0, 0), M.at("g", 0, 1)]);
+    const a = M.snap("a");
+    M.deps("g", "cell", M.at("g", 2, 2), [M.at("g", 1, 1)]);
+    const b = M.snap("b");
+    M.deps("g", "cell", null);
+    const c = M.snap("c");
+    expect(grid(a, "g").deps).toEqual({ cell: { to: 4, from: [0, 1] } });
+    expect(grid(b, "g").deps).toEqual({ cell: { to: 8, from: [4] } });
+    expect(grid(a, "g").deps).toEqual({ cell: { to: 4, from: [0, 1] } }); // (a) untouched by (b)'s move
+    expect(grid(c, "g").deps).toEqual({});
+    expect(() => M.deps("g", "x", 9, [0])).toThrow(/out of range/);
+    expect(() => M.deps("g", "x", 0, [9])).toThrow(/out of range/);
+  });
+
+  it("matches a plain Map<name, {to, from}> over random set/remove operations, several names at once", () => {
+    const { Lanes } = gridKit();
+    let seed = 20260929;
+    const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0), seed / 4294967296);
+    const R = 3, C = 3, CAP = R * C, names = ["a", "b", "c"];
+    for (let t = 0; t < 150; t++) {
+      const M = new Lanes([{ id: "g", kind: "grid", rows: R, cols: C }]);
+      const ref = new Map<string, { to: number; from: number[] }>();
+      for (let k = 0; k < 25; k++) {
+        const name = names[Math.floor(rnd() * names.length)];
+        if (rnd() < 0.25) { M.deps("g", name, null); ref.delete(name); continue; }
+        const to = Math.floor(rnd() * CAP);
+        const from = Array.from({ length: 1 + Math.floor(rnd() * 3) }, () => Math.floor(rnd() * CAP));
+        M.deps("g", name, to, from);
+        ref.set(name, { to, from: from.slice() });
+      }
+      const got = grid(M.snap("t"), "g").deps;
+      expect(Object.keys(got).sort()).toEqual([...ref.keys()].sort());
+      ref.forEach((v, name) => expect(got[name]).toEqual(v));
+    }
   });
 });
 
