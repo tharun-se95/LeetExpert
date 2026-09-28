@@ -8,7 +8,9 @@
    Spec: docs/superpowers/specs/2026-09-28-grid-player-design.md. Included by build.py only in
    lessons that draw a grid (KIT_OPTIONAL), always after lanes.js. */
 
-var GGAP=6,GKEY=16,GAXIS=14;
+/* GDEPGAP: a grid that draws dependency arrows (a DP table) spaces its cells wider, because an arrow
+   runs border to border and in the usual 6px gap its head was a 5px sliver */
+var GGAP=6,GDEPGAP=18,GKEY=16,GAXIS=14;
 function gridOf(M,id){var l=M.lane(id);if(l.kind!=='grid')throw new Error(id+' is not a grid');return l;}
 function gridSlot(l,r,c){if(!(r>=0&&r<l.rows&&c>=0&&c<l.cols))throw new Error(l.id+': cell ('+r+', '+c+') is out of range');return r*l.cols+c;}
 function gridCopy(o){var x={};for(var k in o)x[k]=o[k];return x;}
@@ -64,6 +66,7 @@ LANE_KINDS.grid={
   /* ---------- the view ---------- */
   /* fixed for the player's life: cell size, and room for the most axis names any snapshot shows */
   measure:function(m,l){
+    if(l.deps&&Object.keys(l.deps).length)m.deps=true;
     m.rows=l.rows;m.cols=l.cols;m.rkeys=l.rkeys;m.ckeys=l.ckeys;m.ch=LCH;
     m.gcw=Math.max(m.gcw||0,laneCellW(l.items,l.w||40));m.cw=m.gcw;
     var rowW={},colN={};
@@ -75,12 +78,12 @@ LANE_KINDS.grid={
     var keys=m.rkeys||[String(m.rows-1)];
     m.keyW=Math.ceil(Math.max.apply(null,keys.map(function(k){return String(k).length;}))*6.3)+10;
     m.left=m.keyW+(m.axR?m.axR+6:0)+4;m.top=20+GKEY+(m.axC?m.axC*GAXIS+4:0);
-    m.gw=m.cols*(m.cw+GGAP)-GGAP+2*LPAD;m.gh=m.rows*(m.ch+GGAP)-GGAP+2*LPAD;
+    var g=m.gap=m.deps?GDEPGAP:GGAP;m.gw=m.cols*(m.cw+g)-g+2*LPAD;m.gh=m.rows*(m.ch+g)-g+2*LPAD;
     return {w:m.left+m.gw,h:m.top+m.gh+10};},
-  box:function(m,x0,y){return {kind:'grid',x:x0+m.left,y:y+m.top,left:m.left,top:m.top,keyW:m.keyW,w:m.gw,h:m.gh,cw:m.cw,ch:m.ch,
+  box:function(m,x0,y){return {kind:'grid',gap:m.gap,x:x0+m.left,y:y+m.top,left:m.left,top:m.top,keyW:m.keyW,w:m.gw,h:m.gh,cw:m.cw,ch:m.ch,
     rows:m.rows,cols:m.cols,rkeys:m.rkeys,ckeys:m.ckeys,label:m.label,len:m.rows*m.cols};},
   slotAt:function(b,k){var r=Math.floor(k/b.cols),c=k%b.cols;
-    return {x:b.x+LPAD+b.cw/2+c*(b.cw+GGAP),y:b.y+LPAD+b.ch/2+r*(b.ch+GGAP)};},
+    return {x:b.x+LPAD+b.cw/2+c*(b.cw+b.gap),y:b.y+LPAD+b.ch/2+r*(b.ch+b.gap)};},
   /* the label, every slot's outline (so an empty cell is visible) and the row and column keys */
   svg:function(id,b,l,s){
     var K=LANE_KINDS.grid,h='<g class="ln-lane gd-lane'+(s.hi.indexOf('lane:'+id)>=0?' hi':'')+'">';
@@ -111,7 +114,7 @@ LANE_KINDS.grid={
     /* a dependency arrow per (name, source slot): grid cells are static, so a key surviving between
        snapshots always lands on the same two points, and only its opacity needs to move */
     Object.keys(l.deps).forEach(function(n){var d=l.deps[n],to=K.slotAt(b,d.to);
-      d.from.forEach(function(f){var c=K.slotAt(b,f);deps[l.id+'.'+n+'#'+f]={x0:c.x,y0:c.y,x1:to.x,y1:to.y,name:n};});});},
+      d.from.forEach(function(f){var c=K.slotAt(b,f);deps[l.id+'.'+n+'#'+f]={x0:c.x,y0:c.y,x1:to.x,y1:to.y,hw:b.cw/2,hh:b.ch/2,name:n};});});},
   /* trails run under the cells: the cells are opaque, so a trail shows in the gaps between them,
      a thread through what it visited. One that gained or lost its last cell grows or retracts it. */
   under:function(L,fromL,t,s){
@@ -128,21 +131,24 @@ LANE_KINDS.grid={
       var name=(a||b).name;
       if(pts.length>1)h.push('<g class="gd-path'+(s.hi.indexOf(name)>=0?' hi':'')+'" style="opacity:'+op.toFixed(3)+'"><polyline points="'+
         pts.map(function(p){return p.x.toFixed(1)+','+p.y.toFixed(1);}).join(' ')+'"/></g>');});
-    /* dependency arrows: a cell's value came from these earlier cells. Cells never move, so a key
-       shared between this step and the last one is the same two points at op 1; only a key that
-       appeared or vanished needs to fade */
-    var dto=L.extra.deps||{},dfrom=fromL&&fromL.extra.deps||{},dk={};
-    Object.keys(dto).forEach(function(k){dk[k]=1;});Object.keys(dfrom).forEach(function(k){dk[k]=1;});
-    Object.keys(dk).forEach(function(k){var a=dto[k],b=fromL?dfrom[k]:null,q=a||b,op=a&&b?1:(a?(fromL?t:1):1-t);
-      var dx=q.x1-q.x0,dy=q.y1-q.y0,len=Math.sqrt(dx*dx+dy*dy)||1,ux=dx/len,uy=dy/len,pad=17,
-        x0=q.x0+ux*pad,y0=q.y0+uy*pad,x1=q.x1-ux*pad,y1=q.y1-uy*pad,ah=7,aw=4.5,bx=x1-ux*ah,by=y1-uy*ah,nx=-uy*aw,ny=ux*aw;
-      h.push('<g class="gd-deps'+(s.hi.indexOf(q.name)>=0?' hi':'')+'" style="opacity:'+op.toFixed(3)+'">'+
-        '<line x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+bx.toFixed(1)+'" y2="'+by.toFixed(1)+'"/>'+
-        '<path d="M'+x1.toFixed(1)+','+y1.toFixed(1)+' L'+(bx+nx).toFixed(1)+','+(by+ny).toFixed(1)+' L'+(bx-nx).toFixed(1)+','+(by-ny).toFixed(1)+' Z"/></g>');});
     return h.join('');},
   /* rectangles, then row and column names, over the cells */
   over:function(L,fromL,t,s){
     var h=[],lerp=function(a,b){return a+(b-a)*t;};
+    /* dependency arrows: a cell's value came from these earlier cells. They run over the cells from
+       border to border, so the head lands on the target's edge and never crosses a centred value (drawn
+       under the opaque cells, only the gap between neighbours showed, and the head was hidden). Cells
+       never move, so a key shared with the last step is the same two points; only a new or vanished
+       key fades. */
+    var dto=L.extra.deps||{},dfrom=fromL&&fromL.extra.deps||{},dk={};
+    Object.keys(dto).forEach(function(k){dk[k]=1;});Object.keys(dfrom).forEach(function(k){dk[k]=1;});
+    Object.keys(dk).forEach(function(k){var a=dto[k],b=fromL?dfrom[k]:null,q=a||b,op=a&&b?1:(a?(fromL?t:1):1-t);
+      var dx=q.x1-q.x0,dy=q.y1-q.y0,len=Math.sqrt(dx*dx+dy*dy)||1,ux=dx/len,uy=dy/len,
+        edge=Math.min(ux?q.hw/Math.abs(ux):Infinity,uy?q.hh/Math.abs(uy):Infinity),
+        x0=q.x0+ux*(edge+1),y0=q.y0+uy*(edge+1),x1=q.x1-ux*edge,y1=q.y1-uy*edge,ah=6,aw=4,bx=x1-ux*ah,by=y1-uy*ah,nx=-uy*aw,ny=ux*aw;
+      h.push('<g class="gd-deps'+(s.hi.indexOf(q.name)>=0?' hi':'')+'" style="opacity:'+op.toFixed(3)+'">'+
+        '<line x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+bx.toFixed(1)+'" y2="'+by.toFixed(1)+'"/>'+
+        '<path d="M'+x1.toFixed(1)+','+y1.toFixed(1)+' L'+(bx+nx).toFixed(1)+','+(by+ny).toFixed(1)+' L'+(bx-nx).toFixed(1)+','+(by-ny).toFixed(1)+' Z"/></g>');});
     var rto=L.extra.rects||{},rfrom=fromL&&fromL.extra.rects||{},rk={};
     Object.keys(rto).forEach(function(k){rk[k]=1;});Object.keys(rfrom).forEach(function(k){rk[k]=1;});
     Object.keys(rk).forEach(function(k){var a=rto[k],b=fromL?rfrom[k]:null,q,op;
