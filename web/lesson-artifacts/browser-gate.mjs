@@ -107,12 +107,18 @@ function inPage() {
   }
   for (const el of texts) {
     if (el.closest("[aria-hidden='true'] .kw, script, style, .sr")) continue;
+    // an inactive control is exempt from contrast (WCAG 1.4.3): coin-change dims the coins that no
+    // longer fit to 40%, which the gate first saw once a text's own opacity counted
+    if (el.closest(":disabled, [aria-disabled='true']")) continue;
     const r = el.getBoundingClientRect();
     if (r.width < 1 || r.height < 1 || r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth) continue;
     const cs = getComputedStyle(el);
     if (cs.visibility === "hidden" || Number(cs.opacity) === 0) continue;
     const ink = parse(el instanceof SVGElement ? cs.fill : cs.color);
     if (!ink) continue;
+    // the text's own opacity is how it is styled, not a fade: it thins the ink at rest (a 45% name on a
+    // grid's rectangle tag passed while the loop below skipped the element itself)
+    ink.a *= Number(cs.opacity);
     const px = r.left + Math.min(r.width / 2, 6), py = r.top + r.height / 2;
     if (px < 0 || py < 0 || px >= innerWidth || py >= innerHeight) continue;
     const bg = paintedUnder(px, py, el);
@@ -121,7 +127,7 @@ function inPage() {
     const size = parseFloat(cs.fontSize), bold = Number(cs.fontWeight) >= 700;
     // opacity on an ancestor (a fading node, a dimmed removed node) is intended de-emphasis mid-animation
     let faded = false;
-    for (let a = el; a && a !== document.body; a = a.parentElement) if (Number(getComputedStyle(a).opacity) < 0.95) faded = true;
+    for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) if (Number(getComputedStyle(a).opacity) < 0.95) faded = true;
     if (faded) continue;
     const need = size >= 24 || (bold && size >= 18.66) ? 3 : 4.5;
     const got = ratio(fg, bg);
