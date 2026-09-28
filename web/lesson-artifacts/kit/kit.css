@@ -264,6 +264,9 @@ html,body{overflow-x:clip}
   .split .beat{display:flex;flex-direction:column;gap:18px}
   .split .beat .duo-scene{display:contents}
   .split .beat .lead{order:-1}
+  /* stacked, a scene takes the column's width as it did before the split: the duo's align-items:start
+     sized it to its content, and a player's step bar pushed it past a phone's edge (kit-players, #63) */
+  .split .beat{align-items:stretch}
 }
 @media (prefers-reduced-motion:reduce){.split .toc{transition:none}}
 

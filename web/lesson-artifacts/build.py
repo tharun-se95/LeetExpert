@@ -205,6 +205,9 @@ def split_section(inner):
     return "".join(rows)
 
 
+# The split layout (#63, owner 2026-09-28): prose on the left, each scene hung beside its paragraph, the
+# contents as an icon rail. Every lesson and the kit specimen get it; an overview keeps its own
+# story-and-visual grid, the design the split was taken from.
 def decorate(body, split=False):
     if split:
         body = re.sub(r'(<section class="sec" id="[a-z]+"><h2>.*?</h2>)(.*?)(</section>)',
@@ -271,7 +274,7 @@ def build(module, slug, family, title):
     lesson = render_lesson(folder)
     if lesson and lesson["data"]["title"] != title:
         raise SystemExit(f"{slug}: lesson.md title {lesson['data']['title']!r} differs from build.py's {title!r}")
-    body = decorate(lesson["html"] if lesson else read(folder, "body.html"), split=slug in SPLIT)
+    body = decorate(lesson["html"] if lesson else read(folder, "body.html"), split=module != "overviews")
     code = code_bundle(folder)
     js = "\n".join([
         "(function(){\n'use strict';",
@@ -316,10 +319,6 @@ if(document.fonts&&document.fonts.load)Promise.all(['400 16px "Space Grotesk"','
         f.write(html)
     print(f"{module}/{slug}: {len(html):,} bytes -> {os.path.relpath(out)}")
 
-
-# The split layout (#63): visuals beside the prose, the contents as an overlay. On trial on one lesson
-# while the owner decides; once decided it becomes every lesson's layout and this set is deleted.
-SPLIT = {"longest-substring-without-repeating"}
 
 # module, slug, family colour (familyTheme.ts id), document title
 LESSONS = [

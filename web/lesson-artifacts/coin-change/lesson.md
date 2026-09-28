@@ -14,6 +14,10 @@ hero: |
 
 ## Problem {#problem}
 
+```vig "Three coin sizes on the left, and a target amount on the right made up exactly from them"
+<circle class="fa" cx="24" cy="56" r="8"/><circle class="fa" cx="52" cy="56" r="12"/><circle class="fk" cx="88" cy="56" r="18"/><path class="st" d="M120 56H132M127 51L132 56L127 61"/><rect class="fk" x="142" y="44" width="36" height="24" rx="12"/><rect class="fa" x="180" y="44" width="24" height="24" rx="12"/><rect class="fa" x="206" y="44" width="16" height="24" rx="8"/><path class="st" d="M142 82V88H222V82"/>
+```
+
 You are given a list of `coins`, the sizes available, all different, and a target `amount`. Return the **fewest** coins that add up to exactly `amount`, using each size as many times as you like, or `-1` if no combination adds up to it.
 
 ```examples
@@ -37,6 +41,10 @@ Read a coin as an instance size and the amount as the capacity a customer asked 
 Greedy grabs the biggest size first, and that is not always the fewest instances.
 ```
 
+```vig "Two ways to pay the same amount: the top grabs the largest coin first and ends with many small ones, the bottom uses two middle coins"
+<circle class="fk" cx="30" cy="30" r="18"/><circle class="fa" cx="64" cy="30" r="8"/><circle class="fa" cx="86" cy="30" r="8"/><circle class="fa" cx="108" cy="30" r="8"/><circle class="fa" cx="130" cy="30" r="8"/><circle class="fr" cx="170" cy="30" r="9"/><path class="st" d="M165 25L175 35M175 25L165 35"/><circle class="fa" cx="30" cy="82" r="14"/><circle class="fa" cx="62" cy="82" r="14"/><circle class="fg" cx="170" cy="82" r="9"/><path class="st" d="M165 82L169 86L176 78"/>
+```
+
 This is unbounded knapsack: each size can be reused without limit. Before writing any table, think about the greedy rule first, because it is the natural first move and it is worth knowing exactly why it fails. Take sizes `{1, 3, 4}` and a capacity of 6. Work out what "always launch the biggest size that still fits" does, and compare it with the best possible order.
 
 Predict the fewest instances for each order, then check.
@@ -57,6 +65,10 @@ You do not know which c was last, so try each size that fits and keep the smalle
 
 ```caption
 The recursion asks about the same amounts again and again, and there are only `amount + 1` of them.
+```
+
+```vig "A recursion tree in which the same smaller amount turns up on two different branches, the pair joined by a dashed curve"
+<path class="st" d="M113.5 18.7L76.5 45.3"/><path class="st" d="M126.5 18.7L163.5 45.3"/><path class="st" d="M65.2 56.4L44.8 83.6"/><path class="st" d="M74.8 56.4L95.2 83.6"/><path class="st" d="M165.2 56.4L144.8 83.6"/><path class="st" d="M174.8 56.4L195.2 83.6"/><circle class="fa" cx="120" cy="14" r="8"/><circle class="fa" cx="70" cy="50" r="8"/><circle class="fa" cx="170" cy="50" r="8"/><circle class="fa" cx="40" cy="90" r="8"/><circle class="fc" cx="100" cy="90" r="8"/><circle class="fc" cx="140" cy="90" r="8"/><circle class="fa" cx="200" cy="90" r="8"/><path class="sc" stroke-dasharray="3 5" d="M100 100C110 112 130 112 140 100"/>
 ```
 
 **The first trap is greedy.** Keep launching the biggest size that still fits, and stop when nothing is left:
@@ -87,6 +99,10 @@ This is correct, and it is slow for a specific reason. To make 11 it asks about 
 
 ```caption
 `dp[a]` reads the cells one size behind it.
+```
+
+```vig "A row of cells for every amount; the current cell reaches back to the cells one coin size behind it"
+<rect class="st" x="8" y="60" width="22" height="22" rx="4"/><rect class="st" x="34" y="60" width="22" height="22" rx="4"/><rect class="st" x="60" y="60" width="22" height="22" rx="4"/><rect class="fa" x="86" y="60" width="22" height="22" rx="4"/><rect class="st" x="112" y="60" width="22" height="22" rx="4"/><rect class="st" x="138" y="60" width="22" height="22" rx="4"/><rect class="fa" x="164" y="60" width="22" height="22" rx="4"/><rect class="fa" x="190" y="60" width="22" height="22" rx="4"/><rect class="fk" x="216" y="60" width="22" height="22" rx="4"/><path class="sc" d="M216 56C216 30 190 30 190 56"/><path class="sc" d="M216 56C216 18 164 18 164 56"/><path class="sc" d="M216 56C216 4 86 4 86 56"/>
 ```
 
 Look at an optimal order for some amount `a` and ask only about its **last** instance, whatever its size `c`. Remove it, and what is left adds up to exactly `a − c`. That leftover order must itself be a fewest order for `a − c`: if a shorter one existed, putting the last instance back on it would give a shorter order for `a`, and we assumed ours was the fewest. So the best answer for `a` is built from the best answer for some smaller amount.
@@ -121,6 +137,10 @@ Watch the table fill. The orange cell is the amount being solved. The blue cells
 Each cell is filled once, from the ones before it.
 ```
 
+```vig "Cells filled one after another from left to right, the next one about to be filled from those before it"
+<rect class="fk" x="8" y="44" width="22" height="22" rx="4"/><rect class="fk" x="34" y="44" width="22" height="22" rx="4"/><rect class="fk" x="60" y="44" width="22" height="22" rx="4"/><rect class="fk" x="86" y="44" width="22" height="22" rx="4"/><rect class="fk" x="112" y="44" width="22" height="22" rx="4"/><rect class="fc" x="138" y="44" width="22" height="22" rx="4"/><rect class="st fp" x="164" y="44" width="22" height="22" rx="4"/><rect class="st fp" x="190" y="44" width="22" height="22" rx="4"/><rect class="st fp" x="216" y="44" width="22" height="22" rx="4"/><path class="st" d="M8 86L150 86"/><path class="st" d="M145 89.4L150 86L145 82.6"/>
+```
+
 Attempt it on paper first: decide what the table holds, what goes in cell 0, what unreachable cells start as, and what the answer is once it is full. Then compare. Read it as a capacity planner who fills a price sheet from the smallest order upward, so that pricing any order only needs a lookup in cells already filled.
 
 `````reveal #solbox "Show the solution"
@@ -147,6 +167,10 @@ Do not return `dp[amount]` as it is. For an amount no order can reach, that cell
 
 ## Variants {#variants}
 
+```vig "The same row of cells three times: counting ways, square sizes, and ticket spans covering runs of days"
+<rect class="fa" x="12" y="10" width="20" height="20" rx="4"/><rect class="fa" x="36" y="10" width="20" height="20" rx="4"/><rect class="fa" x="60" y="10" width="20" height="20" rx="4"/><rect class="fa" x="84" y="10" width="20" height="20" rx="4"/><rect class="fa" x="108" y="10" width="20" height="20" rx="4"/><rect class="fa" x="132" y="10" width="20" height="20" rx="4"/><rect class="fa" x="156" y="10" width="20" height="20" rx="4"/><rect class="fa" x="180" y="10" width="20" height="20" rx="4"/><rect class="fk" x="16" y="26" width="12" height="2" rx="1"/><rect class="fk" x="40" y="24" width="12" height="4" rx="1"/><rect class="fk" x="64" y="22" width="12" height="6" rx="1"/><rect class="fk" x="88" y="20" width="12" height="8" rx="1"/><rect class="fk" x="112" y="18" width="12" height="10" rx="1"/><rect class="fk" x="136" y="16" width="12" height="12" rx="1"/><rect class="fk" x="160" y="14" width="12" height="14" rx="1"/><rect class="fk" x="184" y="12" width="12" height="16" rx="1"/><rect class="fk" x="12" y="46" width="20" height="20" rx="4"/><rect class="fa" x="36" y="46" width="20" height="20" rx="4"/><rect class="fa" x="60" y="46" width="20" height="20" rx="4"/><rect class="fk" x="84" y="46" width="20" height="20" rx="4"/><rect class="fa" x="108" y="46" width="20" height="20" rx="4"/><rect class="fa" x="132" y="46" width="20" height="20" rx="4"/><rect class="fa" x="156" y="46" width="20" height="20" rx="4"/><rect class="fa" x="180" y="46" width="20" height="20" rx="4"/><rect class="fa" x="12" y="82" width="20" height="20" rx="4"/><rect class="fa" x="36" y="82" width="20" height="20" rx="4"/><rect class="fa" x="60" y="82" width="20" height="20" rx="4"/><rect class="fa" x="84" y="82" width="20" height="20" rx="4"/><rect class="fa" x="108" y="82" width="20" height="20" rx="4"/><rect class="fa" x="132" y="82" width="20" height="20" rx="4"/><rect class="fa" x="156" y="82" width="20" height="20" rx="4"/><rect class="fa" x="180" y="82" width="20" height="20" rx="4"/><path class="sc" d="M12 78V74H32V78M36 78V74H104V78M108 78V74H200V78"/>
+```
+
 The same table with a different question in each cell.
 
 ```variants
@@ -170,6 +194,10 @@ The same table with a different question in each cell.
 ```
 
 ## Check yourself {#quiz}
+
+```vig "Three questions as rows, the first one answered and ticked"
+<circle class="fg" cx="36" cy="24" r="10"/><path class="st" d="M31 24L35 28L42 20"/><circle class="st" cx="36" cy="56" r="10"/><circle class="st" cx="36" cy="88" r="10"/><rect class="fa" x="58" y="19" width="150" height="10" rx="5"/><rect class="fa" x="58" y="51" width="118" height="10" rx="5"/><rect class="fa" x="58" y="83" width="138" height="10" rx="5"/>
+```
 
 ```quiz
 {

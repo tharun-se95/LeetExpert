@@ -317,3 +317,37 @@ describe("lesson artifacts kit: build.py ships a player with its chrome", () => 
     expect(optional("drawTheHero()")).toEqual([]);
   });
 });
+
+describe("lesson artifacts kit: build.py splits a section into beats (#63)", () => {
+  const split = (inner: string) => {
+    const run = spawnSync("python3", ["-c", `import sys;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(build.split_section(sys.stdin.read()),end="")`], { input: inner, encoding: "utf8" });
+    if (run.status) throw new Error(run.stderr);
+    return run.stdout;
+  };
+  const A = "<p>A</p>", B = "<p>B</p>", X = '<div class="ex">X</div>', Y = '<div class="widget">Y</div>', G = '<div class="vgrid">G</div>';
+  const beat = (text: string, scene: string) => `<div class="duo beat"><div class="duo-text">${text}</div><div class="duo-scene">${scene}</div></div>`;
+  const flow = (...h: string[]) => `<div class="flow">${h.join("")}</div>`;
+
+  it("hangs a scene beside the prose before it, and keeps the prose after it in the same flow", () => {
+    expect(split(A + X + B)).toBe(flow(beat(A, X), B));
+    expect(split(A + X + Y + B)).toBe(flow(beat(A, X + Y), B));
+  });
+  it("puts a scene that opens the section beside the first prose, marked lead so a phone shows it first", () => {
+    expect(split(X + A + Y)).toBe(flow(beat(A, `<div class="lead">${X}</div>` + Y)));
+  });
+  it("closes the flow at a full-width row and opens a new one after it", () => {
+    expect(split(A + G + B)).toBe(flow(A) + G + flow(B));
+    expect(split(A + X + G)).toBe(flow(beat(A, X)) + G);
+  });
+  it("lets a scene with no prose around it span the page, outside any flow", () => {
+    expect(split(X)).toBe(X);
+    expect(split(X + G + A)).toBe(X + G + flow(A));
+  });
+  // a lead scene is the one move: it follows its paragraph in the markup and CSS shows it first
+  // when the page stacks, as the lead case above pins
+  it("never reorders what a reader reads, beyond a lead scene", () => {
+    const words = (h: string) => h.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean);
+    const inner = A + X + '<p>C</p><div class="rosetta">R</div>' + G + B + Y + '<ol id="qlist"><li>Q</li></ol>';
+    expect(words(split(inner))).toEqual(words(inner));
+  });
+});

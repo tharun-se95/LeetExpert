@@ -14,6 +14,10 @@ hero: |
 
 ## The node, then the list {#node}
 
+```vig "Three nodes, each a value and a next reference, chained left to right and ending in an empty reference"
+<rect class="fa" x="10" y="44" width="26" height="24" rx="4"/><rect class="st" x="36" y="44" width="16" height="24" rx="4"/><circle class="fk" cx="44" cy="56" r="2.5"/><rect class="fa" x="68" y="44" width="26" height="24" rx="4"/><rect class="st" x="94" y="44" width="16" height="24" rx="4"/><circle class="fk" cx="102" cy="56" r="2.5"/><rect class="fa" x="126" y="44" width="26" height="24" rx="4"/><rect class="st" x="152" y="44" width="16" height="24" rx="4"/><circle class="fk" cx="160" cy="56" r="2.5"/><path class="st" d="M44 56L66 56"/><path class="st" d="M61.9 58.8L66 56L61.9 53.2"/><path class="st" d="M102 56L124 56"/><path class="st" d="M119.9 58.8L124 56L119.9 53.2"/><path class="st" d="M160 56L180 56"/><path class="st" d="M175.9 58.8L180 56L175.9 53.2"/><circle class="st" cx="188" cy="56" r="7"/><path class="st" d="M183 61L193 51"/>
+```
+
 A node is two fields: the value it stores, and `next`, a reference to the node after it. The last node's `next` is empty (`None` in Python, `null` in TypeScript, drawn here as ∅). A node knows nothing about the nodes before it, only the one after.
 
 The list itself is a small wrapper around the chain. It keeps three fields: `head`, the first node, which is the only way in; `tail`, the last node, kept so adding at the end does not need a walk; and `size`, the number of nodes, kept so counting does not need one either.
@@ -37,6 +41,10 @@ Three invariants: following next from head reaches every node and ends at null; 
 
 ## Build it, one pointer at a time {#build toc="Build it"}
 
+```vig "A list with a new node above it, its next reference about to point at the old head"
+<rect class="fa" x="64" y="66" width="26" height="24" rx="4"/><rect class="st" x="90" y="66" width="16" height="24" rx="4"/><circle class="fk" cx="98" cy="78" r="2.5"/><rect class="fa" x="118" y="66" width="26" height="24" rx="4"/><rect class="st" x="144" y="66" width="16" height="24" rx="4"/><circle class="fk" cx="152" cy="78" r="2.5"/><rect class="fa" x="172" y="66" width="26" height="24" rx="4"/><rect class="st" x="198" y="66" width="16" height="24" rx="4"/><circle class="fk" cx="206" cy="78" r="2.5"/><path class="st" d="M98 78L116 78"/><path class="st" d="M111.9 80.8L116 78L111.9 75.2"/><path class="st" d="M152 78L170 78"/><path class="st" d="M165.9 80.8L170 78L165.9 75.2"/><rect class="fk" x="10" y="14" width="26" height="24" rx="4"/><rect class="st" x="36" y="14" width="16" height="24" rx="4"/><circle class="fk" cx="44" cy="26" r="2.5"/><path class="sc" stroke-dasharray="4 4" d="M44 26C56 26 70 42 76 60"/><path class="sc" d="M68 57L76 62L78 53"/>
+```
+
 Here is a real list, drawn from its actual pointers. Push values onto either end, or click a node to delete its value. Each operation plays one pointer write at a time, and the panel under it checks the three invariants against the pointers themselves, not against what the list claims.
 
 ```widget #play "Build it: every pointer write, one at a time"
@@ -53,6 +61,10 @@ Both pushes are a fixed handful of pointer writes, whatever the length of the li
 
 ## Find and delete: walking in pairs {#walk toc="The pair walk"}
 
+```vig "A chain of nodes with two markers above neighbouring nodes, one trailing the other"
+<rect class="fa" x="10" y="56" width="26" height="24" rx="4"/><rect class="st" x="36" y="56" width="16" height="24" rx="4"/><circle class="fk" cx="44" cy="68" r="2.5"/><rect class="fa" x="68" y="56" width="26" height="24" rx="4"/><rect class="st" x="94" y="56" width="16" height="24" rx="4"/><circle class="fk" cx="102" cy="68" r="2.5"/><rect class="fa" x="126" y="56" width="26" height="24" rx="4"/><rect class="st" x="152" y="56" width="16" height="24" rx="4"/><circle class="fk" cx="160" cy="68" r="2.5"/><path class="st" d="M44 68L66 68"/><path class="st" d="M61.9 70.8L66 68L61.9 65.2"/><path class="st" d="M102 68L124 68"/><path class="st" d="M119.9 70.8L124 68L119.9 65.2"/><path class="st" d="M160 68L180 68"/><path class="st" d="M175.9 70.8L180 68L175.9 65.2"/><circle class="st" cx="188" cy="68" r="7"/><path class="st" d="M183 73L193 63"/><polygon class="fc" points="17,30 29,30 23,41"/><polygon class="fk" points="75,30 87,30 81,41"/>
+```
+
 ```duo
 Finding a value means walking from `head`, one `next` at a time, until the value turns up or the walk falls off the end. There is no shortcut: a node's position in memory says nothing about its position in the list, so reaching the k-th node costs k steps. Find is O(n).
 
@@ -64,6 +76,10 @@ The four delete cases split on two questions. Is `prev` empty? Then the node is 
 ```
 
 ## The forgotten tail {#trap}
+
+```vig "A list whose tail marker still points at a node that has been cut away, drawn dashed and detached"
+<rect class="fa" x="10" y="34" width="26" height="24" rx="4"/><rect class="st" x="36" y="34" width="16" height="24" rx="4"/><circle class="fk" cx="44" cy="46" r="2.5"/><rect class="fa" x="68" y="34" width="26" height="24" rx="4"/><rect class="st" x="94" y="34" width="16" height="24" rx="4"/><circle class="fk" cx="102" cy="46" r="2.5"/><path class="st" d="M44 46L66 46"/><path class="st" d="M61.9 48.8L66 46L61.9 43.2"/><path class="st" d="M102 46L128 46"/><path class="st" d="M123.9 48.8L128 46L123.9 43.2"/><rect class="st" x="134" y="34" width="42" height="24" rx="4" stroke-dasharray="3 3"/><circle class="fr" cx="166" cy="46" r="2.5"/><circle class="fr" cx="155" cy="96" r="6"/><path class="st" d="M155 88L155 64"/><path class="st" d="M158.4 69L155 64L151.6 69"/><circle class="st" cx="210" cy="46" r="7"/><path class="st" d="M205 51L215 41"/>
+```
 
 ```duo
 The branch that moves `tail` back when the tail is deleted is the one most often left out, and leaving it out does not crash anything. Delete the last node without it and `tail` still points at the node that was just removed, a node nothing reachable from `head` leads to. The damage waits for the next append: <span class="c-py">`push_back`</span><span class="c-ts">`pushBack`</span> trusts `tail`, links the new node onto that removed node, and the new value is gone without an error.
@@ -79,6 +95,10 @@ Deleting the tail must move `tail` back to `prev`. Without that line, deleting 1
 ````
 
 ## The special cases are the lesson {#insight toc="The special cases"}
+
+```vig "Three small lists at their boundaries: an empty one, one losing its head, one losing its tail"
+<circle class="st" cx="30" cy="56" r="7"/><path class="st" d="M25 61L35 51"/><rect class="fr" x="64" y="44" width="26" height="24" rx="4"/><rect class="st" x="90" y="44" width="12" height="24" rx="4"/><path class="st" d="M102 56L118 56"/><path class="st" d="M113.9 58.8L118 56L113.9 53.2"/><rect class="fa" x="122" y="44" width="26" height="24" rx="4"/><rect class="fa" x="170" y="44" width="26" height="24" rx="4"/><rect class="st" x="196" y="44" width="12" height="24" rx="4"/><path class="st" d="M208 56L214 56"/><path class="st" d="M209.9 58.8L214 56L209.9 53.2"/><rect class="fr" x="214" y="44" width="20" height="24" rx="4"/>
+```
 
 Count the branches in the class: an empty list in both pushes, deleting the head, deleting the tail. Each one sits at a boundary where the pointer the normal path rewrites does not exist.
 
@@ -97,6 +117,10 @@ The next lesson removes most of these branches with one trick: a dummy node that
 
 ## What it costs {#cost}
 
+```vig "Bars climbing a staircase for walking to the end on every append, beside a flat row for appending at a kept tail"
+<path class="st" d="M10 100H118M130 100H230"/><rect class="fr" x="14" y="86" width="9" height="10" rx="2"/><rect class="fr" x="27" y="76" width="9" height="20" rx="2"/><rect class="fr" x="40" y="66" width="9" height="30" rx="2"/><rect class="fr" x="53" y="56" width="9" height="40" rx="2"/><rect class="fr" x="66" y="46" width="9" height="50" rx="2"/><rect class="fr" x="79" y="36" width="9" height="60" rx="2"/><rect class="fr" x="92" y="26" width="9" height="70" rx="2"/><rect class="fr" x="105" y="16" width="9" height="80" rx="2"/><rect class="fg" x="134" y="88" width="8" height="12" rx="2"/><rect class="fg" x="146" y="88" width="8" height="12" rx="2"/><rect class="fg" x="158" y="88" width="8" height="12" rx="2"/><rect class="fg" x="170" y="88" width="8" height="12" rx="2"/><rect class="fg" x="182" y="88" width="8" height="12" rx="2"/><rect class="fg" x="194" y="88" width="8" height="12" rx="2"/><rect class="fg" x="206" y="88" width="8" height="12" rx="2"/><rect class="fg" x="218" y="88" width="8" height="12" rx="2"/>
+```
+
 Keeping `tail` is what makes appending O(1). Without it, appending means walking from `head` to the last node every time. Appending to a list of k nodes visits all k of them, so appending n values one after another visits 0 + 1 + … + (n − 1) nodes in total, which is n(n − 1) / 2.
 
 ```mount #cost-facts
@@ -109,6 +133,10 @@ Keeping `tail` is what makes appending O(1). Without it, appending means walking
 Memory is the other cost, and big-O hides it. An array of numbers stores the numbers side by side. A linked list stores each number inside its own node, next to a reference to the following node, and each node is a separate allocation with its own bookkeeping. Both are O(n) space, but the list spends at least twice the slots per value, and its nodes are scattered, so reading them in order does not benefit from the cache the way an array does. A list earns its place where it splices: inserting or removing next to a node you already hold is O(1), which an array cannot do.
 
 ## Where next {#next}
+
+```vig "Three sketches: arrows turned to face backwards, a fast and a slow marker on one chain, and a chain that loops back on itself"
+<circle class="fa" cx="14" cy="20" r="7"/><circle class="fa" cx="50" cy="20" r="7"/><circle class="fa" cx="86" cy="20" r="7"/><path class="sc" d="M42 20L22 20"/><path class="sc" d="M26.1 17.2L22 20L26.1 22.8"/><path class="sc" d="M78 20L58 20"/><path class="sc" d="M62.1 17.2L58 20L62.1 22.8"/><circle class="fa" cx="14" cy="64" r="6"/><circle class="fa" cx="38" cy="64" r="6"/><circle class="fa" cx="62" cy="64" r="6"/><circle class="fa" cx="86" cy="64" r="6"/><circle class="fa" cx="110" cy="64" r="6"/><polygon class="fc" points="33,44 43,44 38,55"/><polygon class="fk" points="81,44 91,44 86,55"/><circle class="fa" cx="150" cy="56" r="7"/><circle class="fa" cx="182" cy="56" r="7"/><circle class="fa" cx="214" cy="36" r="7"/><circle class="fa" cx="214" cy="80" r="7"/><path class="st" d="M157 56L175 56"/><path class="st" d="M187.9 52.3L208.1 39.7"/><path class="st" d="M214 43L214 73"/><path class="st" d="M208.4 75.8L187.6 60.2"/>
+```
 
 The rest of the module reuses the moves on this page: rewriting a next pointer, and walking with more than one reference.
 
@@ -138,6 +166,10 @@ The rest of the module reuses the moves on this page: rewriting a next pointer, 
 ```
 
 ## Check yourself {#quiz}
+
+```vig "Three questions as rows, the first one answered and ticked"
+<circle class="fg" cx="36" cy="24" r="10"/><path class="st" d="M31 24L35 28L42 20"/><circle class="st" cx="36" cy="56" r="10"/><circle class="st" cx="36" cy="88" r="10"/><rect class="fa" x="58" y="19" width="150" height="10" rx="5"/><rect class="fa" x="58" y="51" width="118" height="10" rx="5"/><rect class="fa" x="58" y="83" width="138" height="10" rx="5"/>
+```
 
 ```quiz
 {
