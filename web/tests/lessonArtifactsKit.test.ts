@@ -351,6 +351,102 @@ describe("lesson artifacts kit: the DP dependency-arrow layer (grids.js deps())"
   });
 });
 
+/* heaps.js registers the heap lane kind on lanes.js's seam. A heap is a growing lane: push, swap and
+   remove already do everything an insert/repair/extract needs, so the model half is held to a plain
+   array exactly as a row is (the array's own test above); what is specific to a heap is heapHolds
+   (the invariant a snapshot must satisfy), the comparator, and that mark works while span does not. */
+type HeapLane = Lane & { cmp: "min" | "max" };
+type HeapKit = Kit & { heapHolds: (l: HeapLane) => boolean };
+function heapKit(): HeapKit {
+  const ctx: Record<string, unknown> = {};
+  const src = ["lanes.js", "heaps.js"].map((f) => readFileSync(join(ARTIFACTS, "kit", f), "utf8")).join("\n");
+  runInNewContext(src + "\nthis.Lanes=Lanes;this.heapHolds=heapHolds;", ctx);
+  return ctx as unknown as HeapKit;
+}
+const heapLane = (s: Snap, id: string) => s.lanes.find((l) => l.id === id)! as HeapLane;
+
+describe("lesson artifacts kit: the heap lane (heaps.js)", () => {
+  it("a heap lane grows and repairs exactly like a plain row over random pushes, swaps and removes", () => {
+    const { Lanes } = heapKit();
+    let seed = 20260929;
+    const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0), seed / 4294967296);
+    for (let t = 0; t < 200; t++) {
+      const M = new Lanes([{ id: "h", kind: "heap" }]);
+      const A: { v: string; id: number }[] = [];
+      for (let k = 0; k < 24; k++) {
+        const r = rnd(), v = String(Math.floor(rnd() * 99));
+        if (r < 0.5 || A.length < 2) { A.push({ v, id: M.push("h", v).id }); }
+        else if (r < 0.7) { const i = Math.floor(rnd() * A.length), j = Math.floor(rnd() * A.length); M.swap("h", i, j); [A[i], A[j]] = [A[j]!, A[i]!]; }
+        else { const last = A.length - 1; expect(M.remove("h", last).id).toBe(A.pop()!.id); }
+        const got = heapLane(M.snap("x"), "h").items;
+        expect(got.map((x) => x!.v)).toEqual(A.map((x) => x.v));
+        expect(got.map((x) => x!.id)).toEqual(A.map((x) => x.id));
+      }
+    }
+  });
+
+  it("cmp defaults to a min-heap, is carried onto every snapshot, and rejects anything else", () => {
+    const { Lanes } = heapKit();
+    const M = new Lanes([{ id: "h", kind: "heap" }, { id: "g", kind: "heap", cmp: "max" }]);
+    expect(heapLane(M.snap("x"), "h").cmp).toBe("min");
+    expect(heapLane(M.snap("x"), "g").cmp).toBe("max");
+    expect(() => new Lanes([{ id: "bad", kind: "heap", cmp: "up" }])).toThrow(/cmp is 'min' or 'max'/);
+  });
+
+  it("a slot is named with mark(), unaffected by the seam; a heap has no span", () => {
+    const { Lanes } = heapKit();
+    const M = new Lanes([{ id: "h", kind: "heap" }]);
+    [5, 3, 8].forEach((v) => M.push("h", v));
+    M.mark("h", "i", 2);
+    const s = M.snap("marked");
+    expect(heapLane(s, "h").marks).toEqual({ i: 2 });
+    M.mark("h", "i", null);
+    expect(heapLane(M.snap("cleared"), "h").marks).toEqual({});
+    expect(() => M.span("h", "window", 0, 1)).toThrow(/name a slot with mark/);
+  });
+
+  it("heapHolds matches a hand-built min-heap and max-heap, and catches a planted violation", () => {
+    const { Lanes, heapHolds } = heapKit();
+    /* build-heap trace from heapify-sift-up-and-sift-down.md's own worked example: sift down every
+       non-leaf, from the last one back to the root, and the invariant holds only once that is done */
+    const raw = [5, 3, 8, 4, 1, 9, 2];
+    function siftDown(a: number[], i: number, n: number): void {
+      for (;;) {
+        let smallest = i;
+        const l = 2 * i + 1, r = 2 * i + 2;
+        if (l < n && a[l]! < a[smallest]!) smallest = l;
+        if (r < n && a[r]! < a[smallest]!) smallest = r;
+        if (smallest === i) return;
+        [a[i], a[smallest]] = [a[smallest]!, a[i]!];
+        i = smallest;
+      }
+    }
+    const arr = raw.slice();
+    const M = new Lanes([{ id: "h", kind: "heap" }]);
+    arr.forEach((v) => M.push("h", v));
+    expect(heapHolds(heapLane(M.snap("raw"), "h"))).toBe(false);
+    const start = Math.floor((arr.length - 2) / 2);
+    for (let i = start; i >= 0; i--) {
+      siftDown(arr, i, arr.length);
+      // replay the same swaps on the model by rebuilding from the mutated reference array's identity
+      // (heapHolds only reads values, so re-pushing a fresh model per check keeps the id bookkeeping
+      // out of this pure-reference trace while still exercising the real check function)
+      const M2 = new Lanes([{ id: "h", kind: "heap" }]);
+      arr.forEach((v) => M2.push("h", v));
+      const holds = heapHolds(heapLane(M2.snap("x"), "h"));
+      expect(holds).toBe(i === 0); // only the fully-heapified array (i back to the root) satisfies it
+    }
+    expect(arr.slice().sort((a, b) => a - b)).toEqual(raw.slice().sort((a, b) => a - b));
+    // a max-heap checks the opposite direction
+    const Mx = new Lanes([{ id: "h", kind: "heap", cmp: "max" }]);
+    [8, 5, 4, 3, 1].forEach((v) => Mx.push("h", v));
+    expect(heapHolds(heapLane(Mx.snap("x"), "h"))).toBe(true);
+    // fault: swap the root with a smaller leaf and the check must fail
+    Mx.swap("h", 0, 4);
+    expect(heapHolds(heapLane(Mx.snap("broken"), "h"))).toBe(false);
+  });
+});
+
 describe("lesson artifacts kit: build.py ships a player with its chrome", () => {
   const optional = (js: string) => {
     const run = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(json.dumps(build.optional_kit(sys.stdin.read())))`], { input: js, encoding: "utf8" });
@@ -363,6 +459,10 @@ describe("lesson artifacts kit: build.py ships a player with its chrome", () => 
     expect(optional("new ListPlayer(h);new LanePlayer(h)")).toEqual(["player", "lists", "lanes"]);
     expect(optional("var M=new Lanes([{id:'g',kind:'grid',rows:2,cols:2}])")).toEqual(["player", "lanes", "grids"]);
     expect(optional('new Lanes([{id:"g",kind:"grid"}]);new ListPlayer(h)')).toEqual(["player", "lists", "lanes", "grids"]);
+    // the heap-only marker alone (no literal "new Lanes(" in this string) must still pull lanes in
+    // first, via heaps' own KIT_DEPS, not because the marker string happens to also match lanes'
+    expect(optional("var d={kind:'heap'};")).toEqual(["player", "lanes", "heaps"]);
+    expect(optional('new Lanes([{id:"g",kind:"grid"}]);var d={kind:"heap"};')).toEqual(["player", "lanes", "grids", "heaps"]);
     expect(optional("drawTheHero()")).toEqual([]);
   });
 });

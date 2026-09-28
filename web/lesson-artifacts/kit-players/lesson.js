@@ -282,6 +282,101 @@ function lcsSteps(){
   return R.steps;
 }
 
+/* ---------- heaps (kit/heaps.js) ---------- */
+/* append, then swap toward the root while a parent is worse than its child: the ONLY repair push needs */
+function heapPush(M,R,id,v,cmp){
+  var it=M.push(id,v),i=M.lane(id).items.length-1;
+  M.mark(id,'i',i);R.rec('Push '+v+' onto the end, index '+i+'.',{hi:[laneHi(it),'i']});
+  while(i>0){
+    var items=M.lane(id).items,p=(i-1)>>1,pv=+items[p].v,cv=+items[i].v,better=cmp==='max'?cv>pv:cv<pv;
+    if(!better){R.rec('Index '+i+' ('+cv+') is no better than its parent, index '+p+' ('+pv+'). Sifting up stops.',{hi:['i']});break;}
+    var a=items[i],b=items[p];M.swap(id,i,p);
+    R.rec('Index '+i+' ('+cv+') beats its parent, index '+p+' ('+pv+'). Swap up.',{hi:[laneHi(a),laneHi(b),'i']});
+    i=p;M.mark(id,'i',i);
+  }
+  M.mark(id,'i',null);
+  return it;
+}
+/* swap the root with the last slot, drop the empty end, then swap toward a leaf while the better
+   child beats the node: the ONLY repair pop needs */
+function heapPop(M,R,id,cmp){
+  var items=M.lane(id).items,n=items.length,root=items[0],word=cmp==='max'?'≥':'≤';
+  if(n===1){M.remove(id,0);R.rec('Pop '+root.v+': it was the only value left.',{done:true});return root;}
+  M.mark(id,'i',0);R.rec('Pop the root, '+root.v+'. Move the last value, index '+(n-1)+', to the root, then drop the empty end.',{hi:['i',laneHi(items[n-1])]});
+  M.swap(id,0,n-1);var taken=M.remove(id,n-1),i=0;
+  for(;;){
+    items=M.lane(id).items;n=items.length;
+    var l=2*i+1,r=2*i+2,best=i,worse=function(a,b){return cmp==='max'?+items[a].v>+items[b].v:+items[a].v<+items[b].v;};
+    if(l<n&&worse(l,best))best=l;
+    if(r<n&&worse(r,best))best=r;
+    M.mark(id,'i',i);
+    if(best===i){R.rec('Index '+i+' ('+items[i].v+') already '+word+' both children. Sifting down stops.',{hi:['i']});break;}
+    var a=items[i],b=items[best];M.swap(id,i,best);
+    R.rec('Index '+best+' ('+b.v+') beats index '+i+' ('+a.v+'). Swap down.',{hi:[laneHi(a),laneHi(b),'i']});
+    i=best;
+  }
+  M.mark(id,'i',null);
+  return taken;
+}
+/* the min-heap holds, for every lane the walkthrough draws as a heap (a tab may draw one or none) */
+function heapInv(s){return s.lanes.filter(function(l){return l.kind==='heap';}).every(heapHolds);}
+
+function pushPopSteps(){
+  var VALUES=[5,3,8,1],M=new Lanes([{id:'h',kind:'heap',label:'heap'}],{fields:function(M){return [['size',M.size('h')]];}}),R=recorder(M);
+  R.rec('An empty min-heap. Push appends, then sifts up; pop removes the root, then sifts down.',{done:true});
+  VALUES.forEach(function(v){heapPush(M,R,'h',v,'min');});
+  R.rec('Every push landed at the end, then sifted up until a parent no larger stopped it.',{hi:['size'],done:true});
+  var order=[];while(M.size('h'))order.push(+heapPop(M,R,'h','min').v);
+  var want=VALUES.slice().sort(function(a,b){return a-b;});
+  if(order.join()!==want.join())throw new Error('pop order disagrees with Array.prototype.sort');
+  R.rec('Popped in order: '+order.join(', ')+' — sorted, exactly as repeated extract-min always is.',{done:true});
+  return R.steps;
+}
+function heapifySteps(){
+  var RAW=[5,3,8,4,1,9,2],M=new Lanes([{id:'h',kind:'heap',label:'heap'}]),R=recorder(M);
+  RAW.forEach(function(v){M.push('h',v);});
+  R.rec('Load the raw array as a complete tree: every slot filled, no ordering yet.',{done:true});
+  var n=RAW.length,start=(n-2)>>1;
+  for(var i=start;i>=0;i--){
+    var cur=i;
+    for(;;){
+      var items=M.lane('h').items,l=2*cur+1,r=2*cur+2,best=cur;
+      if(l<n&&+items[l].v<+items[best].v)best=l;
+      if(r<n&&+items[r].v<+items[best].v)best=r;
+      M.mark('h','i',cur);
+      if(best===cur)break;
+      var a=items[cur],b=items[best];M.swap('h',cur,best);
+      R.rec('Sifting down from index '+i+': index '+best+' ('+b.v+') beats index '+cur+' ('+a.v+'). Swap.',{hi:[laneHi(a),laneHi(b),'i']});
+      cur=best;
+    }
+  }
+  M.mark('h','i',null);
+  var got=heapLaneOf(M.snap('check'),'h');
+  if(!heapHolds(got))throw new Error('heapify result violates the heap property');
+  var gotVals=got.items.map(function(x){return +x.v;}).slice().sort(function(a,b){return a-b;}),
+      wantVals=RAW.slice().sort(function(a,b){return a-b;});
+  if(gotVals.join()!==wantVals.join())throw new Error('heapify result holds a different multiset than the input');
+  R.rec('Every non-leaf sifted down, from the last one back to the root: the heap property holds everywhere, same values, four swaps.',{done:true});
+  return R.steps;
+}
+function heapLaneOf(s,id){return s.lanes.filter(function(l){return l.id===id;})[0];}
+function topKSteps(){
+  var A=[3,1,5,2],K=2,M=new Lanes([{id:'in',kind:'row',label:'stream',idx:true},{id:'h',kind:'heap',label:'k largest'}],
+      {fields:function(M){return [['k',K],['size',M.size('h')]];}}),R=recorder(M),cells=A.map(function(v){return M.push('in',v);});
+  R.rec('Keep the '+K+' largest values seen in a MIN-heap of size '+K+': its root is the smallest of the k largest, so a new value only has to beat that root.',{hi:['k'],done:true});
+  A.forEach(function(v,i){
+    M.tone(cells[i],'cur');R.rec('Read '+v+' at index '+i+'.',{hi:[laneHi(cells[i])]});
+    heapPush(M,R,'h',v,'min');
+    if(M.size('h')>K)heapPop(M,R,'h','min');
+    M.tone(cells[i],'dim');
+  });
+  var got=heapLaneOf(M.snap('check'),'h').items.map(function(x){return +x.v;}).sort(function(a,b){return a-b;}),
+      want=A.slice().sort(function(a,b){return a-b;}).slice(-K);
+  if(got.join()!==want.join())throw new Error('k-largest heap disagrees with sorting the whole stream');
+  R.rec('Every value read once: the heap holds the '+K+' largest, '+got.join(', ')+', and its root is the Kth largest.',{done:true});
+  return R.steps;
+}
+
 mountLesson();
 new LanePlayer($('#stackw .lvhost'),{id:'stk',loop:true,autoplay:true,inv:[['size matches','size equals the number of items',sizeOk('s')]]}).load(stackSteps());
 mountLaneTabs($('#qtabs'),[{name:'Queue from two stacks',steps:twoStackSteps},{name:'Deque',steps:dequeSteps},{name:'Ring buffer',steps:ringSteps}],{id:'q'});
@@ -291,3 +386,5 @@ mountLaneTabs($('#atabs'),[{name:'Reverse in place',steps:reverseSteps},{name:'S
 mountLaneTabs($('#gtabs'),[{name:'Spiral order',steps:spiralSteps},{name:'Transpose',steps:transposeSteps},{name:'Number of islands',steps:islandsSteps}],{id:'g'});
 new LanePlayer($('#prefix .lvhost'),{id:'pfx',loop:true,autoplay:true,inv:[['prefix holds','every filled prefix cell equals the sum of its block',prefixHolds]]}).load(prefixSteps());
 mountLaneTabs($('#ttabs'),[{name:'Chaining',steps:chainingSteps},{name:'Resize',steps:resizeChainSteps},{name:'LCS table',steps:lcsSteps}],{id:'t'});
+mountLaneTabs($('#htabs'),[{name:'Push and pop',steps:pushPopSteps},{name:'Heapify',steps:heapifySteps},{name:'Top k',steps:topKSteps}],
+  {id:'h',inv:[['heap holds','every parent dominates both children',heapInv]]});
