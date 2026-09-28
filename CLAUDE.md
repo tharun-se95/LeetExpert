@@ -646,7 +646,9 @@ The content is the product. Code exists to serve it.
 Planned work lives in **GitHub issues** on `tharun-se95/LeetExpert` (owner,
 2026-09-25), not in chat, handoff notes or a spec's follow-up list. `gh` is
 the interface because every worker here has it: Claude sessions and the
-Antigravity agents alike. The rollout epic is #14; its phases are
+Antigravity agents alike. A new account, Mac or cloud session sets up from
+[`docs/AGENT_SETUP.md`](docs/AGENT_SETUP.md) (`gh` auth, the token for the cloud,
+the owner's standing rules on autonomy and shared checkouts). The rollout epic is #14; its phases are
 sub-issues with GitHub's own blocked-by links. The board is the
 **leetExpert roadmap** project (https://github.com/users/tharun-se95/projects/1):
 Backlog → Ready → In progress → In review → Done, ordered by the agreed
