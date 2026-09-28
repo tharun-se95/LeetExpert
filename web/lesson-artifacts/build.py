@@ -143,20 +143,22 @@ def _top_level(fragment):
 
 def _kind(attrs):
     """What a top-level element of a section is to the split layout: 'vis' (a picture the prose
-    points at, drawn beside it), 'full' (spans both columns: a grid of cards, the quiz, an authored
-    duo) or 'text' (prose, callouts and anything unknown, which keeps the reading column)."""
+    points at, drawn beside it), 'full' (spans both columns: the section's banner, which is drawn
+    for the full width and whose labels fell to 9px in the right column (owner, 2026-09-28), a grid
+    of cards, the quiz, an authored duo) or 'text' (prose, callouts and anything unknown, which
+    keeps the reading column)."""
     cls = set((attrs.get("class") or "").split())
-    if cls & {"banner", "ex", "widget", "rosetta"} or "data-code-file" in attrs or attrs.get("id") == "solbox":
+    if cls & {"ex", "widget", "rosetta"} or "data-code-file" in attrs or attrs.get("id") == "solbox":
         return "vis"
-    if cls & {"duo", "vgrid"} or attrs.get("id") == "qlist":
+    if cls & {"banner", "duo", "vgrid"} or attrs.get("id") == "qlist":
         return "full"
     return "text"
 
 
 def split_section(inner):
     """One section's content (after its h2) as beats: each visual beside the prose that introduces
-    it. A visual joins the text run just before it; visuals that open a section (its banner) join
-    the first text run and are marked .lead, so a stacked (narrow) page still shows them first.
+    it. A visual joins the text run just before it; visuals that open a section, before any prose,
+    join the first text run and are marked .lead, so a stacked (narrow) page still shows them first.
     Reading order within a beat is unchanged: the text, then what it points at."""
     parts = [(_kind(a), inner[s:e]) for s, e, _, a in _top_level(inner)]
     rows, lead, text, vis = [], [], [], []
