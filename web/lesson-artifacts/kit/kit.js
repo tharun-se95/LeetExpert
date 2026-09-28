@@ -178,6 +178,15 @@ function wirePage(){
   var links=[].slice.call(document.querySelectorAll('.toc a')),secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
   var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var i=secs.indexOf(e.target);links.forEach(function(a){a.removeAttribute('aria-current');});if(i>=0)links[i].setAttribute('aria-current','true');}});},{rootMargin:'-30% 0px -60% 0px'}):null;
   if(io)secs.forEach(function(s){if(s)io.observe(s);});
+  /* the split layout (#63): the contents rail appears once the hero is out of view, and a scene too
+     tall to stick whole scrolls with its text instead */
+  var split=$('.page.split');
+  if(split){
+    var toc=$('.split .toc'),hero=$('.hero2');
+    if(toc&&hero&&io){toc.classList.add('auto');new IntersectionObserver(function(es){toc.classList.toggle('on',!es[0].isIntersecting);}).observe(hero);}
+    var fit=function(){[].forEach.call(document.querySelectorAll('.split .beat .duo-scene'),function(sc){sc.classList.toggle('tall',sc.offsetHeight>innerHeight-96);});};
+    fit();addEventListener('resize',fit);
+  }
   var mainEl=$('main'),bpy=$('#lang-py'),bts=$('#lang-ts');
   function setLang(l){mainEl.dataset.code=l;bpy.setAttribute('aria-pressed',l==='py');bts.setAttribute('aria-pressed',l==='ts');store('lesson-lang',l);}
   window.__setLessonLang=setLang;

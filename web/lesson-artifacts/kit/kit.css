@@ -239,3 +239,34 @@ html,body{overflow-x:clip}
 .factstrip .fact::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--fam)}
 .factstrip .fact b{font:700 clamp(1.35rem,2.4vw,1.85rem)/1.1 'Space Mono',monospace;color:var(--mk);letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .factstrip .fact span{font-size:13px;color:var(--mut);line-height:1.45}
+
+/* ---------- the split layout (#63, on trial on one lesson) ----------
+   Each visual sits beside the prose that introduces it (build.py split_section: .duo.beat, the
+   authored duo's 5fr/7fr and sticky scene), so the page spends its width on pictures instead of an
+   empty strip beside every paragraph. The contents leave the grid and float as a rail in the left
+   margin, shown once the hero has scrolled away. */
+.page.split{grid-template-columns:minmax(0,1fr);gap:0}
+.split .beat{margin:4px 0 26px}
+.split .beat:last-child{margin-bottom:0}
+.split .beat .duo-scene{display:flex;flex-direction:column;gap:18px}
+.split .beat .duo-scene>*,.split .beat .lead>*{margin:0}
+/* a scene taller than the window would stick with its foot out of reach: kit.js marks it and it scrolls */
+.split .beat .duo-scene.tall{position:static}
+.split .toc{position:fixed;z-index:15;top:50%;left:max(12px,calc((100vw - 1180px) / 2 - 72px));transform:translateY(-50%);
+  padding:8px;gap:2px;background:var(--card);border:1px solid var(--hair2);border-radius:14px;box-shadow:var(--shadow-elevation);
+  transition:opacity .25s,transform .25s,visibility .25s}
+.split .toc .kick{display:none;margin:2px 8px 6px}
+/* labels collapse to their icons; font-size 0 keeps each link's text as its accessible name */
+.split .toc a{border-left:0;padding:7px;border-radius:9px;font-size:0;gap:0}
+.split .toc a .i{font-size:16px}
+.split .toc a[aria-current="true"]{background:color-mix(in srgb,var(--fam) 12%,var(--card))}
+.split .toc:hover a,.split .toc:focus-within a{font-size:13px;gap:10px;padding-right:14px}
+.split .toc:hover .kick,.split .toc:focus-within .kick{display:block}
+.split .toc.auto:not(.on){opacity:0;visibility:hidden;transform:translate(-10px,-50%)}
+@media (max-width:1299px){.split .toc{display:none}}
+@media (max-width:1100px){
+  .split .beat{display:flex;flex-direction:column;gap:18px}
+  .split .beat .duo-scene{display:contents}
+  .split .beat .lead{order:-1}
+}
+@media (prefers-reduced-motion:reduce){.split .toc{transition:none}}
