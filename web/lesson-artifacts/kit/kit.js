@@ -247,7 +247,7 @@ function strip(host,chars,onPick){
   host.style.gridTemplateColumns='repeat('+chars.length+','+cs+'px)';host.style.setProperty('--cs',cs+'px');host.style.setProperty('--fs',Math.round(cs*.42)+'px');
   var els=chars.map(function(c,i){var e=el(onPick?'button':'div','cell');if(onPick){e.type='button';e.setAttribute('aria-label','Position '+i+', '+c);e.addEventListener('click',function(){onPick(i);});}e.textContent=c;host.appendChild(e);return e;});
   var last=null;
-  function paint(kinds){last=kinds;els.forEach(function(e,i){var st=styleOf({k:kinds[i]||'idle'});e.style.background=rgb(st.f);e.style.color=rgb(st.i);});}
+  function paint(kinds){last=kinds;els.forEach(function(e,i){var k=kinds[i]||'idle',st=styleOf({k:k});e.style.background=rgb(st.f);e.style.color=rgb(st.i);markState(e,k);});}
   onRepaint(function(){if(last)paint(last);});
   paint(chars.map(function(){return 'idle';}));
   return {els:els,paint:paint};
@@ -275,7 +275,7 @@ function graphView(host,G,o){
   var lastC=null,lastE=null;
   function update(cells,edges){
     lastC=cells;lastE=edges;
-    els.forEach(function(c,i){var s=styleOf(cells[i]);c.style.background=rgb(s.f);c.style.color=rgb(s.i);c.textContent=cells[i].t;});
+    els.forEach(function(c,i){var s=styleOf(cells[i]);c.style.background=rgb(s.f);c.style.color=rgb(s.i);markState(c,cells[i].k);c.textContent=cells[i].t;});
     lines.forEach(function(ln,i){var v=edges?edges[i]:0;ln.style.stroke=rgb(EDGE[v===2?'cur':(v===1?'path':'idle')]);ln.style.strokeWidth=v?4:2;});
   }
   var api={update:update,els:els};

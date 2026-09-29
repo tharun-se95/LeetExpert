@@ -134,6 +134,20 @@ function inPage() {
     if (got < need - 0.05)
       out.contrast.push(`${got.toFixed(2)}:1 < ${need}:1 "${el.textContent.trim().slice(0, 40)}" (${el.tagName.toLowerCase()}.${String(el.getAttribute("class") || "").split(" ")[0]})`);
   }
+  /* win's fill is 1.1:1 off idle on the navy card, so a win cell reads only by its ring (#72). Each
+     paint path marks it separately (the engine, strip, graphView), and a path that painted the fill
+     but not the ring left course-schedule's ready course looking idle, so check the drawn cells. */
+  for (const cell of document.querySelectorAll(".cell")) {
+    const r = cell.getBoundingClientRect();
+    if (r.width < 1 || r.bottom < 0 || r.top > innerHeight) continue;
+    const probe = document.createElement("i");
+    probe.style.cssText = "position:absolute;background:var(--k-win)";
+    cell.parentElement.appendChild(probe);
+    const winFill = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    if (getComputedStyle(cell).backgroundColor === winFill && !cell.classList.contains("win"))
+      out.contrast.push(`win fill without its ring "${cell.textContent.trim().slice(0, 20)}" (${cell.className})`);
+  }
   /* accessible names */
   const named = (el) =>
     (el.getAttribute("aria-label") || el.getAttribute("title") || el.getAttribute("aria-labelledby") || el.textContent || "").trim().length > 0;
