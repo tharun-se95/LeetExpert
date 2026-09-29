@@ -20,7 +20,9 @@
 .ln-item.good .ln-box{stroke:var(--g-ink);stroke-width:1.8}
 .ln-item.bad .ln-box{stroke:var(--r-ink);stroke-width:1.8}
 /* the family colour is a 3:1 UI ink: the name takes --mark (AA), its stem keeps the family */
-.ln-mark text{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;fill:var(--mk)}
+/* a mark's name is haloed in the stage's paper, so an edge running under it (a graph or a trie names the node
+   above its edge) breaks around the text instead of striking through it */
+.ln-mark text{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;fill:var(--mk);paint-order:stroke;stroke:color-mix(in srgb,var(--card) 97%,var(--fg));stroke-width:4px;stroke-linejoin:round}
 .ln-mark line{stroke:var(--fam);stroke-width:1.2;stroke-linecap:round;opacity:.7}
 .ln-mark.hi text{font-weight:700;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--fam) 70%,transparent))}
 /* a range over a row: a bracket open toward the cells, named above it */

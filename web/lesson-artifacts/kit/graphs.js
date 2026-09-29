@@ -141,6 +141,18 @@ function graphEdgeSvg(e,op){
   return h+'</g>';
 }
 
+/* A tidy tree in the graph lane's grid units, for a tree that grows while it plays (a call tree, a trie):
+   node 0 is the root, each node lists its kids in the order they are drawn and has a depth. Depth goes
+   down, leaves go left to right in kid order, and every parent sits over the middle of its first and last
+   child, so two nodes never share a position. */
+function graphTreeLayout(nodes){
+  var xs=[],leaf=0;
+  (function put(i){var n=nodes[i];
+    if(!n.kids.length){xs[i]=leaf++;return;}
+    n.kids.forEach(put);xs[i]=(xs[n.kids[0]]+xs[n.kids[n.kids.length-1]])/2;})(0);
+  return nodes.map(function(n,i){return {x:xs[i],d:n.depth};});
+}
+
 /* write every node's label into its slot (the lane's items, in node order), as grids' fill does */
 Lanes.prototype.nodes=function(id){var l=graphOf(this,id),self=this;return l.nodes.map(function(n,k){return self.put(id,k,n.l);});};
 /* an edge's record; with state, set it first. A typo'd edge throws rather than drawing nothing. */

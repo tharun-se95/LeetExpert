@@ -51,15 +51,8 @@ CallTrace.prototype={
   done:function(){if(!this.nodes.length)throw new Error('an empty call tree');if(this.open.length)throw new Error('call '+this.open[this.open.length-1]+' never returned');return this;}
 };
 
-/* where each node sits, in the graph lane's grid units: depth down, leaves left to right in call order,
-   every parent over the middle of its first and last child. Two nodes never share a position. */
-function callTreeLayout(nodes){
-  var xs=[],leaf=0;
-  (function put(i){var n=nodes[i];
-    if(!n.kids.length){xs[i]=leaf++;return;}
-    n.kids.forEach(put);xs[i]=(xs[n.kids[0]]+xs[n.kids[n.kids.length-1]])/2;})(0);
-  return nodes.map(function(n,i){return {x:xs[i],d:n.depth};});
-}
+/* where each node sits: the tidy tree layout, shared with tries (graphTreeLayout in graphs.js) */
+function callTreeLayout(nodes){return graphTreeLayout(nodes);}
 
 /* the whole picture after the first k events, from the events alone: every call that exists, its
    state and its second line, the edge into it, and the path from the root, root first */
