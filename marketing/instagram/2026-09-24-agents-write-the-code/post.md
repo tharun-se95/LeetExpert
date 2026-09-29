@@ -19,7 +19,7 @@ This two-sum checks every pair. Four numbers? Instant. A million numbers? About 
 
 leetExpert shows you the bar (aim for O(n)), and the coach nudges you toward it without writing the code for you.
 
-Learn DSA by seeing it run. The early modules are free at leetexpert.com (link in bio).
+Learn DSA by seeing it run. Start free at leetexpert.com (link in bio).
 
 What's the last AI-written snippet you had to speed up? 👇
 

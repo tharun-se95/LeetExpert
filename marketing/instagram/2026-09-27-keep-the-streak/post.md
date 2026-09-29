@@ -1,10 +1,10 @@
 # Keep the streak — loop
 
 - **Archetype:** consistency / product (reel loop)
-- **Source lesson:** `web/` practice heatmap (product feature)
+- **Source lesson:** none — the landing page's *example* year (`lib/landing/heat.ts`); the in-app heat map is not built (#30)
 - **Family:** —
 - **Format:** Reel loop, 1080×1920, 17.6s; Hope narration + ElevenLabs Music lo-fi bed (ducked) + synthesized column ticks; tutor stills
-- **Status:** drafted (not posted)
+- **Status:** held — do not post. The reel shows practice days lighting squares and asks for the viewer's streak, which reads as a live feature; the in-app heat map is an open owner decision (#30) and nothing on Instagram carries the site's "example year" label. Post once #30 ships, or re-cut it as a habit message ("one problem today, come back tomorrow") without the square-lighting and streak claims.
 - **Media:** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)
