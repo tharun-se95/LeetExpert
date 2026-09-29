@@ -4,7 +4,7 @@
 - **Source lesson:** `courses/dsa/hash-tables/two-sum.md`
 - **Family:** hash-tables
 - **Format:** Reel, 1080×1920, 45s, Hope narration (ElevenLabs v3) + live-site screen recordings
-- **Status:** drafted (not posted)
+- **Status:** posted 2026-09-29 — https://www.instagram.com/reel/Dd4jAy4DCiW/
 - **Media:** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)
