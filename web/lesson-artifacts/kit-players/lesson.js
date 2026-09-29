@@ -525,6 +525,53 @@ function dijkstraSteps(){
 }
 
 
+/* call trees: the algorithm runs into a CallTrace and callTreeWalk records it, so no expected state is written
+   by hand. Each demo checks its answer against a reference that shares none of its code. */
+function ctList(a){return '['+a.join(',')+']';}
+function subsetsSteps(){
+  var nums=[1,2,3],n=nums.length,T=new CallTrace(),out=[],path=[];
+  function dfs(i,note){
+    var id=T.call(ctList(path),'i='+i,note,['subsets('+i+')','path='+ctList(path)]);
+    if(i===n){out.push(path.slice());T.base(id,null,'<code>i = '+n+'</code>: every element has been decided, so <code>'+ctList(path)+'</code> is one whole subset. Record it and return.');return;}
+    /* choose, explore, unchoose; then the branch that skips it */
+    path.push(nums[i]);dfs(i+1,'Choose '+nums[i]+': the path becomes <code>'+ctList(path)+'</code>. Call the next decision, <code>i='+(i+1)+'</code>.');path.pop();
+    dfs(i+1,'Skip '+nums[i]+': the path stays <code>'+ctList(path)+'</code>. Call the next decision, <code>i='+(i+1)+'</code>.');
+    T.ret(id,null,'Both branches of <code>'+ctList(path)+'</code> at <code>i='+i+'</code> are explored, so it returns to its caller.');
+  }
+  dfs(0,null);
+  var got=out.map(ctList).sort().join(),want=[];
+  for(var m=0;m<1<<n;m++)want.push(ctList(nums.filter(function(_,b){return m>>b&1;})));
+  if(got!==want.sort().join())throw new Error('the call tree collected '+got+' but the bitmask subsets of '+ctList(nums)+' are '+want.sort().join());
+  return callTreeWalk(T,{label:'subsets of [1, 2, 3]',lanes:[{id:'subsets',kind:'row',label:'subsets found',idx:true}],
+    on:function(e,node,M){if(e.ev==='base'){var it=M.push('subsets',node.v);return [laneHi(it)];}},
+    fields:function(M){return [['found',M.size('subsets')]];},
+    outro:'Every call has returned. The leaves are the '+out.length+' subsets, one for each way to answer "take it or skip it" three times: 2 × 2 × 2. The tree has '+T.nodes.length+' calls, which is 1 + 2 + 4 + 8.'});
+}
+function comboSteps(){
+  var cands=[2,3,5],target=8,T=new CallTrace(),out=[],path=[];
+  function dfs(start,rem,note){
+    var id=T.call('rem='+rem,ctList(path),note,['combo('+start+', '+rem+')','path='+ctList(path)]);
+    if(rem===0){out.push(path.slice());T.base(id,null,'The remainder is 0: <code>'+ctList(path)+'</code> adds up to '+target+'. Record it.');return;}
+    for(var i=start;i<cands.length;i++){
+      var c=cands[i];
+      if(c>rem){T.prune('rem='+(rem-c),ctList(path.concat(c)),'Choosing '+c+' would leave <code>rem = '+(rem-c)+'</code>, below zero. The candidates are sorted, so every larger one overshoots too: cut this branch and stop the loop.');break;}
+      path.push(c);dfs(i,rem-c,'Choose '+c+': the path becomes <code>'+ctList(path)+'</code> and the remainder <code>'+(rem-c)+'</code>. It may be chosen again, so the next call starts at the same candidate.');path.pop();
+    }
+    T.ret(id,null,'Every candidate from '+(start<cands.length?cands[start]:'the end')+' on has been tried at <code>rem='+rem+'</code>, so the call returns and its caller unchooses.');
+  }
+  dfs(0,target,null);
+  /* reference: count the ways with a coin-change table, which never recurses on paths */
+  var ways=[1];for(var s=1;s<=target;s++)ways[s]=0;
+  cands.forEach(function(c){for(var s=c;s<=target;s++)ways[s]+=ways[s-c];});
+  if(out.length!==ways[target])throw new Error('combination sum found '+out.length+' combinations; the table counts '+ways[target]);
+  out.forEach(function(p){if(p.reduce(function(a,b){return a+b;},0)!==target)throw new Error(ctList(p)+' does not sum to '+target);});
+  return callTreeWalk(T,{label:'combination sum, [2, 3, 5], target 8',lanes:[{id:'combos',kind:'row',label:'combinations found',idx:true}],
+    on:function(e,node,M){if(e.ev==='base'){var it=M.push('combos',node.sub);return [laneHi(it)];}},
+    fields:function(M){return [['found',M.size('combos')]];},
+    intro:'Find every way to reach 8 by adding 2s, 3s and 5s, reusing them freely. Each call picks the next number to add; a pick that overshoots is cut.',
+    outro:'Every call has returned. '+out.length+' combinations reach 8, and the pruned calls are the picks that overshot. Without the cut, each of them would have been entered and would have gone on adding.'});
+}
+
 mountLesson();
 new LanePlayer($('#stackw .lvhost'),{id:'stk',loop:true,autoplay:true,inv:[['size matches','size equals the number of items',sizeOk('s')]]}).load(stackSteps());
 mountLaneTabs($('#qtabs'),[{name:'Queue from two stacks',steps:twoStackSteps},{name:'Deque',steps:dequeSteps},{name:'Ring buffer',steps:ringSteps}],{id:'q'});
@@ -538,3 +585,4 @@ mountLaneTabs($('#htabs'),[{name:'Push and pop',steps:pushPopSteps},{name:'Heapi
   {id:'h',inv:[['heap holds','every parent dominates both children',heapInv]]});
 mountLaneTabs($('#grtabs'),[{name:'Breadth-first search',steps:bfsSteps},{name:'Topological sort',steps:kahnSteps},{name:'Union-find',steps:unionFindSteps},{name:'Dijkstra',steps:dijkstraSteps}],
   {id:'gr',inv:[['heap holds','every parent in the frontier is no larger than its children',heapInv]]});
+mountCallTreeTabs($('#cttabs'),[{name:'Subsets',steps:subsetsSteps},{name:'Combination sum',steps:comboSteps}],{id:'ct'});

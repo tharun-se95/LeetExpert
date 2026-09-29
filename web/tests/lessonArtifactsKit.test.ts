@@ -568,4 +568,164 @@ describe("lesson artifacts kit: the graph lane (graphs.js)", () => {
     const b = new Lanes([{ id: "g", kind: "graph", nodes: ROW5.map((n) => ({ ...n, d: 1 })) }]).lane("g");
     expect(LANE_KINDS.graph!.key(a)).not.toBe(LANE_KINDS.graph!.key(b));
   });
+
+  it("a graph's gap is measured with its shape, and defaults to room for a weight plate", () => {
+    const { Lanes, LANE_KINDS } = graphKit();
+    const def = new Lanes([{ id: "g", kind: "graph", nodes: ROW5 }]).lane("g");
+    const tight = new Lanes([{ id: "g", kind: "graph", nodes: ROW5, gap: [16, 26] }]).lane("g");
+    expect(LANE_KINDS.graph!.key(def)).not.toBe(LANE_KINDS.graph!.key(tight));
+    expect(graphLane(new Lanes([{ id: "g", kind: "graph", nodes: ROW5 }]).snap("x"), "g")).toMatchObject({ gap: [34, 30], words: null, plain: false });
+  });
+});
+
+/* calltrees.js builds a call tree from a graph lane and a stack lane. It draws with no code of its own, so
+   what is held here is the bookkeeping: the layout, and that the state at step k is a pure function of the
+   first k events, checked against a stack machine that shares none of the kit's code. */
+type CtNode = { id: number; v: string; sub: string; parent: number; kids: number[]; depth: number };
+type CtEvent = { ev: "call" | "base" | "ret" | "prune"; node: number; val?: string | null };
+type CtTrace = {
+  nodes: CtNode[]; events: CtEvent[];
+  call(v: string, sub?: string, note?: string | null, frame?: string[]): number;
+  base(id: number, val?: unknown, note?: string): number;
+  ret(id: number, val?: unknown, note?: string): number;
+  prune(v: string, sub?: string, note?: string): number;
+  done(): CtTrace;
+};
+type CtState = { nodes: Record<string, { state: string; sub: string }>; edges: Record<string, string>; path: number[] };
+type CtSteps = Snap[] & { states: string[] };
+interface CtKit {
+  CallTrace: new () => CtTrace;
+  callTreeLayout(nodes: CtNode[]): { x: number; d: number }[];
+  callTreeState(t: CtTrace, k: number): CtState;
+  callTreeRead(s: Snap): CtState;
+  callTreeSame(want: CtState, got: CtState, k: number): void;
+  callTreeWalk(t: CtTrace, o?: object): CtSteps;
+  LANE_KINDS: { graph: { describe(l: object): string } };
+}
+function ctKit(): CtKit {
+  const ctx: Record<string, unknown> = {};
+  const src = ["lanes.js", "graphs.js", "calltrees.js"].map((f) => readFileSync(join(ARTIFACTS, "kit", f), "utf8")).join("\n");
+  runInNewContext(src + "\nthis.CallTrace=CallTrace;this.callTreeLayout=callTreeLayout;this.callTreeState=callTreeState;this.callTreeRead=callTreeRead;this.callTreeSame=callTreeSame;this.callTreeWalk=callTreeWalk;this.LANE_KINDS=LANE_KINDS;", ctx);
+  return ctx as unknown as CtKit;
+}
+/* a random recursion: each call makes 0 to 3 calls, some of them cut before entry, some base cases */
+function randomTrace(K: CtKit, rnd: (n: number) => number): CtTrace {
+  const T = new K.CallTrace();
+  let n = 0;
+  const go = (depth: number, label: string) => {
+    const id = T.call(label, `d=${depth}`);
+    const kids = depth >= 4 ? 0 : rnd(4);
+    if (!kids) { T.base(id, rnd(2) ? String(rnd(9)) : null); return; }
+    for (let c = 0; c < kids; c++) { if (rnd(4) === 0) T.prune(`x${n++}`, "cut"); else go(depth + 1, `n${n++}`); }
+    T.ret(id, rnd(2) ? String(rnd(9)) : null);
+  };
+  go(0, "root");
+  return T;
+}
+const lcg = (seed: number) => (n: number) => ((seed = (seed * 1664525 + 1013904223) >>> 0), Math.floor((seed / 4294967296) * n));
+
+describe("lesson artifacts kit: call trees (calltrees.js)", () => {
+  it("build.py ships it with the player, lanes and graphs it draws on, once and in that order", () => {
+    const run = (js: string) => {
+      const r = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(json.dumps(build.optional_kit(sys.stdin.read())))`], { input: js, encoding: "utf8" });
+      if (r.status) throw new Error(r.stderr);
+      return JSON.parse(r.stdout) as string[];
+    };
+    expect(run("var s=callTreeWalk(T);")).toEqual(["player", "lanes", "graphs", "calltrees"]);
+    expect(run("var T=new CallTrace();")).toEqual(["player", "lanes", "graphs", "calltrees"]);
+    expect(run("mountCallTreeTabs(w,[]);var d={kind:'graph'};")).toEqual(["player", "lanes", "graphs", "calltrees"]);
+    expect(run("var d={kind:'graph'};")).toEqual(["player", "lanes", "graphs"]);
+  });
+
+  it("lays out leaves in call order with each parent over its children, and no two nodes share a place", () => {
+    const K = ctKit(), rnd = lcg(20260929);
+    for (let t = 0; t < 150; t++) {
+      const T = randomTrace(K, rnd), pos = K.callTreeLayout(T.nodes);
+      expect(new Set(pos.map((p) => `${p.x},${p.d}`)).size).toBe(T.nodes.length);
+      const leaves = T.nodes.filter((n) => !n.kids.length).map((n) => pos[n.id]!.x);
+      expect(leaves).toEqual(leaves.map((_, i) => i));
+      for (const n of T.nodes) {
+        expect(pos[n.id]!.d).toBe(n.parent < 0 ? 0 : pos[n.parent]!.d + 1);
+        if (n.kids.length) expect(pos[n.id]!.x).toBe((pos[n.kids[0]!]!.x + pos[n.kids[n.kids.length - 1]!]!.x) / 2);
+      }
+    }
+  });
+
+  it("step k shows exactly what the first k events say, whatever order the steps are read in", () => {
+    const K = ctKit(), rnd = lcg(778), PAINT: Record<string, string> = { call: "active", base: "base", ret: "returned", prune: "pruned" };
+    for (let t = 0; t < 120; t++) {
+      const T = randomTrace(K, rnd), steps = K.callTreeWalk(T);
+      expect(steps.length).toBe(T.events.length + 2);
+      const order = steps.map((_, k) => k).sort(() => rnd(3) - 1);
+      for (const k of order) {
+        // a reference that shares no code with the kit: a plain stack machine over the events
+        const stack: number[] = [], seen = new Map<number, { state: string; sub: string }>();
+        for (const e of T.events.slice(0, Math.min(k, T.events.length))) {
+          const n = T.nodes[e.node]!;
+          if (e.ev === "call") stack.push(n.id);
+          if (e.ev === "base" || e.ev === "ret") expect(stack.pop()).toBe(n.id);
+          seen.set(n.id, { state: PAINT[e.ev]!, sub: (e.ev === "base" || e.ev === "ret") && e.val != null ? `= ${e.val}` : n.sub });
+        }
+        const got = K.callTreeRead(steps[k]!);
+        expect(Object.keys(got.nodes).map(Number).sort((a, b) => a - b)).toEqual([...seen.keys()].sort((a, b) => a - b));
+        for (const [id, want] of seen) expect(got.nodes[id]).toEqual(want);
+        expect(got.path).toEqual(stack);
+        // the path edges are lit, a cut edge is cut, every other edge is at rest
+        for (const [id, st] of Object.entries(got.edges)) expect(st).toBe(seen.get(+id)!.state === "pruned" ? "bad" : stack.includes(+id) ? "cur" : "idle");
+        // the call stack lane holds one frame per active call, root first
+        expect(lane(steps[k]!, "stack").items.map((x) => x!.v)).toEqual(stack.map((id) => T.nodes[id]!.v));
+        // and the pure function agrees with what was drawn
+        expect(K.callTreeState(T, Math.min(k, T.events.length))).toEqual(got);
+      }
+    }
+  });
+
+  it("a drawing that disagrees with the events is refused, so the check can fail", () => {
+    const K = ctKit(), T = new K.CallTrace();
+    const r = T.call("f(2)", "n=2");
+    const a = T.call("f(1)", "n=1");
+    T.base(a, 1);
+    const b = T.call("f(0)", "n=0");
+    T.base(b, 1);
+    T.ret(r, 2);
+    const steps = K.callTreeWalk(T);
+    // step 3 is after the events call f(2), call f(1), base f(1)
+    const drawn = steps[3]!, copy = () => JSON.parse(JSON.stringify(drawn)) as Snap;
+    K.callTreeSame(K.callTreeState(T, 3), K.callTreeRead(drawn), 3);
+    const lingering = copy();
+    lane(lingering, "tree").items[a]!.tone = "cur";
+    expect(() => K.callTreeSame(K.callTreeState(T, 3), K.callTreeRead(lingering), 3)).toThrow(/call tree step 3/);
+    const lit = copy();
+    (lane(lit, "tree") as unknown as GraphLane).edges.find((e) => e.b === a)!.state = "cur";
+    expect(() => K.callTreeSame(K.callTreeState(T, 3), K.callTreeRead(lit), 3)).toThrow(/edge into call/);
+    expect(() => K.callTreeSame(K.callTreeState(T, 1), K.callTreeRead(drawn), 1)).toThrow(/call tree step 1/);
+  });
+
+  it("rejects what would draw a tree that is not a call tree", () => {
+    const K = ctKit(), T = new K.CallTrace();
+    const r = T.call("root"), c = T.call("child");
+    expect(() => T.ret(r)).toThrow(/not the innermost/);
+    expect(() => T.done()).toThrow(/never returned/);
+    T.ret(c);
+    T.ret(r);
+    expect(() => T.call("second root")).toThrow(/one root/);
+    expect(() => new K.CallTrace().done()).toThrow(/empty/);
+    expect(() => new K.CallTrace().prune("x")).toThrow(/needs a caller/);
+  });
+
+  it("the tree lane is described in the call tree's words, and only for calls that exist", () => {
+    const K = ctKit(), T = new K.CallTrace();
+    const r = T.call("root", "n=1");
+    T.prune("cut", "over");
+    const c = T.call("kid");
+    T.base(c, 7);
+    T.ret(r);
+    const steps = K.callTreeWalk(T), said = (k: number) => K.LANE_KINDS.graph.describe(lane(steps[k]!, "tree"));
+    expect(said(0)).toMatch(/Nodes: \./);
+    expect(said(2)).toContain("root (n=1), active");
+    expect(said(2)).toContain("cut (over), pruned");
+    expect(said(2)).not.toContain("kid");
+    expect(said(4)).toContain("kid (= 7), base case");
+    expect(said(5)).toContain("root (n=1), returned");
+  });
 });

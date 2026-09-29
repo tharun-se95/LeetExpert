@@ -116,6 +116,15 @@ with what it needs before it (`KIT_DEPS`):
   sorted part); `tone` is `cur`, `good`, `bad` or `dim`; `snap` records a step. Spec:
   `docs/superpowers/specs/2026-09-27-array-string-player-design.md`.
 
+- `kit/calltrees.js` + `calltrees.css`: recursion and backtracking call trees, built on the graph lane
+  (`graphs.js`, extended with `gap`, `words` and `plain`) and an ordinary stack lane, with no lane kind of its
+  own. Run the algorithm into a `CallTrace` (`call`, `base`, `ret`, `prune`), then `callTreeWalk(trace, o)`
+  records the steps: every node's position is fixed from the finished tree, a call fills its slot and links
+  its edge when it is made, and the frames on the stack lane are the path from the root. A call is `active`,
+  `returned`, `base` or `pruned`; the state after k events is a pure function of them (`callTreeState`) and
+  every recorded step is checked against it on load. `mountCallTreeTabs` adds the state key. Spec:
+  `docs/superpowers/specs/2026-09-29-call-tree-player-design.md`.
+
 `kit-players/` is a specimen, not a lesson: `build.py` declares it under `specimens` and the ledger does
 not count it. It runs `LanePlayer` through every shape, so the browser gate holds a new player to the
 lesson bar before a lesson depends on it: `node lesson-artifacts/browser-gate.mjs specimens/kit-players dark`.

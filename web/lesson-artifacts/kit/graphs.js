@@ -3,6 +3,9 @@
    through the generic lane API unchanged, and a traversal's copy(graph, k, 'q') enters the queue from
    the node itself. What a graph adds is its edges, held on the lane with a state each (idle, seen,
    tree, cur, bad) and drawn in the under layer, border to border, so the nodes sit on top of them.
+   A structure that GROWS while it plays (a call tree, kit/calltrees.js) still fixes every node's
+   position up front: it names all its nodes, leaves their slots empty, and puts a node in its slot
+   (and links its edge) when it appears, so nothing that is drawn ever moves.
    Node positions are authored by the lesson in grid units ({x, d}, the shape scene boards and
    graphView already use) and fixed for the player's life: a layout that moved when an edge was added
    would break the rule every player keeps, that only the items move.
@@ -30,7 +33,7 @@ LANE_KINDS.graph={
   /* its marks name nodes and sit under them, drawn (and glided) by the generic row marks */
   rowMarks:true,
   /* two tabs that each call their graph 'g' but draw different shapes are measured apart */
-  key:function(l){return l.nodes.map(function(n){return n.x+','+n.d;}).join(' ');},
+  key:function(l){return l.gap.join('x')+' '+l.nodes.map(function(n){return n.x+','+n.d;}).join(' ');},
   init:function(l,d){
     if(!Array.isArray(d.nodes)||!d.nodes.length)throw new Error(l.id+': a graph needs nodes');
     var seen={};
@@ -40,6 +43,11 @@ LANE_KINDS.graph={
       seen[at]=[k];return {x:n.x,d:n.d,l:n.l==null?String(k):String(n.l)};});
     /* Lanes pushes the cap empty slots after init, as for every fixed lane */
     l.cap=l.nodes.length;l.directed=!!d.directed;l.edges={};l.edgeOrder=[];
+    /* gap: [x, y] room between neighbouring nodes (a tree with no weight plates needs far less);
+       words: what each tone is called in the accessible description, for a lesson whose states have their own names */
+    l.gap=d.gap||[GRGAPX,GRGAPY];l.words=d.words||null;
+    /* plain: no "(directed)" after the label, where the arrows already say so (a call tree) */
+    l.plain=!!d.plain;
     (d.edges||[]).forEach(function(e){graphAdd(l,e[0],e[1],e[2]);});
   },
   mark:function(l,name,slot){
@@ -49,7 +57,7 @@ LANE_KINDS.graph={
   span:function(l){throw new Error(l.id+' is a graph: name a node with mark(), not span()');},
   /* edges are copied, so a later state change or unlink never reaches an earlier snapshot */
   snap:function(l,out){
-    out.nodes=l.nodes.map(function(n){return {x:n.x,d:n.d,l:n.l};});out.directed=l.directed;
+    out.nodes=l.nodes.map(function(n){return {x:n.x,d:n.d,l:n.l};});out.directed=l.directed;out.gap=l.gap;out.words=l.words;out.plain=l.plain;
     out.edges=l.edgeOrder.map(function(k){var e=l.edges[k];return {key:k,a:e.a,b:e.b,w:e.w,state:e.state};});
   },
 
@@ -59,11 +67,11 @@ LANE_KINDS.graph={
     /* the generic measure has already widened cw to a row cell's 56; a node box is its own size */
     m.gcw=Math.max(m.gcw||0,laneCellW(l.items,l.w||40));m.cw=m.gcw;
     if(l.items.some(function(x){return x&&x.sub;}))m.ch=LCH2;
-    m.nodes=l.nodes;
+    m.nodes=l.nodes;m.gap=l.gap;
   },
   block:function(m){
     var mx=0,md=0;m.nodes.forEach(function(n){mx=Math.max(mx,n.x);md=Math.max(md,n.d);});
-    m.ux=m.cw+GRGAPX;m.uy=m.ch+GRGAPY;
+    m.ux=m.cw+m.gap[0];m.uy=m.ch+m.gap[1];
     m.gw=mx*m.ux+m.cw+2*GRPAD;m.gh=GRLABEL+md*m.uy+m.ch+GRMARKS;
     return {w:m.gw,h:m.gh};
   },
@@ -75,7 +83,7 @@ LANE_KINDS.graph={
 
   svg:function(id,b,l,s){
     return '<g class="ln-lane gr-lane'+(s.hi.indexOf('lane:'+id)>=0?' hi':'')+'">'+
-      '<text class="ln-label" x="'+b.x+'" y="'+(b.y+12)+'">'+laneEsc(b.label)+(l.directed?' (directed)':'')+'</text></g>';
+      '<text class="ln-label" x="'+b.x+'" y="'+(b.y+12)+'">'+laneEsc(b.label)+(l.directed&&!l.plain?' (directed)':'')+'</text></g>';
   },
   /* (layout and describe read a snapshot, whose edges are an array: see snap) each edge's two node centres, keyed by lane and endpoints so an unlink fades only its own line;
      a directed pair drawn both ways is pulled apart so the two arrows do not lie on one another */
@@ -106,9 +114,10 @@ LANE_KINDS.graph={
       first.push([Math.min(e.a.x,e.b.x)-e.hw,Math.max(e.a.x,e.b.x)+e.hw]);});
   },
   describe:function(l){
-    var TONE={cur:'current',good:'done',bad:'rejected',dim:'finished'},STATE={idle:'',seen:'examined',tree:'chosen',cur:'current',bad:'rejected'};
+    var TONE=Object.assign({cur:'current',good:'done',bad:'rejected',dim:'finished'},l.words),STATE={idle:'',seen:'examined',tree:'chosen',cur:'current',bad:'rejected'};
     var name=function(k){var it=l.items[k];return it?it.v:l.nodes[k].l;};
-    var nodes=l.items.map(function(it,k){var t=it&&it.tone&&TONE[it.tone];return name(k)+(it&&it.sub?' ('+it.sub+')':'')+(t?', '+t:'');});
+    /* a slot still empty is a node that has not appeared yet: it is not there to describe */
+    var nodes=l.items.map(function(it,k){if(!it)return null;var t=it.tone&&TONE[it.tone];return name(k)+(it.sub?' ('+it.sub+')':'')+(t?', '+t:'');}).filter(Boolean);
     var edges=l.edges.map(function(e){var st=STATE[e.state];return name(e.a)+(l.directed?' to ':'–')+name(e.b)+(e.w!=null?' weight '+e.w:'')+(st?', '+st:'');});
     var ms=Object.keys(l.marks).map(function(n){return n+' at '+name(l.marks[n]);});
     return 'Graph '+l.label+(l.directed?' (directed)':'')+'. Nodes: '+nodes.join('; ')+'. Edges: '+(edges.length?edges.join('; '):'none')+(ms.length?'. '+ms.join(', '):'')+'.';
