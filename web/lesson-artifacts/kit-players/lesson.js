@@ -525,6 +525,135 @@ function dijkstraSteps(){
 }
 
 
+/* call trees: the algorithm runs into a CallTrace and callTreeWalk records it, so no expected state is written
+   by hand. Each demo checks its answer against a reference that shares none of its code. */
+function ctList(a){return '['+a.join(',')+']';}
+function subsetsSteps(){
+  var nums=[1,2,3],n=nums.length,T=new CallTrace(),out=[],path=[];
+  function dfs(i,note){
+    var id=T.call(ctList(path),'i='+i,note,['subsets('+i+')','path='+ctList(path)]);
+    if(i===n){out.push(path.slice());T.base(id,null,'<code>i = '+n+'</code>: every element has been decided, so <code>'+ctList(path)+'</code> is one whole subset. Record it and return.');return;}
+    /* choose, explore, unchoose; then the branch that skips it */
+    path.push(nums[i]);dfs(i+1,'Choose '+nums[i]+': the path becomes <code>'+ctList(path)+'</code>. Call the next decision, <code>i='+(i+1)+'</code>.');path.pop();
+    dfs(i+1,'Skip '+nums[i]+': the path stays <code>'+ctList(path)+'</code>. Call the next decision, <code>i='+(i+1)+'</code>.');
+    T.ret(id,null,'Both branches of <code>'+ctList(path)+'</code> at <code>i='+i+'</code> are explored, so it returns to its caller.');
+  }
+  dfs(0,null);
+  var got=out.map(ctList).sort().join(),want=[];
+  for(var m=0;m<1<<n;m++)want.push(ctList(nums.filter(function(_,b){return m>>b&1;})));
+  if(got!==want.sort().join())throw new Error('the call tree collected '+got+' but the bitmask subsets of '+ctList(nums)+' are '+want.sort().join());
+  return callTreeWalk(T,{label:'subsets of [1, 2, 3]',lanes:[{id:'subsets',kind:'row',label:'subsets found',idx:true}],
+    on:function(e,node,M){if(e.ev==='base'){var it=M.push('subsets',node.v);return [laneHi(it)];}},
+    fields:function(M){return [['found',M.size('subsets')]];},
+    outro:'Every call has returned. The leaves are the '+out.length+' subsets, one for each way to answer "take it or skip it" three times: 2 × 2 × 2. The tree has '+T.nodes.length+' calls, which is 1 + 2 + 4 + 8.'});
+}
+function comboSteps(){
+  var cands=[2,3,5],target=8,T=new CallTrace(),out=[],path=[];
+  function dfs(start,rem,note){
+    var id=T.call('rem='+rem,ctList(path),note,['combo('+start+', '+rem+')','path='+ctList(path)]);
+    if(rem===0){out.push(path.slice());T.base(id,null,'The remainder is 0: <code>'+ctList(path)+'</code> adds up to '+target+'. Record it.');return;}
+    for(var i=start;i<cands.length;i++){
+      var c=cands[i];
+      if(c>rem){T.prune('rem='+(rem-c),ctList(path.concat(c)),'Choosing '+c+' would leave <code>rem = '+(rem-c)+'</code>, below zero. The candidates are sorted, so every larger one overshoots too: cut this branch and stop the loop.');break;}
+      path.push(c);dfs(i,rem-c,'Choose '+c+': the path becomes <code>'+ctList(path)+'</code> and the remainder <code>'+(rem-c)+'</code>. It may be chosen again, so the next call starts at the same candidate.');path.pop();
+    }
+    T.ret(id,null,'Every candidate from '+(start<cands.length?cands[start]:'the end')+' on has been tried at <code>rem='+rem+'</code>, so the call returns and its caller unchooses.');
+  }
+  dfs(0,target,null);
+  /* reference: count the ways with a coin-change table, which never recurses on paths */
+  var ways=[1];for(var s=1;s<=target;s++)ways[s]=0;
+  cands.forEach(function(c){for(var s=c;s<=target;s++)ways[s]+=ways[s-c];});
+  if(out.length!==ways[target])throw new Error('combination sum found '+out.length+' combinations; the table counts '+ways[target]);
+  out.forEach(function(p){if(p.reduce(function(a,b){return a+b;},0)!==target)throw new Error(ctList(p)+' does not sum to '+target);});
+  return callTreeWalk(T,{label:'combination sum, [2, 3, 5], target 8',lanes:[{id:'combos',kind:'row',label:'combinations found',idx:true}],
+    on:function(e,node,M){if(e.ev==='base'){var it=M.push('combos',node.sub);return [laneHi(it)];}},
+    fields:function(M){return [['found',M.size('combos')]];},
+    intro:'Find every way to reach 8 by adding 2s, 3s and 5s, reusing them freely. Each call picks the next number to add; a pick that overshoots is cut.',
+    outro:'Every call has returned. '+out.length+' combinations reach 8, and the pruned calls are the picks that overshot. Without the cut, each of them would have been entered and would have gone on adding.'});
+}
+
+/* intervals: the algorithm runs and records into an IvTrace, so no state is written by hand, and each demo checks
+   its answer against an implementation that shares none of its code, and the last picture against its answer. */
+function ivPairs(a){return a.map(function(p){return '['+p[0]+','+p[1]+']';}).join(', ');}
+/* reference for merge: fold in one interval at a time until no two blocks touch, comparing every pair. No sort. */
+function ivMergeRef(input){
+  var blocks=input.map(function(p){return [p[0],p[1]];}),again=true;
+  while(again){again=false;
+    for(var i=0;i<blocks.length&&!again;i++)for(var j=i+1;j<blocks.length&&!again;j++)
+      if(blocks[i][0]<=blocks[j][1]&&blocks[j][0]<=blocks[i][1]){
+        blocks[i]=[Math.min(blocks[i][0],blocks[j][0]),Math.max(blocks[i][1],blocks[j][1])];blocks.splice(j,1);again=true;}}
+  return blocks.sort(function(a,b){return a[0]-b[0];});
+}
+/* reference for the rooms: the busiest instant is the start of some meeting, so count what is running at each start */
+function ivRoomsRef(input){
+  return Math.max.apply(null,input.map(function(p){
+    return input.filter(function(q){return q[0]<=p[0]&&p[0]<q[1];}).length;}));
+}
+function ivFinal(T,answer,what){
+  var last=ivState(T,T.events.length).order.map(function(b){return [b.lo,b.hi];});
+  if(JSON.stringify(last)!==JSON.stringify(answer))throw new Error(what+': the last picture shows '+ivPairs(last)+' but the answer is '+ivPairs(answer));
+}
+function ivMergeSteps(){
+  var input=[[1,3],[2,6],[8,10],[15,18]],
+      T=new IvTrace(input,{label:'merge intervals',band:'a gap: no interval covers it',
+        states:[['waiting',null,'not read yet'],['active','cur','the block being built'],['merged','good','a finished block of the answer']]}),
+      iv=input.map(function(p,i){return {id:i,lo:p[0],hi:p[1]};}).sort(function(a,b){return a.lo-b.lo;}),out=[],gaps=0;
+  T.step('Sort by start, so any interval that overlaps the block being built is the very next one. These are already in order, so every row stays where it is.',[T.sort('lo')]);
+  var cur={id:iv[0].id,lo:iv[0].lo,hi:iv[0].hi};
+  T.step('Start a block with the first interval, '+ivLabel(cur.lo,cur.hi)+'. Its end is the only thing the sweep has to remember.',
+    [T.state(cur.id,'active'),T.mark('end',cur.hi),T.count('blocks done',0)],[cur.id,'end']);
+  for(var i=1;i<iv.length;i++){
+    var nx=iv[i];
+    if(nx.lo<=cur.hi){
+      var hi=Math.max(cur.hi,nx.hi);
+      T.step(ivLabel(nx.lo,nx.hi)+' starts at '+nx.lo+', no later than the block\'s end '+cur.hi+', so they overlap. The two bars become one: '+ivLabel(cur.lo,hi)+
+        (hi===cur.hi?' (the block already reached '+nx.hi+', so the end stays)':'; the end moves to '+hi)+'.',
+        [T.merge(cur.id,nx.id),T.mark('end',hi)],[cur.id,nx.id,'end']);
+      cur.hi=hi;
+    }else{
+      gaps++;out.push([cur.lo,cur.hi]);
+      T.step(ivLabel(nx.lo,nx.hi)+' starts at '+nx.lo+', after the block\'s end '+cur.hi+': nothing covers '+cur.hi+' to '+nx.lo+', so the block '+ivLabel(cur.lo,cur.hi)+
+        ' is final and '+ivLabel(nx.lo,nx.hi)+' begins the next.',
+        [T.state(cur.id,'merged'),T.band('gap '+gaps,cur.hi,nx.lo),T.count('blocks done',out.length),T.state(nx.id,'active'),T.mark('end',nx.hi)],[cur.id,nx.id,'gap '+gaps,'end']);
+      cur={id:nx.id,lo:nx.lo,hi:nx.hi};
+    }
+  }
+  out.push([cur.lo,cur.hi]);
+  T.step('No interval is left, so the last block is final too.',[T.state(cur.id,'merged'),T.mark('end',null),T.count('blocks done',out.length)],[cur.id,'blocks done']);
+  var want=ivMergeRef(input);
+  if(JSON.stringify(out)!==JSON.stringify(want))throw new Error('merge produced '+ivPairs(out)+'; pairwise folding gives '+ivPairs(want));
+  ivFinal(T,out,'merge');
+  var steps=ivWalk(T,{intro:'Merge overlapping intervals. Four bars share one axis, one to a row; touching or overlapping bars will become a single bar.',
+    outro:'The answer is '+ivPairs(out)+'. Each step either widened the block or closed it, so the pass never looked back at an interval it had finished.'});
+  steps.answer=out;return steps;
+}
+function ivRoomsSteps(){
+  var input=[[0,30],[5,10],[15,20]],
+      T=new IvTrace(input,{label:'meetings',
+        states:[['waiting',null,'not started yet'],['running','cur','in progress at the sweep line'],['ended','dim','over, its room is free']]}),
+      starts=input.map(function(p,i){return {t:p[0],id:i};}).sort(function(a,b){return a.t-b.t;}),
+      ends=input.map(function(p,i){return {t:p[1],id:i};}).sort(function(a,b){return a.t-b.t;}),
+      s=0,e=0,rooms=0,most=0;
+  T.step('Split every meeting into two events, a start and an end, and sweep a line along the axis in time order. The line stops only at events. The counter is how many meetings are running at the line.',
+    [T.mark('sweep',starts[0].t),T.count('rooms in use',0),T.count('most so far',0)],['sweep']);
+  while(s<input.length){
+    if(starts[s].t<ends[e].t){
+      rooms++;most=Math.max(most,rooms);var st=starts[s++];
+      T.step('At '+st.t+' meeting '+ivLabel(input[st.id][0],input[st.id][1])+' starts: one more room in use, '+rooms+' in all'+(rooms===most?(rooms>1?', the most so far':''):'')+'.',
+        [T.mark('sweep',st.t),T.state(st.id,'running'),T.count('rooms in use',rooms),T.count('most so far',most)],[st.id,'sweep','rooms in use']);
+    }else{
+      rooms--;var en=ends[e++];
+      T.step('At '+en.t+' meeting '+ivLabel(input[en.id][0],input[en.id][1])+' ends first, so its room is free again: '+rooms+' in use. A meeting that starts exactly when another ends can reuse its room, which is why an end wins a tie.',
+        [T.mark('sweep',en.t),T.state(en.id,'ended'),T.count('rooms in use',rooms)],[en.id,'sweep','rooms in use']);
+    }
+  }
+  var want=ivRoomsRef(input);
+  if(most!==want)throw new Error('the sweep found '+most+' rooms; counting what runs at each start gives '+want);
+  var steps=ivWalk(T,{intro:'Meeting Rooms II: the fewest rooms that hold every meeting. Three meetings on one axis; the answer is the most that are ever running at once.',
+    outro:'Every start has been swept, so no later moment can hold more meetings than '+most+'. The answer is '+most+' rooms: the long meeting plus whichever short one is running.'});
+  steps.answer=most;return steps;
+}
+
 mountLesson();
 new LanePlayer($('#stackw .lvhost'),{id:'stk',loop:true,autoplay:true,inv:[['size matches','size equals the number of items',sizeOk('s')]]}).load(stackSteps());
 mountLaneTabs($('#qtabs'),[{name:'Queue from two stacks',steps:twoStackSteps},{name:'Deque',steps:dequeSteps},{name:'Ring buffer',steps:ringSteps}],{id:'q'});
@@ -538,3 +667,5 @@ mountLaneTabs($('#htabs'),[{name:'Push and pop',steps:pushPopSteps},{name:'Heapi
   {id:'h',inv:[['heap holds','every parent dominates both children',heapInv]]});
 mountLaneTabs($('#grtabs'),[{name:'Breadth-first search',steps:bfsSteps},{name:'Topological sort',steps:kahnSteps},{name:'Union-find',steps:unionFindSteps},{name:'Dijkstra',steps:dijkstraSteps}],
   {id:'gr',inv:[['heap holds','every parent in the frontier is no larger than its children',heapInv]]});
+mountCallTreeTabs($('#cttabs'),[{name:'Subsets',steps:subsetsSteps},{name:'Combination sum',steps:comboSteps}],{id:'ct'});
+mountIvTabs($('#ivtabs'),[{name:'Merge intervals',steps:ivMergeSteps},{name:'Meeting rooms II',steps:ivRoomsSteps}],{id:'iv'});

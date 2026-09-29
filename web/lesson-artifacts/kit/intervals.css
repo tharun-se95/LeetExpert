@@ -1,0 +1,19 @@
+/* kit/intervals.css: the interval lane (kit/intervals.js). Bars are ordinary lane items and take
+   kit/lanes.css's box, tone and highlight styling unchanged; this file adds the axis, the sweep marks
+   and the bands. A mark is told from a band by shape (a line with a head, a bracket with a tint), and a
+   band's tint never carries its meaning alone: its name and extent are written under the axis. */
+.in-intervals .ln-val{font-size:13px}
+.iv-axis{stroke:color-mix(in srgb,var(--fg) 45%,transparent);stroke-width:1.4}
+.iv-tk{stroke:color-mix(in srgb,var(--fg) 45%,transparent);stroke-width:1.2}
+.iv-grid{stroke:color-mix(in srgb,var(--fg) 9%,transparent);stroke-width:1}
+.iv-tick{font:500 10.5px 'JetBrains Mono',monospace;fill:var(--mut)}
+.iv-mark line{stroke:var(--o-ink);stroke-width:2;stroke-linecap:round}
+.iv-mark path{fill:var(--o-ink);stroke:none}
+.iv-mark text{font:600 11px 'JetBrains Mono',monospace;fill:var(--fg)}
+.iv-mark.hi line{stroke-width:3}
+.iv-mark.hi text{font-weight:700}
+.iv-band rect,.ck-band rect{fill:color-mix(in srgb,var(--g-ink) 16%,transparent);stroke:none}
+.iv-band path,.ck-band path{fill:none;stroke:var(--g-ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.iv-band text{font:600 11px 'JetBrains Mono',monospace;fill:var(--fg)}
+.iv-band.hi rect{fill:color-mix(in srgb,var(--g-ink) 28%,transparent)}
+.iv-band.hi text{font-weight:700}

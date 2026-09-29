@@ -568,4 +568,472 @@ describe("lesson artifacts kit: the graph lane (graphs.js)", () => {
     const b = new Lanes([{ id: "g", kind: "graph", nodes: ROW5.map((n) => ({ ...n, d: 1 })) }]).lane("g");
     expect(LANE_KINDS.graph!.key(a)).not.toBe(LANE_KINDS.graph!.key(b));
   });
+
+  it("a graph's gap is measured with its shape, and defaults to room for a weight plate", () => {
+    const { Lanes, LANE_KINDS } = graphKit();
+    const def = new Lanes([{ id: "g", kind: "graph", nodes: ROW5 }]).lane("g");
+    const tight = new Lanes([{ id: "g", kind: "graph", nodes: ROW5, gap: [16, 26] }]).lane("g");
+    expect(LANE_KINDS.graph!.key(def)).not.toBe(LANE_KINDS.graph!.key(tight));
+    expect(graphLane(new Lanes([{ id: "g", kind: "graph", nodes: ROW5 }]).snap("x"), "g")).toMatchObject({ gap: [34, 30], words: null, plain: false });
+  });
+});
+
+/* calltrees.js builds a call tree from a graph lane and a stack lane. It draws with no code of its own, so
+   what is held here is the bookkeeping: the layout, and that the state at step k is a pure function of the
+   first k events, checked against a stack machine that shares none of the kit's code. */
+type CtNode = { id: number; v: string; sub: string; parent: number; kids: number[]; depth: number };
+type CtEvent = { ev: "call" | "base" | "ret" | "prune"; node: number; val?: string | null };
+type CtTrace = {
+  nodes: CtNode[]; events: CtEvent[];
+  call(v: string, sub?: string, note?: string | null, frame?: string[]): number;
+  base(id: number, val?: unknown, note?: string): number;
+  ret(id: number, val?: unknown, note?: string): number;
+  prune(v: string, sub?: string, note?: string): number;
+  done(): CtTrace;
+};
+type CtState = { nodes: Record<string, { state: string; sub: string }>; edges: Record<string, string>; path: number[] };
+type CtSteps = Snap[] & { states: string[] };
+interface CtKit {
+  CallTrace: new () => CtTrace;
+  callTreeLayout(nodes: CtNode[]): { x: number; d: number }[];
+  callTreeState(t: CtTrace, k: number): CtState;
+  callTreeRead(s: Snap): CtState;
+  callTreeSame(want: CtState, got: CtState, k: number): void;
+  callTreeWalk(t: CtTrace, o?: object): CtSteps;
+  LANE_KINDS: { graph: { describe(l: object): string } };
+}
+function ctKit(): CtKit {
+  const ctx: Record<string, unknown> = {};
+  const src = ["lanes.js", "graphs.js", "calltrees.js"].map((f) => readFileSync(join(ARTIFACTS, "kit", f), "utf8")).join("\n");
+  runInNewContext(src + "\nthis.CallTrace=CallTrace;this.callTreeLayout=callTreeLayout;this.callTreeState=callTreeState;this.callTreeRead=callTreeRead;this.callTreeSame=callTreeSame;this.callTreeWalk=callTreeWalk;this.LANE_KINDS=LANE_KINDS;", ctx);
+  return ctx as unknown as CtKit;
+}
+/* a random recursion: each call makes 0 to 3 calls, some of them cut before entry, some base cases */
+function randomTrace(K: CtKit, rnd: (n: number) => number): CtTrace {
+  const T = new K.CallTrace();
+  let n = 0;
+  const go = (depth: number, label: string) => {
+    const id = T.call(label, `d=${depth}`);
+    const kids = depth >= 4 ? 0 : rnd(4);
+    if (!kids) { T.base(id, rnd(2) ? String(rnd(9)) : null); return; }
+    for (let c = 0; c < kids; c++) { if (rnd(4) === 0) T.prune(`x${n++}`, "cut"); else go(depth + 1, `n${n++}`); }
+    T.ret(id, rnd(2) ? String(rnd(9)) : null);
+  };
+  go(0, "root");
+  return T;
+}
+const lcg = (seed: number) => (n: number) => ((seed = (seed * 1664525 + 1013904223) >>> 0), Math.floor((seed / 4294967296) * n));
+
+describe("lesson artifacts kit: call trees (calltrees.js)", () => {
+  it("build.py ships it with the player, lanes and graphs it draws on, once and in that order", () => {
+    const run = (js: string) => {
+      const r = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(json.dumps(build.optional_kit(sys.stdin.read())))`], { input: js, encoding: "utf8" });
+      if (r.status) throw new Error(r.stderr);
+      return JSON.parse(r.stdout) as string[];
+    };
+    expect(run("var s=callTreeWalk(T);")).toEqual(["player", "lanes", "graphs", "calltrees"]);
+    expect(run("var T=new CallTrace();")).toEqual(["player", "lanes", "graphs", "calltrees"]);
+    expect(run("mountCallTreeTabs(w,[]);var d={kind:'graph'};")).toEqual(["player", "lanes", "graphs", "calltrees"]);
+    expect(run("var d={kind:'graph'};")).toEqual(["player", "lanes", "graphs"]);
+  });
+
+  it("lays out leaves in call order with each parent over its children, and no two nodes share a place", () => {
+    const K = ctKit(), rnd = lcg(20260929);
+    for (let t = 0; t < 150; t++) {
+      const T = randomTrace(K, rnd), pos = K.callTreeLayout(T.nodes);
+      expect(new Set(pos.map((p) => `${p.x},${p.d}`)).size).toBe(T.nodes.length);
+      const leaves = T.nodes.filter((n) => !n.kids.length).map((n) => pos[n.id]!.x);
+      expect(leaves).toEqual(leaves.map((_, i) => i));
+      for (const n of T.nodes) {
+        expect(pos[n.id]!.d).toBe(n.parent < 0 ? 0 : pos[n.parent]!.d + 1);
+        if (n.kids.length) expect(pos[n.id]!.x).toBe((pos[n.kids[0]!]!.x + pos[n.kids[n.kids.length - 1]!]!.x) / 2);
+      }
+    }
+  });
+
+  it("step k shows exactly what the first k events say, whatever order the steps are read in", () => {
+    const K = ctKit(), rnd = lcg(778), PAINT: Record<string, string> = { call: "active", base: "base", ret: "returned", prune: "pruned" };
+    for (let t = 0; t < 120; t++) {
+      const T = randomTrace(K, rnd), steps = K.callTreeWalk(T);
+      expect(steps.length).toBe(T.events.length + 2);
+      const order = steps.map((_, k) => k).sort(() => rnd(3) - 1);
+      for (const k of order) {
+        // a reference that shares no code with the kit: a plain stack machine over the events
+        const stack: number[] = [], seen = new Map<number, { state: string; sub: string }>();
+        for (const e of T.events.slice(0, Math.min(k, T.events.length))) {
+          const n = T.nodes[e.node]!;
+          if (e.ev === "call") stack.push(n.id);
+          if (e.ev === "base" || e.ev === "ret") expect(stack.pop()).toBe(n.id);
+          seen.set(n.id, { state: PAINT[e.ev]!, sub: (e.ev === "base" || e.ev === "ret") && e.val != null ? `= ${e.val}` : n.sub });
+        }
+        const got = K.callTreeRead(steps[k]!);
+        expect(Object.keys(got.nodes).map(Number).sort((a, b) => a - b)).toEqual([...seen.keys()].sort((a, b) => a - b));
+        for (const [id, want] of seen) expect(got.nodes[id]).toEqual(want);
+        expect(got.path).toEqual(stack);
+        // the path edges are lit, a cut edge is cut, every other edge is at rest
+        for (const [id, st] of Object.entries(got.edges)) expect(st).toBe(seen.get(+id)!.state === "pruned" ? "bad" : stack.includes(+id) ? "cur" : "idle");
+        // the call stack lane holds one frame per active call, root first
+        expect(lane(steps[k]!, "stack").items.map((x) => x!.v)).toEqual(stack.map((id) => T.nodes[id]!.v));
+        // and the pure function agrees with what was drawn
+        expect(K.callTreeState(T, Math.min(k, T.events.length))).toEqual(got);
+      }
+    }
+  });
+
+  it("a drawing that disagrees with the events is refused, so the check can fail", () => {
+    const K = ctKit(), T = new K.CallTrace();
+    const r = T.call("f(2)", "n=2");
+    const a = T.call("f(1)", "n=1");
+    T.base(a, 1);
+    const b = T.call("f(0)", "n=0");
+    T.base(b, 1);
+    T.ret(r, 2);
+    const steps = K.callTreeWalk(T);
+    // step 3 is after the events call f(2), call f(1), base f(1)
+    const drawn = steps[3]!, copy = () => JSON.parse(JSON.stringify(drawn)) as Snap;
+    K.callTreeSame(K.callTreeState(T, 3), K.callTreeRead(drawn), 3);
+    const lingering = copy();
+    lane(lingering, "tree").items[a]!.tone = "cur";
+    expect(() => K.callTreeSame(K.callTreeState(T, 3), K.callTreeRead(lingering), 3)).toThrow(/call tree step 3/);
+    const lit = copy();
+    (lane(lit, "tree") as unknown as GraphLane).edges.find((e) => e.b === a)!.state = "cur";
+    expect(() => K.callTreeSame(K.callTreeState(T, 3), K.callTreeRead(lit), 3)).toThrow(/edge into call/);
+    expect(() => K.callTreeSame(K.callTreeState(T, 1), K.callTreeRead(drawn), 1)).toThrow(/call tree step 1/);
+  });
+
+  it("rejects what would draw a tree that is not a call tree", () => {
+    const K = ctKit(), T = new K.CallTrace();
+    const r = T.call("root"), c = T.call("child");
+    expect(() => T.ret(r)).toThrow(/not the innermost/);
+    expect(() => T.done()).toThrow(/never returned/);
+    T.ret(c);
+    T.ret(r);
+    expect(() => T.call("second root")).toThrow(/one root/);
+    expect(() => new K.CallTrace().done()).toThrow(/empty/);
+    expect(() => new K.CallTrace().prune("x")).toThrow(/needs a caller/);
+  });
+
+  it("the tree lane is described in the call tree's words, and only for calls that exist", () => {
+    const K = ctKit(), T = new K.CallTrace();
+    const r = T.call("root", "n=1");
+    T.prune("cut", "over");
+    const c = T.call("kid");
+    T.base(c, 7);
+    T.ret(r);
+    const steps = K.callTreeWalk(T), said = (k: number) => K.LANE_KINDS.graph.describe(lane(steps[k]!, "tree"));
+    expect(said(0)).toMatch(/Nodes: \./);
+    expect(said(2)).toContain("root (n=1), active");
+    expect(said(2)).toContain("cut (over), pruned");
+    expect(said(2)).not.toContain("kid");
+    expect(said(4)).toContain("kid (= 7), base case");
+    expect(said(5)).toContain("root (n=1), returned");
+  });
+});
+
+/* intervals.js draws bars on an axis. The layout is checked against the arithmetic it claims (a bar spans
+   its extent, and only its extent), and the walkthrough's state at step k against a reference written here
+   from the events with none of the kit's code. */
+type IvOp = [string, ...unknown[]];
+type IvEvent = { note: string; ops: IvOp[]; hi: (number | string)[] };
+type IvState = { order: { id: number; lo: number; hi: number; st: string | null; tone: string | null }[]; marks: Record<string, number>; bands: Record<string, number[]>; counts: [string, string][] };
+type IvRead = { order: { lo: number; hi: number; tone: string | null; label: string }[]; marks: Record<string, number>; bands: Record<string, number[]>; counts: [string, string][] };
+type IvTrace = {
+  start: { id: number; lo: number; hi: number }[]; events: IvEvent[]; initial: string | null;
+  step(note: string, ops: IvOp[], hi?: (number | string)[]): IvTrace;
+  sort(by: string): IvOp; state(id: number, st: string): IvOp; reach(id: number, lo: number, hi: number): IvOp; merge(keep: number, gone: number): IvOp;
+  add(lo: number, hi: number, at?: number): IvOp; remove(id: number): IvOp; mark(name: string, x: number | null): IvOp;
+  band(name: string, lo: number | null, hi?: number): IvOp; count(name: string, v: unknown): IvOp; done(): IvTrace;
+};
+type IvSteps = Snap[] & { key: { tone: string | null; label: string; band?: boolean }[]; answer?: unknown };
+type IvBox = { x: number; y: number; w: number; h: number; ch: number; rowsY: number; axisY: number; unit: number; axis: { lo: number; hi: number } };
+type IvLane = { items: { tone: string | null; v: string }[]; ext: { lo: number; hi: number }[]; marks: Record<string, number> };
+interface IvKit {
+  Lanes: new (defs: object[], o?: object) => Model & { bar(id: string, lo: number, hi: number, at?: number): { id: number; lo: number; hi: number; v: string }; reach(it: object, lo: number, hi: number): object };
+  IvTrace: new (intervals: number[][], o?: object) => IvTrace;
+  ivState(t: IvTrace, k: number): IvState;
+  ivRead(s: Snap): IvRead;
+  ivSame(want: IvState, got: IvRead, k: number): void;
+  ivWalk(t: IvTrace, o?: object): IvSteps;
+  ivLabel(lo: number, hi: number): string;
+  ivX(b: IvBox, c: number): number;
+  ivLabelW(v: string): number;
+  IV_INV: [string, string, (s: Snap) => boolean][];
+  LANE_KINDS: { intervals: { measure(m: object, l: object): void; block(m: object): { w: number; h: number }; box(m: object, x: number, y: number): IvBox; place(b: IvBox, k: number, l: object): { x: number; y: number; w: number; h: number }; describe(l: object): string } };
+  ivMergeSteps?(): IvSteps;
+  ivRoomsSteps?(): IvSteps;
+}
+function ivKit(extra = ""): IvKit {
+  const ctx: Record<string, unknown> = {};
+  const src = ["lanes.js", "intervals.js"].map((f) => readFileSync(join(ARTIFACTS, "kit", f), "utf8")).join("\n");
+  runInNewContext(src + "\n" + extra + "\nthis.Lanes=Lanes;this.IvTrace=IvTrace;this.ivState=ivState;this.ivRead=ivRead;this.ivSame=ivSame;this.ivWalk=ivWalk;this.ivLabel=ivLabel;this.ivX=ivX;this.ivLabelW=ivLabelW;this.IV_INV=IV_INV;this.LANE_KINDS=LANE_KINDS;", ctx);
+  return ctx as unknown as IvKit;
+}
+const IV_STATES = [["waiting", null, "not read"], ["active", "cur", "being built"], ["kept", "good", "kept"], ["dropped", "bad", "removed"], ["ended", "dim", "over"]];
+const IV_TONE: Record<string, string | null> = { waiting: null, active: "cur", kept: "good", dropped: "bad", ended: "dim" };
+
+/* a random walkthrough over a list of intervals: every operation is legal at the moment it is made,
+   judged by a model kept here, so the trace is valid without the kit's own rules deciding what is */
+function randomIvTrace(K: IvKit, rnd: (n: number) => number): IvTrace {
+  const pair = (): [number, number] => { const a = rnd(30), b = a + rnd(9); return [a, b]; };
+  const input = Array.from({ length: 1 + rnd(6) }, pair);
+  const T = new K.IvTrace(input, { states: IV_STATES, band: "a gap" });
+  const alive: number[] = input.map((_, i) => i);
+  for (let s = 0, n = 1 + rnd(14); s < n; s++) {
+    const ops: IvOp[] = [];
+    for (let o = 0, m = 1 + rnd(3); o < m; o++) {
+      const r = rnd(10), pick = () => alive[rnd(alive.length)]!;
+      if (r === 0) ops.push(T.sort(rnd(2) ? "lo" : "hi"));
+      else if (r <= 2 && alive.length) ops.push(T.state(pick(), Object.keys(IV_TONE)[rnd(5)]!));
+      else if (r === 3 && alive.length) { const p = pair(); ops.push(T.reach(pick(), p[0], p[1])); }
+      else if (r === 4 && alive.length > 1) {
+        const a = pick(); let b = pick(); while (b === a) b = pick();
+        alive.splice(alive.indexOf(b), 1); ops.push(T.merge(a, b));
+      } else if (r === 5) {
+        const p = pair(), at = rnd(alive.length + 1), op = T.add(p[0], p[1], rnd(2) ? at : undefined);
+        alive.splice(op[4] === undefined ? alive.length : at, 0, op[1] as number); ops.push(op);
+      } else if (r === 6 && alive.length > 1) { const id = pick(); alive.splice(alive.indexOf(id), 1); ops.push(T.remove(id)); }
+      else if (r === 7) ops.push(T.mark(rnd(2) ? "sweep" : "end", rnd(4) ? rnd(40) : null));
+      else if (r === 8) { const nm = `gap ${rnd(2)}`, a = rnd(30); ops.push(rnd(4) ? T.band(nm, a, a + rnd(9)) : T.band(nm, null)); }
+      else ops.push(T.count(rnd(2) ? "rooms" : "peak", rnd(9)));
+    }
+    T.step(`step ${s}`, ops, []);
+  }
+  return T;
+}
+/* what the drawing must show after k events, worked out from the events alone. Sorting is by extent, stable. */
+function ivReference(T: IvTrace, k: number) {
+  let rows = T.start.map((p) => ({ id: p.id, lo: p.lo, hi: p.hi, st: T.initial }));
+  const marks = new Map<string, number>(), bands = new Map<string, number[]>(), counts = new Map<string, string>();
+  // every counter is on the fields line from the first step, a dash until it is set
+  for (const e of T.events) for (const op of e.ops) if (op[0] === "count" && !counts.has(op[1] as string)) counts.set(op[1] as string, "–");
+  for (const e of T.events.slice(0, Math.min(k, T.events.length))) for (const op of e.ops) {
+    const name = op[0], at = (id: unknown) => rows.findIndex((r) => r.id === id);
+    if (name === "sort") { const key = op[1] as "lo" | "hi"; rows = rows.map((r, i) => ({ r, i })).sort((x, y) => x.r[key] - y.r[key] || x.i - y.i).map((x) => x.r); }
+    else if (name === "state") rows[at(op[1])]!.st = op[2] as string;
+    else if (name === "reach") { rows[at(op[1])]!.lo = op[2] as number; rows[at(op[1])]!.hi = op[3] as number; }
+    else if (name === "merge") { const a = rows[at(op[1])]!, g = rows[at(op[2])]!; a.lo = Math.min(a.lo, g.lo); a.hi = Math.max(a.hi, g.hi); rows.splice(at(op[2]), 1); }
+    else if (name === "add") rows.splice(op[4] === undefined ? rows.length : (op[4] as number), 0, { id: op[1] as number, lo: op[2] as number, hi: op[3] as number, st: T.initial });
+    else if (name === "remove") rows.splice(at(op[1]), 1);
+    else if (name === "mark") { if (op[2] === null) marks.delete(op[1] as string); else marks.set(op[1] as string, op[2] as number); }
+    else if (name === "band") { if (op[2] === null) bands.delete(op[1] as string); else bands.set(op[1] as string, [op[2] as number, op[3] as number]); }
+    else if (name === "count") counts.set(op[1] as string, String(op[2]));
+  }
+  return { rows, marks, bands, counts };
+}
+
+describe("lesson artifacts kit: the key above a player (laneKey in lanes.js)", () => {
+  /* just enough DOM for the key: an element whose height is one line per entry, and a ResizeObserver whose
+     callback the test fires, since the browser's first call comes after the tabs have set their key */
+  type Fake = { kids: Fake[]; html: string; hidden: boolean; style: Record<string, string>; offsetHeight: number;
+    innerHTML: string; appendChild(c: Fake): void; setAttribute(): void; insertBefore(c: Fake): void };
+  function fake(html = ""): Fake {
+    const e = { kids: [] as Fake[], html, hidden: false, style: {} as Record<string, string>,
+      get offsetHeight() { return e.kids.length * 10; },
+      get innerHTML() { return e.html + e.kids.map((k) => k.innerHTML).join(""); },
+      set innerHTML(v: string) { e.html = v; e.kids = []; },
+      appendChild(c: Fake) { e.kids.push(c); }, setAttribute() {}, insertBefore(c: Fake) { e.kids.push(c); } };
+    return e as Fake;
+  }
+  function keyKit() {
+    const fire: (() => void)[] = [];
+    const ctx: Record<string, unknown> = { el: (_t: string, _c: string | null, html?: string) => fake(html ?? "") };
+    ctx.window = { ResizeObserver: 1 };
+    ctx.ResizeObserver = function (cb: () => void) { return { observe() { fire.push(cb); } }; };
+    runInNewContext(readFileSync(join(ARTIFACTS, "kit", "lanes.js"), "utf8") + "\nthis.laneKey=laneKey;", ctx);
+    const laneKey = ctx.laneKey as (h: Fake) => { el: Fake; set(e: object[] | null): void; reserve(l: object[][]): void };
+    return { laneKey, resize: () => fire.forEach((f) => f()) };
+  }
+  const one = [{ tone: "cur", label: "active: the block being grown" }];
+  const three = [{ tone: null, label: "waiting: not started yet" }, { tone: "cur", label: "running" }, { tone: "dim", label: "ended" }];
+
+  it("holds the tallest tab's height, and a resize keeps the shown tab's key, not the last one measured", () => {
+    const { laneKey, resize } = keyKit(), k = laneKey(fake());
+    k.reserve([one, three]);
+    k.set(one);
+    expect(k.el.style.minHeight).toBe("30px");
+    resize();
+    expect(k.el.innerHTML).toContain("active: the block being grown");
+    expect(k.el.innerHTML).not.toContain("waiting");
+    expect(k.el.style.minHeight).toBe("30px");
+    k.set(three);
+    resize();
+    expect(k.el.innerHTML).toContain("waiting: not started yet");
+    expect(k.el.innerHTML).not.toContain("active");
+  });
+});
+
+describe("lesson artifacts kit: intervals on an axis (intervals.js)", () => {
+  it("build.py ships it with the player and lanes it draws on, once and in that order, and only where it is used", () => {
+    const run = (js: string) => {
+      const r = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(json.dumps(build.optional_kit(sys.stdin.read())))`], { input: js, encoding: "utf8" });
+      if (r.status) throw new Error(r.stderr);
+      return JSON.parse(r.stdout) as string[];
+    };
+    expect(run("var s=ivWalk(T);")).toEqual(["player", "lanes", "intervals"]);
+    expect(run("var T=new IvTrace([[1,2]]);")).toEqual(["player", "lanes", "intervals"]);
+    expect(run("mountIvTabs(w,[]);")).toEqual(["player", "lanes", "intervals"]);
+    expect(run("var d={kind:'intervals'};")).toEqual(["player", "lanes", "intervals"]);
+    expect(run("var d={kind:'graph'};")).toEqual(["player", "lanes", "graphs"]);
+  });
+
+  it("a bar spans exactly its extent on the axis, in its own row, and no label overflows its bar", () => {
+    const K = ivKit(), rnd = lcg(20260930), I = K.LANE_KINDS.intervals;
+    for (let t = 0; t < 150; t++) {
+      const axis = { lo: rnd(5) - 2, hi: 30 + rnd(30) }, M = new K.Lanes([{ id: "iv", kind: "intervals", label: "x", axis }]);
+      const n = 1 + rnd(8);
+      for (let i = 0; i < n; i++) { const lo = axis.lo + rnd(axis.hi - axis.lo), hi = Math.min(axis.hi, lo + rnd(12)); M.bar("iv", lo, hi); }
+      const snap = M.snap("x"), l = snap.lanes[0] as unknown as { items: { v: string }[]; ext: { lo: number; hi: number }[] };
+      const m: Record<string, unknown> = { kind: "intervals", label: "x", cw: 56, ch: 40, len: n };
+      I.measure(m, l);
+      const b = I.box(m, 10, 20), spans: [number, number][] = [];
+      expect(I.block(m)).toMatchObject({ w: b.w, h: b.h });
+      l.ext.forEach((e, k) => {
+        const p = I.place(b, k, l), w = e.hi - e.lo;
+        if (w > 0) {
+          expect(p.x - p.w / 2).toBeCloseTo(K.ivX(b, e.lo), 6);
+          expect(p.x + p.w / 2).toBeCloseTo(K.ivX(b, e.hi), 6);
+          expect(p.w).toBeGreaterThanOrEqual(K.ivLabelW(l.items[k]!.v));
+        } else expect(p.x).toBeCloseTo(K.ivX(b, e.lo), 6);
+        // inside the block, between the top of the rows and the axis
+        expect(p.x - p.w / 2).toBeGreaterThanOrEqual(b.x);
+        expect(p.x + p.w / 2).toBeLessThanOrEqual(b.x + b.w);
+        expect(p.y - p.h / 2).toBeGreaterThanOrEqual(b.rowsY);
+        expect(p.y + p.h / 2).toBeLessThanOrEqual(b.axisY);
+        spans.push([p.y - p.h / 2, p.y + p.h / 2]);
+      });
+      // one row per bar, so no two bars share vertical space whatever their extents
+      spans.sort((a, c) => a[0] - c[0]);
+      for (let i = 1; i < spans.length; i++) expect(spans[i]![0]).toBeGreaterThanOrEqual(spans[i - 1]![1]);
+    }
+  });
+
+  it("the scale is one number for the lane, so equal extents draw equal widths at any row", () => {
+    const K = ivKit(), I = K.LANE_KINDS.intervals, M = new K.Lanes([{ id: "iv", kind: "intervals", label: "x", axis: { lo: 0, hi: 40 } }]);
+    M.bar("iv", 3, 9); M.bar("iv", 20, 26); M.bar("iv", 0, 40);
+    const l = M.snap("x").lanes[0] as unknown as { ext: { lo: number; hi: number }[]; items: { v: string }[] }, m: Record<string, unknown> = { kind: "intervals", label: "x", cw: 56, ch: 40, len: 3 };
+    I.measure(m, l);
+    const b = I.box(m, 0, 0);
+    expect(I.place(b, 0, l).w).toBeCloseTo(I.place(b, 1, l).w, 6);
+    expect(I.place(b, 2, l).w).toBeCloseTo(40 * b.unit, 6);
+  });
+
+  it("step k shows exactly what the first k events say, whatever order the steps are read in", () => {
+    const K = ivKit(), rnd = lcg(7707);
+    for (let t = 0; t < 120; t++) {
+      const T = randomIvTrace(K, rnd), steps = K.ivWalk(T);
+      expect(steps.length).toBe(T.events.length + 2);
+      const order = steps.map((_, k) => k).sort(() => rnd(3) - 1);
+      for (const k of order) {
+        const want = ivReference(T, k), got = K.ivRead(steps[k]!);
+        expect(got.order.map((r) => [r.lo, r.hi, r.tone])).toEqual(want.rows.map((r) => [r.lo, r.hi, r.st === null ? null : IV_TONE[r.st]]));
+        expect(got.order.map((r) => r.label)).toEqual(want.rows.map((r) => K.ivLabel(r.lo, r.hi)));
+        expect(got.marks).toEqual(Object.fromEntries(want.marks));
+        expect(got.bands).toEqual(Object.fromEntries(want.bands));
+        expect(got.counts).toEqual([...want.counts].map(([a, b]) => [a, b]));
+        // and the kit's own pure function agrees with the reference
+        const st = K.ivState(T, k);
+        expect(st.order.map((r) => [r.lo, r.hi, r.tone])).toEqual(got.order.map((r) => [r.lo, r.hi, r.tone]));
+        K.ivSame(st, got, k);
+        // the rows are the lane's items in order, so the picture is read top to bottom
+        expect(lane(steps[k]!, "iv").items.map((x) => x!.v)).toEqual(got.order.map((r) => r.label));
+        for (const [, , ok] of K.IV_INV) expect(ok(steps[k]!)).toBe(true);
+      }
+    }
+  });
+
+  it("a drawing that disagrees with the events is refused, so the check can fail", () => {
+    const K = ivKit(), T = new K.IvTrace([[1, 3], [2, 6]], { states: IV_STATES });
+    T.step("merge", [T.merge(0, 1), T.state(0, "active"), T.mark("end", 6), T.count("blocks", 1)], [0]);
+    const steps = K.ivWalk(T), good = steps[1]!, copy = () => JSON.parse(JSON.stringify(good)) as Snap;
+    const iv = (s: Snap) => lane(s, "iv") as unknown as IvLane;
+    K.ivSame(K.ivState(T, 1), K.ivRead(good), 1);
+    const hull = copy(); iv(hull).ext[0]!.hi = 3; iv(hull).items[0]!.v = "[1,3]";
+    expect(() => K.ivSame(K.ivState(T, 1), K.ivRead(hull), 1)).toThrow(/interval step 1: row 0/);
+    const tone = copy(); iv(tone).items[0]!.tone = "good";
+    expect(() => K.ivSame(K.ivState(T, 1), K.ivRead(tone), 1)).toThrow(/row 0/);
+    const label = copy(); iv(label).items[0]!.v = "[1,9]";
+    expect(() => K.ivSame(K.ivState(T, 1), K.ivRead(label), 1)).toThrow(/row 0/);
+    const sweep = copy(); iv(sweep).marks.end = 3;
+    expect(() => K.ivSame(K.ivState(T, 1), K.ivRead(sweep), 1)).toThrow(/mark end/);
+    const counter = copy(); counter.fields = [["blocks", 2]];
+    expect(() => K.ivSame(K.ivState(T, 1), K.ivRead(counter), 1)).toThrow(/counter blocks/);
+    const extra = copy(); iv(extra).items.push({ tone: null, v: "[0,1]" }); iv(extra).ext.push({ lo: 0, hi: 1 });
+    expect(() => K.ivSame(K.ivState(T, 1), K.ivRead(extra), 1)).toThrow(/bars/);
+    expect(() => K.ivSame(K.ivState(T, 0), K.ivRead(good), 0)).toThrow(/interval step 0/);
+  });
+
+  it("rejects what would draw wrong or nothing: no axis, a bar off it, a plain push, a mark off it, alike states", () => {
+    const K = ivKit(), mk = () => new K.Lanes([{ id: "iv", kind: "intervals", label: "x", axis: { lo: 0, hi: 10 } }]);
+    expect(() => new K.Lanes([{ id: "iv", kind: "intervals" }])).toThrow(/needs an axis/);
+    expect(() => new K.Lanes([{ id: "iv", kind: "intervals", axis: { lo: 5, hi: 5 } }])).toThrow(/lo below hi/);
+    expect(() => mk().bar("iv", 6, 2)).toThrow(/ends before it starts/);
+    expect(() => mk().bar("iv", 2, 11)).toThrow(/outside the axis/);
+    expect(() => mk().bar("iv", NaN, 3)).toThrow(/numeric/);
+    const pushed = mk(); pushed.push("iv", "raw");
+    expect(() => pushed.snap("x")).toThrow(/no extent: add bars with bar/);
+    expect(() => mk().mark("iv", "sweep", 11)).toThrow(/outside the axis/);
+    expect(() => mk().mark("iv", "sweep", "x" as unknown as number)).toThrow(/coordinate/);
+    expect(() => mk().span("iv", "gap", 7, 3)).toThrow(/ends before it starts/);
+    expect(() => new K.Lanes([{ id: "s", kind: "stack" }]).bar("s", 1, 2)).toThrow(/not an interval lane/);
+    const M = mk(), it = M.bar("iv", 1, 3);
+    expect(() => M.reach({ v: "x" }, 1, 2)).toThrow(/made by bar/);
+    M.reach(it, 2, 8);
+    expect(it.v).toBe("[2,8]");
+    expect(() => new K.IvTrace([[1, 2]], { states: [["a", "cur"], ["b", "cur"]] })).toThrow(/drawn alike/);
+    expect(() => new K.IvTrace([[1, 2]], { states: [["a", null], ["b", null]] })).toThrow(/drawn alike/);
+    expect(() => new K.IvTrace([[1, 2]], { states: [["a", "purple"]] })).toThrow(/tone is one of/);
+    expect(() => new K.IvTrace([[1, 2]], { states: [["a", null], ["a", "cur"]] })).toThrow(/named twice/);
+    expect(() => new K.IvTrace([[1, 2]], { states: [] })).toThrow(/names its states/);
+    expect(() => new K.IvTrace([[3, 1]], { states: IV_STATES })).toThrow(/ends before it starts/);
+    const T = () => new K.IvTrace([[1, 2], [4, 5]], { states: IV_STATES });
+    expect(() => T().done()).toThrow(/empty/);
+    expect(() => { const t = T(); t.step("x", [t.state(0, "nope")]).done(); }).toThrow(/not one of/);
+    expect(() => { const t = T(); t.step("x", [t.merge(0, 7)]).done(); }).toThrow(/no bar 7/);
+    expect(() => { const t = T(); t.step("x", [t.merge(0, 0)]).done(); }).toThrow(/itself/);
+    expect(() => { const t = T(); t.step("x", [t.remove(0), t.state(0, "kept")]).done(); }).toThrow(/no bar 0/);
+    expect(() => { const t = T(); t.step("x", [t.add(1, 2, 9)]).done(); }).toThrow(/out of range/);
+    expect(() => { const t = T(); t.step("x", [t.band("g", 1, 2)]); K.ivWalk(t); }).toThrow(/names no meaning/);
+    expect(() => { const t = T(); t.step("x", [["fly", 1]]); t.done(); }).toThrow(/unknown operation/);
+    expect(() => { const t = new K.IvTrace([[1, 2]], { states: IV_STATES, axis: { lo: 0, hi: 3 } }); t.step("x", [t.mark("m", 9)]); K.ivWalk(t); }).toThrow(/outside the axis/);
+  });
+
+  it("the lane is described in its own words: rows top to bottom, states by the walkthrough's name, coordinates and ranges", () => {
+    const K = ivKit(), T = new K.IvTrace([[1, 3], [2, 6]], { states: IV_STATES, band: "free" });
+    T.step("a", [T.state(1, "kept"), T.mark("sweep", 4), T.band("gap", 6, 8)], []);
+    const steps = K.ivWalk(T, { axis: { lo: 0, hi: 10 } }), said = (k: number) => K.LANE_KINDS.intervals.describe(lane(steps[k]!, "iv"));
+    expect(said(0)).toBe("Intervals intervals on an axis from 0 to 10, top to bottom: [1,3]; [2,6].");
+    expect(said(1)).toBe("Intervals intervals on an axis from 0 to 10, top to bottom: [1,3]; [2,6], kept. sweep at 4, gap from 6 to 8.");
+    expect(steps.key).toEqual([{ tone: null, label: "waiting: not read" }, { tone: "good", label: "kept: kept" }, { band: true, label: "free" }]);
+  });
+
+  /* the specimen's two walkthroughs run the real algorithm; here their answers meet an implementation written
+     from scratch, and the walkthrough functions are the specimen's own, taken from its source */
+  it("the specimen's merge and meeting-rooms walkthroughs match independent implementations", () => {
+    const src = readFileSync(join(ARTIFACTS, "kit-players", "lesson.js"), "utf8");
+    const cut = src.indexOf("\nmountLesson();");
+    expect(cut).toBeGreaterThan(0);
+    const K = ivKit(src.slice(0, cut) + "\nthis.ivMergeSteps=ivMergeSteps;this.ivRoomsSteps=ivRoomsSteps;");
+    // union of covered intervals: sweep the sorted endpoints with a depth counter, joining touching blocks
+    const merge = (iv: number[][]) => {
+      const ev = iv.flatMap(([a, b]) => [[a!, 0], [b!, 1]] as [number, number][]).sort((x, y) => x[0] - y[0] || x[1] - y[1]);
+      const out: number[][] = []; let depth = 0, from = 0;
+      for (const [t, end] of ev) { if (!end) { if (!depth) from = t; depth++; } else if (!--depth) { if (out.length && out[out.length - 1]![1] === from) out[out.length - 1]![1] = t; else out.push([from, t]); } }
+      return out;
+    };
+    const rooms = (iv: number[][]) => { let best = 0; for (let t = 0; t <= Math.max(...iv.map((p) => p[1]!)); t += 0.5) best = Math.max(best, iv.filter((p) => p[0]! <= t && t < p[1]!).length); return best; };
+    const m = K.ivMergeSteps!(), r = K.ivRoomsSteps!();
+    expect(m.answer).toEqual(merge([[1, 3], [2, 6], [8, 10], [15, 18]]));
+    expect(m.answer).toEqual([[1, 6], [8, 10], [15, 18]]);
+    expect(r.answer).toBe(rooms([[0, 30], [5, 10], [15, 20]]));
+    expect(r.answer).toBe(2);
+    // the last picture of each walkthrough is its answer, and every step passed the read-back on load
+    expect(K.ivRead(m[m.length - 1]!).order.map((x) => [x.lo, x.hi])).toEqual(m.answer);
+    expect(K.ivRead(r[r.length - 1]!).counts).toContainEqual(["most so far", "2"]);
+    // the fields line has all its counters from the first step, so it never grows (and re-wraps) mid-walkthrough
+    expect(K.ivRead(r[0]!).counts).toEqual([["rooms in use", "–"], ["most so far", "–"]]);
+    expect(K.ivRead(m[0]!).counts).toEqual([["blocks done", "–"]]);
+    // the merge draws a gap between blocks, so its key names a range; the rooms walkthrough draws none
+    expect(m.key.some((k) => k.band)).toBe(true);
+    expect(r.key.some((k) => k.band)).toBe(false);
+  });
 });

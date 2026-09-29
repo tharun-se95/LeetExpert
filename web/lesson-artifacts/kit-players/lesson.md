@@ -95,3 +95,20 @@ A graph is a fixed lane: node `k` is slot `k`, so a node takes the same tones, n
 <div class="extabs" role="group" aria-label="Choose a graph walkthrough"></div><div class="lvhost"></div>
 ```
 
+
+## Call trees {#calltrees}
+
+A call tree is what a recursive function draws while it runs: one node per call, an edge from a call to each call it makes. It grows as the calls are made, and the path from the root down to the call running now is the call stack, so the frames beside the tree are that same path. A call is active while it is on the path, returned once it is done, a base case when it returns without calling itself, and pruned when a backtracking search cut it before entering it. The key names each state; a node's box carries the call's arguments, and after it returns, what it returned. Both walkthroughs run the real algorithm and check their answer against a reference that shares none of its code.
+
+```widget #cttabs "Two call-tree walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a call-tree walkthrough"></div><div class="lvhost"></div>
+```
+
+## Intervals {#intervals}
+
+An interval lane draws each interval as a bar on one shared axis: its row is its place in the list, and its position and width are its extent, so the order of the list and the order on the number line are both visible. A sweep line, a burst arrow or a running end is a named coordinate; a gap or a stretch of free time is a named range, bracketed under the axis with its extent written out. Sorting is a run of swaps that glide, and merging is one bar widening while the other leaves and the rows close up. A bar is `waiting`, `active`, `merged` or whatever the walkthrough calls its states, each drawn by its own tone and named in the key. Both walkthroughs run the real algorithm and check their answer against a reference that shares none of its code.
+
+```widget #ivtabs "Two interval walkthroughs"
+<div class="extabs" role="group" aria-label="Choose an interval walkthrough"></div><div class="lvhost"></div>
+```
+
