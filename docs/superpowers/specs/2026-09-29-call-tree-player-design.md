@@ -87,7 +87,7 @@ calls are one per depth from the root; a pruned call has nothing below it.
 
 ## 5. Where the code goes
 
-`kit/calltrees.js` (+ `calltrees.css`, the key), `KIT_DEPS.calltrees = ["player", "lanes", "graphs"]`,
+`kit/calltrees.js` (its key is the lane player's own `laneKey`, styled in `lanes.css`; `calltrees.css` is gone, #77), `KIT_DEPS.calltrees = ["player", "lanes", "graphs"]`,
 shipped only when a lesson names `callTreeWalk(`, `new CallTrace(` or `mountCallTreeTabs(`
 (`KIT_OPTIONAL`). A lesson that draws no call tree does not ship it.
 

@@ -169,15 +169,10 @@ function callTreeWalk(trace,o){
   return steps;
 }
 
-/* A key of the states a walkthrough uses, drawn with the lane's own item classes so a swatch cannot
-   disagree with the tree it explains, in either theme. set() refills it when a tab changes. */
+/* The key of the states a walkthrough uses is the lane player's own (laneKey); set() takes state names. */
 function callTreeKey(host,before){
-  var k=el('ul','ck');k.setAttribute('aria-label','Key');
-  function set(states){k.innerHTML='';k.hidden=!states||!states.length;
-    (states||[]).forEach(function(s){
-      k.appendChild(el('li',null,'<svg class="ck-sw" width="26" height="16" viewBox="0 0 26 16" aria-hidden="true"><g class="ln-item '+CT_TONE[s]+'"><rect class="ln-box" x="1.5" y="1.5" width="23" height="13" rx="4"/></g></svg>'+CT_MEANING[s]));});}
-  host.insertBefore(k,before||null);set(null);
-  return {el:k,set:set};
+  var k=laneKey(host,before),entries=function(states){return states&&states.map(function(s){return {tone:CT_TONE[s],label:CT_MEANING[s]};});};
+  return {el:k.el,set:function(states){k.set(entries(states));},reserve:function(list){k.reserve(list.map(entries));}};
 }
 /* tabbed call-tree walkthroughs: each example's steps() comes from callTreeWalk, and the key follows the tab */
 function mountCallTreeTabs(w,examples,o){
@@ -185,6 +180,6 @@ function mountCallTreeTabs(w,examples,o){
   var wrapped=examples.map(function(e,k){return {name:e.name,steps:function(){var s=e.steps();seen[k]=s.states;return s;}};});
   var p=mountLaneTabs(w,wrapped,Object.assign({inv:CALLTREE_INV},o));
   [].forEach.call(w.querySelectorAll('.extabs button'),function(b,k){b.addEventListener('click',function(){key.set(seen[k]);});});
-  key.set(seen[0]);
+  key.reserve(seen);key.set(seen[0]);
   return p;
 }

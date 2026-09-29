@@ -1,6 +1,0 @@
-/* kit/calltrees.css: the key above a call-tree player (kit/calltrees.js). The tree itself is the graph
-   lane and the stack an ordinary stack lane, so it takes graphs.css and lanes.css unchanged; each
-   swatch is an item box in the state's own class, so it paints from the same tokens as the tree. */
-.ck{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 10px;padding:0;list-style:none;font:12px 'JetBrains Mono',monospace;color:var(--mut)}
-.ck li{display:flex;align-items:center;gap:7px}
-.ck-sw{flex:none}
