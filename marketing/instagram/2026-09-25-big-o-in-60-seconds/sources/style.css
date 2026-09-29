@@ -1,0 +1,68 @@
+
+@font-face{font-family:"Space Grotesk";src:url("fonts/SpaceGrotesk-500.ttf");font-weight:500}
+@font-face{font-family:"Space Grotesk";src:url("fonts/SpaceGrotesk-700.ttf");font-weight:700}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-400.ttf");font-weight:400}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-700.ttf");font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1350px;overflow:hidden;background:#f1f4f9}
+#root{position:relative;width:100%;height:100%;overflow:hidden;font-family:"Space Grotesk",sans-serif;color:#16202e}
+.clip{position:absolute;inset:0}
+.scene{position:absolute;inset:0;padding:80px 90px;display:flex;flex-direction:column;gap:40px;
+ background-color:#f1f4f9;background-image:linear-gradient(#e2e7ef 1px,transparent 1px),linear-gradient(90deg,#e2e7ef 1px,transparent 1px);background-size:90px 90px}
+.scene.dark{background-color:#16202e;background-image:linear-gradient(#1f2b3d 1px,transparent 1px),linear-gradient(90deg,#1f2b3d 1px,transparent 1px);color:#f1f4f9}
+.hdr{display:flex;justify-content:space-between;align-items:center;font-size:30px;font-weight:700}
+.brand{display:flex;align-items:center;gap:12px}
+.dot{width:18px;height:18px;border-radius:50%;display:block}
+.pg{font-family:"Space Mono",monospace;font-weight:400;font-size:26px}
+.eyebrow{font-family:"Space Mono",monospace;font-size:28px;font-weight:700;letter-spacing:.08em;color:#107d6e}
+.dark .eyebrow{color:#5eead4}
+h1,h2{font-family:"Space Mono",monospace;font-weight:700;letter-spacing:-.03em;line-height:1.08}
+h1{font-size:92px} h2{font-size:76px}
+.sub{font-size:40px;line-height:1.35;color:#4a5567}
+.spacer{flex:1}
+.chips{display:flex;gap:18px;font-family:"Space Mono",monospace;font-size:40px;font-weight:700}
+.chip{display:block;padding:10px 22px;border-radius:14px;background:#dff1ec;color:#0b5c51}
+.chip.warn{background:#fbe8d3;color:#8a3b06}
+.row{display:flex;justify-content:space-between;align-items:flex-end}
+.swipe{display:block;font-size:34px;font-weight:700;color:#107d6e}
+.panel{background:#16202e;color:#f1f4f9;border-radius:28px;padding:48px 56px;display:flex;flex-direction:column;gap:26px}
+.mono{font-family:"Space Mono",monospace}
+.dots{display:grid;grid-template-columns:repeat(8,52px);gap:18px}
+.d{width:52px;height:52px;border-radius:50%;background:#5eead4;display:block}
+.d.late{background:#fbbf24}
+.nlabel{position:relative;height:100px;font-family:"Space Mono",monospace;font-size:88px;font-weight:700}
+.nlabel span{position:absolute;left:0;top:0;display:block}
+.q{font-size:40px;font-weight:700;color:#5eead4}
+.badge{display:flex;align-items:baseline;gap:26px}
+.big{font-family:"Space Mono",monospace;font-size:140px;font-weight:700;letter-spacing:-.04em;line-height:1;color:#107d6e}
+.big.warn{color:#b45309}
+.kind{font-size:40px;font-weight:700;color:#4a5567}
+.code{background:#141c2b;border-radius:26px;padding:40px 48px;font-family:"Space Mono",monospace;font-size:36px;line-height:1.6;color:#e7ebf1;white-space:pre}
+.k{color:#7dd3fc} .n{color:#86efac} .a{color:#fbbf24}
+.caption{font-size:46px;line-height:1.25;font-weight:700}
+.stats{display:flex;gap:22px}
+.stat{flex:1;background:#fff;border-radius:22px;padding:24px 30px;display:flex;flex-direction:column;gap:6px}
+.stat .l{font-family:"Space Mono",monospace;font-size:24px;color:#4a5567}
+.stat .v{font-family:"Space Mono",monospace;font-size:44px;font-weight:700}
+.buckets{display:grid;grid-template-columns:repeat(12,66px);gap:10px;position:relative}
+.bk{width:66px;height:66px;border-radius:14px;background:#fff;border:3px solid #d5dce6;display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:28px;font-weight:700;color:#4a5567}
+.bk.hit{border-color:#d5dce6}
+.ptr{position:absolute;left:0;top:-58px;width:66px;display:flex;justify-content:center;font-family:"Space Mono",monospace;font-size:30px;font-weight:700;color:#107d6e}
+.cells{display:grid;grid-template-columns:repeat(10,74px);gap:12px;position:relative}
+.c{width:74px;height:74px;border-radius:14px;background:#fff;border:3px solid #d5dce6;display:block}
+.gridwrap{display:flex;gap:44px;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(8,40px);gap:7px}
+.g{width:40px;height:40px;border-radius:8px;background:#fff;border:2px solid #d5dce6;display:block}
+.g.diag{background:#e5e9ef;border-color:#e5e9ef}
+.pc{display:flex;flex-direction:column;gap:14px}
+.pc .l{font-family:"Space Mono",monospace;font-size:28px;color:#4a5567}
+.pc .v{font-family:"Space Mono",monospace;font-size:64px;font-weight:700;color:#b45309;line-height:1}
+.swap{position:relative;height:150px;width:440px}
+.swap > div{position:absolute;left:0;top:0;display:flex;flex-direction:column;gap:14px}
+svg text{font-family:"Space Mono",monospace}
+.rows7{display:flex;flex-direction:column;gap:28px;font-size:40px;line-height:1.3}
+.r7{display:flex;gap:28px}
+.r7 b{font-family:"Space Mono",monospace;width:170px;flex-shrink:0;color:#5eead4}
+.r7 b.w{color:#fbbf24}
+.cta{align-self:flex-start;display:block;background:#107d6e;color:#fff;font-size:38px;font-weight:700;padding:24px 44px;border-radius:999px}
+.timed{font-size:32px;line-height:1.4;color:#4a5567}
