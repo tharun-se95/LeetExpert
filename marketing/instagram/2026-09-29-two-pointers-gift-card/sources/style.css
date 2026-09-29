@@ -1,0 +1,92 @@
+@font-face{font-family:"Space Grotesk";src:url("fonts/SpaceGrotesk.woff2");font-weight:300 700}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-400.woff2");font-weight:400}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-700.woff2");font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#16202e}
+#root{position:relative;width:100%;height:100%;overflow:hidden;font-family:"Space Grotesk",sans-serif;color:#f1f4f9;
+ background-color:#16202e;background-image:linear-gradient(#1c2838 1px,transparent 1px),linear-gradient(90deg,#1c2838 1px,transparent 1px);background-size:90px 90px}
+.mono{font-family:"Space Mono",monospace}
+.amb{color:#fbbf24}.teal{color:#5eead4}.mut{color:#94a3b8}
+.top{position:absolute;left:80px;right:80px;top:250px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:12px;font-size:36px;font-weight:700}
+.dot{width:18px;height:18px;border-radius:50%;background:#3fae5a;display:block}
+.chip{font-family:"Space Mono",monospace;font-size:28px;font-weight:700;color:#0e1520;background:#5eead4;padding:8px 18px;border-radius:10px}
+.panel{position:absolute;background:#0e1520;border:2px solid #263248;border-radius:22px}
+/* hook: the gift card */
+#gc{position:absolute;left:170px;top:400px;width:740px;height:440px;border-radius:36px;padding:44px 52px;
+ background:linear-gradient(135deg,#0f3d37 0%,#12314a 100%);border:3px solid #5eead4;display:flex;flex-direction:column;justify-content:space-between}
+#gc .k{font-family:"Space Mono",monospace;font-size:34px;font-weight:700;letter-spacing:.2em;color:#5eead4}
+#gc .v{font-family:"Space Mono",monospace;font-size:190px;font-weight:700;line-height:1}
+#gc .s{font-size:40px;font-weight:700}
+#gc .chipx{position:absolute;right:52px;top:44px;width:84px;height:64px;border-radius:12px;background:#fbbf24;opacity:.9}
+/* meter */
+#meter{left:80px;right:80px;top:350px;height:150px;padding:22px 30px}
+#meter .mrow{display:flex;justify-content:space-between;align-items:baseline}
+#meter .lbl{font-family:"Space Mono",monospace;font-size:30px;font-weight:700;color:#cbd5e1}
+#meter .lbl b{color:#5eead4}
+.rdwrap{position:relative;width:420px;height:44px}
+.rd{position:absolute;right:0;top:0;font-family:"Space Mono",monospace;font-size:36px;font-weight:700;white-space:nowrap}
+#track{position:absolute;left:30px;right:30px;top:92px;height:30px;border-radius:15px;background:#1c2838;overflow:visible}
+#fill{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:15px;background:#fbbf24;transform-origin:0 50%}
+#tick{position:absolute;top:-10px;width:6px;height:50px;border-radius:3px;background:#f1f4f9}
+.bit{position:absolute;width:16px;height:16px;border-radius:4px}
+/* menu */
+.tag{position:absolute;top:620px;width:124px;height:168px;border-radius:20px;border:3px solid #263248;background:#0e1520;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#cbd5e1}
+.tag svg{width:58px;height:58px}
+.tag .p{font-family:"Space Mono",monospace;font-size:44px;font-weight:700;color:#f1f4f9}
+.xo{position:absolute;top:620px;width:124px;height:168px}
+.fg{position:absolute;left:0;top:508px;width:64px;height:104px}
+.flab{position:absolute;top:806px;width:220px;text-align:center;font-family:"Space Mono",monospace;font-size:28px;font-weight:700}
+/* lower panels (y 820-1060) */
+.low{left:80px;right:80px;top:830px}
+#brute{height:240px;padding:20px 30px;display:flex;align-items:center;gap:40px}
+.tri{position:relative;width:210px;height:210px;flex:none}
+.pc{position:absolute;width:29px;height:29px;border-radius:6px;background:#fbbf24}
+.bstat{display:flex;flex-direction:column;gap:10px}
+.bstat .big{font-family:"Space Mono",monospace;font-size:92px;font-weight:700;color:#fbbf24;line-height:1}
+.bstat .sm{font-size:34px;font-weight:700}
+#b2{font-family:"Space Mono",monospace;font-size:34px;font-weight:700;color:#cbd5e1}#b2 b{color:#fbbf24;font-size:44px}
+.eq{height:124px;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.eq .e{font-family:"Space Mono",monospace;font-size:56px;font-weight:700}
+.tg{font-family:"Space Mono",monospace;font-size:32px;font-weight:700;padding:8px 18px;border-radius:12px;color:#0e1520}
+.tg.amb{background:#fbbf24;color:#0e1520}.tg.teal{background:#5eead4;color:#0e1520}
+#why{padding:24px 32px;display:flex;flex-direction:column;gap:14px;font-family:"Space Mono",monospace;font-size:36px;font-weight:700}
+#score{display:flex;flex-direction:column;gap:18px}
+.sc1{display:flex;align-items:baseline;gap:24px}.sc1 b{font-family:"Space Mono",monospace;font-size:150px;color:#5eead4;line-height:1}
+.sc1 span{font-size:44px;font-weight:700}.sc1 i{font-style:normal;font-family:"Space Mono",monospace;font-size:36px;color:#94a3b8}.sc1 i b{font-size:44px;color:#fbbf24}
+.badges{display:flex;gap:16px}.bd{display:block;font-family:"Space Mono",monospace;font-size:34px;font-weight:700;color:#0e1520;background:#5eead4;border-radius:12px;padding:10px 20px}
+/* systems scene: merge join */
+#db{position:absolute;left:80px;right:80px;top:350px;height:720px}
+.dbt{font-size:50px;font-weight:700}
+.dbs{font-family:"Space Mono",monospace;font-size:30px;color:#94a3b8;margin-top:8px}
+.col{position:absolute;top:210px;width:300px}
+.colh{font-family:"Space Mono",monospace;font-size:28px;font-weight:700;color:#cbd5e1;margin-bottom:14px;text-align:center}
+.row{position:absolute;left:0;width:300px;height:74px;border-radius:14px;border:2px solid #263248;background:#0e1520;
+ display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:40px;font-weight:700}
+.dp{position:absolute;left:0;top:0;width:56px;height:74px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:700}
+#links{position:absolute;left:0;top:0;width:920px;height:720px;overflow:visible}
+/* catch, pitfall, cue, challenge */
+.card{position:absolute;left:80px;right:80px;top:360px;height:720px}
+.h{font-size:56px;font-weight:700;line-height:1.1}
+.ch{display:inline-flex;align-items:center;justify-content:center;width:92px;height:92px;border-radius:16px;border:2px solid #263248;background:#0e1520;
+ font-family:"Space Mono",monospace;font-size:38px;font-weight:700;margin-right:12px}
+.opt{position:absolute;left:0;right:0;height:150px;padding:0 32px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.opt .t{font-size:44px;font-weight:700}.opt .c{font-family:"Space Mono",monospace;font-size:32px;color:#94a3b8}
+.code{position:absolute;left:0;right:0;padding:26px 32px;font-family:"Space Mono",monospace;font-size:44px;font-weight:700;line-height:1.7}
+.code .ln{display:flex;justify-content:space-between;align-items:center}
+.kw{color:#c4b5fd}
+.strike{position:absolute;left:32px;height:5px;background:#fbbf24;border-radius:3px;transform-origin:0 50%}
+.cuebox{position:absolute;left:0;right:0;border:3px solid #fbbf24;border-radius:22px;padding:30px 34px;background:#0e1520}
+.lock{position:absolute;left:80px;right:80px;top:470px;display:flex;flex-direction:column;align-items:center;gap:36px;text-align:center}
+.lbrand{display:flex;align-items:center;gap:22px;font-size:126px;font-weight:700;letter-spacing:-.03em}
+.ldot{width:48px;height:48px;border-radius:50%;background:#3fae5a;display:block}
+.lline{font-family:"Space Mono",monospace;font-size:46px;font-weight:700}
+.lcta{display:flex;align-items:center;gap:14px;font-size:48px;font-weight:700;color:#0e1520;background:#5eead4;border-radius:999px;padding:24px 50px}
+#larr{display:block}
+.tutor{position:absolute;left:0;top:1090px;width:470px;height:830px}
+.still{position:absolute;left:50%;bottom:0;max-width:520px;width:auto;display:block}
+.caps{position:absolute;left:470px;right:50px;top:1160px;height:240px}
+.cg{position:absolute;left:0;right:0;top:0;text-align:center;font-size:58px;font-weight:700;line-height:1.15}
+.cg span{display:inline-block}
+.cw{color:#f1f4f9}.ct{color:#5eead4}.ca{color:#fbbf24}
