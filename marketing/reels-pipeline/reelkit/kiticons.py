@@ -30,6 +30,13 @@ def tile(letter, pts=1):
                f'<text x="82" y="84" text-anchor="middle" style="{MONO};font-size:18px" fill="#4f5d72">{pts}</text>', "tl")
 
 
+def terminal_crash():
+    """A terminal window with an X: a crash or a raised error."""
+    return svg("0 0 64 64", f'<rect x="4" y="8" width="56" height="48" rx="8" fill="{SLATE}"/><rect x="4" y="8" width="56" height="12" rx="6" fill="{STEEL}"/>'
+               f'<path d="M14 30 L22 36 L14 42" stroke="{INK}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+               f'<path d="M34 28 L50 46 M50 28 L34 46" stroke="{AMB}" stroke-width="5" stroke-linecap="round"/>', "ico")
+
+
 def cue_card(title_html, say):
     """The interview-tell card: mic, label, the cue, and the phrase to say (id cueB)."""
     return (f'<div class="cuebox" style="top:40px"><div class="cuemic">{mic()}</div><div class="mono amb" style="font-size:32px;font-weight:700">INTERVIEW TELL</div>'

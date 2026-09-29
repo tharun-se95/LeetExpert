@@ -196,7 +196,7 @@ mini = lambda word, cls="": "".join(f'<span class="mt {cls}">{KI.tile(ch)}</span
 slots = "".join(f'<div class="sl" id="sl{n}">{chr(97 + n)}</div>' for n in range(26))
 R.add(f'<div class="card" id="cat" data-layout-allow-overlap><div class="h">The catch: a 26-slot<br/>array covers a to z only</div><div class="slots">{slots}</div>'
       f'<div id="cafe" class="cafe">{mini("caf")}<span class="mt bad">{KI.tile("é")}</span><span class="arr amb mono" id="arr">→ slot 136?</span></div>'
-      f'<div class="panel err" id="err1" style="top:360px">{I.terminal_crash()}<div><span class="t">Python crashes</span><span class="c amb">IndexError: list index out of range</span></div></div>'
+      f'<div class="panel err" id="err1" style="top:360px">{KI.terminal_crash()}<div><span class="t">Python crashes</span><span class="c amb">IndexError: list index out of range</span></div></div>'
       f'<div class="panel err" id="err2" style="top:480px">{I.shh()}<div><span class="t">JavaScript: <span class="amb">false</span></span><span class="c">quietly wrong, it should be true</span></div></div>'
       f'<div class="panel err fixp" id="fix" style="top:600px">{I.buckets()}<div><span class="t">The hash map takes any character</span><span class="c teal">is_anagram("café", "éfac") → True</span></div></div></div>')
 

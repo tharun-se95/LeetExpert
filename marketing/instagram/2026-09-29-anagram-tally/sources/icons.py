@@ -46,11 +46,6 @@ def box(color=AMB, dark=AMB_D):
                f'<path d="M40 38 V76" stroke="{NAVY}" stroke-width="2" opacity=".4"/><path d="M24 17 L56 31" stroke="{INK}" stroke-width="5" opacity=".7"/>', "bx")
 
 
-def terminal_crash():
-    """A terminal window with an X: the Python crash."""
-    return svg("0 0 64 64", f'<rect x="4" y="8" width="56" height="48" rx="8" fill="{SLATE}"/><rect x="4" y="8" width="56" height="12" rx="6" fill="{STEEL}"/>'
-               f'<path d="M14 30 L22 36 L14 42" stroke="{INK}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
-               f'<path d="M34 28 L50 46 M50 28 L34 46" stroke="{AMB}" stroke-width="5" stroke-linecap="round"/>', "ico")
 
 
 def shh():
