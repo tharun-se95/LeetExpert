@@ -211,7 +211,7 @@ export function HashBucketsViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Hash buckets trace" family="relationships">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-center gap-3">
           <motion.div layout className="flex flex-wrap items-end justify-center gap-2">
             {state.buckets.map((chain, i) => (
@@ -219,16 +219,18 @@ export function HashBucketsViz(props: Record<string, unknown>) {
             ))}
           </motion.div>
           <StatusPanel
-            items={[
+            state={state}
+            states={ctx.states}
+            items={(s) => [
               {
                 label: "inserting",
-                value: state.incoming === null ? "—" : state.incoming,
+                value: s.incoming === null ? "—" : s.incoming,
               },
               {
                 label: "size / capacity",
-                value: `${state.size}/${state.capacity}`,
+                value: `${s.size}/${s.capacity}`,
               },
-              { label: "load", value: (state.size / state.capacity).toFixed(2) },
+              { label: "load", value: (s.size / s.capacity).toFixed(2) },
             ]}
           />
         </div>

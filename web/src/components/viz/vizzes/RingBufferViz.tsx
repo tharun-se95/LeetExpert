@@ -251,7 +251,7 @@ export function RingBufferViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Ring buffer trace" family="state-transition">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-center gap-3">
           <RingSlots
             capacity={state.capacity}
@@ -263,19 +263,21 @@ export function RingBufferViz(props: Record<string, unknown>) {
             justCleared={state.justCleared}
           />
           <StatusPanel
-            items={[
+            state={state}
+            states={ctx.states}
+            items={(s) => [
               {
                 label: "op",
-                value: state.op
-                  ? `${state.op}(${state.opValue ?? ""})`
+                value: s.op
+                  ? `${s.op}(${s.opValue ?? ""})`
                   : "—",
               },
               {
                 label: "size",
-                value: `${state.size}/${state.capacity}`,
+                value: `${s.size}/${s.capacity}`,
               },
-              ...(state.wrapped
-                ? [{ label: "wrap", value: state.wrapped }]
+              ...(s.wrapped
+                ? [{ label: "wrap", value: s.wrapped }]
                 : []),
             ]}
           />

@@ -125,9 +125,11 @@ export function SlidingWindowViz(props: Record<string, unknown>) {
             reduced={ctx.reduced}
           />
           <StatusPanel
-            items={[
-              { label: "window sum", value: state.windowSum },
-              { label: "best", value: state.best },
+            state={state}
+            states={ctx.states}
+            items={(s) => [
+              { label: "window sum", value: s.windowSum },
+              { label: "best", value: s.best },
             ]}
           />
         </div>

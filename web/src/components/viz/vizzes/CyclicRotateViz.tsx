@@ -405,10 +405,12 @@ export function CyclicRotateViz(props: Record<string, unknown>) {
                 reduced={ctx.reduced}
               />
               <StatusPanel
-                items={[
-                  { label: "moved", value: `${state.moved} / ${n}` },
-                  ...(state.start !== null
-                    ? [{ label: "cycle from", value: state.start }]
+                state={state}
+                states={ctx.states}
+                items={(s) => [
+                  { label: "moved", value: `${s.moved} / ${n}` },
+                  ...(s.start !== null
+                    ? [{ label: "cycle from", value: s.start }]
                     : []),
                 ]}
               />

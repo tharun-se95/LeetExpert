@@ -139,7 +139,9 @@ export function PalindromeCheckViz(props: Record<string, unknown>) {
           />
           {state.result !== null ? (
             <StatusPanel
-              items={[{ label: "result", value: String(state.result) }]}
+              state={state}
+              states={ctx.states}
+              items={(s) => [{ label: "result", value: String(s.result) }]}
             />
           ) : null}
         </div>

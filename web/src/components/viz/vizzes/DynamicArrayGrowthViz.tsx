@@ -206,7 +206,7 @@ export function DynamicArrayGrowthViz(props: Record<string, unknown>) {
       label="Dynamic array growth trace"
       family="linear-traversal"
     >
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex w-full flex-col items-center gap-3">
           <div className="flex min-h-24 flex-col justify-center gap-2.5">
             {state.oldStore ? (
@@ -221,14 +221,16 @@ export function DynamicArrayGrowthViz(props: Record<string, unknown>) {
             />
           </div>
           <StatusPanel
-            items={[
-              { label: "capacity", value: state.capacity },
-              { label: "length", value: state.length },
+            state={state}
+            states={ctx.states}
+            items={(s) => [
+              { label: "capacity", value: s.capacity },
+              { label: "length", value: s.length },
               {
                 label: "appending",
-                value: state.incoming === null ? "—" : state.incoming,
+                value: s.incoming === null ? "—" : s.incoming,
               },
-              { label: "work", value: state.cost },
+              { label: "work", value: s.cost },
             ]}
           />
         </div>

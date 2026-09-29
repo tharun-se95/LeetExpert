@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { MotionConfig, useReducedMotion } from "motion/react";
@@ -12,11 +12,17 @@ import { useVizChrome } from "@/components/viz/vizChrome";
 import { familyCssVars } from "@/lib/visual/familyTheme";
 import type { FamilyId } from "@/lib/content/manifest";
 
-export interface VizRenderCtx {
+export interface VizRenderCtx<S = unknown> {
   /** Honor prefers-reduced-motion: jump, don't tween */
   reduced: boolean;
   /** Index of the step being rendered */
   index: number;
+  /**
+   * Every step's state, in order. A readout that changes size between steps
+   * (`StatusPanel`'s `across`) reserves the largest from these, so the
+   * centred stage does not slide as a value grows.
+   */
+  states: readonly S[];
 }
 
 /**
@@ -54,7 +60,7 @@ export function VizPlayer<S>({
    * (every consumer already reads `var(--family-accent, var(--accent))`).
    */
   family?: FamilyId;
-  children: (state: S, ctx: VizRenderCtx) => ReactNode;
+  children: (state: S, ctx: VizRenderCtx<S>) => ReactNode;
 }) {
   const last = Math.max(0, steps.length - 1);
   const reduced = useReducedMotion() ?? false;
@@ -65,6 +71,7 @@ export function VizPlayer<S>({
   const showCode = codeShown || expanded;
   const rootRef = useRef<HTMLDivElement>(null);
   const liveId = useId();
+  const states = useMemo(() => steps.map((s) => s.state), [steps]);
 
   useEffect(() => {
     if (autoPlay && !reduced) setPlaying(true);
@@ -187,14 +194,19 @@ export function VizPlayer<S>({
           >
             <div
               className={cn(
-                "viz-stage flex min-w-0 items-center justify-center overflow-x-auto px-3 py-5",
+                "viz-stage flex min-w-0 justify-center overflow-x-auto px-3 py-5",
+                // Fullscreen's stage is taller than most drawings; centred in
+                // it, a drawing that grows (a chain, a call tree) lifted
+                // everything already drawn. Anchored at the top, growth only
+                // extends downward.
+                expanded ? "items-start" : "items-center",
                 "rounded-[length:var(--radius-md)]",
                 expanded || embedded
                   ? "min-h-56 md:min-h-64 md:order-1"
                   : "order-1",
               )}
             >
-              {children(step.state, { reduced, index })}
+              {children(step.state, { reduced, index, states })}
             </div>
             {showCode ? (
               <div
@@ -214,20 +226,27 @@ export function VizPlayer<S>({
             ) : null}
           </div>
 
-          <p
-            id={liveId}
-            aria-live="polite"
-            aria-atomic="true"
+          {/* Every caption sits in one grid cell, only the current one
+              visible, so the cell is as tall as the longest: a caption that
+              wraps to another line no longer pushes the controls down, or,
+              in the vertically centred fullscreen view, re-centres the stage. */}
+          <div
             className={cn(
-              "min-h-12 px-4 py-3 leading-snug text-foreground",
+              "grid min-h-12 px-4 py-3 leading-snug text-foreground",
               expanded ? "text-base" : "text-sm",
             )}
           >
-            <span className="mr-2 font-mono text-[11px] tabular-nums text-mark">
-              step {index + 1} / {steps.length}
-            </span>
-            {step.caption}
-          </p>
+            {steps.map((s, i) => (
+              <p key={i} aria-hidden="true" className="invisible [grid-area:1/1]">
+                <StepCount index={i} total={steps.length} />
+                {s.caption}
+              </p>
+            ))}
+            <p id={liveId} aria-live="polite" aria-atomic="true" className="[grid-area:1/1]">
+              <StepCount index={index} total={steps.length} />
+              {step.caption}
+            </p>
+          </div>
 
           <div
             className={cn(
@@ -316,5 +335,13 @@ function PlayerButton({
     >
       {children}
     </button>
+  );
+}
+
+function StepCount({ index, total }: { index: number; total: number }) {
+  return (
+    <span className="mr-2 font-mono text-[11px] tabular-nums text-mark">
+      step {index + 1} / {total}
+    </span>
   );
 }

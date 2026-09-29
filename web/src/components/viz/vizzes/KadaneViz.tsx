@@ -131,9 +131,11 @@ export function KadaneViz(props: Record<string, unknown>) {
             reduced={ctx.reduced}
           />
           <StatusPanel
-            items={[
-              { label: "best_ending_here", value: state.bestEndingHere },
-              { label: "best", value: state.best },
+            state={state}
+            states={ctx.states}
+            items={(s) => [
+              { label: "best_ending_here", value: s.bestEndingHere },
+              { label: "best", value: s.best },
             ]}
           />
         </div>
