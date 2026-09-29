@@ -646,7 +646,9 @@ The content is the product. Code exists to serve it.
 Planned work lives in **GitHub issues** on `tharun-se95/LeetExpert` (owner,
 2026-09-25), not in chat, handoff notes or a spec's follow-up list. `gh` is
 the interface because every worker here has it: Claude sessions and the
-Antigravity agents alike. The rollout epic is #14; its phases are
+Antigravity agents alike. A new account, Mac or cloud session sets up from
+[`docs/AGENT_SETUP.md`](docs/AGENT_SETUP.md) (`gh` auth, the token for the cloud,
+the owner's standing rules on autonomy and shared checkouts). The rollout epic is #14; its phases are
 sub-issues with GitHub's own blocked-by links. The board is the
 **leetExpert roadmap** project (https://github.com/users/tharun-se95/projects/1):
 Backlog → Ready → In progress → In review → Done, ordered by the agreed
@@ -725,7 +727,7 @@ Status option ids: Backlog `1a154fe8`, Ready `e9c94490`, In progress
 | `web/tests/` | Content validation — runs in CI before build |
 | `web/drizzle/` | Generated Postgres migrations (drizzle-kit); applied by `npm run db:migrate` as a deploy step, never at request time |
 | `hyperframes/` | HyperFrames visual system: seek-safe DSA primitives and explainer videos; one source for lesson art, social stills and video (see its README) |
-| `marketing/` | Instagram post packages; `LEDGER.md` is the append-only record the social-artist agent reads before and appends to after each post |
+| `marketing/` | Instagram post packages; `LEDGER.md` is the append-only record the social-artist agent reads before and appends to after each post; `reels-pipeline/` holds the reels handoff, skill, tutor pose library and scripts |
 | `seo/` | SEO strategy, keywords, technical audit and changelog |
 | `archive/handbook-v1/` | The retired v1 pattern handbook, kept for reference |
 | `scripts/` | v1 handbook Python scripts; they target a root `part-2-pattern-families/` that now lives in `archive/handbook-v1/`, so they do not run as-is |
