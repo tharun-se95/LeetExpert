@@ -40,8 +40,12 @@ test("validateVideo: a good reel passes", () => {
   assert.deepEqual(validateVideo(goodReel, "reel"), []);
 });
 
-test("validateVideo: 136.5 s reel is over the API limit", () => {
-  const p = validateVideo({ ...goodReel, duration: 136.52 }, "reel");
+test("validateVideo: a 136.5 s reel (list-vs-set) is within the limit", () => {
+  assert.deepEqual(validateVideo({ ...goodReel, duration: 136.52 }, "reel"), []);
+});
+
+test("validateVideo: a reel over 15 min is over the API limit", () => {
+  const p = validateVideo({ ...goodReel, duration: 15 * 60 + 1 }, "reel");
   assert.equal(p.length, 1);
   assert.match(p[0], new RegExp(`over the ${REEL_MAX_SECONDS}s API limit`));
 });

@@ -89,21 +89,20 @@ export async function readPackage(dir) {
 // lib.test.mjs), and the one ffprobe call.
 // ---------------------------------------------------------------------------
 
-// Limits from Meta's Instagram Platform "Content Publishing" reference
-// (Reels and carousel video specs). Reels: MP4/MOV, H.264 video, AAC audio,
-// 9:16 recommended, at most 300 MB. The reel DURATION ceiling is the one
-// number we are not certain of: Meta's Content Publishing reference has said
-// 3-90 s for API reels, while the Instagram app itself now allows longer
-// reels. Until it is confirmed against a live account we enforce the
-// conservative documented 90 s, so a longer reel is a clear error here
-// instead of a container that fails minutes later. Raise REEL_MAX_SECONDS
-// (only) once a longer post has succeeded, and say so in the commit.
+// Limits from Meta's IG User Media reference (developers.facebook.com/docs/
+// instagram-platform/instagram-graph-api/reference/ig-user/media, read
+// 2026-09-29). Reels: 3 s to 15 min, at most 300 MB, H.264 or HEVC video, AAC
+// audio. The API accepts any aspect from 0.01:1 to 10:1; we hold reels to 9:16
+// ourselves, because every package is cut for the full-screen Reels frame and
+// anything else is a render mistake, not a choice.
 export const REEL_MIN_SECONDS = 3;
-export const REEL_MAX_SECONDS = 90;
+export const REEL_MAX_SECONDS = 15 * 60;
 export const REEL_MAX_BYTES = 300 * 1024 * 1024;
 export const REEL_RATIO = 9 / 16;
 export const REEL_RATIO_TOLERANCE = 0.01;
-// Video items inside a carousel: 3-60 s each, 100 MB, at most 10 items.
+// Carousel video items: the reference states only the 10-item cap. The
+// per-item 3-60 s and 100 MB bounds are the older feed-video limits, kept as a
+// conservative guard until a video carousel has been posted.
 export const CAROUSEL_VIDEO_MIN_SECONDS = 3;
 export const CAROUSEL_VIDEO_MAX_SECONDS = 60;
 export const CAROUSEL_VIDEO_MAX_BYTES = 100 * 1024 * 1024;
