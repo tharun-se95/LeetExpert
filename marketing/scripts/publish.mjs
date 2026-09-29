@@ -3,9 +3,12 @@
 // posts, image carousels, reels and video carousels; the kind is read from the
 // files prepare.mjs staged.
 //
-//   node marketing/scripts/publish.mjs marketing/instagram/<slug> --dry-run
-//   node marketing/scripts/publish.mjs marketing/instagram/<slug> --publish
+//   node marketing/scripts/publish.mjs marketing/instagram/<slug> --account leetexpert --dry-run
+//   node marketing/scripts/publish.mjs marketing/instagram/<slug> --account leetexpert --publish
 //   ... [--poll-timeout <seconds>]   # default 60 s images, 600 s video
+//
+// --account (leetexpert | 10xtharun, see ACCOUNTS in lib.mjs) is required on
+// every run: there is no default account to post to by accident.
 //
 // Run prepare.mjs first and DEPLOY the site: Instagram fetches each file from
 // its public URL, so an undeployed file fails container creation with a
@@ -16,7 +19,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import {
-  REPO, SITE, readPackage, detectKind, validateVideo, validatePackage, probeVideo,
+  REPO, SITE, ACCOUNTS, parseAccount, parseEnv, resolveAccount, readPackage, detectKind, validateVideo, validatePackage, probeVideo,
   imageParams, imageChildParams, reelParams, videoChildParams, carouselParams, pollPlan,
 } from "./lib.mjs";
 
@@ -28,25 +31,27 @@ const publish = argv.includes("--publish");
 const dryRun = argv.includes("--dry-run");
 const pollIdx = argv.indexOf("--poll-timeout");
 const pollOverride = pollIdx === -1 ? undefined : argv[pollIdx + 1];
+const usage = `usage: publish.mjs <package-dir> --account (${Object.keys(ACCOUNTS).join(" | ")}) (--dry-run | --publish) [--poll-timeout <seconds>]`;
 if (!argv[0] || argv[0].startsWith("--") || (!publish && !dryRun)) {
-  console.error("usage: publish.mjs <package-dir> (--dry-run | --publish) [--poll-timeout <seconds>]");
+  console.error(usage);
   process.exit(2);
 }
+let account;
+try {
+  account = parseAccount(argv);
+} catch (e) {
+  console.error(`${e.message}\n${usage}`);
+  process.exit(2);
+}
+const { handle } = ACCOUNTS[account];
 
 // Credentials live outside the repo's tracked files; never log their values.
 // Read only for --publish so a dry run cannot reach for the token at all.
 let IG;
 let TOKEN;
 if (publish) {
-  const env = Object.fromEntries(
-    (await readFile(join(REPO, "marketing/.env.local"), "utf8"))
-      .split("\n")
-      .filter((l) => l && !l.startsWith("#") && l.includes("="))
-      .map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)]),
-  );
-  IG = env.INSTAGRAM_USER_ID;
-  TOKEN = env.INSTAGRAM_ACCESS_TOKEN;
-  if (!IG || !TOKEN) throw new Error("marketing/.env.local is missing INSTAGRAM_USER_ID or INSTAGRAM_ACCESS_TOKEN");
+  const env = parseEnv(await readFile(join(REPO, "marketing/.env.local"), "utf8"));
+  ({ id: IG, token: TOKEN } = resolveAccount(env, account));
 }
 
 async function graph(path, params, method = "POST") {
@@ -106,7 +111,7 @@ if (problems.length) throw new Error(`${slug} fails Instagram's limits:\n  - ${p
 // Prove every file is publicly fetchable before asking Meta to fetch it.
 const checks = [...urls.map((u) => [u, isVideo ? "video/mp4" : "image/"])];
 if (kind === "reel") checks.push([coverUrl, "image/"]);
-console.log(`checking ${checks.length} ${kind} URL(s)...`);
+console.log(`target: @${handle}\nchecking ${checks.length} ${kind} URL(s)...`);
 for (const [u, want] of checks) {
   const r = await fetch(u, { method: "HEAD" });
   const type = r.headers.get("content-type") ?? "";
@@ -117,10 +122,18 @@ for (const [u, want] of checks) {
 }
 
 if (dryRun) {
-  console.log(`\nDry run OK. ${kind}, ${urls.length} file(s) reachable and within limits, caption ${caption.length} chars.`);
+  console.log(`\nDry run OK for @${handle}. ${kind}, ${urls.length} file(s) reachable and within limits, caption ${caption.length} chars.`);
   console.log("Nothing was posted. Re-run with --publish to post.");
   process.exit(0);
 }
+
+// An id copied into the wrong key would post to the other account. Ask Meta
+// whose id it is before creating anything, so that mistake stops here.
+const { username } = await graph(IG, { fields: "username" }, "GET");
+if (username !== handle) {
+  throw new Error(`--account ${account} expects @${handle}, but its id belongs to @${username}. Nothing was posted.`);
+}
+console.log(`account: @${username}`);
 
 const plan = pollPlan(kind, pollOverride);
 const container = (params) => graph(`${IG}/media`, params);
@@ -147,4 +160,4 @@ await waitFinished(containerId, plan);
 const { id } = await graph(`${IG}/media_publish`, { creation_id: containerId });
 const { permalink } = await graph(id, { fields: "permalink" }, "GET");
 console.log(`\nPublished: ${permalink}`);
-console.log(`Update marketing/LEDGER.md: set ${slug} Status to posted, then run prepare.mjs --clean ${slug}.`);
+console.log(`Update marketing/LEDGER.md: set ${slug}'s row for @${handle} to posted, then run prepare.mjs --clean ${slug}.`);

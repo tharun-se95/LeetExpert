@@ -235,3 +235,44 @@ export async function probeVideo(path) {
   ]);
   return parseProbe(JSON.parse(stdout));
 }
+
+// Every Instagram account publish.mjs may post to, keyed by the name passed to
+// --account. There is deliberately no default: the Graph API posts to whatever
+// id it is given, so a default would make "wrong account" the silent outcome
+// of a forgotten flag. Both accounts sit in the LeetExpert business portfolio
+// and are reached through the same Facebook user token.
+export const ACCOUNTS = {
+  leetexpert: { handle: "leetexpert", idKey: "INSTAGRAM_USER_ID" },
+  "10xtharun": { handle: "10xtharun", idKey: "TENX_INSTAGRAM_USER_ID" },
+};
+
+/** The account named by --account; throws if absent or unknown. */
+export function parseAccount(argv) {
+  const i = argv.indexOf("--account");
+  const name = i === -1 ? undefined : argv[i + 1];
+  if (!name || name.startsWith("--")) {
+    throw new Error(`--account is required (${Object.keys(ACCOUNTS).join(" | ")})`);
+  }
+  if (!Object.hasOwn(ACCOUNTS, name)) {
+    throw new Error(`unknown account "${name}"; known: ${Object.keys(ACCOUNTS).join(", ")}`);
+  }
+  return name;
+}
+
+/** marketing/.env.local as an object; values may themselves contain "=". */
+export function parseEnv(text) {
+  return Object.fromEntries(
+    text
+      .split("\n")
+      .filter((l) => l && !l.startsWith("#") && l.includes("="))
+      .map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)]),
+  );
+}
+
+/** The account's id and the shared token; a missing key is an error, never a fallback. */
+export function resolveAccount(env, name) {
+  const { handle, idKey } = ACCOUNTS[name];
+  const missing = [idKey, "INSTAGRAM_ACCESS_TOKEN"].filter((k) => !env[k]);
+  if (missing.length) throw new Error(`marketing/.env.local is missing ${missing.join(" and ")} for @${handle}`);
+  return { id: env[idKey], token: env.INSTAGRAM_ACCESS_TOKEN, handle };
+}
