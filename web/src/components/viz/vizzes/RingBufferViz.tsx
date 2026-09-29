@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { polarPoint } from "@/lib/visual/polar";
 import { VizPlayer } from "@/components/viz/VizPlayer";
 import { StatusPanel } from "@/components/viz/pieces";
 import { speedProp } from "@/components/viz/props";
@@ -191,8 +192,7 @@ function RingSlots({
     >
       {Array.from({ length: capacity }, (_, i) => {
         const angle = (i / capacity) * 2 * Math.PI - Math.PI / 2;
-        const x = cx + r * Math.cos(angle);
-        const y = cy + r * Math.sin(angle);
+        const { x, y } = polarPoint(cx, cy, r, angle);
         const v = store[i];
         const isHead = i === head && size > 0;
         const isTail = i === tail;
