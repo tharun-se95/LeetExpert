@@ -464,5 +464,108 @@ describe("lesson artifacts kit: build.py ships a player with its chrome", () => 
     expect(optional("var d={kind:'heap'};")).toEqual(["player", "lanes", "heaps"]);
     expect(optional('new Lanes([{id:"g",kind:"grid"}]);var d={kind:"heap"};')).toEqual(["player", "lanes", "grids", "heaps"]);
     expect(optional("drawTheHero()")).toEqual([]);
+    expect(optional("var g={kind:'graph'};")).toEqual(["player", "lanes", "graphs"]);
+    expect(optional('new Lanes([{id:"g",kind:"graph",nodes:[],edges:[]}])')).toEqual(["player", "lanes", "graphs"]);
+  });
+});
+
+/* graphs.js registers the graph lane kind on lanes.js's seam. A graph is a fixed lane (slot k is node
+   k) plus edges held on the lane with a state each; the edge bookkeeping is held to a plain map over
+   random links, unlinks and state changes, in both directions of lookup, as the row is held to an array. */
+type GraphEdge = { key: string; a: number; b: number; w: unknown; state: string };
+type GraphLane = Lane & { nodes: { x: number; d: number; l: string }[]; directed: boolean; edges: GraphEdge[] };
+interface GraphModel extends Model {
+  nodes(id: string): { id: number; v: unknown }[];
+  edge(id: string, a: number, b: number, state?: string): { a: number; b: number; w: unknown; state: string };
+  hasEdge(id: string, a: number, b: number): boolean;
+  adj(id: string, a: number): { to: number; w: unknown }[];
+  link(id: string, a: number, b: number, w?: unknown): object;
+  unlink(id: string, a: number, b: number): void;
+  weight(id: string, a: number, b: number, w: unknown): void;
+  lane(id: string): Lane;
+}
+function graphKit(): { Lanes: new (defs: object[], o?: object) => GraphModel; LANE_KINDS: Record<string, { key: (l: object) => string }> } {
+  const ctx: Record<string, unknown> = {};
+  const src = ["lanes.js", "graphs.js"].map((f) => readFileSync(join(ARTIFACTS, "kit", f), "utf8")).join("\n");
+  runInNewContext(src + "\nthis.Lanes=Lanes;this.LANE_KINDS=LANE_KINDS;", ctx);
+  return ctx as unknown as ReturnType<typeof graphKit>;
+}
+const graphLane = (s: Snap, id: string) => s.lanes.find((l) => l.id === id)! as GraphLane;
+const ROW5 = [0, 1, 2, 3, 4].map((x) => ({ x, d: 0, l: "ABCDE"[x] }));
+
+describe("lesson artifacts kit: the graph lane (graphs.js)", () => {
+  it("edge bookkeeping matches a plain map over random links, unlinks and state changes", () => {
+    const { Lanes } = graphKit();
+    const STATES = ["idle", "seen", "tree", "cur", "bad"];
+    let seed = 20260928;
+    const rnd = (n: number) => ((seed = (seed * 1664525 + 1013904223) >>> 0), Math.floor((seed / 4294967296) * n));
+    for (const directed of [false, true]) {
+      for (let t = 0; t < 100; t++) {
+        const M = new Lanes([{ id: "g", kind: "graph", nodes: ROW5, directed }]);
+        const ref = new Map<string, { w: unknown; state: string }>();
+        const key = (a: number, b: number) => (directed ? `${a}>${b}` : `${Math.min(a, b)}-${Math.max(a, b)}`);
+        const kept: [Snap, [string, { w: unknown; state: string }][]][] = [];
+        for (let k = 0; k < 30; k++) {
+          const a = rnd(5), b = (a + 1 + rnd(4)) % 5, r = rnd(3), has = ref.has(key(a, b));
+          // undirected lookups are asked in either order; directed ones only as stored
+          const [qa, qb] = !directed && rnd(2) ? [b, a] : [a, b];
+          if (r === 0 && !has) { const w = rnd(9); M.link("g", a, b, w); ref.set(key(a, b), { w, state: "idle" }); }
+          else if (r === 1 && has) { M.unlink("g", qa, qb); ref.delete(key(a, b)); }
+          else if (has) { const st = STATES[rnd(5)]!; M.edge("g", qa, qb, st); ref.get(key(a, b))!.state = st; }
+          for (const [x, y] of [[a, b], [b, a]] as const) expect(M.hasEdge("g", x, y)).toBe(ref.has(key(x, y)));
+          const s = M.snap("x");
+          kept.push([s, [...ref].map(([kk, v]) => [kk, { ...v }])]);
+          const got = graphLane(s, "g").edges.map((e) => [e.key, { w: e.w, state: e.state }]);
+          expect(Object.fromEntries(got)).toEqual(Object.fromEntries(ref));
+        }
+        // no later change reached an earlier snapshot
+        for (const [s, want] of kept) expect(Object.fromEntries(graphLane(s, "g").edges.map((e) => [e.key, { w: e.w, state: e.state }]))).toEqual(Object.fromEntries(want));
+      }
+    }
+  });
+
+  it("a node is a fixed slot: nodes() fills exactly one slot per node with its label", () => {
+    const { Lanes } = graphKit();
+    const M = new Lanes([{ id: "g", kind: "graph", nodes: ROW5, edges: [[0, 1]] }]);
+    const items = M.nodes("g");
+    const s = graphLane(M.snap("x"), "g");
+    expect(s.items.map((x) => x && x.v)).toEqual(["A", "B", "C", "D", "E"]);
+    expect(items.map((x) => x.id)).toEqual(s.items.map((x) => x!.id));
+    expect(() => M.push("g", "F")).toThrow(/fixed slots/);
+  });
+
+  it("adj lists out-edges of a directed graph and every incident edge of an undirected one", () => {
+    const { Lanes } = graphKit();
+    const E = [[0, 1, 4], [2, 0, 1], [0, 3]];
+    const U = new Lanes([{ id: "g", kind: "graph", nodes: ROW5, edges: E }]);
+    const D = new Lanes([{ id: "g", kind: "graph", nodes: ROW5, edges: E, directed: true }]);
+    expect(U.adj("g", 0)).toEqual([{ to: 1, w: 4 }, { to: 2, w: 1 }, { to: 3, w: null }]);
+    expect(D.adj("g", 0)).toEqual([{ to: 1, w: 4 }, { to: 3, w: null }]);
+    expect(D.adj("g", 2)).toEqual([{ to: 0, w: 1 }]);
+    expect(D.hasEdge("g", 0, 2)).toBe(false);
+    expect(() => D.edge("g", 0, 2)).toThrow(/no edge \(0, 2\)/);
+  });
+
+  it("rejects what would draw wrong or nothing: typos, duplicates, loops, overlaps, spans", () => {
+    const { Lanes } = graphKit();
+    const M = new Lanes([{ id: "g", kind: "graph", nodes: ROW5, edges: [[0, 1]] }]);
+    expect(() => M.edge("g", 0, 2, "tree")).toThrow(/no edge/);
+    expect(() => M.edge("g", 0, 1, "done")).toThrow(/edge state is one of/);
+    expect(() => M.link("g", 1, 0)).toThrow(/already exists/);
+    expect(() => M.link("g", 0, 5)).toThrow(/out of range/);
+    expect(() => M.link("g", 2, 2)).toThrow(/self-loop/);
+    expect(() => M.unlink("g", 2, 3)).toThrow(/no edge/);
+    expect(() => M.mark("g", "u", 7)).toThrow(/out of range/);
+    expect(() => M.span("g", "w", 0, 1)).toThrow(/name a node with mark/);
+    expect(() => new Lanes([{ id: "g", kind: "graph", nodes: [{ x: 0, d: 0 }, { x: 0, d: 0 }] }])).toThrow(/share the position/);
+    expect(() => new Lanes([{ id: "g", kind: "graph", nodes: [] }])).toThrow(/needs nodes/);
+    expect(() => new Lanes([{ id: "g", kind: "graph", nodes: ROW5, edges: [[0, 9]] }])).toThrow(/out of range/);
+  });
+
+  it("two graphs with the same id but different shapes are measured apart", () => {
+    const { Lanes, LANE_KINDS } = graphKit();
+    const a = new Lanes([{ id: "g", kind: "graph", nodes: ROW5 }]).lane("g");
+    const b = new Lanes([{ id: "g", kind: "graph", nodes: ROW5.map((n) => ({ ...n, d: 1 })) }]).lane("g");
+    expect(LANE_KINDS.graph!.key(a)).not.toBe(LANE_KINDS.graph!.key(b));
   });
 });

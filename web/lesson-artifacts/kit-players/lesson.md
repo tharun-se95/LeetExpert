@@ -86,3 +86,12 @@ The tree IS the array: node `i`'s children sit at `2i+1` and `2i+2`, its parent 
 ```widget #htabs "Three heap walkthroughs"
 <div class="extabs" role="group" aria-label="Choose a heap walkthrough"></div><div class="lvhost"></div>
 ```
+
+## Graphs {#graphs}
+
+A graph is a fixed lane: node `k` is slot `k`, so a node takes the same tones, names and highlights as a row's cell, and a node copied onto a queue enters it from the node itself. Its edges sit under the nodes and change as a step decides them, each state told by weight and dash so none rests on colour alone: a hairline until examined, thick in the current step's tone while a step examines it, thick in the done tone once chosen, a light dash once examined and passed over, and a heavy dash in the stuck tone where it closes a cycle. Directed edges carry arrowheads, and a weight sits on a plate at the edge's middle. Every walkthrough checks its answer on load against a reference that shares none of its code.
+
+```widget #grtabs "Four graph walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a graph walkthrough"></div><div class="lvhost"></div>
+```
+

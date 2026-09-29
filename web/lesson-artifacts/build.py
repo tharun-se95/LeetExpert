@@ -92,7 +92,7 @@ SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-
                  # overview pages
                  "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight",
                  "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral",
-                 "tables": "i-g-cell", "heap": "i-recurse"}
+                 "tables": "i-g-cell", "heap": "i-recurse", "graphs": "i-route", "graph": "i-route"}
 
 
 def _icon(sec):
@@ -118,9 +118,10 @@ def decorate(body):
 KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun("),
                 "lanes": ("LanePlayer", "new Lanes(", "mountLaneTabs("),
                 "grids": ("kind:'grid'", 'kind:"grid"'),
-                "heaps": ("kind:'heap'", 'kind:"heap"')}
+                "heaps": ("kind:'heap'", 'kind:"heap"'),
+                "graphs": ("kind:'graph'", 'kind:"graph"')}
 # what a module needs loaded before it, in the order the page must read them
-KIT_DEPS = {"lists": ["player"], "lanes": ["player"], "grids": ["player", "lanes"], "heaps": ["player", "lanes"]}
+KIT_DEPS = {"lists": ["player"], "lanes": ["player"], "grids": ["player", "lanes"], "heaps": ["player", "lanes"], "graphs": ["player", "lanes"]}
 
 
 def optional_kit(lesson_js):
