@@ -75,6 +75,7 @@ Still useful to request: more explaining variants, pointing-up close-up, a relax
 
 ## 7. Folder contents
 
+- `reelkit/` — the shared reel engine (anchors, tracks, stills, captions, lockup, code walkthrough), base styles, `prep.sh`, `narrate.py`, `est_words.py`. New reels build on it; see `reelkit/README.md`.
 - `skill/` — Instagram specialist skill (SKILL.md + references); package with the skill-creator to install in Claude.
 - `tutor-poses/` — 37 clean transparent cutouts + `brand-avatar.png` (`cu-*` close-ups, `wu-*` waist-up, `fb-*` full body).
 - `stills-cleaning/` — `clean.py` (source-image map `SRC`, originals were chat uploads and are not in the repo) and `clean3.py` (the cleaning method).

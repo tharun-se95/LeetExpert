@@ -1,0 +1,54 @@
+/* Shared reel chrome: 1080x1920, dark Grid palette. A reel's style.css adds its scenes. */
+@font-face{font-family:"Space Grotesk";src:url("fonts/SpaceGrotesk.woff2");font-weight:300 700}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-400.woff2");font-weight:400}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-700.woff2");font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#16202e}
+#root{position:relative;width:100%;height:100%;overflow:hidden;font-family:"Space Grotesk",sans-serif;color:#f1f4f9;
+ background-color:#16202e;background-image:linear-gradient(#1c2838 1px,transparent 1px),linear-gradient(90deg,#1c2838 1px,transparent 1px);background-size:90px 90px}
+.mono{font-family:"Space Mono",monospace}
+.amb{color:#fbbf24}.teal{color:#5eead4}.mut{color:#94a3b8}
+.amb-bg{background:#fbbf24}.teal-bg{background:#5eead4}
+/* top bar (y 250: clear of Instagram's own chrome) */
+.top{position:absolute;left:80px;right:80px;top:250px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:12px;font-size:36px;font-weight:700}
+.dot{width:18px;height:18px;border-radius:50%;background:#3fae5a;display:block}
+.chip{font-family:"Space Mono",monospace;font-size:28px;font-weight:700;color:#0e1520;background:#5eead4;padding:8px 18px;border-radius:10px}
+.amb-chip{background:#fbbf24}
+.panel{position:absolute;background:#0e1520;border:2px solid #263248;border-radius:22px}
+.h{font-size:56px;font-weight:700;line-height:1.1}
+/* the stage: y 350-1080; a .card fills it */
+.card{position:absolute;left:80px;right:80px;top:360px;height:720px}
+.low{position:absolute;left:80px;right:80px;top:720px}
+/* code walkthrough */
+.codecard{position:absolute;left:60px;right:60px;background:#101a26;border:2px solid #2e3b4a;border-radius:22px;overflow:hidden;font-family:"Space Mono",monospace;font-weight:700}
+.chd{height:56px;display:flex;align-items:center;gap:10px;padding:0 22px;background:#1b2735;border-bottom:2px solid #2e3b4a}
+.chd i{width:14px;height:14px;border-radius:50%;background:#334155;display:block}
+.chd span{margin-left:auto;font-size:24px;color:#94a3b8}
+.cbody{position:relative;padding:14px 0 16px}
+.chl{position:absolute;left:0;right:0;top:14px;background:rgba(94,234,212,.14);border-left:6px solid #5eead4}
+.cl{position:relative;display:flex;white-space:pre}
+.cn{width:64px;flex:none;text-align:right;padding-right:18px;color:#94a3b8;font-weight:400}
+.cx{color:#e4e9f2}
+.tk{color:#c4b5fd}.ts{color:#5eead4}.tn{color:#fbbf24}.tc{color:#94a3b8;font-weight:400}.tf{color:#8db0ff}
+.cnotes{position:absolute;left:60px;right:60px;height:170px}
+.cnote{position:absolute;left:0;right:0;top:0;font-size:42px;font-weight:700;line-height:1.2}
+.cnote code{font-family:"Space Mono",monospace;font-size:36px;color:#5eead4}
+/* interview cue */
+.cuebox{position:absolute;left:0;right:0;border:3px solid #fbbf24;border-radius:22px;padding:30px 34px;background:#0e1520}
+.cuemic{position:absolute;right:30px;top:30px}.cuemic svg{width:110px;height:110px}
+.qb svg{width:170px;height:170px}
+/* lockup */
+.lock{position:absolute;left:80px;right:80px;top:470px;display:flex;flex-direction:column;align-items:center;gap:36px;text-align:center}
+.lbrand{display:flex;align-items:center;gap:22px;font-size:126px;font-weight:700;letter-spacing:-.03em}
+.ldot{width:48px;height:48px;border-radius:50%;background:#3fae5a;display:block}
+.lline{font-family:"Space Mono",monospace;font-size:46px;font-weight:700}
+.lcta{display:flex;align-items:center;gap:14px;font-size:48px;font-weight:700;color:#0e1520;background:#5eead4;border-radius:999px;padding:24px 50px}
+#larr{display:block}
+/* tutor (bottom left) and captions (bottom right) */
+.tutor{position:absolute;left:0;top:1090px;width:470px;height:830px}
+.still{position:absolute;left:50%;bottom:0;max-width:520px;width:auto;display:block}
+.caps{position:absolute;left:470px;right:50px;top:1160px;height:240px}
+.cg{position:absolute;left:0;right:0;top:0;text-align:center;font-size:58px;font-weight:700;line-height:1.15}
+.cg span{display:inline-block}
+.cw{color:#f1f4f9}.ct{color:#5eead4}.ca{color:#fbbf24}

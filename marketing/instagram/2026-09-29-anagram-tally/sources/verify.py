@@ -3,8 +3,11 @@
 Run: python3 verify.py && node verify.mjs  (each exits non-zero if a claim drifts)
 The JavaScript half matters: the café case fails differently in each runtime.
 """
-import random, string, timeit
+import random, string, sys, timeit
 from collections import Counter
+
+sys.path.insert(0, "code")
+from is_anagram import is_anagram  # the exact code the reel shows
 
 
 def tally(s, t):
@@ -36,6 +39,12 @@ def by_sort(s, t):
 def by_counter(s, t):
     return len(s) == len(t) and Counter(s) == Counter(t)
 
+
+# The code on screen: the lesson's cases, the reel's cases, and the ones the 26-slot array gets wrong
+for a, b, want in [("anagram", "nagaram", True), ("rat", "car", False), ("a", "a", True), ("ab", "a", False),
+                   ("aacc", "ccac", False), ("listen", "silent", True), ("listen", "listens", False),
+                   ("aab", "abb", False), ("café", "éfac", True), ("", "", True)]:
+    assert is_anagram(a, b) is want, (a, b)
 
 # The demo: listen / silent. After the first rack every row is +1, after the second all zero.
 assert tally("listen", "") == {"l": 1, "i": 1, "s": 1, "t": 1, "e": 1, "n": 1}

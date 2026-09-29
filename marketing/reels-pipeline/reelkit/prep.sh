@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Copies render-time inputs next to the generator: tutor stills, fonts, GSAP.
-# They live elsewhere in the repo and are git-ignored here, so there is one copy.
+# Copies render-time inputs into the current reel's sources/ directory: tutor
+# stills, fonts, GSAP, the HyperFrames config. They live elsewhere in the repo
+# and are git-ignored in each package, so there is one copy of each.
+#   cd marketing/instagram/<package>/sources && bash ../../../reels-pipeline/reelkit/prep.sh
 set -euo pipefail
-cd "$(dirname "$0")"
 ROOT=$(git rev-parse --show-toplevel)
+[ -f script.txt ] || { echo "run from a reel's sources/ directory" >&2; exit 1; }
 mkdir -p stills fonts
 cp "$ROOT"/marketing/reels-pipeline/tutor-poses/*.png stills/
 rm -f stills/brand-avatar.png

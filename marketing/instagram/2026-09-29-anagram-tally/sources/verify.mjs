@@ -1,6 +1,13 @@
 // The JavaScript half of verify.py: the same claims, in the other runtime.
 // Run: node verify.mjs  (exits non-zero if a claim drifts)
 import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+const { isAnagram } = createRequire(import.meta.url)("./code/is_anagram.js"); // the JS twin of the shown code
+
+for (const [a, b, want] of [["anagram", "nagaram", true], ["rat", "car", false], ["a", "a", true], ["ab", "a", false],
+  ["aacc", "ccac", false], ["listen", "silent", true], ["listen", "listens", false], ["aab", "abb", false], ["café", "éfac", true], ["", "", true]]) {
+  assert.equal(isAnagram(a, b), want, `${a} / ${b}`);
+}
 
 // The lesson's 26-slot solution
 function byArray(s, t) {
