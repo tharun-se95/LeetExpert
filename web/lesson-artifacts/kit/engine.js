@@ -143,8 +143,10 @@ function Scene(def,root){
         // letter nearly vanished (the browser gate measured 1.47:1), so it takes whichever reads better
         var changed=a[i].k!==c[i].k||a[i].t!==c[i].t||a[i].s!==c[i].s;
         var sc=changed&&p<1?1+.12*Math.sin(Math.PI*p):1,tx=(p<.3?a[i].t:c[i].t)||'';
-        var key=f+ink+sc.toFixed(3)+tx,e=els[i],id=b.id+i;
+        var win=c[i].k==='win',key=f+ink+sc.toFixed(3)+tx+win,e=els[i],id=b.id+i;
         if(last[id]===key)continue;last[id]=key;
+        // win's fill sits 1.1:1 off idle, so the state is carried by a ring (.cell.win), not the fill (#72)
+        e.classList.toggle('win',win);
         e.style.background=f;e.style.color=ink;e.style.transform=sc===1?'':'scale('+sc.toFixed(3)+')';
         if(e.textContent!==tx)e.textContent=tx;
       }

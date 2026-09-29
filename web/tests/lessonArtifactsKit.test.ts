@@ -351,3 +351,31 @@ describe("lesson artifacts kit: build.py splits a section into beats (#63)", () 
     expect(words(split(inner))).toEqual(words(inner));
   });
 });
+
+describe("lesson artifacts kit: cell states separate from idle on the navy card (#72)", () => {
+  // the accent state's fill changes with the family, the rest do not
+  const families = ["linear-traversal", "ordering-search", "pointer-movement", "priority-structures", "recursive-exploration", "relationships", "state-transition"];
+  type Row = { theme: string; state: string; fillVsIdle: number; ringVsIdle: number | null; ringVsFill: number | null; inkOnFill: number };
+  const report = (family: string) => {
+    const run = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import shared as S;print(json.dumps(S.state_report(*S.tokens(${JSON.stringify(family)}))))`], { encoding: "utf8" });
+    if (run.status) throw new Error(run.stderr);
+    return JSON.parse(run.stdout) as Row[];
+  };
+  it.each(families)("%s: each state stands 3:1 off idle by fill or ring, and its ink is AA, in both themes", (family) => {
+    const rows = report(family);
+    expect(new Set(rows.map((r) => r.theme))).toEqual(new Set(["light", "dark"]));
+    for (const r of rows) {
+      if (r.state !== "dim") {
+        const ring = r.ringVsIdle !== null && r.ringVsIdle >= 3 && r.ringVsFill !== null && r.ringVsFill >= 3;
+        expect(r.fillVsIdle >= 3 || ring, `${family} ${r.theme} ${r.state} vs idle`).toBe(true);
+      }
+      expect(r.inkOnFill, `${family} ${r.theme} ${r.state} ink`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+  it("win's fill is level 1 of the ramp and cannot separate alone, so the engine must draw the ring", () => {
+    const win = report("relationships").filter((r) => r.state === "win");
+    expect(win.every((r) => r.fillVsIdle < 3 && r.ringVsIdle !== null)).toBe(true);
+    expect(readFileSync(join(ARTIFACTS, "kit", "engine.js"), "utf8")).toContain("classList.toggle('win'");
+    expect(readFileSync(join(ARTIFACTS, "shared.py"), "utf8")).toContain(".cell.win{box-shadow:inset 0 0 0 2px var(--k-win-ring)}");
+  });
+});
