@@ -39,7 +39,7 @@ Step through it line by line on leetExpert, the interactive DSA course. Link in 
 
 ## Alt text
 
-The tutor holds up a $15 gift card, then a menu of seven price tags with icons ($1 to $9) appears under a gift-card meter. A triangle of 21 squares shows every pair to try (499,500 for 1,000 items). A teal finger and an amber finger point at the cheapest and priciest tags, and the meter fills to each sum: too low, cross off the cheapest; too high, cross off the priciest. The $7 and $8 tags turn teal as the meter hits $15 exactly. "6 checks vs 21" is shown with O(n) time and O(1) memory badges. A merge-join scene links matching rows of two sorted tables. Then come an "unsorted menu?" card with two fixes (sort first, or a hash set), a `while left < right` vs `<=` card with "$5 + $5, the same item twice", an interview-tell card, a $12 challenge, and a leetExpert lockup.
+The tutor holds up an illustrated $15 gift card with a gold ribbon, next to a shopping cart with two empty slots and a stack of coins. A menu of seven illustrated price tags appears: sticker $1, pencil $3, coffee $4, cookie $5, notebook $7, book $8, headphones $9. A grid of 21 squares shows every pair to try, then a warehouse shelf and an hourglass mark 499,500 pairs for 1,000 items. Two pointing hands (L and R) mark the cheapest and priciest tags while a gift-card meter fills to each sum. A balance scale shows $1 + $9 = $10 rising against $15, and crossed-off tags dim. When $7 + $8 hits $15, a receipt prints "TOTAL $15.00" with an EXACT stamp. "6 checks vs 21" appears with clock and memory-chip badges. Database cylinders over two sorted tables are linked by a merge join. The fixes for an unsorted menu get a sorting-bars icon and a hash-bucket icon. Two cookies ×2 show the `left <= right` pitfall, a microphone marks the interview tip, and a $12 gift card with a question bubble sets the challenge. A leetExpert lockup ends the reel.
 
 ## Verified facts
 
@@ -54,6 +54,6 @@ The tutor holds up a $15 gift card, then a menu of seven price tags with icons (
 
 ## Sources
 
-`script.txt` (the narration), `narrate.py` (Hope TTS + Scribe, which writes `vo.mp3` + `words.json`), `est_words.py` (stand-in timings for a silent preview), `gen.py`, `style.css`, `verify.py`, `prep.sh` (copies the tutor stills, fonts and GSAP next to the generator; they are git-ignored here).
+`script.txt` (the narration), `narrate.py` (Hope TTS + Scribe, which writes `vo.mp3` + `words.json`), `est_words.py` (stand-in timings for a silent preview), `gen.py`, `icons.py` (the SVG illustrations), `style.css`, `verify.py`, `prep.sh` (copies the tutor stills, fonts and GSAP next to the generator; they are git-ignored here).
 
 Build: `./prep.sh && python3 narrate.py && python3 gen.py && npx hyperframes@0.8.77 check && npx hyperframes@0.8.77 render -o ../reel.mp4`. HyperFrames needs `ffmpeg` and `ffprobe` on PATH.

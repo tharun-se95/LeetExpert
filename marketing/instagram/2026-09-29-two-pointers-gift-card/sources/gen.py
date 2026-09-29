@@ -5,6 +5,7 @@ the real take; est_words.py's stand-in for a silent preview). Each element gets
 ONE keyframed GSAP track, so the composition stays seek-safe for HyperFrames.
 """
 import json, html, os, re, subprocess, sys
+import icons as I
 
 W = json.load(open("words.json"))
 LEAD = 0.3
@@ -123,6 +124,7 @@ k("#gc", RESET, {"autoAlpha": 1, "scale": 1, "rotation": -2}, 0.4)
 init("#gcS", autoAlpha=0)
 k("#gcS", A["spend"], {"autoAlpha": 1}, 0.3)
 k("#gcS", RESET, {"autoAlpha": 0}, 0.01)
+show("#hookrow", A["spend"] + 0.3, A["menu"], y=24)
 
 # --- meter
 TRACK_W = 860
@@ -171,7 +173,7 @@ for i, t in CROSS.items():
     k(f"#xo{i}", A["db"] - 0.2, {"autoAlpha": 0}, 0.2)
 
 # --- fingers: one per end of the menu
-fx = lambda i: tag_x(i) + (TAG_W - 64) // 2
+fx = lambda i: tag_x(i) + (TAG_W - 72) // 2
 init("#fL", autoAlpha=0, x=fx(0), y=-40)
 k("#fL", A["cheapest"], {"autoAlpha": 1, "y": 0}, 0.35, "back.out(2)")
 for t, to in [(A["x1"] + 0.45, 1), (A["gone"] + 0.3, 2), (A["sum3"] + 0.6, 3), (A["sum4"] + 0.6, 4)]:
@@ -200,8 +202,17 @@ starts = [A["s1"], A["s2"], A["s3"], A["s4"], A["s5"], A["s6"]]
 ends = [A["key"], A["s3"], A["s4"], A["s5"], A["s6"], A["six"]]
 for i in range(6):
     show(f"#eq{i}", starts[i], ends[i], y=12, d=0.22)
-    pop(f"#eqt{i}", SUMS[i][0])
+    if i < 5:
+        pop(f"#eqt{i}", SUMS[i][0])
+init("#paid", autoAlpha=0, scale=1.8, svgOrigin="770 110")
+k("#paid", A["sum6"] + 0.35, {"autoAlpha": 1, "scale": 1}, 0.3, "back.out(1.4)")
 show("#why", A["key"], A["s2"])
+init("#beam", rotation=0, svgOrigin="150 44")
+k("#beam", A["even"] + 0.2, {"rotation": 12}, 0.8, "elastic.out(1,0.5)")
+init("#panL", y=0)
+k("#panL", A["even"] + 0.2, {"y": -21}, 0.8, "elastic.out(1,0.5)")
+init("#panR", y=0)
+k("#panR", A["even"] + 0.2, {"y": 21}, 0.8, "elastic.out(1,0.5)")
 init("#whyB", autoAlpha=0, x=-14)
 k("#whyB", A["reach"] - 0.1, {"autoAlpha": 1, "x": 0}, 0.3, "power3.out")
 
@@ -340,7 +351,7 @@ for g, ids in enumerate(groups):
     e = min(WS[groups[g + 1][0]] if g + 1 < len(groups) else END, A["leet"] - 0.1)
     init(f"#g{g}", autoAlpha=0)
     k(f"#g{g}", s - 0.05, {"autoAlpha": 1}, 0.06, "none")
-    k(f"#g{g}", max(e - 0.05, s + 0.02), {"autoAlpha": 0}, 0.05, "none")
+    k(f"#g{g}", max(e - 0.1, s + 0.02), {"autoAlpha": 0}, 0.04, "none")
     for i in ids:
         init(f"#w{i}", opacity=0.5)
         k(f"#w{i}", WS[i], {"opacity": 1}, 0.08, "none")
@@ -355,34 +366,23 @@ for sel, tr in K.items():
         prev = p[0] + p[2]
 
 # ---------------------------------------------------------------- markup
-ICON = {
-    1: '<polygon points="24,5 29.5,17.5 43,18.5 32.5,27.5 36,41 24,33.5 12,41 15.5,27.5 5,18.5 18.5,17.5"/>',
-    3: '<path d="M10 38 L13 29 L33 9 L39 15 L19 35 Z M29 13 L35 19"/>',
-    4: '<path d="M10 18 H34 V30 A10 10 0 0 1 24 40 H20 A10 10 0 0 1 10 30 Z M34 21 H37 A4 4 0 0 1 37 29 H34 M17 5 C15 8 19 10 17 13 M25 5 C23 8 27 10 25 13"/>',
-    5: '<circle cx="24" cy="24" r="16"/><circle cx="18" cy="19" r="2.2" fill="currentColor"/><circle cx="29" cy="22" r="2.2" fill="currentColor"/><circle cx="21" cy="30" r="2.2" fill="currentColor"/>',
-    7: '<rect x="12" y="7" width="26" height="34" rx="3"/><path d="M8 15 H15 M8 24 H15 M8 33 H15 M21 17 H32"/>',
-    8: '<path d="M6 11 C13 8 20 9 24 13 C28 9 35 8 42 11 V39 C35 36 28 37 24 41 C20 37 13 36 6 39 Z M24 13 V41"/>',
-    9: '<path d="M9 30 V25 A15 15 0 0 1 39 25 V30"/><rect x="6" y="28" width="9" height="13" rx="3"/><rect x="33" y="28" width="9" height="13" rx="3"/>',
-}
-svg = lambda body: f'<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">{body}</svg>'
-tags = "".join(f'<div class="tag" id="tag{i}" style="left:{tag_x(i)}px">{svg(ICON[p])}<span class="p">${p}</span></div>' for i, p in enumerate(PRICES))
+tags = "".join(f'<div class="tag" id="tag{i}" style="left:{tag_x(i)}px"><i class="hole"></i>{I.ITEMS[p]()}<span class="p">${p}</span></div>' for i, p in enumerate(PRICES))
 xos = "".join(f'<svg class="xo" id="xo{i}" style="left:{tag_x(i)}px" viewBox="0 0 124 168"><path d="M18 30 L106 138 M106 30 L18 138" stroke="#fbbf24" stroke-width="10" stroke-linecap="round"/></svg>' for i in CROSS)
-finger = lambda c: (f'<svg viewBox="0 0 64 104"><rect x="8" y="2" width="48" height="44" rx="16" fill="{c}"/>'
-                    f'<rect x="22" y="34" width="20" height="66" rx="10" fill="{c}"/><path d="M14 18 H50 M14 30 H50" stroke="#0e1520" stroke-width="3" opacity=".35"/></svg>')
 TX = 30 + TRACK_W * 15 / 18
 bits = "".join(f'<div class="bit" id="bit{i}" style="left:{30 + TX - 8}px;top:99px;background:{c}"></div>' for i, (_, _, c) in enumerate(BITS))
 rds = "".join(f'<span class="rd {c}" id="rd{i}">{html.escape(t)}</span>' for i, (t, c) in enumerate(RD))
 tri = "".join(f'<div class="pc" id="pc{n}" style="left:{c * 36}px;top:{r * 36}px"></div>' for n, (r, c) in enumerate(TRI))
 eqs = "".join(f'<div class="panel low eq" id="eq{i}"><span class="e">${a} + ${b} = <b class="{"teal" if s == 15 else "amb"}">${s}</b></span>'
               f'<span class="tg {"teal" if s == 15 else "amb"}" id="eqt{i}">{"exact!" if s == 15 else "too low" if s < 15 else "too high"}</span></div>'
-              for i, (a, b, s) in enumerate(EQ))
+              for i, (a, b, s) in enumerate(EQ[:5]))
+eqs += f'<div class="low rcptw" id="eq5">{I.receipt()}</div>'
 rows_o = "".join(f'<div class="row" id="ro{r}" style="top:{ROW_Y(r)}px">{v}</div>' for r, v in enumerate(ORDERS))
 rows_u = "".join(f'<div class="row" id="ru{r}" style="top:{ROW_Y(r)}px">{v}</div>' for r, v in enumerate(USERS))
 CL, CR = 60, 560  # column lefts inside #db
 links = "".join(f'<path id="lk{n}" d="M{CL + 300} {ROW_Y(a) + 37} C{CL + 400} {ROW_Y(a) + 37} {CR - 100} {ROW_Y(b) + 37} {CR} {ROW_Y(b) + 37}" stroke="#5eead4" stroke-width="5" fill="none"/>'
                 for n, a, b in MATCHES)
 stills = "".join(f'<img class="still" id="st-{n}" src="stills/{n}.png" alt="" style="height:{800 if n.startswith("fb-") else 700 if n.startswith("cu-") else 760}px">' for n in STILLS)
-chips = lambda xs: "".join(f'<span class="ch">{x}</span>' for x in xs)
+minitags = lambda xs: "".join(f'<span class="mt">{I.ITEMS[x]()}<b>${x}</b></span>' for x in xs)
 audio = f'<audio id="vo" src="vo.mp3" data-start="{LEAD}" data-duration="{round(duration("vo.mp3"), 2)}" data-track-index="1"></audio>' if HAS_VO else ""
 
 H = f'''<!doctype html>
@@ -391,40 +391,41 @@ H = f'''<!doctype html>
 <body>
 <div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920" data-duration="{END}">
  <div class="top"><div class="brand" id="topbrand">leetExpert<span class="dot"></span></div><div class="chip" id="topic">Two pointers</div></div>
- <div id="gc" data-layout-allow-overlap><div class="chipx"></div><div class="k">GIFT CARD</div><div class="v">$15</div><div class="s" id="gcS">2 items · spend every cent</div></div>
+ <div id="gc" data-layout-allow-overlap>{I.gift_card(15, "a")}<div class="k">GIFT CARD</div><div class="v">$15</div><div class="s" id="gcS">Spend every cent.</div></div>
+ <div id="hookrow" data-layout-allow-overlap>{I.cart()}<span>2 items</span>{I.coins()}<span>every cent</span></div>
  <div class="panel" id="meter" data-layout-allow-overlap><div class="mrow"><span class="lbl">gift card <b>$15</b></span><div class="rdwrap">{rds}</div></div>
   <div id="track"><div id="fill"></div><div id="tick" style="left:{TX - 30 - 3}px"></div>{bits}</div></div>
  {tags}{xos}
- <div class="fg" id="fL">{finger("#5eead4")}</div><div class="fg" id="fR">{finger("#fbbf24")}</div>
+ <div class="fg" id="fL">{I.hand(I.TEAL, "L")}</div><div class="fg" id="fR">{I.hand(I.AMB, "R")}</div>
  <div class="flab teal" id="labL" style="left:{tag_x(0) + 62 - 110}px">cheapest</div><div class="flab amb" id="labR" style="left:{tag_x(6) + 62 - 110}px">priciest</div>
  <div class="panel low" id="brute" data-layout-allow-overlap><div class="tri">{tri}</div>
-  <div class="bstat"><div class="big">21</div><div class="sm">pairs to try, 7 items</div><div id="b2">1,000 items → <b>499,500</b></div></div></div>
+  <div class="bstat"><div class="big">21</div><div class="sm">pairs to try, 7 items</div><div id="b2">{I.shelves()}<span>1,000 items →</span><b>499,500</b>{I.hourglass()}</div></div></div>
  {eqs}
- <div class="panel low" id="why" data-layout-allow-overlap><span>$1 + priciest $9 = <span class="amb">$10</span></span><span id="whyB" class="amb">→ $1 can't reach $15. Cross it off.</span></div>
+ <div class="panel low" id="why" data-layout-allow-overlap>{I.balance()}<div class="wt"><span>$1 + priciest $9<br/>= <span class="amb">$10</span> &lt; $15</span><span id="whyB" class="amb">→ $1 can't reach $15. Cross it off.</span></div></div>
  <div class="low" id="score" style="position:absolute" data-layout-allow-overlap><div class="sc1"><b>6</b><span>checks</span><i id="vs">vs <b>21</b> every pair</i></div>
-  <div class="badges"><span class="bd" id="bd1">O(n) time</span><span class="bd" id="bd2">O(1) memory</span></div></div>
- <div id="db" data-layout-allow-overlap><div class="dbt">Databases do this too</div><div class="dbs">merge join: one pointer per sorted table</div>
+  <div class="badges"><span class="bd" id="bd1">{I.clock()}O(n) time</span><span class="bd" id="bd2">{I.chip()}O(1) memory</span></div></div>
+ <div id="db" data-layout-allow-overlap><div class="dbt">{I.server()}Databases do this too</div><div class="dbs">{I.no_loop()}merge join: one pointer per sorted table</div>
+  <div class="dbic" style="left:{CL + 114}px">{I.database(I.AMB)}</div><div class="dbic" style="left:{CR + 114}px">{I.database(I.TEAL)}</div>
   <div class="col" style="left:{CL}px;top:0"><div class="colh" style="position:absolute;top:196px;width:300px">orders.user_id</div>{rows_o}</div>
   <div class="col" style="left:{CR}px;top:0"><div class="colh" style="position:absolute;top:196px;width:300px">users.id</div>{rows_u}</div>
   <svg id="links" viewBox="0 0 920 720">{links}</svg>
   <div class="dp teal" id="dpL" style="left:0">▶</div><div class="dp amb" id="dpR" style="left:{CR + 306}px">◀</div></div>
- <div class="card" id="catch" data-layout-allow-overlap><div class="h">Unsorted menu?</div><div style="margin-top:28px">{chips([7, 1, 9, 4, 8, 3, 5])}</div>
+ <div class="card" id="catch" data-layout-allow-overlap><div class="h">Unsorted menu?</div><div style="margin-top:24px">{minitags([7, 1, 9, 4, 8, 3, 5])}</div>
   <div id="nope" class="mono amb" style="margin-top:22px;font-size:36px;font-weight:700">✗ the fingers can't tell which way to move</div>
-  <div class="panel opt" id="opt1" style="top:380px"><span class="t">Sort first</span><span class="c">then two pointers · O(n log n)</span></div>
-  <div class="panel opt" id="opt2" style="top:550px"><span class="t">Or use a hash set</span><span class="c">one pass · O(n) time, O(n) memory</span></div></div>
+  <div class="panel opt" id="opt1" style="top:390px">{I.sort_bars()}<div><span class="t">Sort first</span><span class="c">then two pointers · O(n log n)</span></div></div>
+  <div class="panel opt" id="opt2" style="top:560px">{I.buckets()}<div><span class="t">Or use a hash set</span><span class="c">one pass · O(n) time, O(n) memory</span></div></div></div>
  <div class="card" id="pit" data-layout-allow-overlap><div class="h">Stop when the fingers meet</div>
   <div class="panel code" style="top:120px"><div class="ln"><span><span class="kw">while</span> left &lt; right:</span><span class="teal" id="ok1">✓</span></div>
    <div class="ln" id="ln2"><span><span class="kw">while</span> left &lt;= right:</span><span class="amb" id="bad2">✗</span></div>
    <div class="strike" id="stk" style="top:141px;width:600px"></div></div>
   <div class="panel" id="same" style="position:absolute;left:0;right:0;top:420px;padding:28px 32px;font-family:'Space Mono',monospace;font-size:40px;font-weight:700">
-   $10 card, menu: $5<br/><span class="amb">$5 + $5 = $10 → the same item, twice</span></div></div>
- <div class="card" id="cue" data-layout-allow-overlap><div class="cuebox" style="top:40px"><div class="mono amb" style="font-size:32px;font-weight:700">INTERVIEW TELL</div>
+   <div class="twice">{I.cookie()}<span class="amb">×2</span>{I.cookie()}</div>$10 card, menu: $5<br/><span class="amb">$5 + $5 = $10<br/>the same item, twice</span></div></div>
+ <div class="card" id="cue" data-layout-allow-overlap><div class="cuebox" style="top:40px"><div class="cuemic">{I.mic()}</div><div class="mono amb" style="font-size:32px;font-weight:700">INTERVIEW TELL</div>
   <div class="h" style="margin-top:18px">Sorted input +<br/>find a pair</div>
   <div id="cueB" class="chip" style="display:inline-block;margin-top:26px;font-size:44px">→ say “two pointers”</div></div></div>
  <div class="card" id="chal" data-layout-allow-overlap><div class="h">Your turn</div>
-  <div class="panel" style="position:absolute;left:0;top:110px;width:420px;height:240px;border-color:#5eead4;padding:28px 34px">
-   <div class="mono teal" style="font-size:28px;font-weight:700;letter-spacing:.2em">GIFT CARD</div><div class="mono" style="font-size:112px;font-weight:700;line-height:1.25;margin-top:6px">$12</div></div>
-  <div style="position:absolute;left:0;top:390px">{chips(PRICES)}</div>
+  <div class="gcmini">{I.gift_card(12, "b")}<div class="k">GIFT CARD</div><div class="v">$12</div></div><div class="qb">{I.question()}</div>
+  <div style="position:absolute;left:0;top:390px">{minitags(PRICES)}</div>
   <div id="chq" class="h" style="position:absolute;left:0;top:520px">Which pair do you hit <span class="teal">first?</span><div class="mut" style="font-size:36px;margin-top:10px">Answer in the comments ↓</div></div></div>
  <div class="lock" id="lock"><div class="lbrand">leetExpert<span class="ldot"></span></div><div class="lline" id="lline">The interactive DSA course.<br/>Step through every line.</div>
   <div class="lcta" id="lcta">Try leetExpert free <span id="larr">→</span> link in bio</div></div>
