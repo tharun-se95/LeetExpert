@@ -578,6 +578,30 @@ describe("design tokens", () => {
     expect(flatList).toMatch(/getFamilyTheme\(p\.familyId\)\.accent/);
   });
 
+  it("text inside a family scope is --mark, never the family accent (#45)", () => {
+    // A family's accentUi only has to clear 3:1 (non-text): measured 4.09-4.13
+    // on the light page and 4.29 for the dark blue on elevated, so small text
+    // in it fails AA. Icons may carry the family colour; text uses text-mark.
+    const scoped = [
+      join(SRC, "app", "courses", "dsa", "page.tsx"),
+      join(SRC, "app", "courses", "dsa", "[module]", "page.tsx"),
+      join(SRC, "app", "courses", "dsa", "[module]", "concept-map", "page.tsx"),
+    ];
+    for (const file of scoped) {
+      const src = readFileSync(file, "utf8");
+      // above the scope (the hub's own header) --accent is chrome, which is AA text
+      const scopeAt = src.indexOf("familyCssVars(family)");
+      expect(scopeAt, `${relative(SRC, file)} opens a family scope`).toBeGreaterThan(-1);
+      for (const m of src.matchAll(/(?<![\w:-])text-accent(?![\w/-])/g)) {
+        if (m.index! < scopeAt) continue;
+        // the JSX element this class list belongs to: the last tag opened before it
+        const tag = [...src.slice(0, m.index).matchAll(/<([A-Za-z][\w.]*)/g)].pop()?.[1] ?? "";
+        const line = src.slice(0, m.index).split("\n").length;
+        expect(/^[A-Z]/.test(tag), `${relative(SRC, file)}:${line} <${tag}> text in text-accent`).toBe(true);
+      }
+    }
+  });
+
   it("every module declares a valid family or none", () => {
     const valid = new Set(FAMILY_THEMES.map((f) => f.id));
     for (const mod of MODULES) {
