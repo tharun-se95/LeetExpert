@@ -78,3 +78,11 @@ A DP table is a grid whose cells carry string headers, filled one cell at a time
 ```widget #ttabs "Three table walkthroughs"
 <div class="extabs" role="group" aria-label="Choose a table walkthrough"></div><div class="lvhost"></div>
 ```
+
+## Heaps {#heap}
+
+The tree IS the array: node `i`'s children sit at `2i+1` and `2i+2`, its parent at `(i-1)//2`, so every heap operation is a sequence of swaps along one root-to-leaf path. The heap lane draws both readings of one set of values at once — the complete binary tree, and the flat array underneath it — so a swap glides in both together, and the edge being compared is the one below whichever index is named.
+
+```widget #htabs "Three heap walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a heap walkthrough"></div><div class="lvhost"></div>
+```

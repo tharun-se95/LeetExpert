@@ -92,7 +92,7 @@ SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-
                  # overview pages
                  "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight",
                  "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral",
-                 "tables": "i-g-cell"}
+                 "tables": "i-g-cell", "heap": "i-recurse"}
 
 
 def _icon(sec):
@@ -117,9 +117,10 @@ def decorate(body):
 # does not name them does not ship them (CLAUDE.md §5: 220 lessons must not pay for five).
 KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun("),
                 "lanes": ("LanePlayer", "new Lanes(", "mountLaneTabs("),
-                "grids": ("kind:'grid'", 'kind:"grid"')}
+                "grids": ("kind:'grid'", 'kind:"grid"'),
+                "heaps": ("kind:'heap'", 'kind:"heap"')}
 # what a module needs loaded before it, in the order the page must read them
-KIT_DEPS = {"lists": ["player"], "lanes": ["player"], "grids": ["player", "lanes"]}
+KIT_DEPS = {"lists": ["player"], "lanes": ["player"], "grids": ["player", "lanes"], "heaps": ["player", "lanes"]}
 
 
 def optional_kit(lesson_js):
