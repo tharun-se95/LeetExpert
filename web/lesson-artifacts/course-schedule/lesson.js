@@ -146,56 +146,21 @@ function buildFrames(b){
 }
 function mountWalk(host){mountStepper(host,BUILDS,function(i){return buildFrames(BUILDS[i]);},'walk');}
 
-/* ---------- 5. quiz ---------- */
+/* ---------- the stalled build the quiz quotes ---------- */
 var STALL=BUILDS[2].run;
-var QUIZ=[
- {q:'The queue of ready courses has just run empty. Why is that alone not enough to say the answer is true?',
-  opts:['It empties in two cases: every course was built, or the rest wait on each other in a loop and were never queued. Only the built count against the total tells them apart.',
-        'An empty queue proves every course was queued at some point: a course enters the queue when its waiting count reaches zero, and every count reaches zero in the end.',
-        'The queue also empties early when the input repeats a prerequisite pair, because the duplicate lowers one count twice; the final check is there to rule those duplicates out.'],
-  a:0,why:'A course only enters the queue when its waiting count reaches zero. A course inside a cycle never gets there, so it is never queued and never built, yet the queue still ends up empty. That is why the code ends with <code>built == num_courses</code>. The version that returns true after the loop says true for the loop of three courses as well.'},
- {q:'On the build with prerequisites <code>[[1,0],[2,1],[3,2],[4,3],[2,4]]</code>, which courses get built before the process stalls?',
-  opts:['Courses '+list(STALL.order)+'. Course 2 waits on 1 and on 4, 4 waits on 3, and 3 waits on 2, so courses '+list(STALL.stuck)+' never start.',
-        'None of them: once the graph holds a cycle anywhere, the waiting counts never all reach zero, so the queue starts out empty and nothing is ever built.',
-        'Courses 0, 1 and 2: course 2 becomes ready once course 1 is built, and the loop through 3 and 4 only blocks the courses that come after it.'],
-  a:0,why:'A cycle blocks only what is inside it and what depends on it. Courses 0 and 1 have no prerequisites in the loop, so they are built. Course 2 has two prerequisites, 1 and 4. Course 1 is done, but 4 needs 3, and 3 needs 2, so 2 keeps waiting on 4 forever. The page above runs exactly this build in the third tab.'},
- {q:'Where does the O(V + E) time come from?',
-  opts:['Each course leaves the queue once and each arrow is followed once, lowering one waiting count: V dequeues plus E decrements, plus the pass that builds the tables.',
-        'Each built course scans the list of all E arrows to find the ones leaving it, but the scan stops at the first match, so on average it costs about one step per arrow.',
-        'The queue holds at most V courses, and each is compared with every arrow when it is dequeued, so the work is V for the queue plus E for those comparisons.'],
-  a:0,why:'The adjacency list means a built course only looks at the arrows leaving it, not at all E. Summed over every course, those are exactly E looks. Counting on the loop chart above: about 2n work for n courses, while testing every order needs n!.'}
-];
-
+/* ---------- the numbers lesson.md quotes as {{name}}: computed here, never typed ---------- */
+var FACTS=(function(){
+  var d=BUILDS[0],seen={},wrong=SANDBOX.filter(function(c){var key=JSON.stringify(c);if(seen[key])return false;seen[key]=1;return !kahnRun(c[0],c[1]).ok;});
+  return {list_STALL_order:list(STALL.order),list_STALL_stuck:list(STALL.stuck),V:d.n,E:d.prereqs.length,work:d.run.work,wrongCount:wrong.length};
+})();
 /* ---------- assemble ---------- */
 (function(){
   readPal();
   mountExplore($('#explore'));
   mountGuess($('#predict'));
-  reveal($('#hint'),'Hint: start from what can be built now',function(b){
-    b.innerHTML='<p>Some courses have no prerequisites, so they can be taken immediately. Take them, and notice that other courses have now had a prerequisite satisfied.</p><p>Keep, for every course, the number of prerequisites not yet taken. When it reaches zero the course is ready. Repeat until nothing is ready.</p><p>Then ask how many courses you managed to take, and what it means if that is fewer than all of them.</p>';
-  });
-  $('#slow-code').appendChild(codeBlock(CODE.slow_orderings.py,CODE.slow_orderings.ts,'Try every build order'));
+  mountLesson();
   mountCost($('#cost'));
   mountWalk($('#stepper'));
-  reveal($('#solbox'),'Show the solution',function(b){
-    b.appendChild(codeBlock(CODE.solution.py,CODE.solution.ts,'Build what is ready, then count'));
-    var notes=el('div','notes');
-    notes.innerHTML='<p>The first loop turns each pair into an arrow from the prerequisite to the course and counts, for every course, how many prerequisites it waits on. Every course with a count of zero starts in the queue. The main loop builds a ready course, lowers the count of each course that was waiting on it, and queues any that reach zero. At the end, <code>built</code> is compared with the number of courses: equal means every course was reachable, and fewer means the rest are locked in a cycle.</p><p>The loop is a queue and not recursion, so a chain of 2000 courses cannot overflow the call stack. A depth-first search with three colours finds cycles too, but in Python a chain that long would exceed the default recursion limit.</p>';
-    b.appendChild(notes);
-    var d=BUILDS[0],work=d.run.work,cx=el('div','complexity');
-    cx.innerHTML='<div class="cx-h">Complexity, derived</div><p><b>Time O(V + E).</b> Reading the pairs is E steps and filling the tables is V. After that each course is dequeued exactly once, and each arrow is used exactly once, to lower a count. On the diamond (V = '+d.n+', E = '+d.prereqs.length+') that is '+d.n+' + '+d.prereqs.length+' setup steps plus '+d.n+' dequeues plus '+d.prereqs.length+' decrements, '+work+' in all, as measured. At the constraint\'s limits that is at most 2000 + 5000 in each phase, a few tens of thousands of steps, where testing every order was hopeless.</p><p><b>Space O(V + E).</b> The adjacency lists hold every arrow once, and the counts and queue hold one entry per course.</p>';
-    b.appendChild(cx);
-    var seen={},wrong=SANDBOX.filter(function(c){var key=JSON.stringify(c);if(seen[key])return false;seen[key]=1;return !kahnRun(c[0],c[1]).ok;});
-    var w=el('div','callout warn');
-    w.innerHTML='<div class="cl"><svg class="i"><use href="#i-warn"/></svg>Watch out</div><p>Do not return <code>true</code> just because the queue ran out. A loop of courses never enters the queue, so the queue empties with the loop still unbuilt. That version answers true for all '+wrong.length+' of the builds tested here that contain a cycle, including the loop of three courses in the second example, where the answer is false.</p>';
-    w.appendChild(codeBlock(CODE.mistake_true.py,CODE.mistake_true.ts,'The mistake'));
-    b.appendChild(w);
-  });
-  mountVariants($('#vlist'),[
-    ['Course Schedule II','return the order','The same process, but you return the sequence in which courses were built, or an empty list when a cycle blocks it. The order you already recorded is the answer.'],
-    ['Parallel Courses','count the rounds','Build everything that is ready at the same moment as one round, then the next wave. The number of waves is the fewest semesters, and a leftover course means the loop again.'],
-    ['Task scheduling in real tools','same graph, real names','Package managers, build systems and CI pipelines all model tasks this way. A reported dependency cycle is exactly the stuck case: the tool lists the courses that never became ready.']]);
-  mountQuiz($('#qlist'),QUIZ);
 })();
 
 /* ================= systems layer: the build hero and the animated banners ================= */

@@ -46,6 +46,23 @@ def highlight(bundle):
     return out
 
 
+def render_lesson(folder):
+    """lesson.md rendered by the app's own markdown stack (render-lesson.ts), or None for a lesson
+    still written as body.html. Spec 2026-09-26-lesson-content-as-data-design.md."""
+    src = os.path.join(folder, "lesson.md")
+    if not os.path.exists(src):
+        return None
+    web = os.path.normpath(os.path.join(ROOT, ".."))
+    res = subprocess.run([os.path.join(web, "node_modules", ".bin", "tsx"), os.path.join(ROOT, "render-lesson.ts"), src],
+                         capture_output=True, text=True, cwd=web)
+    if res.returncode:
+        raise SystemExit("lesson.md: " + res.stderr.strip())
+    out = json.loads(res.stdout)
+    if out["rawBlocks"]:
+        print(f"  {os.path.basename(folder)}: {out['rawBlocks']} html fence(s)")
+    return out
+
+
 def code_bundle(folder):
     """{name: {py, ts}} from code/*.py and code/*.ts; a name needs both languages."""
     d = os.path.join(folder, "code")
@@ -73,7 +90,8 @@ SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-
                  # concept lessons
                  "node": "i-box", "build": "i-stack", "walk": "i-route", "cost": "i-s-cost", "next": "i-s-variants",
                  # overview pages
-                 "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight"}
+                 "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight",
+                 "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral"}
 
 
 def _icon(sec):
@@ -96,11 +114,19 @@ def decorate(body):
 
 # Kit modules only some lessons need, with the names that show a lesson uses them. A lesson that
 # does not name them does not ship them (CLAUDE.md §5: 220 lessons must not pay for five).
-KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun(")}
+KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun("),
+                "lanes": ("LanePlayer", "new Lanes(", "mountLaneTabs("),
+                "grids": ("kind:'grid'", 'kind:"grid"')}
+# what a module needs loaded before it, in the order the page must read them
+KIT_DEPS = {"lists": ["player"], "lanes": ["player"], "grids": ["player", "lanes"]}
 
 
 def optional_kit(lesson_js):
-    return [name for name, marks in KIT_OPTIONAL.items() if any(m in lesson_js for m in marks)]
+    out = []
+    for name, marks in KIT_OPTIONAL.items():
+        if any(m in lesson_js for m in marks):
+            out += [d for d in KIT_DEPS.get(name, []) + [name] if d not in out]
+    return out
 
 
 # the latin files every page needs before it can be shown; the rest load on demand
@@ -108,27 +134,38 @@ PRELOAD = sorted(f for f in os.listdir(os.path.join(os.path.dirname(os.path.absp
                  if f.endswith(".woff2") and "-latin-" in f and "-latin-ext-" not in f)
 
 
+def page_parts(slug):
+    """The page script's files in the order build() joins them, as (name, text). The data lines
+    (CODE, LESSON, HL) go between the kit and lesson.js. tests/lessonArtifactsScript.test.ts lints
+    this same list as one script, so what it checks is what ships."""
+    folder = os.path.join(ROOT, slug)
+    kit = ["engine", "trees", "kit", *optional_kit(read(folder, "lesson.js"))]
+    return [(f"kit/{m}.js", read(KIT, m + ".js")) for m in kit] + [("lesson.js", read(folder, "lesson.js"))]
+
+
 def build(module, slug, family, title):
     folder = os.path.join(ROOT, slug)
     L, D, N, ND = shared.tokens(family)
     uses = optional_kit(read(folder, "lesson.js"))
+    parts = [text for _, text in page_parts(slug)]
     css = shared.BASE_CSS.replace("@@L@@", L).replace("@@D@@", D).replace("@@ND@@", ND).replace("@@N@@", N) + read(KIT, "kit.css")
     css += "".join(read(KIT, m + ".css") for m in uses if os.path.exists(os.path.join(KIT, m + ".css")))
     extra = os.path.join(folder, "extra.css")
     if os.path.exists(extra):
         css += read(extra)
-    body = decorate(read(folder, "body.html"))
+    lesson = render_lesson(folder)
+    if lesson and lesson["data"]["title"] != title:
+        raise SystemExit(f"{slug}: lesson.md title {lesson['data']['title']!r} differs from build.py's {title!r}")
+    body = decorate(lesson["html"] if lesson else read(folder, "body.html"))
     code = code_bundle(folder)
     js = "\n".join([
         "(function(){\n'use strict';",
-        read(KIT, "engine.js"),
-        read(KIT, "trees.js"),
-        read(KIT, "kit.js"),
-        *[read(KIT, m + ".js") for m in uses],
+        *parts[:-1],
         "var CODE=" + json.dumps(code) + ";",
+        "var LESSON=" + json.dumps(lesson["data"] if lesson else {"quiz": [], "variants": [], "reveals": {}}) + ";",
         # coloured copies keyed by the exact source, so codeBlock can find them from CODE's strings
         "var HL=" + json.dumps(highlight(code)) + ";",
-        read(folder, "lesson.js"),
+        parts[-1],
         "wirePage();",
         "window.__built&&window.__built();",
         "})();",
@@ -174,6 +211,10 @@ LESSONS = [
     ("linked-lists", "build-a-linked-list", "pointer-movement", "Build a Linked List From Scratch"),
     # overviews: one page across several modules (not a lesson, so not a ledger row; spec §2)
     ("overviews", "linear-structures", "linear-traversal", "The Line Underneath"),
+    ("overviews", "grid-structures", "ordering-search", "The Grid Underneath"),
+    # specimens: kit fixtures, not lessons or overviews, so not ledger rows. The browser gate runs them so a
+    # player is held to the lesson bar before any lesson depends on it (#22).
+    ("specimens", "kit-players", "linear-traversal", "Kit Players"),
 ]
 
 if __name__ == "__main__":

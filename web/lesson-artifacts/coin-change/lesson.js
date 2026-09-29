@@ -150,7 +150,7 @@ function tableFrames(coins,amount){
   });
   var path=orderOf(tr,amount),onPath=[];
   if(tr.ans>=0){var a=amount;onPath.push(a);while(a>0&&tr.par[a]>0){a-=tr.par[a];onPath.push(a);}}
-  var fin=[];for(var i=0;i<n;i++){var k=onPath.indexOf(i)>=0?'done':(tr.dp[i]===INF?'dim':'idle');fin.push({k:k,t:val(tr.dp[i])});}
+  var fin=[];for(var j=0;j<n;j++){var k=onPath.indexOf(j)>=0?'done':(tr.dp[j]===INF?'dim':'idle');fin.push({k:k,t:val(tr.dp[j])});}
   frames.push({b:{ix:ix,dp:fin},note:tr.ans<0?'Done: dp['+amount+'] is ∞, so no order adds up to exactly '+amount+'. The answer is -1.':'Done: dp['+amount+'] = '+tr.ans+'. Following the winning last size back from '+amount+' gives '+path.join(' + ')+' = '+amount+'.',stats:[['answer',tr.ans]],ev:'key'});
   var ref=bfsFewest(coins,amount);if(ref!==tr.ans)throw new Error('frames disagree with breadth-first search');
   return {frames:frames,step:1.0,poster:frames.length-1,
@@ -160,59 +160,25 @@ function tableFrames(coins,amount){
 var EXAMPLES=[{name:'1, 2, 5 · 11',coins:[1,2,5],amount:11},{name:'1, 3, 4 · 6 (where greedy fails)',coins:[1,3,4],amount:6},{name:'2 · 5 (impossible)',coins:[2],amount:5}];
 function mountWalk(host){mountStepper(host,EXAMPLES,function(i){return tableFrames(EXAMPLES[i].coins,EXAMPLES[i].amount);},'walk');}
 
-/* ---------- 5. quiz ---------- */
+/* ---------- the limit the quiz and the derivation quote: 10⁴ amounts × 12 sizes ---------- */
 var OPS=10000*12;
-var QUIZ=[
- {q:'Why is it enough to try every size as the <em>last</em> instance and take the best, when greedy\'s single choice is not?',
-  opts:['Any fewest order for a ends in some size c, and what remains must be a fewest order for a − c, or the whole could be shorter. So 1 + the best dp[a − c] over all c misses nothing.',
-        'Trying every size makes the table record every order in which instances could be launched, and taking the minimum then picks the cheapest of those orders once all of them are listed.',
-        'Taking the minimum over every size ends up choosing the smallest size at each step, and building the order from small sizes is what keeps the count of instances as low as it can go.'],
-  a:0,why:'This is optimal substructure: the best solution contains a best solution to a smaller version of the same problem. Greedy commits to one candidate without comparing, so a locally big choice can strand an awkward remainder. Trying every last size compares them all, and the order in which instances are launched never matters to the total.'},
- {q:'The table starts with <code>dp[0] = 0</code> and every other entry at <code>amount + 1</code>. Why not start them all at 0?',
-  opts:['A 0 would win every minimum, so every cell would claim zero instances. amount + 1 means "not reachable yet": any real count beats it, and a cell still holding it at the end is unreachable.',
-        'Zero would give the same answers, since cells that are never reached are never read; the large value only guards against integer overflow when 1 is added to an entry that is already large.',
-        'Starting high lets the inner loop stop early: once one size gives a count below the starting value, the remaining sizes cannot do better, so the comparison exits on most steps.'],
-  a:0,why:'Take sizes {2} and capacity 3. With zeros everywhere, dp[1] and dp[3] would stay at their starting 0 and the code would answer 0, claiming no instances are needed. With the placeholder, dp[3] stays at 4 and the check turns it into -1. Forgetting that check, as the warning below shows, returns the placeholder itself.'},
- {q:'For the constraint\'s largest input, an amount of 10⁴ with 12 sizes, roughly how many inner steps does the table version take?',
-  opts:['About '+fmt(OPS)+' steps: each of the 10⁴ amounts is solved once, and solving one tries each of the 12 sizes once, so 10⁴ × 12.',
-        'About 2¹² = 4,096 steps, since each of the 12 sizes is either used or not, and the table only settles which subset of sizes the best order draws from.',
-        'About 10⁴ steps, since the table has 10⁴ cells and each is filled by one lookup into the cell for the largest size that fits, which keeps the work linear.'],
-  a:0,why:'Each of the 10⁴ cells tries every one of the 12 sizes, and a try is one lookup and one comparison. The plain recursion, by contrast, asks the same question again and again, and its call count multiplies at every step: see the chart above. The table is the same recurrence with each answer stored once.'}
-];
 
+/* ---------- the numbers lesson.md quotes as {{name}}: computed here, never typed ---------- */
+var FACTS=(function(){
+  var small=dpTrace([1,2,5],11),steps=small.steps.length;
+  var raws=[[[2],3],[[7,9],11]].map(function(c){var t=dpTrace(c[0],c[1]);return {c:c,raw:t.dp[c[1]]===INF?c[1]+1:t.dp[c[1]]};});
+  return {fmt_OPS:fmt(OPS),steps:steps,tries:steps*3,fits:small.steps.reduce(function(s,st){return s+st.cands.length;},0),smallCells:small.dp.length,
+    rawCases:raws.map(function(r){return '<b>'+r.raw+'</b> for sizes <code>'+inputFor(r.c[0])+'</code> and amount '+r.c[1];}).join(' and ')};
+})();
 /* ---------- assemble ---------- */
 (function(){
   readPal();
   mountExplore($('#explore'));
   mountGuess($('#predict'));
-  reveal($('#hint'),'Hint: look only at the last instance',function(b){
-    b.innerHTML='<p>Suppose you already knew the fewest instances for every smaller capacity. How would you use that to answer for capacity a?</p><p>Whatever the best order is, one instance was launched last, and it had some size c. Take it away and you are looking at an order for a − c. So the answer for a is one more than the answer for a − c, for whichever c was last.</p><p>You do not know which c was last, so try each size that fits and keep the smallest result.</p>';
-  });
-  $('#greedy-code').appendChild(codeBlock(CODE.mistake_greedy.py,CODE.mistake_greedy.ts,'Greedy: the biggest size that fits'));
+  mountLesson();
   mountGreedyTable($('#greedy-table'));
-  $('#slow-code').appendChild(codeBlock(CODE.slow_recursion.py,CODE.slow_recursion.ts,'Try every last size, recursively'));
   mountCost($('#cost'));
   mountWalk($('#stepper'));
-  reveal($('#solbox'),'Show the solution',function(b){
-    b.appendChild(codeBlock(CODE.solution.py,CODE.solution.ts,'Fill the table from 0 to amount'));
-    var notes=el('div','notes');
-    notes.innerHTML='<p>The outer loop walks the amounts upward, so when cell <code>a</code> is computed every cell it reads, <code>a - c</code>, is already final. The inner loop tries each size as the last instance. <code>c &lt;= a</code> skips sizes that are too big. After the loops, a cell that still holds the placeholder was never reachable, and that becomes <code>-1</code>.</p>';
-    b.appendChild(notes);
-    var small=dpTrace([1,2,5],11),steps=small.steps.length,tries=steps*3,fits=small.steps.reduce(function(s,st){return s+st.cands.length;},0);
-    var cx=el('div','complexity');
-    cx.innerHTML='<div class="cx-h">Complexity, derived</div><p><b>Time O(amount × sizes).</b> The table has amount + 1 cells and each one tries every size once. For sizes {1, 2, 5} and amount 11 that is '+steps+' cells and '+tries+' tries, of which '+fits+' fit and do a lookup. At the constraint\'s limits, 10⁴ × 12 is '+fmt(OPS)+' tries. The recursion could not say this: it repeated questions instead of storing them.</p><p><b>Space O(amount).</b> One number per amount from 0 to amount, '+(small.dp.length)+' cells in the small example and 10,001 at the limit.</p>';
-    b.appendChild(cx);
-    var raws=[[[2],3],[[7,9],11]].map(function(c){var t=dpTrace(c[0],c[1]);return {c:c,raw:t.dp[c[1]]===INF?c[1]+1:t.dp[c[1]]};});
-    var w=el('div','callout warn');
-    w.innerHTML='<div class="cl"><svg class="i"><use href="#i-warn"/></svg>Watch out</div><p>Do not return <code>dp[amount]</code> as it is. For an amount no order can reach, that cell still holds the placeholder <code>amount + 1</code>, so the answer comes out as '+raws.map(function(r){return '<b>'+r.raw+'</b> for sizes <code>'+inputFor(r.c[0])+'</code> and amount '+r.c[1];}).join(' and ')+' instead of <b>-1</b>.</p>';
-    w.appendChild(codeBlock(CODE.mistake_inf.py,CODE.mistake_inf.ts,'The mistake'));
-    b.appendChild(w);
-  });
-  mountVariants($('#vlist'),[
-    ['Coin Change II','count the ways','Same sizes, but the question is how many different combinations reach the amount. The loop order changes: put the sizes in the outer loop, so 2 + 1 and 1 + 2 count as one combination and not two.'],
-    ['Perfect Squares','sizes are the squares','The sizes are 1, 4, 9, 16 and so on, and the question is the fewest that sum to n. It is this table exactly, with the sizes generated on the fly.'],
-    ['Minimum Cost For Tickets','last ticket decides','A day is covered by a 1-day, 7-day or 30-day pass, and the cheapest plan for each day depends on the cheapest plan a fixed number of days earlier. It is the same "try every last piece" recurrence over days instead of vCPUs.']]);
-  mountQuiz($('#qlist'),QUIZ);
 })();
 
 /* ================= systems layer: the table hero and the animated banners ================= */

@@ -67,7 +67,7 @@ export default async function ConceptMapPage({ params }: PageProps) {
           ]}
         />
 
-        <p className="mt-6 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-accent">
+        <p className="mt-6 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-mark">
           <TreeStructure weight="bold" className="h-4 w-4" />
           Module {mod.number} · Concept map
         </p>

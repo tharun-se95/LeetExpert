@@ -1,0 +1,14 @@
+/* kit/grids.css: the grid lane (kit/grids.js). Cells, tones and names are the lane view's
+   (kit/lanes.css); this adds the trail under the cells and the named rectangles over them. */
+/* a trail shows only in the gaps between opaque cells: a thread through the cells it visited */
+.gd-path polyline{fill:none;stroke:var(--fam);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:.6}
+.gd-path.hi polyline{stroke-width:4;opacity:.9}
+/* a visited (dim) cell's box is clear, so the trail runs through it: its value keeps a halo of the
+   stage's paper, and the trail never strikes through a digit */
+.ln-item.in-grid.dim .ln-val{paint-order:stroke;stroke:color-mix(in srgb,var(--card) 97%,var(--fg));stroke-width:5px;stroke-linejoin:round}
+.gd-rect .gd-box{fill:none;stroke:var(--fam);stroke-width:1.6;opacity:.85}
+.gd-rect.hi .gd-box{stroke-width:2.4;opacity:1}
+/* the name sits on a tag of card paper, so its contrast is the card's, never a cell's */
+.gd-rect .gd-tag{fill:var(--card);stroke:var(--fam);stroke-width:1}
+.gd-rect text{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;fill:var(--mk)}
+.gd-rect.hi text{font-weight:700}

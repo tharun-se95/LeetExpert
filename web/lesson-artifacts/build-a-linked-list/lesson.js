@@ -122,29 +122,11 @@ function mountCost(){
   $('#cost-note').innerHTML='Appending 64 values without a tail visits <b>'+fmt(pts[pts.length-1][1])+'</b> nodes, counted by running it; with the tail it visits <b>0</b>. At '+fmt(big)+' values the walk would visit '+fmt(big*(big-1)/2)+' nodes: O(n²) to build a list that should cost O(n).';
 }
 
-var QUIZ=[
- {q:'<code>delete</code> walks two references, <code>prev</code> and <code>curr</code>. Why not just <code>curr</code>?',
-  opts:['Removing curr means rewriting the next pointer of the node before it, and a singly linked list gives curr no way back to that node.',
-        'Holding both lets the loop stop the moment it finds a match; with curr alone it would have to scan to the end before it could delete anything.',
-        'prev keeps a count of the nodes visited so far, which delete needs so that it can lower size by the right amount when it removes a node.'],
-  a:0,why:'The pointer that changes belongs to the node before the one being removed. From <code>curr</code> there is no way back to it, so the walk carries the predecessor along. A doubly linked list stores a <code>prev</code> in every node precisely to avoid this, and pays a second reference per node for it.'},
- {q:'A <code>delete</code> leaves out the tail branch. You delete the last node, then append 5. What happens?',
-  opts:['The append links 5 onto the removed node that tail still names. No walk from head reaches it, so 5 is lost with no error and size is one too high.',
-        'The append raises an error at once, because tail points at a node that was deleted, and reading the next field of a deleted node fails on the spot.',
-        'Nothing goes wrong: head still reaches every real node, and the append walks from head to find the end, so the stale tail is never actually used.'],
-  a:0,why:'In Python and TypeScript a removed node is an ordinary object until nothing refers to it, and <code>tail</code> still refers to it, so no error is raised. The append trusts <code>tail</code>, which is the whole point of keeping it, and links the new node where no walk from <code>head</code> will ever arrive. The trap widget above runs exactly this sequence.'},
- {q:'Halfway through a push to the front, <code>head</code> already points at the new node but <code>size</code> has not been raised. Is the list broken at that moment?',
-  opts:['No. Invariants must hold whenever a method returns. Inside one they may briefly fail, since with one thread no other code can run mid-call.',
-        'Yes. Every invariant has to hold after every single line, so size should be raised first, before the new node is created or linked into the list.',
-        'No, because size is only a cache: the list recounts its nodes whenever size is read, so a stale value in the middle of a push is never seen.'],
-  a:0,why:'An invariant is a promise about the list between operations. Some temporary break is unavoidable, since no single pointer write can move <code>head</code> and <code>size</code> together. What matters is that every method restores all three before it returns. In this class <code>size</code> is a stored field, never recounted, which is why forgetting to update it is a real bug.'}
-];
-
 /* ---------- assemble ---------- */
 (function(){
   readPal();
   mountHero();
-  $('#code-full').appendChild(codeBlock(CODE.solution.py,CODE.solution.ts,'The whole class'));
+  mountLesson();
   mountPlay($('#play'));
   mountTabs($('#walker'),[
     {name:'delete(3): the middle',steps:scripted([7,3,12],[['delete',3]],'The list 7 → 3 → 12. Delete 3.')},
@@ -159,10 +141,6 @@ var QUIZ=[
     {name:'Delete that forgets the tail',steps:scripted([7,3,12],[['delete',12],['push_back',5]],'The list 7 → 3 → 12. Delete 12 with the version that forgets the tail branch, then append 5.',true,
       function(L){return 'The walk from head gives '+toArr(L).join(' → ')+', but size says '+L.size+'. The append returned normally and its value is gone.';})}
   ],'trap');
-  var w=el('div','callout warn');
-  w.innerHTML='<div class="cl"><svg class="i"><use href="#i-warn"/></svg>Watch out</div><p>Deleting the tail must move <code>tail</code> back to <code>prev</code>. Without that line, deleting 12 from 7 → 3 → 12 and then appending 5 leaves a list whose walk from head is 7 → 3 while <code>size</code> is 3: both runtimes lose the 5, and nothing raises an error.</p>';
-  w.appendChild(codeBlock(CODE.mistake.py,CODE.mistake.ts,'The delete that forgets the tail'));
-  $('#warnbox').appendChild(w);
   mountBanners(banners);
   mountCost();
   /* every number here is run, not typed: the walk count by appendVisits (checked against
@@ -178,12 +156,5 @@ var QUIZ=[
     {v:writes,l:'pointer writes per append with a tail, counted on a real list: link on, then move tail'},
     {v:hops,l:'moves along next to reach the third node: a walk, never a jump'}
   ]);
-  mountVariants($('#vlist'),[
-    ['Pointer Surgery Patterns','next lesson','A dummy node in front of the head: every real node then has a node before it, so deleting the head becomes an ordinary splice and most branches here disappear.'],
-    ['Reverse Linked List','problem','Turn every next pointer to face backwards, holding three references at once so no part of the list is lost halfway through the flip.'],
-    ['Middle of the Linked List','problem','A fast reference moves two nodes for every one a slow reference moves. When the fast one reaches the end, the slow one is in the middle.'],
-    ['Linked List Cycle','problem','The same two speeds detect a loop: if next ever leads back into the list, the fast reference laps the slow one and they meet.']
-  ]);
-  mountQuiz($('#qlist'),QUIZ);
   kinetic();riseIn();
 })();

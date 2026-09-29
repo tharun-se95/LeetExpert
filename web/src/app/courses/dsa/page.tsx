@@ -202,7 +202,7 @@ export default function CourseOverviewPage() {
                             <span className="text-xs tabular-nums text-muted">
                               {String(module.number).padStart(2, "0")}
                             </span>
-                            <p className="mt-1.5 text-sm font-semibold text-accent">
+                            <p className="mt-1.5 text-sm font-semibold text-mark">
                               {module.title}
                             </p>
                           </div>
@@ -211,7 +211,7 @@ export default function CourseOverviewPage() {
                           </p>
                           <span
                             aria-hidden
-                            className="mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wide text-accent"
+                            className="mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wide text-mark"
                           >
                             Open module
                             <ArrowRight weight="bold" className="h-3 w-3" />

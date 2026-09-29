@@ -56,3 +56,61 @@ jobs:
         env:
           # Explicit for clarity; load.ts also walks up to find part-1-foundations.
           HANDBOOK_ROOT: ${{ github.workspace }}
+
+  # The lesson artifacts' gates (#23). ledger.py check (in npm test) proves the evidence is well formed;
+  # this re-runs the gates themselves on every page that has held verified evidence, so a kit change that
+  # breaks a verified page fails here, not only goes stale in the ledger.
+  artifact-pages:
+    name: Artifact pages to gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      pages: ${{ steps.list.outputs.pages }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: List
+        id: list
+        run: echo "pages=$(python3 web/lesson-artifacts/ledger.py gated)" >> "$GITHUB_OUTPUT"
+
+  artifact-gates:
+    name: Artifact gates (${{ matrix.page }})
+    needs: artifact-pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        page: ${{ fromJSON(needs.artifact-pages.outputs.pages) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      # the code gate runs every shown solution in both runtimes
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        working-directory: web
+        run: npm ci
+      # the browser gate drives the runner's installed Chrome (playwright-core, channel "chrome")
+      - name: Gates
+        working-directory: web
+        run: python3 lesson-artifacts/ledger.py gate ${{ matrix.page }}
+      - name: Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-shots-${{ strategy.job-index }}
+          path: web/lesson-artifacts/dist/_gate/
+          if-no-files-found: ignore

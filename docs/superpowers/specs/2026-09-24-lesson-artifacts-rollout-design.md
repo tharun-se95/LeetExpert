@@ -72,10 +72,15 @@ follow the callout rules, and solutions never reach the DOM before the reveal.
 - a cumulative layout shift above 0 while every player and banner plays one full cycle;
 - horizontal page overflow at either width;
 - any text below WCAG AA contrast against the surface it renders on (computed colours on the
-  rendered DOM, including SVG text on navy cards), mid-animation included: a scene cell between two
+  rendered DOM, including SVG text on navy cards), on every step of every step player (`kit/player.js`),
+  each tab, settled — until #22 the gate sampled a player once, on its first step, which is mostly the empty
+  structure, so no later step's text had ever been measured — and mid-animation included: a scene cell between two
   states is a blend of their fills, and its ink is never blended but chosen by `legible()` in
   `kit/engine.js` (the endpoint ink that reads better, else one pushed toward whichever of black and
-  white contrasts more with that blend, only as far as 4.5:1);
+  white contrasts more with that blend, only as far as 4.5:1). A text element's own `opacity` thins
+  its ink and is measured; only a fading ancestor (mid-animation) is exempt. Until #22's grid player
+  the element itself was exempted too, and a planted 45% rectangle name passed. Text inside a disabled
+  control is exempt, as WCAG 1.4.3 exempts inactive components;
 - missing accessible names on interactive controls and diagrams;
 - a solution in the DOM before its reveal is opened;
 - text on a solid family fill: the family colours are mid-tone 3:1 UI fills, and no ink reaches AA on
@@ -106,6 +111,10 @@ hold the bar. Before any batch:
 2. **Shared players in `kit/`.** The linked-list `ListPlayer` (fixed canvas, soft motion, loop,
    invariants panel) moves into the kit, and the same contract is built for arrays/strings,
    grids, trees, graphs, stacks/queues, heaps and tables, so a module's lessons reuse one player.
+   The contract is `StepPlayer` in `kit/player.js` (#22): the chrome and clock, with a view per
+   structure. `ListPlayer` and `LanePlayer` (`kit/lanes.js`: arrays and strings with named indices
+   and ranges, stacks, queues, deques, ring buffers, call frames, several lanes at once) are views on it; the `kit-players` specimen holds each new
+   player to the browser gate before a lesson depends on it.
 3. **Family colour for every module.** `big-o`, `getting-started` and `math-for-dsa` have no
    family in `moduleFamily`; the kit needs one to paint. Decision D4: new family hues, designed in the app.
 4. **Dark mode settled.** The dark theme is The Grid Underneath's palette, with a navy code well
@@ -143,7 +152,8 @@ generated view. Tool: `web/lesson-artifacts/ledger.py`.
   gates. (Proven: an added line dropped `build-a-linked-list` from built to todo; removing it
   restored built.)
 - **Overviews have their own table.** A page across several modules (`overviews/linear-structures`,
-  "The Line Underneath") is not a lesson in the app's manifest, so its row is declared by `build.py`
+  "The Line Underneath", and `overviews/grid-structures`, "The Grid Underneath", rebuilt on the kit
+  from its standalone original in #25) is not a lesson in the app's manifest, so its row is declared by `build.py`
   (`LESSONS` entries under `overviews`), not by `sync` from the manifest; `sync` keeps the two in
   step and `check` fails when they differ. An overview passes the same `build`, `code` (its
   `check.py`) and theme gates and goes stale the same way, but is not counted in the 220 and holds
@@ -180,12 +190,13 @@ set from that measurement, not guessed.
   and it must be re-recorded. This is deliberate: a kit change can never leave a lesson "verified" on
   a page nobody re-checked. Re-recording all lessons after a kit change is the cost, and it grows
   with the rollout; batching kit changes keeps it bounded.
-- **The browser gate does not interact.** It plays what runs by itself (players, banners, the hero)
-  and measures every stop, but it does not click widgets, answer predict questions or open quizzes,
-  so states reached only by interaction are not measured. Found in passing: coin change's order
-  builder painted its segments with text on the solid family fill, the pairing that fails AA, and the
-  gate never saw it. Closing this means the gate driving each widget through its states; until then,
-  interactive states are reviewed by hand and noted in the ledger.
+- **What the browser gate drives, and what it cannot assert.** It plays what runs by itself, then
+  (#24) drives every widget kind the kit makes and asserts the state each interaction lands in:
+  reveals, quiz and predict answers (including the hovered option), step players, walkthroughs and
+  tabs, with every answered state measured for contrast. Its first run found the quiz letter's hover
+  colour at 4.11:1 (a family accent on 12px text). A lesson's own playground has no contract the gate
+  can know, so its buttons are each clicked once and only errors, contrast and names are checked: that
+  a playground computes the right thing stays the lesson's own load check and the code gate's job.
 - **Context and cost.** Work happens one module per fresh chat, with a handoff, never in one long
   chat.
 

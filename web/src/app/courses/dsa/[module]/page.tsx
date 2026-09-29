@@ -136,7 +136,7 @@ export default async function ModulePage({ params }: PageProps) {
           ) : null}
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              <p className="text-xs font-medium uppercase tracking-wider text-accent">
+              <p className="text-xs font-medium uppercase tracking-wider text-mark">
                 Stage {mod.stage} — {stage?.title} · Module {mod.number}
               </p>
               {familyLabel ? (
