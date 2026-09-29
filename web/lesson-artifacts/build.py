@@ -91,7 +91,8 @@ SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-
                  "node": "i-box", "build": "i-stack", "walk": "i-route", "cost": "i-s-cost", "next": "i-s-variants",
                  # overview pages
                  "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight",
-                 "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral"}
+                 "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral",
+                 "tables": "i-g-cell"}
 
 
 def _icon(sec):
