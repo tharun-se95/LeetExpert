@@ -1,0 +1,16 @@
+[
+  {
+    "slug": "linear-structures",
+    "title": "The Line Underneath",
+    "stage": 1,
+    "summary": "Arrays, linked lists, stacks and queues side by side, and the everyday systems that run on each.",
+    "family": "linear-traversal"
+  },
+  {
+    "slug": "grid-structures",
+    "title": "The Grid Underneath",
+    "stage": 2,
+    "summary": "Eight grid algorithms, and the systems that run them every second.",
+    "family": "ordering-search"
+  }
+]

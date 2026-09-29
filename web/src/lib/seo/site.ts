@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MODULES, allProblemSlugs } from "@/lib/course/manifest";
+import { OVERVIEWS, overviewHref } from "@/lib/course/overviews";
 import { lessonHref, moduleHref, problemHref,
   conceptMapHref,
 } from "@/lib/course/nav";
@@ -62,6 +63,11 @@ export function indexableRoutes(): string[] {
 
   for (const slug of allProblemSlugs()) {
     routes.push(problemHref(slug));
+  }
+
+  // Stage overviews are static pages of their own, not chrome.
+  for (const overview of OVERVIEWS) {
+    routes.push(overviewHref(overview.slug));
   }
 
   return routes;

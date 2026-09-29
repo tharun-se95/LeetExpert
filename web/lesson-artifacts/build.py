@@ -11,6 +11,7 @@ A lesson folder holds:
 
     python3 web/lesson-artifacts/build.py <module>/<slug>      one lesson
     python3 web/lesson-artifacts/build.py                      all of them
+    python3 web/lesson-artifacts/build.py --overviews          the overviews' declarations as JSON, nothing built
 """
 import re, json, os, shutil, subprocess, sys
 
@@ -143,7 +144,7 @@ def page_parts(slug):
     return [(f"kit/{m}.js", read(KIT, m + ".js")) for m in kit] + [("lesson.js", read(folder, "lesson.js"))]
 
 
-def build(module, slug, family, title):
+def build(module, slug, family, title, stage=None, summary=None):
     folder = os.path.join(ROOT, slug)
     L, D, N, ND = shared.tokens(family)
     uses = optional_kit(read(folder, "lesson.js"))
@@ -202,7 +203,9 @@ if(document.fonts&&document.fonts.load)Promise.all(['400 16px "Space Grotesk"','
     print(f"{module}/{slug}: {len(html):,} bytes -> {os.path.relpath(out)}")
 
 
-# module, slug, family colour (familyTheme.ts id), document title
+# module, slug, family colour (familyTheme.ts id), document title. An overview also carries the course stage
+# it spans (manifest.ts STAGES number) and a one-line card summary: the app's hub card comes from these two,
+# through `--overviews` (spec 2026-09-29-overview-pages-on-hub-design.md).
 LESSONS = [
     ("binary-trees", "diameter-of-binary-tree", "recursive-exploration", "Diameter of Binary Tree"),
     ("sliding-window", "longest-substring-without-repeating", "pointer-movement", "Longest Substring Without Repeating Characters"),
@@ -210,14 +213,31 @@ LESSONS = [
     ("graphs", "course-schedule", "relationships", "Course Schedule"),
     ("linked-lists", "build-a-linked-list", "pointer-movement", "Build a Linked List From Scratch"),
     # overviews: one page across several modules (not a lesson, so not a ledger row; spec §2)
-    ("overviews", "linear-structures", "linear-traversal", "The Line Underneath"),
-    ("overviews", "grid-structures", "ordering-search", "The Grid Underneath"),
+    ("overviews", "linear-structures", "linear-traversal", "The Line Underneath", 1,
+     "Arrays, linked lists, stacks and queues side by side, and the everyday systems that run on each."),
+    ("overviews", "grid-structures", "ordering-search", "The Grid Underneath", 2,
+     "Eight grid algorithms, and the systems that run them every second."),
     # specimens: kit fixtures, not lessons or overviews, so not ledger rows. The browser gate runs them so a
     # player is held to the lesson bar before any lesson depends on it (#22).
     ("specimens", "kit-players", "linear-traversal", "Kit Players"),
 ]
 
+def overviews():
+    """The overviews as the app's hub reads them: [{slug, title, stage, summary, family}]."""
+    out = []
+    for m, slug, family, title, *rest in LESSONS:
+        if m != "overviews":
+            continue
+        if len(rest) != 2:
+            raise SystemExit(f"overviews/{slug}: declare its stage and card summary in LESSONS")
+        out.append({"slug": slug, "title": title, "stage": rest[0], "summary": rest[1], "family": family})
+    return out
+
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ["--overviews"]:
+        print(json.dumps(overviews(), indent=2))
+        raise SystemExit(0)
     want = sys.argv[1] if len(sys.argv) > 1 else None
     hit = [l for l in LESSONS if want in (None, l[1], f"{l[0]}/{l[1]}")]
     if not hit:

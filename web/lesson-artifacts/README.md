@@ -160,7 +160,9 @@ build time. The Diameter lesson still carries its own tree painter and predict w
 `app-integration/` holds everything that was removed from the app:
 
 1. `cp -r dist/* ../public/lessons/` (create the folder) so the pages are served at `/lessons/...`.
-2. Copy `app-integration/src/LessonArtifactFrame.tsx` to `src/components/problems/` and
+2. Overviews are already served this way (#41: `scripts/build-overviews.mjs` copies them to `public/artifacts/`, and
+   `src/components/course/ArtifactFrame.tsx` is the same frame); use `ArtifactFrame` for the Lesson tab and skip the
+   parked copy. Otherwise copy `app-integration/src/LessonArtifactFrame.tsx` to `src/components/problems/` and
    `app-integration/src/lessonArtifacts.ts` to `src/lib/course/`.
 3. `git apply lesson-artifacts/app-integration/ProblemWorkspace.patch` (adds the Lesson tab; it was made
    against the tree of 2026-09-21, so it may need a manual merge).

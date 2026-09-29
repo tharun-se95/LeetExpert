@@ -57,7 +57,7 @@ def row_of(led, lesson_id):
 
 def build_overviews():
     """(id, family, title) for every overview build.py makes: the overviews table's source of truth."""
-    return [(f"{m}/{slug}", fam, title) for m, slug, fam, title in build_lessons() if m == "overviews"]
+    return [(f"{m}/{slug}", fam, title) for m, slug, fam, title, *_ in build_lessons() if m == "overviews"]
 
 
 def save(led):

@@ -52,6 +52,15 @@ export function isConceptMapPath(pathname: string): boolean {
 }
 
 /**
+ * A stage overview is a whole page in a frame that scrolls itself, so main
+ * holds the viewport like the concept map's does — a frame with no fixed
+ * height would collapse, and a scrolling main would nest two scrollbars.
+ */
+export function isOverviewPath(pathname: string): boolean {
+  return /^\/courses\/dsa\/overviews\/[^/]+\/?$/.test(pathname);
+}
+
+/**
  * The problems list also needs a viewport-locked main — its filter sidebar
  * and result list scroll internally, not the page, so a fixed height chrome
  * above them doesn't leave `main` scrolling to reveal blank space beneath a
@@ -134,7 +143,10 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
   const totalProblemCount = isNextjs ? 0 : allProblemSlugs().length;
   const ideViewport = isIdePath(pathname);
   const fillMain =
-    ideViewport || isProblemsListPath(pathname) || isConceptMapPath(pathname);
+    ideViewport ||
+    isProblemsListPath(pathname) ||
+    isConceptMapPath(pathname) ||
+    isOverviewPath(pathname);
   // Every /courses/nextjs/* route 404s while the course is disabled (see
   // NEXTJS_COURSE.status), but the root layout still renders AppShell
   // around that 404 body — without this, a disabled course's full sidebar
