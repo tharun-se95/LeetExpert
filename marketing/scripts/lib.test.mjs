@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import {
   detectKind, validateVideo, validatePackage, reelParams, videoChildParams, imageParams,
   imageChildParams, carouselParams, pollPlan, assertSlug, parseProbe, REEL_MAX_SECONDS,
-  POLL_IMAGE, POLL_VIDEO,
+  POLL_IMAGE, POLL_VIDEO, ACCOUNTS, parseAccount, resolveAccount, parseEnv,
 } from "./lib.mjs";
 
 const goodReel = { videoCodec: "h264", audioCodec: "aac", width: 1080, height: 1920, duration: 45, bytes: 10e6 };
@@ -111,4 +111,32 @@ test("parseProbe flattens ffprobe json", () => {
     format: { duration: "136.520000", size: "14713600" },
   });
   assert.deepEqual(p, { videoCodec: "h264", audioCodec: "aac", width: 1080, height: 1920, duration: 136.52, bytes: 14713600 });
+});
+
+test("parseAccount: a post must name its account", () => {
+  assert.throws(() => parseAccount(["pkg", "--dry-run"]), /--account is required/);
+  assert.throws(() => parseAccount(["pkg", "--dry-run", "--account"]), /--account is required/);
+});
+
+test("parseAccount: an unknown account is refused, naming the known ones", () => {
+  assert.throws(() => parseAccount(["pkg", "--account", "leetExpert"]), /unknown account "leetExpert".*leetexpert, 10xtharun/);
+});
+
+test("parseAccount: each known account parses", () => {
+  for (const name of Object.keys(ACCOUNTS)) assert.equal(parseAccount(["pkg", "--account", name, "--publish"]), name);
+});
+
+test("resolveAccount: each account reads its own id key, never another's", () => {
+  const env = { INSTAGRAM_ACCESS_TOKEN: "t", INSTAGRAM_USER_ID: "111", TENX_INSTAGRAM_USER_ID: "222" };
+  assert.deepEqual(resolveAccount(env, "leetexpert"), { id: "111", token: "t", handle: "leetexpert" });
+  assert.deepEqual(resolveAccount(env, "10xtharun"), { id: "222", token: "t", handle: "10xtharun" });
+});
+
+test("resolveAccount: a missing id names the key, not a fallback", () => {
+  assert.throws(() => resolveAccount({ INSTAGRAM_ACCESS_TOKEN: "t", INSTAGRAM_USER_ID: "111" }, "10xtharun"), /TENX_INSTAGRAM_USER_ID/);
+  assert.throws(() => resolveAccount({ INSTAGRAM_USER_ID: "111" }, "leetexpert"), /INSTAGRAM_ACCESS_TOKEN/);
+});
+
+test("parseEnv: skips comments and blanks, keeps '=' inside values", () => {
+  assert.deepEqual(parseEnv("# note\n\nA=1\nB=x=y\n"), { A: "1", B: "x=y" });
 });
