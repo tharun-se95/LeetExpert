@@ -1,12 +1,11 @@
 "use client";
 
-import { polarPoint } from "@/lib/visual/polar";
-
 import { useMemo } from "react";
 import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
 import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
+import { polarPoint } from "@/lib/visual/polar";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
 /**
