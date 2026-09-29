@@ -28,3 +28,7 @@
 .ln-span text{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;fill:var(--mk)}
 .ln-span.hi path,.ln-span.hi line{stroke-width:2.2;opacity:1}
 .ln-span.hi text{font-weight:700}
+/* the key above a player (laneKey in lanes.js): calltrees.js and intervals.js both draw it */
+.ck{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 10px;padding:0;list-style:none;font:12px 'JetBrains Mono',monospace;color:var(--mut)}
+.ck li{display:flex;align-items:center;gap:7px}
+.ck-sw{flex:none}

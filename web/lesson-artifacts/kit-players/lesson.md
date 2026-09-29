@@ -103,3 +103,12 @@ A call tree is what a recursive function draws while it runs: one node per call,
 ```widget #cttabs "Two call-tree walkthroughs"
 <div class="extabs" role="group" aria-label="Choose a call-tree walkthrough"></div><div class="lvhost"></div>
 ```
+
+## Intervals {#intervals}
+
+An interval lane draws each interval as a bar on one shared axis: its row is its place in the list, and its position and width are its extent, so the order of the list and the order on the number line are both visible. A sweep line, a burst arrow or a running end is a named coordinate; a gap or a stretch of free time is a named range, bracketed under the axis with its extent written out. Sorting is a run of swaps that glide, and merging is one bar widening while the other leaves and the rows close up. A bar is `waiting`, `active`, `merged` or whatever the walkthrough calls its states, each drawn by its own tone and named in the key. Both walkthroughs run the real algorithm and check their answer against a reference that shares none of its code.
+
+```widget #ivtabs "Two interval walkthroughs"
+<div class="extabs" role="group" aria-label="Choose an interval walkthrough"></div><div class="lvhost"></div>
+```
+

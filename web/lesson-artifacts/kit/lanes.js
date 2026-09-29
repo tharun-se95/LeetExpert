@@ -12,7 +12,8 @@
 var laneUid=0;
 /* Lane kinds beyond row, stack and queue register here (kit/grids.js adds 'grid'), so a lesson that
    draws none of them does not ship them. A kind may supply: fixed (written by slot), init(l,d),
-   mark(l,name,slot), snap(l,out), and for the view measure(m,l), block(m), box(m,x,y), slotAt(b,k),
+   mark(l,name,slot), snap(l,out), and for the view measure(m,l), block(m), box(m,x,y), slotAt(b,k), place(b,k,l) (a slot's
+   own {x,y,w,h}, where its items are not all one size),
    svg(id,b,l,s), layout(l,b,out), under/over(L,fromL,t,s) (drawing layers below and above the items),
    focus(s,L,first,then), rest(L,first), describe(l), and rowMarks (its slots sit in a row, so the
    generic named indices, which glide, are drawn under them). */
@@ -175,8 +176,10 @@ function LanePlayer(host,o){
   function layout(s){
     ensure(s);var items={},marks={},spans={},enter={},extra={},bx=boxesFor(s);
     s.lanes.forEach(function(l){var b=bx[l.id];if(!b)return;
-      l.items.forEach(function(it,k){if(!it)return;var c=slotAt(b,k);items[it.id]={x:c.x,y:c.y,w:b.cw,h:b.ch,kind:b.kind};});
-      var K=laneKind(l.kind);if(K){if(K.layout)K.layout(l,b,extra);if(!K.rowMarks)return;}
+      var K=laneKind(l.kind);
+      /* a kind whose items differ in size (an interval bar is as wide as its extent) places each itself */
+      l.items.forEach(function(it,k){if(!it)return;var c=slotAt(b,k),z=K&&K.place?K.place(b,k,l):c;items[it.id]={x:z.x,y:z.y,w:z.w||b.cw,h:z.h||b.ch,kind:b.kind};});
+      if(K){if(K.layout)K.layout(l,b,extra);if(!K.rowMarks)return;}
       /* names on one slot share it: one under another below a row's cell, one over another beside a column's */
       var at={};Object.keys(l.marks).sort().forEach(function(n){var k=l.marks[n];(at[k]=at[k]||[]).push(n);});
       Object.keys(at).forEach(function(k){var c=slotAt(b,+k),names=at[k];
@@ -301,3 +304,28 @@ function LanePlayer(host,o){
   });
 }
 function mountLaneTabs(w,examples,o){return mountPlayerTabs(w,examples,function(h,x){return new LanePlayer(h,x);},o);}
+
+/* A key above a player: one swatch per state a walkthrough uses, drawn with the lane's own item classes so a
+   swatch cannot disagree with the lane it explains, in either theme. set(entries) refills it when a tab
+   changes; an entry is {tone, label}, or {band: true, label} for a range. */
+function laneKey(host,before){
+  var k=el('ul','ck'),cur=null,all=null;k.setAttribute('aria-label','Key');
+  function set(entries){cur=entries;k.innerHTML='';k.hidden=!all&&(!entries||!entries.length);
+    (entries||[]).forEach(function(e){
+      k.appendChild(el('li',null,(e.band?
+        '<svg class="ck-sw ck-band" width="26" height="16" viewBox="0 0 26 16" aria-hidden="true"><g><rect x="1" y="1" width="24" height="10"/><path d="M1,14 V11 H25 V14"/></g></svg>':
+        '<svg class="ck-sw" width="26" height="16" viewBox="0 0 26 16" aria-hidden="true"><g class="ln-item'+(e.tone?' '+e.tone:'')+'"><rect class="ln-box" x="1.5" y="1.5" width="23" height="13" rx="4"/></g></svg>')+laneEsc(e.label)));});}
+  /* tabs list different states, and a key that wraps to two lines on one tab and one on the next moves the
+     whole player under it: reserve(list) holds the tallest tab's height (and refits when the width changes) */
+  /* measuring draws every tab's key through set(), which moves cur: keep the shown tab's to put back, or a
+     resize (and the observer's first call, which comes after the tabs set theirs) leaves the last tab's key up */
+  function fit(){
+    k.style.minHeight='';var h=0,shown=cur;
+    all.forEach(function(entries){set(entries);h=Math.max(h,k.offsetHeight);});
+    set(shown);if(h)k.style.minHeight=h+'px';
+  }
+  function reserve(list){all=list.filter(Boolean);if(!all.length)return;fit();
+    if('ResizeObserver' in window)new ResizeObserver(fit).observe(host);}
+  host.insertBefore(k,before||null);set(null);
+  return {el:k,set:set,reserve:reserve};
+}
