@@ -4,7 +4,7 @@
 - **Source lesson:** `courses/dsa/hash-tables/hashing-fundamentals.md`
 - **Family:** hash-tables
 - **Format:** Reel, 1080×1920, 2:17, loops; tutor stills; Hope narration + lo-fi bed; rendered in two chunks and joined
-- **Status:** drafted (not posted)
+- **Status:** posted 2026-09-29 — https://www.instagram.com/reel/Dd4j7dZjME-/
 - **Media:** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)
