@@ -173,6 +173,33 @@ class Reel:
         self.init(f"#{cid}-hl", height=(max(first[1]) - min(first[1]) + 1) * lh)
         self.swap([(f"#{cid}-n{j}", t) for j, (t, _, _) in enumerate(steps)], t1 - 0.2)
 
+    # ---------------------------------------------------------------- product footage
+    def screen(self, sid, shots, t0, t1, zooms=(), crops=(), top=350, width=880, aspect=850 / 1075, url="leetexpert.com"):
+        """A browser window playing real product stills, cross-cut, with camera moves.
+
+        `shots` is [(time, "screens/x.png")]: each still shows from its time until the next.
+        Capture them from the running app (see a package's capture.mjs), never mock them.
+        `zooms` is [(time, scale, fx, fy)]: at `time` the camera eases to `scale`, framing
+        the point (fx, fy) given as fractions of the still. Scale 1 frames the whole still.
+        `crops` is [(time, frac)]: the window's visible height eases to that fraction of the
+        still, cutting off its bottom (framing, not retouching: nothing inside is changed).
+        """
+        h = round(width * aspect)
+        imgs = "".join(f'<img class="shot" id="{sid}-s{j}" src="{src}" alt="">' for j, (_, src) in enumerate(shots))
+        self.add(f'<div class="win" id="{sid}" data-layout-allow-overlap style="top:{top}px;left:{(1080 - width) // 2}px;width:{width}px">'
+                 f'<div class="wbar"><i></i><i></i><i></i><span>{html.escape(url)}</span></div>'
+                 f'<div class="wview" id="{sid}-view" style="height:{h}px"><div class="wcam" id="{sid}-cam" data-layout-allow-overlap style="height:{h}px">{imgs}</div></div></div>')
+        self.show(f"#{sid}", t0, t1, y=24)
+        self.swap([(f"#{sid}-s{j}", t) for j, (t, _) in enumerate(shots)], t1)
+        self.init(f"#{sid}-cam", scale=1, x=0, y=0, transformOrigin="0 0")
+        for t, s, fx, fy in zooms:
+            # framing (fx, fy) at scale s with origin 0 0: shift so that point stays put
+            self.k(f"#{sid}-cam", t, {"scale": s, "x": round(-(s - 1) * fx * width), "y": round(-(s - 1) * fy * h)}, 0.6, "power2.inOut")
+        if crops:
+            self.init(f"#{sid}-view", height=h)
+            for t, frac in crops:
+                self.k(f"#{sid}-view", t, {"height": round(frac * h)}, 0.4, "power2.inOut")
+
     # ---------------------------------------------------------------- tutor stills
     def stills(self, SB):
         """SB: [(time, still_name)], the first at 0 and the last at RESET (back to the first)."""

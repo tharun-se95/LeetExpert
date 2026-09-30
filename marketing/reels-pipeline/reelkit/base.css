@@ -45,6 +45,14 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#16202e}
 .err{left:0;right:0;height:108px;padding:0 24px;display:flex;align-items:center;gap:22px}.err>svg{width:70px;height:70px;flex:none}
 .err>div{display:flex;flex-direction:column;gap:2px}.err .t{font-size:38px;font-weight:700}.err .c{font-family:"Space Mono",monospace;font-size:28px;font-weight:700;color:#94a3b8}
 .err .c.amb{color:#fbbf24}.err .c.teal{color:#5eead4}.fixp{border-color:#5eead4}
+/* product footage: a browser window (R.screen) */
+.win{position:absolute;border:2px solid #2e3b4a;border-radius:22px;overflow:hidden;background:#101a26}
+.wbar{height:34px;display:flex;align-items:center;gap:8px;padding:0 16px;background:#1b2735;border-bottom:2px solid #2e3b4a}
+.wbar i{width:11px;height:11px;border-radius:50%;background:#334155;display:block}
+.wbar span{margin:0 auto;font-family:"Space Mono",monospace;font-size:20px;color:#94a3b8;padding-right:60px}
+.wview{position:relative;overflow:hidden}
+.wcam{position:absolute;left:0;top:0;width:100%}
+.shot{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
 /* interview cue */
 .cuebox{position:absolute;left:0;right:0;border:3px solid #fbbf24;border-radius:22px;padding:30px 34px;background:#0e1520}
 .cuemic{position:absolute;right:30px;top:30px}.cuemic svg{width:110px;height:110px}
