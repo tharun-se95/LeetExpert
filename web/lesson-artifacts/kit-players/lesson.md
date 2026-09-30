@@ -119,3 +119,11 @@ A trie is drawn on the graph lane, like a call tree: the words go in first, so t
 ```widget #trtabs "Three trie walkthroughs"
 <div class="extabs" role="group" aria-label="Choose a trie walkthrough"></div><div class="lvhost"></div>
 ```
+
+## Cost plots {#plots}
+
+A cost plot draws how a cost grows with n: named series on one pair of axes, a cursor walking n with each series' value read out beside the plot, and named lines for a budget or a threshold. A formula is drawn as a curve; a measured series is a count taken by running the loop and counting where the work is, and each is checked against an independent statement of it before anything is drawn. Series differ in ink, dash and marker, and are named in the readout, so none rests on colour. All three walkthroughs compute every number they show.
+
+```widget #pltabs "Three cost plots"
+<div class="extabs" role="group" aria-label="Choose a cost plot"></div><div class="lvhost"></div>
+```

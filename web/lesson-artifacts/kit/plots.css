@@ -1,0 +1,37 @@
+/* kit/plots.css: cost plots (kit/plots.js). The SVG holds lines, bars, bands and markers; every word and number
+   is HTML over it, on a solid patch of the surface it sits on (--pl-bg), so a label crossing a line or a band still
+   reads at AA, and the gate measures it against that patch. Series take their colour through `color` +
+   currentColor, never a presentation attribute. */
+.pl{--pl-bg:var(--bg);display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 18px}
+.pl-box{position:relative;flex:1 1 320px;min-width:0}
+.lp-stage .pl-svg,.pl-svg{position:absolute;left:0;top:0;width:auto;height:auto;max-height:none;overflow:visible;margin:0}
+.pl-text{position:absolute;inset:0;pointer-events:none}
+.pl-grid{stroke:var(--hair2);stroke-width:1;opacity:.7}
+.pl-axis,.pl-tk{stroke:var(--mut);stroke-width:1.2}
+.pl-t,.pl-an,.pl-rn,.pl-cn{position:absolute;white-space:nowrap;background:var(--pl-bg);line-height:1.25;border-radius:4px}
+.pl-t{font:11px 'JetBrains Mono',monospace;color:var(--mut);padding:0 2px;font-variant-numeric:tabular-nums}
+.pl-ty{transform:translateY(-50%)} .pl-tx{transform:translateX(-50%)}
+.pl-an{font-size:12px;color:var(--mut);padding:0 3px} .pl-anx{transform:translateX(-50%)}
+.pl-ln{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.pl-edge{stroke-width:1.5}
+.pl-s.hi .pl-ln{stroke-width:3.4}
+.pl-mk>*,.pl-at>*{fill:currentColor} .pl-mk .pl-x,.pl-at .pl-x{fill:none;stroke:currentColor;stroke-width:2}
+.pl-at>*{stroke:var(--pl-bg);stroke-width:1.5} .pl-at .pl-x{stroke:currentColor}
+.pl-bar{fill:currentColor;fill-opacity:.82}
+.pl-band{fill:currentColor;fill-opacity:.16}
+.pl-ref{stroke:var(--fg);stroke-width:1.4;stroke-dasharray:5 4;opacity:.8}
+.pl-ref.hi{stroke:var(--mk);stroke-width:2;opacity:1}
+.pl-rn{font-size:12px;color:var(--fg);padding:1px 5px}
+.pl-rn.hi{color:var(--mk);font-weight:700}
+.pl-cur{stroke:var(--mk);stroke-width:1.6}
+.pl-cn{font:500 11.5px 'JetBrains Mono',monospace;color:var(--mk);padding:1px 6px;border:1px solid var(--mk)}
+.pl-read{flex:0 1 230px;min-width:200px;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.pl-read li{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;min-height:22px;font-size:13px;color:var(--fg)}
+.pl-read b{font:500 12.5px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-align:right}
+.pl-read li.hi b{color:var(--mk)}
+.pl-read li.off{color:var(--mut)} .pl-read li.off b{font-weight:400;color:var(--mut)} .pl-read li.off .pl-sw{opacity:.45}
+.pl-sw line{stroke:currentColor;stroke-width:2.2} .pl-sw .pl-mk>*{fill:currentColor}
+/* the static chart: a sunk well, as the old costChart had */
+.chart.pl-chart{background:var(--deep);border:1px solid var(--hair);border-radius:12px;padding:12px 12px 8px}
+.pl-chart .pl{--pl-bg:var(--deep)}
+@media (max-width:640px){.pl-read{flex-basis:100%}}

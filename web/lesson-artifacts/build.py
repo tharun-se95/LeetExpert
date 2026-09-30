@@ -93,7 +93,7 @@ SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-
                  "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight",
                  "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral",
                  "tables": "i-g-cell", "heap": "i-recurse", "graphs": "i-route", "graph": "i-route",
-                 "calltrees": "i-recurse", "intervals": "i-flat", "tries": "i-recurse"}
+                 "calltrees": "i-recurse", "intervals": "i-flat", "tries": "i-recurse", "plots": "i-s-cost"}
 
 
 def _icon(sec):
@@ -124,11 +124,14 @@ KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun("),
                 # a call tree names no lane kind itself: it builds a graph lane, so it carries its own markers
                 "calltrees": ("callTreeWalk(", "new CallTrace(", "mountCallTreeTabs("),
                 "tries": ("trieWalk(", "new TrieTrace(", "mountTrieTabs("),
-                "intervals": ("kind:'intervals'", 'kind:"intervals"', "ivWalk(", "new IvTrace(", "mountIvTabs(")}
+                "intervals": ("kind:'intervals'", 'kind:"intervals"', "ivWalk(", "new IvTrace(", "mountIvTabs("),
+                "plots": ("costChart(", "plotWalk(", "new PlotTrace("),
+                # the static costChart needs only plots.js; stepping through a plot adds the player's chrome
+                "plotplayer": ("mountPlotTabs(", "PlotPlayer(")}
 # what a module needs loaded before it, in the order the page must read them
 KIT_DEPS = {"lists": ["player"], "lanes": ["player"], "grids": ["player", "lanes"], "heaps": ["player", "lanes"], "graphs": ["player", "lanes"],
             "calltrees": ["player", "lanes", "graphs"], "intervals": ["player", "lanes"],
-            "tries": ["player", "lanes", "graphs"]}
+            "tries": ["player", "lanes", "graphs"], "plotplayer": ["player", "plots"]}
 
 
 def optional_kit(lesson_js):

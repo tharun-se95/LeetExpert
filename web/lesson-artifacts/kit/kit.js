@@ -198,21 +198,6 @@ function wirePage(){
   });
 }
 
-/* Two-series cost chart: `naive` in red, `once` in green. pts = [[x, naive, once]]; log scales the y axis (for exponential growth). */
-function costChart(host,o){
-  var pts=o.pts,W=560,H=280,m={l:64,r:96,t:16,b:40},xmax=o.xmax||pts[pts.length-1][0],last=pts[pts.length-1],ymax=Math.max(last[1],last[2]);
-  var Y=o.log?function(v){return H-m.b-(H-m.t-m.b)*Math.log10(Math.max(1,v))/Math.log10(ymax);}:function(v){return H-m.b-(H-m.t-m.b)*v/ymax;};
-  var X=function(v){return m.l+(W-m.l-m.r)*v/xmax;};
-  var yt=o.log?[1,10,100,1000,10000,100000,1000000].filter(function(v){return v<=ymax;}):[0,.5,1].map(function(f){return Math.round(ymax*f);});
-  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+o.aria+'">';
-  yt.forEach(function(v){s+='<line x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="grid"/><text x="'+(m.l-8)+'" y="'+(Y(v)+4)+'" class="ax" text-anchor="end">'+fmt(v)+'</text>';});
-  (o.xticks||[0,xmax]).forEach(function(v){s+='<text x="'+X(v)+'" y="'+(H-m.b+18)+'" class="ax" text-anchor="middle">'+v+'</text>';});
-  s+='<text x="'+(m.l+(W-m.l-m.r)/2)+'" y="'+(H-4)+'" class="ax" text-anchor="middle">'+o.xlabel+'</text>';
-  s+='<polyline class="ln naive" points="'+pts.map(function(p){return X(p[0])+','+Y(p[1]);}).join(' ')+'"/><polyline class="ln once" points="'+pts.map(function(p){return X(p[0])+','+Y(p[2]);}).join(' ')+'"/>';
-  [[1,'naive'],[2,'once']].forEach(function(k){s+='<circle cx="'+X(xmax)+'" cy="'+Y(last[k[0]])+'" r="4" class="dot '+k[1]+'"/><text x="'+(X(xmax)+8)+'" y="'+(Y(last[k[0]])+4)+'" class="lab '+k[1]+'">'+fmt(last[k[0]])+'</text>';});
-  host.innerHTML=s+'</svg>';
-}
-
 /* A row of letter cells drawn with the scene player's palette; `paint(kinds)` recolours it and survives theme changes. */
 function strip(host,chars,onPick){
   host.innerHTML='';host.className=(host.className.replace(/\bbrd\b/g,'')+' brd').trim();

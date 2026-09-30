@@ -117,7 +117,7 @@ function appendVisits(n,withTail){
 function mountCost(){
   var pts=[];for(var n=0;n<=64;n+=8){var a=appendVisits(n,false),b=appendVisits(n,true);
     if(a!==n*(n-1)/2||b!==0)throw new Error('append cost check failed at n='+n);pts.push([n,a,b]);}
-  costChart($('#cost-chart'),{pts:pts,xlabel:'values appended',xticks:[0,16,32,48,64],aria:'Nodes visited to append n values: without a tail pointer the count grows as n(n − 1)/2, reaching 2,016 at 64 values; with a tail pointer it stays at 0.'});
+  costChart($('#cost-chart'),{names:['no tail: walk to the end each time','with tail: link on directly'],ylabel:'nodes visited',pts:pts,xlabel:'values appended',xticks:[0,16,32,48,64],aria:'Nodes visited to append n values: without a tail pointer the count grows as n(n − 1)/2, reaching 2,016 at 64 values; with a tail pointer it stays at 0.'});
   var big=10000;
   $('#cost-note').innerHTML='Appending 64 values without a tail visits <b>'+fmt(pts[pts.length-1][1])+'</b> nodes, counted by running it; with the tail it visits <b>0</b>. At '+fmt(big)+' values the walk would visit '+fmt(big*(big-1)/2)+' nodes: O(n²) to build a list that should cost O(n).';
 }

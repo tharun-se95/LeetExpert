@@ -61,7 +61,7 @@ Then ask how many courses you managed to take, and what it means if that is fewe
 It is correct and it is hopeless. There are n! orders of n courses, and when no valid order exists it has to test every one of them before it can say so. Even 10 courses is 3,628,800 orders. The chart counts the orders it really tests on a loop of n courses, against the work of the method below.
 
 ```widget "Work to detect a loop of n courses"
-<div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>test every order</span><span><i style="background:var(--g-ink)"></i>peel off what is ready</span></div><p class="cost-note"></p>
+<div class="chart" id="cost"></div><p class="cost-note"></p>
 ```
 
 **The second trap is a good idea used half-way.** The approach in the next section builds courses that are ready and stops when nothing is ready. The mistake is to conclude "the queue is empty, so we finished". An empty queue happens in two very different situations: everything was built, or what is left is locked in a loop. The warning at the end of the solution shows the code that mixes them up.
