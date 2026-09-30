@@ -45,7 +45,7 @@ Step through it on leetExpert, the interactive DSA course. Link in bio.
 
 ## Alt text (per slide)
 
-**Slide 1.** Answer any range sum in O(1).
+**Slide 1.** The reel's cover: "Answer any range sum in O(1)."
 
 **Slide 2.** The array nums, 2, 4, 1, 5, 3, indexed 0 to 4, with a bracket over indices 1 to 3 labelled 4 + 1 + 5 = 10.
 

@@ -134,15 +134,21 @@ def crop(path, dest):
 
 
 def cap(words):
-    """The reel's words, capitalised because they now start a slide (the check compares them as written)."""
+    """The reel's words, capitalised because they now start a slide (the check compares them as written).
+
+    Never when they open on code: "mid = 7 < 9" is a variable, and "Mid" would be a different one.
+    """
+    if re.match(r"[A-Za-z_]\w*\s*[=(\[.<>+-]", words) or not words[0].islower():
+        return words
     return words[0].upper() + words[1:]
 
 
 def page(n, total, body):
-    """Slide 1 is the reel's cover, whole; the rest carry the brand, a counter and a foot."""
+    """A cover slide is the reel's cover, whole; the rest carry the brand, a counter and a foot."""
     last = n == total
-    head = "" if n == 1 else f'<div class="top"><div class="brand">leetExpert<i></i></div><div class="n">{n} / {total}</div></div>'
-    foot = "" if n == 1 else (f'<div class="foot"><span>{"leetexpert.com" if last else "swipe for the next step"}</span>'
+    full = 'class="cover"' in body
+    head = "" if full else f'<div class="top"><div class="brand">leetExpert<i></i></div><div class="n">{n} / {total}</div></div>'
+    foot = "" if full else (f'<div class="foot"><span>{"leetexpert.com" if last else "swipe for the next step"}</span>'
                               f'<span>{"link in bio" if last else "swipe →"}</span></div>')
     return (f'<!doctype html><html lang="en"><head><meta charset="UTF-8"/><title>slide {n}</title><style>{CSS}</style></head>'
             f'<body>{head}{body}{foot}</body></html>')
@@ -160,10 +166,16 @@ def build(car, snap_frames=False):
         f.unlink()
     d.mkdir(parents=True, exist_ok=True)
     (d / "target").write_text(str(car.relative_to(ROOT)))
-    cover = Image.open(reel / "cover.png").convert("RGB")
-    assert cover.size == (1080, 1920)
-    cover.crop((0, GRID_TOP, 1080, GRID_BOTTOM)).save(d / "cover.png")
-    bodies, alts = [('<div class="cover"><img src="cover.png" alt=""></div>', None)], [section(md, "Hook")]
+    hook = section(md, "Hook")
+    if (reel / "cover.png").exists():
+        cover = Image.open(reel / "cover.png").convert("RGB")
+        assert cover.size == (1080, 1920)
+        cover.crop((0, GRID_TOP, 1080, GRID_BOTTOM)).save(d / "cover.png")
+        bodies, alts = [('<div class="cover"><img src="cover.png" alt=""></div>', None)], [f'The reel\'s cover: "{hook}"']
+    else:
+        # a reel without a rendered cover (its post led with a card) opens on its hook instead
+        bodies = [(f'<div class="content"><div class="k">SAVE THIS</div><div class="say">{e(hook)}</div></div>', None)]
+        alts = [f'A text slide: "{hook}"']
     fi = 0
     for s in spec["slides"]:
         if "at" in s:

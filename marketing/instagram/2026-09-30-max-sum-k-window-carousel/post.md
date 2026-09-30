@@ -41,7 +41,7 @@ Step through every line on leetExpert, the interactive DSA course. Link in bio.
 
 ## Alt text (per slide)
 
-**Slide 1.** Max sum of k numbers in a row. Looks clean.
+**Slide 1.** The reel's cover: "Max sum of k numbers in a row. Looks clean."
 
 **Slide 2.** Python max_sum_k(nums, k) tagged "AI · passes the sample": best = float("-inf"); for i in range(len(nums) - k): best = max(best, sum(nums[i:i + k])); return best. Under it [2, 1, 5, 1, 3, 2], k = 3 → 9 ✓, with the windows walked on the array.
 
