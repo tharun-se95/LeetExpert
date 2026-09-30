@@ -213,6 +213,7 @@ def build():
             right = "swipe →" if n < len(pairs) else "link in bio"
             (d / f"slide{n}.html").write_text(page(s["title"], n, len(pairs), body, right))
         pkg = ROOT / "marketing/instagram" / f"{DATE}-{slug}-cheatsheet"
+        (d / "target").write_text(str(pkg.relative_to(ROOT)))
         out[slug] = (pkg, post_md(s, [a for _, a in pairs], pkg), len(pairs))
     return out
 
