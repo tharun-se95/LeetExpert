@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / 
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
 from frames import factorial_events  # noqa: E402
+from viz import StackViz, calls, load  # noqa: E402
 
 N = 3
 EV = factorial_events(N)
@@ -113,7 +114,27 @@ R.code("c1", Path("code/factorial.py").read_text(), [
     (A["otherwise"] - 0.2, [4], "Otherwise: n × factorial(n − 1)"),
     (A["smaller"] - 0.2, [4], "A smaller problem every call"),
     (A["waits2"] - 0.3, [4], "The multiply waits until the call comes back"),
-], A["code"] - 0.1, A["memory"], top=440, font=36)
+], A["code"] - 0.1, A["memory"], top=330, font=34)
+
+# under it, the shown factorial's own calls and returns: frames stack down, then unwind
+EV, _ = calls(load("code/factorial.py", "factorial"), 3)
+stack, fst = [], []
+for kind, depth, x in EV:
+    if kind == "call":
+        stack.append(x["n"])
+        lab = [f"factorial({n}): {n} × ?" if n else "factorial(0) → 1" for n in stack]
+        fst.append({"items": lab, "note": "base case: return 1" if x["n"] == 0 else f"call factorial({x['n']})"})
+    else:
+        n = stack.pop()
+        lab = [f"factorial({m}): {m} × ?" for m in stack]
+        if stack:
+            lab[-1] = f"factorial({stack[-1]}): {stack[-1]} × {x}"
+        fst.append({"items": lab, "note": f"factorial({n}) returns {x}" + ("" if stack else " · done")})
+pushes = [A["code"] + 0.4, A["code"] + 1.6, A["code"] + 2.8, A["floor"] - 0.5]
+pops = [A["waits2"] + 0.2 + 0.8 * j for j in range(4)]
+assert len(pushes) + len(pops) == len(fst) and pops[-1] < A["memory"] - 0.3
+StackViz(R, "fs", list(zip(pushes + pops, fst)), A["code"] - 0.1, A["memory"], top=R.code_bottom + 4,
+         depth=4, left=250, width=580, label="call stack")
 
 # --- limits
 show("#lim", A["memory"], A["break"], y=20)
@@ -131,7 +152,23 @@ R.code("c2", Path("code/broken.py").read_text(), [
     (A["skip"] - 0.4, [2, 4], '3 → 1 → −1 → −3 … <span class="amb">never 0</span>'),
     (A["hang"] - 0.2, [4], 'Not a hang: <span class="amb">a crash</span>'),
     (A["exceeded"] - 0.4, [4], '<span class="amb">RecursionError: maximum recursion<br/>depth exceeded</span>'),
-], A["break"] - 0.1, A["asked"], top=440, font=36)
+], A["break"] - 0.1, A["asked"], top=330, font=34)
+
+# under it, the broken version's own calls: it steps past 0 and never stops
+DEPTH = 5
+EV, ERR = calls(load("code/broken.py", "broken"), 3, limit=8)
+assert type(ERR).__name__ == "RecursionError"
+bst, ns = [], []
+for _, depth, x in EV:
+    ns.append(x["n"])
+    lab = [f"broken({n})" for n in ns]
+    if len(lab) > DEPTH:
+        lab = ["⋮ " + lab[-DEPTH]] + lab[-DEPTH + 1:]
+    bst.append({"items": lab, "note": f"depth {depth}: n = {x['n']}" + (" · past 0" if x["n"] < 0 else "")})
+bst.append({"items": bst[-1]["items"], "note": f"{type(ERR).__name__} ✗"})
+bt = R.spread(A["break"] + 0.6, A["hang"], len(EV)) + [A["exceeded"] - 0.4]
+StackViz(R, "bs", list(zip(bt, bst)), A["break"] - 0.1, A["asked"], top=R.code_bottom + 4,
+         depth=DEPTH, left=250, width=580, slot_h=50, label="call stack")
 
 # --- interview cue, challenge
 show("#cue", A["asked"], A["turn"])
@@ -147,12 +184,12 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "cu-07-confident"), (A["trays"] - 0.2, "wu-13-coffee"), (A["finish"] - 0.2, "wu-03-point-side"),
-          (A["base"] - 0.1, "cu-02-explaining"), (A["comes"] - 0.2, "wu-03b-point-left"), (A["six"] - 0.1, "fb-05-celebrate"),
-          (A["code"] - 0.2, "wu-14-laptop"), (A["memory"] - 0.2, "cu-10-serious"), (A["crashes"] - 0.1, "cu-05b-cringe"),
-          (A["break"] - 0.2, "cu-06-skeptical"), (A["exceeded"] - 0.2, "wu-08-facepalm"), (A["asked"] - 0.2, "cu-02-explaining"),
-          (A["turn"] - 0.2, "wu-04-open-palm"), (A["five"] - 0.1, "cu-03-thinking"), (A["leet"] - 0.2, "fb-03-present"),
-          (R.RESET, "cu-07-confident")])
+# the tutor only where she adds something: the hook, the crash, the challenge, the brand
+R.stills([(0, "cu-07-confident"), (R.at("factorial") - 0.2, None),
+          (A["crashes"] - 0.1, "cu-05b-cringe"), (A["break"] - 0.3, None),
+          (A["exceeded"] - 0.2, "wu-08-facepalm"), (A["say"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["five"] - 0.1, None),
+          (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
 R.captions(amber={"crashes", "break", "skip", "exceeded", "hang"},
            teal={"base", "six", "pops", "pop", "frame", "frames", "leetexpert", "floor"},
            until=A["leet"])

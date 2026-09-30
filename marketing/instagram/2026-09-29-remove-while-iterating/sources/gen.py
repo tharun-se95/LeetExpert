@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / 
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
 import icons as I  # noqa: E402
+from viz import ArrayViz, load, trace  # noqa: E402
 
 R = Reel("Remove while iterating", "Would you ship this?")
 a = R.anchor
@@ -122,11 +123,36 @@ R.code("c1", BUG, [
     (A["lands"], [2, 3, 4], 'The next item lands in the slot<br/>you just checked: <span class="amb">skipped</span>'),
 ], A["walk"] - 0.1, A["fix"], top=380, font=34)
 
+# under it, the shown bug's own run on the failing test
+NUMS = [2, 4, 6, 7]
+EV, RES = trace(load("code/bug.py", "remove_evens"), list(NUMS))
+bug_st, pos, seen = [], -1, set()
+for j, (ln, sn) in enumerate(EV):
+    nxt = EV[j + 1][0] if j + 1 < len(EV) else None
+    if ln == 2 and nxt == 3:
+        pos += 1
+        seen.add(sn["n"])
+        skipped = [v for v in sn["nums"][:pos] if v not in seen]
+        bug_st.append({"vals": sn["nums"], "ptr": {"position": pos}, "mark": {pos: "amb"},
+                       "note": f"position {pos}: n = {sn['n']}" + (f" · {skipped[0]} never checked" if skipped else "")})
+    elif ln == 4:
+        bug_st.append({"vals": sn["nums"], "ptr": {"position": pos}, "note": f"remove({sn['n']}): the rest slide left"})
+evens = [v for v in RES if v % 2 == 0]
+bug_st.append({"vals": RES, "mark": {i: "amb" for i, v in enumerate(RES) if v % 2 == 0}, "note": f"returns {RES}: {evens[0]} survived"})
+bug_t = [A["walk"], A["remove"], A["lands"], (A["lands"] + A["skips"]) / 2, A["skips"] - 0.2]
+assert len(bug_t) == len(bug_st), (len(bug_t), len(bug_st))
+ArrayViz(R, "bv", NUMS, list(zip(bug_t, bug_st)), A["walk"] - 0.1, A["fix"], top=R.code_bottom + 4,
+         pointers=[("position", "amb", "below")])
+
 # --- fix 1: a new list
 R.code("c2", Path("code/fix_new_list.py").read_text(), [
     (A["fix"], [1, 2], "Fix 1: don't edit the list you're reading"),
     (A["build"], [2], "Build a new one: keep <code>n</code> only if it's odd<br/><code>[2, 4, 6, 7]</code> → <span class=\"teal\">[7] ✓</span>"),
 ], A["fix"] - 0.1, A["fix2"], top=420, font=32, note_top=720)
+KEEP = load("code/fix_new_list.py", "remove_evens")(list(NUMS))
+ArrayViz(R, "nv", NUMS, [(A["fix"], {}), (A["build"], {"mark": {i: "teal" for i, v in enumerate(NUMS) if v in KEEP},
+                                                        "dim": {i for i, v in enumerate(NUMS) if v not in KEEP}, "note": f"new list: {KEEP}"})],
+         A["fix"] - 0.1, A["fix2"], top=R.code_bottom + 4)
 
 # --- fix 2: read/write pointers, in place (the course's stable-compaction template)
 R.code("c3", Path("code/fix_in_place.py").read_text(), [
@@ -137,6 +163,27 @@ R.code("c3", Path("code/fix_in_place.py").read_text(), [
     (A["never"], [5], '<code>write</code> never passes <code>read</code>: nothing<br/>unread is overwritten'),
     (A["cut"], [7], "Cut off the tail: <code>del nums[write:]</code>"),
 ], A["fix2"] - 0.1, A["slow"], top=360, font=30)
+
+# under it, read and write on the same list: the shown fix's own run
+EV, RES = trace(load("code/fix_in_place.py", "remove_evens"), list(NUMS))
+ip_st = []
+for j, (ln, sn) in enumerate(EV):
+    nxt = EV[j + 1][0] if j + 1 < len(EV) else None
+    ptr = {"read": sn.get("read"), "write": sn["write"]}
+    if ln == 3 and nxt == 4:
+        v = sn["nums"][sn["read"]]
+        ip_st.append({"vals": sn["nums"], "ptr": ptr, "mark": {sn["read"]: "teal" if v % 2 else "amb"},
+                      "note": f"read {sn['read']}: {v} is {'odd → keep' if v % 2 else 'even → skip'}"})
+    elif ln == 5:
+        ip_st.append({"vals": sn["nums"], "ptr": ptr, "mark": {sn["write"]: "teal"}, "note": f"nums[{sn['write']}] = {sn['nums'][sn['write']]}"})
+    elif ln == 6:
+        ip_st.append({"vals": sn["nums"], "ptr": ptr, "note": f"write → {sn['write']}: never past read"})
+    elif ln == 7:
+        ip_st.append({"vals": sn["nums"], "ptr": {}, "mark": {i: "teal" for i in range(len(sn["nums"]))}, "note": f"del nums[{sn['write']}:] → {sn['nums']}"})
+ip_t = [A["read"], A["visits"], A["visits"] + 1.0, A["keeper"] - 0.3, A["keeper"] + 1.3, A["never"], A["cut"]]
+assert len(ip_t) == len(ip_st) and RES == KEEP, (len(ip_t), len(ip_st))
+ArrayViz(R, "iv", NUMS, list(zip(ip_t, ip_st)), A["fix2"] - 0.1, A["slow"], top=R.code_bottom + 4,
+         pointers=[("write", "teal", "above"), ("read", "amb", "below")])
 
 # --- cost: remove shifts the tail every time
 RM_MS, NL_MS = 7972.0, 4.0  # our recorded run; verify.py re-measures the gap
@@ -179,14 +226,13 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "cu-07-confident"), (A["ai"] - 0.1, "wu-14-laptop"), (A["passes"], "wu-06-thumbs-up"), (A["ship"] - 0.1, "cu-03-thinking"),
-          (A["try"] - 0.1, "wu-05-tablet"), (A["survived"] - 0.9, "cu-04-surprised"), (A["seats"] - 0.2, "wu-03-point-side"),
-          (A["slides"], "cu-02-explaining"), (A["nobody"] - 0.1, "cu-05-worried"), (A["walk"] - 0.2, "wu-14-laptop"),
-          (A["remove"] - 0.1, "wu-02-pen-up"), (A["skips"] - 0.1, "wu-08-facepalm"), (A["fix"] - 0.2, "cu-07-confident"),
-          (A["fix2"] - 0.2, "wu-03b-point-left"), (A["never"] - 0.1, "cu-02-explaining"), (A["cut"] - 0.1, "wu-06-thumbs-up"),
-          (A["slow"] - 0.2, "cu-06-skeptical"), (A["eight"] - 0.2, "cu-05b-cringe"), (A["dictionary"] - 0.2, "cu-10-serious"),
-          (A["lists"] - 0.1, "wu-10-shrug"), (A["changing"] - 0.2, "cu-02-explaining"), (A["turn"] - 0.2, "wu-04-open-palm"),
-          (A["buggy"] - 0.1, "cu-03-thinking"), (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
+# the tutor only where she adds something: the hook, the surprise, the skip, the cost, the challenge, the brand
+R.stills([(0, "cu-07-confident"), (A["ai"] - 0.1, None),
+          (A["survived"] - 0.9, "cu-04-surprised"), (A["seats"] - 0.2, None),
+          (A["skips"] - 0.1, "wu-08-facepalm"), (A["fix"] - 0.3, None),
+          (A["eight"] - 0.2, "cu-05b-cringe"), (A["dictionary"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["buggy"] - 0.1, None),
+          (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
 R.captions(amber={"survived", "even", "skips", "skip", "slow", "eight", "seconds", "runtime", "silently", "nobody", "buggy"},
            teal={"fix", "new", "read", "write", "pointer", "keeper", "odd", "milliseconds", "leetexpert", "tail"},
            until=A["leet"])

@@ -7,6 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / "reelkit"))
 from reel import Reel  # noqa: E402
+from viz import ArrayViz, MapViz, load, trace  # noqa: E402
 import kiticons as KI  # noqa: E402
 from calltree import call_tree  # noqa: E402
 
@@ -66,7 +67,18 @@ R.code("c0", Path("code/naive.py").read_text(), [
     (A["under"] - 0.2, [2, 3], "Under two: return n"),
     (A["otherwise"] - 0.2, [4], "Otherwise: add the two before it"),
     (A["clean"], [1, 2, 3, 4], 'Clean, and <span class="teal">correct</span>. Would you ship it?'),
-], 0.0, A["ask"], top=440, font=34)
+], 0.0, A["ask"], top=330, font=34)
+
+# under it, the values the shown function returns: each one the sum of the two before it
+naive = load("code/naive.py", "fib")
+VALS = [naive(i) for i in range(9)]
+last = len(VALS) - 1
+ArrayViz(R, "nv", VALS, [
+    (0.0, {}),
+    (A["under"] - 0.2, {"mark": {0: "teal", 1: "teal"}, "note": f"fib(0) = {VALS[0]}, fib(1) = {VALS[1]}"}),
+    (A["otherwise"] - 0.2, {"mark": {last - 2: "amb", last - 1: "amb", last: "teal"},
+                            "note": f"fib({last}) = {VALS[last - 1]} + {VALS[last - 2]} = {VALS[last]}"}),
+], 0.0, A["ask"], top=R.code_bottom + 4, label="fib(0) … fib(8)")
 
 # --- the cost
 show("#cost", A["ask"], A["why"], y=20)
@@ -140,7 +152,22 @@ R.code("c1", Path("code/memo.py").read_text(), [
     (A["nosub"] - 0.4, [6, 7], '<span class="teal">No subtree at all</span>'),
     (A["otherwise2"] - 0.2, [8], "Otherwise: compute it once…"),
     (A["store"] - 0.2, [8, 9], "…store it, then return it"),
-], A["walk"] - 0.1, A["now"], top=400, font=28)
+], A["walk"] - 0.1, A["now"], top=330, font=28)
+
+# under it, the memo filling on the shown function's own run of fib(5): four answers, two reused
+EV, RES = trace(load("code/memo.py", "fib"), 5)
+KEYS = sorted(EV[-1][1]["memo"])
+mst = [(A["dictionary"] - 0.6, {"note": "memo = {}"})]
+steps = [(ln, sn) for ln, sn in EV if ln in (7, 8)]
+mt = [A["base"], A["base"] + 1.5, A["new"] + 0.3, A["new"] + 2.0, A["nosub"], A["store"]]
+assert len(steps) == len(mt) and RES == 5
+for t, (ln, sn) in zip(mt, steps):
+    n, memo = sn["n"], sn["memo"]
+    if ln == 8:
+        mst.append((t, {"vals": dict(memo), "mark": {n: "amb"}, "note": f"memo[{n}] = {memo[n]}"}))
+    else:
+        mst.append((t, {"vals": dict(memo), "mark": {n: "teal"}, "note": f"fib({n}): saved → {memo[n]}, no subtree"}))
+MapViz(R, "mv", KEYS, mst, A["walk"] - 0.1, A["now"], top=R.code_bottom + 4, cols=4, label="memo")
 
 # --- the payoff
 show("#pay", A["now"], A["catch"], y=20)
@@ -183,12 +210,12 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "cu-07-confident"), (A["clean"] - 0.1, "wu-06-thumbs-up"), (A["ship"] - 0.1, "cu-03-thinking"),
-          (A["million"] - 0.1, "cu-04-surprised"), (A["seconds"] - 0.1, "cu-05b-cringe"), (A["draw"] - 0.2, "wu-02-pen-up"),
-          (A["look"] - 0.2, "wu-03-point-side"), (A["doubles"] - 0.2, "wu-08-facepalm"), (A["fix"] - 0.1, "cu-07-confident"),
-          (A["walk"] - 0.2, "wu-14-laptop"), (A["nosub"] - 0.2, "cu-08-excited"), (A["now"] - 0.2, "cu-02-explaining"),
-          (A["micro"] - 0.1, "fb-05-celebrate"), (A["catch"] - 0.2, "cu-06-skeptical"), (A["exceeded"] - 0.4, "cu-05b-cringe"),
-          (A["see"] - 0.2, "cu-02-explaining"), (A["turn"] - 0.2, "wu-04-open-palm"), (A["six2"] - 0.1, "cu-03-thinking"),
+# the tutor only where she adds something: the hook, the cost, the doubling, the payoff, the challenge, the brand
+R.stills([(0, "cu-07-confident"), (A["under"] - 0.3, None),
+          (A["seconds"] - 0.1, "cu-05b-cringe"), (A["draw"] - 0.2, None),
+          (A["doubles"] - 0.2, "wu-08-facepalm"), (A["fix"] + 1.0, None),
+          (A["micro"] - 0.1, "fb-05-celebrate"), (A["catch"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["six2"] - 0.1, None),
           (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
 R.captions(amber={"million", "seconds", "twice", "doubles", "catch", "crashes", "exceeded"},
            teal={"memo", "memoize", "memoized", "once", "remember", "seventy", "microseconds", "leetexpert", "saved"},

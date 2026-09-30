@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / 
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
 from bstrace import search_trace  # noqa: E402
+from viz import ArrayViz  # noqa: E402
 
 ARR, TARGET = [1, 3, 5, 7, 9, 11, 13], 9  # the lesson's viz; verify.py reads it from the lesson
 TR = search_trace(ARR, TARGET)
@@ -114,7 +115,7 @@ R.add(f'<div class="card" id="dict" data-layout-allow-overlap><div class="h">A p
       '<div class="val" id="dk2" style="left:0;top:470px">open the middle</div>'
       '<div class="val teal" id="dk3" style="left:0;top:550px">keep one half, ignore the other</div></div>')
 
-# --- the code, line by line
+# --- the code, line by line, with the search acted out under it
 R.code("c1", Path("code/binary_search.py").read_text(), [
     (A["range"] - 0.3, [2], "<code>[lo, hi]</code>: where the answer could still be"),
     (A["while"], [3, 4], "While the range isn't empty,<br/>take the middle"),
@@ -123,7 +124,37 @@ R.code("c1", Path("code/binary_search.py").read_text(), [
     (A["big2"] - 0.3, [9, 10], "Too big: move <code>hi</code> below mid"),
     (A["runs"] - 0.3, [11], "Range ran out: not there"),
     (A["halves"], [3, 4], 'Each check halves the range: <span class="teal">O(log n)</span>'),
-], A["code"] - 0.1, A["million"], top=380, font=30)
+], A["code"] - 0.1, A["million"], top=310, font=26)
+
+
+def stage_states(arr, trace):
+    """The shown code's own run on the lesson's list, as stage states: the range, then
+    per check its mid and its verdict. `trace` is bstrace's record of code/binary_search.py."""
+    lo, hi = trace[0][0], trace[0][1]
+    out = [{"ptr": {"lo": lo, "hi": hi}, "note": f"lo, hi = {lo}, {hi}"}]
+    dim = set()
+    for lo, hi, mid, verdict in trace:
+        out.append({"ptr": {"lo": lo, "hi": hi}, "dim": set(dim), "mark": {mid: "amb"},
+                    "note": f"mid = {mid} → arr[mid] = {arr[mid]}"})
+        if verdict == "found":
+            out.append({"ptr": {"lo": lo, "hi": hi}, "dim": set(dim), "mark": {mid: "teal"},
+                        "note": f"{arr[mid]} == {TARGET} → return {mid}, in {len(trace)} checks"})
+        elif verdict == "low":
+            dim |= set(range(lo, mid + 1))
+            out.append({"ptr": {"lo": mid + 1, "hi": hi}, "dim": set(dim), "note": f"{arr[mid]} < {TARGET} → lo = {mid + 1}"})
+        else:
+            dim |= set(range(mid, hi + 1))
+            out.append({"ptr": {"lo": lo, "hi": mid - 1}, "dim": set(dim), "note": f"{arr[mid]} > {TARGET} → hi = {mid - 1}"})
+    return out
+
+
+ST = stage_states(ARR, TR)
+# init, then (mid, verdict) per check: the verdicts land on the lines that make them
+big_mid = (A["big2"] - 0.3 + A["runs"] - 0.3) / 2
+st_times = [A["range"] - 0.3, A["while"], A["small"] - 0.3, A["big2"] - 0.3, big_mid, A["runs"] - 0.3, A["halves"]]
+assert len(st_times) == len(ST), (len(st_times), len(ST))
+ArrayViz(R, "sv", ARR, list(zip(st_times, ST)), A["code"] - 0.1, A["million"], top=R.code_bottom + 4,
+         pointers=[("hi", "amb", "above"), ("lo", "teal", "below")], cell=100)
 
 # --- scale: halving a million
 show("#scale", A["million"], A["bug"], y=20)
@@ -169,12 +200,12 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "cu-07-confident"), (A["find"], "cu-03-thinking"), (A["dictionary"] - 0.2, "wu-13-coffee"),
-          (A["goes"] - 0.2, "wu-03-point-side"), (A["gone1"] - 0.1, "cu-02-explaining"), (A["gone2"] - 0.1, "wu-03-point-side"),
-          (A["found"] - 0.1, "fb-05-celebrate"), (A["code"] - 0.2, "wu-14-laptop"), (A["halves"] - 0.1, "cu-07-confident"),
-          (A["million"] - 0.2, "wu-05-tablet"), (A["thirty"] - 0.1, "cu-08-excited"), (A["bug"] - 0.2, "cu-10-serious"),
-          (A["forever"] - 0.2, "wu-08-facepalm"), (A["sorted"] - 0.2, "cu-02-explaining"), (A["turn"] - 0.2, "wu-04-open-palm"),
-          (A["thirteen"] - 0.1, "cu-03-thinking"), (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
+# the tutor only where she adds something: the hook, the find, the bug, the challenge and the brand
+R.stills([(0, "cu-07-confident"), (R.at("seven") - 0.3, None),
+          (A["found"] - 0.1, "fb-05-celebrate"), (A["code"] - 0.4, None),
+          (A["bug"] - 0.2, "cu-10-serious"), (A["forever"] - 0.2, "wu-08-facepalm"), (A["sorted"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["thirteen"] - 0.1, "cu-03-thinking"), (A["leet"] - 0.2, "fb-03-present"),
+          (R.RESET, "cu-07-confident")])
 R.captions(amber={"gone", "bug", "forever", "big"},
            teal={"half", "halves", "found", "twenty", "thirty", "sorted", "leetexpert", "middle"},
            until=A["leet"])

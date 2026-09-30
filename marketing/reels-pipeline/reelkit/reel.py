@@ -72,6 +72,10 @@ def highlight(line, lang):
     return "".join(out) or "&nbsp;"
 
 
+CAP_BESIDE, CAP_FULL = 470, 50  # caption box left edge with the tutor on / off
+CAP_TOP = 1250  # the caption zone; every scene ends above it (base.css .caps)
+
+
 class Reel:
     def __init__(self, title, topic, lead=0.3):
         self.title, self.topic, self.lead = title, topic, lead
@@ -157,8 +161,9 @@ class Reel:
         lh = round(font * 1.62)
         card_h = 70 + len(lines) * lh + 30
         note_top = note_top or top + card_h + 18
-        # two lines of notes (~105px) must end above the caption zone at y 1160
-        assert note_top + 105 <= 1155, f"{cid}: notes at y {note_top} would run into the captions; lower font or top"
+        # two lines of notes (~105px) must end above the caption zone
+        assert note_top + 105 <= CAP_TOP - 5, f"{cid}: notes at y {note_top} would run into the captions; lower font or top"
+        self.code_bottom = note_top + 105  # where a data-structure stage (viz.py) can start
         rows = "".join(f'<div class="cl" style="height:{lh}px;line-height:{lh}px"><span class="cn">{i + 1}</span><span class="cx">{highlight(l, lang)}</span></div>'
                        for i, l in enumerate(lines))
         notes = "".join(f'<div class="cnote" id="{cid}-n{j}">{n}</div>' for j, (_, _, n) in enumerate(steps))
@@ -206,30 +211,58 @@ class Reel:
                 self.k(f"#{sid}-view", t, {"height": round(frac * h)}, 0.4, "power2.inOut")
 
     # ---------------------------------------------------------------- tutor stills
-    def stills(self, SB):
-        """SB: [(time, still_name)], the first at 0 and the last at RESET (back to the first)."""
+    def stills(self, SB, max_share=0.35):
+        """SB: [(time, still_name | None)], the first at 0 and the last at RESET (back to the first).
+
+        None takes the tutor off screen until the next named still (owner, 2026-09-30: she drew
+        the eye from the lesson when she was on for the whole reel). Bring her in where she adds
+        something: the hook, a reaction to the bug or the catch, the challenge, the brand. She is
+        held to `max_share` of the reel, and while she is off the captions take the full width.
+        """
         assert [t for t, _ in SB] == sorted(t for t, _ in SB), "still cuts out of order"
-        names = sorted({n for _, n in SB})
+        assert SB[0][1] and SB[-1][1] == SB[0][1], "the reel opens on the tutor and loops back to that still"
+        # on/off windows for the wrapper
+        self.tutor_on = []
+        for j, (t, n) in enumerate(SB[:-1]):
+            if n is None:
+                continue
+            nxt = SB[j + 1][0]
+            if self.tutor_on and abs(self.tutor_on[-1][1] - t) < 1e-6:
+                self.tutor_on[-1][1] = nxt
+            else:
+                self.tutor_on.append([t, nxt])
+        self.tutor_on[-1][1] = self.END  # on through the loop point
+        share = sum(b - a for a, b in self.tutor_on) / self.END
+        assert share <= max_share, f"tutor on screen {share:.0%} of the reel (limit {max_share:.0%}): take her off with None"
+        self.tutor_share = share
+        self.init("#tutorwrap", autoAlpha=1, x=0)
+        for a, b in self.tutor_on:
+            if a > 0:
+                self.k("#tutorwrap", a, {"autoAlpha": 1, "x": 0}, 0.35, "power3.out")
+            if b < self.RESET - 1e-6:
+                self.k("#tutorwrap", b - 0.25, {"autoAlpha": 0, "x": -80}, 0.25, "power2.in")
+        cuts = [(t, n) for t, n in SB if n is not None]
+        names = sorted({n for _, n in cuts})
         missing = [n for n in names if not os.path.exists(f"stills/{n}.png")]
         assert not missing, f"run reelkit/prep.sh first; missing stills: {missing}"
         for n in names:
-            on = SB[0][1] == n
+            on = cuts[0][1] == n
             self.init(f"#st-{n}", autoAlpha=1 if on else 0, xPercent=-50)
-            for t, m in SB[1:]:
+            for t, m in cuts[1:]:
                 if m == n and not on:
                     self.k(f"#st-{n}", t, {"autoAlpha": 1}, 0.14, "power2.out"); on = True
                 elif m != n and on:
                     self.k(f"#st-{n}", t, {"autoAlpha": 0}, 0.1, "none"); on = False
         # a slow push-in on each hold, reset at every cut
         self.init("#tutor", scale=1, transformOrigin="50% 100%")
-        for j, (t, _) in enumerate(SB):
-            nxt = SB[j + 1][0] if j + 1 < len(SB) else self.END
+        for j, (t, _) in enumerate(cuts):
+            nxt = cuts[j + 1][0] if j + 1 < len(cuts) else self.END
             if j:
                 self.k("#tutor", t, {"scale": 1}, 0.001, "none")
             self.k("#tutor", t + 0.002, {"scale": 1.035}, max(0.01, nxt - t - 0.01), "none")
         imgs = "".join(f'<img class="still" id="st-{n}" src="stills/{n}.png" alt="" style="height:{800 if n.startswith("fb-") else 700 if n.startswith("cu-") else 760}px">' for n in names)
-        self.add(f'<div class="tutor" id="tutor">{imgs}</div>')
-        self.n_cuts = len(SB)
+        self.add(f'<div class="tutorwrap" id="tutorwrap"><div class="tutor" id="tutor">{imgs}</div></div>')
+        self.n_cuts = len(cuts)
 
     # ---------------------------------------------------------------- captions
     def captions(self, amber, teal, until):
@@ -257,7 +290,15 @@ class Reel:
                 self.k(f"#cap-w{i}", WS[i], {"opacity": 1}, 0.08, "none")
         cap = "".join(f'<div class="cg" id="cap-g{g}">' + " ".join(f'<span class="{wc(i)}" id="cap-w{i}">{html.escape(W[i]["t"])}</span>' for i in ids) + "</div>"
                       for g, ids in enumerate(groups))
-        self.add(f'<div class="caps">{cap}</div>')
+        # beside the tutor while she is on, the full width while she is off
+        on = getattr(self, "tutor_on", [[0, self.END]])
+        self.init("#caps", left=CAP_BESIDE if on[0][0] == 0 else CAP_FULL, right=50)
+        for a, b in on:
+            if a > 0:
+                self.k("#caps", a, {"left": CAP_BESIDE}, 0.3, "power2.inOut")
+            if b < self.RESET - 1e-6:
+                self.k("#caps", b - 0.2, {"left": CAP_FULL}, 0.3, "power2.inOut")
+        self.add(f'<div class="caps" id="caps">{cap}</div>')
 
     # ---------------------------------------------------------------- brand
     def lockup(self, t_leet, t_link, line):

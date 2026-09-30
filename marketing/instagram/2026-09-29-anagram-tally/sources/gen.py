@@ -9,6 +9,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / 
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
 import icons as I  # noqa: E402
+from viz import MapViz, trace  # noqa: E402
+
+sys.path.insert(0, "code")
+from is_anagram import is_anagram  # noqa: E402
 
 R = Reel("Valid anagram, tally sheet", "Hash map counting")
 a = R.anchor
@@ -148,7 +152,25 @@ R.code("cw", SRC, [
     (A["take"] - 0.4, [7, 8], "−1 for every letter of <code>t</code>"),
     (A["end"], [9], "Every count back at 0 → anagram"),
     (A["pass"], [5, 6, 7, 8], "One pass over each word:<br/><span class=\"teal\">O(n) time</span>"),
-], A["code"] - 0.1, A["million"], font=30)
+], A["code"] - 0.1, A["million"], top=310, font=28)
+
+# --- under the code, counts filling and emptying: the shown function's own run on listen/silent
+S_WORD, T_WORD = "listen", "silent"
+EV, RES = trace(is_anagram, S_WORD, T_WORD)
+adds = [(sn["ch"], sn["counts"]) for ln, sn in EV if ln == 6]
+takes = [(sn["ch"], sn["counts"]) for ln, sn in EV if ln == 8]
+assert RES is True and len(adds) == len(takes) == 6
+KEYS = list(adds[-1][1])  # letters in the order the tally sheet met them
+sign = lambda n: f"+{n}" if n > 0 else str(n)
+look = lambda c: {key: sign(v) for key, v in c.items()}
+st = [(A["lengths"], {"note": f"len({S_WORD!r}) == len({T_WORD!r}): {len(S_WORD)} == {len(T_WORD)}"}),
+      (A["counts"], {"note": "counts = {}"})]
+for t, (ch, c) in zip(R.spread(A["add"] - 0.4, A["take"] - 0.5, 6), adds):
+    st.append((t, {"vals": look(c), "mark": {ch: "amb"}, "note": f"s: '{ch}' → counts['{ch}'] = {c[ch]}"}))
+for t, (ch, c) in zip(R.spread(A["take"] - 0.4, A["end"] - 0.1, 6), takes):
+    st.append((t, {"vals": look(c), "mark": {ch: "teal" if c[ch] == 0 else "amb"}, "note": f"t: '{ch}' → counts['{ch}'] = {c[ch]}"}))
+st.append((A["end"], {"vals": look(takes[-1][1]), "mark": {key: "teal" for key in KEYS}, "note": f"every count is 0 → {RES}"}))
+MapViz(R, "tv", KEYS, st, A["code"] - 0.1, A["million"], top=R.code_bottom + 4, cols=3, label="counts")
 
 # --- benchmark: our test run on 1,000,000 letters (verify.py records it)
 SORT_MS, COUNT_MS = 214.7, 54.9
@@ -227,14 +249,11 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Watch every count change.")
-R.stills([(0, "wu-09-arms-crossed"), (A["listen"], "cu-03-thinking"), (A["sort"], "cu-06-skeptical"),
-          (A["think"] - 0.2, "cu-07-confident"), (A["alpha"] - 0.1, "wu-10-shrug"), (A["tally"] - 0.1, "wu-02-pen-up"),
-          (A["l2"], "wu-03-point-side"), (A["zero"] - 0.1, "cu-08-excited"), (A["code"] - 0.2, "wu-14-laptop"),
-          (A["counts"] - 0.1, "cu-02-explaining"), (A["end"] - 0.1, "wu-03-point-side"), (A["pass"] - 0.1, "wu-06-thumbs-up"),
-          (A["million"] - 0.2, "wu-05-tablet"), (A["quarter"] - 0.1, "cu-04-surprised"), (A["ware"] - 0.2, "wu-15-peace-notes"),
-          (A["catch"] - 0.2, "cu-10-serious"), (A["python"] - 0.1, "cu-05b-cringe"), (A["js"] - 0.1, "wu-08-facepalm"),
-          (A["hash"] - 0.2, "cu-07-confident"), (A["sets"] - 0.2, "cu-06-skeptical"), (A["counts2"] - 0.2, "wu-03b-point-left"),
-          (A["hear"] - 0.2, "cu-02-explaining"), (A["turn"] - 0.2, "wu-04-open-palm"), (A["rows"] - 0.1, "cu-03-thinking"),
+# the tutor only where she adds something: the hook, the payoff, the catch, the challenge, the brand
+R.stills([(0, "wu-09-arms-crossed"), (A["listen"] - 0.1, None),
+          (A["anagram"] - 0.1, "cu-08-excited"), (A["code"] - 0.3, None),
+          (A["python"] - 0.1, "cu-05b-cringe"), (A["js"] - 0.1, "wu-08-facepalm"), (A["hash"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["rows"] - 0.1, None),
           (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "wu-09-arms-crossed")])
 R.captions(amber={"sort", "sorting", "log", "crashes", "range", "worse", "false", "never", "sets", "catch", "miss", "alphabetize"},
            teal={"tally", "zero", "anagram", "pass", "counting", "count", "counts", "quarter", "hash", "map", "lengths", "leetexpert", "scrabble", "code"},
