@@ -654,6 +654,76 @@ function ivRoomsSteps(){
   steps.answer=most;return steps;
 }
 
+/* cost plots: every count is taken by running the loop and counting where the work is, and each is held to an
+   independent statement of it (plotCheck) before anything is drawn. Every number in a caption comes from those counts. */
+function plDoubling(n){var c=0;for(var i=1;i<n;i*=2)c++;return c;}
+function plNested(n){var c=0;for(var i=0;i<n;i++)for(var j=0;j<i;j++)c++;return c;}
+function plLoopsSteps(){
+  var d=[],q=[];for(var n=2;n<=64;n++){d.push([n,plDoubling(n)]);q.push([n,plNested(n)]);}
+  /* independent: the doubling loop runs once per binary digit of n − 1; the nested loop is the triangular number */
+  plotCheck(d,function(n){return (n-1).toString(2).length;},'doubling loop');
+  plotCheck(q,function(n){return n*(n-1)/2;},'dependent nested loop');
+  var T=new PlotTrace({x:{name:'n, the size of the input',short:'n',lo:0,hi:64,ticks:[0,16,32,48,64]},y:{name:'iterations',scale:'log',lo:1,hi:10000},
+    series:[{id:'dbl',name:'doubling loop, counted',kind:'points',join:'step',tone:'info',data:d},
+            {id:'lg',name:'log₂ n',kind:'curve',cls:'log',tone:'cur'},
+            {id:'nest',name:'nested loop, counted',kind:'points',tone:'bad',data:q},
+            {id:'sq',name:'n²',kind:'curve',cls:'n2',tone:'plain'}]});
+  T.step('Run the doubling loop at n = 8 and count: i takes the values 1, 2 and 4, and 8 is not below 8, so it runs <b>'+plDoubling(8)+'</b> times.',[T.reveal('dbl',8),T.cursor(8)],['dbl']);
+  T.step('Doubling n adds one iteration, never doubles the work: at n = 64 the loop runs <b>'+plDoubling(64)+'</b> times. Each count here is measured by running the loop.',[T.reveal('dbl'),T.cursor(64)],['dbl']);
+  T.step('log₂ n is the number of doublings that reach n, so the count is log₂ n rounded up: the staircase sits on the curve at every power of two.',[T.reveal('lg')],['lg']);
+  T.step('The dependent nested loop runs 0 + 1 + ⋯ + (n − 1) times: <b>'+plotFmt(plNested(16))+'</b> at n = 16.',[T.reveal('nest',16),T.cursor(16)],['nest']);
+  T.step('At n = 64 it is <b>'+plotFmt(plNested(64))+'</b>, exactly 64 · 63 / 2. Every count was measured, and every one matched n(n − 1)/2.',[T.reveal('nest'),T.cursor(64)],['nest']);
+  T.step('n² runs parallel to it on a log scale: the loop does half of n², a constant factor, so it grows the same way. That is O(n²).',[T.reveal('sq')],['sq']);
+  return plotWalk(T,{intro:'Iterations of two loops, counted by running them, against the curves that name their growth.',
+    inv:[['nested ≤ n²','the dependent loop never runs more than n² times',function(s){return s.plot.cursor===null||plNested(s.plot.cursor)<=s.plot.cursor*s.plot.cursor;}]]});
+}
+/* a dynamic array that doubles when full, starting at capacity 1: the cost of an append is its write plus every copy */
+function plAppends(m){
+  var cap=1,size=0,total=0,cost=[],tot=[];
+  for(var i=1;i<=m;i++){var c=1;if(size===cap){c+=size;cap*=2;}size++;total+=c;cost.push([i,c]);tot.push([i,total]);}
+  return {cost:cost,tot:tot};
+}
+function plAppendSteps(){
+  var r=plAppends(32);
+  /* independent: an append resizes exactly when the count before it is a power of two; the copies before append i
+     sum to the powers of two below it, 2^(⌊log₂(i − 1)⌋ + 1) − 1 */
+  plotCheck(r.cost,function(i){return i>1&&((i-1)&(i-2))===0?i:1;},'append cost');
+  plotCheck(r.tot,function(i){return i===1?1:i+Math.pow(2,Math.floor(Math.log2(i-1))+1)-1;},'running total');
+  var at=function(i){return r.cost[i-1][1];},sum=function(i){return r.tot[i-1][1];};
+  var T=new PlotTrace({x:{name:'append number',short:'append',lo:0,hi:32,ticks:[0,8,16,24,32]},y:{name:'work (writes and copies)'},
+    series:[{id:'cost',name:'this append',kind:'bars',tone:'cur',data:r.cost},
+            {id:'tot',name:'all appends so far',kind:'points',tone:'info',data:r.tot},
+            {id:'lim',name:'3n',kind:'curve',of:function(n){return 3*n;},tone:'good'}]});
+  T.step('Append 1 writes into the free slot: work <b>'+at(1)+'</b>. Append 2 finds the array full, copies 1 value into a new array twice the size, then writes: work <b>'+at(2)+'</b>.',[T.reveal('cost',2),T.cursor(2)],['cost']);
+  T.step('Append 5 finds 4 values in a full array of 4: it copies all 4 and writes, work <b>'+at(5)+'</b>. The appends between cost 1 each.',[T.reveal('cost',5),T.cursor(5)],['cost']);
+  T.step('The spikes come at appends 2, 3, 5, 9, 17: each twice as far apart as the last, and each as big as the array it copies. Append 17 costs <b>'+at(17)+'</b>.',[T.reveal('cost',17),T.cursor(17)],['cost']);
+  T.step('Add them up as they come. After 9 appends the total is <b>'+sum(9)+'</b>, and after 32 it is <b>'+sum(32)+'</b>.',[T.reveal('cost'),T.reveal('tot'),T.cursor(32)],['tot']);
+  T.step('The total never crosses 3n: 32 appends cost '+sum(32)+', under '+3*32+'. Spread over the appends, that is under 3 each: O(1) amortized.',[T.reveal('lim')],['lim']);
+  return plotWalk(T,{intro:'The work of each append to an array that doubles when it is full, measured by running it.',
+    inv:[['total ≤ 3n','the work of the first n appends is at most 3n',function(s){var c=s.plot.cursor;return c===null||sum(c)<=3*c;}]]});
+}
+/* the largest n a cost fits in, found by running the cost function: double until it is too big, then halve the gap */
+function plReach(f,budget){
+  var lo=1,hi=2;while(f(hi)<=budget)hi*=2;
+  while(hi-lo>1){var mid=Math.floor((lo+hi)/2);if(f(mid)<=budget)lo=mid;else hi=mid;}
+  return lo;
+}
+function plHardwareSteps(){
+  var lin=function(n){return n;},sq=function(n){return n*n;},ex=function(n){return Math.pow(2,n);},b0=1e6,b1=1e8;
+  var r0=[plReach(lin,b0),plReach(sq,b0),plReach(ex,b0)],r1=[plReach(lin,b1),plReach(sq,b1),plReach(ex,b1)];
+  /* independent: the inverse of each cost, worked out directly */
+  [[b0,r0],[b1,r1]].forEach(function(p){var b=p[0],r=p[1];
+    if(r[0]!==b||r[1]!==Math.floor(Math.sqrt(b))||r[2]!==Math.floor(Math.log2(b)))throw new Error('reach under '+b+': '+r.join(', '));});
+  var T=new PlotTrace({x:{name:'n, the size of the input',short:'n',scale:'log',lo:1,hi:1e9},y:{name:'operations',scale:'log',lo:1,hi:1e10},
+    series:[{id:'lin',name:'n',kind:'curve',cls:'n',tone:'good'},{id:'sq',name:'n²',kind:'curve',cls:'n2',tone:'cur'},{id:'ex',name:'2ⁿ',kind:'curve',cls:'exp',tone:'bad'}]});
+  T.step('Three algorithms: n, n² and 2ⁿ operations on an input of size n. Both axes are logarithmic, so each step right or up is ten times more.',[T.reveal('lin'),T.reveal('sq'),T.reveal('ex')]);
+  T.step('A machine that does 10⁶ operations in the time allowed. Each algorithm reaches the largest n whose cost fits under that line.',
+    [T.level('budget',b0),T.at('n reaches',r0[0]),T.at('n² reaches',r0[1]),T.at('2ⁿ reaches',r0[2])],['budget']);
+  T.step('A machine 100 times faster. The linear algorithm now handles <b>'+(r1[0]/r0[0])+'</b> times more, the quadratic one <b>'+(r1[1]/r0[1])+'</b> times more, and the exponential one <b>'+(r1[2]-r0[2])+'</b> more elements.',
+    [T.level('budget',b1),T.at('n reaches',r1[0]),T.at('n² reaches',r1[1]),T.at('2ⁿ reaches',r1[2])],['n reaches','n² reaches','2ⁿ reaches']);
+  return plotWalk(T,{intro:'How far a faster machine gets you depends on the shape of the cost, not on the machine.'});
+}
+
 mountLesson();
 new LanePlayer($('#stackw .lvhost'),{id:'stk',loop:true,autoplay:true,inv:[['size matches','size equals the number of items',sizeOk('s')]]}).load(stackSteps());
 mountLaneTabs($('#qtabs'),[{name:'Queue from two stacks',steps:twoStackSteps},{name:'Deque',steps:dequeSteps},{name:'Ring buffer',steps:ringSteps}],{id:'q'});
@@ -669,3 +739,4 @@ mountLaneTabs($('#grtabs'),[{name:'Breadth-first search',steps:bfsSteps},{name:'
   {id:'gr',inv:[['heap holds','every parent in the frontier is no larger than its children',heapInv]]});
 mountCallTreeTabs($('#cttabs'),[{name:'Subsets',steps:subsetsSteps},{name:'Combination sum',steps:comboSteps}],{id:'ct'});
 mountIvTabs($('#ivtabs'),[{name:'Merge intervals',steps:ivMergeSteps},{name:'Meeting rooms II',steps:ivRoomsSteps}],{id:'iv'});
+mountPlotTabs($('#pltabs'),[{name:'Loops',steps:plLoopsSteps},{name:'Amortized appends',steps:plAppendSteps},{name:'Growth beats hardware',steps:plHardwareSteps}],{id:'pl'});

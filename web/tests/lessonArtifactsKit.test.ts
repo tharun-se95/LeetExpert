@@ -1037,3 +1037,242 @@ describe("lesson artifacts kit: intervals on an axis (intervals.js)", () => {
     expect(r.key.some((k) => k.band)).toBe(false);
   });
 });
+
+/* cost plots (plots.js): a plot's model, read back and held to a reference written here. Drawing is the browser
+   gate's job; what is tested here is that every snapshot says what the steps say, and that what it refuses is refused. */
+type PlOp = (string | number | null)[];
+type PlRows = [string, string][];
+interface PlSnap { note: string; hi: string[]; fields: [string, string][]; plot: { cursor: number | null; shown: Record<string, number>; levels: Record<string, number>; ats: Record<string, number>; rows: { id: string; text: string }[]; ax: { x: { lo: number; hi: number }; y: { lo: number; hi: number } }; inv: [string, string, (s: PlSnap) => boolean][] | null } }
+interface PlRead { shown: Record<string, number>; cursor: number | null; levels: Record<string, number>; ats: Record<string, number>; rows: PlRows; counts: [string, string][] }
+interface PlTrace {
+  events: { note: string; ops: PlOp[]; hi: string[] }[];
+  step(note: string, ops: PlOp[], hi?: string[]): PlTrace;
+  reveal(id: string, upTo?: number): PlOp; hide(id: string): PlOp; cursor(x: number | null): PlOp;
+  level(n: string, y: number | null): PlOp; at(n: string, x: number | null): PlOp; count(n: string, v: unknown): PlOp; done(): PlTrace;
+}
+interface PlKit {
+  PlotTrace: new (o: object) => PlTrace;
+  plotWalk(T: PlTrace, o?: object): PlSnap[];
+  plotState(T: PlTrace, k: number): PlRead;
+  plotRead(s: PlSnap): PlRead;
+  plotSame(w: PlRead, g: PlRead, k: number): void;
+  plotCheck(d: number[][], want: (n: number) => unknown, what?: string): number[][];
+  plotFmt(v: unknown): string;
+  plotExtent(T: PlTrace): { x: { lo: number; hi: number }; y: { lo: number; hi: number } };
+  plScale(a: object, p0: number, p1: number, gap: number): { map(v: number): number; ticks: number[] };
+  plNiceHi(v: number): number;
+  PlotModel: { prototype: { apply(op: PlOp): void } };
+  PL_CLASSES: Record<string, [string, (n: number) => number]>;
+  PL_INV: [string, string, (s: PlSnap) => boolean][];
+  plLoopsSteps?(): PlSnap[]; plAppendSteps?(): PlSnap[]; plHardwareSteps?(): PlSnap[];
+}
+function plKit(extra = ""): PlKit {
+  const ctx: Record<string, unknown> = {};
+  const names = ["PlotTrace", "plotWalk", "plotState", "plotRead", "plotSame", "plotCheck", "plotFmt", "plotExtent", "plScale", "plNiceHi", "PlotModel", "PL_CLASSES", "PL_INV"];
+  runInNewContext(readFileSync(join(ARTIFACTS, "kit", "plots.js"), "utf8") + "\n" + extra + "\n" + names.map((n) => `this.${n}=${n};`).join(""), ctx);
+  return ctx as unknown as PlKit;
+}
+const grouped = (v: number) => v.toLocaleString("en-US");
+
+/* a random walkthrough: integer-valued series, so the reference's readout needs only digit grouping */
+function randomPlTrace(K: PlKit, rnd: (n: number) => number): PlTrace {
+  const pts = (): number[][] => { const out: number[][] = []; for (let n = 1; n <= 20; n++) if (rnd(3)) out.push([n, rnd(500)]); return out.length ? out : [[3, 7]]; };
+  const T = new K.PlotTrace({ x: { name: "n", lo: 0, hi: 20 }, y: { name: "work", lo: 0, hi: 600 }, series: [
+    { id: "a", name: "measured", kind: "points", data: pts() },
+    { id: "b", name: "bars", kind: "bars", data: pts() },
+    { id: "c", name: "square", kind: "curve", of: (n: number) => n * n },
+    { id: "r", name: "range", kind: "range", data: pts().map(([n, v]) => [n!, v!, v! + rnd(50)]) }] });
+  const ids = ["a", "b", "c", "r"];
+  for (let s = 0, n = 1 + rnd(12); s < n; s++) {
+    const ops: PlOp[] = [];
+    for (let o = 0, m = 1 + rnd(3); o < m; o++) {
+      const r = rnd(7), id = ids[rnd(4)]!;
+      if (r === 0) ops.push(T.reveal(id, rnd(3) ? rnd(21) : undefined));
+      else if (r === 1) ops.push(T.hide(id));
+      else if (r === 2) ops.push(T.cursor(rnd(5) ? rnd(21) : null));
+      else if (r === 3) ops.push(T.level(rnd(2) ? "budget" : "cap", rnd(5) ? rnd(400) : null));
+      else if (r === 4) ops.push(T.at(rnd(2) ? "n₀" : "cross", rnd(5) ? rnd(21) : null));
+      else ops.push(T.count(rnd(2) ? "steps" : "total", rnd(99)));
+    }
+    T.step(`step ${s}`, ops, []);
+  }
+  return T;
+}
+/* what the plot must say after k steps, from the steps and the series alone */
+function plReference(T: PlTrace, k: number, series: Record<string, (x: number) => number | number[] | null>, order: string[]) {
+  const shown = new Map<string, number>(), levels = new Map<string, number>(), ats = new Map<string, number>(), counts = new Map<string, string>();
+  let cursor: number | null = null;
+  for (const e of T.events) for (const op of e.ops) if (op[0] === "count" && !counts.has(op[1] as string)) counts.set(op[1] as string, "–");
+  for (const e of T.events.slice(0, k)) for (const op of e.ops) {
+    if (op[0] === "reveal") shown.set(op[1] as string, op[2] as number);
+    else if (op[0] === "hide") shown.delete(op[1] as string);
+    else if (op[0] === "cursor") cursor = op[1] as number | null;
+    else if (op[0] === "level") { if (op[2] === null) levels.delete(op[1] as string); else levels.set(op[1] as string, op[2] as number); }
+    else if (op[0] === "at") { if (op[2] === null) ats.delete(op[1] as string); else ats.set(op[1] as string, op[2] as number); }
+    else if (op[0] === "count") counts.set(op[1] as string, String(op[2]));
+  }
+  const rows: PlRows = order.map((id) => {
+    if (!shown.has(id)) return [id, "not shown"];
+    if (cursor === null) return [id, ""];
+    if (cursor > shown.get(id)!) return [id, "–"];
+    const v = series[id]!(cursor);
+    return [id, v === null ? "–" : Array.isArray(v) ? `${grouped(v[0]!)}–${grouped(v[1]!)}` : grouped(v)];
+  });
+  return { shown: Object.fromEntries(shown), cursor, levels: Object.fromEntries(levels), ats: Object.fromEntries(ats), rows, counts: [...counts] };
+}
+
+describe("lesson artifacts kit: cost plots (plots.js)", () => {
+  it("build.py ships plots.js for the static chart alone, and adds the player only where a plot is stepped through", () => {
+    const run = (js: string) => {
+      const r = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(json.dumps(build.optional_kit(sys.stdin.read())))`], { input: js, encoding: "utf8" });
+      if (r.status) throw new Error(r.stderr);
+      return JSON.parse(r.stdout) as string[];
+    };
+    expect(run("costChart(host,{pts:[]});")).toEqual(["plots"]);
+    expect(run("var T=new PlotTrace({});var s=plotWalk(T);")).toEqual(["plots"]);
+    expect(run("mountPlotTabs(w,[]);")).toEqual(["player", "plots", "plotplayer"]);
+    expect(run("var p=new PlotPlayer(h,{});")).toEqual(["player", "plots", "plotplayer"]);
+  });
+
+  it("every step reads back as the steps say, on random walkthroughs read in random order", () => {
+    const K = plKit();
+    let seed = 20260930;
+    const rnd = (n: number) => ((seed = (seed * 1664525 + 1013904223) >>> 0), Math.floor((seed / 4294967296) * n));
+    for (let t = 0; t < 150; t++) {
+      const T = randomPlTrace(K, rnd) as PlTrace & { by: Record<string, { kind: string; of?: (n: number) => number; data?: number[][] }>; series: { id: string }[] };
+      const at = (id: string) => (x: number) => {
+        const s = T.by[id]!;
+        if (s.of) return s.of(x);
+        const hit = s.data!.find((p) => p[0] === x);
+        return hit ? (hit.length === 3 ? [hit[1]!, hit[2]!] : hit[1]!) : null;
+      };
+      const steps = K.plotWalk(T), order = T.series.map((s) => s.id);
+      const ks = steps.map((_, i) => i).sort(() => rnd(3) - 1);
+      for (const k of ks) expect(K.plotRead(steps[k]!)).toEqual(plReference(T, k, { a: at("a"), b: at("b"), c: at("c"), r: at("r") }, order));
+    }
+  });
+
+  it("a drawing that disagrees with the steps is refused, and a model that drops an operation fails the walk", () => {
+    const K = plKit(), T = new K.PlotTrace({ x: { name: "n", lo: 0, hi: 10 }, y: { name: "work", lo: 0, hi: 100 },
+      series: [{ id: "a", name: "counted", kind: "points", data: [[2, 4], [4, 16]] }] });
+    T.step("go", [T.reveal("a"), T.cursor(4), T.level("budget", 50), T.at("n₀", 3), T.count("steps", 2)], ["a"]);
+    const steps = K.plotWalk(T), good = steps[1]!, copy = () => { const c = { ...good, plot: { ...good.plot } }; c.plot.rows = good.plot.rows.map((r) => ({ ...r })); return c; };
+    K.plotSame(K.plotState(T, 1), K.plotRead(good), 1);
+    const row = copy(); row.plot.rows[0]!.text = "15";
+    expect(() => K.plotSame(K.plotState(T, 1), K.plotRead(row), 1)).toThrow(/readout for a/);
+    const cur = copy(); cur.plot.cursor = 2;
+    expect(() => K.plotSame(K.plotState(T, 1), K.plotRead(cur), 1)).toThrow(/cursor/);
+    const lv = copy(); lv.plot.levels = { budget: 40 };
+    expect(() => K.plotSame(K.plotState(T, 1), K.plotRead(lv), 1)).toThrow(/levels/);
+    const cnt = { ...copy(), fields: [["steps", "3"]] as [string, string][] };
+    expect(() => K.plotSame(K.plotState(T, 1), K.plotRead(cnt), 1)).toThrow(/counter steps/);
+    expect(() => K.plotSame(K.plotState(T, 0), K.plotRead(good), 0)).toThrow(/plot step 0/);
+    // plant a fault in the model the view draws: it forgets named lines. The walk's own read-back must catch it.
+    const apply = K.PlotModel.prototype.apply;
+    K.PlotModel.prototype.apply = function (op: PlOp) { if (op[0] !== "level") apply.call(this, op); };
+    try { expect(() => K.plotWalk(T)).toThrow(/plot step 1: levels/); } finally { K.PlotModel.prototype.apply = apply; }
+  });
+
+  it("refuses what would draw wrong or nothing", () => {
+    const K = plKit(), ax = { x: { name: "n" }, y: { name: "work" } }, pts = { id: "a", name: "a", kind: "points", data: [[1, 1]] };
+    const mk = (series: object[], o: object = {}) => new K.PlotTrace({ ...ax, ...o, series });
+    expect(() => mk(Array.from({ length: 7 }, (_, i) => ({ ...pts, id: `s${i}` })))).toThrow(/no seventh ink/);
+    expect(() => mk([pts, pts])).toThrow(/id of its own/);
+    expect(() => mk([{ ...pts, kind: "pie" }])).toThrow(/kind is one of/);
+    expect(() => mk([{ id: "c", name: "c", kind: "curve" }])).toThrow(/a curve is a formula/);
+    expect(() => mk([{ id: "c", kind: "curve", cls: "cubic" }])).toThrow(/no class cubic/);
+    expect(() => mk([{ id: "m", name: "m", kind: "points" }])).toThrow(/measured by running code/);
+    expect(() => mk([{ ...pts, data: [[1, 1], [1, 2]] }])).toThrow(/given twice/);
+    expect(() => mk([{ ...pts, data: [[1, NaN]] }])).toThrow(/finite numbers/);
+    expect(() => mk([{ id: "r", name: "r", kind: "range", data: [[1, 5, 2]] }])).toThrow(/above the worst/);
+    expect(() => mk([{ id: "b", name: "b", kind: "bars", data: [[1.5, 2]] }])).toThrow(/whole number/);
+    expect(() => mk([{ ...pts, data: [[1, 0]] }], { y: { name: "w", scale: "log" } })).toThrow(/cannot sit on a log axis/);
+    expect(() => mk([pts], { x: { name: "n", scale: "log", lo: 0, hi: 9 } })).toThrow(/starts above 0/);
+    expect(() => mk([{ ...pts, name: "" }])).toThrow(/needs a name/);
+    expect(() => mk([{ ...pts, tone: "good" }, { ...pts, id: "b", tone: "good" }])).toThrow(/share an ink/);
+    expect(() => mk([pts], { y: { name: "w", scale: "sqrt" } })).toThrow(/scale is lin or log/);
+    expect(() => new K.PlotTrace({ y: { name: "w" }, series: [pts] })).toThrow(/names its x axis/);
+    const T = () => mk([pts]);
+    expect(() => T().done()).toThrow(/empty/);
+    expect(() => { const t = T(); t.step("x", [t.reveal("zz")]).done(); }).toThrow(/no series zz/);
+    expect(() => { const t = T(); t.step("x", [["fly", 1]]).done(); }).toThrow(/unknown plot operation/);
+    expect(() => { const t = T(); t.step("x", [t.cursor("far" as unknown as number)]).done(); }).toThrow(/not a number/);
+  });
+
+  it("plotCheck holds a measured series to its independent statement, and fails at the first n that differs", () => {
+    const K = plKit(), d = [[1, 0], [2, 1], [3, 3], [4, 6]];
+    expect(K.plotCheck(d, (n) => (n * (n - 1)) / 2)).toBe(d);
+    expect(() => K.plotCheck([...d, [5, 11]], (n) => (n * (n - 1)) / 2, "triangle")).toThrow(/triangle: at n = 5 the count is 11 but should be 10/);
+    expect(() => K.plotCheck([[3, 1, 3]], () => [1, 2])).toThrow(/at n = 3/);
+  });
+
+  it("numbers read as a reader says them, and axes fit what is drawn with ticks that leave room for their labels", () => {
+    const K = plKit();
+    expect(K.plotFmt(2016)).toBe("2,016");
+    expect(K.plotFmt(2.5)).toBe("2.5");
+    expect(K.plotFmt(1e12)).toBe("1 × 10¹²");
+    expect(K.plotFmt(1.5e13)).toBe("1.5 × 10¹³");
+    expect(K.plotFmt([1, 5])).toBe("1–5");
+    expect(K.plotFmt(null)).toBe("–");
+    expect(K.plotFmt(Infinity)).toBe("over 10³⁰⁸");
+    expect(() => K.plotFmt(NaN)).toThrow(/not a number/);
+    expect(K.plNiceHi(2016)).toBe(2500);
+    expect(K.plNiceHi(96)).toBe(100);
+    const lin = K.plScale({ scale: "lin", lo: 0, hi: 2500 }, 0, 200, 26);
+    expect(lin.ticks).toEqual([0, 500, 1000, 1500, 2000, 2500]);
+    for (let i = 1; i < lin.ticks.length; i++) expect(Math.abs(lin.map(lin.ticks[i]!) - lin.map(lin.ticks[i - 1]!))).toBeGreaterThanOrEqual(26);
+    expect(K.plScale({ scale: "log", lo: 1, hi: 1e8 }, 0, 400, 26).ticks).toEqual([1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8]);
+    expect(K.plScale({ scale: "log", lo: 1, hi: 1e8 }, 0, 100, 26).ticks.length).toBeLessThanOrEqual(5);
+    expect(K.plScale({ scale: "log", lo: 1, hi: 64 }, 0, 400, 26).ticks).toEqual([1, 2, 4, 8, 16, 32, 64]);
+    // the extent covers every step, including a line that is later taken away, and keeps an axis the walkthrough set
+    const T = new K.PlotTrace({ x: { name: "n" }, y: { name: "w" }, series: [{ id: "a", name: "a", kind: "points", data: [[2, 10], [9, 40]] }] });
+    T.step("a", [T.reveal("a", 5), T.level("cap", 300)]).step("b", [T.level("cap", null)]);
+    const e = K.plotExtent(T);
+    expect([e.x.lo, e.x.hi, e.y.lo, e.y.hi]).toEqual([0, 2, 0, 300]);
+    const S = new K.PlotTrace({ x: { name: "n", lo: 0, hi: 64 }, y: { name: "w", scale: "log", lo: 1, hi: 1e4 }, series: [{ id: "c", kind: "curve", cls: "n2" }] });
+    S.step("a", [S.reveal("c")]);
+    expect(K.plotExtent(S).y).toMatchObject({ lo: 1, hi: 1e4 });
+  });
+
+  it("the named classes are labelled as the app labels them", () => {
+    const K = plKit();
+    const app = readFileSync(join(__dirname, "..", "src", "components", "explorers", "BigOObservatory.tsx"), "utf8") +
+      readFileSync(join(__dirname, "..", "src", "components", "md", "diagrams", "ComplexityCurveDiagram.tsx"), "utf8");
+    const labels = new Set([...app.matchAll(/label: "(O\([^"]+\))"/g)].map((m) => m[1]));
+    for (const [key, [label, f]] of Object.entries(K.PL_CLASSES)) {
+      expect(labels.has(label), `${key}: ${label}`).toBe(true);
+      expect(Number.isFinite(f(8))).toBe(true);
+    }
+    expect(K.PL_CLASSES.n2![1](8)).toBe(64);
+    expect(K.PL_CLASSES.log![1](8)).toBe(3);
+    expect(K.PL_CLASSES.exp![1](10)).toBe(1024);
+  });
+
+  /* the specimen's three walkthroughs count by running code; here each count meets a reference written from
+     scratch, and every step's claims hold. The walkthrough functions are the specimen's own, from its source. */
+  it("the specimen's loops, appends and hardware walkthroughs match independent references, and their claims hold", () => {
+    const src = readFileSync(join(ARTIFACTS, "kit-players", "lesson.js"), "utf8"), start = src.indexOf("/* cost plots:"), cut = src.indexOf("\nmountLesson();");
+    expect(start).toBeGreaterThan(0);
+    expect(cut).toBeGreaterThan(start);
+    const K = plKit(src.slice(start, cut) + "\nthis.plLoopsSteps=plLoopsSteps;this.plAppendSteps=plAppendSteps;this.plHardwareSteps=plHardwareSteps;");
+    const loops = K.plLoopsSteps!(), appends = K.plAppendSteps!(), hw = K.plHardwareSteps!();
+    const last = (s: PlSnap[]) => Object.fromEntries(K.plotRead(s[s.length - 1]!).rows);
+    // doubling from 1 until reaching n takes ⌈log₂ n⌉ steps; the dependent loop is 0 + 1 + ⋯ + (n − 1)
+    let tri = 0; for (let i = 0; i < 64; i++) tri += i;
+    expect(last(loops)).toEqual({ dbl: String(Math.ceil(Math.log2(64))), lg: "6", nest: grouped(tri), sq: grouped(64 * 64) });
+    // appends: simulate the capacities directly, charging a copy of everything at each doubling
+    let cap = 1, total = 0;
+    for (let i = 1; i <= 32; i++) { total += 1; if (i - 1 === cap) { total += cap; cap *= 2; } }
+    expect(last(appends)).toMatchObject({ tot: String(total), lim: "96" });
+    expect(total).toBeLessThanOrEqual(96);
+    // the hardware tab's reach is the inverse of each cost under 10⁶ and then 10⁸, drawn as its vertical lines
+    const inverse = (b: number) => ({ "n reaches": b, "n² reaches": Math.floor(Math.sqrt(b)), "2ⁿ reaches": Math.floor(Math.log(b) / Math.LN2) });
+    expect(K.plotRead(hw[2]!)).toMatchObject({ levels: { budget: 1e6 }, ats: inverse(1e6) });
+    expect(K.plotRead(hw[hw.length - 1]!)).toMatchObject({ levels: { budget: 1e8 }, ats: inverse(1e8) });
+    expect(inverse(1e8)).toEqual({ "n reaches": 1e8, "n² reaches": 1e4, "2ⁿ reaches": 26 });
+    // every step of every walkthrough keeps the plot's invariant and its own claims
+    for (const s of [...loops, ...appends, ...hw]) for (const [short, , f] of [...K.PL_INV, ...(s.plot.inv || [])]) expect(f(s), `${s.note.slice(0, 40)}: ${short}`).toBe(true);
+    // no counters: a count that grows from "–" to "100,000,000" wrapped the phone's invariant line mid-walkthrough
+    expect(K.plotRead(hw[0]!).counts).toEqual([]);
+  });
+});

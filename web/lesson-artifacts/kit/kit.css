@@ -99,14 +99,6 @@ button.cell.node{cursor:pointer;border:0}
 .reveal-btn .i{font-size:16px;color:var(--fam)} .reveal-btn[aria-expanded="true"]{box-shadow:none;background:transparent}
 .reveal-body{margin-top:14px;display:flex;flex-direction:column;gap:14px}
 .reveal-body p{max-width:66ch;margin:0}
-.chart{background:var(--deep);border:1px solid var(--hair);border-radius:12px;padding:10px}
-.chart svg{width:100%;height:auto;display:block;max-height:340px}
-.chart .grid{stroke:var(--hair2);stroke-width:1} .chart .ax{fill:var(--mut);font:11px 'JetBrains Mono',monospace}
-.chart .ln{fill:none;stroke-width:2.6;stroke-linejoin:round} .chart .ln.naive{stroke:var(--r-ink)} .chart .ln.once{stroke:var(--g-ink)}
-.chart .dot.naive{fill:var(--r-ink)} .chart .dot.once{fill:var(--g-ink)}
-.chart .lab{font:500 12px 'JetBrains Mono',monospace} .chart .lab.naive{fill:var(--r-ink)} .chart .lab.once{fill:var(--g-ink)}
-.legend{display:flex;gap:18px;font:12px 'JetBrains Mono',monospace;color:var(--mut);flex-wrap:wrap}
-.legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
 .cost-note{font-size:14.5px}
 .extabs{display:inline-flex;flex-wrap:wrap;align-self:flex-start;gap:2px;padding:3px;border:1px solid var(--hair);border-radius:11px;background:var(--deep)}
 .tab{border:0;background:none;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12.5px;color:var(--mut)}
@@ -156,7 +148,7 @@ body{font-size:13.5px;line-height:1.55}
 .tv-wrap{padding:10px 6px} .readout{font-size:13px;min-height:20px}
 .pcard{padding:11px;gap:9px;margin-bottom:10px} .pq{font-size:13px}
 .fb{font-size:13px;padding:8px 10px}
-.cost-note{font-size:13px} .legend{font-size:11px}
+.cost-note{font-size:13px}
 .code header{font-size:10px;padding:6px 10px} .code pre{font-size:11.5px;padding:10px 12px}
 .complexity{padding:11px 13px} .cx-h{font-size:10px}
 .vcard{padding:12px} .vcard .vt{font-size:13px} .vcard .vs{font-size:10.5px} .vcard p{font-size:12.5px}
