@@ -37,7 +37,7 @@ Step through every line on leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#recursion #python #codinginterview #dsa #learntocode
+#recursion #callstack #computerscience #python #learnpython
 
 ## Alt text
 

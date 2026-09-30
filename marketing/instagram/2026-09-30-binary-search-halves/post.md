@@ -41,7 +41,7 @@ Step through every line on leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#binarysearch #dsa #codinginterview #python #learntocode
+#binarysearch #algorithms #computerscience #python #leetcode
 
 ## Alt text
 

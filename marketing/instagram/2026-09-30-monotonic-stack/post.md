@@ -41,7 +41,7 @@ Step through every line on leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#stack #dsa #codinginterview #python #learntocode
+#monotonicstack #stack #leetcode #python #codinginterview
 
 ## Alt text
 

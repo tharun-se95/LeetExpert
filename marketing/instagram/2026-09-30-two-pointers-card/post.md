@@ -34,7 +34,7 @@ leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#twopointers #dsa #codinginterview #cheatsheet #learntocode
+#twopointers #cheatsheet #studygram #leetcode #codinginterview
 
 ## Alt text (reel)
 

@@ -10,7 +10,7 @@ Instagram guidance when a detail matters (e.g. hashtag limits, max carousel leng
 | Feed image / carousel | 1080×1350 (4:5 portrait) | Portrait takes the most feed space. Keep all slides the same ratio. |
 | Reel / Story | 1080×1920 (9:16) | Keep text out of the top ~250px and bottom ~350px, where the UI overlays. |
 | Caption | up to 2,200 characters | Only the first ~125 characters show before "more"; the hook goes there. |
-| Hashtags | 3–5 focused tags | Specific beats broad. Put them at the end of the caption. |
+| Hashtags | 5 at most (Instagram's hard limit since Dec 2025; it strips or refuses extras, caption and comments counted together) | Use all 5, each a specific topic label. Put them at the end of the caption. |
 
 ## Carousel template (5–10 slides)
 
@@ -71,17 +71,29 @@ nudges, and polls ("Which is faster? A / B") in stories.
 
 [CTA: save / share / link in bio + which module to open]
 
-[3–5 hashtags]
+[5 hashtags]
 ```
 
 ## Hashtag pool
 
-Pick 3–5 that fit the specific post; don't paste the same block every time.
+Instagram allows 5 hashtags per post or reel (Dec 2025; before that, 30). Use all five, and
+make each one name what this post is about: the tags are topic labels, not a reach lever,
+so a set that repeats on every post (the old `#dsa #codinginterview #learntocode` block)
+wastes three of the five. Build each set as:
 
-- Topic: #datastructures #algorithms #dsa #bigonotation #dynamicprogramming #recursion #graphs
-- Audience: #codinginterview #softwareengineer #learntocode #computerscience #csstudent
-- Language: #python #javascript
-- Theme: #aicoding #codereview
+1. the pattern or structure (`#slidingwindow`, `#hashmap`, `#monotonicstack`)
+2. the problem, bug or idea the post shows (`#twosum`, `#validanagram`, `#offbyone`, `#memoization`)
+3. the language (`#python`, `#javascript`, `#learnpython`, `#javascripttips`)
+4. the angle (`#codereview`, `#debugging`, `#aicoding`, `#cheatsheet`, `#edtech`)
+5. the audience (`#codinginterview`, `#leetcode`, `#computerscience`, `#learntocode`, `#studygram`)
+
+Every tag must be true of the post. Pool:
+
+- Patterns and structures: #twopointers #slidingwindow #binarysearch #prefixsum #hashmap #stack #monotonicstack #recursion #callstack #dynamicprogramming #bigonotation #timecomplexity #datastructures #algorithms
+- Problems and ideas: #twosum #validanagram #fibonacci #memoization #offbyone
+- Language: #python #learnpython #pythontips #javascript #javascripttips #webdev
+- Angle: #aicoding #codereview #debugging #cheatsheet #edtech
+- Audience: #codinginterview #leetcode #computerscience #learntocode #softwareengineer #csstudent #studygram
 
 ## Alt text
 

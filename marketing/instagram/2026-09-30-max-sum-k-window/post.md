@@ -38,7 +38,7 @@ Step through every line on leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#slidingwindow #python #codinginterview #dsa #learntocode
+#slidingwindow #offbyone #codereview #python #leetcode
 
 ## Alt text
 

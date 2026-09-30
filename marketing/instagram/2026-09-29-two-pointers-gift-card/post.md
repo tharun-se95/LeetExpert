@@ -35,7 +35,7 @@ Step through it line by line on leetExpert, the interactive DSA course. Link in 
 
 ## Hashtags
 
-#twopointers #dsa #codinginterview #algorithms #learntocode
+#twopointers #twosum #algorithms #leetcode #codinginterview
 
 ## Alt text
 

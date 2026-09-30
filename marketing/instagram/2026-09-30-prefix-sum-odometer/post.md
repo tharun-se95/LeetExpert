@@ -42,7 +42,7 @@ Step through it on leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#prefixsum #dsa #codinginterview #python #learntocode
+#prefixsum #algorithms #leetcode #python #codinginterview
 
 ## Alt text
 

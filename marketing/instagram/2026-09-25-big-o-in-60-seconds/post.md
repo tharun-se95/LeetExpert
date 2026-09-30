@@ -25,7 +25,7 @@ Save this for your next interview. Learn it properly on leetExpert, link in bio.
 
 ## Hashtags
 
-#bigonotation #dsa #codinginterview #python #softwareengineer
+#bigonotation #timecomplexity #algorithms #computerscience #codinginterview
 
 ## Alt text
 

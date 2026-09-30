@@ -39,7 +39,7 @@ Step through it on leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#slidingwindow #dsa #codinginterview #python #learntocode
+#slidingwindow #algorithms #leetcode #python #codinginterview
 
 ## Alt text
 

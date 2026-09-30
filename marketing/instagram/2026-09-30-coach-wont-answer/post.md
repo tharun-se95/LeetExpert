@@ -38,7 +38,7 @@ leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#codinginterview #leetcode #python #dsa #learntocode
+#twosum #leetcode #edtech #learntocode #codinginterview
 
 ## Alt text
 

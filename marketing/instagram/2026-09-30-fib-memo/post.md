@@ -48,7 +48,7 @@ Step through every line on leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#dynamicprogramming #python #codinginterview #dsa #learntocode
+#dynamicprogramming #memoization #fibonacci #python #leetcode
 
 ## Alt text
 

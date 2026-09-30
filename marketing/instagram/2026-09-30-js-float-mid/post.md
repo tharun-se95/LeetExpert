@@ -36,7 +36,7 @@ Step through every line on leetExpert, the interactive DSA course. Link in bio.
 
 ## Hashtags
 
-#javascript #binarysearch #codinginterview #webdev #learntocode
+#javascript #binarysearch #javascripttips #debugging #webdev
 
 ## Alt text
 
