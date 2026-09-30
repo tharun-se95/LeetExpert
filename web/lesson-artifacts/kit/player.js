@@ -99,9 +99,14 @@ function StepPlayer(host,o,view){
     var meta=fields.parentNode,mp=probeOf(meta),mh=0,none=function(){return '';};
     mp.innerHTML='<span class="lp-fields"></span>'+inv.outerHTML.replace(' aria-label="Invariants"','');
     /* each step's own invariants, when they differ by walkthrough, so a tab with more claims cannot wrap the line later */
+    /* measured without the width reserved last time, which the clone carries, or each resize would add to it */
+    var iw=0,byStep=typeof view.inv==='function';mp.lastChild.style.minWidth='';
     reserveSteps.concat(steps).forEach(function(x){mp.firstChild.innerHTML=view.fields(x,none);
-      if(typeof view.inv==='function')mp.lastChild.innerHTML=invHtml(x,0);mh=Math.max(mh,mp.offsetHeight);});
-    mp.remove();if(mh)meta.style.minHeight=mh+'px';}
+      if(byStep){mp.lastChild.innerHTML=invHtml(x,0);iw=Math.max(iw,mp.lastChild.offsetWidth);}mh=Math.max(mh,mp.offsetHeight);});
+    mp.remove();if(mh)meta.style.minHeight=mh+'px';
+    /* the line is right-aligned, so a shorter list would move its left edge: hold the widest list's width
+       (the gate measured 0.0011 of shift on a phone as the plot tabs' claims changed) */
+    if(byStep&&iw)inv.style.minWidth=Math.min(iw+1,meta.clientWidth)+'px';}
   if('ResizeObserver' in window)new ResizeObserver(function(){reserve();}).observe(host);
   /* notes: captions the player may show later; all: the snapshots behind them, when known */
   this.reserve=function(notes,all){reserveNotes=notes;reserveSteps=all||[];reserve();};
