@@ -1,0 +1,16 @@
+/* hook badge */
+.aibadge{position:absolute;right:80px;top:340px;font-family:"Space Mono",monospace;font-size:26px;font-weight:700;color:#0e1520;background:#fbbf24;padding:6px 16px;border-radius:10px}
+.call{font-family:"Space Mono",monospace;font-size:44px;font-weight:700}
+.val{position:absolute;font-family:"Space Mono",monospace;font-size:38px;font-weight:700;white-space:nowrap;line-height:1.35}
+/* the walk */
+.lnw{position:absolute;left:80px;font-size:40px;font-weight:700;color:#e4e9f2;background:#101a26;border:2px solid #2e3b4a;border-radius:14px;padding:10px 20px}
+.cell{position:absolute;width:160px;height:160px;border-radius:24px;border:3px solid #263248;background:#0e1520;display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:72px;font-weight:700}
+.ix{position:absolute;width:160px;text-align:center;font-family:"Space Mono",monospace;font-size:28px;color:#94a3b8}
+.m15{position:absolute;width:94px;height:290px;z-index:2}
+.m15 i{position:absolute;left:44px;top:50px;width:6px;height:240px;background:#fbbf24;border-radius:3px;display:block}
+.m15 b{position:absolute;left:0;top:0;width:94px;text-align:center;font-family:"Space Mono",monospace;font-size:34px;color:#0e1520;background:#fbbf24;border-radius:10px}
+/* which lengths hide it */
+.lgrid{position:absolute;left:0;right:0;top:170px;display:grid;grid-template-columns:repeat(8,1fr);gap:12px}
+.lg{height:170px;border-radius:16px;border:3px solid #263248;background:#0e1520;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:"Space Mono",monospace;font-weight:700}
+.lg b{font-size:44px}.lg span{font-size:20px}
+.lg.ok{border-color:#5eead4;color:#5eead4}.lg.no span{color:#fbbf24}
