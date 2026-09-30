@@ -4,7 +4,7 @@ A carousel lives beside its reel as marketing/instagram/<DATE>-<slug>-carousel/ 
 by its sources/slides.json:
 
   {"reel": "2026-09-29-anagram-tally",
-   "slides": [{"at": "<anchor in the reel's timing.json>", "dt": 1.5,
+   "slides": [{"at": "<anchor in the reel's timing.json>", "dt": 1.5, "zoom": [x, y, w, h] (optional),
                "text": "<words from the reel's script or caption>", "alt": "<what the frame shows>"},
               {"say": "<a text-only slide, also from script or caption>", "alt": "..."}],
    "challenge": "<the reel's own challenge line>"}
@@ -79,13 +79,17 @@ def load(car):
         words = s.get("text") or s.get("say")
         assert any(norm(words) in src for src in sources), f"not said in the reel's script or caption: {words!r}"
     anchors = json.loads((reel / "sources/timing.json").read_text())["A"]
-    times = [round(anchors[s["at"]] + s.get("dt", 0), 2) for s in spec["slides"] if "at" in s]
-    assert all(t < json.loads((reel / "sources/timing.json").read_text())["END"] for t in times)
-    return spec, reel, md, times
+    shots = [[round(anchors[s["at"]] + s.get("dt", 0), 2), s.get("zoom")] for s in spec["slides"] if "at" in s]
+    assert all(t < json.loads((reel / "sources/timing.json").read_text())["END"] for t, _ in shots)
+    return spec, reel, md, shots
 
 
-def snap(reel, times, out):
-    """The reel's frames at `times`, captions and tutor off, as out/NN.png."""
+def snap(reel, shots, out):
+    """The reel's frames, captions and tutor off, as out/NN.png: one per (time, zoom) in `shots`.
+
+    A zoom is a region of the 1080x1920 frame, rendered at twice the density by hyperframes'
+    own --zoom, for footage the reel shows too small to read on a still (the coach's replies).
+    """
     src = reel / "sources"
     subprocess.run(["bash", str(KIT / "prep.sh")], cwd=src, check=True, capture_output=True)
     subprocess.run([sys.executable, "gen.py"], cwd=src, check=True, capture_output=True,
@@ -95,13 +99,25 @@ def snap(reel, times, out):
     shutil.copytree(src, proj)
     page = (proj / "index.html").read_text()
     (proj / "index.html").write_text(page.replace("</head>", "<style>#caps,#tutorwrap{display:none!important}</style></head>", 1))
-    subprocess.run(["npx", "-y", "hyperframes@0.8.77", "snapshot", "--at", ",".join(map(str, times)), "--no-end",
-                    "--describe", "false", "-o", str(out / "raw"), "."], cwd=proj, check=True, capture_output=True)
-    raw = sorted((out / "raw").glob("frame-*.png"))
-    assert len(raw) == len(times), f"{len(raw)} frames for {len(times)} times"
-    for i, f in enumerate(raw):
-        f.rename(out / f"{i:02d}.png")
+
+    def run(times, zoom, dest):
+        extra = ["--zoom", ",".join(map(str, zoom)), "--zoom-scale", "2"] if zoom else []
+        shutil.rmtree(out / "raw", ignore_errors=True)
+        subprocess.run(["npx", "-y", "hyperframes@0.8.77", "snapshot", "--at", ",".join(map(str, times)), "--no-end",
+                        "--describe", "false", *extra, "-o", str(out / "raw"), "."], cwd=proj, check=True, capture_output=True)
+        raw = sorted((out / "raw").glob("frame-*.png"))
+        assert len(raw) == len(times), f"{len(raw)} frames for {len(times)} times"
+        for f, i in zip(raw, dest):
+            f.rename(out / f"{i:02d}.png")
+
+    plain = [i for i, (_, z) in enumerate(shots) if not z]
+    run([shots[i][0] for i in plain], None, plain)
+    for i, (t, z) in enumerate(shots):
+        if z:
+            run([t], z, [i])
+    shutil.rmtree(out / "raw", ignore_errors=True)
     shutil.rmtree(proj)
+    (out / "shots.json").write_text(json.dumps(shots))
 
 
 def crop(path, dest):
@@ -117,6 +133,11 @@ def crop(path, dest):
     band.crop((0, top, 1080, bottom)).save(dest)
 
 
+def cap(words):
+    """The reel's words, capitalised because they now start a slide (the check compares them as written)."""
+    return words[0].upper() + words[1:]
+
+
 def page(n, total, body):
     """Slide 1 is the reel's cover, whole; the rest carry the brand, a counter and a foot."""
     last = n == total
@@ -128,12 +149,13 @@ def page(n, total, body):
 
 
 def build(car, snap_frames=False):
-    spec, reel, md, times = load(car)
+    spec, reel, md, shots = load(car)
     name = car.name
     d = HERE / "build" / name
     frames = HERE / "build" / "_frames" / name
-    if snap_frames or len(list(frames.glob("*.png"))) != len(times):
-        snap(reel, times, frames)
+    done = frames / "shots.json"
+    if snap_frames or not done.exists() or json.loads(done.read_text()) != shots:
+        snap(reel, shots, frames)
     for f in d.glob("*"):
         f.unlink()
     d.mkdir(parents=True, exist_ok=True)
@@ -145,15 +167,19 @@ def build(car, snap_frames=False):
     fi = 0
     for s in spec["slides"]:
         if "at" in s:
-            crop(frames / f"{fi:02d}.png", d / f"f{fi}.png")
+            if s.get("zoom"):
+                shutil.copy(frames / f"{fi:02d}.png", d / f"f{fi}.png")
+            else:
+                crop(frames / f"{fi:02d}.png", d / f"f{fi}.png")
             bodies.append((f'<div class="content"><div class="fig"><img src="f{fi}.png" alt=""></div>'
-                           f'<div class="txt">{e(s["text"])}</div></div>', None))
+                           f'<div class="txt">{e(cap(s["text"]))}</div></div>', None))
             fi += 1
         else:
-            bodies.append((f'<div class="content"><div class="say">{e(s["say"])}</div></div>', None))
+            bodies.append((f'<div class="content"><div class="say">{e(cap(s["say"]))}</div></div>', None))
         alts.append(s["alt"])
-    bodies.append((f'<div class="content"><div class="k">YOUR TURN</div><div class="say">{e(spec["challenge"])}</div></div>', None))
-    alts.append(f'A text slide under "Your turn": {spec["challenge"]}')
+    ask = cap(spec["challenge"])
+    bodies.append((f'<div class="content"><div class="k">YOUR TURN</div><div class="say">{e(ask)}</div></div>', None))
+    alts.append(f'A text slide under "Your turn": {ask}')
     bodies.append(('<div class="content"><div class="k">WATCH IT MOVE</div>'
                    '<div class="say">Every step of this, visualised, in leetExpert: the interactive DSA course.</div>'
                    '<div class="where">leetexpert.com · link in bio</div></div>', None))
