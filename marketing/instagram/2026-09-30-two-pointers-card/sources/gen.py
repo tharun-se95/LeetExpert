@@ -10,6 +10,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / 
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
 from cardhtml import card, CARD_CSS, SHEET, COUNTS  # noqa: E402
+from viz import ArrayViz, load, trace  # noqa: E402
+import json as _json, re as _re  # noqa: E402
+
+
+def lesson_case(path, pick=0):
+    """A sandbox case from the lesson itself: the stage runs the shown code on the course's own input."""
+    md = (Path(__file__).resolve().parents[4] / "courses/dsa" / path).read_text()
+    return _json.loads(_re.search(r"```sandbox\n(.*?)\n```", md, _re.S).group(1))["cases"][pick]["args"]
 
 R = Reel("Two pointers on one card", "Two pointers")
 a = R.anchor
@@ -64,25 +72,79 @@ R.code("c0", Path("code/opposite_ends.py").read_text(), [
     (A["opposite"] - 0.2, [2], "<code>l</code> at the front, <code>r</code> at the back"),
     (A["small"] - 0.3, [7, 8], "Sum too small: move <code>l</code> in"),
     (A["big"] - 0.3, [9, 10], "Too big: move <code>r</code> in"),
-], A["smell"], A["removing"], top=450, font=29)
+], A["smell"], A["removing"], top=366, font=25)
+NUMS0, T0 = lesson_case("two-pointers/two-sum-ii.md")
+EV, RES = trace(load("code/opposite_ends.py", "two_sum"), NUMS0, T0)
+st = [{"ptr": {"l": 0, "r": len(NUMS0) - 1}, "note": f"target {T0}"}]
+for ln, sn in EV:
+    l, r = sn["l"], sn["r"]
+    if ln == 4:
+        st.append({"ptr": {"l": l, "r": r}, "mark": {l: "amb", r: "amb"}, "note": f"{NUMS0[l]} + {NUMS0[r]} = {sn['s']}"})
+    elif ln in (8, 10):
+        st.append({"ptr": {"l": l, "r": r}, "note": f"{'too small → l' if ln == 8 else 'too big → r'} moves in"})
+st.append({"ptr": {"l": RES[0] - 1, "r": RES[1] - 1}, "mark": {RES[0] - 1: "teal", RES[1] - 1: "teal"}, "note": f"= {T0} → return {RES}"})
+ArrayViz(R, "v0", NUMS0, list(zip(R.spread(A["opposite"] - 0.2, A["removing"] - 0.8, len(st)), st)), A["smell"], A["removing"],
+         top=R.code_bottom + 4, pointers=[("r", "amb", "above"), ("l", "teal", "below")], cell=100)
 banner("bn1", 1, A["removing"], A["area"])
 R.code("c1", Path("code/fast_slow.py").read_text(), [
     (A["removing"], [3], "<code>fast</code> explores"),
     (A["marks"] - 0.2, [2], "<code>slow</code> marks the end of what you keep"),
     (A["finds"] - 0.2, [4, 5, 6], "Something new? <code>slow</code> steps forward,<br/>takes it"),
-], A["removing"] - 0.1, A["area"], top=450, font=30)
+], A["removing"] - 0.1, A["area"], top=366, font=30)
+NUMS1 = lesson_case("arrays/remove-duplicates-sorted.md", 1)[0]
+EV, K = trace(load("code/fast_slow.py", "remove_duplicates"), list(NUMS1))
+st = [{"ptr": {"slow": 0, "fast": 1}, "note": "slow = 0"}]
+for ln, sn in EV:
+    slow, fast = sn["slow"], sn.get("fast")
+    if ln == 4:
+        new = sn["nums"][fast] != sn["nums"][slow]
+        st.append({"vals": list(sn["nums"]), "ptr": {"slow": slow, "fast": fast}, "mark": {fast: "teal" if new else "amb"}, "dim": set(range(slow + 1, fast)),
+                   "note": f"{sn['nums'][fast]} {'is new' if new else 'seen already'}"})
+    elif ln == 6:
+        st.append({"vals": list(sn["nums"]), "ptr": {"slow": slow, "fast": fast}, "mark": {slow: "teal"}, "dim": set(range(slow + 1, fast + 1)),
+                   "note": f"slow → {slow}, takes {sn['nums'][slow]}"})
+st.append({"vals": list(EV[-1][1]["nums"]), "mark": {j: "teal" for j in range(K)}, "dim": set(range(K, len(NUMS1))), "note": f"keep the first {K}"})
+ArrayViz(R, "v1", NUMS1, list(zip(R.spread(A["removing"], A["area"] - 0.8, len(st)), st)), A["removing"] - 0.1, A["area"],
+         top=R.code_bottom + 4, pointers=[("slow", "teal", "above"), ("fast", "amb", "below")])
 banner("bn2", 2, A["area"], A["merging"])
 R.code("c2", Path("code/inward_area.py").read_text(), [
     (A["area"], [4], "Area = width × the shorter line"),
     (A["inward"] - 0.2, [2, 3], "Start at both ends, move inward"),
     (A["shorter"] - 0.3, [5, 6, 7, 8], 'Move the <span class="teal">shorter</span> side: the taller one<br/>can never raise the minimum'),
-], A["area"] - 0.1, A["merging"], top=450, font=27)
+], A["area"] - 0.1, A["merging"], top=366, font=26)
+H = lesson_case("two-pointers/container-with-most-water.md")[0]
+EV, BEST = trace(load("code/inward_area.py", "max_area"), H)
+st = []
+for ln, sn in EV:
+    if ln == 4:
+        l, r = sn["l"], sn["r"]
+        st.append({"ptr": {"l": l, "r": r}, "mark": {l: "amb" if H[l] < H[r] else "teal", r: "teal" if H[l] < H[r] else "amb"},
+                   "dim": set(range(l)) | set(range(r + 1, len(H))),
+                   "note": f"({r} − {l}) × min({H[l]}, {H[r]}) = {(r - l) * min(H[l], H[r])} · best {sn['best']}"})
+st.append({"ptr": {}, "note": f"returns {BEST}"})
+ArrayViz(R, "v2", H, list(zip(R.spread(A["area"], A["merging"] - 0.8, len(st)), st)), A["area"] - 0.1, A["merging"],
+         top=R.code_bottom + 4, pointers=[("r", "amb", "above"), ("l", "teal", "below")])
 banner("bn3", 3, A["merging"], A["every"])
 R.code("c3", Path("code/merge_walk.py").read_text(), [
     (A["each"] - 0.3, [2], "One pointer in each list"),
     (A["smaller"] - 0.3, [5, 6, 7, 8], "Always take the smaller head"),
     (A["runs"] - 0.3, [9], "One runs out: append the rest"),
-], A["merging"] - 0.1, A["every"], top=450, font=30)
+], A["merging"] - 0.1, A["every"], top=366, font=26)
+MA, MB = lesson_case("linked-lists/merge-two-sorted.md")
+EV, OUT = trace(load("code/merge_walk.py", "merge"), MA, MB)
+sa, sb = [], []
+for ln, sn in EV:
+    if ln in (3, 6, 8):
+        i, j = sn["i"], sn["j"]
+        took = "" if ln == 3 else f"take {sn['out'][-1]} · "
+        sa.append({"ptr": {"i": i if i < len(MA) else None}, "dim": set(range(i)), "note": f"{took}out = {sn['out']}"})
+        sb.append({"ptr": {"j": j if j < len(MB) else None}, "dim": set(range(j))})
+sa.append({"dim": set(range(len(MA))), "note": f"+ the rest → {OUT}"}); sb.append({"dim": set(range(len(MB)))})
+mt = R.spread(A["each"] - 0.3, A["every"] - 0.8, len(sa))
+ArrayViz(R, "v3a", MA, list(zip(mt, sa)), A["merging"] - 0.1, A["every"], top=R.code_bottom + 4, label="a",
+         pointers=[("i", "teal", "below")], cell=100, left=60, right=560, note_full=True)
+ArrayViz(R, "v3b", MB, list(zip(mt, sb)), A["merging"] - 0.1, A["every"], top=R.code_bottom + 4, label="b",
+         pointers=[("j", "amb", "below")], cell=100, left=560, right=60)
 
 # --- targets, straight from the card
 show("#cx", A["every"], A["traps"], y=20)
@@ -114,10 +176,12 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "wu-12-blank-card"), (A["smell"] - 0.2, "cu-02-explaining"), (A["removing"] - 0.2, "wu-03-point-side"),
-          (A["area"] - 0.2, "wu-02-pen-up"), (A["merging"] - 0.2, "wu-03b-point-left"), (A["every"] - 0.2, "cu-07-confident"),
-          (A["traps"] - 0.2, "cu-10-serious"), (A["itself"] - 0.2, "cu-05-worried"), (A["real"] - 0.2, "wu-05-tablet"),
-          (A["twenty"] - 0.1, "cu-08-excited"), (A["turn"] - 0.2, "wu-04-open-palm"), (A["palindrome"], "cu-03-thinking"),
+# the tutor only where she adds something: the hook with the card, the traps, the count, the challenge, the brand
+R.stills([(0, "wu-12-blank-card"), (A["smell"] - 0.2, None),
+          (A["traps"] - 0.2, "cu-10-serious"), (A["sorted"] - 0.2, None),
+          (A["itself"] - 0.2, "cu-05-worried"), (A["real"] - 0.2, None),
+          (A["twenty"] - 0.1, "cu-08-excited"), (A["twenty"] + 2.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["palindrome"], None),
           (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "wu-12-blank-card")])
 R.captions(amber={"traps", "itself", "sorted"},
            teal={"save", "opposite", "fast", "slow", "shorter", "smaller", "leetexpert", "cheatsheet", "card"},

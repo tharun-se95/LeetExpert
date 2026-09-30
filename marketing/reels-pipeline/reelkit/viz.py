@@ -156,7 +156,10 @@ class ArrayViz:
     note  one line under the pointers (a comparison, a verdict)
     """
 
-    def __init__(self, R, vid, values, states, t0, t1, top, pointers=(), label=None, cell=None, gap=14, left=60, right=60):
+    def __init__(self, R, vid, values, states, t0, t1, top, pointers=(), label=None, cell=None, gap=14, left=60, right=60,
+                 note_full=False):
+        """`note_full` lets the note run the frame's width (a row sharing the stage that speaks for both);
+        otherwise the note stays inside the row's own left/right, clear of whatever sits beside it."""
         n = len(values)
         width = 1080 - left - right
         cell = cell or min(118, (width - gap * (n - 1)) // n)
@@ -198,7 +201,8 @@ class ArrayViz:
         if has_note:
             seq = _changes(full, lambda s: s["note"])
             texts = _texts(R, lambda d: f"#{vid}-n{d}", seq, t0, t1)
-            parts += [f'<div class="vzn" id="{vid}-n{d}" style="left:{left}px;top:{note_top}px">{x}</div>' for d, x in enumerate(texts)]
+            nr = 60 if note_full else right
+            parts += [f'<div class="vzn" id="{vid}-n{d}" style="left:{left}px;right:{nr}px;top:{note_top}px">{x}</div>' for d, x in enumerate(texts)]
         parts.append("</div>")
         R.add("".join(parts))
         _window(R, f"#{vid}", t0, t1)
@@ -238,7 +242,7 @@ class MapViz:
         if has_note:
             seq = _changes(full, lambda s: s["note"])
             texts = _texts(R, lambda d: f"#{vid}-n{d}", seq, t0, t1)
-            parts += [f'<div class="vzn" id="{vid}-n{d}" style="left:{left}px;top:{note_top}px">{x}</div>' for d, x in enumerate(texts)]
+            parts += [f'<div class="vzn" id="{vid}-n{d}" style="left:{left}px;right:{right}px;top:{note_top}px">{x}</div>' for d, x in enumerate(texts)]
         parts.append("</div>")
         R.add("".join(parts))
         _window(R, f"#{vid}", t0, t1)

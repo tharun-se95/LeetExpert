@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / "reelkit"))
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
+from viz import ArrayViz, MapViz, load, trace  # noqa: E402
 
 R = Reel("The coach won't give you the answer", "Inside leetExpert")
 a = R.anchor
@@ -79,7 +80,49 @@ R.code("c1", Path("code/draft.py").read_text(), [
     (A["ask"], [5], "6 − 3 = 3. Is 3 in <code>seen</code>? Yes…"),
     (A["stored"], [5], '…but that\'s the 3 we <span class="amb">just stored</span>'),
     (A["itself"], [6], '3 pairs with itself → <span class="amb">[0, 0]</span>'),
-], A["walk"] - 0.1, A["fix"], top=400, font=32)
+], A["walk"] - 0.1, A["fix"], top=320, font=30)
+
+# under it, the draft's own run on the failing test: nums with i, and what seen holds
+CASE, TGT = [3, 2, 4], 6
+
+
+def two_sum_states(path):
+    ev, res = trace(load(path, "two_sum"), CASE, TGT)
+    out = []
+    for ln, sn in ev:
+        i, n, seen = sn.get("i"), sn.get("n"), sn["seen"]
+        if ln == 3 and path.endswith("draft.py"):
+            out.append(({"ptr": {"i": i}, "mark": {i: "amb"}, "note": f"i = {i}, n = {n}"}, {"vals": dict(seen)}))
+        elif ln == 4 and path.endswith("draft.py"):
+            out.append(({"ptr": {"i": i}, "mark": {i: "amb"}}, {"vals": dict(seen), "mark": {n: "amb"}, "note": f"seen[{n}] = {i}"}))
+        elif ln == 5 and path.endswith("draft.py"):
+            hit = TGT - n in seen
+            out.append(({"ptr": {"i": i}, "mark": {i: "amb"}, "note": f"{TGT} − {n} = {TGT - n} in seen? {'yes' if hit else 'no'}"},
+                        {"vals": dict(seen), "mark": {TGT - n: "amb"} if hit else {}}))
+        elif ln == 4:  # the fix checks first: one beat per i, its store folded in below
+            hit = TGT - n in seen
+            out.append(({"ptr": {"i": i}, "mark": {i: "amb"}, "note": f"{TGT} − {n} = {TGT - n} in seen? {'yes' if hit else 'no → store it'}"},
+                        {"vals": dict(seen), "mark": {TGT - n: "teal"} if hit else {}}))
+        elif ln == 6 and not path.endswith("draft.py"):
+            out[-1][1]["vals"] = dict(seen)  # the store that follows a miss
+            out[-1][1]["mark"] = {n: "amb"}
+    return out, res
+
+
+def stage(times, states, p, t0, t1):
+    """nums with i on top, seen under it; the note (a row's) runs full width under seen."""
+    row = ArrayViz(R, f"{p}n", CASE, [(t, {k: v for k, v in a.items() if k != "note"}) for t, (a, b) in zip(times, states)], t0, t1,
+                   top=R.code_bottom + 14, label=f"nums · target {TGT}", pointers=[("i", "amb", "below")], cell=100)
+    MapViz(R, f"{p}s", CASE, [(t, {**b, "note": a.get("note", b.get("note", ""))}) for t, (a, b) in zip(times, states)], t0, t1,
+           top=row.bottom + 2, cols=3, label="seen (n → i)")
+
+
+DS, DRES = two_sum_states("code/draft.py")
+DS.append(({"ptr": {"i": DS[-1][0]["ptr"]["i"]}, "mark": {j: "amb" for j in set(DRES)}, "note": f"returns {DRES}: 3 found itself"},
+           {"vals": DS[-1][1]["vals"], "mark": {CASE[DRES[0]]: "amb"}}))
+dt = [A["first"], A["store2"], A["ask"], A["itself"]]
+assert len(dt) == len(DS), (len(dt), len(DS))
+stage(dt, DS, "d", A["walk"] - 0.1, A["fix"])
 
 # --- the fix, made in the app: move the store below the check
 R.screen("w2", [(A["fix"], S("08-fix0")), (A["move"], S("08-fix1")), (A["move"] + 0.5, S("08-fix2"))],
@@ -87,7 +130,11 @@ R.screen("w2", [(A["fix"], S("08-fix0")), (A["move"], S("08-fix1")), (A["move"] 
 R.code("c2", Path("code/fixed.py").read_text(), [
     (A["earlier"] - 0.3, [4, 5], "Check first: <code>seen</code> only holds<br/>earlier numbers"),
     (A["never"], [6], 'Store after, so a number can<br/><span class="teal">never find itself</span>'),
-], A["earlier"] - 0.4, A["run3"], top=400, font=32)
+], A["earlier"] - 0.4, A["run3"], top=320, font=30)
+FS, FRES = two_sum_states("code/fixed.py")
+FS.append(({"ptr": {"i": FRES[1]}, "mark": {j: "teal" for j in FRES}, "note": f"returns {FRES} ✓"}, {"vals": FS[-1][1]["vals"]}))
+ft = R.spread(A["earlier"] - 0.3, A["run3"] - 0.6, len(FS))
+stage(ft, FS, "f", A["earlier"] - 0.4, A["run3"])
 R.screen("w3", [(A["run3"], S("09-pass")), (A["still"] - 0.3, S("10-coach-pass"))], A["run3"] - 0.1, A["why"],
          zooms=[(A["run3"] + 0.3, 1.3, 1.0, 1.0), (A["still"] - 0.3, 1.0, 0.0, 0.0)],
          crops=[(A["still"] - 0.4, 0.74)])
@@ -107,12 +154,12 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "wu-09-arms-crossed"), (A["point"] - 0.1, "cu-09-wink"), (A["real"] - 0.2, "wu-14-laptop"),
-          (A["run"] - 0.1, "cu-03-thinking"), (A["names"] - 0.2, "wu-03-point-side"), (A["hint"] - 0.2, "cu-02-explaining"),
-          (A["swap"] - 0.2, "wu-07-think-standing"), (A["breaks"] - 0.1, "cu-05b-cringe"), (A["further"] - 0.2, "wu-03-point-side"),
-          (A["walk"] - 0.2, "wu-02-pen-up"), (A["stored"] - 0.1, "cu-04-surprised"), (A["fix"] - 0.2, "cu-07-confident"),
-          (A["run3"] - 0.1, "wu-14-laptop"), (A["solved"] - 0.1, "fb-05-celebrate"), (A["still"] - 0.1, "cu-11-laughing"),
-          (A["why"] - 0.2, "cu-10-serious"), (A["turn"] - 0.2, "wu-04-open-palm"), (A["work"] - 0.1, "cu-03-thinking"),
+# the tutor only where she adds something: the hook, the break, the surprise, the solve, the challenge, the brand
+R.stills([(0, "wu-09-arms-crossed"), (A["point"] - 0.1, "cu-09-wink"), (A["real"] - 0.2, None),
+          (A["breaks"] - 0.1, "cu-05b-cringe"), (A["breaks"] + 2.2, None),
+          (A["stored"] - 0.1, "cu-04-surprised"), (A["itself"] - 0.2, None),
+          (A["solved"] - 0.1, "fb-05-celebrate"), (A["still"] - 0.1, "cu-11-laughing"), (A["why"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["work"] - 0.1, None),
           (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "wu-09-arms-crossed")])
 R.captions(amber={"breaks", "itself", "wrong", "zero"},
            teal={"hint", "fix", "check", "earlier", "solved", "four", "leetexpert", "coach", "reason"},

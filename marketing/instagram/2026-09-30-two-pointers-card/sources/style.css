@@ -2,8 +2,8 @@
 .cardwrap{position:absolute;left:209px;top:340px;z-index:2}
 .sc{transform:scale(.72);transform-origin:0 0}
 /* smell banners over the code cards */
-.bn{position:absolute;left:60px;right:60px;top:350px;display:flex;flex-direction:column;gap:4px}
-.bn .s{font-size:30px;color:#cbd5e1}.bn .p{font-family:"Space Mono",monospace;font-size:40px;font-weight:700;color:#5eead4}
+.bn{position:absolute;left:60px;right:60px;top:318px;display:flex;align-items:baseline;gap:14px;white-space:nowrap}
+.bn .s{font-size:25px;color:#cbd5e1}.bn .p{font-family:"Space Mono",monospace;font-size:28px;font-weight:700;color:#5eead4}
 /* targets */
 .cxh,.cxr{position:relative;display:grid;grid-template-columns:1fr 190px 140px;padding:14px 0;font-size:34px}
 .cxh{margin-top:30px;font-family:"Space Mono",monospace;font-size:24px;color:#94a3b8}
