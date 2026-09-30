@@ -128,8 +128,10 @@ class Reel:
         """Shows each element from its time until the next one's (a cross-cut sequence)."""
         for j, (sel, t) in enumerate(sels_times):
             nxt = sels_times[j + 1][1] if j + 1 < len(sels_times) else t_end
+            # fades shrink for rapid cuts, so each one finishes before the next cut starts
+            gap = (nxt - t) if nxt is not None else 1.0
             self.init(sel, autoAlpha=0)
-            self.k(sel, t, {"autoAlpha": 1}, 0.12, "none")
+            self.k(sel, t, {"autoAlpha": 1}, round(min(0.12, gap * 0.5), 3), "none")
             if nxt is not None:
                 self.k(sel, nxt, {"autoAlpha": 0}, 0.08, "none")
 
@@ -154,6 +156,8 @@ class Reel:
         lh = round(font * 1.62)
         card_h = 70 + len(lines) * lh + 30
         note_top = note_top or top + card_h + 18
+        # two lines of notes (~105px) must end above the caption zone at y 1160
+        assert note_top + 105 <= 1155, f"{cid}: notes at y {note_top} would run into the captions; lower font or top"
         rows = "".join(f'<div class="cl" style="height:{lh}px;line-height:{lh}px"><span class="cn">{i + 1}</span><span class="cx">{highlight(l, lang)}</span></div>'
                        for i, l in enumerate(lines))
         notes = "".join(f'<div class="cnote" id="{cid}-n{j}">{n}</div>' for j, (_, _, n) in enumerate(steps))
@@ -241,16 +245,16 @@ class Reel:
         WS = [L + x["s"] for x in W]
         for g, ids in enumerate(groups):
             s = WS[ids[0]]
-            self.init(f"#g{g}", autoAlpha=0)
+            self.init(f"#cap-g{g}", autoAlpha=0)
             if s >= until - 0.05:
                 continue
             e = min(WS[groups[g + 1][0]] if g + 1 < len(groups) else self.END, until - 0.1)
-            self.k(f"#g{g}", s - 0.05, {"autoAlpha": 1}, 0.06, "none")
-            self.k(f"#g{g}", max(e - 0.1, s + 0.02), {"autoAlpha": 0}, 0.04, "none")
+            self.k(f"#cap-g{g}", s - 0.05, {"autoAlpha": 1}, 0.06, "none")
+            self.k(f"#cap-g{g}", max(e - 0.1, s + 0.02), {"autoAlpha": 0}, 0.04, "none")
             for i in ids:
-                self.init(f"#w{i}", opacity=0.5)
-                self.k(f"#w{i}", WS[i], {"opacity": 1}, 0.08, "none")
-        cap = "".join(f'<div class="cg" id="g{g}">' + " ".join(f'<span class="{wc(i)}" id="w{i}">{html.escape(W[i]["t"])}</span>' for i in ids) + "</div>"
+                self.init(f"#cap-w{i}", opacity=0.5)
+                self.k(f"#cap-w{i}", WS[i], {"opacity": 1}, 0.08, "none")
+        cap = "".join(f'<div class="cg" id="cap-g{g}">' + " ".join(f'<span class="{wc(i)}" id="cap-w{i}">{html.escape(W[i]["t"])}</span>' for i in ids) + "</div>"
                       for g, ids in enumerate(groups))
         self.add(f'<div class="caps">{cap}</div>')
 
@@ -277,6 +281,10 @@ class Reel:
 
     # ---------------------------------------------------------------- output
     def write(self, css=""):
+        # an id used twice lets one element's track drive the other (a cell "#c1" and a code card "#c1")
+        ids = re.findall(r'\bid="([^"]+)"', "".join(self.parts))
+        dup = sorted({i for i in ids if ids.count(i) > 1})
+        assert not dup, f"duplicate element ids: {dup}"
         for sel, tr in self.K.items():
             tr["pts"].sort(key=lambda p: p[0])
             prev = 0.0
