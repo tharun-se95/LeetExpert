@@ -1,87 +1,127 @@
-# Instagram reels pipeline — handoff (2026-09-28, issue #66)
+# Instagram pipeline: handoff (2026-09-30)
 
-This file lets any agent pick up the leetExpert Instagram work without the original chat.
-Owner: Tharun. Site: leetexpert.com ("DSA for the age of AI" — interactive DSA course).
+Start here to pick up leetExpert's Instagram work from any account or session. The plan
+and every open item live in **GitHub issues**: this page tells you where things are and how
+they work, and it never copies an issue's state (read the issue for that).
 
-## 1. Where everything lives (durable)
+Owner: Tharun. Product: leetexpert.com, "DSA for the age of AI", an interactive DSA course.
+Account: @leetexpert (a second account, @10xtharun, is tracked in #113–#117).
+
+## 1. Pick up the work
+
+The epic is **#132, the October launch**. Read it and its comments first: they record the
+owner's decisions (start Oct 1, three posts a day Oct 1–3 then one a day, carousels first,
+stories on, schedule by hand in Meta Business Suite).
+
+| Issue | Work | State of the code |
+|---|---|---|
+| #133 | Cheatsheet carousels, 13 gold modules | **Started**: `carousel/dump_sheets.ts`, `carousel/sheets.json`, build plan in `carousel/README.md` |
+| #134 | Carousel versions of the 12 reels (step-by-step slides from their traces) | Not started |
+| #135 | Spot-the-bug carousels, verified in Python and JavaScript | Not started |
+| #136 | Big-O quiz singles, answer in the first comment | Not started |
+| #137 | Daily story kit and highlight covers | Not started |
+
+These are independent: several agents can take one each. Claim an issue with a comment
+(CLAUDE.md §7) before starting, work on a `feat/N-…` branch from `main`, and add every
+finished post to the posting kit (§4) with its date.
+
+Open owner calls, not for an agent to decide: **#67** (a tutor cameo in post 3, or close it
+under the Sep 30 direction), **#68** (the spoken brand line for posts 2 and 3), and whether the
+gift-card reel (#119, closed) should gain a short code walkthrough (it has none; new narration
+would be needed). Ask; record the answer on the issue.
+
+## 2. Where everything lives
 
 | What | Where |
 |---|---|
-| **Ledger** (30-post plan, status, notes, media library of every final video) | Artifact https://claude.ai/artifact/B6QDfhoU9sC5dc7dujgXfV — db collections `posts` (p01–p30), `media` (videos/covers per post), `meta` (`plan`, `handoff`) |
-| **This handoff, skill, pose library, scripts** | This folder (`marketing/reels-pipeline/`); copies also stored as assets on the ledger artifact (ids in db doc `meta/handoff`) |
-| **Post packages** (post.md, final media, sources incl. narration audio) | `marketing/instagram/2026-09-2*-*/`; rows in `marketing/LEDGER.md` |
-| Character sheet (vector tutor, superseded by painted stills) | https://claude.ai/artifact/R3QLQrEXBJBDXD8QcPjg22 |
-| Post 2 static carousel canvas | https://claude.ai/artifact/XfUxyxwtR9jwU8sXbmRPFn |
-| Instagram specialist skill | `leetexpert-instagram.skill` (also in toolkit/skill) |
+| Post packages (post.md, reel.mp4 / slides, cover.png, sources) | `marketing/instagram/<date>-<slug>/` |
+| Append-only post ledger | `marketing/LEDGER.md` |
+| **Posting kit**: the page the owner schedules from | https://claude.ai/artifact/QBH6EjeE62vGexCuwpCwor, built from `posting-kit/` |
+| **Ledger artifact**: the 30-post plan, statuses, notes, media library | https://claude.ai/artifact/B6QDfhoU9sC5dc7dujgXfV (db `posts` p01–p30 with `scheduledFor`, `media`, `meta`) |
+| Reel engine | `reelkit/` (README there) |
+| Carousel builder (in progress) | `carousel/` |
+| Instagram specialist skill (voice, formats, hashtag rules) | `skill/` (`references/formats.md`) |
+| Tutor poses, cleaning scripts | `tutor-poses/`, `stills-cleaning/` |
+| Publishing to Instagram by API (posts at once, cannot schedule) | `marketing/scripts/prepare.mjs`, `publish.mjs` |
 
-The claude.ai ledger artifact is the working tracker for the 30-post plan; the repo is the durable record. Keep both in step: when a post ships, update its `marketing/LEDGER.md` row and the ledger artifact status.
+Keep the repo and the two artifacts in step: when a post is scheduled or posted, update its
+`post.md` status line, its `LEDGER.md` row and the ledger artifact's `posts/pNN` status.
 
-## 2. Status of posts
+## 3. Content rules (every post)
 
-| # | Topic | Status | Final asset (ledger media) |
-|---|---|---|---|
-| 1 | Launch reel "Agents write the code…" (screen recording of live site + Hope VO) | Designed, ready | `p01-reel` |
-| 2 | Big-O in 60s — animated carousel, 7 video slides + Hope VO v3 | Designed, ready | `p02-*` (slide1–7, cover, preview) |
-| 3 | "Would you ship this?" has_pair_sum reel (72s, code-card hero, loops) | Designed, ready — **no tutor yet** | `p03-reel` |
-| 4 | Two pointers trace reel (60s) with painted tutor stills | Designed, ready | `p04-reel-stills` |
-| 5 | Streak loop (17.6s) with tutor stills, VO + lo-fi + ticks | Designed, ready | `p05-reel-stills` |
-| 6 | list vs set deep reel (2:17) with tutor stills | Designed, ready | `p06-reel-stills` |
-| 7–30 | Planned (see ledger `posts` hooks/angles) | Planned | — |
+1. **Verify every technical claim by running code**, in both Python and JavaScript
+   (CLAUDE.md §2). The code on screen is the file the verifier runs; timings are "our test run".
+2. **Stand alone for a cold viewer**: a hook a stranger understands in 1.5 s, "leetExpert, the
+   interactive DSA course" said or shown, and the brand lockup at the end.
+3. **Never** use the site's placeholder stats or testimonials. No invented learners.
+4. **Five hashtags**, all specific: Instagram's hard limit since Dec 2025. The recipe (pattern,
+   problem, language, angle, audience) is in `skill/references/formats.md`.
+5. **Alt text** on every post.
+6. **The tutor is a cue, not a presenter** (owner, 2026-09-30): the hook, one key reaction, the
+   challenge, the brand. `reelkit` enforces at most 35% screen time.
+7. **Every code walkthrough has a data-structure stage beside it** (owner, 2026-09-30), built
+   from the shown code's own run (`reelkit/viz.py`).
 
-Nothing has been published to Instagram. Posting needs an Instagram connection (Metricool connector suggested, not connected).
+## 4. Production
 
-## 3. Content rules (non-negotiable, also in the skill)
+### Reels (`reelkit/`)
 
-1. **Stand alone for cold viewers**: hook a stranger understands in 1.5s; say "leetExpert" aloud; say what it is ("the interactive DSA course"); end on a brand lockup ("Try leetExpert free → link in bio"); readable wordmark throughout; no dependence on earlier posts.
-2. **Depth**: reels 60–120s; arc = hook → verified demo → mechanism + analogy → caveats/trade-offs → common pitfall (real error text) → interview cue → comment challenge → brand. New visual every 2–4s.
-3. **Verify every technical claim by running code** before scripting (timings are "our test run").
-4. **Never use** the site's placeholder stats/testimonials (2,400+, 18,000, 4.8/5, named quotes). Leave `[CONFIRM]` slots.
-5. Audio always: Hope narration + optional lo-fi bed ducked under voice. Casual, conversational scripts (v3 one continuous take sounds natural; per-slide takes and uniform pause-trimming sounded robotic).
-6. Tutor character: anime-style adult tutor, non-sexualised (reject sexualised framing/schoolgirl cues). Unnamed so far.
+Script → verify → narrate → generate → check → render. Commands are in `reelkit/README.md`.
 
-## 4. Production pipeline (what worked)
+- **Narration:** `reelkit/narrate.py`, ElevenLabs `eleven_v3`, voice Hope (`WZlYpi1yf6zJhNWXih74`),
+  one take, levelled to −15 LUFS; Scribe word timings, then `respell.py` restores the script's
+  spelling ("leetExpert", "hash map", "lo"). Read respell's report: a *different* word (not a
+  homophone) can mean the take said the wrong word. Cut that span, transcribe it alone, and
+  re-record if so (post 12 needed this).
+- **Key:** `ELEVENLABS_API_KEY` in the environment (it is set in the owner's cloud environment;
+  the key lacks `user_read`, so it cannot report remaining quota). Never write it to a file.
+- **Stages:** `viz.py` `ArrayViz` / `MapViz` / `StackViz`, with states from `trace()` (Python,
+  per-frame and recursion-safe), `calls()` (recursive calls and returns) or `js_reads()` (runs a
+  `.js` in Node through a Proxy). A stage fails the build if it reaches the caption zone.
+- **Check:** `npx hyperframes@0.8.77 check` must report 0 errors. Look at stills
+  (`hyperframes snapshot --at …`) before rendering.
+- **Render:** about 4–5 minutes per reel on 4 cores; run in the background. Re-encode to
+  crf 23 (7–9 MB). The container needs `ffmpeg` (`apt-get install -y ffmpeg`).
+- **Cover:** `reelkit/cover.py "<hook with *key* words>" "<topic>" <still>` puts the hook inside
+  the grid's crop (y 285–1635).
 
-1. **Script** → verify facts in Python.
-2. **Voice**: ElevenLabs `eleven_v3`, voice **Hope** `WZlYpi1yf6zJhNWXih74`, stability 0.5, one continuous take; level to −15 LUFS (volume gain + limiter, no pause trimming).
-   **API key is never stored.** Ask the user each session for a restricted key (TTS + STT + Music); delete it from the container after use. (User has repeatedly pasted a full-access key — keep advising rotation.)
-3. **Scribe** (`scribe_v1`, word timestamps) → `words.json`. Anchor every visual to a word via `at(token, after=)`; beware repeated words ("same", "one", "o") — use the `after` offset and assert anchors are monotonic.
-4. **HyperFrames 0.8.77** (`npx hyperframes`), 1080×1920 (reels) or 1080×1350 (carousel). Composition generated by `gen.py` per reel (see toolkit/reels). Key techniques:
-   - One GSAP **keyframed `track()` per element** (seek-safe). Multiple tweens on the same property of one element broke non-linear rendering.
-   - Captions: TikTok-style groups of ≤3 words, keyword colours (teal good / amber bug); hidden once the brand lockup starts.
-   - Tutor stills: stack of `<img class="still">` toggled by an `SB` beat list (time, still-name); cross-fade + slow push per hold; centre with GSAP `xPercent:-50` (no CSS transforms on animated elements).
-   - Loop: final frame resets to frame 1 (pointers/panels/stills back to initial state).
-   - Run `npx hyperframes check` (0 errors) — fix overlaps, contrast; `data-layout-allow-overlap` only for sequential panels.
-5. **Render** in the **foreground** (background processes die when a tool call ends); each call < 300s. Long reels: render chunks via `partN.html` wrappers (`master.add(tl.tweenFromTo(off, off+len))`, set root `data-duration=len`), concat with ffmpeg, then mux audio (`-itsoffset LEAD`). Remove partN.html afterwards (multiple root compositions fail `check`).
-6. **Store**: upload the mp4 + cover as ledger assets (≤20 MB; re-encode crf 23 if needed), add `media` docs `{post, label, asset, kind, order, poster}`, update the post's `notes`/`status`.
+### Carousels and singles
 
-Gotchas: never `pkill -f <pattern>` (kills your own shell); Playwright screenshots at 1080×1920 can hang (use HyperFrames render or small viewports); fonts must be local TTFs (Space Grotesk / Space Mono in toolkit reels).
+1080×1350. Build from real product content where it exists (the cheatsheets in
+`web/src/lib/course/cheatsheets`), render with Playwright (`web/node_modules/playwright-core`,
+Chromium at `/opt/pw-browsers`), and fail on overflow. The two-pointers card
+(`instagram/2026-09-30-two-pointers-card/sources/card.py`, `render_card.mjs`) is the working
+example.
 
-## 5. Tutor pose library
+### Posting kit (`posting-kit/`)
 
-`tutor-pose-library.zip` → `lib/*.png` (37 transparent cutouts + `brand-avatar.png`). Naming: `cu-*` close-ups, `wu-*` waist-up, `fb-*` full body; `*b-*-left` are mirrors.
-Sources are user-generated images (not in the toolkit); cleaning = `toolkit/stills/clean3.py` (isnet-anime mask + flat-background colour model: restores warm whites, peels glow to the outline, removes hair-framed pockets near the silhouette, decontaminates edges). If new images arrive, add them to `SRC` in `clean.py` and run clean3.
-Known consistency notes: glasses sometimes gold vs dark; full-body shots use a short skirt with socks/sneakers (fine at reel scale). One off-model image (hair fully up) was excluded.
-Still useful to request: more explaining variants, pointing-up close-up, a relaxed standing full-body front with no tablet.
+`october.json` lists the posts in order with date, time slot, caption, hashtags, alt text and
+hook (taken from each `post.md`). `build.py` writes the page; the media are assets of the kit
+artifact, mapped in `build.py`'s `MEDIA`. To add a post: upload its media to the kit artifact
+(copy assets server-side from the ledger artifact where they already are), add it to `MEDIA`
+and `october.json`, rebuild, republish to the same URL, and set its `scheduledFor` in the
+ledger artifact.
 
-## 6. Open items / next steps (priority order)
+## 5. Known blockers
 
-1. **Post 3 with the tutor** (follow-up issue): needs a re-layout (code card smaller, stage right, captions beside her) or a corner reaction bubble. User asked for tutor in posts 3–5; post 3 still pending.
-2. Posts 2–4: add a spoken one-liner "leetExpert, the interactive DSA course" (standalone rule item 3) — needs new VO lines.
-3. Continue posts 7–30 (ledger has hooks/angles for each). Post 7: hash-map counting (valid anagram). Apply rules §3 and pipeline §4; tutor stills throughout.
-4. Posting: connect Instagram (Metricool connector) and schedule; set ledger statuses to Scheduled/Posted with links.
-5. Site bug found while recording: tracer fullscreen layout shift (~10px per step). Causes: fullscreen stage vertically centred while step caption grows 1→2 lines; stats values change width. Fix: reserve caption height / top-align stage on mobile; `font-variant-numeric: tabular-nums; min-width: 3ch` on stat values. Needs repo access (Vercel access was declined earlier).
-6. Name the tutor (lockup/end cards).
-7. Superseded drafts (post 1 v1/vo, post 2 v1/v0) were not uploaded; only finals are stored.
+- **GitHub Actions has run no job since 2026-09-29 21:49 UTC**: every job fails in about 3 s
+  with no runner, `main` included; most likely the account's Actions minutes or spending limit
+  (owner to check Settings → Billing and plans). Until it runs, check locally before any PR.
+- **Board cards:** cloud sessions reach GitHub through a connector with no Projects support,
+  so they cannot move roadmap cards. Say so on the issue; the owner, or a Mac session with
+  `gh` and the `project` scope, moves them. Suggested fix: the project's "Auto-add to project"
+  workflow.
+- **Scheduling is manual:** `publish.mjs` posts immediately and needs `marketing/.env.local`
+  (not in cloud sessions). The owner schedules from the posting kit in Meta Business Suite.
+- **Alt text for posts 7–18** predates the Sep 30 redesign: accurate, but it does not describe
+  the new data-structure stages.
 
-## 7. Folder contents
+## 6. Gotchas
 
-- `reelkit/` — the shared reel engine (anchors, tracks, stills, captions, lockup, code walkthrough), base styles, `prep.sh`, `narrate.py`, `est_words.py`. New reels build on it; see `reelkit/README.md`.
-- `skill/` — Instagram specialist skill (SKILL.md + references); package with the skill-creator to install in Claude.
-- `tutor-poses/` — 37 clean transparent cutouts + `brand-avatar.png` (`cu-*` close-ups, `wu-*` waist-up, `fb-*` full body).
-- `stills-cleaning/` — `clean.py` (source-image map `SRC`, originals were chat uploads and are not in the repo) and `clean3.py` (the cleaning method).
-- `vector-tutor-rig/` — the earlier SVG tutor rig (superseded by the painted stills; kept for reference).
-- `ledger-page/index.html` — source of the claude.ai ledger artifact (capabilities: db + assets).
-- Per-post generators and audio live in each package's `sources/`. To re-render: copy `tutor-poses/*.png` into `sources/stills/`, add `gsap.min.js` (gsap@3.14.2) and the Space Grotesk / Space Mono TTFs under `sources/fonts/`, run the generator (writes `index.html`), then `npx hyperframes@0.8.77 check` and `render` as in §4.
-
-
-<sub>Agent: Claude (claude.ai chat, Claude Opus 5.5) · project "LeetExpert" · branch `feat/66-instagram-reels-pipeline` · 2026-09-28 · issue #66</sub>
+- Render in the background; a foreground tool call is cut off after 10 minutes.
+- Never `pkill -f <pattern>`: it can kill your own shell.
+- A reel's `sources/` has git-ignored render inputs (stills, fonts, GSAP, `hyperframes.json`,
+  `index.html`); `reelkit/prep.sh` restores them.
+- `PYTHONDONTWRITEBYTECODE=1` when planting a fault to prove a verifier fails (a stale
+  `__pycache__` can outlive the restore).
+- Posts 1 and 6 are the only ones posted (2026-09-29). Keep-the-streak (post 5) is held under #30.
