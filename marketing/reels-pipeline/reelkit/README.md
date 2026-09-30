@@ -11,6 +11,7 @@ on are built on it. The gift-card re-cut (#119) predates it and still has its ow
 | `kiticons.py` | Icons every reel reuses: interview mic, challenge bubble, word-game tile, `cue_card` |
 | `prep.sh` | Copies tutor stills, fonts, GSAP and the HyperFrames config into a reel's `sources/` (git-ignored there) |
 | `narrate.py` | Hope TTS + Scribe word timings → `vo.mp3` + `words.json` (needs `ELEVENLABS_API_KEY` and network access to api.elevenlabs.io) |
+| `respell.py` | Aligns Scribe's words to `script.txt` so captions and anchors use the script's spelling (Scribe hears "lo" as "Low", "leetExpert" as "Leet Expert", "hash map" as "HashMap"); `narrate.py` runs it, and it reruns safely on an existing `words.json` |
 | `est_words.py` | Stand-in `words.json` from `script.txt`, for a silent preview before the take exists |
 
 ## A reel package
@@ -43,6 +44,11 @@ verifier fails, a `__pycache__` written in the same second can survive the resto
 the verifier then keeps testing the broken copy.
 
 ## Rules the kit enforces or expects
+
+- **Read respell's spelling changes.** A homophone ("Write" → "Right") is Scribe mishearing; a
+  different word ("That" → "Best") can mean the take itself said the wrong word. Cut that
+  span from `vo.mp3`, transcribe it alone, and re-record if the take is wrong: the caption
+  would otherwise show a word the narrator never said.
 
 - **The code on screen is the code that ran.** `R.code()` renders a string; pass it
   `Path("code/x.py").read_text()`, the same file `verify.py` imports. Never retype code in `gen.py`.

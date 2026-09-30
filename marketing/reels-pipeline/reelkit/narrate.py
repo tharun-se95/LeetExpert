@@ -8,6 +8,9 @@ read from the environment only and never written to disk.
 """
 import json, os, subprocess, sys, urllib.request, uuid
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from respell import respell
+
 KEY = os.environ.get("ELEVENLABS_API_KEY") or sys.exit("set ELEVENLABS_API_KEY")
 VOICE = "WZlYpi1yf6zJhNWXih74"  # Hope
 API = "https://api.elevenlabs.io/v1"
@@ -39,5 +42,6 @@ body += open("vo.mp3", "rb").read() + f"\r\n--{b}--\r\n".encode()
 res = json.loads(post(f"{API}/speech-to-text", body, f"multipart/form-data; boundary={b}"))
 words = [{"t": w["text"].strip(), "s": round(w["start"], 2), "e": round(w["end"], 2)}
          for w in res["words"] if w.get("type", "word") == "word" and w["text"].strip()]
+respell(words, text)  # Scribe glues "hash map" into "HashMap"; captions show the script's words
 json.dump(words, open("words.json", "w"))
 print(f"vo.mp3 + words.json ({len(words)} words, {words[-1]['e']:.1f}s); now run gen.py")
