@@ -1,0 +1,146 @@
+<title>leetExpert October Posting Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* A schedule you work down on a phone: one column of dated posts, the date rail on the left like a planner. */
+:root{
+  --bg:#eef2f6; --card:#ffffff; --ink:#16202e; --muted:#566376; --rule:#d5dde7;
+  --accent:#0f766e; --accent-ink:#ffffff; --chip:#dff3ef; --done:#e7ecf2;
+  --display:"Space Mono",ui-monospace,monospace; --body:"Space Grotesk",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15202e; --card:#1f2c3d; --ink:#f1f4f9; --muted:#a4b0c0; --rule:#2e3b4a;
+  --accent:#5eead4; --accent-ink:#0e1520; --chip:#123a37; --done:#1a2533; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15202e; --card:#1f2c3d; --ink:#f1f4f9; --muted:#a4b0c0; --rule:#2e3b4a;
+  --accent:#5eead4; --accent-ink:#0e1520; --chip:#123a37; --done:#1a2533; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding-inline:16px;padding-block:28px 64px;margin:0}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-direction:column;gap:10px}
+.brand{font:700 15px var(--display);letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.brand i{width:9px;height:9px;border-radius:50%;background:#3fae5a;display:block}
+h1{font:700 clamp(28px,6vw,40px)/1.1 var(--display);margin:0;text-wrap:balance}
+.lede{color:var(--muted);margin:0;max-width:60ch}
+.meter{display:flex;align-items:center;gap:12px;font:700 14px var(--display)}
+.bar{flex:1;height:8px;border-radius:4px;background:var(--rule);overflow:hidden}
+.bar b{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.how{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:16px 18px}
+.how h2{font:700 15px var(--display);margin:0 0 8px;letter-spacing:.02em;text-transform:uppercase}
+.how ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.how p{margin:10px 0 0;color:var(--muted);font-size:14px}
+section{display:flex;flex-direction:column;gap:14px}
+section h2{font:700 13px var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:8px 0 0}
+.post{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;align-items:start}
+.when{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;flex-direction:column;align-items:center;
+  border:2px solid var(--ink);border-radius:12px;padding:6px 0;background:var(--card);font-family:var(--display)}
+.when .day{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.when .date{font-size:15px;font-weight:700;white-space:nowrap}
+.body{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.post.is-done .body{background:var(--done)}
+.post.is-done .when{border-color:var(--accent)}
+.kind{margin:0;font:700 12px var(--display);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.body h3{margin:0;font:700 19px/1.25 var(--body);text-wrap:balance}
+.media video,.media img{display:block;width:min(100%,280px);aspect-ratio:9/16;object-fit:cover;border-radius:10px;background:#0e1520}
+.media img{aspect-ratio:auto}
+.saves,.copies{display:flex;flex-wrap:wrap;gap:8px}
+button{font:500 14px var(--body);border-radius:999px;padding:8px 14px;cursor:pointer;border:1px solid var(--rule);background:transparent;color:var(--ink)}
+button.cp{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button[data-state]{background:var(--chip);color:var(--ink);border-color:var(--chip)}
+.done{align-self:flex-end;display:flex;align-items:center;gap:6px;font:700 13px var(--display);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--accent)}
+details{border-top:1px solid var(--rule);padding-top:8px}
+summary{cursor:pointer;font:700 13px var(--display);color:var(--muted)}
+pre{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--body);margin:8px 0 0}
+.note{font-size:13px;color:var(--muted);margin:0}
+@media (prefers-reduced-motion:reduce){.bar b{transition:none}}
+</style>
+<div class="wrap">
+<header>
+  <div class="brand">leetExpert<i></i></div>
+  <h1>October posting kit</h1>
+  <p class="lede">%%N%% posts, Monday to Friday, Oct 5 to Oct 23. Each one has its media, cover, caption with hashtags, and alt text.</p>
+  <div class="meter"><span id="count">0 of %%N%% scheduled</span><div class="bar"><b id="fill"></b></div></div>
+</header>
+<div class="how">
+  <h2>Schedule one in Meta Business Suite</h2>
+  <ol>
+    <li>Save the video and the cover to your phone with the buttons on the post.</li>
+    <li>In Meta Business Suite, tap <b>Create</b> → <b>Reel</b> (a post, for the carousel and the single image) and add the video.</li>
+    <li>Set the cover from the saved cover image, then paste the caption.</li>
+    <li>Choose <b>Schedule</b>, pick the post's date, and use the same time every day.</li>
+    <li>Tick <b>Scheduled</b> here so you can see what's left.</li>
+  </ol>
+  <p>Ticks are kept on this device only. Keep-the-streak (post 5) is left out while #30 is open.</p>
+</div>
+%%POSTS%%
+<p class="note" id="savenote" hidden>Saving isn't available in this view. Open the kit in the Claude app or a browser to save files.</p>
+</div>
+<script>
+(() => {
+  const KEY = "le-kit-done";
+  let done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (_) { done = {}; }
+  const boxes = [...document.querySelectorAll('.done input')];
+  const total = boxes.length;
+  const render = () => {
+    let n = 0;
+    for (const b of boxes) {
+      b.checked = !!done[b.dataset.post];
+      b.closest(".post").classList.toggle("is-done", b.checked);
+      if (b.checked) n++;
+    }
+    document.getElementById("count").textContent = `${n} of ${total} scheduled`;
+    document.getElementById("fill").style.width = `${(n / total) * 100}%`;
+  };
+  for (const b of boxes) b.addEventListener("change", () => {
+    done[b.dataset.post] = b.checked;
+    try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (_) {}
+    render();
+  });
+  render();
+
+  const flash = (btn, text) => {
+    const was = btn.dataset.label || (btn.dataset.label = btn.textContent);
+    btn.textContent = text; btn.dataset.state = "1";
+    setTimeout(() => { btn.textContent = was; delete btn.dataset.state; }, 1800);
+  };
+  for (const btn of document.querySelectorAll("button.cp")) btn.addEventListener("click", async () => {
+    const el = document.getElementById(btn.dataset.src);
+    try { await navigator.clipboard.writeText(el.textContent); flash(btn, "Copied"); }
+    catch (_) {
+      el.closest("details").open = true;
+      const r = document.createRange(); r.selectNodeContents(el);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      flash(btn, "Selected, copy it");
+    }
+  });
+
+  const saves = [...document.querySelectorAll("button.sv")];
+  let dl = null;
+  const setSaving = (on) => { for (const b of saves) b.hidden = !on; document.getElementById("savenote").hidden = on; };
+  setSaving(false);
+  window.claude?.use?.("downloads").then((ns) => { dl = ns; setSaving(!!ns); }).catch(() => setSaving(false));
+  for (const btn of saves) btn.addEventListener("click", async () => {
+    if (!dl) return;
+    btn.disabled = true; const was = btn.textContent; btn.textContent = "Preparing…";
+    try {
+      const res = await fetch("/_blob/" + btn.dataset.id);
+      if (!res.ok) throw new Error("fetch");
+      const blob = await res.blob();
+      btn.textContent = was;
+      await dl.save({ filename: btn.dataset.name, data: blob });
+      flash(btn, "Saved");
+    } catch (e) {
+      btn.textContent = was;
+      const code = e && e.code;
+      if (code === "declined") {}
+      else if (code === "rate_limited") flash(btn, "Finish the open save first");
+      else if (code === "unavailable" || code === "not_granted") setSaving(false);
+      else flash(btn, "Couldn't save, try again");
+    } finally { btn.disabled = false; }
+  });
+})();
+</script>
