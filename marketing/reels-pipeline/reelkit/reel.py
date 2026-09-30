@@ -38,7 +38,8 @@ def norm(t):
 
 def forms(t):
     n = norm(t)
-    return {n, n.replace("'", ""), *n.split("-")}
+    # respell.py turns Scribe's "HashMap" back into the one token "hash map"; each word answers
+    return {n, n.replace("'", ""), *n.split("-"), *(norm(p) for p in t.split())}
 
 
 # ---------------------------------------------------------------- code highlighting
