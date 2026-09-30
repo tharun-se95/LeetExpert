@@ -66,7 +66,7 @@ R.code("c0", BUG, [
 init("#ai", autoAlpha=0, x=20)
 k("#ai", A["ai"] - 0.1, {"autoAlpha": 1, "x": 0}, 0.3, "back.out(2)")
 k("#ai", A["try"] - 0.2, {"autoAlpha": 0}, 0.2)
-R.add(f'<div class="aibadge" id="ai">{I.robot()}AI · 2 seconds</div>')
+R.add(f'<div class="aibadge" id="ai">{KI.robot()}AI · 2 seconds</div>')
 
 # --- the failing test
 show("#test", A["try"], A["seats"], y=20)

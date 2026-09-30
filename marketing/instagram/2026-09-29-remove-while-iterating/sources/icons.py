@@ -25,14 +25,6 @@ def finger():
                f'<rect x="25" y="38" width="15" height="68" rx="7.5" fill="#f5d0b0"/><rect x="28.5" y="89" width="8" height="12" rx="4" fill="#fde9da"/>', "fing")
 
 
-def robot():
-    """'An AI wrote it': a small robot head."""
-    return svg("0 0 64 64", f'<path d="M32 4 V12" stroke="{MUTED}" stroke-width="4" stroke-linecap="round"/><circle cx="32" cy="4" r="4" fill="{AMB}"/>'
-               f'<rect x="8" y="12" width="48" height="40" rx="12" fill="{SLATE}" stroke="{MUTED}" stroke-width="3"/>'
-               f'<circle cx="23" cy="30" r="6" fill="{TEAL}"/><circle cx="41" cy="30" r="6" fill="{TEAL}"/>'
-               f'<path d="M22 43 H42" stroke="{MUTED}" stroke-width="4" stroke-linecap="round"/><rect x="2" y="26" width="6" height="12" rx="3" fill="{MUTED}"/><rect x="56" y="26" width="6" height="12" rx="3" fill="{MUTED}"/>', "ico")
-
-
 def silent_skip():
     """No error shown: a list icon with a skipped row."""
     return svg("0 0 64 64", "".join(f'<rect x="8" y="{y}" width="48" height="10" rx="4" fill="{SLATE if i != 1 else "none"}" stroke="{AMB if i == 1 else "none"}" stroke-width="2.5" stroke-dasharray="{"5 4" if i == 1 else "0"}"/>'

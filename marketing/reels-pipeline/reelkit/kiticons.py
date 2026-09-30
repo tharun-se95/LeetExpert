@@ -36,6 +36,13 @@ def terminal_crash():
                f'<path d="M14 30 L22 36 L14 42" stroke="{INK}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
                f'<path d="M34 28 L50 46 M50 28 L34 46" stroke="{AMB}" stroke-width="5" stroke-linecap="round"/>', "ico")
 
+def robot():
+    """'An AI wrote it': a small robot head, for would-you-ship-this hooks."""
+    return svg("0 0 64 64", f'<path d="M32 4 V12" stroke="{MUTED}" stroke-width="4" stroke-linecap="round"/><circle cx="32" cy="4" r="4" fill="{AMB}"/>'
+               f'<rect x="8" y="12" width="48" height="40" rx="12" fill="{SLATE}" stroke="{MUTED}" stroke-width="3"/>'
+               f'<circle cx="23" cy="30" r="6" fill="{TEAL}"/><circle cx="41" cy="30" r="6" fill="{TEAL}"/>'
+               f'<path d="M22 43 H42" stroke="{MUTED}" stroke-width="4" stroke-linecap="round"/><rect x="2" y="26" width="6" height="12" rx="3" fill="{MUTED}"/><rect x="56" y="26" width="6" height="12" rx="3" fill="{MUTED}"/>', "ico")
+
 
 def cue_card(title_html, say):
     """The interview-tell card: mic, label, the cue, and the phrase to say (id cueB)."""
