@@ -6,7 +6,7 @@
 - **Family:** dynamic programming
 - **Format:** Reel, 1080×1920, ~89s on estimated timing (the recorded take sets the final length), loops to frame 1; tutor stills; Hope narration
 - **Plan:** ledger post `p18`, planned as a carousel and made a reel under the owner's standing direction (2026-09-29) to continue the ledger as reels that explain the code. Issue #131.
-- **Status:** in production. The visuals are built and pass `hyperframes check` (0 errors, 0 warnings). The narration is not recorded yet (deferred by the owner), so the only render is a silent preview on estimated timings.
+- **Status:** narrated and rendered 2026-09-30 (`reel.mp4`, 1:41), not posted. Hope take; the tutor on cue only (hook, the key reaction, the challenge, the brand); a data-structure stage under each code walkthrough, built from the shown code's own run. `hyperframes check`: 0 errors.
 - **Media (when final):** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)

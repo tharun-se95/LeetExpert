@@ -6,7 +6,7 @@
 - **Family:** hash-tables (hash-map counting)
 - **Format:** Reel, 1080×1920, ~91s on estimated timing (the recorded take sets the final length), loops to frame 1; tutor stills; Hope narration
 - **Plan:** ledger post `p07` ("Stop sorting to check anagrams."), planned as a carousel and made a reel at the owner's request on 2026-09-29. Issue #120.
-- **Status:** in production. The visuals are built and pass `hyperframes check` (0 errors). The narration is not recorded yet (`narrate.py`, which needs ElevenLabs; the owner deferred it on 2026-09-29), so the only render is a silent preview on estimated timings.
+- **Status:** narrated and rendered 2026-09-30 (`reel.mp4`, 1:54), not posted. Hope take; the tutor on cue only (hook, the key reaction, the challenge, the brand); a data-structure stage under each code walkthrough, built from the shown code's own run. `hyperframes check`: 0 errors.
 - **Media (when final):** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)
