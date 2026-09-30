@@ -40,7 +40,7 @@ Watch every count change on leetExpert, the interactive DSA course. Link in bio.
 
 ## Alt text (per slide)
 
-**Slide 1.** Stop sorting to check anagrams.
+**Slide 1.** The reel's cover: "Stop sorting to check anagrams."
 
 **Slide 2.** Two racks of word-game tiles, both sorted to E I L N S T, above a code card: sorted("listen") == sorted("silent"), then "eilnst" == "eilnst" with an O(n log n) tag.
 

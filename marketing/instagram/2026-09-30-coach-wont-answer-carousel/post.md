@@ -41,7 +41,7 @@ leetExpert, the interactive DSA course. Link in bio.
 
 ## Alt text (per slide)
 
-**Slide 1.** The coach won't give you the answer. That's the point.
+**Slide 1.** The reel's cover: "The coach won't give you the answer. That's the point."
 
 **Slide 2.** The leetExpert practice page for Two Sum (Module 6, Hash Tables), Code tab, with the draft in Python: seen = {}; for i, n in enumerate(nums): seen[n] = i; if target - n in seen: return [seen[target - n], i].
 

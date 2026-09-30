@@ -136,9 +136,10 @@ def crop(path, dest):
 def cap(words):
     """The reel's words, capitalised because they now start a slide (the check compares them as written).
 
-    Never when they open on code: "mid = 7 < 9" is a variable, and "Mid" would be a different one.
+    Never when they open on code ("mid = 7 < 9", "while stack and …"): "Mid" would be another name.
     """
-    if re.match(r"[A-Za-z_]\w*\s*[=(\[.<>+-]", words) or not words[0].islower():
+    code = r"[A-Za-z_]\w*\s*[=(\[.<>+-]|(while|for|if|elif|return|def|const|let|function)\b"
+    if re.match(code, words) or not words[0].islower():
         return words
     return words[0].upper() + words[1:]
 

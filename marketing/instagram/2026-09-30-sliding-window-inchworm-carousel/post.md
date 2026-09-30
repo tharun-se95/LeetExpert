@@ -42,7 +42,7 @@ Step through it on leetExpert, the interactive DSA course. Link in bio.
 
 ## Alt text (per slide)
 
-**Slide 1.** If you see "contiguous", think window.
+**Slide 1.** The reel's cover: "If you see "contiguous", think window."
 
 **Slide 2.** "Shortest stretch with sum ≥ 7?" over the array 2, 3, 1, 2, 4, 3, with "every start × every end = O(n²)".
 

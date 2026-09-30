@@ -44,7 +44,7 @@ Step through every line on leetExpert, the interactive DSA course. Link in bio.
 
 ## Alt text (per slide)
 
-**Slide 1.** This removes the even numbers. Or does it?
+**Slide 1.** The reel's cover: "This removes the even numbers. Or does it?"
 
 **Slide 2.** A card calls remove_evens([2, 4, 6, 7]) and shows the cells 2, 4, 6, 7; under "returns" are 4 and 7.
 

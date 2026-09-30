@@ -1,4 +1,4 @@
-"""Puts the cheatsheet carousels into the posting kit (../posting-kit/october.json).
+"""Puts the cheatsheet (#133) and reel (#134) carousels into the posting kit (../posting-kit/october.json).
 
 Owner, 2026-09-30 (#132): Oct 1-3 carry three posts a day in mixed formats (a reel, a carousel, a
 single image), then one post a day at 6 pm. Oct 2 and Oct 3 were three reels each, so each takes
@@ -10,6 +10,7 @@ cheatsheet.py. check.py fails if october.json no longer matches.
 
   python3 kit.py
 """
+import datetime
 import json
 import re
 from pathlib import Path
@@ -25,6 +26,13 @@ DAILY = [("2026-10-10", "arrays"), ("2026-10-12", "sliding-window"), ("2026-10-1
          ("2026-10-15", "linked-lists"), ("2026-10-16", "stacks"), ("2026-10-17", "binary-search"),
          ("2026-10-18", "recursion-backtracking"), ("2026-10-19", "binary-trees"), ("2026-10-20", "heaps"),
          ("2026-10-21", "graphs"), ("2026-10-22", "intervals")]
+# The reels' carousel versions (#134), in the order their reels post, from Oct 23: each lands at
+# least two weeks after its reel, so it reaches the people who saved rather than watched.
+# The last three run into November.
+REELS = ["anagram-tally", "two-pointers-reel", "coach-wont-answer", "monotonic-stack", "remove-while-iterating",
+         "sliding-window-inchworm", "max-sum-k-window", "js-float-mid", "call-stack-trays", "fib-memo",
+         "binary-search-halves", "prefix-sum-odometer"]
+REELS_FROM = "2026-10-23"
 SLOTS = ["9 am", "1 pm", "6 pm"]
 
 
@@ -32,22 +40,24 @@ def section(md, name):
     return re.search(rf"^## {re.escape(name)}[^\n]*\n\n(.*?)(?=\n## |\Z)", md, re.S | re.M).group(1).strip()
 
 
-def entry(slug, date, slot):
-    d = f"{DATE}-{slug}-cheatsheet"
+def entry(slug, date, slot, kind="cheatsheet", prefix="cs"):
+    d = f"{DATE}-{slug}-{kind}"
     md = (ROOT / "marketing/instagram" / d / "post.md").read_text()
     alt = re.sub(r"\*\*(Slide \d+)\.\*\*", r"\1.", section(md, "Alt text"))
-    return {"date": date, "post": f"cs-{slug}", "dir": d, "title": md.splitlines()[0].lstrip("# "),
+    return {"date": date, "post": f"{prefix}-{slug}", "dir": d, "title": md.splitlines()[0].lstrip("# "),
             "caption": section(md, "Caption"), "hashtags": section(md, "Hashtags"), "alt": alt,
             "hook": section(md, "Hook"), "slot": slot}
 
 
 def kit():
-    posts = [p for p in json.loads(KIT.read_text()) if not p["post"].startswith("cs-")]
+    posts = [p for p in json.loads(KIT.read_text()) if not p["post"].startswith(("cs-", "rc-"))]
     for p in posts:
         if p["post"] in MOVED:
             p["date"], p["slot"] = MOVED[p["post"]], "6 pm"
     posts += [entry(s, d, t) for s, (d, t) in LAUNCH.items()]
     posts += [entry(s, d, "6 pm") for d, s in DAILY]
+    start = datetime.date.fromisoformat(REELS_FROM)
+    posts += [entry(s, str(start + datetime.timedelta(days=i)), "6 pm", "carousel", "rc") for i, s in enumerate(REELS)]
     posts.sort(key=lambda p: (p["date"], SLOTS.index(p["slot"])))
     days = [(p["date"], p["slot"]) for p in posts]
     assert len(days) == len(set(days)), "two posts share a slot"
