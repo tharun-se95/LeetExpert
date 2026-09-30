@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / 
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
 from wintrace import window_trace  # noqa: E402
+from viz import ArrayViz, load, trace  # noqa: E402
 
 NUMS, TARGET = [2, 3, 1, 2, 4, 3], 7  # the lesson's trace; verify.py checks it against the lesson
 TR = window_trace(TARGET, NUMS)
@@ -113,7 +114,26 @@ R.code("c1", Path("code/min_window.py").read_text(), [
     (A["record2"], [8], "…record the length"),
     (A["subtract"], [9, 10], "drop <code>nums[left]</code>, move <code>left</code> on"),
     (A["both"], [5, 7], 'Both only move forward: <span class="teal">O(n)</span>'),
-], A["code"] - 0.1, A["test"], top=370, font=29)
+], A["code"] - 0.1, A["test"], top=320, font=25)
+
+# under it, the shown function's own run on the lesson's numbers: right grows, left follows
+EV, RES = trace(load("code/min_window.py", "min_subarray_len"), TARGET, NUMS)
+fmt = lambda b: "∞" if b == float("inf") else b
+ws = []
+for ln, sn in EV:
+    if ln == 6:
+        l, r = sn["left"], sn["right"]
+        ws.append({"ptr": {"left": l, "right": r}, "mark": {**{j: "teal" for j in range(l, r)}, r: "amb"},
+                   "dim": set(range(l)), "note": f"+{NUMS[r]} → total {sn['total']} · best {fmt(sn['best'])}"})
+    elif ln == 10:
+        l, r = sn["left"], sn["right"]
+        ws.append({"ptr": {"left": l, "right": r}, "mark": {j: "teal" for j in range(l, r + 1)},
+                   "dim": set(range(l)), "note": f"record {sn['best']}, drop {NUMS[l - 1]} → total {sn['total']}"})
+ws.append({"ptr": {}, "note": f"returns {RES}"})
+wt = R.spread(A["code"] + 0.3, A["both"] + 3.0, len(ws) - 1) + [A["both"] + 3.6]
+assert RES == 2 and wt[-1] < A["test"] - 0.4
+ArrayViz(R, "wv", NUMS, list(zip(wt, ws)), A["code"] - 0.1, A["test"], top=R.code_bottom + 4,
+         pointers=[("right", "amb", "above"), ("left", "teal", "below")], cell=100)
 
 # --- benchmark
 BR_MS, W_MS = 848, 1.18
@@ -160,13 +180,12 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "cu-07-confident"), (A["question"], "wu-03-point-side"), (A["squared"] - 0.1, "cu-06-skeptical"),
-          (A["inchworm"] - 0.2, "cu-09-wink"), (A["watch"] - 0.2, "wu-03-point-side"), (A["eight"] - 0.1, "cu-08-excited"),
-          (A["ten"] - 0.2, "wu-02-pen-up"), (A["pull3"] - 0.1, "cu-02-explaining"), (A["answer"] - 0.1, "fb-05-celebrate"),
-          (A["code"] - 0.2, "wu-14-laptop"), (A["both"] - 0.1, "cu-07-confident"), (A["test"] - 0.2, "wu-05-tablet"),
-          (A["ms"] + 0.4, "cu-04-surprised"), (A["trap"] - 0.2, "cu-10-serious"), (A["four"] - 0.2, "wu-08-facepalm"),
-          (A["negatives"] - 0.2, "cu-05-worried"), (A["contig"] - 0.2, "cu-02-explaining"), (A["turn"] - 0.2, "wu-04-open-palm"),
-          (A["shortest"] - 0.1, "cu-03-thinking"), (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
+# the tutor only where she adds something: the hook, the answer, the trap, the challenge, the brand
+R.stills([(0, "cu-07-confident"), (A["question"] - 0.2, None),
+          (A["answer"] - 0.1, "fb-05-celebrate"), (A["code"] - 0.3, None),
+          (A["trap"] - 0.2, "cu-10-serious"), (A["four"] - 0.2, "wu-08-facepalm"), (A["negatives"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["shortest"] - 0.1, None),
+          (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
 R.captions(amber={"squared", "trap", "if", "never", "negatives", "misses", "overreached"},
            teal={"window", "inchworm", "while", "answer", "leetexpert", "contiguous", "forward"},
            until=A["leet"])

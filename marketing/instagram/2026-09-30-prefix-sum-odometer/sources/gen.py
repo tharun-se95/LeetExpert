@@ -8,6 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / "reelkit"))
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
+from viz import ArrayViz, trace  # noqa: E402
 
 # the numbers on screen come from running the shown code, not from this file
 _s = importlib.util.spec_from_file_location("prefix", "code/prefix.py")
@@ -139,7 +140,28 @@ R.code("c1", Path("code/prefix.py").read_text(), [
     (A["pass"], [3, 4], 'One pass: <span class="teal">O(n)</span>'),
     (A["sum"], [7, 8], "Sum of <code>l..r</code>:"),
     (A["minus"] - 0.3, [8], "<code>prefix[r + 1] − prefix[l]</code>"),
-], A["code"] - 0.1, A["idx1"] - 0.1, top=390, font=32)
+], A["code"] - 0.1, A["idx1"] - 0.1, top=320, font=28)
+
+# under it, the shown build_prefix filling its slots on the lesson's numbers, then range_sum's two reads
+EV, PRE = trace(_m.build_prefix, NUMS)
+assert PRE == P
+L, Rr = 1, 3
+RS = _m.range_sum(P, L, Rr)
+fills = [(sn["i"], sn["x"], list(sn["prefix"])) for ln, sn in EV if ln == 4]
+nst = [{}, {}]
+pst = [{"vals": [0] * len(P), "note": "prefix = [0] * (n + 1)"}, {"vals": [0] * len(P), "mark": {0: "teal"}, "note": "prefix[0] = 0: the sum of nothing"}]
+for i, x, pre in fills:
+    nst.append({"mark": {i: "amb"}})
+    pst.append({"vals": pre, "mark": {i: "teal", i + 1: "amb"}, "note": f"prefix[{i + 1}] = {pre[i]} + {x} = {pre[i + 1]}"})
+nst += [{}, {"mark": {j: "teal" for j in range(L, Rr + 1)}}, {"mark": {j: "teal" for j in range(L, Rr + 1)}}]
+pst += [{"vals": P, "note": f"prefix = {P}"},
+        {"vals": P, "note": f"sum of nums[{L}..{Rr}]"},
+        {"vals": P, "mark": {Rr + 1: "teal", L: "amb"}, "note": f"prefix[{Rr + 1}] − prefix[{L}] = {P[Rr + 1]} − {P[L]} = {RS}"}]
+pt = [A["code"], A["slot"]] + R.spread(A["previous"] - 0.3, A["pass"] - 0.1, len(fills)) + [A["pass"], A["sum"], A["minus"] - 0.3]
+assert len(pt) == len(pst) == len(nst) and RS == sum(NUMS[L:Rr + 1])
+T0, T1 = A["code"] - 0.1, A["idx1"] - 0.1
+nrow = ArrayViz(R, "nr", NUMS, list(zip(pt, nst)), T0, T1, top=R.code_bottom + 4, label="nums", cell=88)
+ArrayViz(R, "pr", [0] * len(P), list(zip(pt, pst)), T0, T1, top=nrow.bottom + 2, label="prefix", cell=88)
 
 # --- benchmark: our test run
 SLOW_S, FAST_MS = 4.96, 6.1
@@ -180,13 +202,13 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "cu-07-confident"), (A["index"], "cu-03-thinking"), (A["ten"], "wu-06-thumbs-up"), (A["thousand"], "cu-04-surprised"),
-          (A["odometer"] - 0.2, "wu-05-tablet"), (A["subtract"] - 0.1, "cu-02-explaining"), (A["prefix"] - 0.2, "wu-03-point-side"),
-          (A["twelve"] - 0.1, "wu-02-pen-up"), (A["code"] - 0.2, "wu-14-laptop"), (A["sum"] - 0.2, "cu-02-explaining"),
-          (A["idx1"] - 0.2, "wu-03-point-side"), (A["subtraction"] - 0.1, "fb-05-celebrate"), (A["test"] - 0.2, "wu-14-laptop"),
-          (A["ms"] - 0.2, "cu-08-excited"), (A["catch"] - 0.2, "cu-10-serious"), (A["stale"] - 0.1, "cu-05-worried"),
-          (A["off"] - 0.2, "wu-08-facepalm"), (A["lots"] - 0.2, "cu-02-explaining"), (A["turn"] - 0.2, "wu-04-open-palm"),
-          (A["four"] - 0.1, "cu-03-thinking"), (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
+# the tutor only where she adds something: the hook, the scratch cost, the payoff, the catch, the challenge, the brand
+R.stills([(0, "cu-07-confident"), (A["index"] - 0.2, None),
+          (A["thousand"] - 0.1, "cu-04-surprised"), (A["odometer"] - 0.2, None),
+          (A["subtraction"] - 0.1, "fb-05-celebrate"), (A["test"] - 0.2, None),
+          (A["stale"] - 0.1, "cu-05-worried"), (A["off"] - 0.2, "wu-08-facepalm"), (A["drops"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["four"] - 0.1, None),
+          (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
 R.captions(amber={"scratch", "stale", "catch", "off", "drops", "seconds", "slow"},
            teal={"prefix", "odometer", "subtract", "subtraction", "ten", "nine", "fifteen", "milliseconds", "leetexpert"},
            until=A["leet"])

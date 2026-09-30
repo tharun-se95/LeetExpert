@@ -1,5 +1,5 @@
 /* hook badge */
-.aibadge{position:absolute;right:80px;top:340px;font-family:"Space Mono",monospace;font-size:26px;font-weight:700;color:#0e1520;background:#fbbf24;padding:6px 16px;border-radius:10px}
+.aibadge{position:absolute;right:240px;top:320px;font-family:"Space Mono",monospace;font-size:26px;font-weight:700;color:#0e1520;background:#fbbf24;padding:6px 16px;border-radius:10px}
 .call{font-family:"Space Mono",monospace;font-size:44px;font-weight:700}
 .val{position:absolute;font-family:"Space Mono",monospace;font-size:38px;font-weight:700;white-space:nowrap;line-height:1.35}
 /* the walk */

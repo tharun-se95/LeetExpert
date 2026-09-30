@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / "reelkit"))
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
+from viz import ArrayViz, js_reads  # noqa: E402
 
 
 def shown(path):
@@ -61,7 +62,14 @@ R.code("c0", BUG, [
     (0.0, list(range(1, 12)), "Binary search, JavaScript."),
     (A["tested"], list(range(1, 12)), 'Tested on 7 numbers: <span class="teal">every target found ✓</span>'),
     (A["ship"], list(range(1, 12)), "Would you ship it?"),
-], 0.0, A["search"], top=390, font=28, label="javascript")
+], 0.0, A["search"], top=310, font=28, label="javascript")
+
+# under it, the test that passed: the shown bug.js finds every one of the seven (run in Node)
+SEVEN = [1, 3, 5, 7, 9, 11, 13]
+found = [js_reads("code/bug.js", "binarySearch", SEVEN, v)[1] == i for i, v in enumerate(SEVEN)]
+ArrayViz(R, "tv", SEVEN, [(0.0, {}), (A["tested"], {"mark": {i: "teal" for i, ok in enumerate(found) if ok},
+                                                     "note": f"{sum(found)} of {len(SEVEN)} targets found"})],
+         0.0, A["search"], top=R.code_bottom + 4)
 init("#badge", autoAlpha=0, x=20)
 k("#badge", A["wrong"], {"autoAlpha": 1, "x": 0}, 0.3, "back.out(2)")
 k("#badge", A["search"] - 0.2, {"autoAlpha": 0}, 0.2)
@@ -119,7 +127,28 @@ R.code("c1", FIX, [
     (A["whole"] - 0.3, [5], "Always a whole index"),
     (A["huge"] - 0.3, [5], "Never adds two huge numbers:<br/>overflow-safe in Java or C++"),
     (A["found"] - 0.3, [6], '<code>[2, 4, 6, 8]</code>, 6 → <span class="teal">index 2 ✓</span>'),
-], A["fix"] - 0.1, A["computing"], top=370, font=28, label="javascript")
+], A["fix"] - 0.1, A["computing"], top=310, font=26, label="javascript")
+
+# under it, the fixed search on the failing list: the indexes fixed.js actually read, in Node
+LIST, T = [2, 4, 6, 8], 6
+READS, RES = js_reads("code/fixed.js", "binarySearch", LIST, T)
+assert all(float(r).is_integer() for r in READS) and RES == LIST.index(T)
+lo, hi, dim = 0, len(LIST) - 1, set()
+fst = [{"ptr": {"lo": lo, "hi": hi}, "note": f"lo = {lo}, hi = {hi}"}]
+for m in map(int, READS):
+    fst.append({"ptr": {"lo": lo, "hi": hi}, "dim": set(dim), "mark": {m: "amb"}, "note": f"mid = {lo} + floor(({hi} - {lo}) / 2) = {m}"})
+    if LIST[m] == T:
+        fst.append({"ptr": {"lo": lo, "hi": hi}, "dim": set(dim), "mark": {m: "teal"}, "note": f"arr[{m}] === {T} → return {RES}"})
+    elif LIST[m] < T:
+        dim |= set(range(lo, m + 1)); lo = m + 1
+        fst.append({"ptr": {"lo": lo, "hi": hi}, "dim": set(dim), "note": f"{LIST[m]} < {T} → lo = {lo}"})
+    else:
+        dim |= set(range(m, hi + 1)); hi = m - 1
+        fst.append({"ptr": {"lo": lo, "hi": hi}, "dim": set(dim), "note": f"{LIST[m]} > {T} → hi = {hi}"})
+ft = [A["fix"], A["whole"] - 0.3, A["huge"] - 0.3, (A["huge"] + A["found"]) / 2, A["found"] - 0.3]
+assert len(ft) == len(fst), (len(ft), len(fst))
+ArrayViz(R, "fv", LIST, list(zip(ft, fst)), A["fix"] - 0.1, A["computing"], top=R.code_bottom + 4,
+         pointers=[("hi", "amb", "above"), ("lo", "teal", "below")], cell=100)
 
 # --- interview cue, challenge
 show("#cue", A["computing"], A["turn"])
@@ -136,12 +165,13 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "cu-06-skeptical"), (A["tested"] - 0.1, "wu-06-thumbs-up"), (A["ship"] - 0.1, "cu-03-thinking"),
-          (A["search"] - 0.1, "wu-05-tablet"), (A["there"] - 0.3, "cu-04-surprised"), (A["walk"] - 0.2, "wu-02-pen-up"),
-          (A["undefined"] - 0.1, "cu-05b-cringe"), (A["branch"] - 0.2, "wu-03-point-side"), (A["pass"] - 0.2, "cu-03-thinking"),
-          (A["power"] - 0.1, "cu-08-excited"), (A["python"] - 0.2, "cu-10-serious"), (A["fix"] - 0.2, "cu-07-confident"),
-          (A["found"] - 0.2, "wu-06-thumbs-up"), (A["computing"] - 0.2, "cu-02-explaining"), (A["turn"] - 0.2, "wu-04-open-palm"),
-          (A["next"] - 0.1, "cu-03-thinking"), (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-06-skeptical")])
+# the tutor only where she adds something: the hook, the surprise, the undefined, the challenge, the brand
+R.stills([(0, "cu-06-skeptical"), (A["tested"] - 0.1, None),
+          (A["there"] - 0.3, "cu-04-surprised"), (A["walk"] - 0.2, None),
+          (A["undefined"] - 0.1, "cu-05b-cringe"), (A["undefined"] + 2.4, None),
+          (A["python"] - 0.2, "cu-10-serious"), (A["crashes"] + 1.5, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["next"] - 0.1, None),
+          (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-06-skeptical")])
 R.captions(amber={"wrong", "minus", "undefined", "crashes", "half"},
            teal={"floor", "fix", "found", "whole", "power", "leetexpert", "hides"},
            until=A["leet"])

@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / 
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
 from mstrace import stack_events  # noqa: E402
+from viz import ArrayViz, StackViz, load, trace  # noqa: E402
 
 NUMS = [2, 1, 5, 3]  # the lesson's viz; verify.py reads it from the lesson
 EV = stack_events(NUMS)
@@ -137,7 +138,30 @@ R.code("c1", Path("code/next_greater.py").read_text(), [
     (A["write"] - 0.3, [6], "…pop it: <code>x</code> is its answer"),
     (A["push_e"] - 0.2, [7], "Then push this index"),
     (A["once"] - 0.3, [4, 5, 6, 7], 'Each index in once, out at most once:<br/><span class="teal">O(n)</span>'),
-], A["code"] - 0.1, A["test"], top=400, font=31)
+], A["code"] - 0.1, A["test"], top=320, font=26)
+
+# beside it, the shown function's own run on the concert row: current i, the answers, the index stack
+ROWN = NUMS
+EV, RES = trace(load("code/next_greater.py", "next_greater"), ROWN)
+ms = [{"i": None, "answer": [-1] * len(ROWN), "stack": [], "note": "answer = [-1, -1, -1, -1]"}]
+for ln, sn in EV:
+    if ln == 6:
+        popped = [j for j in range(len(ROWN)) if sn["answer"][j] != ms[-1]["answer"][j]][0]
+        ms.append({"i": sn["i"], "answer": list(sn["answer"]), "stack": list(sn["stack"]), "hit": popped,
+                   "note": f"{ROWN[sn['i']]} > {ROWN[popped]}: pop {popped}, answer[{popped}] = {sn['x']}"})
+    elif ln == 7:
+        ms.append({"i": sn["i"], "answer": list(sn["answer"]), "stack": list(sn["stack"]), "note": f"push index {sn['i']}"})
+ms.append({"i": None, "answer": list(RES), "stack": ms[-1]["stack"], "note": f"answer = {RES}"})
+mt = [A["starts"] - 0.3, A["indexes"], A["indexes"] + 1.4, A["write"] - 0.3, A["write"] + 1.1, A["push_e"] - 0.2, A["push_e"] + 1.2, A["once"]]
+assert len(mt) == len(ms), (len(mt), len(ms))
+T0, T1 = A["code"] - 0.1, A["test"]
+top = R.code_bottom + 4
+row = ArrayViz(R, "nr", ROWN, [(t, {"mark": {m["i"]: "amb"} if m["i"] is not None else {}, }) for t, m in zip(mt, ms)],
+               T0, T1, top=top, label="nums (amber: i)", cell=88, right=460)
+ArrayViz(R, "ar", ROWN, [(t, {"vals": m["answer"], "mark": {m["hit"]: "teal"} if "hit" in m else {}, "note": m["note"]}) for t, m in zip(mt, ms)],
+         T0, T1, top=row.bottom + 2, label="answer", cell=88, right=460)
+StackViz(R, "sk", [(t, {"items": [f"{j} → {ROWN[j]}" for j in m["stack"]]}) for t, m in zip(mt, ms)],
+         T0, T1, top=top, depth=3, left=690, width=330, slot_h=52, label="stack (index → value)")
 
 # --- benchmark
 show("#bench", A["test"], A["trap"], y=20)
@@ -177,11 +201,11 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "cu-07-confident"), (A["squared"] - 0.1, "cu-06-skeptical"), (A["concert"] - 0.2, "wu-01-wave"),
-          (A["stack"] - 0.2, "cu-02-explaining"), (A["watch"] - 0.2, "wu-03-point-side"), (A["pop1"] - 0.1, "cu-08-excited"),
-          (A["end"] - 0.2, "wu-03-point-side"), (A["code"] - 0.2, "wu-14-laptop"), (A["once"] - 0.2, "cu-07-confident"),
-          (A["test"] - 0.2, "wu-05-tablet"), (A["trap"] - 0.2, "cu-10-serious"), (A["duplicates"] - 0.1, "wu-08-facepalm"),
-          (A["see"] - 0.2, "cu-02-explaining"), (A["turn"] - 0.2, "wu-04-open-palm"), (A["list"] - 0.1, "cu-03-thinking"),
+# the tutor only where she adds something: the hook, the first pop, the trap, the challenge, the brand
+R.stills([(0, "cu-07-confident"), (A["bigger"] - 0.2, None),
+          (A["pop1"] - 0.1, "cu-08-excited"), (A["pop1"] + 2.0, None),
+          (A["trap"] - 0.2, "cu-10-serious"), (A["duplicates"] - 0.1, "wu-08-facepalm"), (A["second"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["list"] - 0.1, None),
           (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
 R.captions(amber={"squared", "trap", "values", "duplicates", "blocked"},
            teal={"stack", "pop", "indexes", "once", "leetexpert", "monotonic", "taller"},

@@ -8,6 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / "reelkit"))
 from reel import Reel  # noqa: E402
 import kiticons as KI  # noqa: E402
+from viz import ArrayViz, load, trace  # noqa: E402
 
 R = Reel("Max sum of k in a row", "Would you ship this?")
 a = R.anchor
@@ -59,6 +60,30 @@ R.code("c0", BUG, [
     (A["passes"], [1, 2, 3, 4, 5], '<code>[2, 1, 5, 1, 3, 2], k = 3</code> → <span class="teal">9 ✓</span>'),
     (A["ship"], [1, 2, 3, 4, 5], "Would you ship it?"),
 ], 0.0, A["try"], top=410, font=31)
+
+# under it, the sample the AI checked: the shown code's own windows, from its run
+bug = load("code/bug.py", "max_sum_k")
+slide = load("code/slide.py", "max_sum_k")
+SAMPLE, SK = [2, 1, 5, 1, 3, 2], 3
+
+
+def window_states(nums, k):
+    """One state per window the shown bug sums (its line 4), with the running best."""
+    ev, res = trace(bug, nums, k)
+    out = []
+    for ln, sn in ev:
+        if ln == 4:
+            i = sn["i"]
+            w = nums[i:i + k]
+            out.append({"mark": {j: "teal" for j in range(i, i + k)},
+                        "note": f"i = {i}: {' + '.join(map(str, w))} = {sum(w)} → best {sn['best']}"})
+    return out, res
+
+
+hs, hres = window_states(SAMPLE, SK)
+ht = R.spread(A["passes"], A["correct"] - 0.4, len(hs)) + [A["correct"]]
+hs.append({"note": f"returns {hres} ✓"})
+ArrayViz(R, "hv", SAMPLE, list(zip(ht, hs)), 0.0, A["try"], top=R.code_bottom + 4, label=f"k = {SK}")
 init("#ai", autoAlpha=0, x=20)
 k("#ai", A["looks"], {"autoAlpha": 1, "x": 0}, 0.3, "back.out(2)")
 k("#ai", A["try"] - 0.2, {"autoAlpha": 0}, 0.2)
@@ -108,6 +133,21 @@ R.code("c1", BUG, [
     (A["fix"], [3], 'Fix: <code>range(len(nums) - k + 1)</code>'),
 ], A["walk"] - 0.1, A["second"], top=410, font=31)
 
+# under it, the failing input: the windows the bug sums, and the one it never reaches
+FAIL, FK = [1, 2, 3, 9], 2
+fs, fres = window_states(FAIL, FK)
+n_starts = len(FAIL) - FK + 1
+assert len(fs) == n_starts - 1  # the off-by-one: one start short
+last = n_starts - 1
+fs = [{"note": "best = -inf"}] + fs + [
+    {"note": f"range({len(FAIL)} - {FK}) = range({len(FAIL) - FK}): starts 0 … {len(FAIL) - FK - 1}"},
+    {"mark": {j: "amb" for j in range(last, last + FK)},
+     "note": f"start {last}: {' + '.join(map(str, FAIL[last:last + FK]))} = {sum(FAIL[last:last + FK])}, never checked"},
+    {"mark": {j: "teal" for j in range(last, last + FK)}, "note": f"bug returns {fres} · right answer {slide(FAIL, FK)}"}]
+ft = [A["starts"] - 0.3, A["each"], (A["each"] + A["short"]) / 2, A["short"], A["last"], A["fix"]]
+assert len(ft) == len(fs), (len(ft), len(fs))
+ArrayViz(R, "fv", FAIL, list(zip(ft, fs)), A["walk"] - 0.1, A["second"], top=R.code_bottom + 4, label=f"k = {FK}")
+
 # --- the second problem, and the slide
 show("#scr", A["second"], A["slide"], y=20)
 pop("#scr2", A["scratch"] + 0.4)
@@ -121,6 +161,20 @@ R.code("c2", Path("code/slide.py").read_text(), [
     (A["keep"], [6], "Keep the best"),
     (A["per"], [4, 5], 'One add, one subtract per step: <span class="teal">O(n)</span>'),
 ], A["slide"] - 0.1, A["test"], top=410, font=29)
+
+# under it, the slide on the sample: the shown code's own run, one add and one subtract per step
+EV, SRES = trace(slide, SAMPLE, SK)
+ss = []
+for ln, sn in EV:
+    if ln == 3:
+        ss.append({"mark": {j: "teal" for j in range(SK)}, "note": f"window = {sn['window']}, best = {sn['best']}"})
+    elif ln == 6:
+        r = sn["right"]
+        ss.append({"mark": {**{j: "teal" for j in range(r - SK + 1, r)}, r: "amb"}, "dim": {r - SK},
+                   "note": f"+{SAMPLE[r]} − {SAMPLE[r - SK]} → window {sn['window']}, best {sn['best']}"})
+st = [A["first"], A["entering"] - 0.3, A["keep"], A["per"] - 0.5]
+assert len(st) == len(ss) and SRES == hres, (len(st), len(ss))
+ArrayViz(R, "sv", SAMPLE, list(zip(st, ss)), A["slide"] - 0.1, A["test"], top=R.code_bottom + 4, label=f"k = {SK}")
 
 # --- benchmark
 RS_S, SL_MS = 12.35, 11.7
@@ -149,13 +203,13 @@ R.add(f'<div class="card" id="chal" data-layout-allow-overlap><div class="h">You
 
 # --- lockup, tutor, captions (added last: DOM order is paint order)
 R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
-R.stills([(0, "cu-07-confident"), (A["looks"] - 0.1, "wu-14-laptop"), (A["correct"] - 0.1, "wu-06-thumbs-up"),
-          (A["ship"] - 0.1, "cu-03-thinking"), (A["try"] - 0.1, "wu-05-tablet"), (A["twelve"] - 0.1, "cu-04-surprised"),
-          (A["infinity"] - 0.1, "cu-05b-cringe"), (A["count"] - 0.2, "wu-03-point-side"), (A["walk"] - 0.2, "wu-02-pen-up"),
-          (A["never"] - 0.1, "wu-08-facepalm"), (A["fix"] - 0.1, "cu-07-confident"), (A["second"] - 0.2, "cu-06-skeptical"),
-          (A["slide"] - 0.2, "wu-03b-point-left"), (A["per"] - 0.1, "cu-02-explaining"), (A["test"] - 0.2, "wu-14-laptop"),
-          (A["ms"] - 0.1, "cu-08-excited"), (A["see"] - 0.2, "cu-02-explaining"), (A["turn"] - 0.2, "wu-04-open-palm"),
-          (A["fit"] - 0.1, "cu-03-thinking"), (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
+# the tutor only where she adds something: the hook, the twelve, the miss, the speed-up, the challenge, the brand
+R.stills([(0, "cu-07-confident"), (A["looks"] - 0.1, None),
+          (A["twelve"] - 0.1, "cu-04-surprised"), (A["infinity"] - 0.1, "cu-05b-cringe"), (A["why"] - 0.2, None),
+          (A["never"] - 0.1, "wu-08-facepalm"), (A["fix"] - 0.1, None),
+          (A["ms"] - 0.1, "cu-08-excited"), (A["see"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["fit"] - 0.1, None),
+          (A["leet"] - 0.2, "fb-03-present"), (R.RESET, "cu-07-confident")])
 R.captions(amber={"five", "infinity", "short", "never", "scratch", "seconds", "second"},
            teal={"twelve", "plus", "fix", "slide", "sliding", "milliseconds", "leetexpert", "count", "windows"},
            until=A["leet"])

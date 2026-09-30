@@ -12,7 +12,7 @@ code), never typed by hand. Every element gets one seek-safe track.
 Each takes the Reel, an id prefix, its states, a time window and a top edge; the stage must
 end above the caption zone (reel.CAP_TOP), which each checks.
 """
-import copy, html, importlib.util, sys
+import copy, html, importlib.util, json, os, subprocess, sys
 
 from reel import CAP_TOP
 
@@ -89,6 +89,25 @@ def calls(fn, *args, limit=None):
     finally:
         sys.settrace(None)
     return events, err
+
+
+def js_reads(path, name, arr, *args):
+    """Runs the shown JavaScript function `name` from `path` in Node on `arr` (wrapped in a Proxy)
+    and returns (the indexes it read, in order, consecutive repeats merged; its result).
+    A read of arr[1.5] comes back as 1.5: the stage shows exactly what the code touched."""
+    js = f"""
+const fn = require({json.dumps(os.path.abspath(path))})[{json.dumps(name)}];
+const reads = [];
+const arr = new Proxy({json.dumps(arr)}, {{ get(t, p) {{
+  if (typeof p === "string" && p !== "" && !isNaN(p)) reads.push(Number(p));
+  return t[p];
+}} }});
+const result = fn(arr, ...{json.dumps(list(args))});
+process.stdout.write(JSON.stringify({{ reads, result }}));
+"""
+    out = json.loads(subprocess.run(["node", "-e", js], capture_output=True, text=True, check=True).stdout)
+    reads = [r for j, r in enumerate(out["reads"]) if j == 0 or r != out["reads"][j - 1]]
+    return reads, out["result"]
 
 
 def _fits(name, bottom):
