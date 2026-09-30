@@ -4,7 +4,7 @@
 - **Source lesson:** `courses/dsa/big-o/common-complexity-classes.md`
 - **Family:** big-o
 - **Format:** Carousel of 7 video slides, 1080×1350, 90s total, Hope narration per slide (one v3 take split at sentence breaks); post `cover.png` as slide 1
-- **Status:** drafted (not posted)
+- **Status:** posted to @leetexpert 2026-10-01: https://www.instagram.com/p/Dd7BJ6OionQ/. Before that: drafted (not posted)
 - **Media:** `slide1.mp4`–`slide7.mp4`, `cover.png`, `preview.mp4` (all slides joined)
 
 ## Hook (first line — all most people read)
