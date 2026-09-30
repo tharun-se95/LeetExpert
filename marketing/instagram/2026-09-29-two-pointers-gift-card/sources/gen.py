@@ -1,46 +1,18 @@
-"""Builds index.html for the gift-card two-pointers reel.
+"""Builds index.html for the gift-card two-pointers reel on the shared reelkit engine.
 
 Every visual is anchored to a spoken word in words.json (Scribe's timings for
-the real take; est_words.py's stand-in for a silent preview). Each element gets
+the real take; reelkit/est_words.py's stand-in for a silent preview). Each element gets
 ONE keyframed GSAP track, so the composition stays seek-safe for HyperFrames.
 """
-import json, html, os, re, subprocess, sys
-import icons as I
+import html, sys
+from pathlib import Path
 
-W = json.load(open("words.json"))
-LEAD = 0.3
-HAS_VO = os.path.exists("vo.mp3")
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "reels-pipeline" / "reelkit"))
+from reel import Reel  # noqa: E402
+import icons as I  # noqa: E402
 
-
-def duration(path):
-    # ffprobe is not always installed; ffmpeg's banner carries the duration too
-    try:
-        return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path]))
-    except FileNotFoundError:
-        ff = os.environ.get("FFMPEG", "ffmpeg")
-        out = subprocess.run([ff, "-i", path], capture_output=True, text=True).stderr
-        h, m, s = re.search(r"Duration: (\d+):(\d+):([\d.]+)", out).groups()
-        return int(h) * 3600 + int(m) * 60 + float(s)
-
-
-def norm(t):
-    return re.sub(r"[^a-z0-9'\-]", "", t.lower()).strip("'-")
-
-
-def forms(t):
-    n = norm(t)
-    return {n, n.replace("'", ""), *n.split("-")}
-
-
-def at(alts, after=0.0, end=False):
-    """Timeline time of the first word matching any of `alts` at or after `after`."""
-    alts = [alts] if isinstance(alts, str) else alts
-    for x in W:
-        if LEAD + x["s"] >= after and forms(x["t"]) & set(alts):
-            return round(LEAD + (x["e"] if end else x["s"]), 2)
-    sys.exit(f"anchor not found: {alts} after {after}")
-
-
+R = Reel("Two pointers, gift card", "Two pointers")
+at = R.at
 A = {}
 A["spend"] = at("spend")
 A["menu"] = at(["menu's", "menus", "menu"])
@@ -88,33 +60,10 @@ A["which"] = at("which", A["turn"])
 A["leet"] = at("teach")
 A["link"] = at(["links", "link"], A["leet"])
 A["bio"] = at("bio", end=True)
-order = list(A.values())
-assert order == sorted(order), "anchors out of narrative order: " + json.dumps(A)
-END = round(A["bio"] + 2.4, 2)
-RESET = END - 0.5  # the last half second returns to frame 1 so the reel loops
-
-# ---------------------------------------------------------------- tracks
-K = {}
-
-
-def k(sel, t, props, d=0.3, e="power2.out"):
-    K.setdefault(sel, {"init": {}, "pts": []})["pts"].append([round(t, 3), props, d, e])
-
-
-def init(sel, **props):
-    K.setdefault(sel, {"init": {}, "pts": []})["init"].update(props)
-
-
-def show(sel, t0, t1, y=16, d=0.28):
-    init(sel, autoAlpha=0, y=y)
-    k(sel, t0, {"autoAlpha": 1, "y": 0}, d, "power3.out")
-    k(sel, t1 - 0.2, {"autoAlpha": 0, "y": -y}, 0.2, "power1.in")
-
-
-def pop(sel, t, d=0.35):
-    init(sel, autoAlpha=0, scale=0.7)
-    k(sel, t, {"autoAlpha": 1, "scale": 1}, d, "back.out(2.2)")
-
+R.A.update(A)
+R.close()
+END, RESET = R.END, R.RESET
+k, init, show, pop = R.k, R.init, R.show, R.pop
 
 # --- hook: gift card
 init("#gc", autoAlpha=1, scale=1, rotation=-2)
@@ -282,89 +231,6 @@ k("#cueB", A["tp"] - 0.2, {"autoAlpha": 1, "scale": 1}, 0.35, "back.out(2)")
 show("#chal", A["turn"], A["leet"])
 pop("#chq", A["which"])
 
-# --- brand lockup, then back to frame 1
-init("#topbrand", autoAlpha=1)
-k("#topbrand", A["leet"] - 0.2, {"autoAlpha": 0}, 0.3)
-k("#topbrand", RESET, {"autoAlpha": 1}, 0.4)
-init("#topic", autoAlpha=1)
-k("#topic", A["leet"] - 0.2, {"autoAlpha": 0}, 0.3)
-k("#topic", RESET, {"autoAlpha": 1}, 0.4)
-init("#lock", autoAlpha=0, y=20)
-k("#lock", A["leet"], {"autoAlpha": 1, "y": 0}, 0.45, "power3.out")
-k("#lock", RESET - 0.1, {"autoAlpha": 0, "y": -16}, 0.3)
-init("#lline", autoAlpha=0)
-k("#lline", A["leet"] + 0.8, {"autoAlpha": 1}, 0.4)
-init("#lcta", autoAlpha=0, scale=0.8)
-k("#lcta", A["link"], {"autoAlpha": 1, "scale": 1}, 0.4, "back.out(2)")
-init("#larr", x=0)
-for n in range(2):
-    k("#larr", A["link"] + 0.5 + n * 0.7, {"x": 12}, 0.35, "sine.inOut")
-    k("#larr", A["link"] + 0.85 + n * 0.7, {"x": 0}, 0.35, "sine.inOut")
-
-# --- tutor stills, cut on story beats
-SB = [(0, "wu-12-blank-card"), (A["menu"] - 0.2, "cu-02-explaining"), (A["c21"], "cu-05b-cringe"),
-      (A["thousand"], "cu-04-surprised"), (A["smarter"] - 0.2, "cu-07-confident"), (A["cheapest"], "wu-03-point-side"),
-      (A["key"] - 0.2, "wu-02-pen-up"), (A["x1"], "wu-03-point-side"), (A["sum3"], "cu-02-explaining"),
-      (A["sum5"], "cu-04-surprised"), (A["nines"] - 0.2, "wu-03b-point-left"), (A["done"] - 0.2, "wu-06-thumbs-up"),
-      (A["six"], "fb-05-celebrate"), (A["time"], "cu-01-happy"), (A["db"] - 0.2, "wu-14-laptop"),
-      (A["catch"] - 0.2, "wu-09-arms-crossed"), (A["meet"] - 0.2, "cu-06-skeptical"), (A["twice"] - 0.3, "wu-10-shrug"),
-      (A["input"] - 0.2, "cu-10-serious"), (A["turn"] - 0.2, "wu-04-open-palm"), (A["which"], "cu-03-thinking"),
-      (A["leet"] - 0.2, "fb-03-present"), (RESET, "wu-12-blank-card")]
-assert [t for t, _ in SB] == sorted(t for t, _ in SB)
-STILLS = sorted({n for _, n in SB})
-missing = [n for n in STILLS if not os.path.exists(f"stills/{n}.png")]
-assert not missing, f"run prep.sh first; missing stills: {missing}"
-for n in STILLS:
-    on = SB[0][1] == n
-    init(f"#st-{n}", autoAlpha=1 if on else 0, xPercent=-50)
-    for j, (t, m) in enumerate(SB[1:], 1):
-        if m == n and not on:
-            k(f"#st-{n}", t, {"autoAlpha": 1}, 0.14, "power2.out"); on = True
-        elif m != n and on:
-            k(f"#st-{n}", t, {"autoAlpha": 0}, 0.1, "none"); on = False
-# a slow push-in on each hold, reset at every cut
-init("#tutor", scale=1, transformOrigin="50% 100%")
-for j, (t, _) in enumerate(SB):
-    nxt = SB[j + 1][0] if j + 1 < len(SB) else END
-    if j:
-        k("#tutor", t, {"scale": 1}, 0.001, "none")
-    k("#tutor", t + 0.002, {"scale": 1.035}, max(0.01, nxt - t - 0.01), "none")
-
-# --- captions: groups of up to three words, key words coloured
-AMB = {"low", "high", "twice", "twenty-one", "21", "thousand", "half", "million", "catch", "problem"}
-TEAL = {"fifteen", "15", "done", "six", "6", "smarter", "key", "pointers", "pointer", "sorted", "databases", "leetexpert"}
-groups, cur = [], []
-for i, x in enumerate(W):
-    cur.append(i)
-    if (x["t"][-1] in ".?!,:…" and len(cur) >= 2) or len(cur) >= 3 or x["t"][-1] in ".?!…":
-        groups.append(cur); cur = []
-if cur:
-    groups.append(cur)
-wc = lambda i: "ca" if forms(W[i]["t"]) & AMB else "ct" if forms(W[i]["t"]) & TEAL else "cw"
-cap = "".join(f'<div class="cg" id="g{g}">' + " ".join(f'<span class="{wc(i)}" id="w{i}">{html.escape(W[i]["t"])}</span>' for i in ids) + "</div>"
-              for g, ids in enumerate(groups))
-WS = [LEAD + x["s"] for x in W]
-for g, ids in enumerate(groups):
-    s = WS[ids[0]]
-    if s >= A["leet"] - 0.05:
-        init(f"#g{g}", autoAlpha=0); continue
-    e = min(WS[groups[g + 1][0]] if g + 1 < len(groups) else END, A["leet"] - 0.1)
-    init(f"#g{g}", autoAlpha=0)
-    k(f"#g{g}", s - 0.05, {"autoAlpha": 1}, 0.06, "none")
-    k(f"#g{g}", max(e - 0.1, s + 0.02), {"autoAlpha": 0}, 0.04, "none")
-    for i in ids:
-        init(f"#w{i}", opacity=0.5)
-        k(f"#w{i}", WS[i], {"opacity": 1}, 0.08, "none")
-
-# every track must run forward: a keyframe that starts before the previous one
-# ends would be shifted later by GSAP, silently drifting off its word
-for sel, tr in K.items():
-    tr["pts"].sort(key=lambda p: p[0])
-    prev = 0.0
-    for p in tr["pts"]:
-        assert p[0] >= prev - 1e-6, f"{sel}: keyframe at {p[0]} overlaps previous ending {prev}"
-        prev = p[0] + p[2]
-
 # ---------------------------------------------------------------- markup
 tags = "".join(f'<div class="tag" id="tag{i}" style="left:{tag_x(i)}px"><i class="hole"></i>{I.ITEMS[p]()}<span class="p">${p}</span></div>' for i, p in enumerate(PRICES))
 xos = "".join(f'<svg class="xo" id="xo{i}" style="left:{tag_x(i)}px" viewBox="0 0 124 168"><path d="M18 30 L106 138 M106 30 L18 138" stroke="#fbbf24" stroke-width="10" stroke-linecap="round"/></svg>' for i in CROSS)
@@ -381,16 +247,8 @@ rows_u = "".join(f'<div class="row" id="ru{r}" style="top:{ROW_Y(r)}px">{v}</div
 CL, CR = 60, 560  # column lefts inside #db
 links = "".join(f'<path id="lk{n}" d="M{CL + 300} {ROW_Y(a) + 37} C{CL + 400} {ROW_Y(a) + 37} {CR - 100} {ROW_Y(b) + 37} {CR} {ROW_Y(b) + 37}" stroke="#5eead4" stroke-width="5" fill="none"/>'
                 for n, a, b in MATCHES)
-stills = "".join(f'<img class="still" id="st-{n}" src="stills/{n}.png" alt="" style="height:{800 if n.startswith("fb-") else 700 if n.startswith("cu-") else 760}px">' for n in STILLS)
 minitags = lambda xs: "".join(f'<span class="mt">{I.ITEMS[x]()}<b>${x}</b></span>' for x in xs)
-audio = f'<audio id="vo" src="vo.mp3" data-start="{LEAD}" data-duration="{round(duration("vo.mp3"), 2)}" data-track-index="1"></audio>' if HAS_VO else ""
-
-H = f'''<!doctype html>
-<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=1080, height=1920" />
-<title>leetExpert: Two pointers, gift card</title><script src="gsap.min.js"></script><style>{open("style.css").read()}</style></head>
-<body>
-<div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920" data-duration="{END}">
- <div class="top"><div class="brand" id="topbrand">leetExpert<span class="dot"></span></div><div class="chip" id="topic">Two pointers</div></div>
+R.add(f'''
  <div id="gc" data-layout-allow-overlap>{I.gift_card(15, "a")}<div class="k">GIFT CARD</div><div class="v">$15</div><div class="s" id="gcS">Spend every cent.</div></div>
  <div id="hookrow" data-layout-allow-overlap>{I.cart()}<span>2 items</span>{I.coins()}<span>every cent</span></div>
  <div class="panel" id="meter" data-layout-allow-overlap><div class="mrow"><span class="lbl">gift card <b>$15</b></span><div class="rdwrap">{rds}</div></div>
@@ -427,25 +285,17 @@ H = f'''<!doctype html>
   <div class="gcmini">{I.gift_card(12, "b")}<div class="k">GIFT CARD</div><div class="v">$12</div></div><div class="qb">{I.question()}</div>
   <div style="position:absolute;left:0;top:390px">{minitags(PRICES)}</div>
   <div id="chq" class="h" style="position:absolute;left:0;top:520px">Which pair do you hit <span class="teal">first?</span><div class="mut" style="font-size:36px;margin-top:10px">Answer in the comments ↓</div></div></div>
- <div class="lock" id="lock"><div class="lbrand">leetExpert<span class="ldot"></span></div><div class="lline" id="lline">The interactive DSA course.<br/>Step through every line.</div>
-  <div class="lcta" id="lcta">Try leetExpert free <span id="larr">→</span> link in bio</div></div>
- <div class="tutor" id="tutor">{stills}</div>
- <div class="caps">{cap}</div>
- {audio}
-</div>
-<script>
-(function(){{
-const tl=gsap.timeline({{paused:true}});
-const K={json.dumps(K)};
-for (const [sel,{{init,pts}}] of Object.entries(K)) {{
-  gsap.set(sel,init); let prev=0; const kf=[];
-  for (const [t,v,d,e] of pts) {{ kf.push(Object.assign({{}},v,{{duration:d||0.001,ease:e||"power2.out",delay:Math.max(0,t-prev)}})); prev=t+(d||0.001); }}
-  if (kf.length) tl.to(sel,{{keyframes:kf}},0);
-}}
-window.__timelines=window.__timelines||{{}};
-window.__timelines["main"]=tl;
-}})();
-</script></body></html>'''
-open("index.html", "w").write(H)
-json.dump({"END": END, "A": A}, open("timing.json", "w"))
-print(f"END {END}s · {len(K)} tracks · {len(SB)} still cuts · vo={'yes' if HAS_VO else 'no (silent preview)'}")
+''')
+
+R.lockup(A["leet"], A["link"], "The interactive DSA course.<br/>Step through every line.")
+# the tutor only where she adds something: the hook, the 21, the key, the find, the pitfall, the challenge, the brand
+R.stills([(0, "wu-12-blank-card"), (A["menu"] - 0.2, None),
+          (A["c21"], "cu-05b-cringe"), (A["smarter"] - 0.2, None),
+          (A["six"], "fb-05-celebrate"), (A["time"] - 0.2, None),
+          (A["twice"] - 0.3, "wu-10-shrug"), (A["input"] - 0.2, None),
+          (A["turn"] - 0.2, "wu-04-open-palm"), (A["which"], None),
+          (A["leet"] - 0.2, "fb-03-present"), (RESET, "wu-12-blank-card")])
+R.captions(amber={"low", "high", "twice", "twenty-one", "21", "thousand", "half", "million", "catch", "problem"},
+           teal={"fifteen", "15", "done", "six", "6", "smarter", "key", "pointers", "pointer", "sorted", "databases", "leetexpert"},
+           until=A["leet"])
+R.write(Path("style.css").read_text())

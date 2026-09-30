@@ -1,7 +1,6 @@
-@font-face{font-family:"Space Grotesk";src:url("fonts/SpaceGrotesk-500.ttf");font-weight:500}
-@font-face{font-family:"Space Grotesk";src:url("fonts/SpaceGrotesk-700.ttf");font-weight:700}
-@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-400.ttf");font-weight:400}
-@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-700.ttf");font-weight:700}
+@font-face{font-family:"Space Grotesk";src:url("fonts/SpaceGrotesk.woff2");font-weight:300 700}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-400.woff2");font-weight:400}
+@font-face{font-family:"Space Mono";src:url("fonts/SpaceMono-700.woff2");font-weight:700}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:1080px;height:1920px;overflow:hidden;background:#16202e}
 #root{position:relative;width:100%;height:100%;overflow:hidden;font-family:"Space Grotesk",sans-serif;color:#f1f4f9;

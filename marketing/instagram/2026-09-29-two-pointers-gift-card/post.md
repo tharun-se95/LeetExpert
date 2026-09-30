@@ -5,7 +5,7 @@
 - **Family:** two-pointers
 - **Format:** Reel, 1080×1920, ~70s (final length set by the recorded take), loops to frame 1; tutor stills; Hope narration
 - **Replaces:** `2026-09-27-two-pointers-trace` (drafted, never posted), at the owner's request on 2026-09-29: explain it through an analogy, richer visuals, faster pacing. Issue #119.
-- **Status:** in production. The visuals are built and pass `hyperframes check`. The narration is not recorded yet (`narrate.py`, which needs ElevenLabs access), so the only render is a silent preview on estimated timings.
+- **Status:** narrated (Hope take recorded 2026-09-30); final render pending; not posted. Rebuilt on the shared reelkit engine on 2026-09-30, with the tutor on cue only (hook, the 21 combos, the find, the pitfall, the challenge, the brand).
 - **Media (when final):** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)
@@ -54,6 +54,6 @@ The tutor holds up an illustrated $15 gift card with a gold ribbon, next to a sh
 
 ## Sources
 
-`script.txt` (the narration), `narrate.py` (Hope TTS + Scribe, which writes `vo.mp3` + `words.json`), `est_words.py` (stand-in timings for a silent preview), `gen.py`, `icons.py` (the SVG illustrations), `style.css`, `verify.py`, `prep.sh` (copies the tutor stills, fonts and GSAP next to the generator; they are git-ignored here).
+`script.txt` (the narration), `vo.mp3` + `words.json` (the take and its Scribe timings, from `reelkit/narrate.py`), `gen.py` (scenes, on `reels-pipeline/reelkit`), `icons.py` (the SVG illustrations), `style.css`, `verify.py`.
 
-Build: `./prep.sh && python3 narrate.py && python3 gen.py && npx hyperframes@0.8.77 check && npx hyperframes@0.8.77 render -o ../reel.mp4`. HyperFrames needs `ffmpeg` and `ffprobe` on PATH.
+Build: see `marketing/reels-pipeline/reelkit/README.md` (`prep.sh`, `narrate.py`, then `gen.py`, `check`, `render -o ../reel.mp4`). HyperFrames needs `ffmpeg` and `ffprobe` on PATH.

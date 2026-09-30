@@ -7,6 +7,7 @@ from math import cos, sin, pi
 
 INK, NAVY, SLATE, STEEL, MUTED = "#f1f4f9", "#0e1520", "#334155", "#64748b", "#94a3b8"
 TEAL, TEAL_D, TEAL_M = "#5eead4", "#0f3d37", "#14b8a6"
+TEAL_INK = "#0f766e"  # teal text on the light receipt paper: 4.96:1 on #f1f4f9 (TEAL_M there was 2.26:1)
 AMB, AMB_D = "#fbbf24", "#b45309"
 VIO, VIO_D = "#c4b5fd", "#6d28d9"
 PINK, SKIN, SKIN_D = "#f9a8d4", "#f5d0b0", "#d9a37f"
@@ -133,8 +134,8 @@ def receipt():
                f'<text x="40" y="34" style="{MONO};font-size:20px;letter-spacing:.2em" fill="{STEEL}">GIFT CARD RECEIPT</text>'
                f'{text}<path d="M40 136 H600" stroke="{STEEL}" stroke-width="2" stroke-dasharray="6 6"/>'
                f'<text x="40" y="180" style="{MONO};font-size:38px" fill="{NAVY}">TOTAL</text><text x="600" y="180" text-anchor="end" style="{MONO};font-size:38px" fill="{NAVY}">$15.00</text>'
-               f'<g transform="rotate(-12 770 110)"><g id="paid"><rect x="660" y="70" width="220" height="80" rx="12" fill="none" stroke="{TEAL_M}" stroke-width="6"/>'
-               f'<text x="770" y="126" text-anchor="middle" style="{MONO};font-size:44px" fill="{TEAL_M}">EXACT</text></g></g>', "rcpt")
+               f'<g transform="rotate(-12 770 110)"><g id="paid"><rect x="660" y="70" width="220" height="80" rx="12" fill="none" stroke="{TEAL_INK}" stroke-width="6"/>'
+               f'<text x="770" y="126" text-anchor="middle" style="{MONO};font-size:44px" fill="{TEAL_INK}">EXACT</text></g></g>', "rcpt")
 
 
 def shelves():
