@@ -26,7 +26,7 @@ weeks = {}
 for r in K:
     d = datetime.date.fromisoformat(r["date"])
     mon = d - datetime.timedelta(days=d.weekday())
-    wk = f"Week of {mon.strftime('%b')} {mon.day}"
+    wk = "Launch: three a day, Oct 1–3" if (d.month, d.day) <= (10, 3) else "Then one a day"
     m = MEDIA[r["post"]]
     slug = r["dir"][11:]
     if "video" in m:
@@ -40,7 +40,7 @@ for r in K:
     saves = "".join(f'<button class="sv" data-id="{fid}" data-name="{e(slug)}-{e(lab.replace(" ", ""))}.{ext}">Save {e(lab)}</button>' for lab, fid, ext in files)
     hook = r["hook"].split("\n")[0].strip()
     weeks.setdefault(wk, []).append(f'''<article class="post" id="{r["post"]}">
- <div class="when"><span class="day">{d.strftime("%a")}</span><span class="date">{d.strftime("%b")} {d.day}</span></div>
+ <div class="when"><span class="day">{d.strftime("%a")}</span><span class="date">{d.strftime("%b")} {d.day}</span><span class="slot">{e(r.get("slot", ""))}</span></div>
  <div class="body">
   <label class="done"><input type="checkbox" id="done-{r["post"]}" data-post="{r["post"]}"> Scheduled</label>
   <p class="kind">{e(kind)} · {r["post"].upper()}</p>
