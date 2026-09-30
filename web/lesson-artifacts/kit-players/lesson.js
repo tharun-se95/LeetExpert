@@ -654,6 +654,126 @@ function ivRoomsSteps(){
   steps.answer=most;return steps;
 }
 
+/* tries: the algorithm walks a TrieTrace, which records each move, so no state is written by hand, and each
+   demo checks its answers against an implementation that shares none of its code (a set of words, a regular
+   expression, a search of the board per word). */
+function trQ(s){return '<code>'+laneEsc(s)+'</code>';}
+/* insert: follow the edge for each letter, making the ones that are missing, then set the flag */
+function trInsert(T,w){
+  for(var i=0;i<w.length;i++){var ch=w[i],k=T.child(ch),pre=trQ(w.slice(0,i+1));
+    if(k<0)T.make(ch,'No edge '+trQ(ch)+' from '+trQ(JSON.stringify(w.slice(0,i)))+': make a node for '+pre+' and move into it.');
+    else T.go(k,'The edge '+trQ(ch)+' is already there, so '+pre+' is shared: follow it.');}
+  T.end(w,'Set the flag: '+trQ(w)+' is a stored word, and its node says so.');
+}
+/* walk a prefix; the last step's caption is given by the caller. -1 when a letter has no edge. */
+function trWalk(T,w,last){
+  for(var i=0;i<w.length;i++){var ch=w[i],k=T.child(ch);
+    if(k<0){T.miss(ch,'No edge '+trQ(ch)+' from '+trQ(JSON.stringify(w.slice(0,i)))+', so no stored word starts with '+trQ(w.slice(0,i+1))+'.');return -1;}
+    T.go(k,i===w.length-1&&last?last:'Follow '+trQ(ch)+'.');}
+  return T.at;
+}
+function trieInsertSteps(){
+  var T=new TrieTrace(),words=['card','cat'],stored={},got=[];
+  words.forEach(function(w,j){if(j)T.reset('Back to the root for the next word, '+trQ(w)+'.');trInsert(T,w);stored[w]=1;});
+  /* search reads the flag at the end of the walk; startsWith only needs the walk to survive */
+  T.reset('Now search. '+trQ('search("car")')+' starts at the root.');
+  var at=trWalk(T,'car','Every edge of '+trQ('car')+' exists, because '+trQ('card')+' needed them. But no word ends on this node: nothing ever set its flag, so search("car") is False.');
+  got.push(['search','car',at>=0&&!!T.nodes[at].word]);
+  T.reset(trQ('search("card")')+' starts at the root.');
+  at=trWalk(T,'card');if(at>=0&&T.nodes[at].word)T.found('The walk survives and this node ends '+trQ('card')+': search("card") is True.');
+  got.push(['search','card',at>=0&&!!T.nodes[at].word]);
+  T.reset(trQ('startsWith("ca")')+' starts at the root.');
+  at=trWalk(T,'ca');if(at>=0)T.found('The walk survives, and that is all a prefix query asks: startsWith("ca") is True, whatever the flag says.');
+  got.push(['startsWith','ca',at>=0]);
+  got.forEach(function(g){
+    var want=g[0]==='search'?!!stored[g[1]]:Object.keys(stored).some(function(w){return w.indexOf(g[1])===0;});
+    if(g[2]!==want)throw new Error(g[0]+'("'+g[1]+'") gave '+g[2]+'; the stored words say '+want);});
+  var steps=trieWalk(T,{label:'trie of card, cat',
+    intro:'Insert '+trQ('card')+' and '+trQ('cat')+', then query. An empty trie is only its root, the empty prefix "", and the cursor <code>node</code> starts there.',
+    outro:'Two words, one shared spine: '+trQ('c → a')+' is stored once. A node on a walk is only a prefix; the word under a node is what makes it a stored word.'});
+  steps.answer=got.map(function(g){return [g[0],g[1],g[2]];});steps.trace=T;return steps;
+}
+/* wildcard search: a dot tries every child, and a branch that fails is abandoned */
+function trieWildSteps(){
+  var T=new TrieTrace(),words=['bad','bat','cot'],pat='.ot';
+  words.forEach(function(w,j){if(j)T.reset('Back to the root for '+trQ(w)+'.');trInsert(T,w);});
+  T.reset('Search '+trQ(pat)+'. A dot matches any one letter, so at a dot the search must try every child in turn.');
+  function dfs(i){
+    if(i===pat.length){
+      if(T.word()){T.found('The pattern is used up on a node that ends '+trQ(T.word())+': a match, so the search stops.');return true;}
+      return false;}
+    var ch=pat[i];
+    if(ch==='.'){
+      var kids=T.children();
+      for(var j=0;j<kids.length;j++){
+        T.go(kids[j],'A dot: try '+trQ(T.nodes[kids[j]].ch)+'.');
+        if(dfs(i+1))return true;
+        T.back(true,'Nothing under '+trQ(T.prefix())+' matches the rest of '+trQ(pat)+': abandon it and try the next child.');}
+      return false;}
+    var k=T.child(ch);
+    if(k<0){T.miss(ch,'No edge '+trQ(ch)+' from '+trQ(T.prefix())+', so this branch cannot match.');return false;}
+    T.go(k,'Follow '+trQ(ch)+'.');
+    if(dfs(i+1))return true;
+    T.back(true,'The rest of the pattern does not match below '+trQ(T.prefix())+'.');
+    return false;
+  }
+  var ok=dfs(0),want=words.some(function(w){return new RegExp('^'+pat+'$').test(w);});
+  if(ok!==want)throw new Error('wildcard search for '+pat+' gave '+ok+'; a regular expression over the words gives '+want);
+  var steps=trieWalk(T,{label:'trie of bad, bat, cot',
+    intro:'Store '+trQ('bad')+', '+trQ('bat')+' and '+trQ('cot')+', then search the pattern '+trQ(pat)+'.',
+    outro:'The dot sent the search down '+trQ('b')+' first, where it died, and then down '+trQ('c')+', where it matched. Each branch tried costs a walk; a pattern of all dots tries every node.'});
+  steps.answer=ok;steps.trace=T;return steps;
+}
+/* Word Search II: walk the board and the trie in lockstep; a found word is cleared so it is reported once,
+   and a leaf with nothing left below it is removed so no later walk enters it */
+var TR_BOARD=[['o','a'],['e','t']],TR_WORDS_B=['oat','ate','eat'];
+function trBoardRef(board,w){
+  var R=board.length,C=board[0].length;
+  function go(r,c,i,seen){
+    if(r<0||c<0||r>=R||c>=C||seen[r*C+c]||board[r][c]!==w[i])return false;
+    if(i===w.length-1)return true;
+    seen[r*C+c]=1;var ok=go(r+1,c,i+1,seen)||go(r-1,c,i+1,seen)||go(r,c+1,i+1,seen)||go(r,c-1,i+1,seen);seen[r*C+c]=0;return ok;}
+  for(var r=0;r<R;r++)for(var c=0;c<C;c++)if(go(r,c,0,{}))return true;
+  return false;
+}
+function trieBoardSteps(){
+  var B=TR_BOARD,R=B.length,C=B[0].length,T=new TrieTrace(),found=[];
+  TR_WORDS_B.forEach(function(w,j){if(j)T.reset('Back to the root for '+trQ(w)+'.');trInsert(T,w);});
+  T.reset('Now walk the board. Start a walk at every cell whose letter is an edge from the root, and move to a neighbour only while the trie has an edge for its letter.');
+  var seen={},D=[[-1,0],[0,1],[1,0],[0,-1]];
+  function cell(r,c){return '('+r+', '+c+')';}
+  function dfs(r,c){
+    var k=T.child(B[r][c]);
+    if(k<0){T.miss(B[r][c],'Cell '+cell(r,c)+' holds '+trQ(B[r][c])+', and there is no edge '+trQ(B[r][c])+' from '+trQ(JSON.stringify(T.prefix()))+': no word goes this way, so the walk does not step there.',{miss:r*C+c});return;}
+    T.go(k,'Step onto '+cell(r,c)+': the board spells '+trQ(T.prefix()+B[r][c])+', and the trie has it.',{go:r*C+c});
+    seen[r*C+c]=1;
+    if(T.word()){var w=T.word();found.push(w);
+      T.found('A word ends here: '+trQ(w)+' is on the board.',{found:w});
+      T.unend('Clear the word, so a second path spelling '+trQ(w)+' is not reported again.');}
+    for(var d=0;d<D.length&&T.children().length;d++){var nr=r+D[d][0],nc=c+D[d][1];
+      if(nr<0||nc<0||nr>=R||nc>=C||seen[nr*C+nc])continue;dfs(nr,nc);}
+    seen[r*C+c]=0;
+    if(!T.children().length&&!T.word())T.drop('Nothing is left below '+trQ(T.prefix())+' and no word ends on it, so remove the node: no later walk will enter it.',{back:r*C+c});
+    else T.back(false,'Every neighbour of '+cell(r,c)+' has been tried; step back.',{back:r*C+c});
+  }
+  for(var r=0;r<R;r++)for(var c=0;c<C;c++)dfs(r,c);
+  var want=TR_WORDS_B.filter(function(w){return trBoardRef(B,w);});
+  if(found.slice().sort().join()!==want.slice().sort().join())throw new Error('the lockstep walk found '+found.join(',')+'; searching the board per word finds '+want.join(','));
+  var walk=[];
+  var steps=trieWalk(T,{label:'trie of oat, ate, eat',
+    lanes:[{id:'b',kind:'grid',label:'board',rows:R,cols:C},{id:'w',kind:'row',label:'words found',idx:true}],
+    init:function(M){M.fill('b',B);},
+    on:function(e,M){var d=e.data;if(!d)return;
+      if(d.go!==undefined){walk.push(d.go);M.path('b','walk',walk);M.tone(M.lane('b').items[d.go],'cur');return [laneHi(M.lane('b').items[d.go])];}
+      if(d.back!==undefined){walk.pop();M.path('b','walk',walk.length?walk:null);M.tone(M.lane('b').items[d.back],null);return [laneHi(M.lane('b').items[d.back])];}
+      if(d.miss!==undefined)return [laneHi(M.lane('b').items[d.miss])];
+      if(d.found!==undefined){var it=M.push('w',d.found);M.tone(it,'good');return [laneHi(it)];}},
+    fields:function(M){return [['found',M.size('w')]];},
+    intro:'Word Search II: which of '+trQ('oat')+', '+trQ('ate')+' and '+trQ('eat')+' can be spelled by a walk of neighbouring cells? Build the trie of the words first.',
+    outro:'The board was walked once for all three words. '+trQ('eat')+' was never entered past '+trQ('e')+': the trie had no edge for any neighbour of the '+trQ('e')+' cell, so '+found.length+' of 3 words are on the board.'});
+  steps.answer=found.slice();steps.trace=T;return steps;
+}
+
 /* cost plots: every count is taken by running the loop and counting where the work is, and each is held to an
    independent statement of it (plotCheck) before anything is drawn. Every number in a caption comes from those counts. */
 function plDoubling(n){var c=0;for(var i=1;i<n;i*=2)c++;return c;}
@@ -739,4 +859,5 @@ mountLaneTabs($('#grtabs'),[{name:'Breadth-first search',steps:bfsSteps},{name:'
   {id:'gr',inv:[['heap holds','every parent in the frontier is no larger than its children',heapInv]]});
 mountCallTreeTabs($('#cttabs'),[{name:'Subsets',steps:subsetsSteps},{name:'Combination sum',steps:comboSteps}],{id:'ct'});
 mountIvTabs($('#ivtabs'),[{name:'Merge intervals',steps:ivMergeSteps},{name:'Meeting rooms II',steps:ivRoomsSteps}],{id:'iv'});
+mountTrieTabs($('#trtabs'),[{name:'Insert and search',steps:trieInsertSteps},{name:'Wildcard search',steps:trieWildSteps},{name:'Word Search II',steps:trieBoardSteps}],{id:'tr'});
 mountPlotTabs($('#pltabs'),[{name:'Loops',steps:plLoopsSteps},{name:'Amortized appends',steps:plAppendSteps},{name:'Growth beats hardware',steps:plHardwareSteps}],{id:'pl'});

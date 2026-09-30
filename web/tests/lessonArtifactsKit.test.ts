@@ -1038,6 +1038,191 @@ describe("lesson artifacts kit: intervals on an axis (intervals.js)", () => {
   });
 });
 
+/* ---------- tries (tries.js) ---------- */
+type TrNode = { id: number; ch: string; parent: number; kids: Record<string, number>; depth: number; gone: boolean; word: string };
+type TrEvent = { ev: string; node: number; ch?: string; word?: string; dead?: boolean };
+interface TrTrace {
+  nodes: TrNode[]; events: TrEvent[]; at: number;
+  child(ch: string): number; children(): number[]; word(): string; prefix(id?: number): string;
+  make(ch: string, note?: string): number; go(id: number, note?: string): number; miss(ch: string, note?: string): void;
+  end(word: string, note?: string): void; unend(note?: string): void; found(note?: string): void;
+  back(dead: boolean, note?: string): void; drop(note?: string): void; reset(note?: string): void; done(): TrTrace;
+}
+type TrState = { nodes: Record<string, { state: string | null; word: string }>; edges: Record<string, string>; cursor: number };
+type TrSteps = Snap[] & { states: string[]; answer?: unknown; trace?: TrTrace };
+interface TrKit {
+  TrieTrace: new () => TrTrace;
+  trieShape(T: TrTrace): { kids: number[]; depth: number }[];
+  graphTreeLayout(nodes: { kids: number[]; depth: number }[]): { x: number; d: number }[];
+  trieState(T: TrTrace, k: number): TrState;
+  trieRead(s: Snap): TrState;
+  trieSame(want: TrState, got: TrState, k: number): void;
+  trieWalk(T: TrTrace, o?: object): TrSteps;
+  TRIE_INV: [string, string, (s: Snap) => boolean][];
+  trieInsertSteps?: () => TrSteps; trieWildSteps?: () => TrSteps; trieBoardSteps?: () => TrSteps;
+}
+function trKit(extra = ""): TrKit {
+  const ctx: Record<string, unknown> = {};
+  const src = ["lanes.js", "graphs.js", "grids.js", "tries.js"].map((f) => readFileSync(join(ARTIFACTS, "kit", f), "utf8")).join("\n");
+  runInNewContext(src + "\n" + extra + "\nthis.TrieTrace=TrieTrace;this.trieShape=trieShape;this.graphTreeLayout=graphTreeLayout;this.trieState=trieState;this.trieRead=trieRead;this.trieSame=trieSame;this.trieWalk=trieWalk;this.TRIE_INV=TRIE_INV;", ctx);
+  return ctx as unknown as TrKit;
+}
+/* random walks over a random alphabet: every operation the trace offers, each only where it is allowed */
+function randomTrie(K: TrKit, rnd: (n: number) => number): TrTrace {
+  const T = new K.TrieTrace(), A = "abcd";
+  const n = 10 + rnd(40);
+  for (let i = 0; i < n; i++) {
+    const cur = T.nodes[T.at]!, kids = T.children(), op = rnd(10), ch = A[rnd(A.length)]!;
+    if (op < 3 && T.child(ch) < 0 && cur.depth < 5) T.make(ch);
+    else if (op < 5 && kids.length) T.go(kids[rnd(kids.length)]!);
+    else if (op === 5 && T.child(ch) < 0) T.miss(ch);
+    else if (op === 6 && T.at) { if (T.word()) T.unend(); else T.end(T.prefix()); }
+    else if (op === 7) T.found();
+    else if (op === 8 && T.at) { if (!kids.length && !T.word() && rnd(2)) T.drop(); else T.back(!!rnd(2)); }
+    else if (op === 9 && rnd(4) === 0) T.reset();
+    else T.found();
+  }
+  return T;
+}
+
+describe("lesson artifacts kit: tries (tries.js)", () => {
+  it("build.py ships it with the player, lanes and graphs it draws on, once and in that order", () => {
+    const run = (js: string) => {
+      const r = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(json.dumps(build.optional_kit(sys.stdin.read())))`], { input: js, encoding: "utf8" });
+      if (r.status) throw new Error(r.stderr);
+      return JSON.parse(r.stdout) as string[];
+    };
+    expect(run("var s=trieWalk(T);")).toEqual(["player", "lanes", "graphs", "tries"]);
+    expect(run("var T=new TrieTrace();")).toEqual(["player", "lanes", "graphs", "tries"]);
+    expect(run("mountTrieTabs(w,[]);")).toEqual(["player", "lanes", "graphs", "tries"]);
+    // Word Search II pairs it with a board: naming the grid kind ships grids too
+    expect(run("var T=new TrieTrace();var d={kind:'grid'};")).toEqual(["player", "lanes", "grids", "graphs", "tries"]);
+  });
+
+  it("lays children out in letter order, each parent over its children, and no two nodes share a place", () => {
+    const K = trKit(), rnd = lcg(20260930);
+    for (let t = 0; t < 150; t++) {
+      const T = randomTrie(K, rnd), shape = K.trieShape(T), pos = K.graphTreeLayout(shape);
+      expect(new Set(pos.map((p) => `${p.x},${p.d}`)).size).toBe(T.nodes.length);
+      for (const n of T.nodes) {
+        const kids = shape[n.id]!.kids;
+        expect(kids.map((k) => T.nodes[k]!.ch)).toEqual(kids.map((k) => T.nodes[k]!.ch).sort());
+        expect(pos[n.id]!.d).toBe(n.depth);
+        if (kids.length) expect(pos[n.id]!.x).toBe((pos[kids[0]!]!.x + pos[kids[kids.length - 1]!]!.x) / 2);
+        // a removed node keeps its slot: nothing drawn moves when a later node takes the letter back
+        for (const k of kids) expect(pos[k]!.x).toBeGreaterThanOrEqual(pos[kids[0]!]!.x);
+      }
+    }
+  });
+
+  it("step k shows exactly what the first k events say, whatever order the steps are read in", () => {
+    const K = trKit(), rnd = lcg(3030);
+    for (let t = 0; t < 120; t++) {
+      const T = randomTrie(K, rnd), steps = K.trieWalk(T);
+      expect(steps.length).toBe(T.events.length + 2);
+      const order = steps.map((_, k) => k).sort(() => rnd(3) - 1);
+      for (const k of order) {
+        // a reference that shares no code with the kit: replay the events on plain maps
+        const st = new Map<number, { state: string | null; word: string; hit: boolean }>([[0, { state: "path", word: "", hit: false }]]);
+        let cur = 0;
+        for (const e of T.events.slice(0, Math.min(k, T.events.length))) {
+          const n = st.get(e.node);
+          if (e.ev === "make") { st.set(e.node, { state: "path", word: "", hit: false }); cur = e.node; }
+          else if (e.ev === "go") { n!.state = "path"; cur = e.node; }
+          else if (e.ev === "end") n!.word = e.word!;
+          else if (e.ev === "unend") n!.word = "";
+          else if (e.ev === "found") { n!.state = "found"; n!.hit = true; }
+          else if (e.ev === "back") { n!.state = n!.hit ? "found" : e.dead ? "dead" : "explored"; cur = T.nodes[e.node]!.parent; }
+          else if (e.ev === "drop") { st.delete(e.node); cur = T.nodes[e.node]!.parent; }
+          else if (e.ev === "reset") { for (const v of st.values()) { v.state = null; v.hit = false; } st.get(0)!.state = "path"; cur = 0; }
+        }
+        const onPath = new Set<number>(); for (let n = cur; n >= 0; n = T.nodes[n]!.parent) onPath.add(n);
+        const got = K.trieRead(steps[k]!);
+        expect(Object.keys(got.nodes).map(Number).sort((a, b) => a - b)).toEqual([...st.keys()].sort((a, b) => a - b));
+        for (const [id, want] of st) expect(got.nodes[id]).toEqual({ state: want.state, word: want.word });
+        for (const [id, s] of Object.entries(got.edges)) expect(s).toBe(onPath.has(+id) ? "cur" : "idle");
+        expect(Object.keys(got.edges).length).toBe(st.size - 1);
+        expect(got.cursor).toBe(cur);
+        // the drawn letters are the trie's, and the pure function agrees with what was drawn
+        const g = lane(steps[k]!, "trie") as unknown as GraphLane;
+        for (const id of st.keys()) expect(g.items[id]!.v).toBe(id ? T.nodes[id]!.ch : '""');
+        expect(K.trieState(T, Math.min(k, T.events.length))).toEqual(got);
+        // and every invariant the player shows holds on every step
+        for (const [name, , holds] of K.TRIE_INV) expect(holds(steps[k]!), name).toBe(true);
+      }
+    }
+  });
+
+  it("a drawing that disagrees with the events is refused, and each invariant can fail", () => {
+    const K = trKit(), T = new K.TrieTrace();
+    T.make("c"); T.make("a"); T.make("r"); T.end("car"); T.reset(); T.go(T.child("c")); T.make("o");
+    const steps = K.trieWalk(T), k = 7, drawn = steps[k]!, copy = () => JSON.parse(JSON.stringify(drawn)) as Snap;
+    K.trieSame(K.trieState(T, k), K.trieRead(drawn), k);
+    const toned = copy(); lane(toned, "trie").items[2]!.tone = "cur";
+    expect(() => K.trieSame(K.trieState(T, k), K.trieRead(toned), k)).toThrow(/trie step 7: node 2/);
+    const unworded = copy(); lane(unworded, "trie").items[3]!.sub = "";
+    expect(() => K.trieSame(K.trieState(T, k), K.trieRead(unworded), k)).toThrow(/node 3/);
+    const lit = copy(); (lane(lit, "trie") as unknown as GraphLane).edges.find((e) => e.b === 2)!.state = "cur";
+    expect(() => K.trieSame(K.trieState(T, k), K.trieRead(lit), k)).toThrow(/edge into node 2/);
+    const moved = copy(); lane(moved, "trie").marks.node = 1;
+    expect(() => K.trieSame(K.trieState(T, k), K.trieRead(moved), k)).toThrow(/cursor/);
+    const [path, parent, unique] = K.TRIE_INV;
+    expect(path![2](drawn) && parent![2](drawn) && unique![2](drawn)).toBe(true);
+    expect(path![2](lit)).toBe(false);
+    const twice = copy(); (lane(twice, "trie") as unknown as GraphLane).edges.push({ a: 1, b: 2, w: null, state: "idle", key: "1>2x" } as unknown as GraphEdge);
+    expect(parent![2](twice)).toBe(false);
+    const same = copy(); (lane(same, "trie") as unknown as GraphLane).nodes[4]!.l = "a";
+    expect(unique![2](same)).toBe(false);
+  });
+
+  it("rejects what would draw a structure that is not a trie", () => {
+    const K = trKit(), T = new K.TrieTrace();
+    expect(() => T.back(false)).toThrow(/at the root/);
+    expect(() => T.drop()).toThrow(/root cannot be removed/);
+    expect(() => T.end("")).toThrow(/empty prefix/);
+    expect(() => T.make("ab")).toThrow(/one character/);
+    const c = T.make("c");
+    T.reset();
+    expect(() => T.make("c")).toThrow(/already has a child c/);
+    expect(() => T.miss("c")).toThrow(/does have a child c/);
+    expect(() => T.go(99)).toThrow(/not a child/);
+    T.go(c); T.make("a");
+    expect(() => T.end("cx")).toThrow(/spells "ca"/);
+    expect(() => T.unend()).toThrow(/no word ends/);
+    T.end("ca"); expect(() => T.drop()).toThrow(/still ends the word ca/);
+    T.back(false); expect(() => T.drop()).toThrow(/still has children/);
+    expect(() => new K.TrieTrace().done()).toThrow(/empty/);
+  });
+
+  it("the specimen's walkthroughs match independent implementations", () => {
+    const src = readFileSync(join(ARTIFACTS, "kit-players", "lesson.js"), "utf8");
+    const cut = src.indexOf("\nmountLesson();");
+    expect(cut).toBeGreaterThan(0);
+    const K = trKit(src.slice(0, cut) + "\nthis.trieInsertSteps=trieInsertSteps;this.trieWildSteps=trieWildSteps;this.trieBoardSteps=trieBoardSteps;");
+    const words = ["card", "cat"];
+    const ins = K.trieInsertSteps!();
+    expect(ins.answer).toEqual([["search", "car", words.includes("car")], ["search", "card", words.includes("card")], ["startsWith", "ca", words.some((w) => w.startsWith("ca"))]]);
+    // the finished trie stores each word's letters once per shared prefix: c, a, r, d, t
+    expect(ins.trace!.nodes.length).toBe(1 + new Set(words.flatMap((w) => [...w].map((_, i) => w.slice(0, i + 1)))).size);
+    const wild = K.trieWildSteps!();
+    expect(wild.answer).toBe(["bad", "bat", "cot"].some((w) => w.length === 3 && w.slice(1) === "ot"));
+    expect(wild.states).toContain("dead");
+    // Word Search II: a word is on a 2 × 2 board when some order of distinct neighbouring cells spells it
+    const B = ["oa", "et"], cells = [[0, 0], [0, 1], [1, 0], [1, 1]] as const;
+    const spells = (w: string) => {
+      const perms = (xs: readonly (readonly [number, number])[], n: number): (readonly [number, number])[][] =>
+        n === 0 ? [[]] : xs.flatMap((x, i) => perms([...xs.slice(0, i), ...xs.slice(i + 1)], n - 1).map((p) => [x, ...p]));
+      return perms(cells, w.length).some((p) => p.every(([r, c], i) => B[r]![c] === w[i] && (i === 0 || Math.abs(r - p[i - 1]![0]) + Math.abs(c - p[i - 1]![1]) === 1)));
+    };
+    const board = K.trieBoardSteps!();
+    expect((board.answer as string[]).slice().sort()).toEqual(["oat", "ate", "eat"].filter(spells).sort());
+    // every found word was cleared so it is reported once; a word not on the board keeps its flag
+    const left = Object.values(K.trieRead(board[board.length - 1]!).nodes).map((n) => n.word).filter(Boolean).sort();
+    expect(left).toEqual(["oat", "ate", "eat"].filter((w) => !(board.answer as string[]).includes(w)).sort());
+    expect(lane(board[board.length - 1]!, "w").items.map((x) => x!.v).sort()).toEqual((board.answer as string[]).slice().sort());
+  });
+});
+
 /* cost plots (plots.js): a plot's model, read back and held to a reference written here. Drawing is the browser
    gate's job; what is tested here is that every snapshot says what the steps say, and that what it refuses is refused. */
 type PlOp = (string | number | null)[];

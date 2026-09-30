@@ -134,6 +134,16 @@ with what it needs before it (`KIT_DEPS`):
   read back (`ivRead`) and checked on load. `mountIvTabs` adds the state key. Spec:
   `docs/superpowers/specs/2026-09-29-intervals-player-design.md`.
 
+- `kit/tries.js`: tries (prefix trees), built on the graph lane like call trees, with no lane kind of its own.
+  `TrieTrace` is the trie: the lesson's algorithm walks it (`child`, `children` look up; `make`, `go`, `miss`,
+  `end`, `unend`, `found`, `back`, `drop`, `reset` each record a step), then `trieWalk(trace, o)` records the steps.
+  Every node's place is fixed from the finished trie (`graphTreeLayout` in `graphs.js`, children in letter order);
+  a node shows its letter (the root `""`) and the word that ends at it on its second line; the cursor is the mark
+  `node`. The state after k steps is a pure function of them (`trieState`) and every recorded step is read back
+  (`trieRead`) and checked on load. A board for Word Search II is an ordinary grid lane in `o.lanes`, filled by
+  `o.init` and driven from `o.on`. `mountTrieTabs` adds the state key. Spec:
+  `docs/superpowers/specs/2026-09-30-trie-player-design.md`.
+
 - `kit/plots.js` + `plots.css`: cost plots, how a cost grows with n. Named series on one pair of axes (`curve`, a
   formula or a named class; `points`, `bars` and `range`, counts measured by running code), a cursor walking n whose
   value for each series is read out beside the plot, named horizontal and vertical lines, and counters. Text is HTML

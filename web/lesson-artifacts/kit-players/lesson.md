@@ -112,6 +112,14 @@ An interval lane draws each interval as a bar on one shared axis: its row is its
 <div class="extabs" role="group" aria-label="Choose an interval walkthrough"></div><div class="lvhost"></div>
 ```
 
+## Tries {#tries}
+
+A trie is drawn on the graph lane, like a call tree: the words go in first, so the finished trie is known and every node's place is fixed, and each node appears in its slot when it is made. A node shows its letter, and the root shows `""`, the empty prefix. The word that ends at a node is written under it, so a stored word and a prefix in passing look different. The cursor is the mark `node`, the edges from the root to it are the current walk, and the fields line spells the prefix. A node on the walk, a match, a dead end and a branch left behind are each drawn by their own tone and named in the key. Word Search II pairs the trie with a board: a step onto a cell follows an edge, a letter with no edge is never stepped on, and a spent leaf is removed. Every walkthrough runs the real algorithm and checks its answers against code that shares none of the trie's.
+
+```widget #trtabs "Three trie walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a trie walkthrough"></div><div class="lvhost"></div>
+```
+
 ## Cost plots {#plots}
 
 A cost plot draws how a cost grows with n: named series on one pair of axes, a cursor walking n with each series' value read out beside the plot, and named lines for a budget or a threshold. A formula is drawn as a curve; a measured series is a count taken by running the loop and counting where the work is, and each is checked against an independent statement of it before anything is drawn. Series differ in ink, dash and marker, and are named in the readout, so none rests on colour. All three walkthroughs compute every number they show.
