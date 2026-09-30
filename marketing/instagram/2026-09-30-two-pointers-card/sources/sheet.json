@@ -1,0 +1,92 @@
+{
+  "sheet": {
+    "moduleSlug": "two-pointers",
+    "tier": "gold",
+    "tagline": "Opposite ends or same direction — drop a nested loop.",
+    "smells": [
+      {
+        "smell": "Sorted array, pair / triplet sum",
+        "pattern": "Opposite ends"
+      },
+      {
+        "smell": "Remove / move while reading ahead",
+        "pattern": "Fast / slow"
+      },
+      {
+        "smell": "Container / area between indices",
+        "pattern": "Inward from tallest hope"
+      },
+      {
+        "smell": "Merge two sorted streams",
+        "pattern": "One pointer each"
+      }
+    ],
+    "patterns": [
+      {
+        "title": "Opposite ends",
+        "smell": "Sorted + target sum",
+        "summary": "Start L=0, R=n−1. Move the end that makes the sum closer to the target. Sorting (if allowed) is the enabling step.",
+        "tone": "accent",
+        "diagram": "two-pointers"
+      },
+      {
+        "title": "Fast & slow (same array)",
+        "smell": "Read ahead, write behind",
+        "summary": "Slow marks the boundary of the kept region; fast explores. Same skeleton as array write-pointer drills.",
+        "tone": "good",
+        "diagram": "array-cells"
+      },
+      {
+        "title": "Inward area search",
+        "smell": "Width × min height style scores",
+        "summary": "Width shrinks as pointers meet — only move the shorter side, because moving the taller one cannot improve the min.",
+        "tone": "mark",
+        "diagram": "two-pointers"
+      },
+      {
+        "title": "Two-list merge walk",
+        "smell": "Combine sorted inputs",
+        "summary": "Always take the smaller head. When one list exhausts, append the rest. Linear in combined length.",
+        "tone": "accent",
+        "diagram": "linked-list"
+      }
+    ],
+    "complexity": [
+      {
+        "label": "Opposite ends on sorted",
+        "time": "O(n)",
+        "space": "O(1)",
+        "note": "Plus sort if needed"
+      },
+      {
+        "label": "Fast / slow rewrite",
+        "time": "O(n)",
+        "space": "O(1)",
+        "note": "In-place"
+      },
+      {
+        "label": "Merge two sorted",
+        "time": "O(n+m)",
+        "space": "O(1)*",
+        "note": "*or O(n+m) for a new array"
+      }
+    ],
+    "traps": [
+      {
+        "title": "Forgetting the sort prerequisite",
+        "detail": "Opposite-end sum logic is wrong on unsorted data. Either sort first (and handle index requirements) or pick another pattern.",
+        "tone": "bad"
+      },
+      {
+        "title": "Crossing pointers",
+        "detail": "Loop condition is usually L < R. Equality can double-count the middle element — know whether the problem allows it.",
+        "tone": "warn"
+      }
+    ]
+  },
+  "counts": {
+    "cheatsheets": 21,
+    "practiceModules": 21,
+    "modules": 24
+  }
+}

@@ -4,7 +4,7 @@
 - **Source lesson:** `courses/dsa/two-pointers/converging-pointers.md`
 - **Family:** two-pointers
 - **Format:** Reel, 1080×1920, 60s, loops; painted tutor stills cut on story beats; Hope narration
-- **Status:** drafted (not posted)
+- **Status:** superseded by `2026-09-29-two-pointers-gift-card` (owner, 2026-09-29: re-cut around an analogy; issue #119). Never posted.
 - **Media:** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)

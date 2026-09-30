@@ -113,7 +113,7 @@ Pillar: … | Format: … | Goal: …
 [full caption]
 
 ### Hashtags
-[3–5]
+[exactly 5: pattern, problem, language, angle, audience (references/formats.md)]
 
 ### Alt text
 [plain description of the visual for screen readers]

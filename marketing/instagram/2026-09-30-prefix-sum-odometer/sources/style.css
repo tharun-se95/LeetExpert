@@ -1,0 +1,17 @@
+/* the two rows */
+.cell{position:absolute;width:130px;height:130px;border-radius:20px;border:3px solid #263248;background:#0e1520;display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:58px;font-weight:700}
+.cell.chg{border-color:#fbbf24;color:#fbbf24}
+.ix{position:absolute;width:130px;text-align:center;font-family:"Space Mono",monospace;font-size:26px;color:#94a3b8}
+.lab{position:absolute;font-family:"Space Mono",monospace;font-size:28px;font-weight:700;color:#94a3b8;white-space:nowrap}
+.brk{position:absolute;height:14px;border:5px solid #fbbf24;border-bottom:none;border-radius:8px 8px 0 0}
+.val{position:absolute;font-family:"Space Mono",monospace;font-size:38px;font-weight:700;white-space:nowrap;line-height:1.35}
+.ring{position:absolute;width:146px;height:146px;border-radius:24px;border:6px solid;display:block}
+.teal-r{border-color:#5eead4}.amb-r{border-color:#fbbf24}
+/* odometer */
+.odo{position:absolute;left:0;display:flex;align-items:center;gap:22px}
+.ol{width:200px;font-family:"Space Mono",monospace;font-size:30px;font-weight:700;color:#94a3b8}
+.od{font-family:"Space Mono",monospace;font-size:88px;font-weight:700;letter-spacing:.08em;background:#0e1520;border:3px solid #263248;border-radius:16px;padding:6px 24px}
+.ou{font-family:"Space Mono",monospace;font-size:34px;color:#94a3b8}
+/* code lines on a panel */
+.code{position:absolute;left:0;right:0;padding:26px 32px;font-family:"Space Mono",monospace;font-size:42px;font-weight:700;line-height:1.7}
+.code .ln{display:flex;justify-content:space-between;align-items:center}

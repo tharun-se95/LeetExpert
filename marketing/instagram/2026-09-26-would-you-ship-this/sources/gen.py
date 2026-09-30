@@ -1,5 +1,11 @@
 import json,html,subprocess
-W=json.load(open("vo/words.json"))
+W=json.load(open("words.json"))
+# Scribe split the brand into "Leet" "Expert,"; the caption must read leetExpert (one token, the take's timing)
+for i in range(len(W) - 1):
+    if W[i]["t"] == "Leet" and W[i + 1]["t"].startswith("Expert"):
+        W[i:i + 2] = [{"t": "leetExpert" + W[i + 1]["t"][len("Expert"):], "s": W[i]["s"], "e": W[i + 1]["e"]}]
+        break
+assert not any(x["t"] in ("Leet", "Expert", "Expert,") for x in W)
 LEAD=0.3
 AUD=float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0","vo.mp3"]))
 TOTAL=round(LEAD+AUD+2.6,2)
@@ -58,7 +64,7 @@ AMB={"true","itself","problem","loop","forty","ten","seconds","secretly","scans"
 TEAL={"true.","fix?","set","seen","gone,","o","of","n.","milliseconds.","proof.","coach","bio."}
 def wcls(i):
     t=W[i]["t"].lower()
-    if i<len(W) and W[i]["s"]>57 : return "ct" if norm(t) in {"proof","coach","expert","bio","passing"} else "cw"
+    if i<len(W) and W[i]["s"]>57 : return "ct" if norm(t) in {"proof","coach","leetexpert","bio","passing"} else "cw"
     if W[i]["s"]>45.5: return "ct" if norm(t) in {"fix","set","seen","gone","o","of","n","three","half","milliseconds"} else "cw"
     if 16<W[i]["s"]<17.4 and norm(t)=="true": return "ct"
     if 24<W[i]["s"]<45.5: return "ca" if norm(t) in {"true","itself","problem","loop","forty","ten","seconds","scans","secretly","only","one","number"} else "cw"
