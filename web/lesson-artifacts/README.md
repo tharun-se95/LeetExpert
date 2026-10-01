@@ -105,7 +105,10 @@ with what it needs before it (`KIT_DEPS`):
   fields and invariants line, caption, step track; soft motion, loop while on screen, still under reduced
   motion). A player is a view object it runs; the contract is at the top of the file.
   `mountPlayerTabs` gives any player tabbed walkthroughs.
-- `kit/lists.js` + `lists.css`: the linked list model and `ListPlayer` (`mountTabs` for its tabs).
+- `kit/lists.js` + `lists.css`: the linked list model and `ListPlayer` (`mountTabs` for its tabs). It also draws
+  **pointer lists** (`ptrSnap`): plain nodes at authored places, any named pointer, `null` names past the end, cycles and
+  two-row merges, and per-player fields and invariants; `ptrRow`, `ptrVals`, `ptrText` and `snapWalk` are the module's
+  shared helpers. Spec: `docs/superpowers/specs/2026-10-01-pointer-list-player-design.md`.
 - `kit/lanes.js` + `lanes.css`: the lane model (`new Lanes(...)`) and `LanePlayer` (`mountLaneTabs`).
   One model for every linear shape: arrays and strings (a row; `idx` labels its slots), stacks (a
   column, top up), queues and deques (a row, front left), fixed rows written by slot (a ring buffer's
@@ -181,14 +184,17 @@ light-mode learner never sees the OS theme flash.
 
 ## Status
 
-Five lessons, a prototype: four problem lessons and one concept lesson, `build-a-linked-list`. No sandbox
-of its own (the workspace's editor is beside it), no progress hook, and the page's colours are copied in at
+`LESSONS` in `build.py` lists the pages, and `LEDGER.md` is their status; this file does not repeat either. A page has
+no sandbox of its own (the workspace's editor is beside it), no progress hook, and its colours are copied in at
 build time. The Diameter lesson still carries its own tree painter and predict widget beside the kit's.
 
+- **Quizzes** are checked at build time as well as at load: `lessonMd.ts` fails a quiz whose answer is its longest
+  option, or whose answers all hash to one slot (`kit.js` `slotOf`, the same hash), and a `{{fact}}` left in body
+  prose, where nothing fills it. A question holding a `{{fact}}` is left to the page's own check.
 - **Code colour** comes from the app's own Shiki setup: `build.py` runs `highlight.ts` (through
   `web/node_modules/.bin/tsx`, from `web/`) over every code file and embeds the result as `HL`, beside the
   raw `CODE` strings the tests compare. The build fails if any file comes back uncoloured.
-- **Concept lessons** have no sandbox cases, so `build-a-linked-list/check.py` holds its shown code to the
+- **Concept lessons** have no sandbox cases, so each has a `check.py` (`build-a-linked-list/check.py` is the model) that holds its shown code to the
   same standard: `code/solution.{py,ts}` must match a plain list on 403 random operation sequences with the
   list's invariants intact, and `code/mistake.*` must lose data in both runtimes. It is not in CI while the
   pages are parked; run it after changing that lesson's code.

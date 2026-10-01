@@ -135,7 +135,7 @@ var FACTS=(function(){
       '<text class="hd-lab" x="'+x0+'" y="56">a change log, oldest first; drop the one '+n+' back from the newest</text>';
     for(var i=0;i<N-1;i++)h+='<line class="hg-link" data-i="'+i+'" x1="'+(x0+i*dx+24)+'" y1="'+y+'" x2="'+(x0+(i+1)*dx-27)+'" y2="'+y+'" marker-end="url(#hgA)"/>';
     h+='<path class="hg-skip" d="M'+(x0+(N-n-1)*dx+12)+','+(y-20)+' C'+(x0+(N-n-1)*dx+30)+','+(y-70)+' '+(x0+(N-n+1)*dx-30)+','+(y-70)+' '+(x0+(N-n+1)*dx-12)+','+(y-22)+'" marker-end="url(#hgA)"/>';
-    for(var i=0;i<N;i++)h+='<rect class="hg-e" data-i="'+i+'" x="'+(x0+i*dx-22)+'" y="'+(y-18)+'" width="44" height="36" rx="8"/><text class="hd-val" x="'+(x0+i*dx)+'" y="'+(y+5)+'" text-anchor="middle">v'+(i+1)+'</text>';
+    for(var j=0;j<N;j++)h+='<rect class="hg-e" data-i="'+j+'" x="'+(x0+j*dx-22)+'" y="'+(y-18)+'" width="44" height="36" rx="8"/><text class="hd-val" x="'+(x0+j*dx)+'" y="'+(y+5)+'" text-anchor="middle">v'+(j+1)+'</text>';
     h+='<text class="hg-tag" id="hgLead" y="'+(y+44)+'" text-anchor="middle">scout</text><text class="hg-tag rd" id="hgTrail" y="'+(y+62)+'" text-anchor="middle">reader</text>';
     svg.innerHTML=h;
     var num=$('#heroNum'),cap=$('#heroCap'),T=N-n,K=n+T+1;

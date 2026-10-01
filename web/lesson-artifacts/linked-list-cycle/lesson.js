@@ -40,7 +40,7 @@ var maxPasses=0,ENTRY_A=12,ENTRY_C=12;
     if(pos>=0&&clPasses>L.a+L.C)throw new Error('met later than a + C at n='+n+' pos='+pos);
     if(clPasses>n)throw new Error('more than n passes at n='+n+' pos='+pos);maxPasses=Math.max(maxPasses,clPasses);}
   /* the follow-up's claim, on every tail length and loop length up to the bounds the page quotes */
-  for(var a=0;a<=ENTRY_A;a++)for(var C=1;C<=ENTRY_C;C++){var v=[];for(var i=0;i<a+C;i++)v.push(i);var L2=clBuild(v,a);
+  for(var a=0;a<=ENTRY_A;a++)for(var C=1;C<=ENTRY_C;C++){var v=[];for(var q=0;q<a+C;q++)v.push(q);var L2=clBuild(v,a);
     if(cycEntry(L2.head)!==L2.ns[a])throw new Error('entry check failed at a='+a+' C='+C);}
 })();
 
@@ -123,7 +123,7 @@ function mountCost(){
   var pts=[];for(var n=0;n<=64;n+=8){var v=[];for(var i=0;i<n;i++)v.push(i);cycSeen(clBuild(v,-1).head);if(cycSeen.held!==n)throw new Error('set held '+cycSeen.held+' at n='+n);pts.push([n,cycSeen.held,2]);}
   costChart($('#cost'),{names:['remember every node: one set entry each','Floyd: slow and fast'],ylabel:'held at once',pts:pts,xlabel:'nodes in the list',xticks:[0,16,32,48,64],
     aria:'Memory held while checking a list with no cycle: the set holds one entry per node, '+pts[pts.length-1][1]+' at 64 nodes; Floyd holds 2 at every size.'});
-  var big=[];for(var i=0;i<10000;i++)big.push(i);cycSeen(clBuild(big,-1).head);
+  var big=[];for(var b=0;b<10000;b++)big.push(b);cycSeen(clBuild(big,-1).head);
   $('#costNote').innerHTML='Counted by running it: on a list of 64 nodes with no cycle the set ends with <b>'+pts[pts.length-1][1]+'</b> entries, and at the constraint\'s 10⁴ with <b>'+fmt(cycSeen.held)+'</b>. Floyd\'s walkers hold 2 references at every size.';
 }
 

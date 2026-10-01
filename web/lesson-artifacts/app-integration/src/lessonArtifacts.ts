@@ -31,6 +31,25 @@ export const LESSON_ARTIFACTS: Readonly<Record<string, LessonArtifact>> = {
   "binary-trees/diameter-of-binary-tree": {
     src: "/lessons/binary-trees/diameter-of-binary-tree.html",
     title: "Diameter of Binary Tree, interactive lesson",
+  },  "linked-lists/reverse-linked-list": {
+    src: "/lessons/linked-lists/reverse-linked-list.html",
+    title: "Reverse Linked List, interactive lesson",
+  },
+  "linked-lists/middle-of-list": {
+    src: "/lessons/linked-lists/middle-of-list.html",
+    title: "Middle of the Linked List, interactive lesson",
+  },
+  "linked-lists/linked-list-cycle": {
+    src: "/lessons/linked-lists/linked-list-cycle.html",
+    title: "Linked List Cycle, interactive lesson",
+  },
+  "linked-lists/merge-two-sorted": {
+    src: "/lessons/linked-lists/merge-two-sorted.html",
+    title: "Merge Two Sorted Lists, interactive lesson",
+  },
+  "linked-lists/remove-nth-from-end": {
+    src: "/lessons/linked-lists/remove-nth-from-end.html",
+    title: "Remove Nth Node From End of List, interactive lesson",
   },
 };
 

@@ -63,8 +63,8 @@ function revSteps(vals,flipFirst){
     curr=nxt;
     rec('March: <code>prev = curr</code>, <code>curr = nxt</code>. Flipped: '+ptrText(prev)+'. Untouched: '+ptrText(curr)+'.',['prev','curr'],true);
   }
-  var out=ptrVals(prev),gone=lost();
-  rec(flipFirst&&gone.length?'Return <code>prev</code>: '+rlShow(out)+'. The other '+gone.length+' node'+(gone.length>1?'s are':' is')+' still in memory, but no pointer leads to '+(gone.length>1?'them':'it')+'.':
+  var out=ptrVals(prev),left=lost();
+  rec(flipFirst&&left.length?'Return <code>prev</code>: '+rlShow(out)+'. The other '+left.length+' node'+(left.length>1?'s are':' is')+' still in memory, but no pointer leads to '+(left.length>1?'them':'it')+'.':
     (vals.length?'<code>curr</code> is null, so the untouched chain is empty. Return <code>prev</code>: '+ptrText(prev)+'.':'Return <code>prev</code>, which is null: the empty list reversed.'),[],true);
   var want=flipFirst?vals.slice(0,1):vals.slice().reverse();
   if(out.join()!==want.join())throw new Error('walkthrough of '+rlShow(vals)+' returned '+rlShow(out));

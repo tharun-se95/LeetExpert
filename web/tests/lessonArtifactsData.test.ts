@@ -55,6 +55,8 @@ describe("lesson artifacts: lesson.md", () => {
       "longest-substring-without-repeating",
       "merge-two-sorted",
       "middle-of-list",
+      "nodes-and-pointers",
+      "pointer-surgery",
       "remove-nth-from-end",
       "reverse-linked-list",
     ]);

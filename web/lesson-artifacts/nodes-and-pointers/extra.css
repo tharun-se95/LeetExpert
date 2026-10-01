@@ -1,0 +1,14 @@
+/* insert buttons name their value, so they keep one width as they disable */
+#playBtns .btn2{min-width:9.5rem;justify-content:center}
+.lv-hint{font-size:12.5px;color:var(--mut);align-self:center;white-space:nowrap}
+/* hero: memory by address, the list's objects scattered in it, links arcing between them */
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hd-val{font:600 14px 'JetBrains Mono',monospace;fill:var(--fg)}
+.hd-val.nw{transition:opacity .5s ease}
+.hh-slot{fill:var(--deep);stroke:var(--hair2);stroke-width:1.2}
+.hh-addr{font:500 9.5px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hh-obj{fill:var(--card);stroke:var(--mut);stroke-width:1.5}
+.hh-obj.nw{stroke:var(--fam);stroke-width:2.4;transition:opacity .5s ease}
+.hh-l{stroke:var(--mut);stroke-width:1.6;fill:none;transition:opacity .5s ease}
+.hh-l.nw{stroke:var(--fam);stroke-width:2.2}
+@media (prefers-reduced-motion:reduce){.hd-val.nw,.hh-obj.nw,.hh-l{transition:none}}

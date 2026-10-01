@@ -126,7 +126,7 @@ var FACTS=(function(){
     var N=9,x0=40,dx=60,y=136,HASH=['e3f1','9a0c','41bd','c72e','5d19','b804','27fa','f06b','8c35'];
     var h='<text class="hd-lab" x="'+x0+'" y="54">git log: newest first, each commit naming its parent</text>';
     for(var i=0;i<N-1;i++)h+='<line class="hr-link" x1="'+(x0+i*dx+15)+'" y1="'+y+'" x2="'+(x0+(i+1)*dx-15)+'" y2="'+y+'"/>';
-    for(var i=0;i<N;i++)h+='<circle class="hr-c" data-i="'+i+'" cx="'+(x0+i*dx)+'" cy="'+y+'" r="13"/><text class="hr-h" x="'+(x0+i*dx)+'" y="'+(y-26)+'" text-anchor="middle">'+HASH[i]+'</text>';
+    for(var j=0;j<N;j++)h+='<circle class="hr-c" data-i="'+j+'" cx="'+(x0+j*dx)+'" cy="'+y+'" r="13"/><text class="hr-h" x="'+(x0+j*dx)+'" y="'+(y-26)+'" text-anchor="middle">'+HASH[j]+'</text>';
     h+='<text class="hr-tag" id="hrSlow" y="'+(y+40)+'" text-anchor="middle">slow</text><text class="hr-tag fast" id="hrFast" y="'+(y+60)+'" text-anchor="middle">fast</text>';
     h+='<text class="hd-lab" x="'+x0+'" y="'+(y+110)+'" id="hrNote"></text>';
     svg.innerHTML=h;
