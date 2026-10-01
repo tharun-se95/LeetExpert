@@ -1,0 +1,13 @@
+/* by hand: the take buttons name the value they take, so they keep one width as it changes */
+#byhand .actions .btn2[data-take]{min-width:10.5rem;justify-content:center}
+/* predict: the two lists, then the count */
+.pl-mini{display:flex;flex-wrap:wrap;gap:6px 18px;font:500 13px 'JetBrains Mono',monospace;color:var(--fg);padding:10px 2px}
+/* hero: two servers' logs, one timeline threaded through them */
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hd-val{font:600 12px 'JetBrains Mono',monospace;fill:var(--fg)}
+.hm-e{fill:var(--card);stroke:var(--hair2);stroke-width:1.5;transition:stroke .5s ease,fill .5s ease}
+.hm-e.on{stroke:var(--fam);stroke-width:2.4}
+.hm-d{fill:var(--mut)}
+.hm-link{stroke:var(--fam);stroke-width:2;fill:none;opacity:0;transition:opacity .5s ease}
+.hm-link.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.hm-e,.hm-link{transition:none}}

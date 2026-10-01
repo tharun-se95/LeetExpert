@@ -53,7 +53,9 @@ describe("lesson artifacts: lesson.md", () => {
       "diameter-of-binary-tree",
       "linked-list-cycle",
       "longest-substring-without-repeating",
+      "merge-two-sorted",
       "middle-of-list",
+      "remove-nth-from-end",
       "reverse-linked-list",
     ]);
     for (const l of lessons) expect(existsSync(join(ARTIFACTS, l, "body.html")), `${l}/body.html`).toBe(false);

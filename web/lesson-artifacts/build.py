@@ -225,6 +225,8 @@ LESSONS = [
     ("linked-lists", "reverse-linked-list", "pointer-movement", "Reverse Linked List"),
     ("linked-lists", "middle-of-list", "pointer-movement", "Middle of the Linked List"),
     ("linked-lists", "linked-list-cycle", "pointer-movement", "Linked List Cycle"),
+    ("linked-lists", "merge-two-sorted", "pointer-movement", "Merge Two Sorted Lists"),
+    ("linked-lists", "remove-nth-from-end", "pointer-movement", "Remove Nth Node From End of List"),
     # overviews: one page across several modules (not a lesson, so not a ledger row; spec §2)
     ("overviews", "linear-structures", "linear-traversal", "The Line Underneath"),
     ("overviews", "grid-structures", "ordering-search", "The Grid Underneath"),

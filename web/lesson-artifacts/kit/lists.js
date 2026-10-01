@@ -88,7 +88,7 @@ function listInvariants(s){
    the walkthrough made, each with a fixed {x, y} the lesson authors, so only arrows and names move;
    o.tags maps any pointer name to a node or null; o.head names the node the chain is read from;
    o.above lists the names drawn over their node (the rest sit under it); o.nil puts a null name at
-   the 'left' of row 0 or (the default) the 'right'; o.data rides along for an invariant that counts
+   the 'left' of row 0, (the default) the 'right', or at an {x, y} of its own (past the end of row 1); o.data rides along for an invariant that counts
    something positions cannot show (how many steps each pointer has taken). */
 function ptrSnap(note,o){
   var nodes=o.nodes.map(function(n){return {id:n.id,value:n.value,next:idOf(n.next),x:n.x,y:n.y||0};});
@@ -111,6 +111,8 @@ function ptrText(h){var o=[],seen={},c=h;for(;c&&!seen[c.id];c=c.next){seen[c.id
   return (o.length?o.join(' → ')+' → ':'')+(c?'back to '+c.value:'null');}
 function snapWalk(s,id){var by={},out=[],seen={};s.nodes.forEach(function(n){by[n.id]=n;});
   for(var c=id;c!==null&&c!==undefined&&!seen[c];c=by[c].next){seen[c]=1;out.push(c);}return {ids:out,ends:c===null||c===undefined};}
+/* where a null name of a pointer snapshot stands: one shared place per end of row 0, or its own */
+function nilKey(s,k){var w=s.nil[k];return w&&typeof w==='object'?'nil:'+k:'nil:'+(w==='left'?'left':'right');}
 /* every name a snapshot draws, and its node id or null: a List snapshot's head and tail live on the snapshot */
 function listNames(s){return s.fixed?s.tags:Object.assign({head:s.head,tail:s.tail},s.tags);}
 
@@ -127,7 +129,7 @@ function listLayout(s){
     s.nodes.forEach(function(n){pos[n.id]={x:n.x,y:n.y};if(n.y===0){lo=Math.min(lo,n.x);hi=Math.max(hi,n.x);}});
     if(lo===Infinity){lo=0;hi=-1;}
     var names=listNames(s);Object.keys(names).forEach(function(k){if(names[k]!==null)return;
-      var side=s.nil[k]==='left'?'left':'right';pos['nil:'+side]={x:side==='left'?lo-1:hi+1,y:0};});
+      var key=nilKey(s,k),w=s.nil[k];pos[key]=w&&typeof w==='object'?{x:w.x,y:w.y}:{x:key==='nil:left'?lo-1:hi+1,y:0};});
     return pos;}
   s.chain.forEach(function(id,i){pos[id]={x:i,y:0};});
   var rest=s.nodes.filter(function(n){return !pos[n.id];});
@@ -167,7 +169,7 @@ function ListPlayer(host,o){
     Object.keys(names).forEach(function(t){var id=names[t];
       if(above.indexOf(t)>=0){put(up,t,id);return;}
       /* a List walk hides a finished name; a pointer walkthrough shows it as name = null */
-      if(id===null){if(s.fixed)put(down,t,'nil:'+(s.nil[t]==='left'?'left':'right'));return;}
+      if(id===null){if(s.fixed)put(down,t,nilKey(s,t));return;}
       if(!(t==='node'&&id===names.curr))put(down,t,id);});
     function anchor(k){return k==='nil'?at(g,{x:0,y:0}):(pos[k]?at(g,pos[k]):null);}
     Object.keys(up).forEach(function(k){var a=anchor(k);if(!a)return;var names=up[k];
