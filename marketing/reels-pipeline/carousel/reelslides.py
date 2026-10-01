@@ -29,6 +29,8 @@ from pathlib import Path
 
 from PIL import Image
 
+from glyphs import FACES, draw
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 IG = ROOT / "marketing/instagram"
@@ -151,8 +153,8 @@ def page(n, total, body):
     head = "" if full else f'<div class="top"><div class="brand">leetExpert<i></i></div><div class="n">{n} / {total}</div></div>'
     foot = "" if full else (f'<div class="foot"><span>{"leetexpert.com" if last else "swipe for the next step"}</span>'
                               f'<span>{"link in bio" if last else "swipe →"}</span></div>')
-    return (f'<!doctype html><html lang="en"><head><meta charset="UTF-8"/><title>slide {n}</title><style>{CSS}</style></head>'
-            f'<body>{head}{body}{foot}</body></html>')
+    return (f'<!doctype html><html lang="en"><head><meta charset="UTF-8"/><title>slide {n}</title><style>{CSS}{FACES}</style></head>'
+            f'<body>{head}{draw(body)}{foot}</body></html>')
 
 
 def build(car, snap_frames=False):

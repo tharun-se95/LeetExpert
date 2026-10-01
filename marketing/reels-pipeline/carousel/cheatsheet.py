@@ -14,6 +14,8 @@ import json
 import shutil
 from pathlib import Path
 
+from glyphs import FACES, draw
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 DATE = "2026-09-30"  # the packages' date prefix: when they were made, as for every package
@@ -102,10 +104,10 @@ body{{background-image:linear-gradient(#1c2838 1px,transparent 1px),linear-gradi
 
 def page(title, n, total, body, foot_right):
     return (f'<!doctype html><html lang="en"><head><meta charset="UTF-8"/><title>{e(title)} cheatsheet {n}</title>'
-            f'<style>{CSS}</style></head><body>'
+            f'<style>{CSS}{FACES}</style></head><body>'
             f'<div class="top"><div class="brand">leetExpert<i></i></div>'
             f'{"<div class=save>Save this</div>" if n == 1 else f"<div class=n>{n} / {total}</div>"}</div>'
-            f'<div class="content">{body}</div>'
+            f'<div class="content">{draw(body)}</div>'
             f'<div class="foot"><span>{e(title)} · cheatsheet</span><span>{foot_right}</span></div></body></html>')
 
 
