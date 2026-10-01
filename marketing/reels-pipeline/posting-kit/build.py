@@ -1,6 +1,7 @@
 import json, html, datetime, subprocess
+from pathlib import Path
 K = json.load(open("october.json"))
-root = "/home/user/LeetExpert/marketing/instagram/"
+root = str(Path(__file__).resolve().parents[2] / "instagram") + "/"
 MEDIA = {
  "p02": {"kind":"Carousel · 8 slides (cover first, then 7 videos)","files":[("cover","f5d42622d15a833d97516a11cdf8ac8b","png")]+[(f"slide {i}",x,"mp4") for i,x in enumerate(["6a23d0298b937dbf6905aeb2622344e9","ec7462379891629d7e95c4ba8d70f798","069e5f7bd0485d111bc4a0822a6e0da6","3708c50e127b57179567961ea29dfd1a","aa1755956c541bdbde4f1bdb5cda0ff9","0fde4188e8939ca9deafecf30e1eb0ed","596b9a4b108a3d3f135c69bfc950299a"],1)]},
  "p03": {"video":"e660bd895bf25bb916d065a39e0903a7","cover":"76db0065e7ec4ccd475de910fae32e69"},
@@ -27,7 +28,11 @@ for r in K:
     d = datetime.date.fromisoformat(r["date"])
     mon = d - datetime.timedelta(days=d.weekday())
     wk = "Launch: three a day, Oct 1–3" if (d.month, d.day) <= (10, 3) else "Then one a day"
-    m = MEDIA[r["post"]]
+    m = MEDIA.get(r["post"])
+    if m is None:
+        # a package whose media are not yet assets of the kit artifact: listed, marked, not saveable
+        n = len(list(Path(root, r["dir"]).glob("slide*.png")))
+        m = {"kind": f"Carousel · {n} slides · media not uploaded yet", "files": []}
     slug = r["dir"][11:]
     if "video" in m:
         kind = f"Reel · {dur(r['dir'])}"
@@ -35,7 +40,7 @@ for r in K:
         media = f'<video controls playsinline preload="none" poster="/_blob/{m["cover"]}" src="/_blob/{m["video"]}"></video>'
     else:
         kind = m["kind"]; files = m["files"]
-        media = f'<img src="/_blob/{files[0][1]}" alt="">'
+        media = f'<img src="/_blob/{files[0][1]}" alt="">' if files else ""
     caption = r["caption"].strip() + "\n\n" + r["hashtags"].strip()
     saves = "".join(f'<button class="sv" data-id="{fid}" data-name="{e(slug)}-{e(lab.replace(" ", ""))}.{ext}">Save {e(lab)}</button>' for lab, fid, ext in files)
     hook = r["hook"].split("\n")[0].strip()
@@ -56,3 +61,6 @@ body = "".join(f'<section><h2>{e(w)}</h2>{"".join(c)}</section>' for w, c in wee
 page = open("template.html").read().replace("%%POSTS%%", body).replace("%%N%%", str(len(K)))
 open("index.html", "w").write(page)
 print(len(K), "posts", len(page)//1024, "KB", list(weeks))
+missing = [r["post"] for r in K if r["post"] not in MEDIA]
+if missing:
+    print("no media assets yet (upload them to the kit artifact and add them to MEDIA):", ", ".join(missing))
