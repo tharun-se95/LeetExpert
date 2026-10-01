@@ -200,8 +200,27 @@ function fence(node: Code, ctx: Ctx): string {
         if (x.options.length < 3 || x.options.length > 5) fail(`${n}: needs 3-5 options, has ${x.options.length}`);
         if (!Number.isInteger(x.answer) || x.answer < 0 || x.answer >= x.options.length) fail(`${n}: answer ${x.answer} is not an option`);
         if (!x.explanation?.trim()) fail(`${n}: needs an explanation`);
+        // the kit throws on this at page load (mountQuiz); checked here too so a lesson fails its build,
+        // not its first browser visit. Length is the rendered text's, as the page measures it. An option
+        // holding a {{fact}} has no length until the page fills it, so that question is left to the page.
+        const plain = (h: string) => h.replace(/<[^>]+>/g, "").replace(/&(?:lt|gt|amp|quot|#39);/g, "x").length;
+        const len = x.options.map((o) => plain(inlineMd(o)));
+        if (!x.options.some((o) => o.includes("{{")) && len[x.answer]! > Math.max(...len.filter((_, k) => k !== x.answer)))
+          fail(`${n}: the answer is longer than every other option (${len.join(", ")}), which gives it away`);
         ctx.quiz.push({ q: inlineMd(x.question), opts: x.options.map(inlineMd), a: x.answer, why: inlineMd(x.explanation) });
       });
+      // the kit places each answer by a hash of its question's text (kit.js slotOf) and throws at page load
+      // when they all land in one slot; the same hash here fails the build first. A question holding a
+      // {{fact}} hashes its filled text, so it is left to the page.
+      const slotOf = (text: string, n: number) => {
+        let h = 2166136261;
+        for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619) >>> 0;
+        return h % n;
+      };
+      if (q.questions.length > 1 && !q.questions.some((x) => x.question.includes("{{"))) {
+        const slots = q.questions.map((x) => slotOf(inlineMd(x.question), x.options.length));
+        if (slots.every((v) => v === slots[0])) fail(`quiz: every answer sits in slot ${slots[0]}; reword a question to move one`);
+      }
       return `<div id="qlist"></div>`;
     }
     case "variants": {
@@ -290,6 +309,11 @@ export function renderLesson(source: string): Rendered {
     sections.map((s) => s.html).join("\n\n"),
     `</article></div>`,
   ].join("\n");
+
+  // FACTS are filled only where the page renders text at run time (reveals, quiz, variants); in the
+  // body a {{name}} would reach the learner as written
+  const stray = html.match(/\{\{(\w+)\}\}/);
+  if (stray) fail(`{{${stray[1]}}} sits outside a reveal, quiz or variant, where nothing fills it: give the sentence a widget readout instead`);
 
   const pairs = (s: string) => [(s.match(/class="c-py"/g) ?? []).length, (s.match(/class="c-ts"/g) ?? []).length];
   const [py, ts] = pairs(html + Object.values(ctx.reveals).map((r) => r.html).join(""));

@@ -93,7 +93,7 @@ SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-
                  "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight",
                  "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral",
                  "tables": "i-g-cell", "heap": "i-recurse", "graphs": "i-route", "graph": "i-route",
-                 "calltrees": "i-recurse", "intervals": "i-flat", "tries": "i-recurse", "plots": "i-s-cost"}
+                 "calltrees": "i-recurse", "intervals": "i-flat", "tries": "i-recurse", "plots": "i-s-cost", "pointers": "i-route"}
 
 
 def _icon(sec):
@@ -222,6 +222,9 @@ LESSONS = [
     ("dynamic-programming", "coin-change", "state-transition", "Coin Change"),
     ("graphs", "course-schedule", "relationships", "Course Schedule"),
     ("linked-lists", "build-a-linked-list", "pointer-movement", "Build a Linked List From Scratch"),
+    ("linked-lists", "reverse-linked-list", "pointer-movement", "Reverse Linked List"),
+    ("linked-lists", "middle-of-list", "pointer-movement", "Middle of the Linked List"),
+    ("linked-lists", "linked-list-cycle", "pointer-movement", "Linked List Cycle"),
     # overviews: one page across several modules (not a lesson, so not a ledger row; spec §2)
     ("overviews", "linear-structures", "linear-traversal", "The Line Underneath"),
     ("overviews", "grid-structures", "ordering-search", "The Grid Underneath"),

@@ -67,15 +67,6 @@ function mountHero(){
 }
 
 /* ---------- banners ---------- */
-function chainArt(svg,vals,x0,y,o){
-  o=o||{};var w=70,g=34,out=[];
-  vals.forEach(function(v,i){var x=x0+i*(w+g);
-    out.push(S('rect',{x:x,y:y,width:w,height:36,rx:8,class:'bn-mid'},svg));
-    S('line',{x1:x+w-22,x2:x+w-22,y1:y,y2:y+36,class:'bn-edge'},svg);
-    var t=S('text',{x:x+(w-22)/2,y:y+23,class:'bn-t','text-anchor':'middle',style:'font-size:14px;font-weight:600'},svg);t.textContent=v;
-    var nt=S('text',{x:x+w-11,y:y+22,class:'bn-t','text-anchor':'middle'},svg);nt.textContent=i===vals.length-1||o.cut===i?'∅':'•';});
-  return function(i){return x0+i*(w+g);};
-}
 var banners={
   node:function(svg){
     var X=chainArt(svg,[7,3,12],200,52),arrows=[0,1].map(function(i){return S('line',{x1:X(i)+60,y1:70,x2:X(i)+60,y2:70,class:'bn-path','marker-end':'url(#bnA)'},svg);});
