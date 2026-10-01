@@ -1,7 +1,7 @@
 // Screenshots build/<name>/slideN.html at 1080x1350 into the package named in
 // build/<name>/target (written by cheatsheet.py or reelslides.py) as slideN.png, and fails if
 // any slide's content runs outside its frame or a face failed to load (a fallback face
-// changes every line break the check just measured).
+// changes every line break the check just measured), or any text was drawn by a system font.
 //   node render.mjs [name ...]
 // Chromium: playwright-core's own download, or PW_CHROMIUM (the cloud image keeps it at
 // /opt/pw-browsers/chromium-1194/chrome-linux/chrome).
@@ -18,6 +18,9 @@ if (!modules.length) throw new Error("nothing to render: run cheatsheet.py or re
 
 const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
 const page = await browser.newPage({ viewport: { width: 1080, height: 1350 }, deviceScaleFactor: 1 });
+const cdp = await page.context().newCDPSession(page);
+await cdp.send("DOM.enable");
+await cdp.send("CSS.enable");
 const failures = [];
 for (const mod of modules) {
   // a carousel that lost a slide must not keep the old last one
@@ -50,10 +53,23 @@ for (const mod of modules) {
       const last = [...frame.querySelectorAll("*")].reduce((m, el) => Math.max(m, el.getBoundingClientRect().bottom), box.top);
       return { out, spare: Math.round(box.bottom - last) };
     });
+    // a glyph a face lacks is drawn by a system font without any error (no handwriting face has
+    // →, ✓ or ✗), so ask Chrome which fonts actually drew each element's own text
+    const { root: doc } = await cdp.send("DOM.getDocument", { depth: -1 });
+    const walk = (n, acc) => { (n.children || []).forEach((c) => walk(c, acc)); if ((n.children || []).some((c) => c.nodeType === 3 && c.nodeValue.trim())) acc.push(n); return acc; };
+    for (const n of walk(doc, [])) {
+      if (n.nodeName === "STYLE" || n.nodeName === "TITLE") continue;
+      const { fonts } = await cdp.send("CSS.getPlatformFontsForNode", { nodeId: n.nodeId });
+      const sys = fonts.filter((x) => !x.isCustomFont);
+      if (sys.length) {
+        const text = n.children.filter((c) => c.nodeType === 3).map((c) => c.nodeValue).join("").trim().slice(0, 40);
+        problems.out.push(`"${text}" falls back to ${sys.map((x) => `${x.familyName} (${x.glyphCount} glyphs)`).join(", ")}`);
+      }
+    }
     const png = join(pkg, f.replace(".html", ".png"));
     if (problems.out.length) failures.push(`${mod}/${f}: ${problems.out.join("; ")}`);
     else await page.screenshot({ path: png });
-    console.log(`${mod}/${f}`, problems.out.length ? "OVERFLOW" : `ok, ${problems.spare}px spare`);
+    console.log(`${mod}/${f}`, problems.out.length ? "FAIL" : `ok, ${problems.spare}px spare`);
   }
 }
 await browser.close();
