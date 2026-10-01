@@ -1,0 +1,48 @@
+{
+ "reel": "2026-09-30-prefix-sum-odometer",
+ "slides": [
+  {
+   "at": "ten",
+   "dt": 2.0,
+   "text": "nums = [2, 4, 1, 5, 3]. What's the sum from index 1 to 3? 4 + 1 + 5 = 10.",
+   "alt": "The array nums, 2, 4, 1, 5, 3, indexed 0 to 4, with a bracket over indices 1 to 3 labelled 4 + 1 + 5 = 10."
+  },
+  {
+   "at": "subtract",
+   "dt": 2.5,
+   "text": "Any trip = end reading − start reading. You never re-drive the trip.",
+   "alt": "\"An odometer: total distance since the car was new.\" Trip start 12,040 km, trip end 12,075 km, so the trip = 12,075 − 12,040 = 35 km."
+  },
+  {
+   "at": "fifteen",
+   "dt": 1.2,
+   "text": "A prefix array is that odometer: 0, 2, 6, 7, 12, 15.",
+   "alt": "nums 2, 4, 1, 5, 3 above its prefix array, the running total: 0, 2, 6, 7, 12, 15."
+  },
+  {
+   "at": "previous",
+   "dt": 1.8,
+   "text": "Then, for each x, the next slot is the previous slot plus x.",
+   "alt": "Python build_prefix(nums): prefix = [0] * (len(nums) + 1); for i, x in enumerate(nums): prefix[i + 1] = prefix[i] + x, with the loop highlighted, and range_sum returning prefix[r + 1] - prefix[l]. The note reads \"Next slot = previous slot + x\"; the stage fills prefix[4] = 7 + 5 = 12."
+  },
+  {
+   "at": "idx1",
+   "dt": 2.3,
+   "text": "1..3 → 12 − 2 = 10. 2..4 → 15 − 6 = 9. One subtraction, however wide the range.",
+   "alt": "nums with indices 1 to 3 bracketed, and the prefix array 0, 2, 6, 7, 12, 15 with 2 and 12 ringed: 12 − 2 = 10."
+  },
+  {
+   "at": "ms",
+   "dt": 1.5,
+   "text": "Our test run, 10,000 queries on 100,000 numbers (Python): 4.96 s summing each range vs 6.1 ms with a prefix array, build included.",
+   "alt": "\"10,000 queries on 100,000 numbers, our test run, Python\": sum(nums[l:r+1]) each time takes 4.96 s; the prefix array, build included, takes 6.1 ms. A tag says about 800× faster."
+  },
+  {
+   "at": "drops",
+   "dt": 1.3,
+   "text": "Off-by-one: prefix[r] − prefix[l] drops nums[r] (7 − 2 = 5, not 10).",
+   "alt": "\"The classic off-by-one\": prefix[r] - prefix[l] gives sum(1..3) → 7 − 2 = 5 ✗, which drops the last number, nums[3] = 5; prefix[r + 1] - prefix[l] gives 10 ✓."
+  }
+ ],
+ "challenge": "using just two numbers, what's sum(0..4)?"
+}
