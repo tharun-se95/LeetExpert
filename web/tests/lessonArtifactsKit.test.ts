@@ -178,6 +178,27 @@ describe("lesson artifacts kit: the lane model", () => {
     expect(lane(full, "a").spans).toEqual({ window: { lo: 0, hi: 2 } });
     expect(lane(M.snap("gone"), "a").spans).toEqual({});
   });
+
+  /* Each tab of a walkthrough builds its own Lanes, and the player sizes every tab's lanes in one
+     table keyed by laneDimKey; the label it draws is the one stored when the key was first seen (#106). */
+  it("two tabs that reuse a lane id are measured apart when the label or kind differs, and together otherwise", () => {
+    const ctx: Record<string, unknown> = {};
+    runInNewContext(readFileSync(join(ARTIFACTS, "kit", "lanes.js"), "utf8") + "\nthis.Lanes=Lanes;this.laneDimKey=laneDimKey;", ctx);
+    const { Lanes, laneDimKey } = ctx as unknown as Kit & { laneDimKey(l: Lane): string };
+    const tab = (def: object, vs: string[]) => {
+      const M = new Lanes([def]);
+      vs.forEach((v) => M.push("out", v));
+      return lane(M.snap("x"), "out");
+    };
+    const subsets = tab({ id: "out", kind: "row", label: "subsets found", idx: true }, ["[]"]);
+    const combos = tab({ id: "out", kind: "row", label: "combinations found", idx: true }, ["[2, 3, 3]"]);
+    const stack = tab({ id: "out", kind: "stack", label: "subsets found" }, ["[]"]);
+    const later = tab({ id: "out", kind: "row", label: "subsets found", idx: true }, ["[1]", "[1, 2]"]);
+    expect(laneDimKey(subsets)).not.toBe(laneDimKey(combos));
+    expect(laneDimKey(subsets)).not.toBe(laneDimKey(stack));
+    // the same lane in two snapshots keeps one size, so it does not jump between steps
+    expect(laneDimKey(subsets)).toBe(laneDimKey(later));
+  });
 });
 
 /* grids.js registers the grid lane kind on lanes.js's seam, so the two load together, in build order */
