@@ -1,0 +1,9 @@
+/* hook: the AI badge over the code card */
+.aibadge{position:absolute;right:80px;top:340px;display:flex;align-items:center;gap:10px;font-family:"Space Mono",monospace;font-size:26px;font-weight:700;color:#0e1520;background:#fbbf24;padding:6px 16px;border-radius:10px}
+.aibadge svg{width:40px;height:40px}
+.call{font-family:"Space Mono",monospace;font-size:44px;font-weight:700}
+.val{position:absolute;font-family:"Space Mono",monospace;font-size:40px;font-weight:700;white-space:nowrap;line-height:1.35}
+/* counting windows */
+.cell{position:absolute;width:150px;height:150px;border-radius:22px;border:3px solid #263248;background:#0e1520;display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:68px;font-weight:700}
+.frame{position:absolute;left:0;height:174px;border-radius:28px;border:6px solid #5eead4;background:rgba(94,234,212,.1);z-index:2}
+.stl{position:absolute;width:150px;text-align:center;font-family:"Space Mono",monospace;font-size:30px;font-weight:700;color:#5eead4}

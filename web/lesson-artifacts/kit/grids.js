@@ -8,7 +8,9 @@
    Spec: docs/superpowers/specs/2026-09-28-grid-player-design.md. Included by build.py only in
    lessons that draw a grid (KIT_OPTIONAL), always after lanes.js. */
 
-var GGAP=6,GKEY=16,GAXIS=14;
+/* GDEPGAP: a grid that draws dependency arrows (a DP table) spaces its cells wider, because an arrow
+   runs border to border and in the usual 6px gap its head was a 5px sliver */
+var GGAP=6,GDEPGAP=18,GKEY=16,GAXIS=14;
 function gridOf(M,id){var l=M.lane(id);if(l.kind!=='grid')throw new Error(id+' is not a grid');return l;}
 function gridSlot(l,r,c){if(!(r>=0&&r<l.rows&&c>=0&&c<l.cols))throw new Error(l.id+': cell ('+r+', '+c+') is out of range');return r*l.cols+c;}
 function gridCopy(o){var x={};for(var k in o)x[k]=o[k];return x;}
@@ -39,23 +41,32 @@ Lanes.prototype.path=function(id,name,slots){var l=gridOf(this,id);
   if(slots===null||slots===undefined){delete l.paths[name];return;}
   slots.forEach(function(k){if(!(k>=0&&k<l.cap))throw new Error(id+': slot '+k+' is out of range');});
   l.paths[name]=slots.slice();};
+/* a named set of arrows into toSlot from one or more fromSlots (a DP cell and the earlier cells it
+   was computed from: a diagonal match, or the better of two neighbours); toSlot null removes it */
+Lanes.prototype.deps=function(id,name,toSlot,fromSlots){var l=gridOf(this,id);
+  if(toSlot===null||toSlot===undefined){delete l.deps[name];return;}
+  if(!(toSlot>=0&&toSlot<l.cap))throw new Error(id+': slot '+toSlot+' is out of range');
+  fromSlots.forEach(function(k){if(!(k>=0&&k<l.cap))throw new Error(id+': slot '+k+' is out of range');});
+  l.deps[name]={to:toSlot,from:fromSlots.slice()};};
 
 LANE_KINDS.grid={
   fixed:true,
   key:function(l){return l.rows+'x'+l.cols;},
   init:function(l,d){if(!(d.rows>0&&d.cols>0))throw new Error(l.id+': a grid needs rows and cols');
-    l.rows=d.rows;l.cols=d.cols;l.cap=d.rows*d.cols;l.rkeys=d.rkeys||null;l.ckeys=d.ckeys||null;l.axes={};l.rects={};l.paths={};},
+    l.rows=d.rows;l.cols=d.cols;l.cap=d.rows*d.cols;l.rkeys=d.rkeys||null;l.ckeys=d.ckeys||null;l.axes={};l.rects={};l.paths={};l.deps={};},
   mark:function(l){throw new Error(l.id+' is a grid: name a cell by its row and column with axis(), and tone() it');},
   span:function(l){throw new Error(l.id+' is a grid: a range of cells is a rect()');},
   snap:function(l,out){
     out.rows=l.rows;out.cols=l.cols;out.rkeys=l.rkeys?l.rkeys.slice():null;out.ckeys=l.ckeys?l.ckeys.slice():null;
     out.axes={};for(var a in l.axes)out.axes[a]=gridCopy(l.axes[a]);
     out.rects={};for(var r in l.rects)out.rects[r]=gridCopy(l.rects[r]);
-    out.paths={};for(var p in l.paths)out.paths[p]=l.paths[p].slice();},
+    out.paths={};for(var p in l.paths)out.paths[p]=l.paths[p].slice();
+    out.deps={};for(var dn in l.deps)out.deps[dn]={to:l.deps[dn].to,from:l.deps[dn].from.slice()};},
 
   /* ---------- the view ---------- */
   /* fixed for the player's life: cell size, and room for the most axis names any snapshot shows */
   measure:function(m,l){
+    if(l.deps&&Object.keys(l.deps).length)m.deps=true;
     m.rows=l.rows;m.cols=l.cols;m.rkeys=l.rkeys;m.ckeys=l.ckeys;m.ch=LCH;
     m.gcw=Math.max(m.gcw||0,laneCellW(l.items,l.w||40));m.cw=m.gcw;
     var rowW={},colN={};
@@ -67,12 +78,12 @@ LANE_KINDS.grid={
     var keys=m.rkeys||[String(m.rows-1)];
     m.keyW=Math.ceil(Math.max.apply(null,keys.map(function(k){return String(k).length;}))*6.3)+10;
     m.left=m.keyW+(m.axR?m.axR+6:0)+4;m.top=20+GKEY+(m.axC?m.axC*GAXIS+4:0);
-    m.gw=m.cols*(m.cw+GGAP)-GGAP+2*LPAD;m.gh=m.rows*(m.ch+GGAP)-GGAP+2*LPAD;
+    var g=m.gap=m.deps?GDEPGAP:GGAP;m.gw=m.cols*(m.cw+g)-g+2*LPAD;m.gh=m.rows*(m.ch+g)-g+2*LPAD;
     return {w:m.left+m.gw,h:m.top+m.gh+10};},
-  box:function(m,x0,y){return {kind:'grid',x:x0+m.left,y:y+m.top,left:m.left,top:m.top,keyW:m.keyW,w:m.gw,h:m.gh,cw:m.cw,ch:m.ch,
+  box:function(m,x0,y){return {kind:'grid',gap:m.gap,x:x0+m.left,y:y+m.top,left:m.left,top:m.top,keyW:m.keyW,w:m.gw,h:m.gh,cw:m.cw,ch:m.ch,
     rows:m.rows,cols:m.cols,rkeys:m.rkeys,ckeys:m.ckeys,label:m.label,len:m.rows*m.cols};},
   slotAt:function(b,k){var r=Math.floor(k/b.cols),c=k%b.cols;
-    return {x:b.x+LPAD+b.cw/2+c*(b.cw+GGAP),y:b.y+LPAD+b.ch/2+r*(b.ch+GGAP)};},
+    return {x:b.x+LPAD+b.cw/2+c*(b.cw+b.gap),y:b.y+LPAD+b.ch/2+r*(b.ch+b.gap)};},
   /* the label, every slot's outline (so an empty cell is visible) and the row and column keys */
   svg:function(id,b,l,s){
     var K=LANE_KINDS.grid,h='<g class="ln-lane gd-lane'+(s.hi.indexOf('lane:'+id)>=0?' hi':'')+'">';
@@ -85,7 +96,7 @@ LANE_KINDS.grid={
       h+='<text class="ln-idx" x="'+(b.x-4)+'" y="'+(q.y+4)+'" text-anchor="end">'+laneEsc(b.rkeys?b.rkeys[r]:r)+'</text>';}
     return h+'</g>';},
   layout:function(l,b,out){
-    var K=LANE_KINDS.grid,axes=out.axes||(out.axes={}),rects=out.rects||(out.rects={}),paths=out.paths||(out.paths={});
+    var K=LANE_KINDS.grid,axes=out.axes||(out.axes={}),rects=out.rects||(out.rects={}),paths=out.paths||(out.paths={}),deps=out.deps||(out.deps={});
     /* names on one row stand side by side leftward; names on one column stack upward */
     var onRow={},onCol={};
     Object.keys(l.axes).sort().forEach(function(n){var a=l.axes[n],g=a.ax==='r'?onRow:onCol;(g[a.i]=g[a.i]||[]).push(n);});
@@ -99,7 +110,11 @@ LANE_KINDS.grid={
         x=a.x-b.cw/2-4,y=a.y-b.ch/2-4;corner[key]=corner[key]||0;
       rects[l.id+'.'+n]={x:x,y:y,w:z.x-a.x+b.cw+8,h:z.y-a.y+b.ch+8,tx:x+corner[key],name:n,empty:r.r0>r.r1||r.c0>r.c1};
       corner[key]+=gridNameW(n)+2;});
-    Object.keys(l.paths).forEach(function(n){paths[l.id+'.'+n]={name:n,pts:l.paths[n].map(function(k){return K.slotAt(b,k);})};});},
+    Object.keys(l.paths).forEach(function(n){paths[l.id+'.'+n]={name:n,pts:l.paths[n].map(function(k){return K.slotAt(b,k);})};});
+    /* a dependency arrow per (name, source slot): grid cells are static, so a key surviving between
+       snapshots always lands on the same two points, and only its opacity needs to move */
+    Object.keys(l.deps).forEach(function(n){var d=l.deps[n],to=K.slotAt(b,d.to);
+      d.from.forEach(function(f){var c=K.slotAt(b,f);deps[l.id+'.'+n+'#'+f]={x0:c.x,y0:c.y,x1:to.x,y1:to.y,hw:b.cw/2,hh:b.ch/2,name:n};});});},
   /* trails run under the cells: the cells are opaque, so a trail shows in the gaps between them,
      a thread through what it visited. One that gained or lost its last cell grows or retracts it. */
   under:function(L,fromL,t,s){
@@ -120,6 +135,20 @@ LANE_KINDS.grid={
   /* rectangles, then row and column names, over the cells */
   over:function(L,fromL,t,s){
     var h=[],lerp=function(a,b){return a+(b-a)*t;};
+    /* dependency arrows: a cell's value came from these earlier cells. They run over the cells from
+       border to border, so the head lands on the target's edge and never crosses a centred value (drawn
+       under the opaque cells, only the gap between neighbours showed, and the head was hidden). Cells
+       never move, so a key shared with the last step is the same two points; only a new or vanished
+       key fades. */
+    var dto=L.extra.deps||{},dfrom=fromL&&fromL.extra.deps||{},dk={};
+    Object.keys(dto).forEach(function(k){dk[k]=1;});Object.keys(dfrom).forEach(function(k){dk[k]=1;});
+    Object.keys(dk).forEach(function(k){var a=dto[k],b=fromL?dfrom[k]:null,q=a||b,op=a&&b?1:(a?(fromL?t:1):1-t);
+      var dx=q.x1-q.x0,dy=q.y1-q.y0,len=Math.sqrt(dx*dx+dy*dy)||1,ux=dx/len,uy=dy/len,
+        edge=Math.min(ux?q.hw/Math.abs(ux):Infinity,uy?q.hh/Math.abs(uy):Infinity),
+        x0=q.x0+ux*(edge+1),y0=q.y0+uy*(edge+1),x1=q.x1-ux*edge,y1=q.y1-uy*edge,ah=6,aw=4,bx=x1-ux*ah,by=y1-uy*ah,nx=-uy*aw,ny=ux*aw;
+      h.push('<g class="gd-deps'+(s.hi.indexOf(q.name)>=0?' hi':'')+'" style="opacity:'+op.toFixed(3)+'">'+
+        '<line x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+bx.toFixed(1)+'" y2="'+by.toFixed(1)+'"/>'+
+        '<path d="M'+x1.toFixed(1)+','+y1.toFixed(1)+' L'+(bx+nx).toFixed(1)+','+(by+ny).toFixed(1)+' L'+(bx-nx).toFixed(1)+','+(by-ny).toFixed(1)+' Z"/></g>');});
     var rto=L.extra.rects||{},rfrom=fromL&&fromL.extra.rects||{},rk={};
     Object.keys(rto).forEach(function(k){rk[k]=1;});Object.keys(rfrom).forEach(function(k){rk[k]=1;});
     Object.keys(rk).forEach(function(k){var a=rto[k],b=fromL?rfrom[k]:null,q,op;
@@ -142,15 +171,17 @@ LANE_KINDS.grid={
     return h.join('');},
   /* on a phone: a highlighted column name or rectangle is where the reading is */
   focus:function(s,L,first){
-    var ax=L.extra.axes||{},rc=L.extra.rects||{};
+    var ax=L.extra.axes||{},rc=L.extra.rects||{},dp=L.extra.deps||{};
     Object.keys(ax).forEach(function(k){var a=ax[k];if(a.ax==='c'&&s.hi.indexOf(a.name)>=0)first.push([a.x-20,a.x+20]);});
-    Object.keys(rc).forEach(function(k){var r=rc[k];if(!r.empty&&s.hi.indexOf(r.name)>=0)first.push([r.x,r.x+r.w]);});},
+    Object.keys(rc).forEach(function(k){var r=rc[k];if(!r.empty&&s.hi.indexOf(r.name)>=0)first.push([r.x,r.x+r.w]);});
+    Object.keys(dp).forEach(function(k){var d=dp[k];if(s.hi.indexOf(d.name)>=0)first.push([Math.min(d.x0,d.x1)-8,Math.max(d.x0,d.x1)+8]);});},
   rest:function(L,first){var ax=L.extra.axes||{};Object.keys(ax).forEach(function(k){var a=ax[k];if(a.ax==='c')first.push([a.x-20,a.x+20]);});},
   describe:function(l){
     var rows=[];for(var r=0;r<l.rows;r++)rows.push(l.items.slice(r*l.cols,(r+1)*l.cols).map(function(x){return x?x.v:'empty';}).join(' '));
     var at=function(k){return '('+Math.floor(k/l.cols)+', '+(k%l.cols)+')';},
       names=Object.keys(l.axes).map(function(n){var a=l.axes[n];return n+' at '+(a.ax==='r'?'row ':'column ')+a.i;})
         .concat(Object.keys(l.rects).map(function(n){var q=l.rects[n];return q.r0>q.r1||q.c0>q.c1?n+' empty':n+' over rows '+q.r0+' to '+q.r1+', columns '+q.c0+' to '+q.c1;}))
-        .concat(Object.keys(l.paths).map(function(n){var p=l.paths[n];return n+(p.length?' through '+p.map(at).join(', '):' empty');}));
+        .concat(Object.keys(l.paths).map(function(n){var p=l.paths[n];return n+(p.length?' through '+p.map(at).join(', '):' empty');}))
+        .concat(Object.keys(l.deps).map(function(n){var d=l.deps[n];return n+' '+at(d.to)+' from '+d.from.map(at).join(', ');}));
     return 'Grid '+l.label+', '+l.rows+' by '+l.cols+', row by row: '+rows.join('; ')+(names.length?'; '+names.join('; '):'');}
 };

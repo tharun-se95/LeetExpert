@@ -72,7 +72,7 @@ The reason is that a big size can leave an awkward remainder. With `{1, 3, 4}` a
 This is correct, and it is slow for a specific reason. To make 11 it asks about 10, 9 and 6. To make 10 it asks about 9, 8 and 5. Both of those need 9, and both then need 8, so the same question is asked over and over. The chart counts the calls the recursion really makes against the number of different questions, which is only one per amount.
 
 ```widget "Calls made as the amount grows (sizes 1, 2 and 5)"
-<div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>recursion, every call</span><span><i style="background:var(--g-ink)"></i>different questions</span></div><p class="cost-note"></p>
+<div class="chart" id="cost"></div><p class="cost-note"></p>
 ```
 
 ## The insight {#insight banner}

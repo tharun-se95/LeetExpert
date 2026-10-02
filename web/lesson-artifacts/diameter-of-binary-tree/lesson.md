@@ -65,7 +65,7 @@ So a function returning diameters throws away the one number its parent requires
 This is correct but slow. In network terms, every switch asks everything below it to report its depth all over again, even though the switch beneath already worked it out for its own parent. For every node, `diameter` calls `height` on its children, and `height` walks that entire subtree. A node near the root triggers a height computation over almost the whole tree, and this repeats at every node: the height of a subtree is recomputed once for every ancestor it has. The chart counts the node visits on a skewed tree, the worst case.
 
 ```widget "Work done as the tree grows"
-<div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>naive: diameter with a separate height call</span><span><i style="background:var(--g-ink)"></i>one pass</span></div><p class="cost-note"></p>
+<div class="chart" id="cost"></div><p class="cost-note"></p>
 ```
 
 ## The insight {#insight banner}

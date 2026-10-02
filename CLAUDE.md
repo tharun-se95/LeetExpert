@@ -727,7 +727,7 @@ Status option ids: Backlog `1a154fe8`, Ready `e9c94490`, In progress
 | `web/tests/` | Content validation — runs in CI before build |
 | `web/drizzle/` | Generated Postgres migrations (drizzle-kit); applied by `npm run db:migrate` as a deploy step, never at request time |
 | `hyperframes/` | HyperFrames visual system: seek-safe DSA primitives and explainer videos; one source for lesson art, social stills and video (see its README) |
-| `marketing/` | Instagram post packages; `LEDGER.md` is the append-only record the social-artist agent reads before and appends to after each post |
+| `marketing/` | Instagram post packages; `LEDGER.md` is the append-only record the social-artist agent reads before and appends to after each post; `reels-pipeline/` holds the reels handoff, skill, tutor pose library and scripts |
 | `seo/` | SEO strategy, keywords, technical audit and changelog |
 | `archive/handbook-v1/` | The retired v1 pattern handbook, kept for reference |
 | `scripts/` | v1 handbook Python scripts; they target a root `part-2-pattern-families/` that now lives in `archive/handbook-v1/`, so they do not run as-is |

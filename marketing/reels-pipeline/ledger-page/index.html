@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>leetExpert: first 30 Instagram posts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1e293b; --paper:#f6f7f9; --card:#ffffff; --line:#d8dde5; --muted:#5f6b7c;
+  --h0:#e3e7ee; --h1:#fdecb3; --h2:#fcd96a; --h3:#fbbf24; --h4:#f59e0b; --h5:#b45309;
+  --onheat:#1e293b; --focus:#2563eb;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#e7ebf1; --paper:#0f172a; --card:#172033; --line:#2b3850; --muted:#94a3b8;
+    --h0:#243149; --h1:#5c4a1c; --h2:#8a6a1a; --h3:#c28c12; --h4:#f59e0b; --h5:#fcd34d;
+    --onheat:#0f172a; --focus:#60a5fa;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e7ebf1; --paper:#0f172a; --card:#172033; --line:#2b3850; --muted:#94a3b8;
+  --h0:#243149; --h1:#5c4a1c; --h2:#8a6a1a; --h3:#c28c12; --h4:#f59e0b; --h5:#fcd34d;
+  --onheat:#0f172a; --focus:#60a5fa;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:16px/1.5 "Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:28px 18px 64px}
+h1{font-size:clamp(2rem,7vw,3rem);line-height:1.05;font-weight:800;letter-spacing:-.02em;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 20px}
+.sub input{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+.count{font-size:1.1rem;margin:0 0 14px}
+.count b{font-size:1.6rem;font-weight:800}
+
+/* heatmap: rows are weeks, columns Mon–Fri */
+.heat{display:grid;grid-template-columns:auto repeat(5,1fr);gap:6px;align-items:center;margin-bottom:10px;max-width:420px}
+.heat .lbl{font-size:.8rem;color:var(--muted);padding-right:6px;white-space:nowrap}
+.heat .dh{font-size:.8rem;color:var(--muted);text-align:center}
+.sq{aspect-ratio:1;border:0;border-radius:5px;background:var(--h0);color:var(--muted);
+  font:700 .8rem/1 inherit;font-family:inherit;cursor:pointer;display:grid;place-items:center}
+.sq[data-l="1"]{background:var(--h1);color:var(--onheat)}
+.sq[data-l="2"]{background:var(--h2);color:var(--onheat)}
+.sq[data-l="3"]{background:var(--h3);color:var(--onheat)}
+.sq[data-l="4"]{background:var(--h4);color:var(--onheat)}
+.sq[data-l="5"]{background:var(--h5);color:var(--paper)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.82rem;color:var(--muted);margin:0 0 28px;padding:0;list-style:none}
+.legend span{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.filters select{font:inherit;font-size:.9rem;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+
+h2{font-size:1.05rem;font-weight:700;margin:26px 0 8px}
+h2 small{font-weight:400;color:var(--muted);font-size:.9rem;margin-left:6px}
+.post{border-top:1px solid var(--line)}
+.post:last-child{border-bottom:1px solid var(--line)}
+.row{display:grid;grid-template-columns:2.2rem 1fr auto;gap:10px;align-items:start;padding:12px 0;cursor:pointer;background:none;border:0;width:100%;text-align:left;color:inherit;font:inherit}
+.num{font-weight:800;font-size:1rem;color:var(--muted);padding-top:1px}
+.hook{font-weight:600;display:block}
+.meta{font-size:.85rem;color:var(--muted)}
+.pill{font-size:.78rem;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--h0);color:var(--ink);white-space:nowrap;margin-top:2px}
+.pill[data-l="1"]{background:var(--h1);color:var(--onheat)} .pill[data-l="2"]{background:var(--h2);color:var(--onheat)}
+.pill[data-l="3"]{background:var(--h3);color:var(--onheat)} .pill[data-l="4"]{background:var(--h4);color:var(--onheat)}
+.pill[data-l="5"]{background:var(--h5);color:var(--paper)}
+.detail{display:none;padding:0 0 16px 3.2rem}
+.post.open .detail{display:block}
+.angle{margin:0 0 12px;max-width:62ch}
+.media{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:0 0 16px}
+.media figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.media video,.media img{width:100%;border-radius:10px;background:#000;display:block}
+.media figcaption{font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.media figcaption a{color:var(--muted)}
+.nfiles{color:var(--muted)}
+.angle code{font-size:.9em;background:var(--h0);padding:0 4px;border-radius:4px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.fields label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.fields .wide{grid-column:1/-1}
+.fields input,.fields select,.fields textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;max-width:100%}
+.fields textarea{min-height:70px;resize:vertical}
+.saved{font-size:.8rem;color:var(--muted);height:1.2em;margin-top:6px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.msg{padding:18px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.sq{transition:background-color .25s}}
+</style>
+</head>
+<body>
+<main>
+  <h1>First 30 posts</h1>
+  <p class="sub">leetExpert on Instagram, five posts a week starting <input type="date" id="start" aria-label="Start date"></p>
+  <p class="count" id="count"></p>
+  <div class="heat" id="heat" aria-label="Progress by week and weekday"></div>
+  <ul class="legend" id="legend"></ul>
+  <div class="filters">
+    <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option></select>
+    <select id="fPillar" aria-label="Filter by pillar"><option value="">All pillars</option></select>
+  </div>
+  <div id="list"><p class="msg">Loading the ledger…</p></div>
+</main>
+<script>
+const STAGES=["Planned","Drafted","Verified","Designed","Scheduled","Posted"];
+const DAYS=["Mon","Tue","Wed","Thu","Fri"];
+let db=null, posts=[], plan={startDate:"2026-09-28"}, openId=null;
+const queues={};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtAngle=s=>esc(s).replace(/`([^`]+)`/g,"<code>$1</code>");
+const lvl=s=>Math.max(0,STAGES.indexOf(s));
+
+function dateFor(p){
+  const d=new Date(plan.startDate+"T12:00:00");
+  if(isNaN(d)) return null;
+  d.setDate(d.getDate()+(p.week-1)*7+(p.day-1));
+  return d;
+}
+const short=d=>d?d.toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
+const iso=d=>d?d.toISOString().slice(0,10):"";
+
+STAGES.forEach((s,i)=>{
+  $("#legend").insertAdjacentHTML("beforeend",`<li><span style="background:var(--h${i})"></span>${s}</li>`);
+  $("#fStatus").insertAdjacentHTML("beforeend",`<option>${s}</option>`);
+});
+["Pattern in 60 seconds","Would you ship this?","Trace it","Cost check","Keep the streak","Inside leetExpert"]
+  .forEach(p=>$("#fPillar").insertAdjacentHTML("beforeend",`<option>${p}</option>`));
+$("#fStatus").onchange=renderList; $("#fPillar").onchange=renderList;
+
+function renderHeat(){
+  let h=`<span></span>`+DAYS.map(d=>`<span class="dh">${d}</span>`).join("");
+  for(let w=1;w<=6;w++){
+    h+=`<span class="lbl">Wk ${w}</span>`;
+    for(let d=1;d<=5;d++){
+      const p=posts.find(x=>x.week===w&&x.day===d);
+      h+=p?`<button class="sq" data-l="${lvl(p.status)}" data-id="${p.id}" aria-label="Post ${p.n}: ${esc(p.status)}">${p.n}</button>`:`<span></span>`;
+    }
+  }
+  $("#heat").innerHTML=h;
+  $("#heat").querySelectorAll(".sq").forEach(b=>b.onclick=()=>{
+    $("#fStatus").value="";$("#fPillar").value="";openId=b.dataset.id;renderList();
+    document.getElementById("post-"+b.dataset.id)?.scrollIntoView({block:"start",behavior:"smooth"});
+  });
+  const posted=posts.filter(p=>p.status==="Posted").length;
+  const ready=posts.filter(p=>lvl(p.status)>=4).length;
+  $("#count").innerHTML=`<b>${posted}</b> of 30 posted, ${ready-posted} scheduled`;
+}
+
+let media=[];
+function mediaHtml(id){
+  const m=media.filter(x=>x.post===id).sort((a,b)=>(a.order||0)-(b.order||0)); if(!m.length) return "";
+  return `<div class="media">${m.map(x=>{const u="/_blob/"+x.asset; const cover=x.poster?` poster="/_blob/${x.poster}"`:"";
+    return `<figure>${x.kind==="video"?`<video controls playsinline preload="metadata"${cover} src="${u}"></video>`:`<img src="${u}" alt="${esc(x.label)}">`}<figcaption><span>${esc(x.label)}</span><a href="${u}" download>save</a></figcaption></figure>`}).join("")}</div>`;
+}
+function renderList(){
+  const fs=$("#fStatus").value, fp=$("#fPillar").value;
+  const shown=posts.filter(p=>(!fs||p.status===fs)&&(!fp||p.pillar===fp));
+  if(!shown.length){$("#list").innerHTML=`<p class="msg">No posts match these filters.</p>`;return;}
+  let h="";
+  for(let w=1;w<=6;w++){
+    const ws=shown.filter(p=>p.week===w); if(!ws.length) continue;
+    const first=dateFor({week:w,day:1}), last=dateFor({week:w,day:5});
+    h+=`<h2>Week ${w}<small>${short(first)} to ${short(last)}</small></h2>`;
+    for(const p of ws){
+      const d=dateFor(p);
+      h+=`<div class="post${openId===p.id?" open":""}" id="post-${p.id}">
+        <button class="row" data-id="${p.id}" aria-expanded="${openId===p.id}">
+          <span class="num">${p.n}</span>
+          <span><span class="hook">${esc(p.hook)}</span><span class="meta">${esc(p.pillar)}, ${esc(p.format.toLowerCase())}, ${DAYS[p.day-1]} ${short(d)}${media.filter(x=>x.post===p.id).length?`, <span class="nfiles">${media.filter(x=>x.post===p.id).length} files</span>`:""}</span></span>
+          <span class="pill" data-l="${lvl(p.status)}">${esc(p.status)}</span>
+        </button>
+        <div class="detail">
+          ${mediaHtml(p.id)}<p class="angle">${fmtAngle(p.angle)}</p>
+          <div class="fields">
+            <label>Status<select data-f="status" data-id="${p.id}">${STAGES.map(s=>`<option${s===p.status?" selected":""}>${s}</option>`).join("")}</select></label>
+            <label>Scheduled for<input type="date" data-f="scheduledFor" data-id="${p.id}" value="${esc(p.scheduledFor||iso(d))}"></label>
+            <label class="wide">Post link<input type="url" inputmode="url" placeholder="https://instagram.com/p/…" data-f="link" data-id="${p.id}" value="${esc(p.link)}"></label>
+            <label class="wide">Notes<textarea data-f="notes" data-id="${p.id}" placeholder="Design notes, results, what to change">${esc(p.notes)}</textarea></label>
+          </div>
+          <div class="saved" id="saved-${p.id}"></div>
+        </div>
+      </div>`;
+    }
+  }
+  $("#list").innerHTML=h;
+  $("#list").querySelectorAll(".row").forEach(r=>r.onclick=()=>{openId=openId===r.dataset.id?null:r.dataset.id;renderList();});
+  $("#list").querySelectorAll("[data-f]").forEach(el=>el.onchange=()=>save(el.dataset.id,{[el.dataset.f]:el.value}));
+}
+
+function save(id,patch){
+  const p=posts.find(x=>x.id===id); if(!p||!db) return;
+  Object.assign(p,patch);
+  const note=document.getElementById("saved-"+id); if(note) note.textContent="Saving…";
+  queues[id]=(queues[id]||Promise.resolve()).then(()=>
+    db.doc("posts/"+id).update({...patch,updatedAt:new Date().toISOString()})
+      .then(()=>{const n=document.getElementById("saved-"+id); if(n) n.textContent="Saved";})
+      .catch(e=>{const n=document.getElementById("saved-"+id); if(n) n.textContent="Couldn't save: "+(e&&e.message||"try again");}));
+  if("status" in patch){renderHeat();
+    const pill=document.querySelector(`#post-${id} .pill`); if(pill){pill.textContent=p.status;pill.dataset.l=lvl(p.status);}}
+}
+
+$("#start").onchange=async e=>{
+  if(!db||!e.target.value) return;
+  plan.startDate=e.target.value; renderList();
+  try{await db.doc("meta/plan").update({startDate:plan.startDate});}catch(_){}
+};
+
+(async()=>{
+  try{ db=await (window.claude&&window.claude.use?window.claude.use("db"):null); }catch(_){db=null;}
+  if(!db){$("#list").innerHTML=`<p class="msg">The ledger is stored with this artifact. Open it in Claude to load and update your posts.</p>`;return;}
+  db.doc("meta/plan").onSnapshot(s=>{ if(s.exists){plan={...plan,...s.data()}; $("#start").value=plan.startDate; if(posts.length) renderList();} });
+  db.collection("media").onSnapshot(snap=>{ media=snap.docs.map(d=>d.data()); if(posts.length){ renderHeat(); const a=document.activeElement; if(!(a&&a.dataset&&a.dataset.f)) renderList(); } },()=>{});
+  db.collection("posts").orderBy("n").onSnapshot(snap=>{
+    const active=document.activeElement;
+    const editing=active&&active.dataset&&active.dataset.f;
+    posts=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!posts.length){$("#list").innerHTML=`<p class="msg">No posts yet. Ask Claude to seed the plan.</p>`;return;}
+    renderHeat();
+    if(!editing) renderList();
+  },()=>{$("#list").innerHTML=`<p class="msg">The ledger couldn't load. Reopen the page to try again.</p>`;});
+})();
+</script>
+</body>
+</html>

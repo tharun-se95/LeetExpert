@@ -236,7 +236,8 @@ wall. The CTA points to `https://www.leetexpert.com` and is stated once.
 
 `marketing/LEDGER.md` is append-only state and the defence against repeating
 yourself. **Read it first, write to it last.** One row per post: date, slug,
-archetype, source lesson, family, and the hook in full.
+account (`leetexpert` unless the owner names `10xtharun`), archetype, source
+lesson, family, and the hook in full.
 
 Before building, check the ledger for: the same lesson, the same hook, the
 same archetype three posts running, or one family dominating the recent feed.

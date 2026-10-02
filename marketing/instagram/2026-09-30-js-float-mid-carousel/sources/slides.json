@@ -1,0 +1,42 @@
+{
+ "reel": "2026-09-30-js-float-mid",
+ "slides": [
+  {
+   "at": "there",
+   "dt": 1.4,
+   "text": "Search [2, 4, 6, 8] for 6 → -1. But 6 is right there.",
+   "alt": "binarySearch([2, 4, 6, 8], 6) → -1 ✗, over the note \"6 is right there, at index 2\"."
+  },
+  {
+   "at": "undefined",
+   "dt": 2.5,
+   "text": "lo = 0, hi = 3 → (0 + 3) / 2 = 1.5. JavaScript doesn't round, so arr[1.5] is undefined.",
+   "alt": "const mid = (lo + hi) / 2; over the array 2, 4, 6, 8, with a marker between indices 1 and 2 labelled 1.5: lo = 0, hi = 3 → (0 + 3) / 2 = 1.5, and arr[1.5] → undefined."
+  },
+  {
+   "at": "half",
+   "dt": 2.5,
+   "text": "the code falls into the last branch: hi = 0.5. It never looks at a real index again.",
+   "alt": "The same array: arr[1.5] is undefined, so === 6? is false and < 6? is false, so hi = mid − 1 = 0.5."
+  },
+  {
+   "at": "power",
+   "dt": 1.4,
+   "text": "The bug only hides on lengths 1, 3, 7, 15…: one less than a power of two.",
+   "alt": "\"Why the tests passed: on 7 numbers, lo + hi is even at every step.\" Lengths 1 to 16 in a grid: 1, 3, 7 and 15 are marked hides, the rest fails. Hides only on 2^k − 1: one less than a power of two."
+  },
+  {
+   "at": "loud",
+   "dt": 1.0,
+   "text": "Python's / makes a float too, but it crashes: \"TypeError: list indices must be integers or slices, not float\". Loud beats silently wrong.",
+   "alt": "\"Python, same slash\": mid = (lo + hi) / 2 gives TypeError: list indices must be integers or slices, not float. Loud beats silently wrong."
+  },
+  {
+   "at": "huge",
+   "dt": 3.0,
+   "text": "Fix: const mid = lo + Math.floor((hi - lo) / 2);",
+   "alt": "The fixed JavaScript binarySearch with const mid = lo + Math.floor((hi - lo) / 2); highlighted and the note \"Never adds two huge numbers: overflow-safe in Java or C++\"; the stage shows 2, 4 dimmed and lo on 6: 4 < 6 → lo = 2."
+  }
+ ],
+ "challenge": "7 hides the bug. What's the next length that does?"
+}

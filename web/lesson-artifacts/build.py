@@ -92,7 +92,9 @@ SECTION_ICONS = {"problem": "i-s-problem", "attempt": "i-s-attempt", "trap": "i-
                  "node": "i-box", "build": "i-stack", "walk": "i-route", "cost": "i-s-cost", "next": "i-s-variants",
                  # overview pages
                  "arrays": "i-flat", "lists": "i-route", "stacks": "i-stack", "queues": "i-rack", "shape": "i-s-insight",
-                 "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral"}
+                 "cells": "i-g-cell", "neighbours": "i-g-kernel", "inplace": "i-g-rotate", "walks": "i-g-spiral",
+                 "tables": "i-g-cell", "heap": "i-recurse", "graphs": "i-route", "graph": "i-route",
+                 "calltrees": "i-recurse", "intervals": "i-flat", "tries": "i-recurse", "plots": "i-s-cost"}
 
 
 def _icon(sec):
@@ -117,9 +119,20 @@ def decorate(body):
 # does not name them does not ship them (CLAUDE.md §5: 220 lessons must not pay for five).
 KIT_OPTIONAL = {"lists": ("ListPlayer", "listOf(", "mountTabs(", "listRun("),
                 "lanes": ("LanePlayer", "new Lanes(", "mountLaneTabs("),
-                "grids": ("kind:'grid'", 'kind:"grid"')}
+                "grids": ("kind:'grid'", 'kind:"grid"'),
+                "heaps": ("kind:'heap'", 'kind:"heap"'),
+                "graphs": ("kind:'graph'", 'kind:"graph"'),
+                # a call tree names no lane kind itself: it builds a graph lane, so it carries its own markers
+                "calltrees": ("callTreeWalk(", "new CallTrace(", "mountCallTreeTabs("),
+                "tries": ("trieWalk(", "new TrieTrace(", "mountTrieTabs("),
+                "intervals": ("kind:'intervals'", 'kind:"intervals"', "ivWalk(", "new IvTrace(", "mountIvTabs("),
+                "plots": ("costChart(", "plotWalk(", "new PlotTrace("),
+                # the static costChart needs only plots.js; stepping through a plot adds the player's chrome
+                "plotplayer": ("mountPlotTabs(", "PlotPlayer(")}
 # what a module needs loaded before it, in the order the page must read them
-KIT_DEPS = {"lists": ["player"], "lanes": ["player"], "grids": ["player", "lanes"]}
+KIT_DEPS = {"lists": ["player"], "lanes": ["player"], "grids": ["player", "lanes"], "heaps": ["player", "lanes"], "graphs": ["player", "lanes"],
+            "calltrees": ["player", "lanes", "graphs"], "intervals": ["player", "lanes"],
+            "tries": ["player", "lanes", "graphs"], "plotplayer": ["player", "plots"]}
 
 
 def optional_kit(lesson_js):
