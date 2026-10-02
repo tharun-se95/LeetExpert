@@ -215,10 +215,12 @@ export function FrequencyCountViz(props: Record<string, unknown>) {
 
           {state.result !== null ? (
             <StatusPanel
-              items={[
+              state={state}
+              states={ctx.states}
+              items={(s) => [
                 {
                   label: "result",
-                  value: String(state.result),
+                  value: String(s.result),
                 },
               ]}
             />

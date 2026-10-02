@@ -167,12 +167,14 @@ export function ConvergingPointersViz(props: Record<string, unknown>) {
             reduced={ctx.reduced}
           />
           <StatusPanel
-            items={[
+            state={state}
+            states={ctx.states}
+            items={(s) => [
               { label: "target", value: tgt },
-              { label: "sum", value: state.sum === null ? "—" : state.sum },
+              { label: "sum", value: s.sum === null ? "—" : s.sum },
               {
                 label: "pairs eliminated",
-                value: `${state.gone} / ${state.total}`,
+                value: `${s.gone} / ${s.total}`,
               },
             ]}
           />

@@ -183,19 +183,21 @@ export function FastSlowViz(props: Record<string, unknown>) {
             ))}
           </div>
           <StatusPanel
-            items={[
+            state={state}
+            states={ctx.states}
+            items={(s) => [
               {
                 label: "slow",
                 value:
-                  state.slowIdx === null ? "null" : state.values[state.slowIdx],
+                  s.slowIdx === null ? "null" : s.values[s.slowIdx],
               },
               {
                 label: "fast",
                 value:
-                  state.fastIdx === null ? "null" : state.values[state.fastIdx],
+                  s.fastIdx === null ? "null" : s.values[s.fastIdx],
               },
-              ...(state.gap !== null
-                ? [{ label: "gap", value: state.gap }]
+              ...(s.gap !== null
+                ? [{ label: "gap", value: s.gap }]
                 : []),
             ]}
           />

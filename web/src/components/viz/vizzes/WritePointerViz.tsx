@@ -135,9 +135,11 @@ export function WritePointerViz(props: Record<string, unknown>) {
             reduced={ctx.reduced}
           />
           <StatusPanel
-            items={[
-              { label: "write", value: state.write },
-              { label: "read", value: state.read ?? "—" },
+            state={state}
+            states={ctx.states}
+            items={(s) => [
+              { label: "write", value: s.write },
+              { label: "read", value: s.read ?? "—" },
             ]}
           />
         </div>

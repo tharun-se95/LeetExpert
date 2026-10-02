@@ -127,19 +127,33 @@ function answerTone(state: MonoStackState, i: number): Tone {
   return "default";
 }
 
+const CELL_PX = 40;
+
 function StackColumn({
   values,
   stackIdx,
+  maxDepth,
   justPushed,
   reduced,
 }: {
   values: number[];
   stackIdx: number[];
+  /** Deepest the stack gets over the trace. */
+  maxDepth: number;
   justPushed: number | null;
   reduced: boolean;
 }) {
+  // Tall enough for the deepest stack from the first step: a column that grew
+  // with each push pushed the readout and the player's controls down mid-trace.
+  // Cells, the gaps between them, then p-1.5 and the border (border-box),
+  // never under the 128px (min-h-32) an empty column had before.
+  const depth = Math.max(maxDepth, 1);
+  const minHeight = Math.max(128, depth * CELL_PX + (depth - 1) * 4 + 2 * 6 + 2);
   return (
-    <div className="flex min-h-32 w-16 flex-col-reverse items-center justify-start gap-1 rounded-[length:var(--radius-md)] border border-dashed border-border p-1.5">
+    <div
+      className="flex w-16 flex-col-reverse items-center justify-start gap-1 rounded-[length:var(--radius-md)] border border-dashed border-border p-1.5"
+      style={{ minHeight }}
+    >
       <AnimatePresence initial={false}>
         {stackIdx.map((idx) => (
           <motion.div
@@ -156,7 +170,7 @@ function StackColumn({
               value={values[idx]}
               sub={String(idx)}
               shape="square"
-              size={40}
+              size={CELL_PX}
               state={justPushed === idx ? "focal" : "visited"}
               reduced={reduced}
             />
@@ -206,14 +220,17 @@ export function MonotonicStackViz(props: Record<string, unknown>) {
             <StackColumn
               values={state.values}
               stackIdx={state.stackIdx}
+              maxDepth={Math.max(...ctx.states.map((s) => s.stackIdx.length))}
               justPushed={state.justPushed}
               reduced={ctx.reduced}
             />
           </div>
 
           <StatusPanel
-            items={[
-              { label: "stack", value: `[${state.stackIdx.join(", ")}]` },
+            state={state}
+            states={ctx.states}
+            items={(s) => [
+              { label: "stack", value: `[${s.stackIdx.join(", ")}]` },
             ]}
           />
         </div>

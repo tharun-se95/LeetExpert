@@ -199,9 +199,11 @@ export function BlockReversalViz(props: Record<string, unknown>) {
             reduced={ctx.reduced}
           />
           <StatusPanel
-            items={[
-              { label: "k", value: state.k ?? "—" },
-              { label: "phase", value: state.phase || "—" },
+            state={state}
+            states={ctx.states}
+            items={(s) => [
+              { label: "k", value: s.k ?? "—" },
+              { label: "phase", value: s.phase || "—" },
             ]}
           />
         </div>

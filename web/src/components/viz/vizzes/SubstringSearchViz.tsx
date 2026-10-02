@@ -173,8 +173,10 @@ export function SubstringSearchViz(props: Record<string, unknown>) {
           </motion.div>
           {state.done ? (
             <StatusPanel
-              items={[
-                { label: "result", value: state.found !== null ? state.found : -1 },
+              state={state}
+              states={ctx.states}
+              items={(s) => [
+                { label: "result", value: s.found !== null ? s.found : -1 },
               ]}
             />
           ) : null}

@@ -165,11 +165,13 @@ export function BinarySearchViz(props: Record<string, unknown>) {
             reduced={ctx.reduced}
           />
           <StatusPanel
-            items={[
-              { label: "target", value: state.target },
+            state={state}
+            states={ctx.states}
+            items={(s) => [
+              { label: "target", value: s.target },
               {
                 label: "range",
-                value: state.empty ? "∅" : `[${state.lo}, ${state.hi}]`,
+                value: s.empty ? "∅" : `[${s.lo}, ${s.hi}]`,
               },
             ]}
           />
