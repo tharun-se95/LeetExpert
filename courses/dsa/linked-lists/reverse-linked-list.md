@@ -45,7 +45,8 @@ because sub-range reversal shows up inside harder problems constantly.
     { "args": [[1, 2, 3, 4, 5]], "expect": [5, 4, 3, 2, 1] },
     { "args": [[1, 2]], "expect": [2, 1] },
     { "args": [[1]], "expect": [1] },
-    { "args": [[]], "expect": [] }
+    { "args": [[]], "expect": [] },
+    { "args": [{ "$range": [1, 5000] }], "expect": { "$range": [5000, 1] } }
   ]
 }
 ```

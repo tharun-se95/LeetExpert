@@ -34,21 +34,46 @@ function bootPyodide() {
 const DRIVER = String.raw`
 import json, io, contextlib, copy
 
+# Every node the harness classes ever construct, so a case can unlink them all
+# before its references drop. CPython frees a linked chain RECURSIVELY (each
+# node's dealloc releases .next), and under Pyodide that recursion runs on the
+# fixed WASM stack: freeing a 5000-node list raised "Maximum call stack size
+# exceeded", a fatal Pyodide error that kills the runner, even for a correct
+# iterative solution. sys.setrecursionlimit does not apply (it counts Python
+# frames, not C stack). Unlinking first leaves every node a leaf, so the
+# frees are flat. Registering in the constructors also covers nodes the
+# learner builds with these classes themselves. Single underscore: a leading
+# double underscore is name-mangled inside a class body.
+_NODES = []
+
 class ListNode:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
+        _NODES.append(self)
 
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
         self.left = left
         self.right = right
+        _NODES.append(self)
 
 class Node:
     def __init__(self, val=0, neighbors=None):
         self.val = val
         self.neighbors = neighbors if neighbors is not None else []
+        _NODES.append(self)
+
+def __release_nodes():
+    # Iterative on purpose, and independent of structure: a cycle, a shared
+    # subtree or a half-built result all unlink the same way.
+    for n in _NODES:
+        if hasattr(n, "next"): n.next = None
+        if hasattr(n, "left"): n.left = None
+        if hasattr(n, "right"): n.right = None
+        if hasattr(n, "neighbors"): n.neighbors = []
+    _NODES.clear()
 
 def __build_graph(adjacency):
     # Conventional 1-indexed adjacency list: [[2,4],[1,3],...] is node 1
@@ -175,11 +200,18 @@ def __encode(value, shape):
     return value
 
 def __find_node(root, val):
-    if root is None:
-        return None
-    if root.val == val:
-        return root
-    return __find_node(root.left, val) or __find_node(root.right, val)
+    # Iterative: Python's recursion limit under Pyodide is 1000, below the
+    # depth a skewed tree within the stated constraints reaches.
+    stack = [root] if root is not None else []
+    while stack:
+        cur = stack.pop()
+        if cur.val == val:
+            return cur
+        if cur.right is not None:
+            stack.append(cur.right)
+        if cur.left is not None:
+            stack.append(cur.left)
+    return None
 
 def __resolve_nodes(built, raw, shape):
     # A "node" arg is written as a plain value; the learner receives the node
@@ -313,6 +345,9 @@ def __run_cases(user_source, export_name, cases_json, arg_index, check, shape_js
                         arg_after = __safe(__encode(built[arg_index], shape.get(str(arg_index), "value")))
         except Exception as exc:
             error = type(exc).__name__ + ": " + str(exc)
+        finally:
+            # After the results are encoded; see _NODES for why.
+            __release_nodes()
         buf.finish()
         outcomes.append({
             "index": i, "ret": ret, "argAfter": arg_after,

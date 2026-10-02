@@ -67,6 +67,13 @@ export interface SandboxCase {
   construct?: unknown[];
   /** `sequence` cases only — the ordered script of calls */
   ops?: SequenceOp[];
+  /**
+   * Set only when `args` / `expect` came from generators
+   * (lib/sandbox/generate.ts): a short description of each, so the UI never
+   * renders thousands of expanded values.
+   */
+  argsLabel?: string;
+  expectLabel?: string;
 }
 
 export interface SandboxSpec {
