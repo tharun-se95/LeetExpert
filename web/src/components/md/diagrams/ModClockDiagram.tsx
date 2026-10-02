@@ -1,5 +1,7 @@
 "use client";
 
+import { polarPoint } from "@/lib/visual/polar";
+
 /**
  * A clock face for modular arithmetic: m evenly-spaced positions around a
  * circle, with one or more values plotted at their (value mod m) landing
@@ -28,10 +30,7 @@ function angleFor(position: number, m: number): number {
 }
 
 function pointAt(radius: number, angle: number): { x: number; y: number } {
-  return {
-    x: CENTER + radius * Math.cos(angle),
-    y: CENTER + radius * Math.sin(angle),
-  };
+  return polarPoint(CENTER, CENTER, radius, angle);
 }
 
 export function ModClockDiagram({

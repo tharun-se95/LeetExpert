@@ -241,15 +241,17 @@ export function FibCallTreeViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Fibonacci call tree trace" family="recursive-exploration">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-center gap-3">
           <div className="overflow-x-auto">
             <TreeCanvas flat={flat} state={state} />
           </div>
           <StatusPanel
-            items={[
-              { label: "calls so far", value: state.visible.size },
-              { label: "recomputed", value: state.recomputeCount },
+            state={state}
+            states={ctx.states}
+            items={(s) => [
+              { label: "calls so far", value: s.visible.size },
+              { label: "recomputed", value: s.recomputeCount },
             ]}
           />
         </div>

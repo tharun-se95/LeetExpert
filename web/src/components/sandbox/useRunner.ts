@@ -176,7 +176,9 @@ export function useRunner(spec: SandboxSpec) {
             testCase.name ??
             (spec.check === "sequence"
               ? sequenceLabel(spec.cls?.[lang] ?? "", testCase, outcome)
-              : formatCall(spec.fn[lang], testCase.args)),
+              : testCase.argsLabel !== undefined
+                ? `${spec.fn[lang]}(${testCase.argsLabel})`
+                : formatCall(spec.fn[lang], testCase.args)),
           passed:
             outcome.error === null &&
             !reusedInput &&
@@ -186,7 +188,7 @@ export function useRunner(spec: SandboxSpec) {
           got: outcome.error === null ? pretty(actual) : null,
           expected: spec.property
             ? (PROPERTY_LABEL[spec.property] ?? spec.property)
-            : pretty(want),
+            : (testCase.expectLabel ?? pretty(want)),
           error:
             outcome.error ??
             propertyFailure ??

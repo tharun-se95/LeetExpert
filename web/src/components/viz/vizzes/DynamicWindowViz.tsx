@@ -152,13 +152,15 @@ export function DynamicWindowViz(props: Record<string, unknown>) {
             reduced={ctx.reduced}
           />
           <StatusPanel
-            items={[
-              { label: "target", value: state.target },
+            state={state}
+            states={ctx.states}
+            items={(s) => [
+              { label: "target", value: s.target },
               {
                 label: "window sum",
-                value: state.windowSum,
+                value: s.windowSum,
               },
-              { label: "best", value: state.best ?? "∞" },
+              { label: "best", value: s.best ?? "∞" },
             ]}
           />
         </div>

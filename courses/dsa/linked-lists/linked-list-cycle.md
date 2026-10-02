@@ -46,7 +46,10 @@ argue it before opening the hints.
     { "args": [[1]], "expect": false },
     { "args": [[]], "expect": false },
     { "args": [{ "values": [1, 2, 3, 4, 5], "pos": 4 }], "expect": true },
-    { "args": [[1, 1, 1, 1]], "expect": false }
+    { "args": [[1, 1, 1, 1]], "expect": false },
+    { "args": [{ "$range": [1, 10000] }], "expect": false },
+    { "args": [{ "values": { "$range": [1, 10000] }, "pos": 0 }], "expect": true },
+    { "args": [{ "values": { "$range": [1, 10000] }, "pos": 9999 }], "expect": true }
   ]
 }
 ```

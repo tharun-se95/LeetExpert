@@ -82,7 +82,11 @@ export function pretty(value: unknown, max = 80): string {
   const text = canonical(value);
   if (text === undefined) return "undefined";
   const spaced = text.replace(/,/g, ", ");
-  return spaced.length > max ? `${spaced.slice(0, max - 1)}…` : spaced;
+  if (spaced.length <= max) return spaced;
+  // A long list cut mid-number says nothing about its size, which is what a
+  // learner failing a ceiling case needs to see.
+  const size = Array.isArray(value) ? ` (${value.length} items)` : "";
+  return `${spaced.slice(0, max - 1)}…${size}`;
 }
 
 /**

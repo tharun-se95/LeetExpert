@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { polarPoint } from "@/lib/visual/polar";
 import { VizPlayer } from "@/components/viz/VizPlayer";
 import { StatusPanel } from "@/components/viz/pieces";
 import { speedProp } from "@/components/viz/props";
@@ -191,8 +192,7 @@ function RingSlots({
     >
       {Array.from({ length: capacity }, (_, i) => {
         const angle = (i / capacity) * 2 * Math.PI - Math.PI / 2;
-        const x = cx + r * Math.cos(angle);
-        const y = cy + r * Math.sin(angle);
+        const { x, y } = polarPoint(cx, cy, r, angle);
         const v = store[i];
         const isHead = i === head && size > 0;
         const isTail = i === tail;
@@ -251,7 +251,7 @@ export function RingBufferViz(props: Record<string, unknown>) {
 
   return (
     <VizPlayer code={CODE} steps={steps} speedMs={speedProp(speed)} label="Ring buffer trace" family="state-transition">
-      {(state) => (
+      {(state, ctx) => (
         <div className="flex flex-col items-center gap-3">
           <RingSlots
             capacity={state.capacity}
@@ -263,19 +263,21 @@ export function RingBufferViz(props: Record<string, unknown>) {
             justCleared={state.justCleared}
           />
           <StatusPanel
-            items={[
+            state={state}
+            states={ctx.states}
+            items={(s) => [
               {
                 label: "op",
-                value: state.op
-                  ? `${state.op}(${state.opValue ?? ""})`
+                value: s.op
+                  ? `${s.op}(${s.opValue ?? ""})`
                   : "—",
               },
               {
                 label: "size",
-                value: `${state.size}/${state.capacity}`,
+                value: `${s.size}/${s.capacity}`,
               },
-              ...(state.wrapped
-                ? [{ label: "wrap", value: state.wrapped }]
+              ...(s.wrapped
+                ? [{ label: "wrap", value: s.wrapped }]
                 : []),
             ]}
           />

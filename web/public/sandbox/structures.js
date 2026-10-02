@@ -209,9 +209,16 @@ function encodeResult(value, shape) {
 
 /** Depth-first search for the node carrying `val`. Values are unique. */
 function findNode(root, val) {
-  if (!root) return null;
-  if (root.val === val) return root;
-  return findNode(root.left, val) || findNode(root.right, val);
+  // Iterative: a 10^4-deep skewed tree is within the stated constraints, and
+  // recursion that deep overflows the stack in the worker.
+  const stack = root ? [root] : [];
+  while (stack.length) {
+    const cur = stack.pop();
+    if (cur.val === val) return cur;
+    if (cur.right) stack.push(cur.right);
+    if (cur.left) stack.push(cur.left);
+  }
+  return null;
 }
 
 /**

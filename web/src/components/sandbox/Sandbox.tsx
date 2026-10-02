@@ -858,7 +858,7 @@ function caseInputLabel(testCase: SandboxCase): string {
   if (testCase.construct !== undefined) {
     return `construct=${pretty(testCase.construct, 120)}`;
   }
-  return pretty(testCase.args, 160);
+  return testCase.argsLabel ?? pretty(testCase.args, 160);
 }
 
 function caseExpectedLabel(spec: SandboxSpec, testCase: SandboxCase): string {
@@ -866,7 +866,7 @@ function caseExpectedLabel(spec: SandboxSpec, testCase: SandboxCase): string {
   if (testCase.ops) {
     return `${testCase.ops.length} operations`;
   }
-  return pretty(testCase.expect, 160);
+  return testCase.expectLabel ?? pretty(testCase.expect, 160);
 }
 
 function IdeTestcases({

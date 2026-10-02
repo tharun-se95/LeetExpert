@@ -1,5 +1,7 @@
 "use client";
 
+import { polarPoint } from "@/lib/visual/polar";
+
 /**
  * Same small graph shown three ways: node-link picture, adjacency list,
  * adjacency matrix. Makes the sparse-vs-dense cost story concrete.
@@ -50,10 +52,7 @@ export function GraphRepresentationDiagram({
   const R = 54;
   const positions = Array.from({ length: V }, (_, i) => {
     const angle = -Math.PI / 2 + (i * 2 * Math.PI) / V;
-    return {
-      x: graphX + R * Math.cos(angle),
-      y: graphY + R * Math.sin(angle),
-    };
+    return polarPoint(graphX, graphY, R, angle);
   });
 
   const listX = 160;

@@ -542,9 +542,9 @@ function subsetsSteps(){
   var got=out.map(ctList).sort().join(),want=[];
   for(var m=0;m<1<<n;m++)want.push(ctList(nums.filter(function(_,b){return m>>b&1;})));
   if(got!==want.sort().join())throw new Error('the call tree collected '+got+' but the bitmask subsets of '+ctList(nums)+' are '+want.sort().join());
-  return callTreeWalk(T,{label:'subsets of [1, 2, 3]',lanes:[{id:'subsets',kind:'row',label:'subsets found',idx:true}],
-    on:function(e,node,M){if(e.ev==='base'){var it=M.push('subsets',node.v);return [laneHi(it)];}},
-    fields:function(M){return [['found',M.size('subsets')]];},
+  return callTreeWalk(T,{label:'subsets of [1, 2, 3]',lanes:[{id:'out',kind:'row',label:'subsets found',idx:true}],
+    on:function(e,node,M){if(e.ev==='base'){var it=M.push('out',node.v);return [laneHi(it)];}},
+    fields:function(M){return [['found',M.size('out')]];},
     outro:'Every call has returned. The leaves are the '+out.length+' subsets, one for each way to answer "take it or skip it" three times: 2 × 2 × 2. The tree has '+T.nodes.length+' calls, which is 1 + 2 + 4 + 8.'});
 }
 function comboSteps(){
@@ -565,9 +565,9 @@ function comboSteps(){
   cands.forEach(function(c){for(var s=c;s<=target;s++)ways[s]+=ways[s-c];});
   if(out.length!==ways[target])throw new Error('combination sum found '+out.length+' combinations; the table counts '+ways[target]);
   out.forEach(function(p){if(p.reduce(function(a,b){return a+b;},0)!==target)throw new Error(ctList(p)+' does not sum to '+target);});
-  return callTreeWalk(T,{label:'combination sum, [2, 3, 5], target 8',lanes:[{id:'combos',kind:'row',label:'combinations found',idx:true}],
-    on:function(e,node,M){if(e.ev==='base'){var it=M.push('combos',node.sub);return [laneHi(it)];}},
-    fields:function(M){return [['found',M.size('combos')]];},
+  return callTreeWalk(T,{label:'combination sum, [2, 3, 5], target 8',lanes:[{id:'out',kind:'row',label:'combinations found',idx:true}],
+    on:function(e,node,M){if(e.ev==='base'){var it=M.push('out',node.sub);return [laneHi(it)];}},
+    fields:function(M){return [['found',M.size('out')]];},
     intro:'Find every way to reach 8 by adding 2s, 3s and 5s, reusing them freely. Each call picks the next number to add; a pick that overshoots is cut.',
     outro:'Every call has returned. '+out.length+' combinations reach 8, and the pruned calls are the picks that overshot. Without the cut, each of them would have been entered and would have gone on adding.'});
 }

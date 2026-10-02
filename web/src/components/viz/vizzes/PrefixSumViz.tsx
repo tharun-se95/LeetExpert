@@ -173,16 +173,18 @@ export function PrefixSumViz(props: Record<string, unknown>) {
             />
           </div>
           <StatusPanel
-            items={[
+            state={state}
+            states={ctx.states}
+            items={(s) => [
               {
                 label: "query",
                 value:
-                  state.queryL === null
+                  s.queryL === null
                     ? "—"
-                    : `[${state.queryL}, ${state.queryR}]`,
+                    : `[${s.queryL}, ${s.queryR}]`,
               },
-              ...(state.queryResult !== null
-                ? [{ label: "sum", value: state.queryResult }]
+              ...(s.queryResult !== null
+                ? [{ label: "sum", value: s.queryResult }]
                 : []),
             ]}
           />

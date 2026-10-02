@@ -1,5 +1,7 @@
 "use client";
 
+import { polarPoint } from "@/lib/visual/polar";
+
 /**
  * Cyclic placement as displacement chains on a ring: each index i points at
  * its destination (i + k) mod n. With n = 6, k = 2 the arrows form TWO
@@ -23,10 +25,7 @@ function angleFor(index: number, n: number): number {
 }
 
 function pointAt(radius: number, angle: number): { x: number; y: number } {
-  return {
-    x: CENTER + radius * Math.cos(angle),
-    y: CENTER + radius * Math.sin(angle),
-  };
+  return polarPoint(CENTER, CENTER, radius, angle);
 }
 
 /** Partition 0..n-1 into the cycles induced by i -> (i + k) mod n. */

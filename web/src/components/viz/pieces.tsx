@@ -276,7 +276,7 @@ export function Tape({
   keyOf = (v) => String(v),
   toneFor,
   focal = null,
-  markers = [],
+  markers,
   window = null,
   bracket = null,
   held = null,
@@ -289,6 +289,11 @@ export function Tape({
   toneFor?: (i: number) => Tone;
   /** The step's subject — gets a ring + scale on top of its tone. */
   focal?: number | null;
+  /**
+   * Pointer heads above the tape. Passing it at all, even empty, keeps their
+   * row for every step: a row that appeared only with its first head grew the
+   * stage and pushed everything below it down mid-trace.
+   */
   markers?: TapeMarker[];
   window?: TapeRange | null;
   bracket?: TapeRange | null;
@@ -313,9 +318,9 @@ export function Tape({
 
   return (
     <div className={cn("flex flex-col gap-1", className)}>
-      {(markers.length > 0 || held !== null) && (
+      {(markers !== undefined || held !== null) && (
         <div className="relative h-7">
-          {markers.map((m) => (
+          {markers?.map((m) => (
             <Head key={m.label} at={m.at} label={m.label} color={m.color} />
           ))}
           {held !== null ? (
@@ -372,14 +377,34 @@ export function Tape({
   );
 }
 
-/** One instrument strip for live variables, identical across every tracer. */
-export function StatusPanel({
+export interface StatusItem {
+  label: string;
+  value: ReactNode;
+}
+
+/**
+ * One instrument strip for live variables, identical across every tracer.
+ *
+ * `items` reads the strip off a step's state, and the strip reads it off
+ * every step in `states` (the player's `ctx.states`): each value is stacked
+ * in one grid cell with every value its label ever shows, all but the current
+ * one invisible, and a label a step leaves out keeps its place hidden. The
+ * strip is then one size for the whole trace. It is often the widest thing on
+ * a stage that centres its content, so a value growing from "—" to "23" slid
+ * the whole drawing sideways.
+ */
+export function StatusPanel<S>({
+  state,
+  states,
   items,
   className,
 }: {
-  items: { label: string; value: ReactNode }[];
+  state: S;
+  states: readonly S[];
+  items: (state: S) => StatusItem[];
   className?: string;
 }) {
+  const slots = statusSlots(items(state), states.map(items));
   return (
     <div
       className={cn(
@@ -387,14 +412,63 @@ export function StatusPanel({
         className,
       )}
     >
-      {items.map((it, i) => (
-        <span key={i} className="flex items-baseline gap-1.5">
-          <span className="text-muted/70">{it.label}</span>
-          <span className="font-semibold text-foreground">{it.value}</span>
+      {slots.map(({ label, current, ghosts }) => (
+        <span
+          key={label}
+          aria-hidden={current === undefined ? true : undefined}
+          className={cn("flex items-baseline gap-1.5", current === undefined && "invisible")}
+        >
+          <span className="text-muted/70">{label}</span>
+          <span className="inline-grid font-semibold text-foreground">
+            {ghosts.map((g, i) => (
+              <span key={i} aria-hidden="true" className="invisible [grid-area:1/1]">
+                {g}
+              </span>
+            ))}
+            <span className="[grid-area:1/1]">{current?.value}</span>
+          </span>
         </span>
       ))}
     </div>
   );
+}
+
+/**
+ * The strip's slots: every label in `across` (or just `items`), with the
+ * current item and the distinct values the label takes over the trace. A
+ * label is placed just after the one before it in the first list that has
+ * it, so a label only some steps show sits where those steps put it.
+ */
+export function statusSlots(
+  items: StatusItem[],
+  across: readonly StatusItem[][] = [],
+): { label: string; current: StatusItem | undefined; ghosts: ReactNode[] }[] {
+  const order: string[] = [];
+  const values = new Map<string, ReactNode[]>();
+  // The trace's lists come first so a label's place never depends on the
+  // step being shown; `items` is last only in case it is not among them.
+  for (const list of [...across, items]) {
+    let prev: string | undefined;
+    for (const { label, value } of list) {
+      let seen = values.get(label);
+      if (!seen) {
+        seen = [];
+        values.set(label, seen);
+        order.splice(prev === undefined ? 0 : order.indexOf(prev) + 1, 0, label);
+      }
+      prev = label;
+      // Text dedupes by what it renders; an element is kept as is.
+      const same =
+        (typeof value === "string" || typeof value === "number") &&
+        seen.some((v) => String(v) === String(value));
+      if (!same) seen.push(value);
+    }
+  }
+  return order.map((label) => ({
+    label,
+    current: items.find((it) => it.label === label),
+    ghosts: values.get(label) ?? [],
+  }));
 }
 
 export type NodeState = "default" | "focal" | "visited" | "result" | "held";

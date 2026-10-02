@@ -20,9 +20,11 @@ var laneUid=0;
 var LANE_KINDS={};
 function laneKind(k){return LANE_KINDS[k]||null;}
 function laneEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
-/* what a lane's drawn size is measured under: its id, or with its shape where a kind has one, so two
-   tabs that each call their grid 'g' but give it different shapes are not merged into one board */
-function laneDimKey(l){var K=laneKind(l.kind);return K&&K.key?l.id+'#'+K.key(l):l.id;}
+/* what a lane's drawn size is measured under: its id, kind and label, and its shape where a kind has
+   one. Every tab of a player is measured in one table, and a lane draws the kind and label stored when
+   its key was first seen, so two tabs that each call a lane 'out' under different labels, or their
+   grid 'g' at different shapes, must not merge into one (#106). */
+function laneDimKey(l){var K=laneKind(l.kind);return l.id+'\u0000'+l.kind+'\u0000'+l.label+(K&&K.key?'#'+K.key(l):'');}
 function laneFixed(l){var K=laneKind(l.kind);return !!l.cap&&(l.kind==='row'||!!(K&&K.fixed));}
 /* defs: [{id, kind:'stack'|'queue'|'row', label, cap, w, idx, keys}]. cap fixes a lane's slots: a row
    with cap holds holes (null) and is written by slot, like a ring buffer's backing array. w is the

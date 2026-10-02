@@ -185,21 +185,23 @@ export function ListReversalViz(props: Record<string, unknown>) {
             ))}
           </div>
           <StatusPanel
-            items={[
+            state={state}
+            states={ctx.states}
+            items={(s) => [
               {
                 label: "prev",
                 value:
-                  state.prevIdx === null ? "null" : state.values[state.prevIdx],
+                  s.prevIdx === null ? "null" : s.values[s.prevIdx],
               },
               {
                 label: "curr",
                 value:
-                  state.currIdx === null ? "null" : state.values[state.currIdx],
+                  s.currIdx === null ? "null" : s.values[s.currIdx],
               },
               {
                 label: "nxt",
                 value:
-                  state.nxtIdx === null ? "null" : state.values[state.nxtIdx],
+                  s.nxtIdx === null ? "null" : s.values[s.nxtIdx],
               },
             ]}
           />
