@@ -1,5 +1,8 @@
 # Carousels
 
+Two kinds, one renderer: **cheatsheet carousels** (#133, below) and **reel carousels** (#134,
+`reelslides.py`, see "Reel carousels").
+
 Cheatsheet carousels (issue #133) are built from the product's own cheatsheets
 (`web/src/lib/course/cheatsheets`), gold tier only: the 14 hand-written modules, less two pointers,
 which has its own single card (#128). The 7 template-tier sheets are generated and left out.
@@ -42,6 +45,28 @@ downloaded, point `PW_CHROMIUM` at any Chromium: on the cloud image
 Each check has been seen to fail (2026-09-30): a changed word in `sheets.json`, a missing
 slide, an overlong pattern summary, a value column too narrow for "O(h) / O(w)", and a
 changed hashtag in `october.json`.
+
+## Reel carousels
+
+Each narrated reel gets a carousel for people who save rather than watch:
+`marketing/instagram/2026-09-30-<reel>-carousel/` with `sources/slides.json` (the slides),
+`slideN.png` and `post.md` (the reel's hook, caption and hashtags, alt text per slide).
+
+A slide is the reel's own frame at a named anchor in its `timing.json` plus an offset, rendered
+by `hyperframes snapshot` with the captions and tutor off and cropped to the stage (or, with
+`zoom`, a region at twice the density, for product footage), under words that **must** appear in
+the reel's `script.txt` or caption; `reelslides.py` fails otherwise, so a carousel never says
+anything its reel's verifiers have not checked. Slide 1 is the reel's cover (its grid band),
+or its hook when it has none; then the challenge and a close.
+
+```bash
+python3 reelslides.py ../../instagram/<reel>-carousel [--snap]   # --snap re-renders frames
+node render.mjs <reel>-carousel
+```
+
+Frames are cached in `build/_frames/` and re-rendered when a slide's time or zoom changes.
+Pick offsets by looking at the frames: a moment mid-animation shows half a scene. Choose times
+just before the next anchor, when the scene has settled.
 
 ## Publishing
 

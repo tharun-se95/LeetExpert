@@ -1,39 +1,43 @@
-// Screenshots build/<module>/slideN.html (from cheatsheet.py) at 1080x1350 into each module's
-// package as slideN.png, and fails if any slide's content runs outside its frame or a face
-// failed to load (a fallback face changes every line break the check just measured).
-//   node render.mjs [module ...]
+// Screenshots build/<name>/slideN.html at 1080x1350 into the package named in
+// build/<name>/target (written by cheatsheet.py or reelslides.py) as slideN.png, and fails if
+// any slide's content runs outside its frame or a face failed to load (a fallback face
+// changes every line break the check just measured), or any text was drawn by a system font.
+//   node render.mjs [name ...]
 // Chromium: playwright-core's own download, or PW_CHROMIUM (the cloud image keeps it at
 // /opt/pw-browsers/chromium-1194/chrome-linux/chrome).
 import { chromium } from "../../../web/node_modules/playwright-core/index.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { readdirSync, readFileSync, rmSync } from "node:fs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..", "..");
-const date = readFileSync(join(here, "cheatsheet.py"), "utf8").match(/^DATE = "([\d-]+)"/m)[1];
 const only = process.argv.slice(2);
 const modules = readdirSync(join(here, "build")).filter((m) => !only.length || only.includes(m)).sort();
-if (!modules.length) throw new Error("nothing to render: run cheatsheet.py first");
+if (!modules.length) throw new Error("nothing to render: run cheatsheet.py or reelslides.py first");
 
 const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
 const page = await browser.newPage({ viewport: { width: 1080, height: 1350 }, deviceScaleFactor: 1 });
+const cdp = await page.context().newCDPSession(page);
+await cdp.send("DOM.enable");
+await cdp.send("CSS.enable");
 const failures = [];
 for (const mod of modules) {
   // a carousel that lost a slide must not keep the old last one
-  const pkg = join(root, "marketing", "instagram", `${date}-${mod}-cheatsheet`);
+  const pkg = resolve(root, readFileSync(join(here, "build", mod, "target"), "utf8").trim());
   for (const old of readdirSync(pkg).filter((f) => /^slide\d+\.png$/.test(f))) rmSync(join(pkg, old));
   const slides = readdirSync(join(here, "build", mod)).filter((f) => /^slide\d+\.html$/.test(f))
     .sort((a, b) => parseInt(a.slice(5)) - parseInt(b.slice(5)));
   for (const f of slides) {
     await page.goto(pathToFileURL(join(here, "build", mod, f)).href);
-    await page.evaluate(() => document.fonts.ready);
+    // load every declared face, so a slide that sets no text (a reel cover) does not read as a failed font
+    await page.evaluate(() => Promise.all([...document.fonts].map((f) => f.load())));
     const problems = await page.evaluate(() => {
       const out = [];
       for (const face of document.fonts) if (face.status !== "loaded" && face.status !== "unloaded") out.push(`font ${face.family} ${face.status}`);
       for (const fam of ['700 20px "Space Mono"', '400 20px "Space Grotesk"'])
         if (!document.fonts.check(fam)) out.push(`font not available: ${fam}`);
-      const frame = document.querySelector(".content");
+      const frame = document.querySelector(".content") || document.body; // a full-bleed slide (a reel cover) is its own frame
       const box = frame.getBoundingClientRect();
       if (frame.scrollHeight > frame.clientHeight + 1) out.push(`content is ${frame.scrollHeight - frame.clientHeight}px taller than its frame`);
       for (const el of frame.querySelectorAll("*")) {
@@ -49,10 +53,23 @@ for (const mod of modules) {
       const last = [...frame.querySelectorAll("*")].reduce((m, el) => Math.max(m, el.getBoundingClientRect().bottom), box.top);
       return { out, spare: Math.round(box.bottom - last) };
     });
+    // a glyph a face lacks is drawn by a system font without any error (no handwriting face has
+    // →, ✓ or ✗), so ask Chrome which fonts actually drew each element's own text
+    const { root: doc } = await cdp.send("DOM.getDocument", { depth: -1 });
+    const walk = (n, acc) => { (n.children || []).forEach((c) => walk(c, acc)); if ((n.children || []).some((c) => c.nodeType === 3 && c.nodeValue.trim())) acc.push(n); return acc; };
+    for (const n of walk(doc, [])) {
+      if (n.nodeName === "STYLE" || n.nodeName === "TITLE") continue;
+      const { fonts } = await cdp.send("CSS.getPlatformFontsForNode", { nodeId: n.nodeId });
+      const sys = fonts.filter((x) => !x.isCustomFont);
+      if (sys.length) {
+        const text = n.children.filter((c) => c.nodeType === 3).map((c) => c.nodeValue).join("").trim().slice(0, 40);
+        problems.out.push(`"${text}" falls back to ${sys.map((x) => `${x.familyName} (${x.glyphCount} glyphs)`).join(", ")}`);
+      }
+    }
     const png = join(pkg, f.replace(".html", ".png"));
     if (problems.out.length) failures.push(`${mod}/${f}: ${problems.out.join("; ")}`);
     else await page.screenshot({ path: png });
-    console.log(`${mod}/${f}`, problems.out.length ? "OVERFLOW" : `ok, ${problems.spare}px spare`);
+    console.log(`${mod}/${f}`, problems.out.length ? "FAIL" : `ok, ${problems.spare}px spare`);
   }
 }
 await browser.close();

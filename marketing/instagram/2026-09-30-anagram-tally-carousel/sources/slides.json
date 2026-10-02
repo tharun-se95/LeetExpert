@@ -1,0 +1,18 @@
+{
+ "reel": "2026-09-29-anagram-tally",
+ "slides": [
+  {"at": "costs", "dt": 1.6, "text": "Most people sort both words and compare. That's O(n log n).",
+   "alt": "Two racks of word-game tiles, both sorted to E I L N S T, above a code card: sorted(\"listen\") == sorted(\"silent\"), then \"eilnst\" == \"eilnst\" with an O(n log n) tag."},
+  {"at": "s2", "dt": 0.3, "text": "+1 for every tile in the first rack, −1 for every tile in the second.",
+   "alt": "Racks spelling LISTEN and SILENT above a tally sheet with one row per letter, L, I, S, T, E and N; after the first rack every row reads +1."},
+  {"at": "anagram", "dt": 1.2, "text": "Every row back at zero means the same tiles.",
+   "alt": "The same tally sheet with all six rows back at 0, each ticked, and an ANAGRAM stamp."},
+  {"at": "take", "dt": 1.5, "text": "+1 for each letter of s, −1 for each letter of t; then every count must be 0.",
+   "alt": "Python function is_anagram(s, t) with the second loop, for ch in t: counts[ch] = counts.get(ch, 0) - 1, highlighted. Under it the counts map for listen and silent with every letter at 0, and the note t: 't' → counts['t'] = 0."},
+  {"at": "quarter", "dt": 1.2, "text": "Our test run on 1,000,000 letters (Python): sorted() 215 ms, Counter 55 ms.",
+   "alt": "A stopwatch over two bars for 1,000,000 letters in our Python test run: sorted(s) == sorted(t) at 215 ms and Counter(s) == Counter(t) at 55 ms, with the label \"counting: about ¼ of the time\"."},
+  {"at": "js", "dt": 2.5, "text": "Give it \"café\" and Python raises IndexError: list index out of range, while JavaScript quietly returns false.",
+   "alt": "\"The catch: a 26-slot array covers a to z only\" over a strip of slots a to z. Tiles C A F É point to \"slot 136?\"; Python crashes with IndexError: list index out of range, and JavaScript returns false, quietly wrong."}
+ ],
+ "challenge": "\"aab\" vs \"abb\". Which rows miss zero?"
+}

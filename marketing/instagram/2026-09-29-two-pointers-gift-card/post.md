@@ -5,7 +5,7 @@
 - **Family:** two-pointers
 - **Format:** Reel, 1080×1920, ~70s (final length set by the recorded take), loops to frame 1; tutor stills; Hope narration
 - **Replaces:** `2026-09-27-two-pointers-trace` (drafted, never posted), at the owner's request on 2026-09-29: explain it through an analogy, richer visuals, faster pacing. Issue #119.
-- **Status:** narrated and rendered 2026-09-30 (`reel.mp4`, 1:20), not posted. Rebuilt on the shared reelkit engine, with the tutor on cue only (hook, the 21 combos, the find, the pitfall, the challenge, the brand).
+- **Status:** posted to @leetexpert 2026-10-01: https://www.instagram.com/reel/Dd7MbyQladO/. Before that: narrated and rendered 2026-09-30 (`reel.mp4`, 1:20), not posted. Rebuilt on the shared reelkit engine, with the tutor on cue only (hook, the 21 combos, the find, the pitfall, the challenge, the brand).
 - **Media (when final):** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)

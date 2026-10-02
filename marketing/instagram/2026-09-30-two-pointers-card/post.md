@@ -6,7 +6,7 @@
 - **Family:** two-pointers
 - **Formats:** Reel, 1080×1920, ~86s on estimated timing, loops to frame 1; tutor stills; Hope narration. **And** `card.png`, 1080×1350, the single-image post the plan named.
 - **Plan:** ledger post `p15` (single image). Made as both at the owner's direction (reels explain their code). Issue #128.
-- **Status:** `card.png` is final and can be posted. narrated and rendered 2026-09-30 (`reel.mp4`, 1:38), not posted. Hope take; the tutor on cue only (hook, the key reaction, the challenge, the brand); a data-structure stage under each code walkthrough, built from the shown code's own run. `hyperframes check`: 0 errors.
+- **Status:** card.png posted to @leetexpert 2026-10-01: https://www.instagram.com/p/Dd7BNEgk-Wy/. Before that: `card.png` is final and can be posted. narrated and rendered 2026-09-30 (`reel.mp4`, 1:38), not posted. Hope take; the tutor on cue only (hook, the key reaction, the challenge, the brand); a data-structure stage under each code walkthrough, built from the shown code's own run. `hyperframes check`: 0 errors.
 - **Media:** `card.png` (final); `reel.mp4` and `cover.png` when the take exists
 
 ## Hook (first line — all most people read)
