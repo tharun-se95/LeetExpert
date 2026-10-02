@@ -1,0 +1,19 @@
+/* kit/graphs.css: the graph lane (kit/graphs.js). Nodes are ordinary lane items, so they take
+   kit/lanes.css's box, value, tone and highlight styling unchanged; this file adds the edges and
+   their weight plates. A state is told by weight and dash as well as colour, so it never rests on
+   colour alone: idle a hairline, seen dashed, tree and cur thick, bad dashed and red. */
+.gr-edge line{fill:none;stroke-linecap:round}
+.gr-edge path{stroke:none}
+.gr-edge.idle line{stroke:color-mix(in srgb,var(--fg) 34%,transparent);stroke-width:1.4}
+.gr-edge.idle path{fill:color-mix(in srgb,var(--fg) 34%,transparent)}
+.gr-edge.seen line{stroke:color-mix(in srgb,var(--fg) 30%,transparent);stroke-width:1.4;stroke-dasharray:4 4}
+.gr-edge.seen path{fill:color-mix(in srgb,var(--fg) 30%,transparent)}
+.gr-edge.tree line{stroke:var(--g-ink);stroke-width:3}
+.gr-edge.tree path{fill:var(--g-ink)}
+.gr-edge.cur line{stroke:var(--o-ink);stroke-width:3}
+.gr-edge.cur path{fill:var(--o-ink)}
+.gr-edge.bad line{stroke:var(--r-ink);stroke-width:2.2;stroke-dasharray:6 4}
+.gr-edge.bad path{fill:var(--r-ink)}
+/* the plate is the card, so the weight's ink is measured against the card, where --fg is AA */
+.gr-plate{fill:var(--card);stroke:color-mix(in srgb,var(--fg) 18%,transparent);stroke-width:1}
+.gr-weight{font:600 11px 'JetBrains Mono',monospace;fill:var(--fg)}

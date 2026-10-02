@@ -114,7 +114,7 @@ function mountCost(host){
     pts.push([n,b.examined,k.work]);
   }
   var last=pts[pts.length-1];
-  costChart(host,{pts:pts,xmax:8,log:true,xticks:[2,3,4,5,6,7,8],xlabel:'courses in a loop',aria:'Work to detect a loop of n courses, on a log scale: testing every order reaches '+fmt(last[1])+' at eight courses while peeling off what is ready takes '+last[2]+'.'});
+  costChart(host,{names:['test every order','peel off what is ready'],ylabel:'work',pts:pts,xmax:8,log:true,xticks:[2,3,4,5,6,7,8],xlabel:'courses in a loop',aria:'Work to detect a loop of n courses, on a log scale: testing every order reaches '+fmt(last[1])+' at eight courses while peeling off what is ready takes '+last[2]+'.'});
   host.parentNode.querySelector('.cost-note').innerHTML='For a loop of <b>8</b> courses, testing every order examines <b>'+fmt(last[1])+'</b> orders (exactly 8!) before it can say no, and peeling off what is ready does about <b>'+last[2]+'</b> units of work. The axis is logarithmic because factorials multiply by a bigger number at every step: at 10 courses it would be '+fmt(factorial(10))+'. Both counts are measured by running the two methods.';
 }
 

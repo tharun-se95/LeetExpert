@@ -64,7 +64,7 @@ Look at what it throws away. When the run from start 0 stops at position 5 becau
 How much is wasted depends on how long clean stretches run. A stretch can never be longer than the number of distinct characters in play, so each start re-reads at most that many. In a string cycling through 26 letters each start re-reads about 26 characters, so the total is about 26 times the length. If identifiers were unbounded, as request IDs are in a real system, clean stretches could be as long as the log and the cost would be quadratic. Either way the same characters are read again and again.
 
 ```widget "Characters read as the log grows (a cycle of 26 backends)"
-<div class="chart" id="cost"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>restart from every position</span><span><i style="background:var(--g-ink)"></i>one pass with a window</span></div><p class="cost-note"></p>
+<div class="chart" id="cost"></div><p class="cost-note"></p>
 ```
 
 ## The insight {#insight banner}

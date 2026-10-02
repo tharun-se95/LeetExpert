@@ -68,3 +68,62 @@ A 2D prefix sum is a second grid, one row and one column larger, where each cell
 ```widget #prefix "Build a 2D prefix sum, then answer one query"
 <div class="lvhost"></div>
 ```
+
+## Tables {#tables}
+
+A hash table's buckets are a row of small stacks: each bucket is open at the top, exactly like the call-frame stack above, and several buckets side by side are still just consecutive stack lanes. A collision is a second entry landing on the same bucket, on top of the first. A resize declares the larger table alongside the old one and copies each entry into its recomputed bucket, so it glides from the bucket it left.
+
+A DP table is a grid whose cells carry string headers, filled one cell at a time from the cells it depends on — a diagonal match, or the better of two neighbours — drawn as arrows into the cell being filled.
+
+```widget #ttabs "Three table walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a table walkthrough"></div><div class="lvhost"></div>
+```
+
+## Heaps {#heap}
+
+The tree IS the array: node `i`'s children sit at `2i+1` and `2i+2`, its parent at `(i-1)//2`, so every heap operation is a sequence of swaps along one root-to-leaf path. The heap lane draws both readings of one set of values at once — the complete binary tree, and the flat array underneath it — so a swap glides in both together, and the edge being compared is the one below whichever index is named.
+
+```widget #htabs "Three heap walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a heap walkthrough"></div><div class="lvhost"></div>
+```
+
+## Graphs {#graphs}
+
+A graph is a fixed lane: node `k` is slot `k`, so a node takes the same tones, names and highlights as a row's cell, and a node copied onto a queue enters it from the node itself. Its edges sit under the nodes and change as a step decides them, each state told by weight and dash so none rests on colour alone: a hairline until examined, thick in the current step's tone while a step examines it, thick in the done tone once chosen, a light dash once examined and passed over, and a heavy dash in the stuck tone where it closes a cycle. Directed edges carry arrowheads, and a weight sits on a plate at the edge's middle. Every walkthrough checks its answer on load against a reference that shares none of its code.
+
+```widget #grtabs "Four graph walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a graph walkthrough"></div><div class="lvhost"></div>
+```
+
+
+## Call trees {#calltrees}
+
+A call tree is what a recursive function draws while it runs: one node per call, an edge from a call to each call it makes. It grows as the calls are made, and the path from the root down to the call running now is the call stack, so the frames beside the tree are that same path. A call is active while it is on the path, returned once it is done, a base case when it returns without calling itself, and pruned when a backtracking search cut it before entering it. The key names each state; a node's box carries the call's arguments, and after it returns, what it returned. Both walkthroughs run the real algorithm and check their answer against a reference that shares none of its code.
+
+```widget #cttabs "Two call-tree walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a call-tree walkthrough"></div><div class="lvhost"></div>
+```
+
+## Intervals {#intervals}
+
+An interval lane draws each interval as a bar on one shared axis: its row is its place in the list, and its position and width are its extent, so the order of the list and the order on the number line are both visible. A sweep line, a burst arrow or a running end is a named coordinate; a gap or a stretch of free time is a named range, bracketed under the axis with its extent written out. Sorting is a run of swaps that glide, and merging is one bar widening while the other leaves and the rows close up. A bar is `waiting`, `active`, `merged` or whatever the walkthrough calls its states, each drawn by its own tone and named in the key. Both walkthroughs run the real algorithm and check their answer against a reference that shares none of its code.
+
+```widget #ivtabs "Two interval walkthroughs"
+<div class="extabs" role="group" aria-label="Choose an interval walkthrough"></div><div class="lvhost"></div>
+```
+
+## Tries {#tries}
+
+A trie is drawn on the graph lane, like a call tree: the words go in first, so the finished trie is known and every node's place is fixed, and each node appears in its slot when it is made. A node shows its letter, and the root shows `""`, the empty prefix. The word that ends at a node is written under it, so a stored word and a prefix in passing look different. The cursor is the mark `node`, the edges from the root to it are the current walk, and the fields line spells the prefix. A node on the walk, a match, a dead end and a branch left behind are each drawn by their own tone and named in the key. Word Search II pairs the trie with a board: a step onto a cell follows an edge, a letter with no edge is never stepped on, and a spent leaf is removed. Every walkthrough runs the real algorithm and checks its answers against code that shares none of the trie's.
+
+```widget #trtabs "Three trie walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a trie walkthrough"></div><div class="lvhost"></div>
+```
+
+## Cost plots {#plots}
+
+A cost plot draws how a cost grows with n: named series on one pair of axes, a cursor walking n with each series' value read out beside the plot, and named lines for a budget or a threshold. A formula is drawn as a curve; a measured series is a count taken by running the loop and counting where the work is, and each is checked against an independent statement of it before anything is drawn. Series differ in ink, dash and marker, and are named in the readout, so none rests on colour. All three walkthroughs compute every number they show.
+
+```widget #pltabs "Three cost plots"
+<div class="extabs" role="group" aria-label="Choose a cost plot"></div><div class="lvhost"></div>
+```

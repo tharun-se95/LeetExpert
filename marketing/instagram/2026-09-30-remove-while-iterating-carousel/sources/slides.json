@@ -1,0 +1,42 @@
+{
+ "reel": "2026-09-29-remove-while-iterating",
+ "slides": [
+  {
+   "at": "get",
+   "dt": 2.0,
+   "text": "[2, 4, 6, 7] → [4, 7] ✗ (4 is even, and it survived)",
+   "alt": "A card calls remove_evens([2, 4, 6, 7]) and shows the cells 2, 4, 6, 7; under \"returns\" are 4 and 7."
+  },
+  {
+   "at": "nobody",
+   "dt": 1.2,
+   "text": "It's like checking tickets along a row of seats while everyone slides left under your finger.",
+   "alt": "\"Checking tickets, seat by seat\": four cinema seats, 0 to 3. A finger points at seat 1, holding 6, while 4 sits in seat 0, ringed, over the line \"4 slid into seat 0. Nobody checked it.\""
+  },
+  {
+   "at": "skips",
+   "dt": 0.8,
+   "text": "remove() deletes the value and shifts everything after it one step left, so the next item lands in the slot you just checked, and the loop skips it.",
+   "alt": "Python remove_evens(nums) with the loop for n in nums: if n % 2 == 0: nums.remove(n) highlighted. The note reads \"The next item lands in the slot you just checked: skipped\", above cells 4 and 7 and the result \"returns [4, 7]: 4 survived\"."
+  },
+  {
+   "at": "keeping",
+   "dt": 2.2,
+   "text": "Fix 1: don't edit the list you're reading. Build a new one:",
+   "alt": "The fix as one line, return [n for n in nums if n % 2 != 0], highlighted. The note reads \"Build a new one: keep n only if it's odd\", [2, 4, 6, 7] → [7] ✓, with 2, 4 and 6 dimmed and 7 lit: new list: [7]."
+  },
+  {
+   "at": "never",
+   "dt": 3.0,
+   "text": "Copy each keeper to write and move write forward. Write never passes read, so nothing unread is overwritten.",
+   "alt": "The in-place fix: write = 0; for read in range(len(nums)): if nums[read] % 2 != 0: nums[write] = nums[read]; write += 1; then del nums[write:]. The copy line is highlighted. The note reads \"write never passes read: nothing unread is overwritten\" over cells 7, 4, 6, 7 with write above index 0 and read below index 3: write → 1, never past read."
+  },
+  {
+   "at": "ms",
+   "dt": 2.0,
+   "text": "Our test run on 100,000 numbers: 7,972 ms vs 4 ms for the new list.",
+   "alt": "\"100,000 numbers, our test run, Python\": every remove shifts the whole tail, O(n²). for n in nums[:]: nums.remove(n) takes 7,972 ms; [n for n in nums if n % 2 != 0] takes 4 ms. A tag says about 2,000× slower."
+  }
+ ],
+ "challenge": "what does the buggy version return for [1, 2, 2, 3]?"
+}
