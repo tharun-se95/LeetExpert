@@ -12,7 +12,9 @@ import { expandGenerators } from "../src/lib/sandbox/generate";
  * correct iterative solution. Only this engine can show the regression.
  */
 
-const PYODIDE = join(__dirname, "..", "public", "pyodide");
+// The npm package itself, which scripts/copy-pyodide.mjs copies into the
+// gitignored public/pyodide only before dev and build: CI tests run first.
+const PYODIDE = join(__dirname, "..", "node_modules", "pyodide");
 
 interface PyodideLike {
   runPython(code: string): unknown;
