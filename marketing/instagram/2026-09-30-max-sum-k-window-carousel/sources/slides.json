@@ -1,0 +1,42 @@
+{
+ "reel": "2026-09-30-max-sum-k-window",
+ "slides": [
+  {
+   "at": "passes",
+   "dt": 7.0,
+   "text": "An AI wrote this, and it passes the sample ([2, 1, 5, 1, 3, 2], k = 3 → 9). Would you ship it?",
+   "alt": "Python max_sum_k(nums, k) tagged \"AI · passes the sample\": best = float(\"-inf\"); for i in range(len(nums) - k): best = max(best, sum(nums[i:i + k])); return best. Under it [2, 1, 5, 1, 3, 2], k = 3 → 9 ✓, with the windows walked on the array."
+  },
+  {
+   "at": "twelve",
+   "dt": 3.0,
+   "text": "[1, 2, 3, 9], k = 2 → 5. The answer is 12 (3 + 9).",
+   "alt": "max_sum_k([1, 2, 3, 9], 2) → 5 ✗; the answer is 12 (3 + 9)."
+  },
+  {
+   "at": "two",
+   "dt": 2.5,
+   "text": "Count the windows: a 2-wide frame on 4 numbers fits at starts 0, 1 and 2. That's n − k + 1.",
+   "alt": "\"Count the windows\": a 2-wide frame on 1, 2, 3, 9 fits at start 0, start 1 and start 2, with the last one, 3 and 9, lit."
+  },
+  {
+   "at": "never",
+   "dt": 1.2,
+   "text": "range(n − k) stops one short, so the last window is never checked. Fix: + 1.",
+   "alt": "The same code with for i in range(len(nums) - k): highlighted and the note \"Start 2, [3, 9]: never checked\"; on 1, 2, 3, 9 the pair 3, 9 is ringed: start 2: 3 + 9 = 12, never checked."
+  },
+  {
+   "at": "keep",
+   "dt": 2.0,
+   "text": "Slide instead: sum the first window once, then add the number entering on the right and subtract the one leaving on the left. O(n).",
+   "alt": "The sliding version: window = sum(nums[:k]); best = window; for right in range(k, len(nums)): window += nums[right] - nums[right - k]; best = max(best, window), with that line highlighted and the note \"Keep the best\". On 2, 1, 5, 1, 3, 2 with k = 3: +3 − 1 → window 9, best 9."
+  },
+  {
+   "at": "ms",
+   "dt": 1.2,
+   "text": "Our test run, 100,000 numbers with k = 10,000 (Python): 12.35 s summing every window vs 11.7 ms sliding.",
+   "alt": "\"100,000 numbers, k = 10,000, our test run, Python\": summing every window (with the +1 fix) takes 12.35 s; sliding the sum takes 11.7 ms."
+  }
+ ],
+ "challenge": "how many windows of size 3 fit in 10 numbers?"
+}

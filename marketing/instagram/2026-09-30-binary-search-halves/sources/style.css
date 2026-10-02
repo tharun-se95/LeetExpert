@@ -1,0 +1,17 @@
+/* the row */
+.ask{position:absolute;left:80px;top:380px;font-family:"Space Mono",monospace;font-size:40px;font-weight:700}
+.cell{position:absolute;width:118px;height:118px;border-radius:20px;border:3px solid #263248;background:#0e1520;display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:52px;font-weight:700}
+.ring{position:absolute;left:0;width:136px;height:136px;border-radius:26px;border:6px solid #fbbf24;z-index:2}
+.mk{position:absolute;left:0;width:80px;text-align:center;font-family:"Space Mono",monospace;font-size:34px;font-weight:700}
+.verd{position:absolute;left:80px;right:60px;font-family:"Space Mono",monospace;font-size:32px;font-weight:700}
+/* dictionary */
+.book{position:absolute;left:160px;top:130px;width:600px;height:320px}.book svg{width:600px;height:320px}
+.val{position:absolute;font-family:"Space Mono",monospace;font-size:40px;font-weight:700;white-space:nowrap;line-height:1.35}
+/* halving a million */
+.hb{position:absolute;left:0;right:0;top:130px;height:60px;border-radius:14px;background:#1c2838}
+.hbf{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:14px;background:#5eead4;transform-origin:0 50%}
+.hcs{position:absolute;left:0;right:0;top:220px;height:60px}
+.hcn{position:absolute;left:0;top:0;font-family:"Space Mono",monospace;font-size:36px;font-weight:700;color:#cbd5e1;white-space:nowrap}
+/* code lines on a panel */
+.code{position:absolute;left:0;right:0;padding:26px 32px;font-family:"Space Mono",monospace;font-size:44px;font-weight:700;line-height:1.7}
+.code .ln{display:flex;justify-content:space-between;align-items:center}

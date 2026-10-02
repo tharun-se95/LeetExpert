@@ -1,0 +1,14 @@
+/* the row */
+.cell{position:absolute;width:136px;height:136px;border-radius:20px;border:3px solid #263248;background:#0e1520;display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:62px;font-weight:700}
+.ix{position:absolute;width:136px;text-align:center;font-family:"Space Mono",monospace;font-size:26px;color:#94a3b8}
+.ask{position:absolute;left:80px;top:360px;font-family:"Space Mono",monospace;font-size:34px;font-weight:700;line-height:1.35}
+/* the inchworm: the window's body, head on the right end */
+.worm{position:absolute;left:0;height:164px;border-radius:40px;background:rgba(94,234,212,.12);border:5px solid #5eead4;z-index:2}
+.worm .head{position:absolute;right:-30px;top:44px;width:64px;height:64px;border-radius:50%;background:#5eead4;display:flex;gap:10px;align-items:center;justify-content:center}
+.worm .head b{width:12px;height:12px;border-radius:50%;background:#0e1520;display:block}
+.ros{position:absolute;left:80px;right:80px;height:60px}
+.ro{position:absolute;left:0;top:0;font-family:"Space Mono",monospace;font-size:40px;font-weight:700;white-space:nowrap}
+.val{position:absolute;font-family:"Space Mono",monospace;font-size:38px;font-weight:700;white-space:nowrap;line-height:1.35}
+/* code lines on a panel */
+.code{position:absolute;left:0;right:0;padding:26px 32px;font-family:"Space Mono",monospace;font-size:42px;font-weight:700;line-height:1.7}
+.code .ln{display:flex;justify-content:space-between;align-items:center}

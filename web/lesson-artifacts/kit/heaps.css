@@ -1,0 +1,6 @@
+/* kit/heaps.css: the heap lane (kit/heaps.js). The tree copy reuses the lane view's item and mark
+   styling (kit/lanes.css: .ln-item, .ln-box, .ln-val, .ln-mark) unchanged, so a tone or a highlight
+   looks the same whether it lands on the array cell or the tree node drawn from the same item. This
+   file adds only what is new: the edges between a node and its parent. */
+.hp-edge{stroke:color-mix(in srgb,var(--fg) 30%,transparent);stroke-width:1.4;stroke-linecap:round}
+.hp-edge.hi{stroke:var(--fam);stroke-width:2.2;opacity:1}

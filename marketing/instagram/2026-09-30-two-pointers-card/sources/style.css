@@ -1,0 +1,15 @@
+/* the card inside the reel: scaled to the stage */
+.cardwrap{position:absolute;left:209px;top:340px;z-index:2}
+.sc{transform:scale(.72);transform-origin:0 0}
+/* smell banners over the code cards */
+.bn{position:absolute;left:60px;right:60px;top:318px;display:flex;align-items:baseline;gap:14px;white-space:nowrap}
+.bn .s{font-size:25px;color:#cbd5e1}.bn .p{font-family:"Space Mono",monospace;font-size:28px;font-weight:700;color:#5eead4}
+/* targets */
+.cxh,.cxr{position:relative;display:grid;grid-template-columns:1fr 190px 140px;padding:14px 0;font-size:34px}
+.cxh{margin-top:30px;font-family:"Space Mono",monospace;font-size:24px;color:#94a3b8}
+.cxr{border-top:1px solid #263248}.cxr .t,.cxr .m{font-family:"Space Mono",monospace;font-weight:700;color:#5eead4}
+/* traps */
+.trap{position:absolute;left:0;right:0;border-left:6px solid #fbbf24;padding:10px 20px;display:flex;flex-direction:column;gap:6px}
+.trap b{font-size:40px}.trap span{font-size:30px;color:#cbd5e1;line-height:1.3}
+.code{position:absolute;left:0;right:0;padding:20px 30px;font-family:"Space Mono",monospace;font-size:36px;font-weight:700;line-height:1.7}
+.code .ln{display:flex;justify-content:space-between;align-items:center}

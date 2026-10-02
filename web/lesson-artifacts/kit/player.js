@@ -39,13 +39,18 @@ function StepPlayer(host,o,view){
   function chrome(k){
     var s=steps[k],hiF=function(f){return s.hi.indexOf(f)>=0?' class="hi"':'';};
     fields.innerHTML=view.fields(s,hiF);
-    var iv=view.check(s),between=s.done||k===0;
-    inv.innerHTML=view.inv.map(function(t,j){var st=between?(iv[j]?'ok':'bad'):'mid';
-      return '<span role="listitem" class="'+st+'" title="'+t[1]+'" aria-label="'+t[1]+': '+(st==='mid'?'mid-operation, not checked':(st==='ok'?'holds':'broken'))+'"><i></i>'+t[0]+'</span>';}).join('');
+    inv.innerHTML=invHtml(s,k);
     note.innerHTML=s.note;
     track.querySelectorAll('button').forEach(function(b,j){b.classList.toggle('on',j<=k);b.setAttribute('aria-current',j===k?'step':'false');});
     count.textContent=(k+1)+' / '+steps.length;pv.disabled=k===0;nx.disabled=k===steps.length-1&&!o.loop;
     view.label(s);
+  }
+  /* view.inv is a list, or a function of the snapshot when a walkthrough states claims of its own (plots.js) */
+  function invOf(s){return typeof view.inv==='function'?view.inv(s):view.inv;}
+  function invHtml(s,k){
+    var iv=view.check(s),between=s.done||k===0;
+    return invOf(s).map(function(t,j){var st=between?(iv[j]?'ok':'bad'):'mid';
+      return '<span role="listitem" class="'+st+'" title="'+t[1]+'" aria-label="'+t[1]+': '+(st==='mid'?'mid-operation, not checked':(st==='ok'?'holds':'broken'))+'"><i></i>'+t[0]+'</span>';}).join('');
   }
   function show(k,animate){
     var s=steps[k],L=view.layout(s),from=shown,fromL=shownL;
@@ -93,8 +98,15 @@ function StepPlayer(host,o,view){
     probe.remove();if(h)note.style.minHeight=h+'px';
     var meta=fields.parentNode,mp=probeOf(meta),mh=0,none=function(){return '';};
     mp.innerHTML='<span class="lp-fields"></span>'+inv.outerHTML.replace(' aria-label="Invariants"','');
-    reserveSteps.concat(steps).forEach(function(x){mp.firstChild.innerHTML=view.fields(x,none);mh=Math.max(mh,mp.offsetHeight);});
-    mp.remove();if(mh)meta.style.minHeight=mh+'px';}
+    /* each step's own invariants, when they differ by walkthrough, so a tab with more claims cannot wrap the line later */
+    /* measured without the width reserved last time, which the clone carries, or each resize would add to it */
+    var iw=0,byStep=typeof view.inv==='function';mp.lastChild.style.minWidth='';
+    reserveSteps.concat(steps).forEach(function(x){mp.firstChild.innerHTML=view.fields(x,none);
+      if(byStep){mp.lastChild.innerHTML=invHtml(x,0);iw=Math.max(iw,mp.lastChild.offsetWidth);}mh=Math.max(mh,mp.offsetHeight);});
+    mp.remove();if(mh)meta.style.minHeight=mh+'px';
+    /* the line is right-aligned, so a shorter list would move its left edge: hold the widest list's width
+       (the gate measured 0.0011 of shift on a phone as the plot tabs' claims changed) */
+    if(byStep&&iw)inv.style.minWidth=Math.min(iw+1,meta.clientWidth)+'px';}
   if('ResizeObserver' in window)new ResizeObserver(function(){reserve();}).observe(host);
   /* notes: captions the player may show later; all: the snapshots behind them, when known */
   this.reserve=function(notes,all){reserveNotes=notes;reserveSteps=all||[];reserve();};

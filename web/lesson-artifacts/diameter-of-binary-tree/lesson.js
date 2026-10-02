@@ -119,7 +119,7 @@ function mountCost(host){
     if(nv!==n*(n+1)/2||one!==n)throw new Error('cost formula check failed at n='+n);
     if(diameterNaive(r)!==diameterSolution(r))throw new Error('naive and one-pass disagree');pts.push([n,nv,one]);}
   var last=pts[pts.length-1];
-  costChart(host,{pts:pts,xmax:64,xticks:[0,16,32,48,64],xlabel:'nodes in a skewed tree',aria:'Work done as a skewed tree grows: the naive version grows with n squared, the one-pass version with n.'});
+  costChart(host,{names:['naive: diameter with a separate height call','one pass'],ylabel:'node visits',pts:pts,xmax:64,xticks:[0,16,32,48,64],xlabel:'nodes in a skewed tree',aria:'Work done as a skewed tree grows: the naive version grows with n squared, the one-pass version with n.'});
   var big=10000*10001/2;
   host.parentNode.querySelector('.cost-note').innerHTML='On a skewed tree of 64 nodes the naive version does <b>'+fmt(last[1])+'</b> node visits and the one-pass version <b>64</b>. The naive count is exactly n(n + 1) / 2, checked for every size plotted. At the constraint\'s n = 10⁴ that is <b>'+fmt(big)+'</b> visits, against 10,000.';
 }

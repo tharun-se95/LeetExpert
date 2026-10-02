@@ -103,7 +103,7 @@ Keeping `tail` is what makes appending O(1). Without it, appending means walking
 ```
 
 ```widget "Nodes visited to append n values"
-<div class="chart" id="cost-chart"></div><div class="legend"><span><i style="background:var(--r-ink)"></i>no tail: walk to the end each time</span><span><i style="background:var(--g-ink)"></i>with tail: link on directly</span></div><p class="cost-note" id="cost-note"></p>
+<div class="chart" id="cost-chart"></div><p class="cost-note" id="cost-note"></p>
 ```
 
 Memory is the other cost, and big-O hides it. An array of numbers stores the numbers side by side. A linked list stores each number inside its own node, next to a reference to the following node, and each node is a separate allocation with its own bookkeeping. Both are O(n) space, but the list spends at least twice the slots per value, and its nodes are scattered, so reading them in order does not benefit from the cache the way an array does. A list earns its place where it splices: inserting or removing next to a node you already hold is O(1), which an array cannot do.
