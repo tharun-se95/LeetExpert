@@ -2,8 +2,8 @@
 
 For any agent picking up work here: a Claude Code session on another account, on another Mac,
 in the cloud (claude.ai/code), or an Antigravity agent. Once set up, every agent works the same
-way: from GitHub issues, on the **leetExpert roadmap** board, through pull requests the owner
-merges.
+way: from GitHub issues, on the **leetExpert roadmap** board, through pull requests the agent
+merges once they pass (§3, Merging).
 
 The rules themselves live in [`CLAUDE.md`](../CLAUDE.md), which every session loads when it opens
 the repo: §1–§6 set the standard of work, and §7 sets the issue workflow. This page covers the
@@ -78,7 +78,8 @@ This is §7 in the order you meet it. Read §7 itself for the details and the ca
    Anything left for a later session goes there too, not in chat.
 7. **Open the PR** with `Closes #N` (or `Part of #N` for one item of a larger issue), then move the
    card to In review.
-8. **Stop at the PR.** The owner merges. Then take the next issue.
+8. **Merge it yourself** once it meets the bar in §3 (Merging), check the card reached Done, then
+   take the next issue.
 
 Sign every issue, comment and PR body with the provenance line from §7. In the cloud,
 `CLAUDE_CODE_HOST_SESSION_ID` is empty: leave that part out, and keep the model, the transcript
@@ -96,10 +97,36 @@ The owner reviews in the PR. Still stop for:
 
 - `owner-decision` issues: lay out the options on the issue, ask, and record the answer. Never decide
   one yourself.
-- merging, or enabling auto-merge: never.
 - anything destructive or outward-facing beyond issues, comments, branches and PRs. That includes
   force-pushes, deleting branches, rewriting history on `main`, and any production deploy. Ask
   first.
+
+**Merging (owner, 2026-10-02: "merge the PR yourself").** This replaces "the owner merges". An agent
+merges its own PR, with `gh pr merge N --merge` (the history keeps merge commits), when all of
+these hold:
+
+- every CI check on the head commit passed. A cancelled or flaky run is re-run until it passes,
+  never waved through.
+- GitHub reports it `MERGEABLE`. A conflict is resolved on the branch, and a ledger conflict is
+  re-recorded, not hand-merged.
+- the checks in CLAUDE.md §2 ran on the final head and are recorded on the issue: what passed,
+  and what was not checked and why.
+- a stacked PR merges only after the PRs below it, in the order its body lists.
+
+Still never enable auto-merge (it merges a head nobody verified), and never merge another
+session's or the owner's PR unless asked. After the merge, check the issue closed and the card
+reached Done. A merge to `main` can reach production, so a PR that changes deploy config, secrets,
+migrations or auth waits for the owner.
+
+**Watch what you dispatch (owner, 2026-10-02).** Every background task an agent starts gets an
+estimate and a deadline, stated when it starts. That covers a subagent, an Antigravity run, a
+background command, or CI it is waiting on. At the deadline the agent checks the task's process, log,
+branch and the task list. If the task is overdue, the agent finds out why before waiting longer:
+queued behind another job, stuck, slow, or dead. Then it reports what it found and what it is doing
+about it. An agent that must queue behind a long run (one browser gate at a time, below) says so up
+front or reorders the work. When a task reports back, the agent stops it if it is still open and kills
+anything it left running, such as orphaned browsers or dev servers. On 2026-10-02 a CI fix sat an hour
+behind its own dispatcher's gate run, and a finished agent's task stayed open 2.5 hours, both unnoticed.
 
 **Several sessions share one checkout.** The main checkout often holds another session's
 uncommitted work.
