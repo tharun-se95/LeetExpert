@@ -1,3 +1,9 @@
+import {
+  describeGenerated,
+  expandGenerators,
+  GeneratorError,
+  hasGenerator,
+} from "@/lib/sandbox/generate";
 import { propertyNames } from "@/lib/sandbox/properties";
 import type {
   CheckMode,
@@ -47,7 +53,14 @@ export function parseSandboxSpec(source: string): SandboxSpec | null {
       ? spec.property
       : null;
 
-  const cases = parseCases(spec.cases, property !== null);
+  let cases: SandboxCase[] | null;
+  try {
+    cases = parseCases(spec.cases, property !== null);
+  } catch (err) {
+    // A malformed generator is an authoring error like any other.
+    if (err instanceof GeneratorError) return null;
+    throw err;
+  }
   if (!cases) return null;
 
   const check: CheckMode =
@@ -162,10 +175,16 @@ function parseCases(value: unknown, graded: boolean): SandboxCase[] | null {
 
     if (!Array.isArray(c.args)) return null;
     if (!graded && !("expect" in c)) return null;
+    // Expanded here, on the main thread, so the runners receive plain data and
+    // the page and CI see the same case.
     out.push({
-      args: c.args,
-      expect: c.expect,
+      args: expandGenerators(c.args) as unknown[],
+      expect: expandGenerators(c.expect),
       name: typeof c.name === "string" ? c.name : undefined,
+      argsLabel: hasGenerator(c.args)
+        ? c.args.map(describeGenerated).join(", ")
+        : undefined,
+      expectLabel: hasGenerator(c.expect) ? describeGenerated(c.expect) : undefined,
     });
   }
   return out;

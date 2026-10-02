@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { matches, type CompareMode } from "../../src/lib/sandbox/compare";
+import { expandGenerators } from "../../src/lib/sandbox/generate";
 import { checkProperty } from "../../src/lib/sandbox/properties";
 import type { Outcome, RunRequest } from "../referenceRunner";
 
@@ -38,7 +39,16 @@ export function sandboxFences(): Fence[] {
       const buf: string[] = [];
       let j = i + 1;
       for (; j < lines.length && lines[j].trimEnd() !== "```"; j++) buf.push(lines[j]);
-      found.push({ lesson: rel, line: i + 1, spec: JSON.parse(buf.join("\n")) });
+      const spec = JSON.parse(buf.join("\n")) as Record<string, unknown>;
+      // The same expansion the page applies at parse time (lib/sandbox/generate).
+      if (Array.isArray(spec.cases)) {
+        spec.cases = (spec.cases as Record<string, unknown>[]).map((c) => ({
+          ...c,
+          ...("args" in c ? { args: expandGenerators(c.args) } : {}),
+          ...("expect" in c ? { expect: expandGenerators(c.expect) } : {}),
+        }));
+      }
+      found.push({ lesson: rel, line: i + 1, spec });
       i = j;
     }
   }
