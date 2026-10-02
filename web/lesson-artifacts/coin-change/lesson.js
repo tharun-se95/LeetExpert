@@ -117,8 +117,8 @@ function mountCost(host){
     pts.push([a,r.calls,r.asked]);
   }
   var last=pts[pts.length-1];
-  costChart(host,{pts:pts,xmax:25,log:true,xticks:[0,5,10,15,20,25],xlabel:'amount to make',aria:'Calls made by the plain recursion against different questions, on a log scale: the recursion reaches '+fmt(last[1])+' calls at amount 25 while there are only '+last[2]+' different questions.'});
-  host.parentNode.querySelector('.cost-note').innerHTML='Making <b>25</b> takes the recursion <b>'+fmt(last[1])+'</b> calls, yet it only ever asks <b>'+last[2]+'</b> different questions, one per amount from 0 to 25. The axis is logarithmic because the red line multiplies by about '+(last[1]/pts[pts.length-2][1]).toFixed(1)+' with every step. Each call count is measured by running the recursion, and matches the recurrence calls(a) = 1 + the sum of calls(a − c) over sizes that fit.';
+  costChart(host,{names:['recursion, every call','different questions'],ylabel:'calls',pts:pts,xmax:25,log:true,xticks:[0,5,10,15,20,25],xlabel:'amount to make',aria:'Calls made by the plain recursion against different questions, on a log scale: the recursion reaches '+fmt(last[1])+' calls at amount 25 while there are only '+last[2]+' different questions.'});
+  host.parentNode.querySelector('.cost-note').innerHTML='Making <b>25</b> takes the recursion <b>'+fmt(last[1])+'</b> calls, yet it only ever asks <b>'+last[2]+'</b> different questions, one per amount from 0 to 25. The axis is logarithmic because the recursion\'s line multiplies by about '+(last[1]/pts[pts.length-2][1]).toFixed(1)+' with every step. Each call count is measured by running the recursion, and matches the recurrence calls(a) = 1 + the sum of calls(a − c) over sizes that fit.';
 }
 
 /* ---------- 4. the table, frame by frame ---------- */

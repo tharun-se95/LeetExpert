@@ -85,7 +85,7 @@ function mountCost(host){
     if(windowTrace(s).best!==26||bruteLongest(cycle(Math.min(n,78))).len!==26)throw new Error('cycle check failed at '+n);
     pts.push([n,a,b]);}
   var last=pts[pts.length-1];
-  costChart(host,{pts:pts,xmax:520,xticks:[0,130,260,390,520],xlabel:'requests in the log',aria:'Characters read as the log grows: restarting from every position reads about '+Math.round(last[1]/last[2])+' times as many characters as one pass with a window.'});
+  costChart(host,{names:['restart from every position','one pass with a window'],ylabel:'characters read',pts:pts,xmax:520,xticks:[0,130,260,390,520],xlabel:'requests in the log',aria:'Characters read as the log grows: restarting from every position reads about '+Math.round(last[1]/last[2])+' times as many characters as one pass with a window.'});
   host.parentNode.querySelector('.cost-note').innerHTML='On a log of <b>'+last[0]+'</b> requests cycling through 26 backends, restarting reads <b>'+fmt(last[1])+'</b> characters and the window <b>'+fmt(last[2])+'</b>, about <b>'+Math.round(last[1]/last[2])+'</b> times fewer. Each restart re-reads a whole clean stretch of 26 plus the repeat that stops it, so it costs about 27 per start; the window reads each character in once and out once. Both counts are measured by running the two versions.';
 }
 

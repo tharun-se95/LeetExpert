@@ -1,0 +1,36 @@
+{
+ "reel": "2026-09-30-two-pointers-card",
+ "slides": [
+  {
+   "at": "small",
+   "dt": 1.8,
+   "text": "Sorted array + pair sum → opposite ends: l at the front, r at the back; too small moves l in, too big moves r in.",
+   "alt": "Under \"Sorted array, pair / triplet sum → Opposite ends\", Python two_sum(numbers, target) with l, r = 0, len(numbers) - 1 and while l < r; the branch if s < target: l += 1 is highlighted with the note \"Sum too small: move l in\". On 2, 7, 11, 15, l is on 2 and r on 7: 2 + 7 = 9."
+  },
+  {
+   "at": "finds",
+   "dt": 1.5,
+   "text": "Remove / move while reading ahead → fast & slow: fast explores, slow marks the end of what you keep.",
+   "alt": "Under \"Remove / move while reading ahead → Fast / slow\", Python remove_duplicates(nums) with if nums[fast] != nums[slow]: slow += 1; nums[slow] = nums[fast] highlighted and the note \"Something new? slow steps forward, takes it\". The array reads 0, 1, 2, 3 kept, then dimmed values, with fast on a 4: 4 is new."
+  },
+  {
+   "at": "merging",
+   "dt": -0.6,
+   "text": "Area between two lines → move inward, always the shorter side (the taller one can never raise the minimum).",
+   "alt": "Under \"Container / area between indices → Inward from tallest hope\", Python max_area(h) with if h[l] < h[r]: l += 1 else: r -= 1 highlighted and the note \"Move the shorter side: the taller one can never raise the minimum\". Heights 1, 8, 6, 2, 5, 4, 8, 3, 7; returns 49."
+  },
+  {
+   "at": "runs",
+   "dt": 1.5,
+   "text": "Merge two sorted lists → one pointer each: take the smaller head, then append the rest.",
+   "alt": "Under \"Merge two sorted streams → One pointer each\", Python merge(a, b) with return out + a[i:] + b[j:] highlighted and the note \"One runs out: append the rest\". a is 1, 2, 4 and b is 1, 3, 4: + the rest → [1, 1, 2, 3, 4, 4]."
+  },
+  {
+   "at": "itself",
+   "dt": 1.5,
+   "text": "Watch l < r: with l <= r the middle element can pair with itself.",
+   "alt": "\"Two traps\": forgetting the sort prerequisite (opposite-end sum logic is wrong on unsorted data; sort first or pick another pattern) and crossing pointers (the loop condition is usually l < r; equality can double-count the middle element). while l < r ✓ against while l <= r, where [3], 6 → [1, 1] ✗."
+  }
+ ],
+ "challenge": "checking whether a string is a palindrome. Which pattern?"
+}

@@ -1,0 +1,97 @@
+{
+ "parens": {
+  "cases": 8,
+  "valid": {
+   "s": "([{}])",
+   "steps": [
+    {
+     "ch": "(",
+     "stack": "("
+    },
+    {
+     "ch": "[",
+     "stack": "(["
+    },
+    {
+     "ch": "{",
+     "stack": "([{"
+    },
+    {
+     "ch": "}",
+     "stack": "(["
+    },
+    {
+     "ch": "]",
+     "stack": "("
+    },
+    {
+     "ch": ")",
+     "stack": ""
+    }
+   ],
+   "fail": null,
+   "valid": true
+  },
+  "invalid": {
+   "s": "([)]",
+   "steps": [
+    {
+     "ch": "(",
+     "stack": "("
+    },
+    {
+     "ch": "[",
+     "stack": "(["
+    }
+   ],
+   "fail": {
+    "at": 2,
+    "ch": ")",
+    "top": "["
+   },
+   "valid": false
+  },
+  "challenge": {
+   "s": "{[]}",
+   "valid": true
+  }
+ },
+ "train": {
+  "cars": 5,
+  "hops_to_5": 4,
+  "hops_to_1000": 999,
+  "front": [
+   {
+    "size": 5,
+    "links_written": 1,
+    "old_engine_second": true
+   },
+   {
+    "size": 1000,
+    "links_written": 1,
+    "old_engine_second": true
+   },
+   {
+    "size": 100000,
+    "links_written": 1,
+    "old_engine_second": true
+   }
+  ],
+  "reachable_after_losing_head": 0,
+  "cars_still_linked_behind": 5
+ },
+ "bsearch": {
+  "n": 1000000000,
+  "worst": 30,
+  "trillion": 40,
+  "max_seen": 30,
+  "searches": 20006,
+  "bit_length": 30
+ },
+ "bigo": {
+  "n": 1000,
+  "n2": 1000000,
+  "nlogn": 9966,
+  "logn": 9.97
+ }
+}

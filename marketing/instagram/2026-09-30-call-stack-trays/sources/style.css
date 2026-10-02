@@ -1,0 +1,13 @@
+.big{font-size:88px;font-weight:700}
+.val{position:absolute;font-family:"Space Mono",monospace;font-size:38px;font-weight:700;white-space:nowrap;line-height:1.35}
+/* trays */
+.trays{position:absolute;left:0;right:0;top:100px;height:340px}
+.tray{position:absolute;width:560px;height:34px;border-radius:10px;background:#334155;border:3px solid #64748b}
+/* the call stack */
+.dir{position:absolute;left:150px;top:380px;font-family:"Space Mono",monospace;font-size:32px;font-weight:700;color:#cbd5e1}
+.fr{position:absolute;left:150px;width:780px;height:104px;border-radius:18px;border:3px solid #5eead4;background:#0f3d37;display:flex;align-items:center;justify-content:space-between;padding:0 26px;z-index:2}
+.fn{font-family:"Space Mono",monospace;font-size:40px;font-weight:700}
+.sts{position:relative;width:330px;height:50px}
+.st{position:absolute;right:0;top:0;font-family:"Space Mono",monospace;font-size:34px;font-weight:700;line-height:50px;white-space:nowrap}
+.fr .st.amb{position:static}
+.floor{position:absolute;left:140px;width:800px;height:6px;border-radius:3px;background:#94a3b8}

@@ -6,7 +6,8 @@
 
   At 1366x900 and 375x812 it fails on: a console or page error (which includes the page's own
   load checks), layout shift while every widget and banner plays, horizontal page overflow, text
-  below WCAG AA against what is actually painted behind it, a control or diagram without an
+  below WCAG AA against what is actually painted behind it, a color-scheme that does not match the
+  theme (so native scrollbars paint the wrong theme, #107), a control or diagram without an
   accessible name, a revealed solution in the DOM before its reveal is opened, and, under reduced
   motion, anything still animating or autoplaying. It then drives every widget (reveals, quiz and predict
   answers, step players, walkthroughs, tabs, and every other widget button) and fails on a state the
@@ -303,6 +304,23 @@ try {
     });
     await page.goto(URL_, { waitUntil: "load" });
     await page.waitForTimeout(1500);
+    // Both theme paths: the system preference this context emulates, then the toggle's data-theme
+    // forcing the other theme. A navy card is dark on either page.
+    const schemes = await page.evaluate((t) => {
+      const root = document.documentElement, other = t === "dark" ? "light" : "dark";
+      const read = () => [getComputedStyle(root).colorScheme,
+        ...[...document.querySelectorAll(".navy")].map((e) => getComputedStyle(e).colorScheme)];
+      const sys = read(), prev = root.getAttribute("data-theme");
+      root.setAttribute("data-theme", other);
+      const forced = read();
+      prev === null ? root.removeAttribute("data-theme") : root.setAttribute("data-theme", prev);
+      return { other, sys, forced };
+    }, theme);
+    for (const [want, got, how] of [[theme, schemes.sys, "system"], [schemes.other, schemes.forced, "data-theme"]]) {
+      if (got[0] !== want) note(w, `color-scheme is "${got[0]}" on the ${want} page (${how} path)`);
+      const light = got.slice(1).filter((c) => c !== "dark").length;
+      if (light) note(w, `${light} navy card(s) not color-scheme dark on the ${want} page (${how} path)`);
+    }
     const before = await page.evaluate(() => document.querySelectorAll(".reveal-body").length &&
       [...document.querySelectorAll(".reveal-body")].filter((b) => b.innerHTML.trim()).length);
     if (before) note(w, `${before} reveal(s) have content before being opened`);

@@ -22,7 +22,7 @@ python3 web/lesson-artifacts/build.py coin-change            # rebuild one
   - `engine.js`: palette, animation clock and the scene player (grid boards and node-link boards,
     directed arrows with `tree.directed`).
   - `trees.js`: binary-tree layout helpers.
-  - `kit.js`: reveals, code blocks, quiz, predict widget, stepper, cost chart, letter strip, graph view,
+  - `kit.js`: reveals, code blocks, quiz, predict widget, stepper, letter strip, graph view,
     banners, contents rail, language switch, theme repaint and the embedding contract.
   - `kit.css`: layout, widgets and the scaled-down type scale.
 - `<lesson>/`: `lesson.md` (the page's content), `lesson.js` (its own widgets, animation, checks and
@@ -115,6 +115,44 @@ with what it needs before it (`KIT_DEPS`):
   from; `mark` places a named index (`i`, `l`, `head`); `span` names a range over a row (a window, the
   sorted part); `tone` is `cur`, `good`, `bad` or `dim`; `snap` records a step. Spec:
   `docs/superpowers/specs/2026-09-27-array-string-player-design.md`.
+
+- `kit/calltrees.js`: recursion and backtracking call trees, built on the graph lane
+  (`graphs.js`, extended with `gap`, `words` and `plain`) and an ordinary stack lane, with no lane kind of its
+  own. Run the algorithm into a `CallTrace` (`call`, `base`, `ret`, `prune`), then `callTreeWalk(trace, o)`
+  records the steps: every node's position is fixed from the finished tree, a call fills its slot and links
+  its edge when it is made, and the frames on the stack lane are the path from the root. A call is `active`,
+  `returned`, `base` or `pruned`; the state after k events is a pure function of them (`callTreeState`) and
+  every recorded step is checked against it on load. `mountCallTreeTabs` adds the state key. Spec:
+  `docs/superpowers/specs/2026-09-29-call-tree-player-design.md`.
+
+- `kit/intervals.js` + `intervals.css`: intervals on a number line. An `intervals` lane kind on `lanes.js`'s seam: each
+  item is a bar (`bar(id, lo, hi)`, `reach(item, lo, hi)`) whose row is its slot and whose position and width are its
+  extent on one shared axis; `mark` is a named coordinate (the sweep line, a burst arrow) and `span` a named range
+  (a gap, free time). Record the algorithm into an `IvTrace` (`sort`, `state`, `reach`, `merge`, `add`, `remove`,
+  `mark`, `band`, `count`; states named by the walkthrough, each drawn by its own tone), then `ivWalk(trace, o)`
+  records the steps; the state after k steps is a pure function of them (`ivState`) and every recorded step is
+  read back (`ivRead`) and checked on load. `mountIvTabs` adds the state key. Spec:
+  `docs/superpowers/specs/2026-09-29-intervals-player-design.md`.
+
+- `kit/tries.js`: tries (prefix trees), built on the graph lane like call trees, with no lane kind of its own.
+  `TrieTrace` is the trie: the lesson's algorithm walks it (`child`, `children` look up; `make`, `go`, `miss`,
+  `end`, `unend`, `found`, `back`, `drop`, `reset` each record a step), then `trieWalk(trace, o)` records the steps.
+  Every node's place is fixed from the finished trie (`graphTreeLayout` in `graphs.js`, children in letter order);
+  a node shows its letter (the root `""`) and the word that ends at it on its second line; the cursor is the mark
+  `node`. The state after k steps is a pure function of them (`trieState`) and every recorded step is read back
+  (`trieRead`) and checked on load. A board for Word Search II is an ordinary grid lane in `o.lanes`, filled by
+  `o.init` and driven from `o.on`. `mountTrieTabs` adds the state key. Spec:
+  `docs/superpowers/specs/2026-09-30-trie-player-design.md`.
+
+- `kit/plots.js` + `plots.css`: cost plots, how a cost grows with n. Named series on one pair of axes (`curve`, a
+  formula or a named class; `points`, `bars` and `range`, counts measured by running code), a cursor walking n whose
+  value for each series is read out beside the plot, named horizontal and vertical lines, and counters. Text is HTML
+  over an SVG drawn at its real size, never SVG text in a scaled `viewBox`. Record the steps into a `PlotTrace`
+  (`reveal`, `hide`, `cursor`, `level`, `at`, `count`), then `plotWalk(T, o)`; the state after k steps is a pure
+  function of them (`plotState`), every snapshot is read back (`plotRead`) and checked on load, and `plotCheck`
+  holds a measured series to its closed form. `costChart` (the static two-series chart five lessons draw) is the
+  same renderer. `kit/plotplayer.js` (`mountPlotTabs`, `PlotPlayer`) steps through a plot on the step player,
+  shipped only where a plot is stepped. Spec: `docs/superpowers/specs/2026-09-30-cost-plot-player-design.md`.
 
 `kit-players/` is a specimen, not a lesson: `build.py` declares it under `specimens` and the ledger does
 not count it. It runs `LanePlayer` through every shape, so the browser gate holds a new player to the

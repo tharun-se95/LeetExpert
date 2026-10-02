@@ -1,0 +1,16 @@
+/* hook: the AI badge over the code card */
+.aibadge{position:absolute;right:80px;top:340px;display:flex;align-items:center;gap:10px;font-family:"Space Mono",monospace;font-size:26px;font-weight:700;color:#0e1520;background:#fbbf24;padding:6px 16px;border-radius:10px}
+.aibadge svg{width:40px;height:40px}
+/* arrays as rows of cells */
+.cells{position:absolute;display:flex;gap:16px}
+.cell{width:130px;height:130px;border-radius:20px;border:3px solid #263248;background:#0e1520;display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:64px;font-weight:700}
+.cell.bad{border-color:#fbbf24;color:#fbbf24}.cell.ok{border-color:#5eead4;color:#5eead4}
+.call{font-family:"Space Mono",monospace;font-size:44px;font-weight:700}
+/* the seats */
+.seat{position:absolute;width:180px;height:200px}
+.pax{position:absolute;width:120px;height:120px;border-radius:50%;background:#f1f4f9;color:#0e1520;display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:60px;font-weight:700;border:6px solid #f1f4f9}
+.slab{position:absolute;width:180px;text-align:center;font-family:"Space Mono",monospace;font-size:28px;font-weight:700;color:#94a3b8}
+.fing{position:absolute;width:64px;height:112px}
+.tag{position:absolute;font-family:"Space Mono",monospace;font-size:32px;font-weight:700;white-space:nowrap}
+.ring{position:absolute;width:150px;height:150px;border-radius:50%;border:6px dashed #fbbf24}
+/* dict / list panels reuse the kit's .err panels */

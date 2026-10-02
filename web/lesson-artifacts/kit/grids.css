@@ -12,3 +12,9 @@
 .gd-rect .gd-tag{fill:var(--card);stroke:var(--fam);stroke-width:1}
 .gd-rect text{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;fill:var(--mk)}
 .gd-rect.hi text{font-weight:700}
+/* a dependency arrow: which earlier cells fed this one. Same family stroke as a trail, with a
+   filled head so the direction (into the target) is unambiguous even in a still frame */
+.gd-deps line{stroke:var(--fam);stroke-width:1.6;opacity:.7}
+.gd-deps path{fill:var(--fam);opacity:.7}
+.gd-deps.hi line{stroke-width:2.2;opacity:1}
+.gd-deps.hi path{opacity:1}
