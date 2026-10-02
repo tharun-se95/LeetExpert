@@ -76,10 +76,11 @@ python3 web/lesson-artifacts/ledger.py record <module/slug> build|code|light|dar
 python3 web/lesson-artifacts/ledger.py check      # also run in CI (tests/lessonArtifactsLedger.test.ts)
 python3 web/lesson-artifacts/ledger.py render     # rewrite LEDGER.md
 python3 web/lesson-artifacts/ledger.py gated      # the pages CI gates, as JSON
-python3 web/lesson-artifacts/ledger.py gate <module/slug>   # run a page's gates, recording nothing
+python3 web/lesson-artifacts/ledger.py gate <module/slug> [light|dark]   # run a page's gates (or one theme's half), recording nothing
 ```
 
-CI (`.github/workflows/ci.yml`, "Artifact gates") runs `gate` on every page `gated` lists: each row that
+CI (`.github/workflows/ci.yml`, "Artifact gates") runs `gate` on every page `gated` lists, one job per page and theme (`gate <page> light` runs build, code and
+light; `gate <page> dark` runs build and dark). `gated` lists each row that
 holds evidence for every verified gate, fresh or stale, and every specimen. A kit change stales every
 page, and CI is where you learn whether it also broke one. Recording evidence stays a local step, since
 it writes the ledger.
