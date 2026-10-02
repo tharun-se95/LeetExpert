@@ -74,7 +74,7 @@ export async function runJavaScript(req: RunRequest): Promise<Outcome[]> {
 /* --------------------------------- Python -------------------------------- */
 
 /** Pulls the driver out of py-runner.js so CI runs the shipped one. */
-function pythonDriver(): string {
+export function pythonDriver(): string {
   const src = readFileSync(join(PUBLIC, "py-runner.js"), "utf8");
   const start = src.indexOf("const DRIVER = String.raw`");
   const open = src.indexOf("`", start);
