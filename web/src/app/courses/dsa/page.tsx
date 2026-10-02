@@ -12,6 +12,7 @@ import {
 import { familyCssVars, getFamilyTheme } from "@/lib/visual/familyTheme";
 import { getModuleArt } from "@/lib/course/media";
 import { moduleHref } from "@/lib/course/nav";
+import { overviewHref, overviewsByStage } from "@/lib/course/overviews";
 import { cn } from "@/lib/utils";
 import { canonicalFor } from "@/lib/seo/site";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -222,6 +223,37 @@ export default function CourseOverviewPage() {
                   </Link>
                 );
               })}
+              {overviewsByStage(stage.number).map((overview) => (
+                <Link
+                  key={overview.slug}
+                  href={overviewHref(overview.slug)}
+                  data-overview-card={overview.slug}
+                  // Family colour is scoped to this card, as the module cards'.
+                  style={familyCssVars(overview.family)}
+                  className="group block rounded-[length:var(--radius-lg)] border border-border bg-elevated p-5 shadow-elevation transition hover:border-accent/45 sm:col-span-2"
+                >
+                  <p className="inline-flex items-center gap-2 font-mono text-[10px] tracking-wide text-muted uppercase">
+                    <span
+                      className="h-1.5 w-1.5 rounded-full bg-accent"
+                      aria-hidden
+                    />
+                    Stage overview
+                  </p>
+                  <h3 className="mt-2 font-display text-xl font-bold tracking-tight">
+                    {overview.title}
+                  </h3>
+                  <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-muted">
+                    {overview.summary}
+                  </p>
+                  <span
+                    aria-hidden
+                    className="mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wide text-mark"
+                  >
+                    Open overview
+                    <ArrowRight weight="bold" className="h-3 w-3" />
+                  </span>
+                </Link>
+              ))}
             </div>
           </section>
         ))}

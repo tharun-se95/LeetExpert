@@ -288,6 +288,9 @@ describe("every DSA content URL in the sitemap is backed by a real file", () => 
       .map((r) => /^\/courses\/dsa\/([^/]+)\/([^/]+)$/.exec(r))
       .filter((m): m is RegExpExecArray => m !== null)
       .filter(([, mod]) => mod !== "problems")
+      // Stage overviews are built pages, not markdown — covered instead by
+      // tests/overviewPages.test.tsx.
+      .filter(([, mod]) => mod !== "overviews")
       // The concept map has its own route and is backed by the registry, not
       // by markdown — covered instead by tests/conceptMapCoverage.test.ts.
       .filter(([, , lesson]) => lesson !== "concept-map")

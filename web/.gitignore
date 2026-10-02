@@ -44,3 +44,6 @@ next-env.d.ts
 # Pyodide runtime, copied from node_modules at build time
 /public/pyodide/
 /public/search-index.json
+
+# Course overview pages, built from lesson-artifacts at prebuild
+/public/artifacts/
