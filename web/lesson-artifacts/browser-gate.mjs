@@ -257,10 +257,12 @@ async function drive(page, w, issues) {
   const KNOWN = ".reveal-btn, .qopt, .choice, .lp-btn, .lp-seg, .player button, .extabs button";
   const widgets = page.locator(".widget");
   for (let i = 0; i < (await widgets.count()); i++) {
-    const wd = widgets.nth(i), rest = wd.locator("button, [role=button]");
+    // Handles to the buttons there on arrival, not a live nth(k): a statement widget (the reverse
+    // lesson's) adds a step per press ahead of its buttons, so a re-counted index kept landing on
+    // another statement button and the loop never ended.
+    const wd = widgets.nth(i), rest = await wd.locator("button, [role=button]").elementHandles();
     let clicked = 0;
-    for (let k = 0; k < (await rest.count()); k++) {
-      const b = rest.nth(k);
+    for (const b of rest) {
       if ((await b.evaluate((x, sel) => x.matches(sel) || x.disabled, KNOWN)) || !(await b.isVisible())) continue;
       await b.click();
       await page.waitForTimeout(150);
