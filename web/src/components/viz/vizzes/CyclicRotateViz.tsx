@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { VizPlayer } from "@/components/viz/VizPlayer";
 import { StatusPanel, Tape, type Tone } from "@/components/viz/pieces";
 import { numberArrayProp, speedProp } from "@/components/viz/props";
+import { polarPoint } from "@/lib/visual/polar";
 import type { VizCode, VizStep } from "@/components/viz/types";
 
 /**
@@ -206,10 +207,7 @@ function angleFor(index: number, n: number): number {
 }
 
 function pointAt(radius: number, angle: number): { x: number; y: number } {
-  return {
-    x: RING_C + radius * Math.cos(angle),
-    y: RING_C + radius * Math.sin(angle),
-  };
+  return polarPoint(RING_C, RING_C, radius, angle);
 }
 
 function cellTone(state: CycleState, i: number): Tone {
