@@ -198,11 +198,14 @@ K = ("--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-i
 
 # @@L@@ and @@D@@ become the light and dark token lists, @@N@@ the navy card's inks in the light
 # theme and @@ND@@ in the dark one. The dark .navy rules outrank .navy (0,3,0 against 0,1,0).
+# color-scheme travels with each token list: without it native controls (a lane stage's sideways
+# scrollbar) keep the light default and draw a white track across the dark page. The navy card is
+# dark in both themes, so it is dark whatever the page is (#107).
 BASE_CSS = r'''
-:root{@@L@@;@@K@@}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){@@D@@}}
-:root[data-theme="dark"]{@@D@@}
-.navy{@@N@@;--bg:var(--nv-bg);--card:var(--nv-card);--deep:var(--nv-deep);--well:var(--nv-deep);--hair2:var(--nv-hair2);--mut:var(--nv-mut);@@K@@;color:var(--fg)}
+:root{@@L@@;@@K@@;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){@@D@@;color-scheme:dark}}
+:root[data-theme="dark"]{@@D@@;color-scheme:dark}
+.navy{color-scheme:dark;@@N@@;--bg:var(--nv-bg);--card:var(--nv-card);--deep:var(--nv-deep);--well:var(--nv-deep);--hair2:var(--nv-hair2);--mut:var(--nv-mut);@@K@@;color:var(--fg)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .navy{@@ND@@}}
 :root[data-theme="dark"] .navy{@@ND@@}'''.replace("@@K@@", K) + r'''
 *{box-sizing:border-box}
