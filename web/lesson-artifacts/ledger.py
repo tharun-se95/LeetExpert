@@ -7,7 +7,7 @@ Spec: docs/superpowers/specs/2026-09-24-lesson-artifacts-rollout-design.md (sect
     python3 web/lesson-artifacts/ledger.py render            # rewrite LEDGER.md from ledger.json
     python3 web/lesson-artifacts/ledger.py record ID GATE    # run one gate for one lesson and store its evidence
     python3 web/lesson-artifacts/ledger.py gated             # JSON list of the pages CI gates (see cmd_gated)
-    python3 web/lesson-artifacts/ledger.py gate ID           # run every gate a page holds, recording nothing (CI)
+    python3 web/lesson-artifacts/ledger.py gate ID [THEME]   # run every gate a page holds, or one theme's half, recording nothing (CI)
 
 Overviews (pages across several modules, e.g. overviews/linear-structures) are not lessons in the app's
 manifest, so they sit in their own table, declared by build.py LESSONS under "overviews". They pass the
@@ -260,6 +260,15 @@ def gates_for(page_id):
     return ["build", "code", "light", "dark"]
 
 
+def gates_for_half(page_id, theme):
+    """One CI job's share of a page's gates: build always (it produces dist the browser gate reads), the code
+    check only in the light half so it runs once, then that one theme. A page with 24 step players takes
+    longer than a job's timeout when both themes run in sequence, so CI splits them across two jobs."""
+    if theme not in ("light", "dark"):
+        raise SystemExit(f"unknown theme {theme}; themes: light, dark")
+    return [g for g in gates_for(page_id) if g == "build" or g == theme or (g == "code" and theme == "light")]
+
+
 def cmd_gated():
     """The pages CI re-runs the gates on: every row that holds evidence for every verified gate, fresh or
     stale, and every specimen. Stale is included on purpose: a kit change stales every page, and the point
@@ -270,10 +279,10 @@ def cmd_gated():
     print(json.dumps(ids + specimens()))
 
 
-def cmd_gate(page_id):
+def cmd_gate(page_id, theme=None):
     if page_id not in specimens() and row_of(load(), page_id) is None:
         raise SystemExit(f"{page_id} is not a lesson, an overview or a specimen in build.py")
-    for g in gates_for(page_id):
+    for g in (gates_for(page_id) if theme is None else gates_for_half(page_id, theme)):
         print(f"{page_id}: {g}: {run_gate(page_id, g)}", flush=True)
 
 
@@ -339,7 +348,7 @@ if __name__ == "__main__":
         cmd_record(a[1], a[2])
     elif a[:1] == ["gated"]:
         cmd_gated()
-    elif a[:1] == ["gate"] and len(a) == 2:
-        cmd_gate(a[1])
+    elif a[:1] == ["gate"] and len(a) in (2, 3):
+        cmd_gate(*a[1:])
     else:
         raise SystemExit(__doc__)
