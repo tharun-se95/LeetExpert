@@ -118,6 +118,16 @@ session's or the owner's PR unless asked. After the merge, check the issue close
 reached Done. A merge to `main` can reach production, so a PR that changes deploy config, secrets,
 migrations or auth waits for the owner.
 
+**Watch what you dispatch (owner, 2026-10-02).** Every background task an agent starts gets an
+estimate and a deadline, stated when it starts. That covers a subagent, an Antigravity run, a
+background command, or CI it is waiting on. At the deadline the agent checks the task's process, log,
+branch and the task list. If the task is overdue, the agent finds out why before waiting longer:
+queued behind another job, stuck, slow, or dead. Then it reports what it found and what it is doing
+about it. An agent that must queue behind a long run (one browser gate at a time, below) says so up
+front or reorders the work. When a task reports back, the agent stops it if it is still open and kills
+anything it left running, such as orphaned browsers or dev servers. On 2026-10-02 a CI fix sat an hour
+behind its own dispatcher's gate run, and a finished agent's task stayed open 2.5 hours, both unnoticed.
+
 **Several sessions share one checkout.** The main checkout often holds another session's
 uncommitted work.
 
