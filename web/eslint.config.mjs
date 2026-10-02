@@ -31,6 +31,9 @@ const eslintConfig = defineConfig([
     // Emscripten output is not our source; linting it floods CI/local with
     // thousands of false positives and can fail on `module` assignment.
     "public/pyodide/**",
+    // Built by scripts/build-overviews.mjs (gitignored): generated pages and
+    // the vendored motion.js, not our source.
+    "public/artifacts/**",
   ]),
   {
     rules: {
