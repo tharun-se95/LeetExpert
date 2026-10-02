@@ -206,7 +206,7 @@ var FACTS=(function(){
       return function(){M.animate(0,1,{duration:1.2,onUpdate:function(v){a.textContent=v>.5?'can be built':'';b.textContent=v>.9?'cannot: a loop':'';}});};
     },
     trap:function(svg){
-      var big=S('text',{x:360,y:52,class:'bn-big red','text-anchor':'middle'},svg);big.textContent='1 order';
+      var big=S('text',{x:360,y:52,class:'bn-big bad','text-anchor':'middle'},svg);big.textContent='1 order';
       S('text',{x:360,y:88,class:'bn-t','text-anchor':'middle'},svg).textContent='10 courses have 3,628,800 possible build orders';
       return function(){M.animate(1,factorial(10),{duration:2.6,ease:'easeIn',onUpdate:function(v){big.textContent=fmt(Math.round(v))+' orders';}});};
     },

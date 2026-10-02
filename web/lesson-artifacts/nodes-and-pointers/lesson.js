@@ -141,7 +141,7 @@ function mountCost(){
       chainArt(svg,[7,3],150,42);var g=S('g',{},svg);chainArt(g,[12],480,42);
       var loop=S('path',{d:'M392,42 C392,6 352,6 352,40',class:'bn-path b2',style:'fill:none;opacity:0'},svg),n=S('rect',{x:330,y:42,width:70,height:36,rx:8,class:'bn-mid',style:'opacity:0'},svg);
       var t=S('text',{x:356,y:65,class:'bn-t','text-anchor':'middle',style:'font-size:14px;font-weight:600;opacity:0'},svg);t.textContent='9';
-      var big=S('text',{x:660,y:66,class:'bn-big red','text-anchor':'middle'},svg);
+      var big=S('text',{x:660,y:66,class:'bn-big bad','text-anchor':'middle'},svg);
       return function(){M.animate(0,1,{duration:1,delay:.4,onUpdate:function(v){n.style.opacity=v;t.style.opacity=v;loop.style.opacity=v;g.style.opacity=1-.6*v;big.textContent=v>.5?'12 lost':'';}});};
     }
   };

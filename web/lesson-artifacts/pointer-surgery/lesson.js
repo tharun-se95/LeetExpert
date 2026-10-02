@@ -132,7 +132,7 @@ var PS_OPTS={inv:function(s){return PS_INV[s.data.kind];},check:psCheck,fields:p
     },
     /* the 7 that a careless advance steps over */
     trap:function(svg){
-      var X=chainArt(svg,[7,7,3],180,42),t=S('text',{y:104,class:'bn-t','text-anchor':'middle'},svg),big=S('text',{x:640,y:66,class:'bn-big red','text-anchor':'middle'},svg);t.textContent='prev';
+      var X=chainArt(svg,[7,7,3],180,42),t=S('text',{y:104,class:'bn-t','text-anchor':'middle'},svg),big=S('text',{x:640,y:66,class:'bn-big bad','text-anchor':'middle'},svg);t.textContent='prev';
       return function(){M.animate(0,1,{duration:1,delay:.4,onUpdate:function(v){t.setAttribute('x',X(v)+35);big.textContent=v>.9?'7 skipped':'';}});};
     },
     /* three names on one list */

@@ -34,7 +34,7 @@
 #heroCap{font-size:14px;color:var(--mut);width:min(32ch,100%);min-height:3.2em;text-align:right} #heroCap b{color:var(--fg);font-weight:500}
 .banner{margin:0 0 22px;border:1px solid var(--hair2);border-radius:14px;background-color:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden}
 .banner svg{width:100%;height:auto;display:block}
-.bn-t{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)} .bn-big{font:700 22px 'Space Mono',monospace;fill:var(--fg)} .bn-big.red{fill:var(--r-ink)}
+.bn-t{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)} .bn-big{font:700 22px 'Space Mono',monospace;fill:var(--fg)} .bn-big.bad{fill:var(--r-ink)}
 /* a number drawn on an accent fill (.bn-end) takes the accent's own ink: --fg on the dark theme's light blue read 1.79:1 */
 .bn-big.on{fill:var(--fam-on)}
 .bn-path{fill:none;stroke:var(--fam);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round} .bn-path.b2{stroke:var(--o-ink)}

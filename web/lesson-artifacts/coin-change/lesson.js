@@ -240,12 +240,12 @@ var FACTS=(function(){
       S('text',{x:540,y:28,class:'bn-t','text-anchor':'middle'},svg).textContent='best: 3 + 3';
       var a=[4,1,1].map(function(p,i){return S('rect',{x:70+[0,4,5][i]*22,y:40,width:0,height:26,rx:6,class:'bn-bar'},svg);}),
           b=[3,3].map(function(p,i){var r=S('rect',{x:430+i*3*22,y:40,width:0,height:26,rx:6,class:'bn-bar'},svg);r.style.fill='var(--o-ink)';return r;});
-      S('text',{x:180,y:104,class:'bn-big red','text-anchor':'middle'},svg).textContent='3 instances';
+      S('text',{x:180,y:104,class:'bn-big bad','text-anchor':'middle'},svg).textContent='3 instances';
       S('text',{x:540,y:104,class:'bn-big','text-anchor':'middle'},svg).textContent='2 instances';
       return function(){a.forEach(function(r,i){M.animate(0,[4,1,1][i]*22-3,{duration:.4,delay:i*.4,onUpdate:function(v){r.setAttribute('width',v);}});});b.forEach(function(r,i){M.animate(0,66-3,{duration:.5,delay:.3+i*.5,onUpdate:function(v){r.setAttribute('width',v);}});});};
     },
     trap:function(svg){
-      var big=S('text',{x:360,y:50,class:'bn-big red','text-anchor':'middle'},svg);big.textContent='1 call';
+      var big=S('text',{x:360,y:50,class:'bn-big bad','text-anchor':'middle'},svg);big.textContent='1 call';
       S('text',{x:360,y:84,class:'bn-t','text-anchor':'middle'},svg).textContent='to make 25, the recursion asks about the same amounts again and again';
       S('text',{x:360,y:104,class:'bn-t','text-anchor':'middle'},svg).textContent='but there are only 26 different amounts';
       var last=recursionCost([1,2,5],25).calls;
