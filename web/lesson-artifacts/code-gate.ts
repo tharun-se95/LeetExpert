@@ -9,6 +9,9 @@
   what its name claims:
     solution*, naive*, alt*   correct: pass every case
     slow*                     correct but exponential by design: pass the first five cases
+    deep*                     correct, but recursing once per element: pass every case, except that
+                              Python may raise RecursionError, and on at least one case must, since a
+                              page that shows one says so (CPython stops at 1,000 frames by default)
     mistake*                  a shown mistake: must fail at least one case
   The built page must embed exactly those files, so a stale build cannot show code nobody ran.
   This replaces the parked lessonArtifactSolutions test, which needed the app's Lesson tab.
@@ -20,11 +23,15 @@ import ts from "typescript";
 import { judge, localiseOps, request, sandboxFences } from "../tests/helpers/sandboxCases";
 import { pythonAvailable, runJavaScript, runPython } from "../tests/referenceRunner";
 
-const RULES: [RegExp, "all" | "few" | "fail"][] = [
+const RULES: [RegExp, "all" | "few" | "deep" | "fail"][] = [
   [/^(solution|naive|alt)/, "all"],
   [/^slow/, "few"],
+  [/^deep/, "deep"],
   [/^mistake/, "fail"],
 ];
+
+// judge() reports a throw as "case <i> threw: <error>"; only the stack limit excuses a deep* case
+const STACK_LIMIT = /^case \d+ threw: RecursionError\b/;
 
 async function main(): Promise<void> {
   const id = process.argv[2];
@@ -39,7 +46,7 @@ async function main(): Promise<void> {
 
   const names = [...new Set(readdirSync(dir).map((f) => f.replace(/\.(py|ts)$/, "")))].sort();
   const unnamed = names.filter((n) => !RULES.some(([re]) => re.test(n)));
-  if (unnamed.length) throw new Error(`unclassified code files: ${unnamed.join(", ")} (name them solution*, naive*, alt*, slow* or mistake*)`);
+  if (unnamed.length) throw new Error(`unclassified code files: ${unnamed.join(", ")} (name them solution*, naive*, alt*, slow*, deep* or mistake*)`);
 
   const fn = fence.spec.fn as Record<string, string>;
   const failures: string[] = [];
@@ -63,6 +70,12 @@ async function main(): Promise<void> {
       const bad = judge(judged, outcome);
       runs++;
       if (rule === "fail" && bad.length === 0) failures.push(`${name} (${lang}) passes every case, so the page's warning is not true`);
+      if (rule === "deep" && lang === "python") {
+        const wrong = bad.filter((b) => !STACK_LIMIT.test(b));
+        if (wrong.length) failures.push(`${name} (python) fails ${wrong.length} case(s) other than by RecursionError: ${JSON.stringify(wrong[0]).slice(0, 160)}`);
+        else if (bad.length === 0) failures.push(`${name} (python) never reaches RecursionError, so the page's stack-limit claim is not true`);
+        continue;
+      }
       if (rule !== "fail" && bad.length > 0) failures.push(`${name} (${lang}) fails ${bad.length} case(s): ${JSON.stringify(bad[0]).slice(0, 160)}`);
     }
   }

@@ -63,8 +63,10 @@ they disagree. Then:
 - `lessonArtifactSolutions.test.ts` runs the code the page shows against the lesson's own sandbox cases
   in real Python and JavaScript (the harness `reference.test.ts` uses), and requires the built page to
   embed exactly those files. Code files are classified by name: `solution*`, `naive*`, `alt*` must pass every
-  case; `slow*` (correct but exponential) must pass the first five; `mistake*` must fail at least one, so a
-  "Watch out" is only ever printed if it is true.
+  case; `slow*` (correct but exponential) must pass the first five; `deep*` (correct, recursing once per
+  element) must pass every case except by Python's `RecursionError`, and must hit it at least once, since a
+  page that shows one says so; `mistake*` must fail at least one, so a "Watch out" is only ever printed if it
+  is true.
 
 ## Gates and the ledger
 

@@ -130,7 +130,7 @@ Do not return `curr`. The loop's condition is `curr is not None`, so when the lo
 `````
 
 `````reveal #recbox "Follow-up: the recursive version"
-```code alt_recursive "Reverse the rest, then hook on"
+```code deep_recursive "Reverse the rest, then hook on"
 ```
 
 ```notes
