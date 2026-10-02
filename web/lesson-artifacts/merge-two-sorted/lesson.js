@@ -186,12 +186,21 @@ var FACTS=(function(){
       h+='<rect class="hm-e" data-key="'+key+'" x="'+(p[0]-26)+'" y="'+(p[1]-20)+'" width="52" height="40" rx="8"/><text class="hd-val" x="'+p[0]+'" y="'+(p[1]+5)+'" text-anchor="middle">'+e[1]+'</text>';});
     svg.innerHTML=h;
     var num=$('#heroNum'),unit=$('#heroUnit'),cap=$('#heroCap'),N=order.length;
+    var tm=function(key){return (key[0]==='a'?A:B)[+key.slice(1)][1];};
+    function capOf(k){return k===0?'Each server\'s log is already in time order':(k<N?'Linked <b>'+tm(order[k-1])+'</b>, the older of the two fronts':'One timeline, from the same six entries');}
+    /* hold the count at its widest ("6 entries"): "1 entry" is narrower, so at that step the caption fit
+       beside the count, the readout row unwrapped from two lines to one and the hero, centred, moved its art
+       19 px each way (the gate measured 0.08 of layout shift at 1366 px). Then hold the tallest caption. */
+    var box=num.parentNode,caps=order.map(function(_,k){return capOf(k);}).concat(capOf(N));
+    /* measured with the widest text, then the shown text put back: the observer also fires mid-animation */
+    var reserveRead=function(){var n=num.textContent,u=unit.textContent;box.style.minWidth='';num.textContent=N;unit.textContent='entries';
+      box.style.minWidth=Math.ceil(box.getBoundingClientRect().width)+'px';num.textContent=n;unit.textContent=u;reserveHeight(cap,caps);};
+    reserveRead();if('ResizeObserver' in window)new ResizeObserver(reserveRead).observe(box.parentNode);
     function show(k){/* k entries linked */
       svg.querySelectorAll('.hm-link').forEach(function(l){l.classList.toggle('on',+l.dataset.k<k);});
       svg.querySelectorAll('.hm-e').forEach(function(e){e.classList.toggle('on',order.indexOf(e.dataset.key)<k);});
       num.textContent=k;unit.textContent=k===1?'entry':'entries';
-      var last=k?order[k-1]:null,tm=function(key){return (key[0]==='a'?A:B)[+key.slice(1)][1];};
-      cap.innerHTML=k===0?'Each server\'s log is already in time order':(k<N?'Linked <b>'+tm(last)+'</b>, the older of the two fronts':'One timeline, from the same six entries');
+      cap.innerHTML=capOf(k);
     }
     if(reduce||!M||!M.animate){show(N);return;}
     var lastK=-1;M.animate(0,N+2,{duration:(N+2)*1.5,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(N,Math.floor(v));if(k!==lastK){lastK=k;show(k);}}});
