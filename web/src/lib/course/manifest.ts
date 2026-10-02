@@ -793,6 +793,9 @@ export function allLessonsNavIds(): string[] {
 }
 
 const FAMILY_BY_MODULE: Record<string, FamilyId> = {
+  "getting-started": "foundations",
+  "big-o": "foundations",
+  "math-for-dsa": "foundations",
   arrays: "linear-traversal",
   strings: "linear-traversal",
   "hash-tables": "linear-traversal",

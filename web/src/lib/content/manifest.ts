@@ -7,7 +7,8 @@ export type FamilyId =
   | "recursive-exploration"
   | "state-transition"
   | "relationships"
-  | "priority-structures";
+  | "priority-structures"
+  | "foundations";
 
 export interface PatternMeta {
   slug: string;
@@ -135,5 +136,15 @@ export const FAMILIES: FamilyMeta[] = [
       { title: "Monotonic Stack" },
       { title: "Trie" },
     ]),
+  },
+  {
+    id: "foundations",
+    number: 8,
+    title: "Foundations",
+    shortTitle: "Foundations",
+    description:
+      "Before the patterns — how to approach a problem, Big-O, and the maths the course leans on.",
+    // no pattern lab: these modules teach tools the patterns use, not a pattern
+    patterns: [],
   },
 ];
