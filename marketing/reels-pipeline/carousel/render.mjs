@@ -1,5 +1,6 @@
-// Screenshots build/<name>/slideN.html at 1080x1350 into the package named in
-// build/<name>/target (written by cheatsheet.py or reelslides.py) as slideN.png, and fails if
+// Screenshots build/<name>/slideN.html at 1080x1350 (or the WxH in build/<name>/size: a story
+// frame is 1080x1920) into the package named in build/<name>/target (written by the builder) as
+// slideN.png, and fails if
 // any slide's content runs outside its frame or a face failed to load (a fallback face
 // changes every line break the check just measured), or any text was drawn by a system font.
 //   node render.mjs [name ...]
@@ -8,7 +9,7 @@
 import { chromium } from "../../../web/node_modules/playwright-core/index.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join, resolve } from "node:path";
-import { readdirSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from "node:fs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..", "..");
@@ -25,6 +26,10 @@ const failures = [];
 for (const mod of modules) {
   // a carousel that lost a slide must not keep the old last one
   const pkg = resolve(root, readFileSync(join(here, "build", mod, "target"), "utf8").trim());
+  mkdirSync(pkg, { recursive: true });
+  const sizeFile = join(here, "build", mod, "size");
+  const [width, height] = existsSync(sizeFile) ? readFileSync(sizeFile, "utf8").trim().split("x").map(Number) : [1080, 1350];
+  await page.setViewportSize({ width, height });
   for (const old of readdirSync(pkg).filter((f) => /^slide\d+\.png$/.test(f))) rmSync(join(pkg, old));
   const slides = readdirSync(join(here, "build", mod)).filter((f) => /^slide\d+\.html$/.test(f))
     .sort((a, b) => parseInt(a.slice(5)) - parseInt(b.slice(5)));

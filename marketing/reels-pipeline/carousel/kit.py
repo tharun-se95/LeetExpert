@@ -23,8 +23,10 @@ from cheatsheet import DATE, HERE, ROOT
 
 sys.path.insert(0, str(HERE.parent / "spotbug"))
 sys.path.insert(0, str(HERE.parent / "bigoquiz"))
+sys.path.insert(0, str(HERE.parent / "storykit"))
 import bigoquiz  # noqa: E402
 import spotbug  # noqa: E402
+import storykit  # noqa: E402
 
 KIT = HERE.parent / "posting-kit" / "october.json"
 
@@ -67,7 +69,8 @@ def entry(slug, date, slot, kind="cheatsheet", prefix="cs", made=DATE):
     return post
 
 
-def kit():
+def kit(stories=True):
+    """The whole schedule; each October day from Oct 4 also carries its story (#137, ../storykit/)."""
     posts = [p for p in json.loads(KIT.read_text()) if not p["post"].startswith(("cs-", "rc-", "sb-", "bq-"))]
     for p in posts:
         if p["post"] in MOVED:
@@ -85,7 +88,9 @@ def kit():
     posts.sort(key=lambda p: (p["date"], SLOTS.index(p["slot"])))
     days = [(p["date"], p["slot"]) for p in posts]
     assert len(days) == len(set(days)), "two posts share a slot"
-    return posts
+    for p in posts:
+        p.pop("story", None)
+    return storykit.attach(posts) if stories else posts
 
 
 if __name__ == "__main__":
