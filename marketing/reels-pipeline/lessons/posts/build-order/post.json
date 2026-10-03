@@ -1,0 +1,37 @@
+{
+ "name": "what to compile first",
+ "roadmap": 23,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/graphs/topological-sort.md",
+ "module": "Graphs",
+ "archetype": "why DSA? (lesson carousel)",
+ "hook": "How does a build system know what to compile first? It sorts a graph.",
+ "hook_slide": "How does a build system know what to compile *first*?",
+ "hook_sub": "It sorts a graph.",
+ "caption": [
+  "To build a source file you must first build the modules it imports. Model each file as a vertex and each \"A before B\" as an edge A → B. A topological sort is an order in which every edge points forward.",
+  "Kahn's algorithm: anything with no unmet dependencies is safe to place. Place it, remove its edges, and whatever just dropped to zero dependencies is ready next.",
+  "Four files, four imports ({imports}) come out as {order}.",
+  "And the cycle check is free: make app a dependency of utils and {ready_in_cycle} of the {n} files can ever be built. The order comes up short, so no valid order exists.",
+  "Where else have you met this? Course prerequisites, spreadsheet cells… 👇"
+ ],
+ "tags": "#graphs #topologicalsort #buildsystems #python #codinginterview",
+ "cta": "Then the DFS version, and why only a DAG can be ordered.",
+ "slides": [
+  {"k": "THE MODEL", "h": "Tasks are vertices. \"Before\" is an edge.",
+   "p": ["To build a source file you must first build the modules it imports.",
+         "Draw A → B for \"A must come before B\". A *topological sort* is an order where every edge points forward."]},
+  {"k": "THE IDEA", "h": "Start with what depends on nothing",
+   "p": ["A vertex with in-degree zero has no unmet dependencies, so it is safe to place first.",
+         "Place it, remove its edges, and whatever just dropped to zero is ready next."]},
+  {"k": "KAHN'S ALGORITHM", "h": "BFS by in-degree",
+   "code": {"file": "topo.py", "lines": [12, 20], "marks": {"6": "hint"}},
+   "p": ["The queue starts with every vertex whose in-degree is zero. Each one placed can free the vertices it points to."]},
+  {"k": "RUN IT", "h": "{n} files, {edges} imports",
+   "rows": [{"lab": "Must come before", "val": "{imports}", "tone": "mark"},
+            {"lab": "Build order", "val": "{order}", "tone": "good"}]},
+  {"k": "THE FREE CHECK", "h": "A cycle has no starting point",
+   "rows": [{"lab": "Make app a dependency of utils", "val": "{ready_in_cycle} of {n} files can be built", "tone": "bad"}],
+   "p": ["A vertex on a cycle never reaches in-degree zero. If the order comes up short, no valid order exists."]}
+ ]
+}
