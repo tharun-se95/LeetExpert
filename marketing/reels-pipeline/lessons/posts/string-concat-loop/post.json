@@ -1,0 +1,39 @@
+{
+ "name": "+= on a string in a loop",
+ "roadmap": 4,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/strings/strings-in-memory.md",
+ "module": "Strings",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Why += on a string inside a loop quietly goes quadratic.",
+ "hook_slide": "`+=` on a string in a loop *re-copies* what it already built.",
+ "hook_sub": "Strings are immutable. Every `+=` builds a brand-new one.",
+ "caption": [
+  "Strings are immutable in Python and JavaScript. So result += w can't extend result: it allocates a new string and copies both halves in.",
+  "Join [\"a\", \"b\", \"c\", \"d\"] that way and you copy 1 + 2 + 3 + 4 = {small_bad} characters. Collect the pieces in a list and join once: {small_good}.",
+  "At {n} one-letter words it's {big_bad} copies against {big_good}. That's O(n² · L) against O(n · L).",
+  "Honesty note from the lesson: CPython and V8 often special-case += and hide this. The builder is the version whose cost you can prove.",
+  "Which one is in your codebase right now? 👇"
+ ],
+ "tags": "#strings #immutability #timecomplexity #python #codinginterview",
+ "cta": "Trace the copies yourself, then meet the builder pattern.",
+ "slides": [
+  {"k": "THE TRAP", "h": "It looks like one step per word",
+   "code": {"file": "joins.py", "lines": [1, 5], "marks": {"4": "hint"}},
+   "p": ["Strings are immutable. `result += w` allocates a new string of `len(result) + len(w)` and copies both in."]},
+  {"k": "COUNT THE COPIES", "h": "Join a, b, c, d",
+   "rows": [{"lab": "+= each time: 1 + 2 + 3 + 4", "val": "{small_bad} character copies", "tone": "bad"},
+            {"lab": "Collect, then join once", "val": "{small_good} character copies", "tone": "good"}],
+   "p": ["Every step re-copies the whole prefix it already built."]},
+  {"k": "THE FIX", "h": "Collect the pieces. Join once.",
+   "code": {"file": "joins.py", "lines": [7, 11], "marks": {"5": "add"}},
+   "p": ["`parts.append(w)` stores a reference, not characters. `\"\".join(parts)` allocates once and copies each word once."]},
+  {"k": "AT SCALE", "h": "{n} one-letter words",
+   "rows": [{"lab": "+= in the loop", "val": "{big_bad} copies · O(n² · L)", "tone": "bad"},
+            {"lab": "Collect, then join", "val": "{big_good} copies · O(n · L)", "tone": "good"}],
+   "p": ["The triangular sum again: L + 2L + … + nL. The gap only widens as n grows."]},
+  {"k": "HONESTY NOTE", "h": "Your interpreter may hide it",
+   "p": ["CPython and V8 both special-case `+=` on strings when the reference is private, often making it linear in practice.",
+         "Rely on that and your cost depends on interpreter internals. The builder is the version whose cost you can *prove*."]}
+ ]
+}
