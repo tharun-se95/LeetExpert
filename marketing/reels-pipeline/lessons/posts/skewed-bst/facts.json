@@ -1,0 +1,9 @@
+{
+ "small_levels": 5,
+ "small_visits": 5,
+ "n": 1000,
+ "chain_levels": 1000,
+ "chain_visits": 1000,
+ "balanced_levels": 10,
+ "balanced_visits": 10
+}
