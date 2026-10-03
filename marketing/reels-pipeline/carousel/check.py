@@ -10,6 +10,8 @@
    facts.json, then rebuilds each of those carousels' post.md and compares it and its slides.
 7. Reruns the Big-O quiz verifier (../bigoquiz/verify.py) against its facts.json, then rebuilds
    each quiz's post.md and compares it and its image.
+9. Reruns each lesson carousel's verifiers in both runtimes (../lessons/), then rebuilds its
+   post.md and compares it and its slides.
 8. Reruns every reel verifier a story answer rests on (../storykit/), then rebuilds each day's
    story.md and compares it and its frames; the four highlight covers must be there too.
 
@@ -80,6 +82,21 @@ for quiz, (pkg, md, n) in bigoquiz.build().items():
         problems.append(f"{pkg.name}: {len(tags)} hashtags, Instagram allows exactly 5 to be used")
     if "#" in re.search(r"## First comment[^\n]*\n\n(.*?)\n## ", md, re.S).group(1):
         problems.append(f"{pkg.name}: a hashtag in the first comment counts against the caption's five")
+import lessons  # noqa: E402
+for post in lessons.POSTS:
+    try:
+        if lessons.run_verifiers(post) != json.loads((lessons.HERE / "posts" / post / "facts.json").read_text()):
+            problems.append(f"lessons/posts/{post}/facts.json differs from a fresh run: python3 lessons.py --facts")
+    except AssertionError as err:
+        problems.append(str(err))
+for post, (pkg, md, n) in lessons.build().items():
+    if not (pkg / "post.md").exists() or (pkg / "post.md").read_text() != md:
+        problems.append(f"{pkg.name}/post.md differs from a fresh build")
+    if sorted(p.name for p in pkg.glob("slide*.png")) != sorted(f"slide{i}.png" for i in range(1, n + 1)):
+        problems.append(f"{pkg.name}: its slides don't match its build of {n}")
+    tags = re.search(r"## Hashtags\n\n(.+)\n", md).group(1).split()
+    if len(tags) != 5 or len(set(tags)) != 5:
+        problems.append(f"{pkg.name}: {len(tags)} hashtags, Instagram allows exactly 5 to be used")
 import storykit  # noqa: E402
 base = kit(stories=False)
 try:
@@ -104,4 +121,5 @@ reels = len(list((ROOT / "marketing/instagram").glob("*-carousel/sources/slides.
 print(f"{len(build())} cheatsheet carousels match gold.ts ({DATA['counts']['cheatsheets']} cheatsheets in the registry); "
       f"{reels} reel carousels match their reels; {len(spotbug.BUGS)} spot-the-bug carousels match their verified code; "
       f"{len(bigoquiz.QUIZZES)} Big-O quiz singles match their measured answers; "
+      f"{len(lessons.POSTS)} lesson carousels match their verified facts; "
       f"{len(days)} story days and {len(storykit.COVERS)} highlight covers match their posts")

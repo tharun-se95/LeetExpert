@@ -24,7 +24,9 @@ from cheatsheet import DATE, HERE, ROOT
 sys.path.insert(0, str(HERE.parent / "spotbug"))
 sys.path.insert(0, str(HERE.parent / "bigoquiz"))
 sys.path.insert(0, str(HERE.parent / "storykit"))
+sys.path.insert(0, str(HERE.parent / "lessons"))
 import bigoquiz  # noqa: E402
+import lessons  # noqa: E402
 import spotbug  # noqa: E402
 import storykit  # noqa: E402
 
@@ -50,6 +52,10 @@ SPOTBUG_FROM = "2026-11-04"
 # Big-O quiz singles (#136, ../bigoquiz/), one a day after the last spot-the-bug carousel. They are
 # quick posts for gaps in the calendar, so the owner may pull any of them earlier.
 BIGO_FROM = "2026-11-10"
+# Lesson carousels (#172, ../lessons/), one a day after the last quiz single, in the order built.
+LESSONS_FROM = "2026-11-18"
+# post id -> the order it was built in; a new post is appended, so earlier dates never move
+LESSON_ORDER = ["dynamic-array-append"]
 SLOTS = ["9 am", "1 pm", "6 pm"]
 
 
@@ -71,7 +77,7 @@ def entry(slug, date, slot, kind="cheatsheet", prefix="cs", made=DATE):
 
 def kit(stories=True):
     """The whole schedule; each October day from Oct 4 also carries its story (#137, ../storykit/)."""
-    posts = [p for p in json.loads(KIT.read_text()) if not p["post"].startswith(("cs-", "rc-", "sb-", "bq-"))]
+    posts = [p for p in json.loads(KIT.read_text()) if not p["post"].startswith(("cs-", "rc-", "sb-", "bq-", "lc-"))]
     for p in posts:
         if p["post"] in MOVED:
             p["date"], p["slot"] = MOVED[p["post"]], "6 pm"
@@ -85,6 +91,10 @@ def kit(stories=True):
     start = datetime.date.fromisoformat(BIGO_FROM)
     posts += [entry(q, str(start + datetime.timedelta(days=i)), "6 pm", "big-o-quiz", "bq", bigoquiz.DATE)
               for i, q in enumerate(bigoquiz.QUIZZES)]
+    assert sorted(LESSON_ORDER) == lessons.POSTS, "LESSON_ORDER and ../lessons/posts name different posts"
+    start = datetime.date.fromisoformat(LESSONS_FROM)
+    posts += [entry(q, str(start + datetime.timedelta(days=i)), "6 pm", "lesson", "lc", lessons.load(q)["date"])
+              for i, q in enumerate(LESSON_ORDER)]
     posts.sort(key=lambda p: (p["date"], SLOTS.index(p["slot"])))
     days = [(p["date"], p["slot"]) for p in posts]
     assert len(days) == len(set(days)), "two posts share a slot"
