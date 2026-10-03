@@ -1,0 +1,11 @@
+{
+ "greedy_str": "4 + 1 + 1",
+ "greedy_n": 3,
+ "best_str": "3 + 3",
+ "dp_n": 2,
+ "ok_str": "5 + 5 + 1",
+ "ok_n": 3,
+ "ok_dp": 3,
+ "upto": 100,
+ "wrong": 24
+}
