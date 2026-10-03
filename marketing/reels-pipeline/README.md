@@ -19,7 +19,7 @@ stories on, schedule by hand in Meta Business Suite).
 | #134 | Carousel versions of the 12 reels (step-by-step slides from their traces) | Not started |
 | #135 | Spot-the-bug carousels, verified in Python and JavaScript | Six built: `spotbug/` (README there) |
 | #136 | Big-O quiz singles, the answer in the first comment | Eight built: `bigoquiz/` (README there) |
-| #137 | Daily story kit and highlight covers | Not started |
+| #137 | Daily story kit and highlight covers | Built for Oct 4–31: `storykit/` (README there) |
 
 These are independent: several agents can take one each. Claim an issue with a comment
 (CLAUDE.md §7) before starting, work on a `feat/N-…` branch from `main`, and add every
