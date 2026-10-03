@@ -160,6 +160,25 @@ be split into two equal halves"?
         ]
       ],
       "expect": true
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          5
+        ]
+      ],
+      "expect": false
+    },
+    {
+      "args": [
+        [
+          2,
+          6
+        ]
+      ],
+      "expect": false
     }
   ]
 }
