@@ -96,7 +96,9 @@ def slides(post):
             f'Cover. {p["module"]}. {fill(p["hook_slide"], facts)} {fill(p.get("hook_sub", ""), facts)}'.replace("*", "").strip())]
     prose = [p["hook_slide"], p.get("hook_sub", "")]
     for s in p["slides"]:
-        body, alt = f'<div class="k">{e(s["k"])}</div>', [s["k"].capitalize() + "."]
+        kicker = fill(s["k"], facts)
+        body, alt = f'<div class="k">{e(kicker)}</div>', [kicker.capitalize() + "."]
+        prose.append(s["k"])
         if "h" in s:
             body += f'<div class="h">{inline(fill(s["h"], facts))}</div>'
             alt.append(fill(s["h"], facts).replace("`", ""))
