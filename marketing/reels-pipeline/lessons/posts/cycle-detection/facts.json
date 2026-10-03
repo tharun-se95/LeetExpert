@@ -1,0 +1,9 @@
+{
+ "ex_steps": 3,
+ "n": 10000,
+ "loop_steps": 10000,
+ "tail_steps": 9999,
+ "none_steps": 5000,
+ "set_nodes": 10000,
+ "pointers": 2
+}
