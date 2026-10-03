@@ -1,0 +1,39 @@
+{
+ "name": "growth beats hardware",
+ "roadmap": 14,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/big-o/why-efficiency-matters.md",
+ "module": "Big O & Complexity Analysis",
+ "archetype": "why DSA? (lesson carousel)",
+ "hook": "Two correct functions. One finishes in a blink, the other takes days. A faster computer won't save it.",
+ "hook_slide": "Same answer. One takes a blink. The other takes *days*.",
+ "hook_sub": "And a faster computer won't save it.",
+ "caption": [
+  "Two functions that both decide whether any two numbers sum to a target. Both correct. On {n1} numbers one makes {checks_a} pair checks, the other {checks_b} set lookups.",
+  "At about 10⁸ simple operations a second, {big} numbers cost about {a_seconds} seconds against {b_ms} millisecond. At {huge}: about {a_days} days against {b_seconds} seconds.",
+  "So buy a machine {speedup}× faster? A linear algorithm handles {speedup}× more data. A quadratic one, {quad_gain}×. An exponential one, about {exp_gain} more elements.",
+  "The shape of the growth curve is a property of your algorithm, and no amount of hardware budges it.",
+  "What's the worst accidental O(n²) you've shipped? 👇"
+ ],
+ "tags": "#bigo #timecomplexity #algorithms #python #codinginterview",
+ "cta": "Start here: it is the first lesson of the Big O module.",
+ "slides": [
+  {"k": "TWO CORRECT VERSIONS", "h": "Does any pair sum to the target?",
+   "code": {"file": "has_pair.py"}},
+  {"k": "COUNT THE WORK", "h": "{n1} numbers, no matching pair",
+   "rows": [{"lab": "Version A: check every pair", "val": "{checks_a} pair checks", "tone": "bad"},
+            {"lab": "Version B: remember what you saw", "val": "{checks_b} set lookups", "tone": "good"}],
+   "p": ["Nothing about correctness distinguishes them. Only their growth does."]},
+  {"k": "SCALE IT", "h": "At about 10⁸ operations a second",
+   "rows": [{"lab": "{big} numbers", "val": "A: ~{a_seconds} s · B: ~{b_ms} ms", "tone": "warn"},
+            {"lab": "{huge} numbers", "val": "A: ~{a_days} days · B: ~{b_seconds} s", "tone": "bad"}],
+   "p": ["Version A didn't just get a little slower. It fell off a cliff."]},
+  {"k": "GROWTH BEATS HARDWARE", "h": "Buy a machine {speedup}× faster",
+   "rows": [{"lab": "Linear algorithm", "val": "{speedup}× more data", "tone": "good"},
+            {"lab": "Quadratic algorithm", "val": "{quad_gain}× more data", "tone": "warn"},
+            {"lab": "Exponential algorithm", "val": "about {exp_gain} more elements", "tone": "bad"}]},
+  {"k": "THE POINT", "h": "The curve belongs to the algorithm",
+   "p": ["The shape of the growth curve is a property of your algorithm, and no amount of hardware budges it.",
+         "That is why we count operations, not seconds."]}
+ ]
+}
