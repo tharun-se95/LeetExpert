@@ -37,10 +37,10 @@ TONE = {"good": "#7ee2a8", "bad": "#f87171", "mark": "#8db0ff", "warn": "#fbbf24
 
 CSS = CARD_CSS + """
 .p{font-size:42px;color:#cbd5e1;line-height:1.42;margin-top:32px}
-.p code,.h code{font-family:"JetBrains Mono",monospace;font-variant-ligatures:none;font-size:.88em;color:#f1f4f9}
+.p code,.h code,.hook code{font-family:"JetBrains Mono",monospace;font-variant-ligatures:none;font-size:.88em;color:#f1f4f9}
 .row .val{font-size:42px}
 .hook{font-family:"Space Mono",monospace;font-size:84px;font-weight:700;line-height:1.12;margin-top:24px}
-.hook em{font-style:normal;color:#5eead4}
+.hook em,.p em,.h em{font-style:normal;color:#5eead4}
 """
 
 
