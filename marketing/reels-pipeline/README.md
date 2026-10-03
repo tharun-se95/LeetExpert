@@ -17,7 +17,7 @@ stories on, schedule by hand in Meta Business Suite).
 |---|---|---|
 | #133 | Cheatsheet carousels, 13 gold modules | **Started**: `carousel/dump_sheets.ts`, `carousel/sheets.json`, build plan in `carousel/README.md` |
 | #134 | Carousel versions of the 12 reels (step-by-step slides from their traces) | Not started |
-| #135 | Spot-the-bug carousels, verified in Python and JavaScript | Not started |
+| #135 | Spot-the-bug carousels, verified in Python and JavaScript | Six built: `spotbug/` (README there) |
 | #136 | Big-O quiz singles, answer in the first comment | Not started |
 | #137 | Daily story kit and highlight covers | Not started |
 
