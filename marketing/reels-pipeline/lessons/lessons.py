@@ -87,7 +87,7 @@ def slides(post):
     """[(html, alt)] and the lesson's title."""
     p, facts = load(post), json.loads((HERE / "posts" / post / "facts.json").read_text())
     lesson = (ROOT / p["lesson"]).read_text()
-    title = lesson_title(p["lesson"])
+    title = lesson_title(p["lesson"]).strip('"')  # a title with a comma is quoted in the front matter
     assert f'"{p["module"]}"' in MANIFEST or f"'{p['module']}'" in MANIFEST, f"{post}: no module titled {p['module']} in the course manifest"
     known = numbers(lesson) | numbers(" ".join(str(v) for v in facts.values()))
     out = [(f'<div class="k">{e(p["module"].upper())}</div><div class="hook">{inline(fill(p["hook_slide"], facts))}</div>'
