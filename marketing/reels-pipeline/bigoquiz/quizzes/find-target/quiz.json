@@ -1,0 +1,26 @@
+{
+ "lesson": "courses/dsa/big-o/complexity-drills.md",
+ "drill": "Drill 4",
+ "rename": {
+  "drill4": "find_target"
+ },
+ "question": "Worst-case time complexity?",
+ "options": [
+  "O(n)",
+  "O(n log n)",
+  "O(n²)",
+  "O(n³)"
+ ],
+ "answer": "O(n²)",
+ "args": "[V(i) for i in range(1, n + 1)], V(0)",
+ "sizes": [
+  64,
+  256,
+  1024
+ ],
+ "count": {
+  "eq": true,
+  "n": 1000,
+  "formula": "(n - 1) + (n - 1) * (n - 2) // 2 + n"
+ }
+}

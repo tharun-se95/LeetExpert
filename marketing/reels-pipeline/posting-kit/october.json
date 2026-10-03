@@ -504,5 +504,101 @@
   "alt": "Slide 1. Spot the bug: Sort Colors (Dutch National Flag). A 12-line Python function, sort_colors: def sort_colors(nums): / low, mid, high = 0, 0, len(nums) - 1 / while mid < high: / if nums[mid] == 0: / nums[low], nums[mid] = nums[mid], nums[low] / low += 1 / mid += 1 / elif nums[mid] == 1: / mid += 1 / else: / nums[mid], nums[high] = nums[high], nums[mid] / high -= 1. It passes the sample test: sort_colors([2, 0, 2, 1, 1, 0]) gives [0, 0, 1, 1, 2, 2]. Find the input that breaks it. Comment it, then swipe.\n\nSlide 2. Hint. The same code, with line 3 highlighted. When the loop stops, is every element checked? Look at the one where mid meets high.\n\nSlide 3. The input that breaks it: sort_colors([2, 0, 1]). Leaves nums as [1, 0, 2]. It should be [0, 1, 2].\n\nSlide 4. The fix. One line changes. while mid < high: becomes while mid <= high:. JavaScript, same bug: while (mid &lt; high) { becomes while (mid &lt;= high) {.\n\nSlide 5. Why. mid..high is the part not yet read. When mid == high, one element is still unread, and < skips it. From the course: Sort Colors (Dutch National Flag), in Two Pointers.\n\nSlide 6. Closing slide: Passing the sample is not proof. Every problem in leetExpert, the interactive DSA course, has a sandbox: write it in Python or JavaScript and run the lesson's tests. leetexpert.com, link in bio.",
   "hook": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.",
   "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-10",
+  "post": "bq-find-target",
+  "dir": "2026-10-03-find-target-big-o-quiz",
+  "title": "Big-O quiz: find_target (Complexity Drills)",
+  "caption": "Big-O quiz 🧠 One loop. So it's O(n)… right?\n\nWorst-case time complexity? Comment A, B, C or D before you look: the answer and the why are in the first comment.\n\nThe snippet is from the Complexity Drills lesson in leetExpert.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #timecomplexity #python #hiddencost #codinginterview",
+  "alt": "Big-O quiz: Worst-case time complexity? A 7-line Python function, find_target: def find_target(nums: list[int], target: int) -> bool: / for x in nums: / if x in nums[1:]: / pass / if x == target: / return True / return False. Four options: A: O(n), B: O(n log n), C: O(n²), D: O(n³). Comment A, B, C or D. The answer is in the first comment.",
+  "hook": "Big-O quiz 🧠 One loop. So it's O(n)… right?",
+  "slot": "6 pm",
+  "comment": "Answer: C, O(n²). One loop, but nums[1:] copies the list and `in` scans the copy, on every pass. That is n work inside n passes: 500,500 comparisons for n = 1,000 when the target is missing. Built-ins have a price too."
+ },
+ {
+  "date": "2026-11-11",
+  "post": "bq-doublings",
+  "dir": "2026-10-03-doublings-big-o-quiz",
+  "title": "Big-O quiz: doublings (Analyzing Loops & API Complexity)",
+  "caption": "Big-O quiz 🧠 How many times does this loop run?\n\nWhat's the time complexity? Comment A, B, C or D before you look: the answer and the why are in the first comment.\n\nThe snippet is from the Analyzing Loops & API Complexity lesson in leetExpert.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #logarithm #python #loops #codinginterview",
+  "alt": "Big-O quiz: What's the time complexity? A 7-line Python function, doublings: def doublings(n: int) -> int: / steps = 0 / i = 1 / while i < n: / steps += 1 / i *= 2 / return steps. Four options: A: O(1), B: O(log n), C: O(n), D: O(n log n). Comment A, B, C or D. The answer is in the first comment.",
+  "hook": "Big-O quiz 🧠 How many times does this loop run?",
+  "slot": "6 pm",
+  "comment": "Answer: B, O(log n). i doubles every pass, so it reaches n after log₂ n passes: 20 passes for n = 1,000,000. A loop that multiplies or divides its counter by a constant is logarithmic."
+ },
+ {
+  "date": "2026-11-12",
+  "post": "bq-zero-pairs",
+  "dir": "2026-10-03-zero-pairs-big-o-quiz",
+  "title": "Big-O quiz: zero_pairs (Complexity Drills)",
+  "caption": "Big-O quiz 🧠 The inner loop shrinks every pass. Still quadratic?\n\nWhat's the time complexity? Comment A, B, C or D before you look: the answer and the why are in the first comment.\n\nThe snippet is from the Complexity Drills lesson in leetExpert.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #nestedloops #python #timecomplexity #codinginterview",
+  "alt": "Big-O quiz: What's the time complexity? A 7-line Python function, zero_pairs: def zero_pairs(nums: list[int]) -> list[int]: / out = [] / for i in range(len(nums)): / for j in range(i + 1, len(nums)): / if nums[i] + nums[j] == 0: / out.append(i) / return out. Four options: A: O(n), B: O(n log n), C: O(n²), D: O(2ⁿ). Comment A, B, C or D. The answer is in the first comment.",
+  "hook": "Big-O quiz 🧠 The inner loop shrinks every pass. Still quadratic?",
+  "slot": "6 pm",
+  "comment": "Answer: C, O(n²). The inner loop runs (n − 1) + (n − 2) + … + 1 = n(n − 1)/2 times: 499,500 checks for n = 1,000. The ½ is a constant factor, so the class is quadratic."
+ },
+ {
+  "date": "2026-11-13",
+  "post": "bq-split-twice",
+  "dir": "2026-10-03-split-twice-big-o-quiz",
+  "title": "Big-O quiz: split_twice (Complexity Drills)",
+  "caption": "Big-O quiz 🧠 It calls itself twice. Exponential?\n\nWhat's the time complexity? Comment A, B, C or D before you look: the answer and the why are in the first comment.\n\nThe snippet is from the Complexity Drills lesson in leetExpert.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #recursion #python #recursiontree #codinginterview",
+  "alt": "Big-O quiz: What's the time complexity? A 4-line Python function, split_twice: def split_twice(n: int) -> int: / if n <= 1: / return 1 / return split_twice(n // 2) + split_twice(n // 2). Four options: A: O(log n), B: O(n), C: O(n log n), D: O(2ⁿ). Comment A, B, C or D. The answer is in the first comment.",
+  "hook": "Big-O quiz 🧠 It calls itself twice. Exponential?",
+  "slot": "6 pm",
+  "comment": "Answer: B, O(n). Two calls per call looks exponential, but n halves each time, so the tree is only log₂ n levels deep. The width doubles per level and ends near n: 2,047 calls for n = 1,024. Depth decides, not branching alone."
+ },
+ {
+  "date": "2026-11-14",
+  "post": "bq-two-passes",
+  "dir": "2026-10-03-two-passes-big-o-quiz",
+  "title": "Big-O quiz: two_passes (Complexity Drills)",
+  "caption": "Big-O quiz 🧠 Two loops. Is that O(n²)?\n\nWhat's the time complexity? Comment A, B, C or D before you look: the answer and the why are in the first comment.\n\nThe snippet is from the Complexity Drills lesson in leetExpert.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #loops #python #timecomplexity #codinginterview",
+  "alt": "Big-O quiz: What's the time complexity? A 7-line Python function, two_passes: def two_passes(nums: list[int]) -> int: / total = 0 / for x in nums: / total += x / for x in nums: / total -= x // 2 / return total. Four options: A: O(log n), B: O(n), C: O(n log n), D: O(n²). Comment A, B, C or D. The answer is in the first comment.",
+  "hook": "Big-O quiz 🧠 Two loops. Is that O(n²)?",
+  "slot": "6 pm",
+  "comment": "Answer: B, O(n). The loops run one after the other, so their costs add: n + n = 2n loop steps, 2,000 for n = 1,000. The 2 is a constant. Loops multiply only when one sits inside the other."
+ },
+ {
+  "date": "2026-11-15",
+  "post": "bq-naive-fib",
+  "dir": "2026-10-03-naive-fib-big-o-quiz",
+  "title": "Big-O quiz: fib (From Recursion to Memoization)",
+  "caption": "Big-O quiz 🧠 Three lines of Fibonacci. What does it cost?\n\nWhat's the time complexity? Comment A, B, C or D before you look: the answer and the why are in the first comment.\n\nThe snippet is from the From Recursion to Memoization lesson in leetExpert.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #fibonacci #python #recursion #codinginterview",
+  "alt": "Big-O quiz: What's the time complexity? A 4-line Python function, fib: def fib(n: int) -> int: / if n < 2: / return n / return fib(n - 1) + fib(n - 2). Four options: A: O(n), B: O(n log n), C: O(n²), D: O(2ⁿ). Comment A, B, C or D. The answer is in the first comment.",
+  "hook": "Big-O quiz 🧠 Three lines of Fibonacci. What does it cost?",
+  "slot": "6 pm",
+  "comment": "Answer: D, O(2ⁿ). Each call makes two more, and n only drops by 1 or 2, so the tree is n levels deep: fib(25) makes 242,785 calls. O(2ⁿ) is the bound the course uses; the exact growth is φⁿ, with φ ≈ 1.618."
+ },
+ {
+  "date": "2026-11-16",
+  "post": "bq-halving-rounds",
+  "dir": "2026-10-03-halving-rounds-big-o-quiz",
+  "title": "Big-O quiz: halving_rounds (Complexity Drills)",
+  "caption": "Big-O quiz 🧠 One loop halves, the other doesn't. What's the total?\n\nWhat's the time complexity? Comment A, B, C or D before you look: the answer and the why are in the first comment.\n\nThe snippet is from the Complexity Drills lesson in leetExpert.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #nlogn #python #nestedloops #codinginterview",
+  "alt": "Big-O quiz: What's the time complexity? A 8-line Python function, halving_rounds: def halving_rounds(n: int) -> int: / count = 0 / i = n / while i > 1: / for _ in range(n): / count += 1 / i //= 2 / return count. Four options: A: O(log n), B: O(n), C: O(n log n), D: O(n²). Comment A, B, C or D. The answer is in the first comment.",
+  "hook": "Big-O quiz 🧠 One loop halves, the other doesn't. What's the total?",
+  "slot": "6 pm",
+  "comment": "Answer: C, O(n log n). The outer loop halves i, so it runs log₂ n times. The inner loop is a full n every time. Multiply: n · log₂ n, which is 10,240 increments for n = 1,024."
+ },
+ {
+  "date": "2026-11-17",
+  "post": "bq-grid-max",
+  "dir": "2026-10-03-grid-max-big-o-quiz",
+  "title": "Big-O quiz: grid_max (Complexity Drills)",
+  "caption": "Big-O quiz 🧠 Nested loops. Is O(n²) always bad?\n\nAn n × n matrix. Time complexity in n? Comment A, B, C or D before you look: the answer and the why are in the first comment.\n\nThe snippet is from the Complexity Drills lesson in leetExpert.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #matrix #python #nestedloops #codinginterview",
+  "alt": "Big-O quiz: An n × n matrix. Time complexity in n? A 8-line Python function, grid_max: def grid_max(matrix: list[list[int]]) -> int: / n = len(matrix) / best = matrix[0][0] / for row in matrix: / for value in row: / if value > best: / best = value / return best. Four options: A: O(n), B: O(n log n), C: O(n²), D: O(n³). Comment A, B, C or D. The answer is in the first comment.",
+  "hook": "Big-O quiz 🧠 Nested loops. Is O(n²) always bad?",
+  "slot": "6 pm",
+  "comment": "Answer: C, O(n²). Two nested loops over an n × n grid: n² reads, 10,000 for n = 100. But the input has n² cells and a max needs every one read, so this is linear in the input, and optimal."
  }
 ]

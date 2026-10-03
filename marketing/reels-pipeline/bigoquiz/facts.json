@@ -1,0 +1,228 @@
+{
+ "doublings": {
+  "lesson": "courses/dsa/big-o/analyzing-loops-api-complexity.md",
+  "fn": "doublings",
+  "options": [
+   "O(1)",
+   "O(log n)",
+   "O(n)",
+   "O(n log n)"
+  ],
+  "answer": "O(log n)",
+  "letter": "B",
+  "tight": true,
+  "sizes": [
+   "1125899906842624",
+   "1267650600228229401496703205376",
+   "1606938044258990275541962092341162602522202993782792835301376"
+  ],
+  "steps": [
+   154,
+   304,
+   604
+  ],
+  "count": {
+   "n": 1000000,
+   "value": 20,
+   "formula": "(n - 1).bit_length()"
+  }
+ },
+ "find-target": {
+  "lesson": "courses/dsa/big-o/complexity-drills.md",
+  "fn": "find_target",
+  "options": [
+   "O(n)",
+   "O(n log n)",
+   "O(n²)",
+   "O(n³)"
+  ],
+  "answer": "O(n²)",
+  "letter": "C",
+  "tight": true,
+  "sizes": [
+   "64",
+   "256",
+   "1024"
+  ],
+  "steps": [
+   2337,
+   33921,
+   528897
+  ],
+  "count": {
+   "n": 1000,
+   "value": 500500,
+   "formula": "(n - 1) + (n - 1) * (n - 2) // 2 + n"
+  },
+  "question": "Worst-case time complexity?"
+ },
+ "grid-max": {
+  "lesson": "courses/dsa/big-o/complexity-drills.md",
+  "fn": "grid_max",
+  "options": [
+   "O(n)",
+   "O(n log n)",
+   "O(n²)",
+   "O(n³)"
+  ],
+  "answer": "O(n²)",
+  "letter": "C",
+  "tight": true,
+  "sizes": [
+   "32",
+   "128",
+   "512"
+  ],
+  "steps": [
+   3139,
+   49411,
+   787459
+  ],
+  "count": {
+   "n": 100,
+   "value": 10000,
+   "formula": "n * n"
+  },
+  "question": "An n × n matrix. Time complexity in n?"
+ },
+ "halving-rounds": {
+  "lesson": "courses/dsa/big-o/complexity-drills.md",
+  "fn": "halving_rounds",
+  "options": [
+   "O(log n)",
+   "O(n)",
+   "O(n log n)",
+   "O(n²)"
+  ],
+  "answer": "O(n log n)",
+  "letter": "C",
+  "tight": true,
+  "sizes": [
+   "256",
+   "2048",
+   "16384"
+  ],
+  "steps": [
+   4124,
+   45093,
+   458798
+  ],
+  "count": {
+   "n": 1024,
+   "value": 10240,
+   "formula": "n * (n.bit_length() - 1)"
+  }
+ },
+ "naive-fib": {
+  "lesson": "courses/dsa/dynamic-programming/from-recursion-to-memoization.md",
+  "fn": "fib",
+  "options": [
+   "O(n)",
+   "O(n log n)",
+   "O(n²)",
+   "O(2ⁿ)"
+  ],
+  "answer": "O(2ⁿ)",
+  "letter": "D",
+  "tight": false,
+  "sizes": [
+   "12",
+   "18",
+   "24"
+  ],
+  "steps": [
+   930,
+   16722,
+   300098
+  ],
+  "count": {
+   "n": 25,
+   "value": 242785,
+   "formula": "2 * F(n + 1) - 1"
+  }
+ },
+ "split-twice": {
+  "lesson": "courses/dsa/big-o/complexity-drills.md",
+  "fn": "split_twice",
+  "options": [
+   "O(log n)",
+   "O(n)",
+   "O(n log n)",
+   "O(2ⁿ)"
+  ],
+  "answer": "O(n)",
+  "letter": "B",
+  "tight": true,
+  "sizes": [
+   "256",
+   "4096",
+   "65536"
+  ],
+  "steps": [
+   1022,
+   16382,
+   262142
+  ],
+  "count": {
+   "n": 1024,
+   "value": 2047,
+   "formula": "2 * n - 1"
+  }
+ },
+ "two-passes": {
+  "lesson": "courses/dsa/big-o/complexity-drills.md",
+  "fn": "two_passes",
+  "options": [
+   "O(log n)",
+   "O(n)",
+   "O(n log n)",
+   "O(n²)"
+  ],
+  "answer": "O(n)",
+  "letter": "B",
+  "tight": true,
+  "sizes": [
+   "256",
+   "2048",
+   "16384"
+  ],
+  "steps": [
+   1028,
+   8196,
+   65540
+  ],
+  "count": {
+   "n": 1000,
+   "value": 2000,
+   "formula": "2 * n"
+  }
+ },
+ "zero-pairs": {
+  "lesson": "courses/dsa/big-o/complexity-drills.md",
+  "fn": "zero_pairs",
+  "options": [
+   "O(n)",
+   "O(n log n)",
+   "O(n²)",
+   "O(2ⁿ)"
+  ],
+  "answer": "O(n²)",
+  "letter": "C",
+  "tight": true,
+  "sizes": [
+   "64",
+   "256",
+   "1024"
+  ],
+  "steps": [
+   4163,
+   65795,
+   1049603
+  ],
+  "count": {
+   "n": 1000,
+   "value": 499500,
+   "formula": "n * (n - 1) // 2"
+  }
+ }
+}
