@@ -162,7 +162,7 @@ def post_md(post, title, alts, facts):
 - **Source lesson:** `{p["lesson"]}`
 - **Family:** {Path(p["lesson"]).parent.name}
 - **Format:** Carousel, {len(alts)} slides, 1080×1350
-- **Plan:** issue #172 (epic #132); content roadmap post {p["roadmap"]}
+- **Plan:** issue #172 (epic #132); {f'content roadmap post {p["roadmap"]}' if p.get("roadmap") else "not on the content roadmap"}
 - **Status:** rendered {p["date"]}, not scheduled.
 - **Media:** {", ".join(f"`slide{i}.png`" for i in range(1, len(alts) + 1))}
 
