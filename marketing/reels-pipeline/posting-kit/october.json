@@ -438,5 +438,71 @@
   "alt": "Slide 1. The reel's cover: \"Answer any range sum in O(1).\"\n\nSlide 2. The array nums, 2, 4, 1, 5, 3, indexed 0 to 4, with a bracket over indices 1 to 3 labelled 4 + 1 + 5 = 10.\n\nSlide 3. \"An odometer: total distance since the car was new.\" Trip start 12,040 km, trip end 12,075 km, so the trip = 12,075 − 12,040 = 35 km.\n\nSlide 4. nums 2, 4, 1, 5, 3 above its prefix array, the running total: 0, 2, 6, 7, 12, 15.\n\nSlide 5. Python build_prefix(nums): prefix = [0] * (len(nums) + 1); for i, x in enumerate(nums): prefix[i + 1] = prefix[i] + x, with the loop highlighted, and range_sum returning prefix[r + 1] - prefix[l]. The note reads \"Next slot = previous slot + x\"; the stage fills prefix[4] = 7 + 5 = 12.\n\nSlide 6. nums with indices 1 to 3 bracketed, and the prefix array 0, 2, 6, 7, 12, 15 with 2 and 12 ringed: 12 − 2 = 10.\n\nSlide 7. \"10,000 queries on 100,000 numbers, our test run, Python\": sum(nums[l:r+1]) each time takes 4.96 s; the prefix array, build included, takes 6.1 ms. A tag says about 800× faster.\n\nSlide 8. \"The classic off-by-one\": prefix[r] - prefix[l] gives sum(1..3) → 7 − 2 = 5 ✗, which drops the last number, nums[3] = 5; prefix[r + 1] - prefix[l] gives 10 ✓.\n\nSlide 9. A text slide under \"Your turn\": Using just two numbers, what's sum(0..4)?\n\nSlide 10. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "Answer any range sum in O(1).",
   "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-04",
+  "post": "sb-rotate-array",
+  "dir": "2026-10-03-rotate-array-spot-the-bug",
+  "title": "Spot the bug: Rotate Array (carousel, 6 slides)",
+  "caption": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.\n\nComment your input before you swipe. The hint is on slide 2, the answer on slide 3, the fix on slide 4.\n\nFrom the Rotate Array lesson in leetExpert. The same bug is checked in Python and JavaScript.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#arrays #offbyone #python #debugging #codinginterview",
+  "alt": "Slide 1. Spot the bug: Rotate Array. A 2-line Python function, rotate: def rotate(nums, k): / nums[:] = nums[-k:] + nums[:-k]. It passes the sample test: rotate([1, 2, 3, 4, 5, 6, 7], 3) gives [5, 6, 7, 1, 2, 3, 4]. Find the input that breaks it. Comment it, then swipe.\n\nSlide 2. Hint. The same code, with line 2 highlighted. Python slices never raise. What is nums[-k:] when k is bigger than the list?\n\nSlide 3. The input that breaks it: rotate([1, 2, 3], 4). Leaves nums as [1, 2, 3]. It should be [3, 1, 2].\n\nSlide 4. The fix. One line added. Add k %= len(nums). JavaScript, same bug: add k %= nums.length;.\n\nSlide 5. Why. Rotating by len(nums) changes nothing, so only k % len(nums) steps matter. Past the length, the slices stop meaning what they look like. From the course: Rotate Array, in Arrays & Dynamic Arrays.\n\nSlide 6. Closing slide: Passing the sample is not proof. Every problem in leetExpert, the interactive DSA course, has a sandbox: write it in Python or JavaScript and run the lesson's tests. leetexpert.com, link in bio.",
+  "hook": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-05",
+  "post": "sb-subsets",
+  "dir": "2026-10-03-subsets-spot-the-bug",
+  "title": "Spot the bug: Subsets (carousel, 6 slides)",
+  "caption": "Spot the bug 🐛 subsets([1, 2, 3]) returns 8 lists, the right count. So what is wrong with them?\n\nComment your answer before you swipe. The hint is on slide 2, the answer on slide 3, the fix on slide 4.\n\nFrom the Subsets lesson in leetExpert. The same bug is checked in Python and JavaScript.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#backtracking #recursion #python #debugging #codinginterview",
+  "alt": "Slide 1. Spot the bug: Subsets. A 12-line Python function, subsets: def subsets(nums): / result, path = [], [] / def backtrack(start): / result.append(path) / for i in range(start, len(nums)): / path.append(nums[i]) / backtrack(i + 1) / path.pop() / backtrack(0) / return result. subsets([1, 2, 3]) returns 8 lists, the right count. So what is wrong with them? Comment, then swipe.\n\nSlide 2. Hint. The same code, with line 5 highlighted. Every subset is appended. How many different lists are in result?\n\nSlide 3. The smallest case: subsets([1, 2]). Returns [[], [], [], []]. It should be [[], [1], [1, 2], [2]].\n\nSlide 4. The fix. One line changes. result.append(path) becomes result.append(path[:]). JavaScript, same bug: result.push(path); becomes result.push([...path]);.\n\nSlide 5. Why. result.append(path) stores the same list object every time. The backtracking pops it back to empty, so every entry ends up empty. Append a copy. From the course: Subsets, in Recursion & Backtracking.\n\nSlide 6. Closing slide: Passing the sample is not proof. Every problem in leetExpert, the interactive DSA course, has a sandbox: write it in Python or JavaScript and run the lesson's tests. leetexpert.com, link in bio.",
+  "hook": "Spot the bug 🐛 subsets([1, 2, 3]) returns 8 lists, the right count. So what is wrong with them?",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-06",
+  "post": "sb-partition-equal-subset-sum",
+  "dir": "2026-10-03-partition-equal-subset-sum-spot-the-bug",
+  "title": "Spot the bug: Partition Equal Subset Sum (carousel, 6 slides)",
+  "caption": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.\n\nComment your input before you swipe. The hint is on slide 2, the answer on slide 3, the fix on slide 4.\n\nFrom the Partition Equal Subset Sum lesson in leetExpert. The same bug is checked in Python and JavaScript.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#dynamicprogramming #knapsack #python #debugging #leetcode",
+  "alt": "Slide 1. Spot the bug: Partition Equal Subset Sum. A 11-line Python function, can_partition: def can_partition(nums): / total = sum(nums) / if total % 2: / return False / target = total // 2 / dp = [True] + [False] * target / for num in nums: / for cap in range(num, target + 1): / if dp[cap - num]: / dp[cap] = True / return dp[target]. It passes the sample test: can_partition([1, 5, 11, 5]) gives True. Find the input that breaks it. Comment it, then swipe.\n\nSlide 2. Hint. The same code, with line 8 highlighted. Each number may be used once. Can this loop use the same number twice?\n\nSlide 3. The input that breaks it: can_partition([1, 2, 5]). Returns True. It should be False.\n\nSlide 4. The fix. One line changes. for cap in range(num, target + 1): becomes for cap in range(target, num - 1, -1):. JavaScript, same bug: for (let cap = num; cap &lt;= target; cap++) { becomes for (let cap = target; cap &gt;= num; cap--) {.\n\nSlide 5. Why. Counting up, dp[cap - num] may already include this num, so it gets counted again. Counting down reads only values from before num was considered. From the course: Partition Equal Subset Sum, in Dynamic Programming.\n\nSlide 6. Closing slide: Passing the sample is not proof. Every problem in leetExpert, the interactive DSA course, has a sandbox: write it in Python or JavaScript and run the lesson's tests. leetexpert.com, link in bio.",
+  "hook": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-07",
+  "post": "sb-evaluate-rpn",
+  "dir": "2026-10-03-evaluate-rpn-spot-the-bug",
+  "title": "Spot the bug: Evaluate Reverse Polish Notation (carousel, 6 slides)",
+  "caption": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.\n\nComment your input before you swipe. The hint is on slide 2, the answer on slide 3, the fix on slide 4.\n\nFrom the Evaluate Reverse Polish Notation lesson in leetExpert. The same bug is checked in Python and JavaScript.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#stack #integerdivision #python #debugging #leetcode",
+  "alt": "Slide 1. Spot the bug: Evaluate Reverse Polish Notation. A 12-line Python function, eval_rpn: def eval_rpn(tokens): / stack = [] / for t in tokens: / if t in (\"+\", \"-\", \"*\", \"/\"): / b, a = stack.pop(), stack.pop() / if t == \"+\": stack.append(a + b) / elif t == \"-\": stack.append(a - b) / elif t == \"*\": stack.append(a * b) / else: stack.append(a // b) / else: / stack.append(int(t)) / return stack[0]. It passes the sample test: eval_rpn(['2', '1', '+', '3', '*']) gives 9. Find the input that breaks it. Comment it, then swipe.\n\nSlide 2. Hint. The same code, with line 9 highlighted. The problem says division truncates toward zero. Does // ?\n\nSlide 3. The input that breaks it: eval_rpn(['-13', '5', '/']). Returns -3. It should be -2.\n\nSlide 4. The fix. One line changes. else: stack.append(a // b) becomes else: stack.append(int(a / b)). JavaScript, same bug: else stack.push(Math.floor(a / b)); becomes else stack.push(Math.trunc(a / b));.\n\nSlide 5. Why. // rounds down, toward minus infinity. When the true quotient is negative and not whole, that is one below what truncating gives. From the course: Evaluate Reverse Polish Notation, in Stacks.\n\nSlide 6. Closing slide: Passing the sample is not proof. Every problem in leetExpert, the interactive DSA course, has a sandbox: write it in Python or JavaScript and run the lesson's tests. leetexpert.com, link in bio.",
+  "hook": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-08",
+  "post": "sb-non-overlapping-intervals",
+  "dir": "2026-10-03-non-overlapping-intervals-spot-the-bug",
+  "title": "Spot the bug: Non-overlapping Intervals (carousel, 6 slides)",
+  "caption": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.\n\nComment your input before you swipe. The hint is on slide 2, the answer on slide 3, the fix on slide 4.\n\nFrom the Non-overlapping Intervals lesson in leetExpert. The same bug is checked in Python and JavaScript.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#intervals #greedy #python #debugging #codinginterview",
+  "alt": "Slide 1. Spot the bug: Non-overlapping Intervals. A 9-line Python function, erase_overlap_intervals: def erase_overlap_intervals(intervals): / intervals.sort(key=lambda iv: iv[0]) / removed, end = 0, float(\"-inf\") / for start, finish in intervals: / if start >= end: / end = finish / else: / removed += 1 / return removed. It passes the sample test: erase_overlap_intervals([[1, 2], [2, 3], [3, 4], [1, 3]]) gives 1. Find the input that breaks it. Comment it, then swipe.\n\nSlide 2. Hint. The same code, with line 2 highlighted. The greedy keeps the first interval it sees. Which one should it see first?\n\nSlide 3. The input that breaks it: erase_overlap_intervals([[1, 10], [2, 3], [4, 5]]). Returns 2. It should be 1.\n\nSlide 4. The fix. One line changes. intervals.sort(key=lambda iv: iv[0]) becomes intervals.sort(key=lambda iv: iv[1]). JavaScript, same bug: intervals.sort((a, b) =&gt; a[0] - b[0]); becomes intervals.sort((a, b) =&gt; a[1] - b[1]);.\n\nSlide 5. Why. Keep the interval that ends first, and it leaves the most room for the rest. Sorted by start, one long early interval blocks every short one after it. From the course: Non-overlapping Intervals, in Intervals.\n\nSlide 6. Closing slide: Passing the sample is not proof. Every problem in leetExpert, the interactive DSA course, has a sandbox: write it in Python or JavaScript and run the lesson's tests. leetexpert.com, link in bio.",
+  "hook": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-09",
+  "post": "sb-sort-colors",
+  "dir": "2026-10-03-sort-colors-spot-the-bug",
+  "title": "Spot the bug: Sort Colors (Dutch National Flag) (carousel, 6 slides)",
+  "caption": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.\n\nComment your input before you swipe. The hint is on slide 2, the answer on slide 3, the fix on slide 4.\n\nFrom the Sort Colors (Dutch National Flag) lesson in leetExpert. The same bug is checked in Python and JavaScript.\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#twopointers #dutchnationalflag #python #debugging #leetcode",
+  "alt": "Slide 1. Spot the bug: Sort Colors (Dutch National Flag). A 12-line Python function, sort_colors: def sort_colors(nums): / low, mid, high = 0, 0, len(nums) - 1 / while mid < high: / if nums[mid] == 0: / nums[low], nums[mid] = nums[mid], nums[low] / low += 1 / mid += 1 / elif nums[mid] == 1: / mid += 1 / else: / nums[mid], nums[high] = nums[high], nums[mid] / high -= 1. It passes the sample test: sort_colors([2, 0, 2, 1, 1, 0]) gives [0, 0, 1, 1, 2, 2]. Find the input that breaks it. Comment it, then swipe.\n\nSlide 2. Hint. The same code, with line 3 highlighted. When the loop stops, is every element checked? Look at the one where mid meets high.\n\nSlide 3. The input that breaks it: sort_colors([2, 0, 1]). Leaves nums as [1, 0, 2]. It should be [0, 1, 2].\n\nSlide 4. The fix. One line changes. while mid < high: becomes while mid <= high:. JavaScript, same bug: while (mid &lt; high) { becomes while (mid &lt;= high) {.\n\nSlide 5. Why. mid..high is the part not yet read. When mid == high, one element is still unread, and < skips it. From the course: Sort Colors (Dutch National Flag), in Two Pointers.\n\nSlide 6. Closing slide: Passing the sample is not proof. Every problem in leetExpert, the interactive DSA course, has a sandbox: write it in Python or JavaScript and run the lesson's tests. leetexpert.com, link in bio.",
+  "hook": "Spot the bug 🐛 It passes the sample test. Find the input that breaks it.",
+  "slot": "6 pm"
  }
 ]

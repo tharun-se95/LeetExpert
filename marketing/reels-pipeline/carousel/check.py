@@ -6,6 +6,8 @@
 4. Checks the posting kit carries each carousel as kit.py places it.
 5. Rebuilds every reel carousel (reelslides.py; its words must be the reel's own) and compares
    its post.md and slide count, from the frames already rendered.
+6. Reruns the spot-the-bug verifiers in both runtimes (../spotbug/verify.py, verify.mjs) against
+   facts.json, then rebuilds each of those carousels' post.md and compares it and its slides.
 
   PYTHONDONTWRITEBYTECODE=1 python3 check.py
 """
@@ -41,9 +43,24 @@ for car in sorted(p.parent.parent for p in (ROOT / "marketing/instagram").glob("
         problems.append(f"{car.name}: its slides don't match its build of {n}")
     if "TODO" in md:
         problems.append(f"{car.name}: alt text still TODO")
+import spotbug  # noqa: E402  (kit put its folder on the path)
+import verify as spotverify  # noqa: E402
+if spotverify.compute() != json.loads(spotverify.FACTS.read_text()):
+    problems.append("spotbug/facts.json differs from a fresh run of verify.py: rerun it, then spotbug.py and render.mjs")
+js = subprocess.run(["node", str(spotverify.HERE / "verify.mjs")], capture_output=True, text=True)
+if js.returncode:
+    problems.append("spotbug/verify.mjs: " + (js.stderr or js.stdout).strip())
+for bug, (pkg, md, n) in spotbug.build().items():
+    if not (pkg / "post.md").exists() or (pkg / "post.md").read_text() != md:
+        problems.append(f"{pkg.name}/post.md differs from a fresh build")
+    if sorted(p.name for p in pkg.glob("slide*.png")) != sorted(f"slide{i}.png" for i in range(1, n + 1)):
+        problems.append(f"{pkg.name}: its slides don't match its build of {n}")
+    tags = re.search(r"## Hashtags\n\n(.+)\n", md).group(1).split()
+    if len(tags) != 5 or len(set(tags)) != 5:
+        problems.append(f"{pkg.name}: {len(tags)} hashtags, Instagram allows exactly 5 to be used")
 if json.loads(KIT.read_text()) != kit():
     problems.append("posting-kit/october.json differs from kit.py: rerun kit.py")
 assert not problems, "\n".join(problems)
 reels = len(list((ROOT / "marketing/instagram").glob("*-carousel/sources/slides.json")))
 print(f"{len(build())} cheatsheet carousels match gold.ts ({DATA['counts']['cheatsheets']} cheatsheets in the registry); "
-      f"{reels} reel carousels match their reels")
+      f"{reels} reel carousels match their reels; {len(spotbug.BUGS)} spot-the-bug carousels match their verified code")
