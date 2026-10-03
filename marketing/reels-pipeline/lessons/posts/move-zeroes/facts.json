@@ -1,0 +1,8 @@
+{
+ "example_out": "[1, 3, 12, 0, 0]",
+ "example_writes": 5,
+ "n": 1000,
+ "ref_writes": 1000,
+ "shuffle_writes": 375250,
+ "ratio": 375
+}
