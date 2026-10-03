@@ -47,7 +47,7 @@ leetExpert, the interactive DSA course. Link in bio.
 - **Every value is computed** (`spotbug/facts.json`): `verify.py` runs the code against the lesson's reference solution (`web/tests/reference/dynamic-programming/`), and `verify.mjs` recomputes all of it in JavaScript and fails on any difference.
 - **can_partition([1, 5, 11, 5])** gives `True` (the lesson's first case expects `True`).
 - **can_partition([1, 2, 5])** gives `True` from the bug and `False` from the reference, in both runtimes.
-- The fix passes all 7 of the lesson's sandbox cases in both runtimes; the bug passes 7 of 7.
+- The fix passes all 9 of the lesson's sandbox cases in both runtimes; the bug passes 7 of 9.
 
 ## Sources
 
