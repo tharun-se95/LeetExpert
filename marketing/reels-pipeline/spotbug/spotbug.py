@@ -105,7 +105,8 @@ CSS = BASE_CSS + f"""
 def highlight(src, lang):
     """One line of code as HTML, coloured like the app's code blocks."""
     out, pos = [], 0
-    pat = re.compile(rf"(?P<c>#.*$|//.*$)|(?P<s>\"[^\"]*\"|'[^']*')|(?P<n>\b\d+\b)|(?P<k>\b(?:{KW[lang]})\b)|(?P<f>\b[A-Za-z_]\w*(?=\())")
+    # each language's own comment marker: // is floor division in Python, and it drew as a comment
+    pat = re.compile(rf"(?P<c>{'#' if lang == 'py' else '//'}.*$)|(?P<s>\"[^\"]*\"|'[^']*')|(?P<n>\b\d+\b)|(?P<k>\b(?:{KW[lang]})\b)|(?P<f>\b[A-Za-z_]\w*(?=\())")
     for m in pat.finditer(src):
         out.append(e(src[pos:m.start()]))
         cls = {"c": "tc", "s": "ts", "n": "tn", "k": "tk", "f": "tf"}[m.lastgroup]
