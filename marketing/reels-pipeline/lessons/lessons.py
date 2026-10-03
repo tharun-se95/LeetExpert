@@ -39,6 +39,7 @@ CSS = CARD_CSS + """
 .p{font-size:42px;color:#cbd5e1;line-height:1.42;margin-top:32px}
 .p code,.h code,.hook code{font-family:"JetBrains Mono",monospace;font-variant-ligatures:none;font-size:.88em;color:#f1f4f9}
 .row .val{font-size:42px;font-family:"JetBrains Mono","Space Mono",monospace}
+.pre{font-family:"JetBrains Mono",monospace;font-variant-ligatures:none;white-space:pre;font-size:46px;line-height:1.3;color:#f1f4f9;background:#0e1520;border:2px solid #263248;border-radius:22px;padding:30px 40px;margin-top:30px;align-self:flex-start}
 .hook{font-family:"Space Mono",monospace;font-size:84px;font-weight:700;line-height:1.12;margin-top:24px}
 .hook em,.p em,.h em{font-style:normal;color:#5eead4}
 """
@@ -122,6 +123,13 @@ def slides(post):
                              f'<div class="val">{e(fill(r["val"], facts))}</div></div>')
                     alt.append(f'{fill(r["lab"], facts)}: {fill(r["val"], facts)}.')
                     prose += [r["lab"], r["val"]]
+            elif part == "pre":
+                # a drawing in text (a tree, a grid): the lesson's own lines, so nothing is redrawn by hand
+                for line in s["pre"]["lines"]:
+                    assert line in lesson, f"{post}: the drawing's line {line!r} is not in the lesson"
+                known |= numbers("\n".join(s["pre"]["lines"]))
+                body += f'<div class="pre">{e(chr(10).join(s["pre"]["lines"]))}</div>'
+                alt.append(s["pre"]["alt"])
             else:
                 assert part in ("k", "h"), f"{post}: a slide has an unknown part {part!r}"
         out.append((body, " ".join(alt)))

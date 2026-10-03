@@ -1,0 +1,39 @@
+{
+ "name": "where two paths meet",
+ "roadmap": 26,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/binary-trees/lowest-common-ancestor-of-a-binary-tree.md",
+ "module": "Binary Trees",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Two nodes in a tree. Where do their paths meet? Eight lines find it.",
+ "hook_slide": "Two nodes in a tree. *Where do their paths meet?*",
+ "hook_sub": "The lowest common ancestor, in eight lines.",
+ "caption": [
+  "Lowest common ancestor: the deepest node that has both p and q beneath it (a node counts as its own descendant). No ordering to lean on, just structure.",
+  "Ask every subtree one question: do you contain p or q? If the left side and the right side both say yes, their paths split at this node. That's the answer.",
+  "Everywhere else, a non-null result isn't the answer yet. It's a found target being relayed upward.",
+  "On the tree in the slides: 5 and 1 meet at {lca_5_1}, 7 and 4 at {lca_7_4}, and 5 and 4 at {lca_5_4}, because 4 sits under 5.",
+  "What's the LCA of 6 and 4? 👇"
+ ],
+ "tags": "#binarytree #lowestcommonancestor #dfs #python #codinginterview",
+ "cta": "Solve it in the sandbox, then meet the BST version of the same problem.",
+ "slides": [
+  {"k": "THE PROBLEM", "h": "The deepest node above both",
+   "pre": {"lines": ["      3", "     / \\", "    5   1", "   / \\  / \\", "  6  2 0   8", "    / \\", "   7   4"],
+           "alt": "A binary tree: 3 at the root with children 5 and 1; 5 has children 6 and 2; 1 has children 0 and 8; 2 has children 7 and 4."},
+   "p": ["5 and 1 sit in different subtrees of 3, so their lowest common ancestor is 3."]},
+  {"k": "THE IDEA", "h": "Ask each subtree one question",
+   "p": ["Does this subtree contain p or q? Return the node found, or nothing.",
+         "If the left side and the right side *both* report a find, the two paths split here. This node is the answer."]},
+  {"k": "THE CODE", "h": "Postorder search",
+   "code": {"file": "lca.py", "marks": {"6": "hint", "7": "hint"}},
+   "p": ["Anywhere else, a non-null result is just a found target being relayed upward, not a victory."]},
+  {"k": "RUN IT", "h": "On that {nodes}-node tree",
+   "rows": [{"lab": "p = 5, q = 1", "val": "{lca_5_1}", "tone": "good"},
+            {"lab": "p = 7, q = 4", "val": "{lca_7_4}", "tone": "good"},
+            {"lab": "p = 5, q = 4", "val": "{lca_5_4} · 4 is under 5", "tone": "warn"}]},
+  {"k": "WHY IT IS RIGHT", "h": "The deepest point still joined",
+   "p": ["If p is on one side of a node and q on the other, any common ancestor is at or above that node, and the node itself is one.",
+         "So it is the lowest. One postorder pass: O(n) time, O(h) space for the recursion stack."]}
+ ]
+}
