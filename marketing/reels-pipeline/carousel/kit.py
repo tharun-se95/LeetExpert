@@ -1,4 +1,5 @@
-"""Puts the cheatsheet (#133), reel (#134) and spot-the-bug (#135) carousels into the posting kit
+"""Puts the cheatsheet (#133), reel (#134) and spot-the-bug (#135) carousels and the Big-O quiz
+singles (#136) into the posting kit
 (../posting-kit/october.json).
 
 Owner, 2026-09-30 (#132): Oct 1-3 carry three posts a day in mixed formats (a reel, a carousel, a
@@ -21,6 +22,8 @@ import sys
 from cheatsheet import DATE, HERE, ROOT
 
 sys.path.insert(0, str(HERE.parent / "spotbug"))
+sys.path.insert(0, str(HERE.parent / "bigoquiz"))
+import bigoquiz  # noqa: E402
 import spotbug  # noqa: E402
 
 KIT = HERE.parent / "posting-kit" / "october.json"
@@ -42,6 +45,9 @@ REELS_FROM = "2026-10-23"
 # Spot-the-bug carousels (#135, ../spotbug/), one a day after the last reel carousel, so nothing
 # already scheduled moves; the owner may pull them earlier.
 SPOTBUG_FROM = "2026-11-04"
+# Big-O quiz singles (#136, ../bigoquiz/), one a day after the last spot-the-bug carousel. They are
+# quick posts for gaps in the calendar, so the owner may pull any of them earlier.
+BIGO_FROM = "2026-11-10"
 SLOTS = ["9 am", "1 pm", "6 pm"]
 
 
@@ -53,13 +59,16 @@ def entry(slug, date, slot, kind="cheatsheet", prefix="cs", made=DATE):
     d = f"{made}-{slug}-{kind}"
     md = (ROOT / "marketing/instagram" / d / "post.md").read_text()
     alt = re.sub(r"\*\*(Slide \d+)\.\*\*", r"\1.", section(md, "Alt text"))
-    return {"date": date, "post": f"{prefix}-{slug}", "dir": d, "title": md.splitlines()[0].lstrip("# "),
+    post = {"date": date, "post": f"{prefix}-{slug}", "dir": d, "title": md.splitlines()[0].lstrip("# "),
             "caption": section(md, "Caption"), "hashtags": section(md, "Hashtags"), "alt": alt,
             "hook": section(md, "Hook"), "slot": slot}
+    if "\n## First comment" in md:  # a quiz single's answer, posted as the first comment
+        post["comment"] = section(md, "First comment")
+    return post
 
 
 def kit():
-    posts = [p for p in json.loads(KIT.read_text()) if not p["post"].startswith(("cs-", "rc-", "sb-"))]
+    posts = [p for p in json.loads(KIT.read_text()) if not p["post"].startswith(("cs-", "rc-", "sb-", "bq-"))]
     for p in posts:
         if p["post"] in MOVED:
             p["date"], p["slot"] = MOVED[p["post"]], "6 pm"
@@ -70,6 +79,9 @@ def kit():
     start = datetime.date.fromisoformat(SPOTBUG_FROM)
     posts += [entry(b, str(start + datetime.timedelta(days=i)), "6 pm", "spot-the-bug", "sb", spotbug.DATE)
               for i, b in enumerate(spotbug.BUGS)]
+    start = datetime.date.fromisoformat(BIGO_FROM)
+    posts += [entry(q, str(start + datetime.timedelta(days=i)), "6 pm", "big-o-quiz", "bq", bigoquiz.DATE)
+              for i, q in enumerate(bigoquiz.QUIZZES)]
     posts.sort(key=lambda p: (p["date"], SLOTS.index(p["slot"])))
     days = [(p["date"], p["slot"]) for p in posts]
     assert len(days) == len(set(days)), "two posts share a slot"

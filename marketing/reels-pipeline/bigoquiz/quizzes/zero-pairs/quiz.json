@@ -1,0 +1,27 @@
+{
+ "lesson": "courses/dsa/big-o/complexity-drills.md",
+ "drill": "Drill 2",
+ "rename": {
+  "drill2": "zero_pairs"
+ },
+ "options": [
+  "O(n)",
+  "O(n log n)",
+  "O(n²)",
+  "O(2ⁿ)"
+ ],
+ "answer": "O(n²)",
+ "args": "[i for i in range(1, n + 1)]",
+ "sizes": [
+  64,
+  256,
+  1024
+ ],
+ "count": {
+  "lines": [
+   5
+  ],
+  "n": 1000,
+  "formula": "n * (n - 1) // 2"
+ }
+}
