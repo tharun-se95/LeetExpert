@@ -1,0 +1,7 @@
+{
+ "n": 4,
+ "edges": 4,
+ "imports": "utils → lexer, utils → parser, lexer → app, parser → app",
+ "order": "utils → lexer → parser → app",
+ "ready_in_cycle": 0
+}
