@@ -1,0 +1,39 @@
+{
+ "name": "why arrays are faster than they look",
+ "roadmap": 29,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/arrays/contiguous-memory.md",
+ "module": "Arrays & Dynamic Arrays",
+ "archetype": "why DSA? (lesson carousel)",
+ "hook": "arr[7] doesn't search for index 7. It computes where it is. That one fact explains what arrays are good and bad at.",
+ "hook_slide": "`arr[7]` doesn't search for index 7. *It computes where it is.*",
+ "hook_sub": "Why arrays are faster than they look.",
+ "caption": [
+  "An array is one contiguous block of memory holding equal-sized slots. So the address of slot i is pure arithmetic: base + i × slot size. Base {base}, {slot}-byte slots: index {i} lives at {addr}. No searching, O(1).",
+  "The price of being packed: no gaps allowed. Insert at the front and everything shifts. {n} front inserts cost {front_writes} writes; {n} appends cost {end_writes}.",
+  "The hidden bonus: CPUs fetch a {line}-byte cache line at a time, which holds {per_line} four-byte integers. Read one and the next {free_reads} are already in cache.",
+  "When two designs tie on paper, bet on the contiguous one.",
+  "Ever shipped a loop of front-inserts? 👇"
+ ],
+ "tags": "#arrays #memory #cachelocality #python #codinginterview",
+ "cta": "Then build a dynamic array from scratch in the next lesson.",
+ "slides": [
+  {"k": "WHAT AN ARRAY IS", "h": "One contiguous block, equal-sized slots",
+   "p": ["Because the slots are equal-sized and packed, the address of slot i is pure arithmetic."],
+   "rows": [{"lab": "address(i)", "val": "base + i × slot_size", "tone": "mark"}]},
+  {"k": "DO THE MATH", "h": "Base {base}, {slot}-byte slots",
+   "code": {"file": "memory.py", "lines": [1, 2]},
+   "rows": [{"lab": "address({i})", "val": "{addr}", "tone": "good"}],
+   "p": ["No other position is touched. That is why `arr[i]` is O(1)."]},
+  {"k": "THE PRICE", "h": "Contiguity forbids gaps",
+   "code": {"file": "memory.py", "lines": [4, 7], "marks": {"3": "hint"}},
+   "p": ["Insert at the front and every element shifts one slot. It reads as one line and moves the entire array."]},
+  {"k": "COUNT IT", "h": "{n} inserts",
+   "rows": [{"lab": "At the front", "val": "{front_writes} writes", "tone": "bad"},
+            {"lab": "At the end", "val": "{end_writes} writes", "tone": "good"}],
+   "p": ["The triangular sum, n(n+1)/2: one of the most common accidental quadratics in real code."]},
+  {"k": "THE HIDDEN SUPERPOWER", "h": "Cache locality",
+   "p": ["CPUs pull a cache line at a time, typically {line} bytes: {per_line} four-byte integers.",
+         "Read `arr[0]` and the next {free_reads} reads hit cache for free, about {hit_pct}%. When two designs tie on paper, bet on the contiguous one."]}
+ ]
+}
