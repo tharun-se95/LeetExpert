@@ -11,7 +11,8 @@ slides, and a closing slide that names the lesson. These are the "general educat
 - `post.json`: the lesson, its module's title, the hook, the caption paragraphs, five hashtags
   and the slides. A slide has a kicker `k`, a heading `h`, and any of `p` (paragraphs), `code`
   (`file`, optional `lines: [from, to]`, optional `marks: {line: "hint" | "add"}`) and `rows`
-  (`lab`, `val`, `tone`: good, bad, mark or warn), drawn in the order listed. In text,
+  (`lab`, `val`, `tone`: good, bad, mark or warn) and `pre` (`lines`: a drawing in text, each line
+  found verbatim in the lesson; `alt`: what it shows), drawn in the order listed. In text,
   `` `x` `` is code, `*x*` is the accent, and `{name}` is a fact.
 - `code/`: what a slide shows, verbatim, in Python, with a JavaScript twin.
 - `verify.py` and `verify.mjs`: each prints the post's facts as one JSON object, computed by
