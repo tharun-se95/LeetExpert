@@ -1,0 +1,39 @@
+{
+ "name": "two keys, one slot",
+ "roadmap": 22,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/hash-tables/collision-chaining.md",
+ "module": "Hash Tables",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "What happens when two keys hash to the exact same slot?",
+ "hook_slide": "Two keys, one slot. *Now what?*",
+ "hook_sub": "Nobody gets turned away. The slot grows a chain.",
+ "caption": [
+  "With {m} buckets, {a} and {b} both land in slot {slot_ab}. Collisions aren't a bug in your hash table. They're guaranteed.",
+  "Separate chaining: each bucket holds a list. Insert appends to that list; lookup scans only that one list.",
+  "That's why \"O(1)\" is an average. Put {prank_n} keys that all hash to slot {prank_slot} into one table and finding the last one scans {prank_scan} entries. Spread the same number of keys out and it's {spread_scan}.",
+  "Doubling the table helps, statistically: {c} and {d} split apart at {m2} buckets, but {a} and {b} still share slot {slot_ab2}.",
+  "Did you know the O(1) was an average? 👇"
+ ],
+ "tags": "#hashmap #collisions #hashing #python #codinginterview",
+ "cta": "Watch a chain form, then a rehash re-file every key.",
+ "slides": [
+  {"k": "THE COLLISION", "h": "{a} and {b} both land in slot {slot_ab}",
+   "p": ["A table with {m} buckets files a key under `key % {m}`. Two different keys, one address.",
+         "Sooner or later it is guaranteed to happen."]},
+  {"k": "THE FIX: CHAINING", "h": "Each bucket holds a list",
+   "code": {"file": "chained.py", "lines": [5, 11], "marks": {"7": "add"}},
+   "p": ["Insert appends to that bucket's list. Lookup scans only that one list, never the whole table."]},
+  {"k": "WHY IT IS STILL FAST", "h": "O(1) on average",
+   "p": ["The cost of any operation is the length of one chain.",
+         "Under uniform hashing, the expected chain length is the *load factor*: entries per bucket. Keep it bounded by resizing and the expected work stays constant."]},
+  {"k": "THE CATCH", "h": "{prank_n} keys, all for slot {prank_slot}",
+   "rows": [{"lab": "Entries scanned to find the last one", "val": "{prank_scan}", "tone": "bad"},
+            {"lab": "Same number of keys, spread out", "val": "{spread_scan}", "tone": "good"}],
+   "p": ["\"Hash lookup is O(1)\" quotes the average case, not a guarantee."]},
+  {"k": "DOUBLING THE TABLE", "h": "{m} buckets become {m2}",
+   "rows": [{"lab": "{c} and {d}: shared slot {slot_cd}", "val": "now slots {slot_c2} and {slot_d2}", "tone": "good"},
+            {"lab": "{a} and {b}: shared slot {slot_ab}", "val": "still slot {slot_ab2}, together", "tone": "warn"}],
+   "p": ["Doubling reduces collisions statistically, not individually."]}
+ ]
+}

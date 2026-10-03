@@ -1,0 +1,17 @@
+{
+ "m": 4,
+ "m2": 8,
+ "a": 10,
+ "b": 18,
+ "c": 3,
+ "d": 7,
+ "slot_ab": 2,
+ "slot_ab2": 2,
+ "slot_cd": 3,
+ "slot_c2": 3,
+ "slot_d2": 7,
+ "prank_n": 100,
+ "prank_slot": 4,
+ "prank_scan": 100,
+ "spread_scan": 1
+}
