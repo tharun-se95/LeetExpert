@@ -1,0 +1,38 @@
+{
+ "name": "memory has a Big-O too",
+ "roadmap": 13,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/big-o/space-complexity.md",
+ "module": "Big O & Complexity Analysis",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Time isn't the only cost. Memory has a Big-O too, and some of it you never typed.",
+ "hook_slide": "Time isn't the only cost. *Memory has a Big-O too.*",
+ "hook_sub": "And some of that memory you never typed.",
+ "caption": [
+  "Space complexity is the same O machinery, applied to memory. One distinction does most of the work: total space counts the input, auxiliary space is only the extra you allocate. Auxiliary is what people mean by default.",
+  "Finding a max keeps one variable: O(1). Returning a sorted copy of {n} numbers allocates {copy_cells} more slots: O(n).",
+  "Then the memory you don't see. Every active call holds a stack frame, so adding 1 to {n} recursively stacks {frames_rec} frames; the loop uses {frames_iter}. Same time complexity, different space.",
+  "And at {big} the recursive version isn't slow. It's a stack overflow.",
+  "Do you state space when you state time? 👇"
+ ],
+ "tags": "#bigo #spacecomplexity #recursion #python #codinginterview",
+ "cta": "See the stack frames drawn, call by call.",
+ "slides": [
+  {"k": "TWO KINDS", "h": "Total vs auxiliary space",
+   "p": ["Total space counts everything, including the input.",
+         "*Auxiliary* space is only the extra you allocate. It is what people mean by default, since the input's size isn't something you chose."]},
+  {"k": "SAME INPUT, DIFFERENT EXTRA", "h": "One variable, or a full copy",
+   "code": {"file": "space.py", "lines": [1, 9]},
+   "p": ["`max_of` is O(1) auxiliary. `sorted_copy` is O(n): on {n} numbers, {copy_cells} extra slots."]},
+  {"k": "THE MEMORY YOU DON'T SEE", "h": "Every call holds a stack frame",
+   "code": {"file": "space.py", "lines": [11, 20], "marks": {"4": "hint"}},
+   "p": ["Recursion costs memory proportional to its depth, even if no frame allocates anything."]},
+  {"k": "MEASURE IT", "h": "Adding 1 to {n}",
+   "rows": [{"lab": "sum_to: frames on the stack", "val": "{frames_rec}", "tone": "bad"},
+            {"lab": "sum_iter: frames on the stack", "val": "{frames_iter}", "tone": "good"}],
+   "p": ["Same time complexity, different space."]},
+  {"k": "AND IT CRASHES", "h": "At {big} it is not slow. It is an error.",
+   "p": ["Python's recursion limit and JavaScript engines' stack sizes both turn `sum_to` on {big} into a stack overflow.",
+         "From here on, stack depth is always part of the space answer."]}
+ ]
+}
