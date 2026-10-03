@@ -1060,5 +1060,16 @@
   "hook": "Big-O quiz 🧠 Nested loops. Is O(n²) always bad?",
   "slot": "6 pm",
   "comment": "Answer: C, O(n²). Two nested loops over an n × n grid: n² reads, 10,000 for n = 100. But the input has n² cells and a max needs every one read, so this is linear in the input, and optimal."
+ },
+ {
+  "date": "2026-11-18",
+  "post": "lc-dynamic-array-append",
+  "dir": "2026-10-03-dynamic-array-append-lesson",
+  "title": "Dynamic Arrays, Built From Scratch: appending isn't always O(1) (carousel, 7 slides)",
+  "caption": "Appending to an array isn't always O(1). Some appends copy everything.\n\nA list sits on a fixed block of slots. When the block is full, the next append allocates a bigger one and copies every element over: that one append is O(n).\n\nSo why is append called O(1)? Because the block doubles. 1,000 appends trigger only 10 grows and 1,023 copies in total, about 1.02 per append.\n\nGrow by 10 slots at a time instead and the same 1,000 appends cost 49,600 copies: 48 times more, and it gets worse as n grows.\n\nThat's what \"O(1) amortized\" means: averaged over the run, even though a single append can copy 512 elements.\n\nDid you know which appends are the slow ones? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#arrays #dynamicarray #amortizedanalysis #python #codinginterview",
+  "alt": "Slide 1. Cover. Arrays & Dynamic Arrays. Appending to an array isn't always O(1). Most appends are one write. A few copy the whole array first.\n\nSlide 2. The setup. A list sits on a fixed block Underneath is a plain array, the backing store. Its capacity is how many slots it has. Its length is how many are used. The memory after it may belong to something else, so it cannot simply grow in place.\n\nSlide 3. The slow append. Full? Copy everything. Python code: def append(self, value): / if self._length == self._capacity: / self._grow() / self._store[self._length] = value / self._length += 1 / def _grow(self): / self._capacity *= 2 / new_store = [None] * self._capacity / for j in range(self._length): / new_store[j] = self._store[j] / self._store = new_store. When length == capacity, append allocates a bigger block and copies every element over. That one append is O(n).\n\nSlide 4. How much bigger?. 1,000 appends, two policies Double the capacity: 10 grows · 1,023 copies. Add 10 slots each time: 100 grows · 49,600 copies. Same appends, 48 times the copying.\n\nSlide 5. Why doubling wins. Copies at 1, 2, 4, 8, … A geometric series: it sums to under 2n copies across n appends. Spread over n appends, that is O(1) each. A fixed increment copies again every c appends, re-moving the same early elements. It never escapes O(n) per append.\n\nSlide 6. The name for it. O(1) amortized Average copies per append: 1.02. The costliest single append: 512 copies. Amortized means averaged over the whole run. One append can still be O(n).\n\nSlide 7. Closing slide. From the course: Dynamic Arrays, Built From Scratch, a lesson in Arrays & Dynamic Arrays, in leetExpert, the interactive DSA course. Build the whole class from scratch and step through its growth. leetexpert.com, link in bio.",
+  "hook": "Appending to an array isn't always O(1). Some appends copy everything.",
+  "slot": "6 pm"
  }
 ]
