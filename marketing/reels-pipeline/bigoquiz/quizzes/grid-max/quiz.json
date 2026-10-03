@@ -1,0 +1,28 @@
+{
+ "lesson": "courses/dsa/big-o/complexity-drills.md",
+ "drill": "Drill 6",
+ "rename": {
+  "drill6": "grid_max"
+ },
+ "question": "An n × n matrix. Time complexity in n?",
+ "options": [
+  "O(n)",
+  "O(n log n)",
+  "O(n²)",
+  "O(n³)"
+ ],
+ "answer": "O(n²)",
+ "args": "[[r * n + c for c in range(n)] for r in range(n)]",
+ "sizes": [
+  32,
+  128,
+  512
+ ],
+ "count": {
+  "lines": [
+   6
+  ],
+  "n": 100,
+  "formula": "n * n"
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "lesson": "courses/dsa/big-o/complexity-drills.md",
+ "drill": "Drill 3",
+ "rename": {
+  "drill3": "halving_rounds"
+ },
+ "options": [
+  "O(log n)",
+  "O(n)",
+  "O(n log n)",
+  "O(n²)"
+ ],
+ "answer": "O(n log n)",
+ "args": "n",
+ "sizes": [
+  256,
+  2048,
+  16384
+ ],
+ "count": {
+  "lines": [
+   6
+  ],
+  "n": 1024,
+  "formula": "n * (n.bit_length() - 1)"
+ }
+}
