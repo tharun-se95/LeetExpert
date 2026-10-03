@@ -57,6 +57,9 @@ function styleOf(c){
   if(c.s!=null){var f=mixc(PAL.idle.f,PAL.acc.f,clamp(c.s));return {f:f,i:legible(f,PAL.idle.i,PAL.acc.i)};}
   var P=PAL[c.k]||PAL.idle;return {f:P.f,i:P.i};
 }
+/* win's fill sits about 1.1:1 off idle on the navy card, so the state is carried by a ring (.cell.win),
+   not the fill (#72). Every path that paints a cell's fill marks its state here too. */
+function markState(e,k){e.classList.toggle('win',k==='win');}
 
 var mk=function(n,f){var a=[];for(var i=0;i<n;i++)a.push(f(i));return a;};
 var cp=function(a){return a.map(function(x){return {k:x.k,t:x.t,s:x.s};});};
@@ -143,9 +146,9 @@ function Scene(def,root){
         // letter nearly vanished (the browser gate measured 1.47:1), so it takes whichever reads better
         var changed=a[i].k!==c[i].k||a[i].t!==c[i].t||a[i].s!==c[i].s;
         var sc=changed&&p<1?1+.12*Math.sin(Math.PI*p):1,tx=(p<.3?a[i].t:c[i].t)||'';
-        var key=f+ink+sc.toFixed(3)+tx,e=els[i],id=b.id+i;
+        var key=f+ink+sc.toFixed(3)+tx+c[i].k,e=els[i],id=b.id+i;
         if(last[id]===key)continue;last[id]=key;
-        e.style.background=f;e.style.color=ink;e.style.transform=sc===1?'':'scale('+sc.toFixed(3)+')';
+        markState(e,c[i].k);e.style.background=f;e.style.color=ink;e.style.transform=sc===1?'':'scale('+sc.toFixed(3)+')';
         if(e.textContent!==tx)e.textContent=tx;
       }
       var o=ovs[b.id];
