@@ -4,7 +4,7 @@
 - **Source lesson:** `courses/dsa/hash-tables/two-sum.md`
 - **Family:** hash-tables
 - **Format:** Reel, 1080×1920, 73s, loops to frame 1; code card as hero prop; Hope narration
-- **Status:** drafted (not posted)
+- **Status:** posted to @leetexpert 2026-10-03: https://www.instagram.com/reel/DeBfi2UDhiq/. Before that: drafted (not posted)
 - **Media:** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)

@@ -32,7 +32,7 @@ for r in K:
     if m is None:
         # a package whose media are not yet assets of the kit artifact: listed, marked, not saveable
         n = len(list(Path(root, r["dir"]).glob("slide*.png")))
-        m = {"kind": f"Carousel · {n} slides · media not uploaded yet", "files": []}
+        m = {"kind": ("Single image" if n == 1 else f"Carousel · {n} slides") + " · media not uploaded yet", "files": []}
     slug = r["dir"][11:]
     if "video" in m:
         kind = f"Reel · {dur(r['dir'])}"
@@ -44,6 +44,10 @@ for r in K:
     caption = r["caption"].strip() + "\n\n" + r["hashtags"].strip()
     saves = "".join(f'<button class="sv" data-id="{fid}" data-name="{e(slug)}-{e(lab.replace(" ", ""))}.{ext}">Save {e(lab)}</button>' for lab, fid, ext in files)
     hook = r["hook"].split("\n")[0].strip()
+    # a quiz single's answer goes up as the first comment, so the card carries it to copy
+    first = r.get("comment", "").strip()
+    copy_first = f'<button class="cp" data-src="com-{r["post"]}">Copy first comment</button>' if first else ""
+    show_first = f'<details><summary>First comment (post it right after publishing)</summary><pre id="com-{r["post"]}">{e(first)}</pre></details>' if first else ""
     weeks.setdefault(wk, []).append(f'''<article class="post" id="{r["post"]}">
  <div class="when"><span class="day">{d.strftime("%a")}</span><span class="date">{d.strftime("%b")} {d.day}</span><span class="slot">{e(r.get("slot", ""))}</span></div>
  <div class="body">
@@ -52,9 +56,10 @@ for r in K:
   <h3>{e(hook)}</h3>
   <div class="media">{media}</div>
   <div class="saves">{saves}</div>
-  <div class="copies"><button class="cp" data-src="cap-{r["post"]}">Copy caption + hashtags</button><button class="cp" data-src="alt-{r["post"]}">Copy alt text</button></div>
+  <div class="copies"><button class="cp" data-src="cap-{r["post"]}">Copy caption + hashtags</button><button class="cp" data-src="alt-{r["post"]}">Copy alt text</button>{copy_first}</div>
   <details><summary>Caption</summary><pre id="cap-{r["post"]}">{e(caption)}</pre></details>
   <details><summary>Alt text</summary><pre id="alt-{r["post"]}">{e(r["alt"].strip())}</pre></details>
+  {show_first}
  </div>
 </article>''')
 body = "".join(f'<section><h2>{e(w)}</h2>{"".join(c)}</section>' for w, c in weeks.items())
