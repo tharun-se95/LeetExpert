@@ -1,0 +1,29 @@
+{
+ "lesson": "courses/dsa/big-o/analyzing-loops-api-complexity.md",
+ "contains": [
+  "i = 1",
+  "while i < n:",
+  "    i *= 2"
+ ],
+ "states": "**k = log₂n → O(log n)**",
+ "options": [
+  "O(1)",
+  "O(log n)",
+  "O(n)",
+  "O(n log n)"
+ ],
+ "answer": "O(log n)",
+ "args": "n",
+ "sizes": [
+  1125899906842624,
+  1267650600228229401496703205376,
+  1606938044258990275541962092341162602522202993782792835301376
+ ],
+ "count": {
+  "lines": [
+   5
+  ],
+  "n": 1000000,
+  "formula": "(n - 1).bit_length()"
+ }
+}

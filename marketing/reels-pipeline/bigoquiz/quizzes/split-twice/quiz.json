@@ -1,0 +1,27 @@
+{
+ "lesson": "courses/dsa/big-o/complexity-drills.md",
+ "drill": "Drill 5",
+ "rename": {
+  "drill5": "split_twice"
+ },
+ "options": [
+  "O(log n)",
+  "O(n)",
+  "O(n log n)",
+  "O(2ⁿ)"
+ ],
+ "answer": "O(n)",
+ "args": "n",
+ "sizes": [
+  256,
+  4096,
+  65536
+ ],
+ "count": {
+  "lines": [
+   2
+  ],
+  "n": 1024,
+  "formula": "2 * n - 1"
+ }
+}

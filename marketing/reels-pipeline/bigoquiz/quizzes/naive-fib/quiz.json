@@ -1,0 +1,26 @@
+{
+ "lesson": "courses/dsa/dynamic-programming/from-recursion-to-memoization.md",
+ "rename": {},
+ "states": "\"name\": \"naive recursive fib\", \"time\": \"O(2ⁿ)\"",
+ "options": [
+  "O(n)",
+  "O(n log n)",
+  "O(n²)",
+  "O(2ⁿ)"
+ ],
+ "answer": "O(2ⁿ)",
+ "bound_only": true,
+ "args": "n",
+ "sizes": [
+  12,
+  18,
+  24
+ ],
+ "count": {
+  "lines": [
+   2
+  ],
+  "n": 25,
+  "formula": "2 * F(n + 1) - 1"
+ }
+}
