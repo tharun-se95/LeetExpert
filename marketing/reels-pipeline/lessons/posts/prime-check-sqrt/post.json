@@ -1,0 +1,42 @@
+{
+ "name": "a prime check stops at the square root",
+ "roadmap": null,
+ "date": "2026-10-04",
+ "lesson": "courses/dsa/math-for-dsa/divisibility-primes-gcd.md",
+ "module": "Math for DSA",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Is {p} prime? You could try {slow_tests} divisors. Or {fast_tests}.",
+ "hook_slide": "Is {p} prime? *{fast_tests} divisions will tell you.*",
+ "hook_sub": "Not {slow_tests}. Divisors come in pairs.",
+ "caption": [
+  "To check whether n is prime, the obvious loop tries every divisor from 2 up to n - 1. For {p} that is {slow_tests} divisions.",
+  "But divisors come in pairs. 36 has (1, 36), (2, 18), (3, 12), (4, 9) and (6, 6), and the small member of each pair never exceeds 6, the square root of 36. It can't: if both members were larger than the square root, their product would be larger than n.",
+  "So if n has any divisor, it has one at or below its square root. Stop the loop there: {fast_tests} divisions, and finishing without finding one is a proof that n is prime.",
+  "One caveat: that is the square root of the value, not of the input size. For a 300-digit number it is still hopeless, which is exactly why RSA can rest on factoring being hard.",
+  "Which loop bound did you learn first? 👇"
+ ],
+ "tags": "#primes #math #timecomplexity #dsa #codinginterview",
+ "cta": "The same lesson goes on to the Sieve of Eratosthenes and Euclid's GCD.",
+ "slides": [
+  {"k": "THE QUESTION", "h": "Is `n` prime?",
+   "code": {"file": "prime.py", "lines": [1, 9], "marks": {"5": "hint"}},
+   "rows": [{"lab": "n = {p}", "val": "{slow_tests} divisions", "tone": "bad"}]},
+  {"k": "THE INSIGHT", "h": "Divisors come in pairs",
+   "p": ["If `d` divides `n`, so does `n / d`. For 36:",
+         "(1, 36)  (2, 18)  (3, 12)  (4, 9)  (6, 6)",
+         "The small member never exceeds 6, and 6 is the square root of 36."]},
+  {"k": "WHY", "h": "One of each pair has to be small",
+   "p": ["If both members were larger than the square root of `n`, their product would be larger than `n`. But their product *is* `n`.",
+         "So if `n` has any divisor, the loop finds one at or below the square root. If it finishes without finding one, `n` is prime. *That is a proof, not a guess.*"]},
+  {"k": "THE CODE", "h": "Stop at the square root",
+   "code": {"file": "prime.py", "lines": [11, 19], "marks": {"5": "add"}},
+   "p": ["`d * d <= n` instead of a square root call: it stays in integer arithmetic."]},
+  {"k": "COUNT IT", "h": "n = {p}",
+   "rows": [{"lab": "Every divisor below n", "val": "{slow_tests} divisions", "tone": "bad"},
+            {"lab": "Up to the square root", "val": "{fast_tests} divisions", "tone": "good"},
+            {"lab": "Both say", "val": "prime", "tone": "mark"}]},
+  {"k": "THE CAVEAT", "h": "The root of the value, not of the input",
+   "p": ["A number with 300 digits still has a square root far too large to loop over. Measured against the number of digits, this algorithm is exponential.",
+         "That is exactly why RSA can rest on factoring being hard."]}
+ ]
+}
