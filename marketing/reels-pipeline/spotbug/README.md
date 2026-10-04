@@ -50,4 +50,5 @@ last reel carousel. Each check was seen to fail on 2026-10-03: a bug fixed in Py
 fixed in JavaScript only, a fix broken in JavaScript, an input the bug gets right, an edited
 `post.md` and a missing slide.
 
-Found while building: the partition bug passes all of its lesson's sandbox cases (#164).
+Found while building: the partition bug passed all seven of its lesson's sandbox cases. #164 added
+two cases that catch it and `web/tests/namedMistakes.test.ts`, which keeps it caught.

@@ -1,0 +1,40 @@
+{
+ "name": "the question a hash set can't answer",
+ "roadmap": null,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/tries/trie-structure-and-prefix-search.md",
+ "module": "Tries",
+ "archetype": "why DSA? (lesson carousel)",
+ "hook": "A hash set finds a word in O(1). Ask it what starts with \"pre\" and it has to check every entry.",
+ "hook_slide": "Ask a hash set what starts with \"pre\". *It has to check every entry.*",
+ "hook_sub": "The property that makes it fast is what makes it useless here.",
+ "caption": [
+  "A hash set answers one question: is this exact string stored? Autocomplete asks a different one: does anything start with \"pre\"?",
+  "The set scattered \"prefix\" and \"pretend\" to unrelated slots on purpose. That's why exact lookup is O(1), and why a prefix query has to test all {n} entries: {scan_checks} checks.",
+  "A trie keeps related keys related. Words that share a prefix share the same nodes: {words} is {chars} characters stored in {nodes} nodes. The same prefix query takes {prefix_steps} steps, one per character, however many words are stored.",
+  "And a missing edge ends a search early: looking for \"cable\" among card and cat stops after {cable_matched} of its {cable_len} characters.",
+  "Where have you used a trie outside an interview? 👇"
+ ],
+ "tags": "#trie #prefixsearch #autocomplete #python #codinginterview",
+ "cta": "Then implement one in the sandbox, in Python or JavaScript.",
+ "slides": [
+  {"k": "THE GAP", "h": "One question, answered very fast",
+   "p": ["A hash set answers \"is this exact string stored?\" in O(1) on average.",
+         "Autocomplete asks something else: \"does any stored word start with this?\" The set scattered related words to unrelated slots on purpose, so it has nothing to offer."]},
+  {"k": "THE STRUCTURE", "h": "Shared prefixes share nodes",
+   "rows": [{"lab": "Stored", "val": "{words}", "tone": "mark"},
+            {"lab": "Characters across the words", "val": "{chars}", "tone": "warn"},
+            {"lab": "Nodes in the trie", "val": "{nodes}", "tone": "good"}],
+   "p": ["Edges are labelled with characters; a path from the root spells a string."]},
+  {"k": "THE CODE", "h": "Every operation is one walk",
+   "code": {"file": "trie.py", "lines": [5, 16], "marks": {"9": "hint", "10": "hint"}},
+   "p": ["A missing edge ends the walk at once."]},
+  {"k": "THE PREFIX QUERY", "h": "{n} words. What starts with \"pre\"?",
+   "rows": [{"lab": "Hash set: entries tested", "val": "{scan_checks}", "tone": "bad"},
+            {"lab": "Trie: steps down from the root", "val": "{prefix_steps}", "tone": "good"}],
+   "p": ["The tree gets wider as words are added, never slower to descend."]},
+  {"k": "STOPPING EARLY", "h": "Search for \"cable\" among card and cat",
+   "rows": [{"lab": "Characters looked at", "val": "{cable_matched} of {cable_len}", "tone": "good"}],
+   "p": ["After c and a there is no edge for b, so the word was never stored. No point continuing."]}
+ ]
+}

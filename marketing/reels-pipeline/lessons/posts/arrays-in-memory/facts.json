@@ -1,0 +1,13 @@
+{
+ "base": 4096,
+ "slot": 8,
+ "i": 3,
+ "addr": 4120,
+ "n": 1000,
+ "front_writes": 500500,
+ "end_writes": 1000,
+ "line": 64,
+ "per_line": 16,
+ "free_reads": 15,
+ "hit_pct": 94
+}

@@ -1,0 +1,11 @@
+{
+ "n": 1000,
+ "c": 10,
+ "double_grows": 10,
+ "double_copies": 1023,
+ "worst": 512,
+ "avg": "1.02",
+ "add_grows": 100,
+ "add_copies": 49600,
+ "ratio": 48
+}

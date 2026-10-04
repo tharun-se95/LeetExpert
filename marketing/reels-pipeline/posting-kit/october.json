@@ -107,7 +107,23 @@
   "hashtags": "#pythontips #javascript #debugging #codereview #learnpython",
   "alt": "A code card shows a Python function, remove_evens, that loops over nums and calls nums.remove(n) on each even number. An \"AI · 2 seconds\" badge sits above it, and a note says remove_evens([1, 2, 3]) returns [1, 3], a pass. Then remove_evens([2, 4, 6, 7]) returns [4, 7], with the 4 outlined in amber: \"4 is even. It survived.\" A row of four cinema seats holds passengers 2, 4, 6 and 7, with a pointing finger marked i over seat 0. Passenger 2 leaves, everyone slides one seat left, and the finger moves on to seat 1. Passenger 4, now in seat 0, gets a dashed ring: \"Nobody checked it.\" Then 6 leaves, 7 slides left, and the finger points past the end: the loop stops with [4, 7]. The code card returns, and a highlight walks it: the loop's position always moves forward, remove shifts the tail left, and the next item lands in the checked slot and is skipped. Fix 1 is a one-line list comprehension that keeps odd numbers, giving [7]. Fix 2 is an in-place read/write pointer version, walked line by line, ending with del nums[write:]. Bars for 100,000 numbers show 7,972 ms for looping with remove against 4 ms for the new list, \"about 2,000× slower\". A panel shows Python's RuntimeError for deleting from a dict during iteration, and another says lists and JavaScript arrays skip items with no error. An interview-tell card reads \"Changing a collection while looping over it? Say 'new list, or a write pointer'\". A challenge asks what remove_evens([1, 2, 2, 3]) returns. A leetExpert lockup ends the reel.",
   "hook": "This removes the even numbers. Or does it?",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-04",
+   "frames": [
+    {
+     "kind": "quiz",
+     "sticker": "Quiz",
+     "question": "What does the buggy version return for [1, 2, 2, 3]?",
+     "options": [
+      "[1, 3]",
+      "[1, 2, 3]",
+      "[1, 2, 2, 3]"
+     ],
+     "answer": "[1, 2, 3]"
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-05",
@@ -118,7 +134,29 @@
   "hashtags": "#slidingwindow #algorithms #leetcode #python #codinginterview",
   "alt": "Six number cells, 2, 3, 1, 2, 4 and 3, with indices 0 to 5, under the question \"shortest stretch with sum ≥ 7? every start × every end = O(n²)\". Two lines explain the inchworm: \"front stretches forward, back pulls in, neither end ever backs up\". A teal rounded window with a small face on its right end, the inchworm, grows across the cells, and readouts show the window total and the shortest length so far: 6 < 7; 8 ≥ 7 with shortest 4; pull in to 6; grow to 10; pull in to 7 with shortest 3; pull in to 6; grow to 9; pull in to [4, 3], 7, with shortest 2. The chip \"answer: [4, 3], length 2\" appears. A code card walks min_subarray_len line by line: right expands and adds nums[right]; while the total is big enough, record the length, drop nums[left] and move left on; both pointers only move forward, O(n). Bars for 10,000 numbers show 848 ms for every start × every end against 1.18 ms for the sliding window. A trap card compares \"while total >= target: ✓ 2\" with \"if total >= target: ✗ 4\": \"shrinks at most once per step, the window never gets tight\". A caveat card shows target 5 on [4, −2, −3, 4, 1]: \"window: 0 (nothing found), but [4, 1] = 5, length 2\". An interview-tell card reads \"Contiguous, subarray, substring? Say 'sliding window'\". A challenge asks for the shortest length with target 11 on [1, 2, 3, 4, 5]. A leetExpert lockup ends the reel.",
   "hook": "If you see \"contiguous\", think window.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-05",
+   "frames": [
+    {
+     "kind": "answer",
+     "sticker": "none",
+     "question": "What does the buggy version return for [1, 2, 2, 3]?",
+     "answer": "[1, 2, 3]"
+    },
+    {
+     "kind": "quiz",
+     "sticker": "Quiz",
+     "question": "Target 11 on [1, 2, 3, 4, 5]. Shortest length?",
+     "options": [
+      "2",
+      "3",
+      "4"
+     ],
+     "answer": "3"
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-06",
@@ -129,7 +167,29 @@
   "hashtags": "#slidingwindow #offbyone #codereview #python #leetcode",
   "alt": "A code card shows a Python function, max_sum_k, looping for i in range(len(nums) - k) and taking the max of sum(nums[i:i + k]), with an \"AI · passes the sample\" badge. A note shows [2, 1, 5, 1, 3, 2], k = 3 → 9, a pass, then \"Would you ship it?\". The next card shows max_sum_k([1, 2, 3, 9], 2) → 5, wrong, with \"answer: 12 (3 + 9)\", and max_sum_k([4, 5], 2) → -inf, wrong, because k is the whole length. A \"Count the windows\" scene slides a teal frame two cells wide over 1, 2, 3, 9 to start 0, start 1 and start 2: \"3 windows = n − k + 1\". The code card returns, and a highlight walks it: best starts at negative infinity; for each start i, sum k numbers and keep the biggest; range(n − k) = range(2) tries starts 0 and 1; start 2, [3, 9], is never checked; the fix is range(len(nums) - k + 1). A \"Second problem\" card reads \"k additions × every window = O(n·k)\". A second code card walks the sliding version: sum the first window once, add the number entering on the right and subtract the one leaving on the left, keep the best, one add and one subtract per step, O(n). Bars for 100,000 numbers with k = 10,000 show 12.35 s for summing every window against 11.7 ms for sliding. An interview-tell card reads \"k numbers in a row? Say 'n − k + 1, then slide'\". A challenge asks how many windows of size 3 fit in 10 numbers. A leetExpert lockup ends the reel.",
   "hook": "Max sum of k numbers in a row. Looks clean.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-06",
+   "frames": [
+    {
+     "kind": "answer",
+     "sticker": "none",
+     "question": "Target 11 on [1, 2, 3, 4, 5]. Shortest length?",
+     "answer": "3"
+    },
+    {
+     "kind": "quiz",
+     "sticker": "Quiz",
+     "question": "How many windows of size 3 fit in 10 numbers?",
+     "options": [
+      "7",
+      "8",
+      "10"
+     ],
+     "answer": "8"
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-07",
@@ -140,7 +200,29 @@
   "hashtags": "#javascript #binarysearch #javascripttips #debugging #webdev",
   "alt": "A JavaScript code card shows binarySearch with the line \"const mid = (lo + hi) / 2;\", under a badge \"one character is wrong\". A note says it was tested on 7 numbers and every target was found, then \"Would you ship it?\". binarySearch([2, 4, 6, 8], 6) returns -1, marked wrong: \"6 is right there, at index 2\". A scene shows the line const mid = (lo + hi) / 2; above four cells, 2, 4, 6 and 8. An amber marker labelled 1.5 lands between the 4 and the 6: \"lo = 0, hi = 3 → (0 + 3) / 2 = 1.5\", then \"arr[1.5] → undefined\", \"=== 6? false · < 6? false → hi = mid − 1 = 0.5\", \"never a real index again → -1\". \"Why the tests passed\" shows a grid of lengths 1 to 16: 1, 3, 7 and 15 marked \"hides\" in teal, every other length \"fails\": \"hides only on 2ᵏ − 1, one less than a power of two\". A Python panel shows mid = (lo + hi) / 2 raising \"TypeError: list indices must be integers or slices, not float\": \"loud beats silently wrong\". The fixed code card highlights \"const mid = lo + Math.floor((hi - lo) / 2);\": always a whole index, never adds two huge numbers, overflow-safe in Java or C++. Then [2, 4, 6, 8], 6 → index 2, correct. An interview-tell card reads \"A middle index in JavaScript? Say 'I'll floor it'\". A challenge asks for the next length after 7 that hides the bug. A leetExpert lockup ends the reel.",
   "hook": "Binary search in JavaScript. One character is wrong.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-07",
+   "frames": [
+    {
+     "kind": "answer",
+     "sticker": "none",
+     "question": "How many windows of size 3 fit in 10 numbers?",
+     "answer": "8"
+    },
+    {
+     "kind": "quiz",
+     "sticker": "Quiz",
+     "question": "7 hides the bug. What's the next length that does?",
+     "options": [
+      "8",
+      "14",
+      "15"
+     ],
+     "answer": "15"
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-08",
@@ -151,7 +233,29 @@
   "hashtags": "#recursion #callstack #computerscience #python #learnpython",
   "alt": "The title factorial(3) = 3 × 2 × 1. A card of stacked cafeteria trays reads \"every call: a fresh tray on top; you only ever work on the top tray\". Then a call stack builds from the bottom, labelled \"winding down: each call waits\": frames factorial(3), factorial(2) and factorial(1) each say \"waiting: n × ?\", and factorial(0) says \"base case → 1\". The label changes to \"unwinding: multiply on the way back\". factorial(0) pops, factorial(1) fills in \"1 × 1 = 1\" and pops, factorial(2) fills in \"2 × 1 = 2\" and pops, and factorial(3) fills in \"3 × 2 = 6\" and pops, leaving \"factorial(3) = 6\" and \"4 frames = n + 1\". A code card walks factorial line by line: the base case returns 1 (the floor); otherwise n × factorial(n − 1), a smaller problem every call; the multiply waits until the call comes back. A card reads \"Every frame costs memory\": Python stops at 1,000 frames, factorial(1000) raises RecursionError: maximum recursion depth exceeded, and JavaScript allows around 10,000. A second code card shows broken(n), which steps down by 2: \"3 → 1 → −1 → −3 … never 0\", not a hang but a crash, RecursionError: maximum recursion depth exceeded. An interview-tell card reads \"Space of a recursive function? Say 'O(n), one frame per call'\". A challenge asks how many frames deep factorial(5) goes. A leetExpert lockup ends the reel.",
   "hook": "Watch recursion go down and come back up.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-08",
+   "frames": [
+    {
+     "kind": "answer",
+     "sticker": "none",
+     "question": "7 hides the bug. What's the next length that does?",
+     "answer": "15"
+    },
+    {
+     "kind": "quiz",
+     "sticker": "Quiz",
+     "question": "How many frames deep does factorial(5) go?",
+     "options": [
+      "5",
+      "6",
+      "120"
+     ],
+     "answer": "6"
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-09",
@@ -162,7 +266,29 @@
   "hashtags": "#dynamicprogramming #memoization #fibonacci #python #leetcode",
   "alt": "A code card shows the three-line recursive fib and is walked line by line: under two, return n; otherwise add the two before it; \"Clean, and correct. Would you ship it?\" A card titled \"What does it cost?\" shows fib(30): 2,692,537 calls, fib(40): 331,160,281 calls, and 14.5 seconds (our test run, Python). Then fib(5)'s call tree draws itself one call at a time: 5 splits into 4 and 3, and so on down to 1s and 0s. As they're named, the repeated calls get amber rings: both fib(3)s, the three fib(2)s, the five fib(1)s and the three fib(0)s. A chip reads \"15 calls · 6 questions\", and O(2ⁿ) appears. A code card walks the memoized fib: the memo is a dictionary made fresh on the first call; the base case; \"New: already solved? Return the saved answer\", \"No subtree at all\"; otherwise compute it once, store it, then return it. A card titled \"Each value, once\" shows fib(40) memoized: 79 calls, not 331,160,281, O(n), with bars of 14.5 s for naive against 7 µs for memoized. A card titled \"One catch: still recursion\" shows a memoized fib(1000) raising \"RecursionError: maximum recursion depth exceeded\" in Python. An interview-tell card reads \"Same call twice in your tree? Say 'Memoize it'\". A challenge asks how many calls the naive fib(6) makes. A leetExpert lockup ends the reel.",
   "hook": "Fibonacci in three lines. What does fib(30) cost?",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-09",
+   "frames": [
+    {
+     "kind": "answer",
+     "sticker": "none",
+     "question": "How many frames deep does factorial(5) go?",
+     "answer": "6"
+    },
+    {
+     "kind": "quiz",
+     "sticker": "Quiz",
+     "question": "How many calls does the naive fib(6) make?",
+     "options": [
+      "13",
+      "25",
+      "64"
+     ],
+     "answer": "25"
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-10",
@@ -173,7 +299,27 @@
   "hashtags": "#arrays #inplace #datastructures #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Arrays & Dynamic Arrays\", with a \"Save this\" tag. Tagline: \"In-place discipline — write pointers, partitions, one pass.\" Chips list what is inside: 5 smells to patterns, 5 patterns, 3 targets and 2 traps.\n\nSlide 2. Smell to pattern. Sorted array, remove / unique in place → Write pointer. Reorder around a predicate (zero / pivot) → Partition. Rotate or reverse cycles, O(1) space → Triple reverse. Best of something over a scan → Running extreme. Answer needs left×right without division → Prefix / suffix.\n\nSlide 3. Pattern 1 of 5: Write pointer. When: Compact valid elements to the front. Read with one index, write with another. Everything left of write is the answer region; never allocate a second array.\n\nSlide 4. Pattern 2 of 5: Partition pointers. When: Stable reorder by a boolean test. Grow a ‘kept’ region from the left. Swap (or assign) when the predicate holds; watch relative order if the problem demands stability.\n\nSlide 5. Pattern 3 of 5: Triple reverse. When: Rotate by k with O(1) extra memory. Reverse whole → reverse prefix → reverse suffix. Normalise k mod n before indexing; empty and n=1 are free no-ops.\n\nSlide 6. Pattern 4 of 5: Running minimum / maximum. When: Optimal pair from a left-to-right scan. Track the best so far while scanning once. The sell/buy (or similar) day ordering is an invariant — encode it in the scan direction.\n\nSlide 7. Pattern 5 of 5: Prefix × suffix products. When: Each index needs product of all others. Build left products, then fold right products on a second pass. Division tricks die on zeroes — don’t use them.\n\nSlide 8. Targets, time and extra space. Write / partition pass: O(n) time, O(1) space (Target for in-place drills). Triple reverse rotate: O(n) time, O(1) space (Three linear reverses). Prefix / suffix products: O(n) time, O(1)* space (*output array doesn’t count). Traps. Off-by-one on the write index: Decide whether write points at the next free slot or the last written one — and stick to it. Mixing the two is the usual silent corruption. k can exceed n: Any rotate or index arithmetic that ignores k %= n will read off the end. Normalise before you touch the array.\n\nSlide 9. Closing slide: \"The real Arrays & Dynamic Arrays cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Arrays & Dynamic Arrays on one cheatsheet: 5 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-10",
+   "frames": [
+    {
+     "kind": "answer",
+     "sticker": "none",
+     "question": "How many calls does the naive fib(6) make?",
+     "answer": "25"
+    },
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Off-by-one on the write index",
+      "k can exceed n"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-11",
@@ -184,7 +330,23 @@
   "hashtags": "#binarysearch #algorithms #computerscience #python #leetcode",
   "alt": "Seven number cells, 1, 3, 5, 7, 9, 11 and 13, with the prompt \"sorted list · find 9\". A paper-dictionary card shows an open book: \"open the middle, keep one half, ignore the other\". Back on the row, lo sits under the first cell and hi under the last. An amber ring marks the middle, 7: \"mid = 7 < 9 → drop 7 and everything left of it\". Cells 1 to 7 grey out and lo moves to the 9. The ring moves to 11: \"mid = 11 > 9 → drop 11 and everything right\". 11 and 13 grey out and hi moves onto the 9. The ring lands on 9, which turns teal: \"found in 3 checks\". A code card walks binary_search line by line: [lo, hi] is where the answer could still be; while the range isn't empty, take the middle; return the target; too small moves lo past mid; too big moves hi below mid; if the range runs out, it's not there; each check halves the range, O(log n). A bar labelled \"1,000,000 sorted numbers\" halves twenty times while a counter counts the checks down to at most 1 left: \"at most 20 checks\", then \"1,000,000,000 → at most 30\". A bug card compares \"lo = mid + 1 ✓\" with \"lo = mid ✗\": on [1, 3], finding 3, lo = 0, hi = 1, mid = 0, \"1 < 3 → lo = mid = 0 … again, forever\". A card reads \"Only on sorted data, or anything where one comparison tells you which half to drop\". An interview-tell card reads \"Sorted data and a search? Say 'binary search'\". A challenge asks how many checks it takes to find 13 in the list. A leetExpert lockup ends the reel.",
   "hook": "Watch binary search throw away half.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-11",
+   "frames": [
+    {
+     "kind": "quiz",
+     "sticker": "Quiz",
+     "question": "How many checks to find 13 in this list?",
+     "options": [
+      "2",
+      "3",
+      "7"
+     ],
+     "answer": "3"
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-12",
@@ -195,7 +357,27 @@
   "hashtags": "#slidingwindow #substring #algorithms #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Sliding Window\", with a \"Save this\" tag. Tagline: \"Grow the right edge, shrink the left — maintain a window invariant.\" Chips list what is inside: 4 smells to patterns, 4 patterns, 3 targets and 2 traps.\n\nSlide 2. Smell to pattern. Longest / shortest subarray with a property → Variable window. Fixed length k aggregate → Fixed window. At most K distinct / replacements → Count map + shrink. Anagram / permutation in a string → Need map + deficit.\n\nSlide 3. Pattern 1 of 4: Variable window. When: Max length while invariant holds. Expand R freely; while the invariant breaks, advance L. Answer updates when the window is valid.\n\nSlide 4. Pattern 2 of 4: Fixed window of k. When: Best score on every block of k. Maintain a running sum (or structure) for indices [i−k+1, i]. Slide by adding the entering element and dropping the leaving one.\n\nSlide 5. Pattern 3 of 4: Distinct / frequency budget. When: At most K different characters. Map counts inside the window. When distinct > K (or a budget breaks), shrink from L until legal again.\n\nSlide 6. Pattern 4 of 4: Need / have matching. When: Window must cover required counts. Track how many constraints are satisfied. Expand until ‘need’ is met, then shrink to minimise — classic minimum-window shape.\n\nSlide 7. Targets, time and extra space. Variable window scan: O(n) time, O(Σ) space (Each index enters/leaves once). Fixed window: O(n) time, O(1) space (Often just a running sum). Covering window: O(n) time, O(Σ) space (Two maps or one + deficit). Traps. Updating the answer at the wrong time: Max-length updates when valid; min-length updates after you’ve satisfied the need and while shrinking. Mixing them is a silent wrong answer. Forgetting to erase zero counts: If you use map.size / distinct counters, delete keys (or decrement a distinct tally) when a count hits zero — stale keys inflate distinct.\n\nSlide 8. Closing slide: \"The real Sliding Window cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Sliding Window on one cheatsheet: 4 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-12",
+   "frames": [
+    {
+     "kind": "answer",
+     "sticker": "none",
+     "question": "How many checks to find 13 in this list?",
+     "answer": "3"
+    },
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Updating the answer at the wrong time",
+      "Forgetting to erase zero counts"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-13",
@@ -206,7 +388,23 @@
   "hashtags": "#prefixsum #algorithms #leetcode #python #codinginterview",
   "alt": "A row of five number cells, 2, 4, 1, 5 and 3, with index labels 0 to 4. A bracket over indices 1 to 3 shows \"4 + 1 + 5 = 10\". Brackets flicker over other ranges, with the tag \"10,000 queries × O(n) each\". An odometer card shows a trip start of 12,040 km and a trip end of 12,075 km: \"trip = 12,075 − 12,040 = 35 km, no re-driving the trip\". A second row labelled \"prefix (running total)\" fills in cell by cell, 0, 2, 6, 7, 12, 15, each total under the number that completes it. A code card walks build_prefix and range_sum line by line: n + 1 slots with prefix[0] = 0 as the sum of nothing, next slot = previous slot + x, one pass O(n), and sum of l..r = prefix[r + 1] − prefix[l]. The rows return with prefix[4] and prefix[1] ringed: \"sum(1..3) = prefix[4] − prefix[1] = 12 − 2 = 10\". Then prefix[5] and prefix[2]: \"15 − 6 = 9\", and the chip \"one subtraction per query: O(1)\". Bars for 10,000 queries on 100,000 numbers show 4.96 s summing each range against 6.1 ms with a prefix array, \"about 800× faster\". The nums cell at index 1 changes from 4 to 9, and prefix cells 2 to 5 turn amber: \"change nums[1] → prefix[2..5] are stale\". An off-by-one card shows prefix[r] − prefix[l] giving 7 − 2 = 5, which drops nums[3] = 5, against prefix[r + 1] − prefix[l] giving 10. An interview-tell card reads \"Many range sums, the array never changes. Say 'prefix sums'\". A challenge shows the prefix array and asks for sum(0..4) using just two numbers. A leetExpert lockup ends the reel.",
   "hook": "Answer any range sum in O(1).",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-13",
+   "frames": [
+    {
+     "kind": "quiz",
+     "sticker": "Quiz",
+     "question": "Using just two numbers, what's sum(0..4)?",
+     "options": [
+      "12",
+      "15",
+      "17"
+     ],
+     "answer": "15"
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-14",
@@ -217,7 +415,27 @@
   "hashtags": "#strings #palindrome #datastructures #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Strings\", with a \"Save this\" tag. Tagline: \"Two ends, builders, and character counts — not magic regex.\" Chips list what is inside: 5 smells to patterns, 5 patterns, 3 targets and 2 traps.\n\nSlide 2. Smell to pattern. Ignore non-alphanumeric / case → Filter + two pointers. Same letters, different order → Anagram counts. Shared stem across words → Prefix shrink. Words reversed, spaces messy → Split / rebuild. Find needle in haystack → Scan + match window.\n\nSlide 3. Pattern 1 of 5: Two-pointer palindrome. When: Symmetric check after cleaning. Advance L/R while skipping noise characters. Compare lowercase forms; stop when they cross.\n\nSlide 4. Pattern 2 of 5: Frequency / anagram map. When: Permutation of the same multiset. Count characters (array of 26 or a map). Equal counts ⇔ anagram. Prefer fixed alphabets when the problem allows.\n\nSlide 5. Pattern 3 of 5: Longest common prefix. When: Vertical or horizontal shrink. Start from the first string and trim until every word agrees — or compare column-by-column and stop at the first mismatch.\n\nSlide 6. Pattern 4 of 5: Reverse words. When: Token order flips, spacing collapses. Identify word spans, then rebuild with a single space. Trim ends; don’t reverse characters inside words unless asked.\n\nSlide 7. Pattern 5 of 5: Substring search window. When: First index of a pattern. Slide a candidate start; match character-by-character. Know the naive O(n·m) baseline before reaching for KMP.\n\nSlide 8. Targets, time and extra space. Clean + two pointers: O(n) time, O(1) space (Or O(n) if you build a filtered copy). Anagram counts: O(n) time, O(Σ) space (Σ = alphabet size). Naive strStr: O(n·m) time, O(1) space (Acceptable for short needles). Traps. Immutability cost: Repeated string concatenation in a loop is quadratic in some languages. Build with a list/array, then join once. Unicode vs interview alphabet: Problems usually mean ASCII letters/digits. Don’t invent Unicode case folding unless the statement asks.\n\nSlide 9. Closing slide: \"The real Strings cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Strings on one cheatsheet: 5 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-14",
+   "frames": [
+    {
+     "kind": "answer",
+     "sticker": "none",
+     "question": "Using just two numbers, what's sum(0..4)?",
+     "answer": "15"
+    },
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Immutability cost",
+      "Unicode vs interview alphabet"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-15",
@@ -228,7 +446,21 @@
   "hashtags": "#linkedlist #fastandslowpointers #datastructures #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Linked Lists\", with a \"Save this\" tag. Tagline: \"Pointer surgery — reverse, meet, and splice without losing the rest.\" Chips list what is inside: 5 smells to patterns, 5 patterns, 3 targets and 2 traps.\n\nSlide 2. Smell to pattern. Reverse order of nodes → Iterative prev/curr/next. Middle or cycle? → Fast & slow. Remove nth from end → Leader gap of n. Merge two sorted lists → Dummy head walk. Reorder / rotate nodes → Cut + relink.\n\nSlide 3. Pattern 1 of 5: Iterative reverse. When: Flip every next without recursion. Three pointers: prev, curr, next. Save next, rewire curr.next → prev, then advance. Return prev — that is the new head.\n\nSlide 4. Pattern 2 of 5: Fast & slow. When: Middle node or cycle detection. Slow +1, fast +2. Middle when fast hits null; cycle when fast meets slow again. Draw one lap — the rhythm sticks.\n\nSlide 5. Pattern 3 of 5: Dummy head. When: Delete or merge that might touch the real head. Fake node before the list so every splice shares one path. Return dummy.next. Eliminates special-case head deletes.\n\nSlide 6. Pattern 4 of 5: Leader gap. When: Nth from end without knowing length first. Advance a leader n steps (or n+1 if you need the node before the cut). Move both until leader is null — follower sits at the edit point.\n\nSlide 7. Pattern 5 of 5: Cut and relink. When: Rotate, split, or weave two chains. Find the cut with a length or two-pointer pass, then rewire heads/tails. Never lose the second half’s head before you attach it.\n\nSlide 8. Targets, time and extra space. Reverse / middle / merge: O(n) time, O(1) space (Prefer iterative). Recursive reverse: O(n) time, O(n) space (Call stack depth). Cycle detect (Floyd): O(n) time, O(1) space (No visited set needed). Traps. Losing the next pointer: Save curr.next before rewiring. One missed save and the rest of the list is unreachable — silent data loss, not a crash. Off-by-one on the gap: Removing the nth-from-end needs the node before it. A gap of n vs n+1 is the usual bug; empty-list and n = length are the stress cases.\n\nSlide 9. Closing slide: \"The real Linked Lists cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Linked Lists on one cheatsheet: 5 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-15",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Losing the next pointer",
+      "Off-by-one on the gap"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-16",
@@ -239,7 +471,21 @@
   "hashtags": "#stack #monotonicstack #datastructures #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Stacks\", with a \"Save this\" tag. Tagline: \"LIFO for nesting, deferred work, and monotonic candidates.\" Chips list what is inside: 5 smells to patterns, 4 patterns, 3 targets and 2 traps.\n\nSlide 2. Smell to pattern. Valid parentheses / nesting → Push open, match close. Next greater / smaller element → Monotonic stack. Evaluate expression / calculator → Values + ops stacks. Histogram / largest rectangle → Mono heights + widths. Decode nested strings → Stack of frames.\n\nSlide 3. Pattern 1 of 4: Match nesting. When: Brackets, tags, or nested scopes. Push opening symbols; on close, pop and check the pair. Empty stack at the end ⇔ balanced. A leftover opener is also a fail.\n\nSlide 4. Pattern 2 of 4: Monotonic stack. When: Next greater / smaller to the right (or left). Keep indices in increasing or decreasing value order. When a new value breaks the mono invariant, pop — each pop answers ‘next’ for that index.\n\nSlide 5. Pattern 3 of 4: Deferred evaluation. When: Infix expression or running calculator. Hold operators until precedence (or a ‘)’) says apply. Two stacks — values and ops — cover most interview expression drills.\n\nSlide 6. Pattern 4 of 4: Frame stack decode. When: Nested repeats like 3[a2[c]]. Push a frame (count, partial string) when you enter a bracket; pop and multiply when you leave. The stack depth mirrors nesting.\n\nSlide 7. Targets, time and extra space. Linear scan + stack: O(n) time, O(n) space (Each index push/pop ≤ once). Nested structure walk: O(n) time, O(h) space (h = nesting depth). Monotonic next-greater: O(n) time, O(n) space (Amortised one pop per index). Traps. Peeking an empty stack: Always guard pop/top. Empty means unmatched closer or no candidate yet — both are meaningful states, not just crashes. Storing values instead of indices: Monotonic ‘next greater’ usually needs indices (for distance or later writes). Storing only values loses where the answer belongs.\n\nSlide 8. Closing slide: \"The real Stacks cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Stacks on one cheatsheet: 4 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-16",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Peeking an empty stack",
+      "Storing values instead of indices"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-17",
@@ -250,7 +496,21 @@
   "hashtags": "#binarysearch #offbyone #algorithms #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Binary Search\", with a \"Save this\" tag. Tagline: \"Halve a monotonic search space — on arrays or on the answer.\" Chips list what is inside: 5 smells to patterns, 4 patterns, 3 targets and 2 traps.\n\nSlide 2. Smell to pattern. Sorted array lookup / bound → Classic binary search. Min feasible capacity / days / speed → Search on answer. First true / last false in a predicate → Lower / upper bound. Peak / bitonic array → Compare mid to neighbours. Rotated sorted array → Identify the sorted half.\n\nSlide 3. Pattern 1 of 4: Classic midpoint. When: Find a target in a sorted array. Maintain [lo, hi] where the answer may live. Mid = lo + (hi − lo) // 2 — avoids overflow. Shrink the half that cannot contain the target.\n\nSlide 4. Pattern 2 of 4: Search on answer. When: Minimise / maximise a numeric capacity. When feasibility is monotonic in a numeric answer, binary search that number and run a linear check. The check — not the mid formula — is the hard part.\n\nSlide 5. Pattern 3 of 4: Lower / upper bound. When: First index where predicate becomes true. Loop until lo == hi; return that boundary. Decide inclusive/exclusive carefully — ‘first true’ and ‘last false’ differ by one.\n\nSlide 6. Pattern 4 of 4: Rotated / bitonic half. When: Sorted array that was rotated, or a peak. Compare mid to an endpoint (or neighbour) to learn which half is sorted / ascending. Search the half that still can hold the answer.\n\nSlide 7. Targets, time and extra space. Array binary search: O(log n) time, O(1) space (Sorted input). Answer search + check: O(check · log R) time, O(1) space (R = answer range). Rotated search: O(log n) time, O(1) space (One sorted half each step). Traps. Infinite loop on bounds: Ensure every branch moves lo or hi. Using mid and mid±1 inconsistently with an inclusive range is the usual hang — write the invariant first. Non-monotonic check: Search-on-answer only works when ‘feasible(x)’ never flips back. If the predicate wiggles, binary search returns nonsense — prove monotonicity first.\n\nSlide 8. Closing slide: \"The real Binary Search cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Binary Search on one cheatsheet: 4 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-17",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Infinite loop on bounds",
+      "Non-monotonic check"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-18",
@@ -261,7 +521,22 @@
   "hashtags": "#recursion #backtracking #algorithms #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Recursion & Backtracking\", with a \"Save this\" tag. Tagline: \"Choose → explore → unchoose. The call stack is your state.\" Chips list what is inside: 4 smells to patterns, 4 patterns, 2 targets and 3 traps.\n\nSlide 2. Smell to pattern. All subsets / permutations → Backtracking tree. Constraint board (N-Queens…) → Place + prune. Divide structure in half → Recurse on parts. Every valid arrangement / path → Enumerate + record.\n\nSlide 3. Pattern 1 of 4: Backtracking template. When: Enumerate valid configurations. Push a choice, recurse, pop. Record when a complete valid state is reached. Prune early when constraints break.\n\nSlide 4. Pattern 2 of 4: Include / exclude. When: Subsets / combination sum. For subsets: branch on taking nums[i] or not, then advance i. Same tree, two edges.\n\nSlide 5. Pattern 3 of 4: Swap permutations. When: All orderings of a sequence. For i…n, swap i with j≥i, recurse i+1, swap back. Generates each order once.\n\nSlide 6. Pattern 4 of 4: Place + prune (constraints). When: N-Queens, Sudoku, safe placement. Check constraints before recursing, not after recording. Pruning at the placement step is what keeps board searches from degenerating into full enumeration.\n\nSlide 7. Targets, time and extra space. Subsets: O(2ⁿ · n) time, O(n) space (Output-sensitive). Permutations: O(n! · n) time, O(n) space (Depth-n stack). Traps. Mutating shared arrays: Push a copy into the answer (or copy on record). Otherwise every result points at the same final list. Forgetting to unchoose: After recurse, undo the mutation (pop, unmark, swap back). Missing undo corrupts every sibling branch. Pruning after the record: If you record partial answers and only reject them later, you still walk the dead branches. Reject at the choice, not at the leaf.\n\nSlide 8. Closing slide: \"The real Recursion & Backtracking cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Recursion & Backtracking on one cheatsheet: 4 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-18",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Mutating shared arrays",
+      "Forgetting to unchoose",
+      "Pruning after the record"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-19",
@@ -272,7 +547,22 @@
   "hashtags": "#binarytree #dfs #datastructures #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Binary Trees\", with a \"Save this\" tag. Tagline: \"Rooted structure — traverse with intent (order, level, or path).\" Chips list what is inside: 4 smells to patterns, 4 patterns, 3 targets and 3 traps.\n\nSlide 2. Smell to pattern. Visit every node once → DFS pre/in/post. Per level aggregates → BFS queue. Path / diameter style → DFS return + global. Reconstruct from traversals → Split by inorder root.\n\nSlide 3. Pattern 1 of 4: Recursive DFS. When: Combine children with the root. Base null → 0/identity. Combine left and right with the root. Pick pre/in/post for when you use the root value.\n\nSlide 4. Pattern 2 of 4: Level-order BFS. When: Averages, zigzags, right-side view. Queue nodes; drain a level size each round. Natural for averages, zigzags, and ‘right side view’.\n\nSlide 5. Pattern 3 of 4: Post-order aggregate. When: Height, diameter, LCA prep. Need both children before deciding. Compute below, then update a global answer — don’t decide too early.\n\nSlide 6. Pattern 4 of 4: Reconstruct from traversals. When: Preorder + inorder (or the like). Take the root from preorder, split inorder into left/right spans, recurse on each span. The root index bookkeeping is the entire trap.\n\nSlide 7. Targets, time and extra space. DFS / BFS visit: O(n) time, O(h) / O(w) space (h height, w width). Path aggregates: O(n) time, O(h) space (One pass with returns). Reconstruct: O(n) time, O(n) space (With index map). Traps. Null child assumptions: Always guard left/right. Many ‘simple’ bugs are dereferencing null on a leaf’s child. Confusing node count with height: Height and depth conventions differ (edges vs nodes). Pick one definition and stick to it in base cases. Reconstruction index drift: Inorder split sizes shrink each level; recompute spans from lengths, not from global positions, or you read off the wrong subtree.\n\nSlide 8. Closing slide: \"The real Binary Trees cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Binary Trees on one cheatsheet: 4 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-19",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Null child assumptions",
+      "Confusing node count with height",
+      "Reconstruction index drift"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-20",
@@ -283,7 +573,22 @@
   "hashtags": "#heap #priorityqueue #datastructures #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Heaps\", with a \"Save this\" tag. Tagline: \"Priority in O(log n) — top-K and running medians live here.\" Chips list what is inside: 4 smells to patterns, 4 patterns, 3 targets and 3 traps.\n\nSlide 2. Smell to pattern. Repeated extract-min/max → Binary heap. Top K in a stream → Size-K heap. Merge K sorted → Heap of heads. Cooldown / gap scheduling → Greedy with heap.\n\nSlide 3. Pattern 1 of 4: Size-K heap. When: Top K of a stream / array. For top K largest, keep a min-heap of size K. Evict the smallest when over capacity — heap root is the threshold.\n\nSlide 4. Pattern 2 of 4: Two-heap median. When: Running median as values arrive. Max-heap for the lower half, min-heap for the upper. Rebalance sizes so the median sits at the boundary.\n\nSlide 5. Pattern 3 of 4: K-way merge. When: Merge K sorted lists / arrays. Push the next item from each list with its list id. Pop global min, push that list’s successor.\n\nSlide 6. Pattern 4 of 4: Greedy with heap (cooldown). When: Task scheduler / spaced gaps. Always run the task with the largest remaining count; park just-run tasks in a cooldown queue until their gap clears. A plain queue drifts from optimal.\n\nSlide 7. Targets, time and extra space. Push / pop: O(log n) time, O(n) space (n = heap size). Top-K over stream: O(n log k) time, O(k) space (Better than full sort). K-way merge: O(n log k) time, O(k) space (n total items, k lists). Traps. Min vs max heap mix-up: Top-K largest needs a min-heap of size K (evict small). Flipping the heap type silently inverts the answer. Comparing tuples incorrectly: When the heap stores (value, index, …), define the full comparison. Partial compares break ties and corrupt order. Cooldown queue vs heap state: A task on cooldown must re-enter the heap, not stay parked. Forgetting to re-push is how task-scheduler counts come out too small.\n\nSlide 8. Closing slide: \"The real Heaps cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Heaps on one cheatsheet: 4 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-20",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Min vs max heap mix-up",
+      "Comparing tuples incorrectly",
+      "Cooldown queue vs heap state"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-21",
@@ -294,7 +599,21 @@
   "hashtags": "#graphs #bfs #algorithms #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Graphs\", with a \"Save this\" tag. Tagline: \"Nodes + edges — BFS for short, DFS for components, Union-Find for merges.\" Chips list what is inside: 5 smells to patterns, 4 patterns, 3 targets and 2 traps.\n\nSlide 2. Smell to pattern. Shortest path, unweighted → BFS. Connected components / cycle → DFS or Union-Find. Topological order / course schedule → Kahn or DFS postorder. Edges stream in; connectivity queries → Union-Find. Grid islands / regions → DFS/BFS flood.\n\nSlide 3. Pattern 1 of 4: BFS shortest. When: Unweighted (or equal-weight) distance. Queue + dist (or layer count). First time you reach a node is optimal — don’t relax it again. Mark seen when enqueued, not when dequeued, to avoid duplicates.\n\nSlide 4. Pattern 2 of 4: DFS components. When: Count islands, colour regions, detect cycles. Flood from each unvisited node. Mark visited to avoid revisits. On directed graphs, cycle detection needs a recursion-stack (or colours), not only a visited set.\n\nSlide 5. Pattern 3 of 4: Union-Find. When: Merge sets; ask ‘same component?’. find(u) with path compression; union by rank/size. Perfect when edges arrive as pairs and you rarely need full adjacency.\n\nSlide 6. Pattern 4 of 4: Topo sort (Kahn). When: Order tasks with prerequisites. Queue zero-indegree nodes; peel outgoing edges. Cycle ⇔ you finish with fewer than V nodes ordered. DFS postorder is the dual.\n\nSlide 7. Targets, time and extra space. BFS / DFS: O(V+E) time, O(V) space (Adj list assumed). Union-Find (α): ≈ O(E α(V)) time, O(V) space (Nearly linear). Kahn topo: O(V+E) time, O(V) space (Indegree array + queue). Traps. Directed vs undirected edges: Adding both directions on a directed problem invents paths that don’t exist. Match the statement — and build the adj list the same way. Marking visited too late: In BFS, mark when you enqueue. Marking only on dequeue lets the same node sit in the queue many times and blows time on dense graphs.\n\nSlide 8. Closing slide: \"The real Graphs cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Graphs on one cheatsheet: 4 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-21",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Directed vs undirected edges",
+      "Marking visited too late"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-22",
@@ -305,7 +624,22 @@
   "hashtags": "#intervals #mergeintervals #algorithms #cheatsheet #codinginterview",
   "alt": "Slide 1. Cover. A leetExpert cheatsheet titled \"Intervals\", with a \"Save this\" tag. Tagline: \"Sort, then sweep — merge, insert, and conflict detection.\" Chips list what is inside: 4 smells to patterns, 4 patterns, 3 targets and 3 traps.\n\nSlide 2. Smell to pattern. Overlap / merge ranges → Sort by start. Minimum rooms / cameras → Sweep line events. Insert into sorted intervals → Walk + merge splice. Fewest removals for non-overlap → Earliest-end greedy.\n\nSlide 3. Pattern 1 of 4: Sort + merge. When: Collapse overlapping ranges. Sort by start. If next.start ≤ current.end, extend end; else push current and shift. Linear after sort.\n\nSlide 4. Pattern 2 of 4: Sweep events. When: Peak concurrent intervals. Turn intervals into +1 at start and −1 at end. Sort events; scan tracking active count.\n\nSlide 5. Pattern 3 of 4: Insert & coalesce. When: Add one interval into a sorted list. Copy intervals before the new one, merge through overlaps, then append the rest.\n\nSlide 6. Pattern 4 of 4: Earliest-end greedy. When: Max non-overlapping / min arrows. For maximum non-overlapping intervals, keep the one ending soonest and drop any later interval that overlaps it. Earliest start fails on the overlap chain.\n\nSlide 7. Targets, time and extra space. Merge intervals: O(n log n) time, O(n) space (Dominated by sort). Sweep active count: O(n log n) time, O(n) space (Event sort). Earliest-end greedy: O(n log n) time, O(n) space (Sort by end). Traps. Half-open vs closed ends: Touching endpoints may or may not overlap — read the problem. Off-by-one here fails half the cases. Event sort tie-break: When start and end share a time, decide whether ends process first. Wrong order invents a phantom overlap of 1. Greedy key confusion: Non-overlap greed sorts by END; a sort-by-start variant ‘looks sorted’ and quietly accepts overlapping chains. State the key before you code.\n\nSlide 8. Closing slide: \"The real Intervals cheatsheet, from the course.\" One of 21 cheatsheets in leetExpert, the interactive DSA course, each under its module's practice problems. leetexpert.com, link in bio.",
   "hook": "Intervals on one cheatsheet: 4 patterns, the smells that pick them, the traps. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-22",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "Which trap has cost you a test case?",
+     "options": [
+      "Half-open vs closed ends",
+      "Event sort tie-break",
+      "Greedy key confusion"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-23",
@@ -316,7 +650,21 @@
   "hashtags": "#validanagram #hashmap #leetcode #python #codinginterview",
   "alt": "Slide 1. The reel's cover: \"Stop sorting to check anagrams.\"\n\nSlide 2. Two racks of word-game tiles, both sorted to E I L N S T, above a code card: sorted(\"listen\") == sorted(\"silent\"), then \"eilnst\" == \"eilnst\" with an O(n log n) tag.\n\nSlide 3. Racks spelling LISTEN and SILENT above a tally sheet with one row per letter, L, I, S, T, E and N; after the first rack every row reads +1.\n\nSlide 4. The same tally sheet with all six rows back at 0, each ticked, and an ANAGRAM stamp.\n\nSlide 5. Python function is_anagram(s, t) with the second loop, for ch in t: counts[ch] = counts.get(ch, 0) - 1, highlighted. Under it the counts map for listen and silent with every letter at 0, and the note t: 't' → counts['t'] = 0.\n\nSlide 6. A stopwatch over two bars for 1,000,000 letters in our Python test run: sorted(s) == sorted(t) at 215 ms and Counter(s) == Counter(t) at 55 ms, with the label \"counting: about ¼ of the time\".\n\nSlide 7. \"The catch: a 26-slot array covers a to z only\" over a strip of slots a to z. Tiles C A F É point to \"slot 136?\"; Python crashes with IndexError: list index out of range, and JavaScript returns false, quietly wrong.\n\nSlide 8. A text slide under \"Your turn\": \"aab\" vs \"abb\". Which rows miss zero?\n\nSlide 9. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "Stop sorting to check anagrams.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-23",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "How do you learn a pattern best?",
+     "options": [
+      "Watch the reel",
+      "Swipe the carousel"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-24",
@@ -327,7 +675,21 @@
   "hashtags": "#twopointers #cheatsheet #studygram #leetcode #codinginterview",
   "alt": "Slide 1. A text slide: \"Two pointers on one card. Save this.\"\n\nSlide 2. Under \"Sorted array, pair / triplet sum → Opposite ends\", Python two_sum(numbers, target) with l, r = 0, len(numbers) - 1 and while l < r; the branch if s < target: l += 1 is highlighted with the note \"Sum too small: move l in\". On 2, 7, 11, 15, l is on 2 and r on 7: 2 + 7 = 9.\n\nSlide 3. Under \"Remove / move while reading ahead → Fast / slow\", Python remove_duplicates(nums) with if nums[fast] != nums[slow]: slow += 1; nums[slow] = nums[fast] highlighted and the note \"Something new? slow steps forward, takes it\". The array reads 0, 1, 2, 3 kept, then dimmed values, with fast on a 4: 4 is new.\n\nSlide 4. Under \"Container / area between indices → Inward from tallest hope\", Python max_area(h) with if h[l] < h[r]: l += 1 else: r -= 1 highlighted and the note \"Move the shorter side: the taller one can never raise the minimum\". Heights 1, 8, 6, 2, 5, 4, 8, 3, 7; returns 49.\n\nSlide 5. Under \"Merge two sorted streams → One pointer each\", Python merge(a, b) with return out + a[i:] + b[j:] highlighted and the note \"One runs out: append the rest\". a is 1, 2, 4 and b is 1, 3, 4: + the rest → [1, 1, 2, 3, 4, 4].\n\nSlide 6. \"Two traps\": forgetting the sort prerequisite (opposite-end sum logic is wrong on unsorted data; sort first or pick another pattern) and crossing pointers (the loop condition is usually l < r; equality can double-count the middle element). while l < r ✓ against while l <= r, where [3], 6 → [1, 1] ✗.\n\nSlide 7. A text slide under \"Your turn\": Checking whether a string is a palindrome. Which pattern?\n\nSlide 8. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "Two pointers on one card. Save this.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-24",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "How do you learn a pattern best?",
+     "options": [
+      "Watch the reel",
+      "Swipe the carousel"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-25",
@@ -338,7 +700,21 @@
   "hashtags": "#twosum #leetcode #edtech #learntocode #codinginterview",
   "alt": "Slide 1. The reel's cover: \"The coach won't give you the answer. That's the point.\"\n\nSlide 2. The leetExpert practice page for Two Sum (Module 6, Hash Tables), Code tab, with the draft in Python: seen = {}; for i, n in enumerate(nums): seen[n] = i; if target - n in seen: return [seen[target - n], i].\n\nSlide 3. The Coach tab, close up. A CASE FAILED note reads: two_sum([3, 2, 4], 6) returned [0, 0]; expected [1, 2]. Open Hint 1 on Explanation for the next authored nudge.\n\nSlide 4. The Explanation tab, close up, with Hint 2 open: \"one pass, check before insert\". For each nums[i], the partner is target − nums[i]; ask the map before inserting nums[i], so its stored index is earlier than i.\n\nSlide 5. Python two_sum with the return line highlighted and the note \"3 pairs with itself → [0, 0]\". Under it nums 3, 2, 4 with target 6, the pointer i on 3, and the map seen holding 3 → 0; it returns [0, 0]: 3 found itself.\n\nSlide 6. The fixed two_sum: the check, if target - n in seen: return [seen[target - n], i], now comes before seen[n] = i, which is highlighted. The note reads \"Store after, so a number can never find itself\"; nums 3, 2, 4 with 2 and 4 lit, seen holding 3 → 0 and 2 → 1, and it returns [1, 2] ✓.\n\nSlide 7. The Two Sum page marked Solved, close up on the Coach tab: ALL CASES PASSED. All 4 cases passed. Ask about this lesson's bound or what to take from it — I still will not write the code.\n\nSlide 8. A text slide under \"Your turn\": With the fix, why does [3, 3] still work?\n\nSlide 9. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "The coach won't give you the answer. That's the point.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-25",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "How do you learn a pattern best?",
+     "options": [
+      "Watch the reel",
+      "Swipe the carousel"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-26",
@@ -349,7 +725,21 @@
   "hashtags": "#monotonicstack #stack #leetcode #python #codinginterview",
   "alt": "Slide 1. The reel's cover: \"\"Next greater element\" has a shape.\"\n\nSlide 2. nums 2, 1, 5, 3 at i = 0 to 3 above an answer row of four −1s, an empty stack, and the tag \"check right of each: O(n²)\".\n\nSlide 3. \"A concert crowd\": figures of different heights in a row. Someone tall in front: everyone shorter behind them is blocked. Only taller people ever matter again.\n\nSlide 4. nums with 5 ringed; the answer row now reads 5, 5, −1, −1 and the stack holds 5 (i = 2).\n\nSlide 5. The answer row 5, 5, −1, −1 with \"no greater → −1\" under the last two; the stack holds 5 (i = 2) and 3 (i = 3).\n\nSlide 6. Python next_greater(nums): answer = [-1] * len(nums); stack = []; for i, x in enumerate(nums): while stack and nums[stack[-1]] < x: answer[stack.pop()] = x; stack.append(i). The pop line is highlighted with the note \"…pop it: x is its answer\"; the stage shows 5 > 2: pop 0, answer[0] = 5.\n\nSlide 7. \"10,000 numbers, our test run, Python\": checking right of every number takes 953 ms; the monotonic stack takes 0.6 ms.\n\nSlide 8. \"The trap: values, not indexes\": stack.append(x) and answer[nums.index(stack.pop())] = x. Popped a value: where does its answer go? [1, 1, 3] → [3, −1, −1] ✗, because index(1) finds the first 1 twice and the second 1 never gets its 3.\n\nSlide 9. A text slide under \"Your turn\": The next-greater list for [4, 3, 2, 5]?\n\nSlide 10. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "\"Next greater element\" has a shape.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-26",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "How do you learn a pattern best?",
+     "options": [
+      "Watch the reel",
+      "Swipe the carousel"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-27",
@@ -360,7 +750,21 @@
   "hashtags": "#pythontips #javascript #debugging #codereview #learnpython",
   "alt": "Slide 1. The reel's cover: \"This removes the even numbers. Or does it?\"\n\nSlide 2. A card calls remove_evens([2, 4, 6, 7]) and shows the cells 2, 4, 6, 7; under \"returns\" are 4 and 7.\n\nSlide 3. \"Checking tickets, seat by seat\": four cinema seats, 0 to 3. A finger points at seat 1, holding 6, while 4 sits in seat 0, ringed, over the line \"4 slid into seat 0. Nobody checked it.\"\n\nSlide 4. Python remove_evens(nums) with the loop for n in nums: if n % 2 == 0: nums.remove(n) highlighted. The note reads \"The next item lands in the slot you just checked: skipped\", above cells 4 and 7 and the result \"returns [4, 7]: 4 survived\".\n\nSlide 5. The fix as one line, return [n for n in nums if n % 2 != 0], highlighted. The note reads \"Build a new one: keep n only if it's odd\", [2, 4, 6, 7] → [7] ✓, with 2, 4 and 6 dimmed and 7 lit: new list: [7].\n\nSlide 6. The in-place fix: write = 0; for read in range(len(nums)): if nums[read] % 2 != 0: nums[write] = nums[read]; write += 1; then del nums[write:]. The copy line is highlighted. The note reads \"write never passes read: nothing unread is overwritten\" over cells 7, 4, 6, 7 with write above index 0 and read below index 3: write → 1, never past read.\n\nSlide 7. \"100,000 numbers, our test run, Python\": every remove shifts the whole tail, O(n²). for n in nums[:]: nums.remove(n) takes 7,972 ms; [n for n in nums if n % 2 != 0] takes 4 ms. A tag says about 2,000× slower.\n\nSlide 8. A text slide under \"Your turn\": What does the buggy version return for [1, 2, 2, 3]?\n\nSlide 9. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "This removes the even numbers. Or does it?",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-27",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "How do you learn a pattern best?",
+     "options": [
+      "Watch the reel",
+      "Swipe the carousel"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-28",
@@ -371,7 +775,21 @@
   "hashtags": "#slidingwindow #algorithms #leetcode #python #codinginterview",
   "alt": "Slide 1. The reel's cover: \"If you see \"contiguous\", think window.\"\n\nSlide 2. \"Shortest stretch with sum ≥ 7?\" over the array 2, 3, 1, 2, 4, 3, with \"every start × every end = O(n²)\".\n\nSlide 3. The same array with the rule \"front stretches forward →, back pulls in →, neither end ever backs up\".\n\nSlide 4. A window around 1, 2, 4 at indices 2 to 4: window total = 7 ≥ 7 ✓, shortest so far = 3.\n\nSlide 5. The window now around 4, 3 at indices 4 and 5: window total = 7 ≥ 7 ✓, shortest so far = 2, and the tag \"answer: [4, 3], length 2\".\n\nSlide 6. Python min_subarray_len(target, nums) with the shrink step, total -= nums[left], highlighted inside while total >= target. The note reads \"drop nums[left], move left on\"; the stage shows the window on 2, 4 with left and right pointers: record 3, drop 1 → total 6.\n\nSlide 7. \"10,000 numbers, our test run, Python\": every start × every end takes 848 ms; the sliding window takes 1.18 ms.\n\nSlide 8. \"The trap: if instead of while\": while total >= target: gives 2 ✓; if total >= target: gives 4 ✗. It shrinks at most once per step, so the window never gets tight.\n\nSlide 9. A text slide under \"Your turn\": Target 11 on [1, 2, 3, 4, 5]. Shortest length?\n\nSlide 10. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "If you see \"contiguous\", think window.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-28",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "How do you learn a pattern best?",
+     "options": [
+      "Watch the reel",
+      "Swipe the carousel"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-29",
@@ -382,7 +800,21 @@
   "hashtags": "#slidingwindow #offbyone #codereview #python #leetcode",
   "alt": "Slide 1. The reel's cover: \"Max sum of k numbers in a row. Looks clean.\"\n\nSlide 2. Python max_sum_k(nums, k) tagged \"AI · passes the sample\": best = float(\"-inf\"); for i in range(len(nums) - k): best = max(best, sum(nums[i:i + k])); return best. Under it [2, 1, 5, 1, 3, 2], k = 3 → 9 ✓, with the windows walked on the array.\n\nSlide 3. max_sum_k([1, 2, 3, 9], 2) → 5 ✗; the answer is 12 (3 + 9).\n\nSlide 4. \"Count the windows\": a 2-wide frame on 1, 2, 3, 9 fits at start 0, start 1 and start 2, with the last one, 3 and 9, lit.\n\nSlide 5. The same code with for i in range(len(nums) - k): highlighted and the note \"Start 2, [3, 9]: never checked\"; on 1, 2, 3, 9 the pair 3, 9 is ringed: start 2: 3 + 9 = 12, never checked.\n\nSlide 6. The sliding version: window = sum(nums[:k]); best = window; for right in range(k, len(nums)): window += nums[right] - nums[right - k]; best = max(best, window), with that line highlighted and the note \"Keep the best\". On 2, 1, 5, 1, 3, 2 with k = 3: +3 − 1 → window 9, best 9.\n\nSlide 7. \"100,000 numbers, k = 10,000, our test run, Python\": summing every window (with the +1 fix) takes 12.35 s; sliding the sum takes 11.7 ms.\n\nSlide 8. A text slide under \"Your turn\": How many windows of size 3 fit in 10 numbers?\n\nSlide 9. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "Max sum of k numbers in a row. Looks clean.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-29",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "How do you learn a pattern best?",
+     "options": [
+      "Watch the reel",
+      "Swipe the carousel"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-30",
@@ -393,7 +825,21 @@
   "hashtags": "#javascript #binarysearch #javascripttips #debugging #webdev",
   "alt": "Slide 1. The reel's cover: \"Binary search in JavaScript. One character is wrong.\"\n\nSlide 2. binarySearch([2, 4, 6, 8], 6) → -1 ✗, over the note \"6 is right there, at index 2\".\n\nSlide 3. const mid = (lo + hi) / 2; over the array 2, 4, 6, 8, with a marker between indices 1 and 2 labelled 1.5: lo = 0, hi = 3 → (0 + 3) / 2 = 1.5, and arr[1.5] → undefined.\n\nSlide 4. The same array: arr[1.5] is undefined, so === 6? is false and < 6? is false, so hi = mid − 1 = 0.5.\n\nSlide 5. \"Why the tests passed: on 7 numbers, lo + hi is even at every step.\" Lengths 1 to 16 in a grid: 1, 3, 7 and 15 are marked hides, the rest fails. Hides only on 2^k − 1: one less than a power of two.\n\nSlide 6. \"Python, same slash\": mid = (lo + hi) / 2 gives TypeError: list indices must be integers or slices, not float. Loud beats silently wrong.\n\nSlide 7. The fixed JavaScript binarySearch with const mid = lo + Math.floor((hi - lo) / 2); highlighted and the note \"Never adds two huge numbers: overflow-safe in Java or C++\"; the stage shows 2, 4 dimmed and lo on 6: 4 < 6 → lo = 2.\n\nSlide 8. A text slide under \"Your turn\": 7 hides the bug. What's the next length that does?\n\nSlide 9. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "Binary search in JavaScript. One character is wrong.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-30",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "How do you learn a pattern best?",
+     "options": [
+      "Watch the reel",
+      "Swipe the carousel"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-10-31",
@@ -404,7 +850,21 @@
   "hashtags": "#recursion #callstack #computerscience #python #learnpython",
   "alt": "Slide 1. The reel's cover: \"Watch recursion go down and come back up.\"\n\nSlide 2. \"Winding down: each call waits\": one frame on the stack, factorial(3), waiting: 3 × ?.\n\nSlide 3. Four frames stacked: factorial(0) on top marked base case → 1, then factorial(1) waiting 1 × ?, factorial(2) waiting 2 × ?, and factorial(3) waiting 3 × ? at the bottom.\n\nSlide 4. \"Unwinding: multiply on the way back\": the stack is down to factorial(3), waiting: 3 × ?.\n\nSlide 5. The stack emptied to factorial(3) = 6, with the note \"4 frames = n + 1\".\n\nSlide 6. Python factorial(n): if n == 0: return 1; return n * factorial(n - 1), with the last line highlighted and the note \"The multiply waits until the call comes back\"; the call stack shows factorial(3): 3 × 2 after factorial(2) returns 2.\n\nSlide 7. \"Every frame costs memory\": Python stops at 1,000 frames, factorial(1000) raises RecursionError: maximum recursion depth exceeded; JavaScript around 10,000.\n\nSlide 8. Python broken(n): if n == 0: return 1; return n * broken(n - 2), with the last line highlighted and the note \"Not a hang: a crash\". The call stack piles up broken(-3), broken(-5), broken(-7), broken(-9), broken(-11): depth 8, n = −11, past 0.\n\nSlide 9. A text slide under \"Your turn\": How many frames deep does factorial(5) go?\n\nSlide 10. Closing slide: every step of this, visualised, in leetExpert, the interactive DSA course. leetexpert.com, link in bio.",
   "hook": "Watch recursion go down and come back up.",
-  "slot": "6 pm"
+  "slot": "6 pm",
+  "story": {
+   "dir": "stories/2026-10-31",
+   "frames": [
+    {
+     "kind": "poll",
+     "sticker": "Poll",
+     "question": "How do you learn a pattern best?",
+     "options": [
+      "Watch the reel",
+      "Swipe the carousel"
+     ]
+    }
+   ]
+  }
  },
  {
   "date": "2026-11-01",
@@ -600,5 +1060,236 @@
   "hook": "Big-O quiz 🧠 Nested loops. Is O(n²) always bad?",
   "slot": "6 pm",
   "comment": "Answer: C, O(n²). Two nested loops over an n × n grid: n² reads, 10,000 for n = 100. But the input has n² cells and a max needs every one read, so this is linear in the input, and optimal."
+ },
+ {
+  "date": "2026-11-18",
+  "post": "lc-dynamic-array-append",
+  "dir": "2026-10-03-dynamic-array-append-lesson",
+  "title": "Dynamic Arrays, Built From Scratch: appending isn't always O(1) (carousel, 7 slides)",
+  "caption": "Appending to an array isn't always O(1). Some appends copy everything.\n\nA list sits on a fixed block of slots. When the block is full, the next append allocates a bigger one and copies every element over: that one append is O(n).\n\nSo why is append called O(1)? Because the block doubles. 1,000 appends trigger only 10 grows and 1,023 copies in total, about 1.02 per append.\n\nGrow by 10 slots at a time instead and the same 1,000 appends cost 49,600 copies: 48 times more, and it gets worse as n grows.\n\nThat's what \"O(1) amortized\" means: averaged over the run, even though a single append can copy 512 elements.\n\nDid you know which appends are the slow ones? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#arrays #dynamicarray #amortizedanalysis #python #codinginterview",
+  "alt": "Slide 1. Cover. Arrays & Dynamic Arrays. Appending to an array isn't always O(1). Most appends are one write. A few copy the whole array first.\n\nSlide 2. The setup. A list sits on a fixed block Underneath is a plain array, the backing store. Its capacity is how many slots it has. Its length is how many are used. The memory after it may belong to something else, so it cannot simply grow in place.\n\nSlide 3. The slow append. Full? Copy everything. Python code: def append(self, value): / if self._length == self._capacity: / self._grow() / self._store[self._length] = value / self._length += 1 / def _grow(self): / self._capacity *= 2 / new_store = [None] * self._capacity / for j in range(self._length): / new_store[j] = self._store[j] / self._store = new_store. When length == capacity, append allocates a bigger block and copies every element over. That one append is O(n).\n\nSlide 4. How much bigger?. 1,000 appends, two policies Double the capacity: 10 grows · 1,023 copies. Add 10 slots each time: 100 grows · 49,600 copies. Same appends, 48 times the copying.\n\nSlide 5. Why doubling wins. Copies at 1, 2, 4, 8, … A geometric series: it sums to under 2n copies across n appends. Spread over n appends, that is O(1) each. A fixed increment copies again every c appends, re-moving the same early elements. It never escapes O(n) per append.\n\nSlide 6. The name for it. O(1) amortized Average copies per append: 1.02. The costliest single append: 512 copies. Amortized means averaged over the whole run. One append can still be O(n).\n\nSlide 7. Closing slide. From the course: Dynamic Arrays, Built From Scratch, a lesson in Arrays & Dynamic Arrays, in leetExpert, the interactive DSA course. Build the whole class from scratch and step through its growth. leetexpert.com, link in bio.",
+  "hook": "Appending to an array isn't always O(1). Some appends copy everything.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-19",
+  "post": "lc-string-concat-loop",
+  "dir": "2026-10-03-string-concat-loop-lesson",
+  "title": "Strings in Memory & Immutability: += on a string in a loop (carousel, 7 slides)",
+  "caption": "Why += on a string inside a loop quietly goes quadratic.\n\nStrings are immutable in Python and JavaScript. So result += w can't extend result: it allocates a new string and copies both halves in.\n\nJoin [\"a\", \"b\", \"c\", \"d\"] that way and you copy 1 + 2 + 3 + 4 = 10 characters. Collect the pieces in a list and join once: 4.\n\nAt 1,000 one-letter words it's 500,500 copies against 1,000. That's O(n² · L) against O(n · L).\n\nHonesty note from the lesson: CPython and V8 often special-case += and hide this. The builder is the version whose cost you can prove.\n\nWhich one is in your codebase right now? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#strings #immutability #timecomplexity #python #codinginterview",
+  "alt": "Slide 1. Cover. Strings. `+=` on a string in a loop re-copies what it already built. Strings are immutable. Every `+=` builds a brand-new one.\n\nSlide 2. The trap. It looks like one step per word Python code: def join_bad(words): / result = \"\" / for w in words: / result += w / return result. Strings are immutable. result += w allocates a new string of len(result) + len(w) and copies both in.\n\nSlide 3. Count the copies. Join a, b, c, d += each time: 1 + 2 + 3 + 4: 10 character copies. Collect, then join once: 4 character copies. Every step re-copies the whole prefix it already built.\n\nSlide 4. The fix. Collect the pieces. Join once. Python code: def join_good(words): / parts = [] / for w in words: / parts.append(w) / return \"\".join(parts). parts.append(w) stores a reference, not characters. \"\".join(parts) allocates once and copies each word once.\n\nSlide 5. At scale. 1,000 one-letter words += in the loop: 500,500 copies · O(n² · L). Collect, then join: 1,000 copies · O(n · L). The triangular sum again: L + 2L + … + nL. The gap only widens as n grows.\n\nSlide 6. Honesty note. Your interpreter may hide it CPython and V8 both special-case += on strings when the reference is private, often making it linear in practice. Rely on that and your cost depends on interpreter internals. The builder is the version whose cost you can *prove*.\n\nSlide 7. Closing slide. From the course: Strings in Memory & Immutability, a lesson in Strings, in leetExpert, the interactive DSA course. Trace the copies yourself, then meet the builder pattern. leetexpert.com, link in bio.",
+  "hook": "Why += on a string inside a loop quietly goes quadratic.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-20",
+  "post": "lc-mutable-key",
+  "dir": "2026-10-03-mutable-key-lesson",
+  "title": "Keys, Immutability & Cryptographic Hashing: a key must never change (carousel, 7 slides)",
+  "caption": "Why can't a list be a dictionary key? Because of what happens when it changes.\n\nA hash table computes a key's slot once, when you insert it, from the key's contents. The promise isn't \"correct once\". It's correct for as long as the key sits in the table.\n\nSo file an entry under [1, 2], then append 5 to that list. In our eight-slot table it was filed in slot 3; the lookup now goes to slot 0 and finds nothing.\n\nThe entry is still there. Nobody will ever compute its address again.\n\nPython stops this at the type level: TypeError: unhashable type. A tuple works, because it's frozen the moment it's built. JavaScript doesn't stop you, so treat every key as frozen the instant you insert it.\n\nEver lost an entry this way? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#hashmap #immutability #hashing #python #codinginterview",
+  "alt": "Slide 1. Cover. Hash Tables. A list can't be a dict key. Here's what it would break. Python refuses to let you. JavaScript hands you the footgun.\n\nSlide 2. The rule. Same key, same slot. Forever. A hash table computes a key's slot once, at insert time, from the key's contents. The promise is not \"correct once\". It is correct for as long as the key sits in the table.\n\nSlide 3. How filing works. The slot comes from the contents Python code: def slot(key): / return sum(key) % 8 / class Table: / def __init__(self): / self.buckets = [[] for _ in range(8)] / def put(self, key, value): / self.buckets[slot(key)].append((key, value)). put runs the hash once and files the entry there. Nothing re-files it later.\n\nSlide 4. Break it. Change the key after filing it Python code: def demo(): / table = Table() / key = [1, 2] / table.put(key, \"parcel\") / key.append(5) / return table, key. Filed under [1, 2]: slot 3. Looked up as [1, 2, 5]: slot 0 · not found.\n\nSlide 5. The damage. Still stored. Never found. The entry is still in its old slot. The address and the object simply drifted apart, silently. No error, no warning: the table just starts lying to you.\n\nSlide 6. What the languages do. Python refuses. JavaScript doesn't. Python: a list can't key a dict (TypeError: unhashable type). A tuple can, because its contents are frozen the moment it's built. JavaScript: nothing stops you mutating an object that is a Map key. Treat every key as frozen the instant you insert it.\n\nSlide 7. Closing slide. From the course: Keys, Immutability & Cryptographic Hashing, a lesson in Hash Tables, in leetExpert, the interactive DSA course. Then see why two identical-looking objects are two different Map keys. leetexpert.com, link in bio.",
+  "hook": "Why can't a list be a dictionary key? Because of what happens when it changes.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-21",
+  "post": "lc-matrix-binary-search",
+  "dir": "2026-10-03-matrix-binary-search-lesson",
+  "title": "Search a 2D Matrix: binary search on a grid (carousel, 7 slides)",
+  "caption": "You can binary search a 2D matrix without ever flattening it.\n\nSearch a 2D Matrix makes two promises: each row is sorted, and each row starts above where the previous one ended. Chain them and the whole grid, read row by row, is one sorted sequence.\n\nSo binary search the index range 0 to rows × cols − 1 and turn each midpoint k back into a cell: row = k // cols, col = k % cols. The flattened array is never built.\n\nOn a 100 × 100 matrix that's at most 14 cell reads instead of 10,000.\n\nWhen a problem hands you a stronger promise, use it.\n\nWhat does k = 6 map to in a 3 × 4 grid? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#binarysearch #matrix #algorithms #python #codinginterview",
+  "alt": "Slide 1. Cover. Matrix / 2D Traversal. Binary search a 2D matrix. No flattening needed. It's a sorted array wearing a grid costume.\n\nSlide 2. The setup. Two promises about the matrix Each row is sorted, left to right. The first value of each row is greater than the last value of the row before. Chain them: read row by row, the whole grid is *one sorted sequence*.\n\nSlide 3. The trick. One index, two coordinates Which row: k // cols. Which column: k % cols. Binary search the virtual indices from 0 to rows × cols − 1 and translate each midpoint back into the grid. The flattened array is never built.\n\nSlide 4. The code. Ordinary binary search, one new line Python code: def search_matrix(matrix, target): / rows, cols = len(matrix), len(matrix[0]) / lo, hi = 0, rows * cols - 1 / while lo <= hi: / mid = (lo + hi) // 2 / value = matrix[mid // cols][mid % cols] / if value == target: / return True / if value < target: / lo = mid + 1 / else: / hi = mid - 1 / return False.\n\nSlide 5. One step. Find 3 in the 3 × 4 example First midpoint, k = 5: row 1, col 1 · value 11. Cells read to find it: 4. 11 is too big, so everything from k = 5 onward is discarded in one move.\n\nSlide 6. At the limit. A 100 × 100 matrix Scan every cell: 10,000 reads · O(m·n). Binary search, worst case: 14 reads · O(log(m·n)). When a problem hands you a stronger promise, use it.\n\nSlide 7. Closing slide. From the course: Search a 2D Matrix, a lesson in Matrix / 2D Traversal, in leetExpert, the interactive DSA course. Solve it in the sandbox, in Python or JavaScript. leetexpert.com, link in bio.",
+  "hook": "You can binary search a 2D matrix without ever flattening it.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-22",
+  "post": "lc-move-zeroes",
+  "dir": "2026-10-03-move-zeroes-lesson",
+  "title": "Move Zeroes: zeroes to the end, in place (carousel, 7 slides)",
+  "caption": "Move every zero to the end of an array, in place, without shifting anything twice.\n\nMove Zeroes: push every 0 to the end, keep the other numbers in order, use O(1) extra space.\n\nThe tempting way: find a zero, shift everything after it left, drop the zero at the end. Correct, and accidentally quadratic.\n\nThe insight: zeroes are all identical, so they don't need carrying. Compact the non-zeroes to the front with a write pointer, then fill the tail with zeroes.\n\nOn 1,000 numbers with every other one a zero, that's 1,000 writes against 375,250 for the shuffle: 375 times fewer.\n\nThere's a one-pass swap version too. Which would you write? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#arrays #inplace #twopointers #python #codinginterview",
+  "alt": "Slide 1. Cover. Arrays & Dynamic Arrays. Move the zeroes to the end. No second array. And without shifting the whole array on every zero.\n\nSlide 2. The problem. In place, order kept nums: [0, 1, 0, 3, 12]. After: [1, 3, 12, 0, 0]. O(1) auxiliary space: building a new array fails the requirement.\n\nSlide 3. The tempting way. Shift left on every zero Find a zero, shift everything after it one step left, place the zero at the end. Correct, and *accidentally quadratic*: every zero moves the rest of the array.\n\nSlide 4. The insight. Zeroes don't need carrying They are all identical, so they can be *reconstructed*. Compact the non-zeroes to the front, in order. Then fill the tail with zeroes.\n\nSlide 5. The code. One write pointer Python code: def move_zeroes(nums): / w = 0 / for r in range(len(nums)): / if nums[r] != 0: / nums[w] = nums[r] / w += 1 / while w < len(nums): / nums[w] = 0 / w += 1. Everything before w is a non-zero, in order. Whatever is left past w gets overwritten with zeroes.\n\nSlide 6. Count the writes. 1,000 numbers, every other one a zero Shift left on every zero: 375,250 writes. Compact, then fill: 1,000 writes. One write per slot, however many zeroes there are.\n\nSlide 7. Closing slide. From the course: Move Zeroes, a lesson in Arrays & Dynamic Arrays, in leetExpert, the interactive DSA course. Then try the one-pass swap version and its three-region invariant. leetexpert.com, link in bio.",
+  "hook": "Move every zero to the end of an array, in place, without shifting anything twice.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-23",
+  "post": "lc-hash-collisions",
+  "dir": "2026-10-03-hash-collisions-lesson",
+  "title": "Collision Resolution: Separate Chaining: two keys, one slot (carousel, 7 slides)",
+  "caption": "What happens when two keys hash to the exact same slot?\n\nWith 4 buckets, 10 and 18 both land in slot 2. Collisions aren't a bug in your hash table. They're guaranteed.\n\nSeparate chaining: each bucket holds a list. Insert appends to that list; lookup scans only that one list.\n\nThat's why \"O(1)\" is an average. Put 100 keys that all hash to slot 4 into one table and finding the last one scans 100 entries. Spread the same number of keys out and it's 1.\n\nDoubling the table helps, statistically: 3 and 7 split apart at 8 buckets, but 10 and 18 still share slot 2.\n\nDid you know the O(1) was an average? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#hashmap #collisions #hashing #python #codinginterview",
+  "alt": "Slide 1. Cover. Hash Tables. Two keys, one slot. Now what? Nobody gets turned away. The slot grows a chain.\n\nSlide 2. The collision. 10 and 18 both land in slot 2 A table with 4 buckets files a key under key % 4. Two different keys, one address. Sooner or later it is guaranteed to happen.\n\nSlide 3. The fix: chaining. Each bucket holds a list Python code: def put(self, key, value): / chain = self.buckets[key % len(self.buckets)] / for entry in chain: / if entry[0] == key: / entry[1] = value / return / chain.append([key, value]). Insert appends to that bucket's list. Lookup scans only that one list, never the whole table.\n\nSlide 4. Why it is still fast. O(1) on average The cost of any operation is the length of one chain. Under uniform hashing, the expected chain length is the *load factor*: entries per bucket. Keep it bounded by resizing and the expected work stays constant.\n\nSlide 5. The catch. 100 keys, all for slot 4 Entries scanned to find the last one: 100. Same number of keys, spread out: 1. \"Hash lookup is O(1)\" quotes the average case, not a guarantee.\n\nSlide 6. Doubling the table. 4 buckets become 8 3 and 7: shared slot 3: now slots 3 and 7. 10 and 18: shared slot 2: still slot 2, together. Doubling reduces collisions statistically, not individually.\n\nSlide 7. Closing slide. From the course: Collision Resolution: Separate Chaining, a lesson in Hash Tables, in leetExpert, the interactive DSA course. Watch a chain form, then a rehash re-file every key. leetexpert.com, link in bio.",
+  "hook": "What happens when two keys hash to the exact same slot?",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-24",
+  "post": "lc-build-order",
+  "dir": "2026-10-03-build-order-lesson",
+  "title": "Topological Sort: what to compile first (carousel, 7 slides)",
+  "caption": "How does a build system know what to compile first? It sorts a graph.\n\nTo build a source file you must first build the modules it imports. Model each file as a vertex and each \"A before B\" as an edge A → B. A topological sort is an order in which every edge points forward.\n\nKahn's algorithm: anything with no unmet dependencies is safe to place. Place it, remove its edges, and whatever just dropped to zero dependencies is ready next.\n\nFour files, four imports (utils → lexer, utils → parser, lexer → app, parser → app) come out as utils → lexer → parser → app.\n\nAnd the cycle check is free: make app a dependency of utils and 0 of the 4 files can ever be built. The order comes up short, so no valid order exists.\n\nWhere else have you met this? Course prerequisites, spreadsheet cells… 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#graphs #topologicalsort #buildsystems #python #codinginterview",
+  "alt": "Slide 1. Cover. Graphs. How does a build system know what to compile first? It sorts a graph.\n\nSlide 2. The model. Tasks are vertices. \"Before\" is an edge. To build a source file you must first build the modules it imports. Draw A → B for \"A must come before B\". A *topological sort* is an order where every edge points forward.\n\nSlide 3. The idea. Start with what depends on nothing A vertex with in-degree zero has no unmet dependencies, so it is safe to place first. Place it, remove its edges, and whatever just dropped to zero is ready next.\n\nSlide 4. Kahn's algorithm. BFS by in-degree Python code: while queue: / u = queue.popleft() / order.append(u) / for v in adj[u]: / indegree[v] -= 1 / if indegree[v] == 0: / queue.append(v) / return order if len(order) == num_vertices else None. The queue starts with every vertex whose in-degree is zero. Each one placed can free the vertices it points to.\n\nSlide 5. Run it. 4 files, 4 imports Must come before: utils → lexer, utils → parser, lexer → app, parser → app. Build order: utils → lexer → parser → app.\n\nSlide 6. The free check. A cycle has no starting point Make app a dependency of utils: 0 of 4 files can be built. A vertex on a cycle never reaches in-degree zero. If the order comes up short, no valid order exists.\n\nSlide 7. Closing slide. From the course: Topological Sort, a lesson in Graphs, in leetExpert, the interactive DSA course. Then the DFS version, and why only a DAG can be ordered. leetexpert.com, link in bio.",
+  "hook": "How does a build system know what to compile first? It sorts a graph.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-25",
+  "post": "lc-provinces",
+  "dir": "2026-10-03-provinces-lesson",
+  "title": "Number of Provinces: counting separate networks (carousel, 7 slides)",
+  "caption": "How many separate networks are hiding inside one graph? Count the flood-fills.\n\nNumber of Provinces: n cities, a matrix saying which pairs are directly connected, and a province is any group connected directly or indirectly. How many provinces?\n\nStrip the story away and it's counting connected components. Scan every city; an unvisited one is a new province. Flood-fill from it so its whole group is never counted again.\n\n6 cities with links 0–1, 1–2, 3–4: the answer is 3, the groups {0, 1, 2} {3, 4} {5}. Cities 0 and 2 aren't directly connected, but 1 joins them.\n\nSame skeleton as Number of Islands. And Union-Find answers it a completely different way.\n\nDFS or Union-Find: which do you reach for? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#graphs #connectedcomponents #dfs #python #codinginterview",
+  "alt": "Slide 1. Cover. Graphs. How many separate networks are hiding in one graph? Count the flood-fills, not the cities.\n\nSlide 2. The problem. Cities, connections, provinces isConnected[i][j] = 1 means city i and city j are directly connected. A province is a group of directly *or indirectly* connected cities. How many are there?\n\nSlide 3. The reframe. It is counting connected components Scan every city. An unvisited one is a new province. Flood-fill from it, marking every city reachable, so they are never counted again.\n\nSlide 4. The code. One counter, one flood-fill Python code: def find_circle_num(is_connected): / n = len(is_connected) / seen = [False] * n / count = 0 / for start in range(n): / if seen[start]: / continue / count += 1 / stack = [start] / seen[start] = True / while stack: / node = stack.pop() / for j in range(n): / if is_connected[node][j] == 1 and not seen[j]: / seen[j] = True / stack.append(j) / return count.\n\nSlide 5. Run it. 6 cities, links 0–1, 1–2, 3–4 Provinces: {0, 1, 2} {3, 4} {5}. Flood-fills started: 3. 0 and 2 are not directly connected, but 1 joins them: one province.\n\nSlide 6. Same skeleton. You have seen this before It is structurally identical to Number of Islands: scan for unvisited, flood-fill the whole component, increment a counter. Union-Find answers the same question an entirely different way.\n\nSlide 7. Closing slide. From the course: Number of Provinces, a lesson in Graphs, in leetExpert, the interactive DSA course. Solve it both ways, with DFS and with Union-Find. leetexpert.com, link in bio.",
+  "hook": "How many separate networks are hiding inside one graph? Count the flood-fills.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-26",
+  "post": "lc-growth-beats-hardware",
+  "dir": "2026-10-03-growth-beats-hardware-lesson",
+  "title": "Why Efficiency Matters: growth beats hardware (carousel, 7 slides)",
+  "caption": "Two correct functions. One finishes in a blink, the other takes days. A faster computer won't save it.\n\nTwo functions that both decide whether any two numbers sum to a target. Both correct. On 1,000 numbers one makes 499,500 pair checks, the other 1,000 set lookups.\n\nAt about 10⁸ simple operations a second, 100,000 numbers cost about 50 seconds against 1 millisecond. At 10,000,000: about 5.8 days against 0.1 seconds.\n\nSo buy a machine 100× faster? A linear algorithm handles 100× more data. A quadratic one, 10×. An exponential one, about 7 more elements.\n\nThe shape of the growth curve is a property of your algorithm, and no amount of hardware budges it.\n\nWhat's the worst accidental O(n²) you've shipped? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #timecomplexity #algorithms #python #codinginterview",
+  "alt": "Slide 1. Cover. Big O & Complexity Analysis. Same answer. One takes a blink. The other takes days. And a faster computer won't save it.\n\nSlide 2. Two correct versions. Does any pair sum to the target? Python code: def has_pair_a(nums: list[int], target: int) -> bool: / n = len(nums) / for i in range(n): / for j in range(i + 1, n): / if nums[i] + nums[j] == target: / return True / return False / def has_pair_b(nums: list[int], target: int) -> bool: / seen = set() / for x in nums: / if target - x in seen: / return True / seen.add(x) / return False.\n\nSlide 3. Count the work. 1,000 numbers, no matching pair Version A: check every pair: 499,500 pair checks. Version B: remember what you saw: 1,000 set lookups. Nothing about correctness distinguishes them. Only their growth does.\n\nSlide 4. Scale it. At about 10⁸ operations a second 100,000 numbers: A: ~50 s · B: ~1 ms. 10,000,000 numbers: A: ~5.8 days · B: ~0.1 s. Version A didn't just get a little slower. It fell off a cliff.\n\nSlide 5. Growth beats hardware. Buy a machine 100× faster Linear algorithm: 100× more data. Quadratic algorithm: 10× more data. Exponential algorithm: about 7 more elements.\n\nSlide 6. The point. The curve belongs to the algorithm The shape of the growth curve is a property of your algorithm, and no amount of hardware budges it. That is why we count operations, not seconds.\n\nSlide 7. Closing slide. From the course: Why Efficiency Matters, a lesson in Big O & Complexity Analysis, in leetExpert, the interactive DSA course. Start here: it is the first lesson of the Big O module. leetexpert.com, link in bio.",
+  "hook": "Two correct functions. One finishes in a blink, the other takes days. A faster computer won't save it.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-27",
+  "post": "lc-space-complexity",
+  "dir": "2026-10-03-space-complexity-lesson",
+  "title": "Space Complexity: memory has a Big-O too (carousel, 7 slides)",
+  "caption": "Time isn't the only cost. Memory has a Big-O too, and some of it you never typed.\n\nSpace complexity is the same O machinery, applied to memory. One distinction does most of the work: total space counts the input, auxiliary space is only the extra you allocate. Auxiliary is what people mean by default.\n\nFinding a max keeps one variable: O(1). Returning a sorted copy of 500 numbers allocates 500 more slots: O(n).\n\nThen the memory you don't see. Every active call holds a stack frame, so adding 1 to 500 recursively stacks 501 frames; the loop uses 1. Same time complexity, different space.\n\nAnd at 100,000 the recursive version isn't slow. It's a stack overflow.\n\nDo you state space when you state time? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bigo #spacecomplexity #recursion #python #codinginterview",
+  "alt": "Slide 1. Cover. Big O & Complexity Analysis. Time isn't the only cost. Memory has a Big-O too. And some of that memory you never typed.\n\nSlide 2. Two kinds. Total vs auxiliary space Total space counts everything, including the input. *Auxiliary* space is only the extra you allocate. It is what people mean by default, since the input's size isn't something you chose.\n\nSlide 3. Same input, different extra. One variable, or a full copy Python code: def max_of(nums: list[int]) -> int: / best = nums[0] / for x in nums: / if x > best: / best = x / return best / def sorted_copy(nums: list[int]) -> list[int]: / return sorted(nums). max_of is O(1) auxiliary. sorted_copy is O(n): on 500 numbers, 500 extra slots.\n\nSlide 4. The memory you don't see. Every call holds a stack frame Python code: def sum_to(n: int) -> int: / if n == 0: / return 0 / return n + sum_to(n - 1) / def sum_iter(n: int) -> int: / total = 0 / for i in range(1, n + 1): / total += i / return total. Recursion costs memory proportional to its depth, even if no frame allocates anything.\n\nSlide 5. Measure it. Adding 1 to 500 sum_to: frames on the stack: 501. sum_iter: frames on the stack: 1. Same time complexity, different space.\n\nSlide 6. And it crashes. At 100,000 it is not slow. It is an error. Python's recursion limit and JavaScript engines' stack sizes both turn sum_to on 100,000 into a stack overflow. From here on, stack depth is always part of the space answer.\n\nSlide 7. Closing slide. From the course: Space Complexity, a lesson in Big O & Complexity Analysis, in leetExpert, the interactive DSA course. See the stack frames drawn, call by call. leetexpert.com, link in bio.",
+  "hook": "Time isn't the only cost. Memory has a Big-O too, and some of it you never typed.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-28",
+  "post": "lc-lowest-common-ancestor",
+  "dir": "2026-10-03-lowest-common-ancestor-lesson",
+  "title": "Lowest Common Ancestor of a Binary Tree: where two paths meet (carousel, 7 slides)",
+  "caption": "Two nodes in a tree. Where do their paths meet? Eight lines find it.\n\nLowest common ancestor: the deepest node that has both p and q beneath it (a node counts as its own descendant). No ordering to lean on, just structure.\n\nAsk every subtree one question: do you contain p or q? If the left side and the right side both say yes, their paths split at this node. That's the answer.\n\nEverywhere else, a non-null result isn't the answer yet. It's a found target being relayed upward.\n\nOn the tree in the slides: 5 and 1 meet at 3, 7 and 4 at 2, and 5 and 4 at 5, because 4 sits under 5.\n\nWhat's the LCA of 6 and 4? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#binarytree #lowestcommonancestor #dfs #python #codinginterview",
+  "alt": "Slide 1. Cover. Binary Trees. Two nodes in a tree. Where do their paths meet? The lowest common ancestor, in eight lines.\n\nSlide 2. The problem. The deepest node above both A binary tree: 3 at the root with children 5 and 1; 5 has children 6 and 2; 1 has children 0 and 8; 2 has children 7 and 4. 5 and 1 sit in different subtrees of 3, so their lowest common ancestor is 3.\n\nSlide 3. The idea. Ask each subtree one question Does this subtree contain p or q? Return the node found, or nothing. If the left side and the right side *both* report a find, the two paths split here. This node is the answer.\n\nSlide 4. The code. Postorder search Python code: def lowest_common_ancestor(root, p, q): / if root is None or root is p or root is q: / return root / left = lowest_common_ancestor(root.left, p, q) / right = lowest_common_ancestor(root.right, p, q) / if left and right: / return root / return left or right. Anywhere else, a non-null result is just a found target being relayed upward, not a victory.\n\nSlide 5. Run it. On that 9-node tree p = 5, q = 1: 3. p = 7, q = 4: 2. p = 5, q = 4: 5 · 4 is under 5.\n\nSlide 6. Why it is right. The deepest point still joined If p is on one side of a node and q on the other, any common ancestor is at or above that node, and the node itself is one. So it is the lowest. One postorder pass: O(n) time, O(h) space for the recursion stack.\n\nSlide 7. Closing slide. From the course: Lowest Common Ancestor of a Binary Tree, a lesson in Binary Trees, in leetExpert, the interactive DSA course. Solve it in the sandbox, then meet the BST version of the same problem. leetexpert.com, link in bio.",
+  "hook": "Two nodes in a tree. Where do their paths meet? Eight lines find it.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-29",
+  "post": "lc-arrays-in-memory",
+  "dir": "2026-10-03-arrays-in-memory-lesson",
+  "title": "Arrays in Memory: why arrays are faster than they look (carousel, 7 slides)",
+  "caption": "arr[7] doesn't search for index 7. It computes where it is. That one fact explains what arrays are good and bad at.\n\nAn array is one contiguous block of memory holding equal-sized slots. So the address of slot i is pure arithmetic: base + i × slot size. Base 4,096, 8-byte slots: index 3 lives at 4,120. No searching, O(1).\n\nThe price of being packed: no gaps allowed. Insert at the front and everything shifts. 1,000 front inserts cost 500,500 writes; 1,000 appends cost 1,000.\n\nThe hidden bonus: CPUs fetch a 64-byte cache line at a time, which holds 16 four-byte integers. Read one and the next 15 are already in cache.\n\nWhen two designs tie on paper, bet on the contiguous one.\n\nEver shipped a loop of front-inserts? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#arrays #memory #cachelocality #python #codinginterview",
+  "alt": "Slide 1. Cover. Arrays & Dynamic Arrays. `arr[7]` doesn't search for index 7. It computes where it is. Why arrays are faster than they look.\n\nSlide 2. What an array is. One contiguous block, equal-sized slots Because the slots are equal-sized and packed, the address of slot i is pure arithmetic. address(i): base + i × slot_size.\n\nSlide 3. Do the math. Base 4,096, 8-byte slots Python code: def address(base, slot_size, i): / return base + i * slot_size. address(3): 4,120. No other position is touched. That is why arr[i] is O(1).\n\nSlide 4. The price. Contiguity forbids gaps Python code: def insert_front(store, length, value): / for j in range(length, 0, -1): / store[j] = store[j - 1] / store[0] = value. Insert at the front and every element shifts one slot. It reads as one line and moves the entire array.\n\nSlide 5. Count it. 1,000 inserts At the front: 500,500 writes. At the end: 1,000 writes. The triangular sum, n(n+1)/2: one of the most common accidental quadratics in real code.\n\nSlide 6. The hidden superpower. Cache locality CPUs pull a cache line at a time, typically 64 bytes: 16 four-byte integers. Read arr[0] and the next 15 reads hit cache for free, about 94%. When two designs tie on paper, bet on the contiguous one.\n\nSlide 7. Closing slide. From the course: Arrays in Memory, a lesson in Arrays & Dynamic Arrays, in leetExpert, the interactive DSA course. Then build a dynamic array from scratch in the next lesson. leetexpert.com, link in bio.",
+  "hook": "arr[7] doesn't search for index 7. It computes where it is. That one fact explains what arrays are good and bad at.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-11-30",
+  "post": "lc-birthday-collisions",
+  "dir": "2026-10-03-birthday-collisions-lesson",
+  "title": "Hashing Fundamentals: the birthday paradox in your hash table (carousel, 7 slides)",
+  "caption": "A hash table with a million slots collides after about a thousand inserts, not half a million.\n\nEven with a perfectly uniform hash, two keys land in the same slot far sooner than intuition suggests.\n\nIt's the birthday paradox. With 365 slots, one per birthday, 23 people already give a 50.7% chance that two share one.\n\nScale it up: 1,000,000 slots, and after just 1,000 inserts there's a 39.3% chance of a collision. Better than even comes at 1,178 inserts, nowhere near the 500,000 you'd guess.\n\nSo a collision isn't your hash function making a mistake. It's arithmetic about slots and keys: a certainty to manage, not a defect to eliminate.\n\nDid you expect it to be that early? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#hashmap #birthdayparadox #collisions #python #codinginterview",
+  "alt": "Slide 1. Cover. Hash Tables. A million-slot hash table collides after about a thousand inserts. Not half a million.\n\nSlide 2. The intuition. Surely not until it is half full? A table with 1,000,000 slots and a perfectly uniform hash. You might assume two keys won't share a slot until around 500,000 inserts.\n\nSlide 3. The birthday version. 365 slots, one per birthday People needed for a better-than-even chance of a shared slot: 23. The chance at 23 people: 50.7%.\n\nSlide 4. The math. Every new key must miss every taken slot Python code: def collision_chance(slots, inserts): / clear = 1.0 / for i in range(inserts): / clear *= (slots - i) / slots / return 1 - clear. Those chances multiply, and the product shrinks fast.\n\nSlide 5. Scale it. 1,000,000 slots Chance of a collision after 1,000 inserts: 39.3%. Inserts for a better-than-even chance: 1,178. About a thousand, not half a million.\n\nSlide 6. So what. A guarantee, not a bug A collision isn't the hash function making a mistake. It is simple arithmetic about slots and keys. Collisions aren't a defect to eliminate. They are a certainty to *manage*.\n\nSlide 7. Closing slide. From the course: Hashing Fundamentals, a lesson in Hash Tables, in leetExpert, the interactive DSA course. Next in the module: the two ways a table manages collisions. leetexpert.com, link in bio.",
+  "hook": "A hash table with a million slots collides after about a thousand inserts, not half a million.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-12-01",
+  "post": "lc-queue-pop-front",
+  "dir": "2026-10-03-queue-pop-front-lesson",
+  "title": "FIFO & Queue Mechanics: pop(0) moves everything (carousel, 7 slides)",
+  "caption": "queue.pop(0) looks free. It moves every element left, every time.\n\nA queue adds at the back and removes from the front. An array's end is cheap. Its front is its bad end: pop(0) in Python and shift() in JavaScript move every remaining element.\n\nDequeue once from A, B, C and 2 elements move. Drain a queue of 1,000 that way and it's 499,500 element moves.\n\nThe fix isn't faster shifting. It's not shifting: advance a head index and the array never moves, only the boundary that marks where the queue begins. 0 moves.\n\nIn Python that's collections.deque. JavaScript has no built-in deque, so know that you're paying O(n) when you call shift().\n\nIs there a pop(0) in a loop somewhere in your code? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#queue #deque #timecomplexity #python #codinginterview",
+  "alt": "Slide 1. Cover. Queues. `pop(0)` looks free. It moves every element left. A queue built on a list's front is quietly quadratic.\n\nSlide 2. The problem. A queue needs both ends Add at the back, remove from the front. An array's end is cheap. Its front is its bad end. pop(0) in Python and shift() in JavaScript move every remaining element.\n\nSlide 3. What it does. Removing the front, spelled out Python code: def dequeue_shift(items): / front = items[0] / for j in range(1, len(items)): / items[j - 1] = items[j] / items.pop() / return front. Dequeue once from A, B, C: 2 elements move.\n\nSlide 4. Count it. Drain a queue of 1,000 Shift on every dequeue: 499,500 element moves. Move the front instead: 0 element moves.\n\nSlide 5. The fix. Move the front, not the data Python code: def dequeue(self): / x = self.items[self.head] / self.head += 1 / return x. Advance a head index instead of shifting. The array never moves, only the boundary that marks where the queue begins.\n\nSlide 6. In practice. Use the right tool Python: collections.deque, push and pop at either end in O(1). JavaScript has no built-in deque. For modest sizes shift() is often tolerated: know that you are paying O(n) when you do.\n\nSlide 7. Closing slide. From the course: FIFO & Queue Mechanics, a lesson in Queues, in leetExpert, the interactive DSA course. Next in the module: the ring buffer, the tightest version. leetexpert.com, link in bio.",
+  "hook": "queue.pop(0) looks free. It moves every element left, every time.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-12-02",
+  "post": "lc-skewed-bst",
+  "dir": "2026-10-03-skewed-bst-lesson",
+  "title": "Balance & Why It Matters: sorted input breaks a BST (carousel, 7 slides)",
+  "caption": "Feed a binary search tree sorted data and it quietly becomes a linked list.\n\nEvery BST operation costs O(h), where h is the tree's height. That's only fast if the tree's shape cooperates.\n\nInsert 1, 2, 3, 4, 5 in order: every insert turns right, and you get 5 levels for 5 keys. Finding 5 visits all 5 nodes.\n\nAt 1,000 sorted keys: 1,000 levels, 1,000 nodes visited to find the largest. Build the same keys middle-first and it's 10 levels.\n\nAnd sorted input isn't exotic: ordered files, timestamps, an already-sorted array. That's why real libraries don't hope for balance. They restore it with rotations.\n\nWhich self-balancing tree did you learn first? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#bst #binarysearchtree #balancedtree #python #codinginterview",
+  "alt": "Slide 1. Cover. BST & Ordered Structures. Feed a BST sorted data and it becomes a linked list. Every promise still true. All of them worthless.\n\nSlide 2. The promise. Every BST operation is O(h) h is the height, and it is only small if the tree's shape cooperates. A *balanced* tree guarantees h = O(log n). No binary tree can be shorter than about log₂ n.\n\nSlide 3. The break. Insert 1, 2, 3, 4, 5 in order Every insert turns right, because every value is larger than everything already there. The tree collapses into a straight line. Levels: 5. Nodes visited to find 5: 5.\n\nSlide 4. The code is fine. A correct insert Python code: def insert_into_bst(root, val): / if root is None: / return TreeNode(val) / node = root / while True: / if val < node.val: / if node.left is None: / node.left = TreeNode(val) / return root / node = node.left / else: / if node.right is None: / node.right = TreeNode(val) / return root / node = node.right. Nothing here is wrong. The shape comes from the order of the input.\n\nSlide 5. At scale. 1,000 keys Inserted in sorted order: 1,000 levels · O(n) search. Same keys, built middle first: 10 levels · O(log n) search.\n\nSlide 6. Why it matters. Sorted input is not exotic Data loaded from an ordered file, timestamps arriving in order, an already-sorted array inserted one element at a time. So real libraries don't hope for balance. They restore it as the tree changes, *with rotations*.\n\nSlide 7. Closing slide. From the course: Balance & Why It Matters, a lesson in BST & Ordered Structures, in leetExpert, the interactive DSA course. What balanced means, and the one rotation that restores it. leetexpert.com, link in bio.",
+  "hook": "Feed a binary search tree sorted data and it quietly becomes a linked list.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-12-03",
+  "post": "lc-greedy-coins",
+  "dir": "2026-10-03-greedy-coins-lesson",
+  "title": "Coin Change: the biggest coin is not always right (carousel, 7 slides)",
+  "caption": "Always take the biggest coin that fits. It feels optimal. With coins 1, 3 and 4, it isn't.\n\nFewest coins to make an amount. The obvious plan: take the largest coin that fits, repeat. On coins 1, 2, 5 making 11 it gives 5 + 5 + 1, 3 coins, and that's optimal.\n\nNow coins 1, 3, 4 and amount 6. Greedy takes 4 + 1 + 1: 3 coins. The best is 3 + 3: 2 coins.\n\nGreedy commits to one choice per step and never reconsiders it. Dynamic programming tries every possible last coin and keeps the minimum.\n\nWith those coins, greedy uses more coins than needed on 24 of the amounts from 1 to 100. A plausible-looking greedy rule needs a proof before you trust it.\n\nCan you name coins where greedy is always right? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#dynamicprogramming #greedy #coinchange #python #codinginterview",
+  "alt": "Slide 1. Cover. Dynamic Programming. Always take the biggest coin. It feels optimal. It isn't. Coins 1, 3 and 4. Make 6.\n\nSlide 2. The obvious plan. Largest coin that fits, repeat Python code: def greedy_change(coins, amount): / used = [] / for c in sorted(coins, reverse=True): / while amount >= c: / amount -= c / used.append(c) / return used if amount == 0 else None. Coins 1, 2, 5 making 11: it gives 5 + 5 + 1, which is 3 coins, and that is optimal.\n\nSlide 3. The counterexample. Coins 1, 3, 4. Make 6. Greedy: 4 + 1 + 1 · 3 coins. Best: 3 + 3 · 2 coins.\n\nSlide 4. Why. Greedy commits and never reconsiders It makes one choice at each step, the largest coin, and never revisits it. A locally appealing choice that leads to a worse overall result is never corrected.\n\nSlide 5. The fix. Try every possible last coin Python code: def coin_change(coins, amount): / INF = amount + 1 / dp = [0] + [INF] * amount / for a in range(1, amount + 1): / for c in coins: / if c <= a and dp[a - c] + 1 < dp[a]: / dp[a] = dp[a - c] + 1 / return -1 if dp[amount] >= INF else dp[amount]. dp[a] is the fewest coins for amount a: one more than the best dp[a - c] over every coin c.\n\nSlide 6. How often. Coins 1, 3, 4, amounts 1 to 100 Greedy uses more coins than needed: 24 of 100 amounts. A plausible-looking greedy rule needs a proof before you trust it.\n\nSlide 7. Closing slide. From the course: Coin Change, a lesson in Dynamic Programming, in leetExpert, the interactive DSA course. Solve Coin Change in the sandbox, in Python or JavaScript. leetexpert.com, link in bio.",
+  "hook": "Always take the biggest coin that fits. It feels optimal. With coins 1, 3 and 4, it isn't.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-12-04",
+  "post": "lc-insertion-sort-inversions",
+  "dir": "2026-10-03-insertion-sort-inversions-lesson",
+  "title": "The O(n²) Baseline Sorts: O(n²), except when it's O(n) (carousel, 7 slides)",
+  "caption": "Insertion sort is O(n²). Except when it's O(n). Its real cost is how out of order your data is.\n\nInsertion sort takes the next element, shifts the larger ones right, and drops it into place.\n\nReverse-sorted input is the worst case: [5, 4, 3, 2, 1] takes 1 + 2 + 3 + 4 = 10 shifts, and 1,000 reversed elements take 499,500.\n\nAlready sorted? 0 shifts and 999 comparisons, one per element. With 10 neighbouring pairs swapped: 10 shifts.\n\nEvery shift fixes exactly one inversion (a pair that's out of order), so the work is O(n + I), where I is the number of inversions. That's why it survives in practice: real data is often almost sorted.\n\nWhere have you seen insertion sort hiding inside a faster sort? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#sorting #insertionsort #timecomplexity #python #codinginterview",
+  "alt": "Slide 1. Cover. Sorting. Insertion sort is O(n²). Except when it's O(n). Its real cost is how out of order your data is.\n\nSlide 2. The code. Shift the larger ones right Python code: def insertion_sort(arr: list[int]) -> None: / for i in range(1, len(arr)): / key = arr[i] / j = i - 1 / while j >= 0 and arr[j] > key: / arr[j + 1] = arr[j] / j -= 1 / arr[j + 1] = key. Take the next element, shift larger elements right, and drop it into its place.\n\nSlide 3. The worst case. [5, 4, 3, 2, 1] Shifts: 1 + 2 + 3 + 4: 10. Reverse-sorted input: each insertion shifts all the way back. The triangular sum, O(n²).\n\nSlide 4. Same code, 1,000 elements. It depends on the input Reverse-sorted: 499,500 shifts. Already sorted: 0 shifts · 999 comparisons. Sorted, with 10 neighbouring pairs swapped: 10 shifts.\n\nSlide 5. The real measure. Inversions An inversion is a pair that is out of order relative to each other. Every shift resolves exactly one. So the total work is O(n + I), where I is the inversion count: how far the input is from sorted, not n outright.\n\nSlide 6. Why it survives. Real data is often almost sorted A new log entry appended to a sorted log. One out-of-place card in a hand. On input like that, the inner loop's condition fails almost immediately, every time.\n\nSlide 7. Closing slide. From the course: The O(n²) Baseline Sorts, a lesson in Sorting, in leetExpert, the interactive DSA course. Then merge sort, and the proof that no comparison sort beats O(n log n). leetexpert.com, link in bio.",
+  "hook": "Insertion sort is O(n²). Except when it's O(n). Its real cost is how out of order your data is.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-12-05",
+  "post": "lc-heap-as-array",
+  "dir": "2026-10-03-heap-as-array-lesson",
+  "title": "The Heap Property & Array Representation: a tree with no pointers (carousel, 7 slides)",
+  "caption": "A heap is a tree with no pointers. Just an array and three lines of arithmetic.\n\nA heap is always a complete binary tree: every level full except possibly the last, and the last filled left to right with no gaps.\n\nNumber the nodes in reading order and write them into an array. A node at index i has its children at 2i + 1 and 2i + 2, and its parent at (i − 1) // 2. No pointer is ever stored.\n\nIn [1, 3, 2, 7, 4, 5, 8], index 1's children are indices 3 and 4 (values 7 and 4), and index 6's parent is index 2.\n\nIt only works because there are no gaps. And it saves real memory: a pointer-based tree of 1,000,000 nodes spends 16,000,000 bytes on child references alone.\n\nDid you know the heap in your standard library is just a list? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#heap #priorityqueue #binarytree #python #codinginterview",
+  "alt": "Slide 1. Cover. Heaps. A heap is a tree with no pointers. Just an array and three lines of arithmetic.\n\nSlide 2. The rule. Complete: no gaps, ever Every level is entirely full except possibly the last, and the last is filled strictly left to right. Number the nodes in reading order, write them into a flat array, and the whole tree is still there.\n\nSlide 3. The arithmetic. Three index helpers Python code: def parent(i: int) -> int: / return (i - 1) // 2 / def left(i: int) -> int: / return 2 * i + 1 / def right(i: int) -> int: / return 2 * i + 2. A node's parent and children are found by pure index arithmetic. Not a single pointer is stored.\n\nSlide 4. Try it. [1, 3, 2, 7, 4, 5, 8] Children of index 1: indices 3 and 4 · values 7 and 4. Parent of index 6: index 2 · value 2. Every parent is no bigger than its children: a min-heap, stored flat.\n\nSlide 5. Why no gaps. Completeness is the precondition With no gaps, the level sizes are exact powers of two. That counting is what collapses the algebra to 2i + 1 and 2i + 2. A node missing in the middle of a level would break the arithmetic. Completeness is not cosmetic: it lets the array *be* the tree.\n\nSlide 6. What it saves. 1,000,000 nodes Pointer-based tree: child references: 16,000,000 bytes. Array heap: child references: none. Two child references are 16 bytes on a 64-bit machine. For an int-sized payload, the pointers can outweigh the data.\n\nSlide 7. Closing slide. From the course: The Heap Property & Array Representation, a lesson in Heaps, in leetExpert, the interactive DSA course. Next: sift up and sift down, the two moves that keep it a heap. leetexpert.com, link in bio.",
+  "hook": "A heap is a tree with no pointers. Just an array and three lines of arithmetic.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-12-06",
+  "post": "lc-trie-prefix",
+  "dir": "2026-10-03-trie-prefix-lesson",
+  "title": "Trie Structure & Prefix Search: the question a hash set can't answer (carousel, 7 slides)",
+  "caption": "A hash set finds a word in O(1). Ask it what starts with \"pre\" and it has to check every entry.\n\nA hash set answers one question: is this exact string stored? Autocomplete asks a different one: does anything start with \"pre\"?\n\nThe set scattered \"prefix\" and \"pretend\" to unrelated slots on purpose. That's why exact lookup is O(1), and why a prefix query has to test all 10,000 entries: 10,000 checks.\n\nA trie keeps related keys related. Words that share a prefix share the same nodes: car, card, cat, cats is 14 characters stored in 6 nodes. The same prefix query takes 3 steps, one per character, however many words are stored.\n\nAnd a missing edge ends a search early: looking for \"cable\" among card and cat stops after 2 of its 5 characters.\n\nWhere have you used a trie outside an interview? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#trie #prefixsearch #autocomplete #python #codinginterview",
+  "alt": "Slide 1. Cover. Tries. Ask a hash set what starts with \"pre\". It has to check every entry. The property that makes it fast is what makes it useless here.\n\nSlide 2. The gap. One question, answered very fast A hash set answers \"is this exact string stored?\" in O(1) on average. Autocomplete asks something else: \"does any stored word start with this?\" The set scattered related words to unrelated slots on purpose, so it has nothing to offer.\n\nSlide 3. The structure. Shared prefixes share nodes Stored: car, card, cat, cats. Characters across the words: 14. Nodes in the trie: 6. Edges are labelled with characters; a path from the root spells a string.\n\nSlide 4. The code. Every operation is one walk Python code: def insert(self, word): / node = self.root / for ch in word: / node = node.setdefault(ch, {}) / node[\"$\"] = True / def _walk(self, s): / node = self.root / for ch in s: / if ch not in node: / return None / node = node[ch]. A missing edge ends the walk at once.\n\nSlide 5. The prefix query. 10,000 words. What starts with \"pre\"? Hash set: entries tested: 10,000. Trie: steps down from the root: 3. The tree gets wider as words are added, never slower to descend.\n\nSlide 6. Stopping early. Search for \"cable\" among card and cat Characters looked at: 2 of 5. After c and a there is no edge for b, so the word was never stored. No point continuing.\n\nSlide 7. Closing slide. From the course: Trie Structure & Prefix Search, a lesson in Tries, in leetExpert, the interactive DSA course. Then implement one in the sandbox, in Python or JavaScript. leetexpert.com, link in bio.",
+  "hook": "A hash set finds a word in O(1). Ask it what starts with \"pre\" and it has to check every entry.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-12-07",
+  "post": "lc-cycle-detection",
+  "dir": "2026-10-03-cycle-detection-lesson",
+  "title": "Linked List Cycle: two runners find the loop (carousel, 7 slides)",
+  "caption": "Find a loop in a linked list with two pointers and no extra memory. One walks, one runs.\n\nA linked list has a cycle when some node's next points back to an earlier node, so walking it never reaches null.\n\nThe first answer: remember every node you visit. A revisit means a cycle. Correct, and O(n) space: 10,000 nodes stored for a list of 10,000.\n\nFloyd's tortoise and hare: slow moves one node, fast moves two. No cycle and fast falls off the end. A cycle and both end up inside it, where the gap between them shrinks by exactly one per step, so it must hit zero.\n\nOn [3, 2, 0, -4] with the tail linked back to 2, they meet after 3 steps. On 10,000 nodes looping to the head: 10,000 steps, and 2 pointers of memory.\n\nWhy must the comparison come after the step, not before? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#linkedlist #fastandslowpointers #floydcycle #python #codinginterview",
+  "alt": "Slide 1. Cover. Linked Lists. Find a loop in a linked list with two pointers and no memory. One walks. One runs. If there is a loop, they meet.\n\nSlide 2. The problem. A list that never ends A cycle: some node's next points back to an earlier node, so traversal never reaches null. In [3, 2, 0, -4], the last node links back to 2. Walk it and you loop forever.\n\nSlide 3. The first answer. Remember every node Walk with a set of visited nodes. A revisit means a cycle; null means none. Correct, and the right first answer. A list of 10,000: nodes stored: 10,000 · O(n) space.\n\nSlide 4. The code. One walks, one runs Python code: def has_cycle(head): / slow = fast = head / while fast and fast.next: / slow = slow.next / fast = fast.next.next / if slow is fast: / return True / return False. The comparison is node identity, not value, and it happens after stepping.\n\nSlide 5. Why they must meet. The gap shrinks by exactly one Inside the loop, fast gains one step on slow every move. The gap cannot skip from 1 to −1, so it reaches 0. A guaranteed meeting within one lap. No probability, no luck.\n\nSlide 6. Count it. 10,000 nodes Tail loops back to the head: steps to meet: 10,000. No cycle: steps until fast falls off: 5,000. Extra memory either way: 2 pointers · O(1).\n\nSlide 7. Closing slide. From the course: Linked List Cycle, a lesson in Linked Lists, in leetExpert, the interactive DSA course. Solve it in the sandbox, in Python or JavaScript. leetexpert.com, link in bio.",
+  "hook": "Find a loop in a linked list with two pointers and no extra memory. One walks, one runs.",
+  "slot": "6 pm"
+ },
+ {
+  "date": "2026-12-08",
+  "post": "lc-subarray-sum-seed",
+  "dir": "2026-10-04-subarray-sum-seed-lesson",
+  "title": "Prefix Sum + Hash Map: the map starts with {0: 1} (carousel, 8 slides)",
+  "caption": "This function counts subarrays that sum to k. Delete the {0: 1} it starts with and it still runs. It just counts wrong.\n\nHow many contiguous subarrays sum to exactly k? You don't know the endpoints in advance, so the obvious answer tries every start and every end: 500,500 additions for 1,000 numbers.\n\nThe turn: a subarray's sum is one running total minus an earlier one. So at each position, ask a hash map whether an earlier running total equaled running - k. One question per number: 1,000 steps, same answer.\n\nThe map starts with {0: 1}, the empty prefix before index 0. Without it, a subarray that starts at index 0 has no earlier total to match. On [1, 2, 3] with k = 3 the answer is 2. Without the seed you get 1. No error, just a wrong count.\n\nAnd unlike a sliding window, it works with negative numbers: it never shrinks anything.\n\nHave you ever shipped an off-by-one that never crashed? 👇\n\nleetExpert, the interactive DSA course. Link in bio.",
+  "hashtags": "#prefixsum #hashmap #subarraysum #dsa #codinginterview",
+  "alt": "Slide 1. Cover. Prefix Sum. Delete `{0: 1}` and it still runs. It just counts wrong. Counting the subarrays that sum to k, in one pass.\n\nSlide 2. The question. How many subarrays sum to k? You don't know the range's endpoints in advance. You're searching for them. Python code: def brute_count(nums, k): / count = 0 / for l in range(len(nums)): / total = 0 / for r in range(l, len(nums)): / total += nums[r] / if total == k: / count += 1 / return count. Every start, every end, 1,000 numbers: 500,500 additions.\n\nSlide 3. The turn. Ask about the past instead A subarray's sum is one running total minus an earlier one. So at each position: has an earlier running total equaled running - k? A hash map remembers every running total so far. Each position asks it a single O(1) question.\n\nSlide 4. The code. One pass Python code: def subarray_count(nums: list[int], k: int) -> int: / seen: dict[int, int] = {0: 1} / running = 0 / count = 0 / for x in nums: / running += x / count += seen.get(running - k, 0) / seen[running] = seen.get(running, 0) + 1 / return count.\n\nSlide 5. The seed. Why it starts with {0: 1} It is the empty prefix, before index 0. Without it, a subarray that starts at index 0 has no earlier total to match. [1, 2, 3], k = 3, with the seed: 2 subarrays. The same call without it: 1.\n\nSlide 6. Count it. 1,000 numbers, negatives included Every start, every end: 500,500 additions. One pass with the map: 1,000 steps. Subarrays that sum to 7, both ways: 4,402.\n\nSlide 7. When to use it. Not a sliding window A sliding window needs a guarantee, typically all non-negative values, for its shrink step to be right. This never shrinks anything. It asks a hash map a question at every position, so negative numbers are fine. The cost: O(n) space instead of O(1).\n\nSlide 8. Closing slide. From the course: Prefix Sum + Hash Map, a lesson in Prefix Sum, in leetExpert, the interactive DSA course. Next in the module: 2D prefix sums. leetexpert.com, link in bio.",
+  "hook": "This function counts subarrays that sum to k. Delete the {0: 1} it starts with and it still runs. It just counts wrong.",
+  "slot": "6 pm"
  }
 ]
