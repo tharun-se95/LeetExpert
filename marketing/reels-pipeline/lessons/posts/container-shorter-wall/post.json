@@ -1,0 +1,117 @@
+{
+ "name": "move the shorter wall",
+ "roadmap": null,
+ "date": "2026-10-04",
+ "lesson": "courses/dsa/two-pointers/container-with-most-water.md",
+ "module": "Two Pointers",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Two pointers on an array that isn't sorted. It still works, and the reason is the part interviewers push on.",
+ "hook_slide": "Unsorted input. *Two pointers anyway.*",
+ "hook_sub": "Container With Most Water, and why moving the shorter wall is safe.",
+ "caption": [
+  "Pick two lines. The water they hold is the distance between them times the shorter line's height. Find the most.",
+  "Every pair of {n} lines is {pairs} containers. Start with the widest container instead and move the shorter wall inward: {steps} containers measured, same answer.",
+  "The rule is easy to guess and hard to prove. Here is the proof: keep the shorter wall and narrow, and the width shrinks while the height is still capped by that wall. It can never win. So one measurement speaks for every container that wall could form, and the wall is discarded.",
+  "The input isn't sorted, and sorting would destroy the widths. What makes the elimination work this time is the width shrinking with every move.",
+  "Could you have proved it in an interview? 👇"
+ ],
+ "tags": "#twopointers #arrays #dsa #leetcode #codinginterview",
+ "cta": "Next in the module: Trapping Rain Water.",
+ "slides": [
+  {
+   "k": "THE PROBLEM",
+   "h": "Two lines, the most water",
+   "p": [
+    "Area is the distance between two lines times the *shorter* line's height."
+   ],
+   "code": {
+    "file": "container.py",
+    "lines": [
+     1,
+     7
+    ],
+    "marks": {
+     "3": "hint",
+     "4": "hint"
+    }
+   },
+   "rows": [
+    {
+     "lab": "{n} lines, every pair",
+     "val": "{pairs} containers",
+     "tone": "bad"
+    }
+   ]
+  },
+  {
+   "k": "THE RULE",
+   "h": "Start widest. Move the shorter wall.",
+   "code": {
+    "file": "container.py",
+    "lines": [
+     9,
+     20
+    ],
+    "marks": {
+     "6": "hint",
+     "8": "add",
+     "11": "add"
+    }
+   }
+  },
+  {
+   "k": "WHY IT'S SAFE",
+   "h": "The shorter wall is finished",
+   "p": [
+    "Keep the shorter wall and narrow: the width shrinks, and the height is still capped by that wall. It can never win."
+   ],
+   "rows": [
+    {
+     "lab": "[1,8,6,2,5,4,8,3,7]: lines 0 and 8, the widest",
+     "val": "area {first_area}",
+     "tone": "mark"
+    },
+    {
+     "lab": "Best of every container that uses line 0",
+     "val": "area {line0_best}",
+     "tone": "good"
+    }
+   ]
+  },
+  {
+   "k": "COUNT IT",
+   "h": "Same answer, fewer containers",
+   "rows": [
+    {
+     "lab": "The example, every pair",
+     "val": "{small_pairs} containers → {answer}",
+     "tone": "bad"
+    },
+    {
+     "lab": "The example, shorter wall",
+     "val": "{small_steps} containers → {answer}",
+     "tone": "good"
+    },
+    {
+     "lab": "{n} lines, every pair",
+     "val": "{pairs} containers",
+     "tone": "bad"
+    },
+    {
+     "lab": "{n} lines, shorter wall",
+     "val": "{steps} containers",
+     "tone": "good"
+    }
+   ]
+  },
+  {
+   "k": "THE POINT",
+   "h": "Not sorted. Still works.",
+   "p": [
+    "Sorting would destroy the widths, so sortedness can't be the reason.",
+    "The width shrinks with every move, so the only hope of improvement is a taller minimum, and the shorter wall is the one holding it down.",
+    "That is what lets *one measurement speak for a whole family*."
+   ]
+  }
+ ]
+}
