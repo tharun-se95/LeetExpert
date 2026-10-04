@@ -37,7 +37,7 @@ source (section 6). Nothing is marked done by hand.
 | Gate | What it proves | How |
 |---|---|---|
 | `build` | the page builds from the kit | `build.py <slug>` exits 0; code is coloured by the app's Shiki (build fails otherwise) |
-| `code` | every piece of code on the page is true | problem: the shown `solution*`/`naive*`/`alt*` pass every sandbox case in Python and JavaScript, `slow*` the first five, `mistake*` fails at least one; concept: a `check.py` model check (as in `build-a-linked-list`), in both runtimes |
+| `code` | every piece of code on the page is true | problem: the shown `solution*`/`naive*`/`alt*` pass every sandbox case in Python and JavaScript, `slow*` the first five, `deep*` every case except by Python's `RecursionError`, which it must hit at least once (added 2026-10-02 for #26, when #157's ceiling cases reached the stack limit), `mistake*` fails at least one; concept: a `check.py` model check (as in `build-a-linked-list`), in both runtimes |
 | `light` | the page works in the light theme | browser gate, section 4.2 |
 | `dark` | the page works in the dark theme | browser gate, section 4.2 |
 | `app` | the app serves it (shipped) | the Lesson tab shows it; phase 4 |

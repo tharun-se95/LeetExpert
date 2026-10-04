@@ -844,6 +844,51 @@ function plHardwareSteps(){
   return plotWalk(T,{intro:'How far a faster machine gets you depends on the shape of the cost, not on the machine.'});
 }
 
+/* ---------- pointer lists (kit/lists.js ptrSnap): nodes at authored places, pointers that move ---------- */
+function plReverseSteps(){
+  var ns=ptrRow([1,2,3,4]),prev=null,curr=ns[0],nxt,steps=[];
+  function rec(note,hi,done){var tags={prev:prev,curr:curr};if(nxt!==undefined)tags.nxt=nxt;
+    steps.push(ptrSnap(note,{nodes:ns,head:prev||curr,tags:tags,above:[],nil:{prev:'left'},hi:hi||[],done:done}));}
+  rec('Reverse 1 → 2 → 3 → 4 in place. <code>prev</code> is null, the reversed part, still empty; <code>curr</code> is 1, the head of the part not yet touched.',[],true);
+  while(curr!==null){
+    nxt=curr.next;rec('Save the lifeline: <code>nxt = curr.next</code>, '+(nxt?nxt.value:'null')+'. The flip is about to overwrite the only pointer to it.',['nxt']);
+    curr.next=prev;rec('Flip: <code>curr.next = prev</code>. '+curr.value+' now points at '+(prev?prev.value:'null')+'.',['next:'+curr.id]);
+    prev=curr;curr=nxt;nxt=undefined;
+    rec('March: <code>prev = curr</code>, <code>curr = nxt</code>. The reversed part is '+ptrText(prev)+'; '+(curr?'the rest starts at '+curr.value+'.':'nothing is left.'),['prev','curr'],true);
+  }
+  rec('<code>curr</code> is null, so every node is flipped. Return <code>prev</code>: '+ptrText(prev)+'.',[],true);
+  var got=[];for(var c=prev;c;c=c.next)got.push(c.value);
+  if(got.join()!=='4,3,2,1')throw new Error('pointer reversal gave '+got.join());
+  return steps;
+}
+/* Floyd on a rho: 1 → 2 → 3 → 4 → 5 → 6, and 6 links back to 3. The loop is laid out as a box over two rows. */
+function plFloydSteps(){
+  var ns=ptrRow([1,2,3,4]),tail=[5,6].map(function(v){return mkNode(v);});
+  tail[0].x=3;tail[0].y=1;tail[1].x=2;tail[1].y=1;ns[3].next=tail[0];tail[0].next=tail[1];tail[1].next=ns[2];ns=ns.concat(tail);
+  var slow=ns[0],fast=ns[0],k=0,steps=[];
+  function rec(note,hi,done){steps.push(ptrSnap(note,{nodes:ns,head:ns[0],tags:{slow:slow,fast:fast},above:[],hi:hi||[],done:done,data:{slow:k,fast:2*k}}));}
+  rec('1 → 2 → 3 → 4 → 5 → 6, and 6 links back to 3: a cycle. <code>slow</code> and <code>fast</code> both start at the head.',[],true);
+  while(fast&&fast.next){
+    slow=slow.next;fast=fast.next.next;k++;
+    var met=slow===fast;
+    rec('<code>slow</code> moves one node, to '+slow.value+'; <code>fast</code> moves two, to '+fast.value+'.'+(met?' They meet: the list has a cycle.':''),['slow','fast'],true);
+    if(met)break;
+  }
+  if(slow!==fast||k!==4)throw new Error('Floyd on the rho met after '+k+' steps');
+  return steps;
+}
+var PL_REV=[['two parts','prev heads the reversed part, which ends at null; curr heads the untouched rest; together they hold every node once']],
+    PL_FLOYD=[['fast = 2 × slow','fast has taken twice as many steps as slow']];
+var PL_OPTS={
+  inv:function(s){return 'slow' in s.tags?PL_FLOYD:PL_REV;},
+  check:function(s){
+    if('slow' in s.tags)return [s.data.fast===2*s.data.slow];
+    var a=snapWalk(s,s.tags.prev),b=snapWalk(s,s.tags.curr),all={};
+    a.ids.concat(b.ids).forEach(function(id){all[id]=1;});
+    return [a.ends&&b.ends&&Object.keys(all).length===a.ids.length+b.ids.length&&a.ids.length+b.ids.length===s.nodes.length];},
+  fields:function(s,hiF,val){return Object.keys(s.tags).map(function(k){var id=s.tags[k];return '<span'+hiF(k)+'>'+k+' <b>'+(id===null?'null':val(id))+'</b></span>';}).join('');}
+};
+
 mountLesson();
 new LanePlayer($('#stackw .lvhost'),{id:'stk',loop:true,autoplay:true,inv:[['size matches','size equals the number of items',sizeOk('s')]]}).load(stackSteps());
 mountLaneTabs($('#qtabs'),[{name:'Queue from two stacks',steps:twoStackSteps},{name:'Deque',steps:dequeSteps},{name:'Ring buffer',steps:ringSteps}],{id:'q'});
@@ -860,4 +905,5 @@ mountLaneTabs($('#grtabs'),[{name:'Breadth-first search',steps:bfsSteps},{name:'
 mountCallTreeTabs($('#cttabs'),[{name:'Subsets',steps:subsetsSteps},{name:'Combination sum',steps:comboSteps}],{id:'ct'});
 mountIvTabs($('#ivtabs'),[{name:'Merge intervals',steps:ivMergeSteps},{name:'Meeting rooms II',steps:ivRoomsSteps}],{id:'iv'});
 mountTrieTabs($('#trtabs'),[{name:'Insert and search',steps:trieInsertSteps},{name:'Wildcard search',steps:trieWildSteps},{name:'Word Search II',steps:trieBoardSteps}],{id:'tr'});
+mountPlayerTabs($('#ptrtabs'),[{name:'Reverse in place',steps:plReverseSteps},{name:'A cycle, by Floyd',steps:plFloydSteps}],function(h,o){return new ListPlayer(h,Object.assign(o,PL_OPTS));},{id:'ptr'});
 mountPlotTabs($('#pltabs'),[{name:'Loops',steps:plLoopsSteps},{name:'Amortized appends',steps:plAppendSteps},{name:'Growth beats hardware',steps:plHardwareSteps}],{id:'pl'});

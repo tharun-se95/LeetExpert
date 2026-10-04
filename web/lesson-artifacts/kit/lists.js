@@ -83,6 +83,39 @@ function listInvariants(s){
   return [!s.cyclic,s.tail===last,s.size===s.chain.length];
 }
 
+/* A snapshot of plain nodes, for a walkthrough of code that holds no List, only nodes and the
+   pointers a solution keeps (spec 2026-10-01-pointer-list-player-design.md). o.nodes is every node
+   the walkthrough made, each with a fixed {x, y} the lesson authors, so only arrows and names move;
+   o.tags maps any pointer name to a node or null; o.head names the node the chain is read from;
+   o.above lists the names drawn over their node (the rest sit under it); o.nil puts a null name at
+   the 'left' of row 0, (the default) the 'right', or at an {x, y} of its own (past the end of row 1); o.data rides along for an invariant that counts
+   something positions cannot show (how many steps each pointer has taken). */
+function ptrSnap(note,o){
+  var nodes=o.nodes.map(function(n){return {id:n.id,value:n.value,next:idOf(n.next),x:n.x,y:n.y||0};});
+  var chain=[],seen={},c=o.head||null;
+  for(;c&&!seen[c.id];c=c.next){seen[c.id]=1;chain.push(c.id);}
+  var tags={};Object.keys(o.tags||{}).forEach(function(k){tags[k]=idOf(o.tags[k]);});
+  /* live: what some name still reaches. A node no name reaches is garbage, and is drawn as dropped,
+     which is how a flip made before saving next shows the rest of the list being lost */
+  var live={};[o.head].concat(Object.keys(o.tags||{}).map(function(k){return o.tags[k];})).forEach(function(r){
+    for(var q=r;q&&!live[q.id];q=q.next)live[q.id]=1;});
+  return {note:note,head:idOf(o.head||null),tail:null,size:chain.length,nodes:nodes,chain:chain,cyclic:!!c,live:Object.keys(live).map(Number),
+    tags:tags,above:o.above||['head','tail'],nil:o.nil||{},data:o.data||null,hi:o.hi||[],done:!!o.done,fixed:true};
+}
+/* helpers the module's walkthroughs share: nodes on one row at the slot they start in; the values a
+   chain holds and its text ("1 → 2 → null", or "… → back to 3" when it loops); and a walk over a
+   snapshot's own pointers, for an invariant checked from the snapshot alone */
+function ptrRow(vals,y){var ns=vals.map(function(v,i){var n=mkNode(v);n.x=i;n.y=y||0;return n;});ns.forEach(function(n,i){n.next=ns[i+1]||null;});return ns;}
+function ptrVals(h){var o=[],seen={};for(var c=h;c&&!seen[c.id];c=c.next){seen[c.id]=1;o.push(c.value);}return o;}
+function ptrText(h){var o=[],seen={},c=h;for(;c&&!seen[c.id];c=c.next){seen[c.id]=1;o.push(c.value);}
+  return (o.length?o.join(' → ')+' → ':'')+(c?'back to '+c.value:'null');}
+function snapWalk(s,id){var by={},out=[],seen={};s.nodes.forEach(function(n){by[n.id]=n;});
+  for(var c=id;c!==null&&c!==undefined&&!seen[c];c=by[c].next){seen[c]=1;out.push(c);}return {ids:out,ends:c===null||c===undefined};}
+/* where a null name of a pointer snapshot stands: one shared place per end of row 0, or its own */
+function nilKey(s,k){var w=s.nil[k];return w&&typeof w==='object'?'nil:'+k:'nil:'+(w==='left'?'left':'right');}
+/* every name a snapshot draws, and its node id or null: a List snapshot's head and tail live on the snapshot */
+function listNames(s){return s.fixed?s.tags:Object.assign({head:s.head,tail:s.tail},s.tags);}
+
 
 /* ---------- the view ---------- */
 var SLOT=118,BW=78,BH=46,ROWY=[84,190];
@@ -91,6 +124,13 @@ var SLOT=118,BW=78,BH=46,ROWY=[84,190];
    slot it last held; a new node sits below where it will join. */
 function listLayout(s){
   var pos={};
+  /* authored positions, and the two places a null name can stand: past either end of row 0 */
+  if(s.fixed){var lo=Infinity,hi=-Infinity;
+    s.nodes.forEach(function(n){pos[n.id]={x:n.x,y:n.y};if(n.y===0){lo=Math.min(lo,n.x);hi=Math.max(hi,n.x);}});
+    if(lo===Infinity){lo=0;hi=-1;}
+    var names=listNames(s);Object.keys(names).forEach(function(k){if(names[k]!==null)return;
+      var key=nilKey(s,k),w=s.nil[k];pos[key]=w&&typeof w==='object'?{x:w.x,y:w.y}:{x:key==='nil:left'?lo-1:hi+1,y:0};});
+    return pos;}
   s.chain.forEach(function(id,i){pos[id]={x:i,y:0};});
   var rest=s.nodes.filter(function(n){return !pos[n.id];});
   function freeX(){var x=s.chain.length;for(var k in pos)if(pos[k].y===1)x=Math.max(x,Math.ceil(pos[k].x+1));return x;}
@@ -125,13 +165,17 @@ function ListPlayer(host,o){
   function tagPlaces(s,pos,g){
     var out={},up={},down={};
     function put(list,name,id){var k=id===null?'nil':id;(list[k]=list[k]||[]).push(name);}
-    put(up,'head',s.head);put(up,'tail',s.tail);
-    ['prev','curr','node'].forEach(function(t){var id=s.tags[t];if(id!==null&&!(t==='node'&&id===s.tags.curr))put(down,t,id);});
+    var names=listNames(s),above=s.above||['head','tail'];
+    Object.keys(names).forEach(function(t){var id=names[t];
+      if(above.indexOf(t)>=0){put(up,t,id);return;}
+      /* a List walk hides a finished name; a pointer walkthrough shows it as name = null */
+      if(id===null){if(s.fixed)put(down,t,nilKey(s,t));return;}
+      if(!(t==='node'&&id===names.curr))put(down,t,id);});
     function anchor(k){return k==='nil'?at(g,{x:0,y:0}):(pos[k]?at(g,pos[k]):null);}
     Object.keys(up).forEach(function(k){var a=anchor(k);if(!a)return;var names=up[k];
       names.forEach(function(n,j){out[n]={x:a.x+(names.length>1?(j?22:-22):0),y:a.y-BH/2-12,nil:k==='nil',walk:false};});});
-    Object.keys(down).forEach(function(k){var a=anchor(k);if(!a)return;var off=s.chain.indexOf(+k)<0?16:0;
-      down[k].forEach(function(n,j){out[n]={x:a.x,y:a.y+BH/2+14+off+j*18,nil:false,walk:true};});});
+    Object.keys(down).forEach(function(k){var a=anchor(k);if(!a)return;var nil=k.indexOf('nil:')===0,off=!s.fixed&&s.chain.indexOf(+k)<0?16:0;
+      down[k].forEach(function(n,j){out[n]={x:a.x,y:nil?a.y-((down[k].length-1)*18)/2+j*18:a.y+BH/2+14+off+j*18,nil:nil,walk:!nil};});});
     return out;
   }
   function draw(s,pos,t,fromS,fromPos){
@@ -140,21 +184,34 @@ function ListPlayer(host,o){
       return {x:eg.ox+40+(a.x+1)*SLOT,y:ROWY[0]+(ROWY[1]-ROWY[0])*a.y};};
     var h=[],hi=s.hi,byFrom={};
     if(fromS)fromS.nodes.forEach(function(n){byFrom[n.id]=n;});
-    function arrowPath(a,b){var x1=a.x+BW/2-13,y1=a.y,x2=b.x-BW/2-4,y2=b.y;
+    /* pair: the target points straight back (a two-node loop, or a flip made before its neighbour's), so
+       the two arrows would share one line; each moves to the right of its own direction of travel */
+    function arrowPath(a,b,pair){var x1=a.x+BW/2-13,y1=a.y,x2=b.x-BW/2-4,y2=b.y;
+      if(pair&&s.fixed){var L0=Math.hypot(b.x-a.x,b.y-a.y)||1,nx=-(b.y-a.y)/L0*7,ny=(b.x-a.x)/L0*7;a={x:a.x+nx,y:a.y+ny};b={x:b.x+nx,y:b.y+ny};y1=a.y;y2=b.y;}
       if(Math.abs(y1-y2)<1&&x2>x1)return 'M'+x1+','+y1+' L'+x2+','+y2;
+      /* authored layouts: a flipped pointer runs left, edge to edge (2 ← 3); one between rows is
+         straight and trimmed to both boxes, so a rho or a merge never curves through other nodes */
+      if(s.fixed){
+        /* a node whose next is itself (prev = curr, then curr.next = prev): a loop over its own box */
+        if(Math.abs(a.x-b.x)<1&&Math.abs(a.y-b.y)<1){var r=a.x+BW/2-16,l=a.x-BW/2+16,t0=a.y-BH/2;
+          return 'M'+r+','+t0+' C'+r+','+(t0-40)+' '+l+','+(t0-40)+' '+l+','+(t0-4);}
+        if(Math.abs(y1-y2)<1)return 'M'+(a.x-BW/2)+','+y1+' L'+(b.x+BW/2+4)+','+y2;
+        var dx=b.x-a.x,dy=b.y-a.y,ta=Math.min(BW/2/Math.abs(dx||1e-9),BH/2/Math.abs(dy||1e-9)),tb=Math.min((BW/2+4)/Math.abs(dx||1e-9),(BH/2+4)/Math.abs(dy||1e-9));
+        return 'M'+(a.x+dx*ta).toFixed(1)+','+(a.y+dy*ta).toFixed(1)+' L'+(b.x-dx*tb).toFixed(1)+','+(b.y-dy*tb).toFixed(1);}
       var bend=Math.max(40,Math.abs(x2-x1)*.45);return 'M'+x1+','+y1+' C'+(x1+bend)+','+y1+' '+(x2-bend)+','+y2+' '+x2+','+y2;}
     /* outgoing: nodes and pointers that this step removed, fading where they were */
     if(fromS&&t<1){
       fromS.nodes.forEach(function(n){var here=s.nodes.some(function(m){return m.id===n.id;});var a=fromPos[n.id];if(!a)return;var A={x:fg.ox+40+(a.x+1)*SLOT,y:ROWY[0]+(ROWY[1]-ROWY[0])*a.y};
         if(!here)h.push(nodeSvg(n,A,false,1-t,''));
         var same=here&&s.nodes.filter(function(m){return m.id===n.id;})[0].next===n.next;
-        if(n.next&&!same&&fromPos[n.next]){var B=fromPos[n.next];h.push('<path class="lp-arrow" style="opacity:'+(1-t)+'" d="'+arrowPath(A,{x:fg.ox+40+(B.x+1)*SLOT,y:ROWY[0]+(ROWY[1]-ROWY[0])*B.y})+'" marker-end="'+arrow+'"/>');}});
+        if(n.next&&!same&&fromPos[n.next]){var B=fromPos[n.next];h.push('<path class="lp-arrow" style="opacity:'+(1-t)+'" d="'+arrowPath(A,{x:fg.ox+40+(B.x+1)*SLOT,y:ROWY[0]+(ROWY[1]-ROWY[0])*B.y},byFrom[n.next]&&byFrom[n.next].next===n.id)+'" marker-end="'+arrow+'"/>');}});
     }
+    var byTo={};s.nodes.forEach(function(n){byTo[n.id]=n;});
     s.nodes.forEach(function(n){var a=P(n.id);if(!a||!n.next)return;var b=P(n.next);if(!b)return;
-      var was=byFrom[n.id],fresh=fromS&&(!was||was.next!==n.next),reveal=fresh&&t<1?' pathLength="1" stroke-dasharray="1" stroke-dashoffset="'+(1-t).toFixed(3)+'"':'';
-      h.push('<path class="lp-arrow'+(hi.indexOf('next:'+n.id)>=0?' hi':'')+'" d="'+arrowPath(a,b)+'"'+reveal+' marker-end="'+(fresh&&t<.85?'none':arrow)+'"/>');});
+      var pair=n.next!==n.id&&byTo[n.next]&&byTo[n.next].next===n.id,was=byFrom[n.id],fresh=fromS&&(!was||was.next!==n.next),reveal=fresh&&t<1?' pathLength="1" stroke-dasharray="1" stroke-dashoffset="'+(1-t).toFixed(3)+'"':'';
+      h.push('<path class="lp-arrow'+(hi.indexOf('next:'+n.id)>=0?' hi':'')+'" d="'+arrowPath(a,b,pair)+'"'+reveal+' marker-end="'+(fresh&&t<.85?'none':arrow)+'"/>');});
     s.nodes.forEach(function(n){var a=P(n.id);if(!a)return;var enter=fromS&&!byFrom[n.id]?t:1;
-      h.push(nodeSvg(n,{x:a.x,y:a.y-(1-enter)*10},s.chain.indexOf(n.id)>=0,enter,hi.indexOf('next:'+n.id)>=0?' hi':''));});
+      h.push(nodeSvg(n,{x:a.x,y:a.y-(1-enter)*10},(s.fixed?s.live:s.chain).indexOf(n.id)>=0,enter,hi.indexOf('next:'+n.id)>=0?' hi':''));});
     var to=tagPlaces(s,pos,g),from=fromS&&t<1?tagPlaces(fromS,fromPos,fg):null;
     var names={};Object.keys(to).forEach(function(k){names[k]=1;});if(from)Object.keys(from).forEach(function(k){names[k]=1;});
     Object.keys(names).forEach(function(name){var a=to[name],b=from&&from[name],op=1,q;
@@ -189,12 +246,33 @@ function ListPlayer(host,o){
     sizeTo:function(all){if(o.slots)return;var n=4,low=false;
       all.forEach(function(st){var pos=listLayout(st),sp=listSpan(pos);n=Math.max(n,sp[1]-sp[0]+2);
         for(var k in pos)if(pos[k].y===1)low=true;});
-      VBW=n*SLOT+40;VBH=low?262:150;setBox();},
-    layout:listLayout,draw:draw,inv:INV,check:listInvariants,
-    fields:function(s,hiF){return '<span'+hiF('head')+'>head <b>'+(s.head===null?'null':valueOf(s,s.head))+'</b></span><span'+hiF('tail')+'>tail <b>'+(s.tail===null?'null':valueOf(s,s.tail))+'</b></span><span'+hiF('size')+'>size <b>'+s.size+'</b></span>';},
-    label:function(s){svg.setAttribute('aria-label','List '+(s.chain.length?s.chain.map(function(id){return valueOf(s,id);}).join(' → ')+' → null':'is empty'));}
+      VBW=n*SLOT+40;VBH=low?262:150;
+      var deep=0;all.forEach(function(st){var pos=listLayout(st);for(var k in pos)deep=Math.max(deep,pos[k].y);});
+      if(deep>1)VBH=262+(deep-1)*(ROWY[1]-ROWY[0]);setBox();},
+    layout:listLayout,draw:draw,inv:o.inv||INV,check:o.check||listInvariants,
+    fields:o.fields?function(s,hiF){return o.fields(s,hiF,function(id){return valueOf(s,id);});}:function(s,hiF){return '<span'+hiF('head')+'>head <b>'+(s.head===null?'null':valueOf(s,s.head))+'</b></span><span'+hiF('tail')+'>tail <b>'+(s.tail===null?'null':valueOf(s,s.tail))+'</b></span><span'+hiF('size')+'>size <b>'+s.size+'</b></span>';},
+    label:function(s){
+      /* a pointer walkthrough has no one list to name: say where each name leads */
+      if(s.fixed){var by={};s.nodes.forEach(function(n){by[n.id]=n;});
+        svg.setAttribute('aria-label',Object.keys(s.tags).map(function(k){var o=[],seen={},c=s.tags[k];
+          for(;c!==null&&!seen[c];c=by[c].next){seen[c]=1;o.push(by[c].value);}
+          return k+': '+(o.length?o.join(' → ')+(c===null?' → null':' → back to '+by[c].value):'null');}).join('; ')+
+          (s.live.length<s.nodes.length?'; '+(s.nodes.length-s.live.length)+' unreachable':''));return;}
+      var back=s.cyclic?s.nodes.filter(function(n){return n.id===s.chain[s.chain.length-1];})[0].next:null;
+      svg.setAttribute('aria-label','List '+(s.chain.length?s.chain.map(function(id){return valueOf(s,id);}).join(' → ')+(s.cyclic?' → back to '+valueOf(s,back):' → null'):'is empty'));}
   });
   return p;
+}
+
+/* ---------- banner art: a row of boxes with next ports, shared by the module's lessons ---------- */
+function chainArt(svg,vals,x0,y,o){
+  o=o||{};var w=70,g=34,out=[];
+  vals.forEach(function(v,i){var x=x0+i*(w+g);
+    out.push(S('rect',{x:x,y:y,width:w,height:36,rx:8,class:'bn-mid'},svg));
+    S('line',{x1:x+w-22,x2:x+w-22,y1:y,y2:y+36,class:'bn-edge'},svg);
+    var t=S('text',{x:x+(w-22)/2,y:y+23,class:'bn-t','text-anchor':'middle',style:'font-size:14px;font-weight:600'},svg);t.textContent=v;
+    var nt=S('text',{x:x+w-11,y:y+22,class:'bn-t','text-anchor':'middle'},svg);nt.textContent=i===vals.length-1||o.cut===i?'∅':'•';});
+  return function(i){return x0+i*(w+g);};
 }
 
 /* ---------- tabbed walkthroughs of the list ---------- */

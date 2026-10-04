@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readdirSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
+import { runInNewContext } from "node:vm";
 import { renderLesson } from "../lesson-artifacts/lessonMd";
 
 /**
@@ -44,13 +45,20 @@ describe("lesson artifacts: lesson.md", () => {
     }
   });
 
-  it("the five verified lessons are written as lesson.md, with no body.html left", () => {
+  it("every lesson is written as lesson.md, with no body.html left", () => {
     expect(lessons.sort()).toEqual([
       "build-a-linked-list",
       "coin-change",
       "course-schedule",
       "diameter-of-binary-tree",
+      "linked-list-cycle",
       "longest-substring-without-repeating",
+      "merge-two-sorted",
+      "middle-of-list",
+      "nodes-and-pointers",
+      "pointer-surgery",
+      "remove-nth-from-end",
+      "reverse-linked-list",
     ]);
     for (const l of lessons) expect(existsSync(join(ARTIFACTS, l, "body.html")), `${l}/body.html`).toBe(false);
   });
@@ -108,7 +116,7 @@ Why.
 \`\`\`
 
 \`\`\`derivation
-**Time O(n).** Counted {{n}}.
+**Time O(n).** Counted 11.
 \`\`\`
 
 \`\`\`duo
@@ -124,7 +132,7 @@ Text.
     expect(r.html).toContain('<div class="chart" id="m"></div>');
     expect(r.html).toContain('<div data-code-file="solution" data-title="The fix"></div>');
     expect(r.html).toContain('<div class="notes"><p>Why.</p></div>');
-    expect(r.html).toContain('<div class="complexity"><div class="cx-h">Complexity, derived</div><p><b>Time O(n).</b> Counted {{n}}.</p></div>');
+    expect(r.html).toContain('<div class="complexity"><div class="cx-h">Complexity, derived</div><p><b>Time O(n).</b> Counted 11.</p></div>');
     expect(r.html).toContain('<div class="duo"><div class="duo-text"><p>Text.</p></div><div class="duo-scene"><div id="scene"></div></div></div>');
   });
 
@@ -154,15 +162,33 @@ Text.
       ["a quiz with two options", QUIZ({ ...Q, options: ["a", "b"] }), /3-5 options/],
       ["a quiz answer out of range", QUIZ({ ...Q, answer: 3 }), /not an option/],
       ["a quiz with no explanation", QUIZ({ ...Q, explanation: " " }), /explanation/],
+      ["a quiz whose answer is its longest option", QUIZ({ ...Q, options: ["a", "<code>bb</code>b", "cc"] }), /longer than every other option \(1, 3, 2\)/],
       ["half a language pair", '<span class="c-py">`a`</span> only.', /half written/],
       ["a duplicate id", "```mount #x\n```\n\n```mount #x\n```", /duplicate id #x/],
       ["an unknown fence", "```sparkle\n```", /unknown fence/],
       ["raw HTML outside an html fence", "<div>raw</div>", /raw HTML block/],
       ["a reveal with no button label", "```reveal #r\nA.\n```", /button label/],
       ["an examples line without →", "```examples\nno arrow\n```", /no →/],
+      ["a computed fact in the body, where nothing fills it", "It returns {{answer}}.", /\{\{answer\}\} sits outside a reveal/],
     ];
+    it("a computed fact inside a reveal is left for the page to fill", () => {
+      expect(() => page('## S {#s}\n\n```reveal #r "Show"\nIt returns {{answer}}.\n```\n')).not.toThrow();
+    });
     it.each(cases)("%s", (_, body, err) => {
       expect(() => page("## S {#s}\n\n" + body + "\n")).toThrow(err);
+    });
+
+    it("a quiz whose answers would all sit in one slot, judged by the kit's own hash", () => {
+      const ctx: Record<string, unknown> = {};
+      const kit = readFileSync(join(ARTIFACTS, "kit", "kit.js"), "utf8");
+      runInNewContext(kit.slice(kit.indexOf("function slotOf"), kit.indexOf("\n", kit.indexOf("function slotOf"))) + "\nthis.slotOf=slotOf;", ctx);
+      const slotOf = ctx.slotOf as (t: string, n: number) => number;
+      const qs = Array.from({ length: 40 }, (_, i) => `Question ${i}?`);
+      const a = qs.find((x) => slotOf(x, 3) === slotOf(qs[0]!, 3) && x !== qs[0])!;
+      const b = qs.find((x) => slotOf(x, 3) !== slotOf(qs[0]!, 3))!;
+      const two = (x: string, y: string) => "```quiz\n" + JSON.stringify({ questions: [{ ...Q, question: x }, { ...Q, question: y }] }) + "\n```";
+      expect(() => page("## S {#s}\n\n" + two(qs[0]!, a) + "\n")).toThrow(/every answer sits in slot/);
+      expect(() => page("## S {#s}\n\n" + two(qs[0]!, b) + "\n")).not.toThrow();
     });
 
     it("a section heading without an id", () => {

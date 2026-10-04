@@ -1,0 +1,20 @@
+/* by hand: the four statements keep one width, so the row never reflows as buttons disable */
+#byhand .stmts .btn2{min-width:10.5rem;justify-content:center}
+#byhand .stmts code{font-size:12.5px;background:none;padding:0}
+.lv-hint{font-size:12.5px;color:var(--mut);align-self:center;white-space:nowrap}
+/* predict: the list before, then its two chains */
+.pl-mini{display:flex;flex-wrap:wrap;gap:6px 18px;font:500 13px 'JetBrains Mono',monospace;color:var(--fg);padding:10px 2px}
+/* hero: the file's blocks in order, each entry naming the next, then the one before */
+.hd-node,.hd-nx,.hf-fw,.hf-bw,.hf-tag{transition:fill .6s ease,stroke .6s ease,opacity .6s ease}
+@media (prefers-reduced-motion:reduce){.hd-node,.hd-nx,.hf-fw,.hf-bw,.hf-tag{transition:none}}
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hd-node{fill:var(--card);stroke:var(--hair2);stroke-width:1.5}
+.hd-node.lit{stroke:var(--fam);stroke-width:2.6}
+.hd-val{font:600 15px 'JetBrains Mono',monospace;fill:var(--fg)}
+.hd-nx{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hd-nx.lit{fill:var(--fg)}
+.hf-fw,.hf-bw{stroke-width:2;fill:none;opacity:0}
+.hf-fw{stroke:var(--mut)}
+.hf-bw{stroke:var(--fam)}
+.hf-fw.on,.hf-bw.on{opacity:1}
+.hf-tag{font:500 12px 'JetBrains Mono',monospace;fill:var(--fg)}

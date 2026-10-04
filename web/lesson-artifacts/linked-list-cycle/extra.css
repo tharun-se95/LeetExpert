@@ -1,0 +1,12 @@
+/* predict: the list, then the pass they meet on */
+.pl-mini{display:flex;flex-wrap:wrap;gap:6px 18px;font:500 13px 'JetBrains Mono',monospace;color:var(--fg);padding:10px 2px}
+/* hero: a file's blocks as a rho, the corrupt entry drawn in the warning ink */
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hd-val{font:600 13px 'JetBrains Mono',monospace;fill:var(--fg)}
+.hl-edge{stroke:var(--mut);stroke-width:1.8;fill:none}
+.hl-edge.bad{stroke:var(--r-ink);stroke-dasharray:5 4}
+.hl-b{fill:var(--card);stroke:var(--hair2);stroke-width:1.6;transition:fill .5s ease,stroke .5s ease}
+.hl-b.met{fill:color-mix(in srgb,var(--fam) 30%,var(--card));stroke:var(--fam);stroke-width:2.6}
+.hl-tag{font:500 12px 'JetBrains Mono',monospace;fill:var(--fg);transition:x .5s ease,y .5s ease}
+.hl-tag.fast{fill:var(--mut)}
+@media (prefers-reduced-motion:reduce){.hl-b,.hl-tag{transition:none}}

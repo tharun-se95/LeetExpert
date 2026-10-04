@@ -63,8 +63,10 @@ they disagree. Then:
 - `lessonArtifactSolutions.test.ts` runs the code the page shows against the lesson's own sandbox cases
   in real Python and JavaScript (the harness `reference.test.ts` uses), and requires the built page to
   embed exactly those files. Code files are classified by name: `solution*`, `naive*`, `alt*` must pass every
-  case; `slow*` (correct but exponential) must pass the first five; `mistake*` must fail at least one, so a
-  "Watch out" is only ever printed if it is true.
+  case; `slow*` (correct but exponential) must pass the first five; `deep*` (correct, recursing once per
+  element) must pass every case except by Python's `RecursionError`, and must hit it at least once, since a
+  page that shows one says so; `mistake*` must fail at least one, so a "Watch out" is only ever printed if it
+  is true.
 
 ## Gates and the ledger
 
@@ -106,7 +108,10 @@ with what it needs before it (`KIT_DEPS`):
   fields and invariants line, caption, step track; soft motion, loop while on screen, still under reduced
   motion). A player is a view object it runs; the contract is at the top of the file.
   `mountPlayerTabs` gives any player tabbed walkthroughs.
-- `kit/lists.js` + `lists.css`: the linked list model and `ListPlayer` (`mountTabs` for its tabs).
+- `kit/lists.js` + `lists.css`: the linked list model and `ListPlayer` (`mountTabs` for its tabs). It also draws
+  **pointer lists** (`ptrSnap`): plain nodes at authored places, any named pointer, `null` names past the end, cycles and
+  two-row merges, and per-player fields and invariants; `ptrRow`, `ptrVals`, `ptrText` and `snapWalk` are the module's
+  shared helpers. Spec: `docs/superpowers/specs/2026-10-01-pointer-list-player-design.md`.
 - `kit/lanes.js` + `lanes.css`: the lane model (`new Lanes(...)`) and `LanePlayer` (`mountLaneTabs`).
   One model for every linear shape: arrays and strings (a row; `idx` labels its slots), stacks (a
   column, top up), queues and deques (a row, front left), fixed rows written by slot (a ring buffer's
@@ -182,14 +187,17 @@ light-mode learner never sees the OS theme flash.
 
 ## Status
 
-Five lessons, a prototype: four problem lessons and one concept lesson, `build-a-linked-list`. No sandbox
-of its own (the workspace's editor is beside it), no progress hook, and the page's colours are copied in at
+`LESSONS` in `build.py` lists the pages, and `LEDGER.md` is their status; this file does not repeat either. A page has
+no sandbox of its own (the workspace's editor is beside it), no progress hook, and its colours are copied in at
 build time. The Diameter lesson still carries its own tree painter and predict widget beside the kit's.
 
+- **Quizzes** are checked at build time as well as at load: `lessonMd.ts` fails a quiz whose answer is its longest
+  option, or whose answers all hash to one slot (`kit.js` `slotOf`, the same hash), and a `{{fact}}` left in body
+  prose, where nothing fills it. A question holding a `{{fact}}` is left to the page's own check.
 - **Code colour** comes from the app's own Shiki setup: `build.py` runs `highlight.ts` (through
   `web/node_modules/.bin/tsx`, from `web/`) over every code file and embeds the result as `HL`, beside the
   raw `CODE` strings the tests compare. The build fails if any file comes back uncoloured.
-- **Concept lessons** have no sandbox cases, so `build-a-linked-list/check.py` holds its shown code to the
+- **Concept lessons** have no sandbox cases, so each has a `check.py` (`build-a-linked-list/check.py` is the model) that holds its shown code to the
   same standard: `code/solution.{py,ts}` must match a plain list on 403 random operation sequences with the
   list's invariants intact, and `code/mistake.*` must lose data in both runtimes. It is not in CI while the
   pages are parked; run it after changing that lesson's code.

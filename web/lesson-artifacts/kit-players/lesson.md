@@ -120,6 +120,14 @@ A trie is drawn on the graph lane, like a call tree: the words go in first, so t
 <div class="extabs" role="group" aria-label="Choose a trie walkthrough"></div><div class="lvhost"></div>
 ```
 
+## Pointer lists {#pointers}
+
+A pointer list is drawn by the list player, the box with a `next` port that the linked-list lessons teach, from plain nodes with no list object around them. Each node stands where the walkthrough put it, so nothing moves but the arrows and the names: a flip turns an arrow round in place, and a loop laid out as a box shows the cycle as the shape it is. Any name can be drawn, and a name that is null says so, past the end of the row, so the moment a walk runs out is on the stage. Each walkthrough states its own invariant and checks it on every settled step.
+
+```widget #ptrtabs "Two pointer walkthroughs"
+<div class="extabs" role="group" aria-label="Choose a pointer walkthrough"></div><div class="lvhost"></div>
+```
+
 ## Cost plots {#plots}
 
 A cost plot draws how a cost grows with n: named series on one pair of axes, a cursor walking n with each series' value read out beside the plot, and named lines for a budget or a threshold. A formula is drawn as a curve; a measured series is a count taken by running the loop and counting where the work is, and each is checked against an independent statement of it before anything is drawn. Series differ in ink, dash and marker, and are named in the readout, so none rests on colour. All three walkthroughs compute every number they show.

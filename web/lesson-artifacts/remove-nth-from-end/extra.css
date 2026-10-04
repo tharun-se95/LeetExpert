@@ -1,0 +1,13 @@
+/* predict: the list with its dummy, then where trail stops */
+.pl-mini{display:flex;flex-wrap:wrap;gap:6px 18px;font:500 13px 'JetBrains Mono',monospace;color:var(--fg);padding:10px 2px}
+/* hero: a log oldest first, a scout ahead and a reader behind, then the unlink */
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hd-val{font:600 13px 'JetBrains Mono',monospace;fill:var(--fg)}
+.hg-link{stroke:var(--mut);stroke-width:1.8;transition:opacity .5s ease}
+.hg-skip{stroke:var(--fam);stroke-width:2.2;fill:none;opacity:0;transition:opacity .5s ease}
+.hg-e{fill:var(--card);stroke:var(--hair2);stroke-width:1.5;transition:fill .5s ease,stroke .5s ease,opacity .5s ease}
+.hg-e.lit{stroke:var(--fam);stroke-width:2.4}
+.hg-e.gone{opacity:.35;stroke-dasharray:4 4}
+.hg-tag{font:500 12px 'JetBrains Mono',monospace;fill:var(--fg);transition:x .5s ease,opacity .3s ease}
+.hg-tag.rd{fill:var(--mut)}
+@media (prefers-reduced-motion:reduce){.hg-link,.hg-skip,.hg-e,.hg-tag{transition:none}}

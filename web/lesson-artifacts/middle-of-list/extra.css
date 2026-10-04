@@ -1,0 +1,12 @@
+/* predict: the list before, then where slow stopped */
+.pl-mini{display:flex;flex-wrap:wrap;gap:6px 18px;font:500 13px 'JetBrains Mono',monospace;color:var(--fg);padding:10px 2px}
+/* hero: a commit chain, newest first, and the two walkers under it */
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hr-link{stroke:var(--mut);stroke-width:1.6}
+.hr-c{fill:var(--card);stroke:var(--hair2);stroke-width:1.6;transition:fill .5s ease,stroke .5s ease}
+.hr-c.seen{stroke:var(--mut)}
+.hr-c.mid{fill:color-mix(in srgb,var(--fam) 30%,var(--card));stroke:var(--fam);stroke-width:2.6}
+.hr-h{font:500 10.5px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hr-tag{font:500 12px 'JetBrains Mono',monospace;fill:var(--fg);transition:x .5s ease}
+.hr-tag.fast{fill:var(--mut)}
+@media (prefers-reduced-motion:reduce){.hr-c,.hr-tag{transition:none}}

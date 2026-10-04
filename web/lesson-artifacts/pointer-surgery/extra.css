@@ -1,0 +1,11 @@
+/* hero: a process list behind a sentinel; finished processes unlinked one by one */
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hd-val{font:600 13px 'JetBrains Mono',monospace;fill:var(--fg)}
+.hs-sent{fill:var(--deep);stroke:var(--fam);stroke-width:2;stroke-dasharray:4 3}
+.hs-p{fill:var(--card);stroke:var(--hair2);stroke-width:1.5;transition:opacity .5s ease}
+.hs-p.done{stroke:var(--mut)}
+.hs-p.gone{opacity:.25}
+.hs-st{font:500 9.5px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hs-link{stroke:var(--fam);stroke-width:2;fill:none}
+.hs-cur{font:500 12px 'JetBrains Mono',monospace;fill:var(--fg);transition:x .5s ease}
+@media (prefers-reduced-motion:reduce){.hs-p,.hs-cur{transition:none}}

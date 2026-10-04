@@ -100,13 +100,21 @@ function StepPlayer(host,o,view){
     mp.innerHTML='<span class="lp-fields"></span>'+inv.outerHTML.replace(' aria-label="Invariants"','');
     /* each step's own invariants, when they differ by walkthrough, so a tab with more claims cannot wrap the line later */
     /* measured without the width reserved last time, which the clone carries, or each resize would add to it */
-    var iw=0,byStep=typeof view.inv==='function';mp.lastChild.style.minWidth='';
-    reserveSteps.concat(steps).forEach(function(x){mp.firstChild.innerHTML=view.fields(x,none);
-      if(byStep){mp.lastChild.innerHTML=invHtml(x,0);iw=Math.max(iw,mp.lastChild.offsetWidth);}mh=Math.max(mh,mp.offsetHeight);});
+    var iw=0,fw=0,fh=0,ih=0,byStep=typeof view.inv==='function';mp.lastChild.style.minWidth=mp.lastChild.style.minHeight='';
+    reserveSteps.concat(steps).forEach(function(x){mp.firstChild.innerHTML=view.fields(x,none);fw=Math.max(fw,mp.firstChild.offsetWidth);fh=Math.max(fh,mp.firstChild.offsetHeight);
+      if(byStep){mp.lastChild.innerHTML=invHtml(x,0);iw=Math.max(iw,mp.lastChild.offsetWidth);ih=Math.max(ih,mp.lastChild.offsetHeight);}mh=Math.max(mh,mp.offsetHeight);});
     mp.remove();if(mh)meta.style.minHeight=mh+'px';
+    /* hold the widest fields line too: a step that names one more pointer (nxt, between the save and
+       the march) would otherwise push the invariants onto the next line on a phone, and back */
+    if(fw)fields.style.minWidth=Math.min(fw+1,meta.clientWidth)+'px';
     /* the line is right-aligned, so a shorter list would move its left edge: hold the widest list's width
        (the gate measured 0.0011 of shift on a phone as the plot tabs' claims changed) */
-    if(byStep&&iw)inv.style.minWidth=Math.min(iw+1,meta.clientWidth)+'px';}
+    if(byStep&&iw)inv.style.minWidth=Math.min(iw+1,meta.clientWidth)+'px';
+    /* and each item's own height: the line centres its items, so on a phone, where the widest fields
+       wrap to two lines inside the held width, the fields rose 4px and the invariants fell 4px with them,
+       though the line kept its height (the gate measured 0.0025 on the reverse lesson's tabs) */
+    if(fh)fields.style.minHeight=fh+'px';
+    if(byStep&&ih)inv.style.minHeight=ih+'px';}
   if('ResizeObserver' in window)new ResizeObserver(function(){reserve();}).observe(host);
   /* notes: captions the player may show later; all: the snapshots behind them, when known */
   this.reserve=function(notes,all){reserveNotes=notes;reserveSteps=all||[];reserve();};

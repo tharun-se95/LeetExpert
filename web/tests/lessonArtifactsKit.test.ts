@@ -468,6 +468,75 @@ describe("lesson artifacts kit: the heap lane (heaps.js)", () => {
   });
 });
 
+/* lists.js: the pointer snapshot (spec 2026-10-01-pointer-list-player-design.md). Its model half,
+   snapshot and layout, needs no DOM. */
+type PNode = { id: number; value: unknown; next: PNode | null; x?: number; y?: number };
+type PSnap = { head: number | null; chain: number[]; cyclic: boolean; live: number[]; tags: Record<string, number | null>; fixed: boolean; nodes: { id: number; next: number | null; x: number; y: number }[] };
+interface ListKit {
+  mkNode(v: unknown, next?: PNode | null): PNode;
+  ptrSnap(note: string, o: object): PSnap;
+  listLayout(s: object): Record<string, { x: number; y: number }>;
+  listOf(vals: unknown[]): object;
+  listSnap(L: object, note: string, o?: object): PSnap;
+}
+function listKit(): ListKit {
+  const ctx: Record<string, unknown> = {};
+  runInNewContext(readFileSync(join(ARTIFACTS, "kit", "lists.js"), "utf8") + "\nthis.mkNode=mkNode;this.ptrSnap=ptrSnap;this.listLayout=listLayout;this.listOf=listOf;this.listSnap=listSnap;", ctx);
+  return ctx as unknown as ListKit;
+}
+const row = (K: ListKit, vals: number[]) => {
+  const ns = vals.map((v, i) => Object.assign(K.mkNode(v), { x: i, y: 0 }));
+  ns.forEach((n, i) => { n.next = ns[i + 1] ?? null; });
+  return ns;
+};
+
+describe("lesson artifacts kit: pointer lists (ptrSnap in lists.js)", () => {
+  it("authored positions come back as given, and a null name stands past the end it names", () => {
+    const K = listKit(), ns = row(K, [1, 2, 3]);
+    const s = K.ptrSnap("start", { nodes: ns, head: ns[0], tags: { prev: null, curr: ns[0] }, nil: { prev: "left" } });
+    const pos = K.listLayout(s);
+    ns.forEach((n, i) => expect(pos[n.id]).toEqual({ x: i, y: 0 }));
+    expect(pos["nil:left"]).toEqual({ x: -1, y: 0 });
+    expect(pos["nil:right"]).toBeUndefined();
+    expect(s.tags).toEqual({ prev: null, curr: ns[0]!.id });
+    const end = K.listLayout(K.ptrSnap("end", { nodes: ns, head: ns[2], tags: { curr: null } }));
+    expect(end["nil:right"]).toEqual({ x: 3, y: 0 });
+  });
+
+  it("the chain is read from head and stops at a cycle, which is reported", () => {
+    const K = listKit(), ns = row(K, [3, 2, 0, -4]);
+    expect(K.ptrSnap("x", { nodes: ns, head: ns[0] })).toMatchObject({ chain: ns.map((n) => n.id), cyclic: false });
+    ns[3]!.next = ns[1]!;
+    const s = K.ptrSnap("x", { nodes: ns, head: ns[0] });
+    expect(s.chain).toEqual(ns.map((n) => n.id));
+    expect(s.cyclic).toBe(true);
+    // a reversal's prefix: head is the reversed part's first node, which ends at null
+    const r = row(K, [1, 2, 3]);
+    r[0]!.next = null; r[1]!.next = r[0]!;
+    expect(K.ptrSnap("x", { nodes: r, head: r[1] }).chain).toEqual([r[1]!.id, r[0]!.id]);
+  });
+
+  it("a node no name reaches is not live: a flip made before saving next loses the rest", () => {
+    const K = listKit(), ns = row(K, [1, 2, 3]);
+    expect(K.ptrSnap("x", { nodes: ns, tags: { prev: null, curr: ns[0] } }).live).toEqual(ns.map((n) => n.id));
+    ns[0]!.next = null;  // curr.next = prev, with nothing holding 2
+    expect(K.ptrSnap("x", { nodes: ns, tags: { prev: null, curr: ns[0] } }).live).toEqual([ns[0]!.id]);
+    expect(K.ptrSnap("x", { nodes: ns, tags: { prev: null, curr: ns[0], nxt: ns[1] } }).live.sort()).toEqual(ns.map((n) => n.id).sort());
+  });
+
+  it("a snapshot copies the pointers, so a later write never reaches an earlier step", () => {
+    const K = listKit(), ns = row(K, [1, 2]), s = K.ptrSnap("x", { nodes: ns, head: ns[0] });
+    ns[1]!.next = ns[0]!; ns[0]!.next = null;
+    expect(s.nodes.map((n) => n.next)).toEqual([ns[1]!.id, null]);
+  });
+
+  it("a List snapshot keeps the computed layout it always had", () => {
+    const K = listKit(), s = K.listSnap(K.listOf([7, 3, 12]), "x");
+    expect(s.fixed).toBeUndefined();
+    expect(Object.values(K.listLayout(s))).toEqual([{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }]);
+  });
+});
+
 describe("lesson artifacts kit: build.py ships a player with its chrome", () => {
   const optional = (js: string) => {
     const run = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import build;print(json.dumps(build.optional_kit(sys.stdin.read())))`], { input: js, encoding: "utf8" });
