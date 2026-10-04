@@ -55,7 +55,7 @@ BIGO_FROM = "2026-11-10"
 # Lesson carousels (#172, ../lessons/), one a day after the last quiz single, in the order built.
 LESSONS_FROM = "2026-11-18"
 # post id -> the order it was built in; a new post is appended, so earlier dates never move
-LESSON_ORDER = ["dynamic-array-append", "string-concat-loop", "mutable-key", "matrix-binary-search", "move-zeroes", "hash-collisions", "build-order", "provinces", "growth-beats-hardware", "space-complexity", "lowest-common-ancestor", "arrays-in-memory", "birthday-collisions", "queue-pop-front", "skewed-bst", "greedy-coins", "insertion-sort-inversions", "heap-as-array", "trie-prefix", "cycle-detection", "subarray-sum-seed", "min-stack-snapshots"]
+LESSON_ORDER = ["dynamic-array-append", "string-concat-loop", "mutable-key", "matrix-binary-search", "move-zeroes", "hash-collisions", "build-order", "provinces", "growth-beats-hardware", "space-complexity", "lowest-common-ancestor", "arrays-in-memory", "birthday-collisions", "queue-pop-front", "skewed-bst", "greedy-coins", "insertion-sort-inversions", "heap-as-array", "trie-prefix", "cycle-detection", "subarray-sum-seed", "min-stack-snapshots", "container-shorter-wall"]
 SLOTS = ["9 am", "1 pm", "6 pm"]
 
 
