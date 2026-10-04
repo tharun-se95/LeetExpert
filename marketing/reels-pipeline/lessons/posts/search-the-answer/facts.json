@@ -1,0 +1,9 @@
+{
+ "hours_slow": 10,
+ "hours_ok": 8,
+ "big_max": 1000000,
+ "big_h": 9,
+ "big_answer": 500000,
+ "brute_checks": 500000,
+ "binary_checks": 19
+}
