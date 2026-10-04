@@ -1,0 +1,39 @@
+{
+ "name": "appending isn't always O(1)",
+ "roadmap": 1,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/arrays/dynamic-arrays.md",
+ "module": "Arrays & Dynamic Arrays",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Appending to an array isn't always O(1). Some appends copy everything.",
+ "hook_slide": "Appending to an array isn't *always* O(1).",
+ "hook_sub": "Most appends are one write. A few copy the whole array first.",
+ "caption": [
+  "A list sits on a fixed block of slots. When the block is full, the next append allocates a bigger one and copies every element over: that one append is O(n).",
+  "So why is append called O(1)? Because the block doubles. {n} appends trigger only {double_grows} grows and {double_copies} copies in total, about {avg} per append.",
+  "Grow by {c} slots at a time instead and the same {n} appends cost {add_copies} copies: {ratio} times more, and it gets worse as n grows.",
+  "That's what \"O(1) amortized\" means: averaged over the run, even though a single append can copy {worst} elements.",
+  "Did you know which appends are the slow ones? 👇"
+ ],
+ "tags": "#arrays #dynamicarray #amortizedanalysis #python #codinginterview",
+ "cta": "Build the whole class from scratch and step through its growth.",
+ "slides": [
+  {"k": "THE SETUP", "h": "A list sits on a fixed block",
+   "p": ["Underneath is a plain array, the backing store. Its `capacity` is how many slots it has. Its `length` is how many are used.",
+         "The memory after it may belong to something else, so it cannot simply grow in place."]},
+  {"k": "THE SLOW APPEND", "h": "Full? Copy everything.",
+   "code": {"file": "dynamic_array.py", "lines": [7, 18], "marks": {"3": "hint"}},
+   "p": ["When `length == capacity`, append allocates a bigger block and copies every element over. That one append is O(n)."]},
+  {"k": "HOW MUCH BIGGER?", "h": "{n} appends, two policies",
+   "rows": [{"lab": "Double the capacity", "val": "{double_grows} grows · {double_copies} copies", "tone": "good"},
+            {"lab": "Add {c} slots each time", "val": "{add_grows} grows · {add_copies} copies", "tone": "bad"}],
+   "p": ["Same appends, {ratio} times the copying."]},
+  {"k": "WHY DOUBLING WINS", "h": "Copies at 1, 2, 4, 8, …",
+   "p": ["A geometric series: it sums to under 2n copies across n appends. Spread over n appends, that is O(1) each.",
+         "A fixed increment copies again every c appends, re-moving the same early elements. It never escapes O(n) per append."]},
+  {"k": "THE NAME FOR IT", "h": "O(1) amortized",
+   "rows": [{"lab": "Average copies per append", "val": "{avg}", "tone": "good"},
+            {"lab": "The costliest single append", "val": "{worst} copies", "tone": "warn"}],
+   "p": ["Amortized means averaged over the whole run. One append can still be O(n)."]}
+ ]
+}

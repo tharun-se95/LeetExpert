@@ -1,0 +1,12 @@
+{
+ "rows": 3,
+ "cols": 4,
+ "mid0": 5,
+ "row0": 1,
+ "col0": 1,
+ "val0": 11,
+ "checks_example": 4,
+ "big": 100,
+ "cells": 10000,
+ "worst": 14
+}

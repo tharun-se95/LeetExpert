@@ -1,0 +1,38 @@
+{
+ "name": "a key must never change",
+ "roadmap": 6,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/hash-tables/keys-immutability-hashing.md",
+ "module": "Hash Tables",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Why can't a list be a dictionary key? Because of what happens when it changes.",
+ "hook_slide": "A list can't be a dict key. *Here's what it would break.*",
+ "hook_sub": "Python refuses to let you. JavaScript hands you the footgun.",
+ "caption": [
+  "A hash table computes a key's slot once, when you insert it, from the key's contents. The promise isn't \"correct once\". It's correct for as long as the key sits in the table.",
+  "So file an entry under [1, 2], then append 5 to that list. In our eight-slot table it was filed in slot {slot_before}; the lookup now goes to slot {slot_after} and finds nothing.",
+  "The entry is still there. Nobody will ever compute its address again.",
+  "Python stops this at the type level: TypeError: unhashable type. A tuple works, because it's frozen the moment it's built. JavaScript doesn't stop you, so treat every key as frozen the instant you insert it.",
+  "Ever lost an entry this way? 👇"
+ ],
+ "tags": "#hashmap #immutability #hashing #python #codinginterview",
+ "cta": "Then see why two identical-looking objects are two different Map keys.",
+ "slides": [
+  {"k": "THE RULE", "h": "Same key, same slot. Forever.",
+   "p": ["A hash table computes a key's slot once, at insert time, from the key's contents.",
+         "The promise is not \"correct once\". It is correct for as long as the key sits in the table."]},
+  {"k": "HOW FILING WORKS", "h": "The slot comes from the contents",
+   "code": {"file": "table.py", "lines": [1, 9], "marks": {"9": "hint"}},
+   "p": ["`put` runs the hash once and files the entry there. Nothing re-files it later."]},
+  {"k": "BREAK IT", "h": "Change the key after filing it",
+   "code": {"file": "table.py", "lines": [17, 22], "marks": {"5": "hint"}},
+   "rows": [{"lab": "Filed under [1, 2]", "val": "slot {slot_before}", "tone": "good"},
+            {"lab": "Looked up as [1, 2, 5]", "val": "slot {slot_after} · not found", "tone": "bad"}]},
+  {"k": "THE DAMAGE", "h": "Still stored. Never found.",
+   "p": ["The entry is still in its old slot. The address and the object simply drifted apart, silently.",
+         "No error, no warning: the table just starts lying to you."]},
+  {"k": "WHAT THE LANGUAGES DO", "h": "Python refuses. JavaScript doesn't.",
+   "p": ["Python: a `list` can't key a `dict` (`TypeError: unhashable type`). A `tuple` can, because its contents are frozen the moment it's built.",
+         "JavaScript: nothing stops you mutating an object that is a `Map` key. Treat every key as frozen the instant you insert it."]}
+ ]
+}

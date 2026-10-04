@@ -1,0 +1,38 @@
+{
+ "name": "sorted input breaks a BST",
+ "roadmap": null,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/bst/balance-and-why-it-matters.md",
+ "module": "BST & Ordered Structures",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Feed a binary search tree sorted data and it quietly becomes a linked list.",
+ "hook_slide": "Feed a BST sorted data and it becomes *a linked list*.",
+ "hook_sub": "Every promise still true. All of them worthless.",
+ "caption": [
+  "Every BST operation costs O(h), where h is the tree's height. That's only fast if the tree's shape cooperates.",
+  "Insert 1, 2, 3, 4, 5 in order: every insert turns right, and you get {small_levels} levels for {small_levels} keys. Finding 5 visits all {small_visits} nodes.",
+  "At {n} sorted keys: {chain_levels} levels, {chain_visits} nodes visited to find the largest. Build the same keys middle-first and it's {balanced_levels} levels.",
+  "And sorted input isn't exotic: ordered files, timestamps, an already-sorted array. That's why real libraries don't hope for balance. They restore it with rotations.",
+  "Which self-balancing tree did you learn first? 👇"
+ ],
+ "tags": "#bst #binarysearchtree #balancedtree #python #codinginterview",
+ "cta": "What balanced means, and the one rotation that restores it.",
+ "slides": [
+  {"k": "THE PROMISE", "h": "Every BST operation is O(h)",
+   "p": ["h is the height, and it is only small if the tree's shape cooperates.",
+         "A *balanced* tree guarantees h = O(log n). No binary tree can be shorter than about log₂ n."]},
+  {"k": "THE BREAK", "h": "Insert 1, 2, 3, 4, 5 in order",
+   "p": ["Every insert turns right, because every value is larger than everything already there. The tree collapses into a straight line."],
+   "rows": [{"lab": "Levels", "val": "{small_levels}", "tone": "bad"},
+            {"lab": "Nodes visited to find 5", "val": "{small_visits}", "tone": "bad"}]},
+  {"k": "THE CODE IS FINE", "h": "A correct insert",
+   "code": {"file": "insert.py"},
+   "p": ["Nothing here is wrong. The shape comes from the order of the input."]},
+  {"k": "AT SCALE", "h": "{n} keys",
+   "rows": [{"lab": "Inserted in sorted order", "val": "{chain_levels} levels · O(n) search", "tone": "bad"},
+            {"lab": "Same keys, built middle first", "val": "{balanced_levels} levels · O(log n) search", "tone": "good"}]},
+  {"k": "WHY IT MATTERS", "h": "Sorted input is not exotic",
+   "p": ["Data loaded from an ordered file, timestamps arriving in order, an already-sorted array inserted one element at a time.",
+         "So real libraries don't hope for balance. They restore it as the tree changes, *with rotations*."]}
+ ]
+}

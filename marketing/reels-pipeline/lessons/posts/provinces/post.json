@@ -1,0 +1,37 @@
+{
+ "name": "counting separate networks",
+ "roadmap": 28,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/graphs/number-of-provinces.md",
+ "module": "Graphs",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "How many separate networks are hiding inside one graph? Count the flood-fills.",
+ "hook_slide": "How many *separate networks* are hiding in one graph?",
+ "hook_sub": "Count the flood-fills, not the cities.",
+ "caption": [
+  "Number of Provinces: n cities, a matrix saying which pairs are directly connected, and a province is any group connected directly or indirectly. How many provinces?",
+  "Strip the story away and it's counting connected components. Scan every city; an unvisited one is a new province. Flood-fill from it so its whole group is never counted again.",
+  "{n} cities with links {links}: the answer is {count}, the groups {groups}. Cities 0 and 2 aren't directly connected, but 1 joins them.",
+  "Same skeleton as Number of Islands. And Union-Find answers it a completely different way.",
+  "DFS or Union-Find: which do you reach for? 👇"
+ ],
+ "tags": "#graphs #connectedcomponents #dfs #python #codinginterview",
+ "cta": "Solve it both ways, with DFS and with Union-Find.",
+ "slides": [
+  {"k": "THE PROBLEM", "h": "Cities, connections, provinces",
+   "p": ["`isConnected[i][j] = 1` means city i and city j are directly connected.",
+         "A province is a group of directly *or indirectly* connected cities. How many are there?"]},
+  {"k": "THE REFRAME", "h": "It is counting connected components",
+   "p": ["Scan every city. An unvisited one is a new province.",
+         "Flood-fill from it, marking every city reachable, so they are never counted again."]},
+  {"k": "THE CODE", "h": "One counter, one flood-fill",
+   "code": {"file": "provinces.py", "marks": {"8": "add"}}},
+  {"k": "RUN IT", "h": "{n} cities, links {links}",
+   "rows": [{"lab": "Provinces", "val": "{groups}", "tone": "good"},
+            {"lab": "Flood-fills started", "val": "{count}", "tone": "mark"}],
+   "p": ["0 and 2 are not directly connected, but 1 joins them: one province."]},
+  {"k": "SAME SKELETON", "h": "You have seen this before",
+   "p": ["It is structurally identical to Number of Islands: scan for unvisited, flood-fill the whole component, increment a counter.",
+         "Union-Find answers the same question an entirely different way."]}
+ ]
+}

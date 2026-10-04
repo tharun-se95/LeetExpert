@@ -1,0 +1,14 @@
+{
+ "n1": 1000,
+ "checks_a": 499500,
+ "checks_b": 1000,
+ "big": 100000,
+ "huge": 10000000,
+ "a_seconds": 50,
+ "b_ms": 1,
+ "a_days": "5.8",
+ "b_seconds": "0.1",
+ "speedup": 100,
+ "quad_gain": 10,
+ "exp_gain": 7
+}

@@ -1,0 +1,10 @@
+{
+ "words": "car, card, cat, cats",
+ "chars": 14,
+ "nodes": 6,
+ "cable_matched": 2,
+ "cable_len": 5,
+ "n": 10000,
+ "scan_checks": 10000,
+ "prefix_steps": 3
+}

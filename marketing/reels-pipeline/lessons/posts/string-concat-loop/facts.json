@@ -1,0 +1,8 @@
+{
+ "small_bad": 10,
+ "small_good": 4,
+ "n": 1000,
+ "big_bad": 500500,
+ "big_good": 1000,
+ "ratio": 500
+}

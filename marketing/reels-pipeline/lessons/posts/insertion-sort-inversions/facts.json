@@ -1,0 +1,9 @@
+{
+ "small_shifts": 10,
+ "n": 1000,
+ "sorted_shifts": 0,
+ "sorted_cmp": 999,
+ "reversed_shifts": 499500,
+ "pairs": 10,
+ "nearly_shifts": 10
+}

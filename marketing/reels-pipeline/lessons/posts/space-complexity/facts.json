@@ -1,0 +1,7 @@
+{
+ "n": 500,
+ "copy_cells": 500,
+ "frames_rec": 501,
+ "frames_iter": 1,
+ "big": 100000
+}

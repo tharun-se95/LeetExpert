@@ -1,0 +1,37 @@
+{
+ "name": "pop(0) moves everything",
+ "roadmap": null,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/queues/fifo-basics.md",
+ "module": "Queues",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "queue.pop(0) looks free. It moves every element left, every time.",
+ "hook_slide": "`pop(0)` looks free. *It moves every element left.*",
+ "hook_sub": "A queue built on a list's front is quietly quadratic.",
+ "caption": [
+  "A queue adds at the back and removes from the front. An array's end is cheap. Its front is its bad end: pop(0) in Python and shift() in JavaScript move every remaining element.",
+  "Dequeue once from A, B, C and {small_moves} elements move. Drain a queue of {n} that way and it's {shift_moves} element moves.",
+  "The fix isn't faster shifting. It's not shifting: advance a head index and the array never moves, only the boundary that marks where the queue begins. {head_moves} moves.",
+  "In Python that's collections.deque. JavaScript has no built-in deque, so know that you're paying O(n) when you call shift().",
+  "Is there a pop(0) in a loop somewhere in your code? 👇"
+ ],
+ "tags": "#queue #deque #timecomplexity #python #codinginterview",
+ "cta": "Next in the module: the ring buffer, the tightest version.",
+ "slides": [
+  {"k": "THE PROBLEM", "h": "A queue needs both ends",
+   "p": ["Add at the back, remove from the front. An array's end is cheap. Its front is its bad end.",
+         "`pop(0)` in Python and `shift()` in JavaScript move every remaining element."]},
+  {"k": "WHAT IT DOES", "h": "Removing the front, spelled out",
+   "code": {"file": "queues.py", "lines": [1, 6], "marks": {"3": "hint", "4": "hint"}},
+   "rows": [{"lab": "Dequeue once from A, B, C", "val": "{small_moves} elements move", "tone": "warn"}]},
+  {"k": "COUNT IT", "h": "Drain a queue of {n}",
+   "rows": [{"lab": "Shift on every dequeue", "val": "{shift_moves} element moves", "tone": "bad"},
+            {"lab": "Move the front instead", "val": "{head_moves} element moves", "tone": "good"}]},
+  {"k": "THE FIX", "h": "Move the front, not the data",
+   "code": {"file": "queues.py", "lines": [16, 19], "marks": {"3": "add"}},
+   "p": ["Advance a `head` index instead of shifting. The array never moves, only the boundary that marks where the queue begins."]},
+  {"k": "IN PRACTICE", "h": "Use the right tool",
+   "p": ["Python: `collections.deque`, push and pop at either end in O(1).",
+         "JavaScript has no built-in deque. For modest sizes `shift()` is often tolerated: know that you are paying O(n) when you do."]}
+ ]
+}

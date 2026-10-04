@@ -1,0 +1,37 @@
+{
+ "name": "the biggest coin is not always right",
+ "roadmap": null,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/dynamic-programming/coin-change.md",
+ "module": "Dynamic Programming",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Always take the biggest coin that fits. It feels optimal. With coins 1, 3 and 4, it isn't.",
+ "hook_slide": "Always take the biggest coin. *It feels optimal. It isn't.*",
+ "hook_sub": "Coins 1, 3 and 4. Make 6.",
+ "caption": [
+  "Fewest coins to make an amount. The obvious plan: take the largest coin that fits, repeat. On coins 1, 2, 5 making 11 it gives {ok_str}, {ok_n} coins, and that's optimal.",
+  "Now coins 1, 3, 4 and amount 6. Greedy takes {greedy_str}: {greedy_n} coins. The best is {best_str}: {dp_n} coins.",
+  "Greedy commits to one choice per step and never reconsiders it. Dynamic programming tries every possible last coin and keeps the minimum.",
+  "With those coins, greedy uses more coins than needed on {wrong} of the amounts from 1 to {upto}. A plausible-looking greedy rule needs a proof before you trust it.",
+  "Can you name coins where greedy is always right? 👇"
+ ],
+ "tags": "#dynamicprogramming #greedy #coinchange #python #codinginterview",
+ "cta": "Solve Coin Change in the sandbox, in Python or JavaScript.",
+ "slides": [
+  {"k": "THE OBVIOUS PLAN", "h": "Largest coin that fits, repeat",
+   "code": {"file": "greedy.py"},
+   "p": ["Coins 1, 2, 5 making 11: it gives {ok_str}, which is {ok_n} coins, and that is optimal."]},
+  {"k": "THE COUNTEREXAMPLE", "h": "Coins 1, 3, 4. Make 6.",
+   "rows": [{"lab": "Greedy", "val": "{greedy_str} · {greedy_n} coins", "tone": "bad"},
+            {"lab": "Best", "val": "{best_str} · {dp_n} coins", "tone": "good"}]},
+  {"k": "WHY", "h": "Greedy commits and never reconsiders",
+   "p": ["It makes one choice at each step, the largest coin, and never revisits it.",
+         "A locally appealing choice that leads to a worse overall result is never corrected."]},
+  {"k": "THE FIX", "h": "Try every possible last coin",
+   "code": {"file": "coin_change.py", "marks": {"6": "hint", "7": "hint"}},
+   "p": ["`dp[a]` is the fewest coins for amount a: one more than the best `dp[a - c]` over every coin c."]},
+  {"k": "HOW OFTEN", "h": "Coins 1, 3, 4, amounts 1 to {upto}",
+   "rows": [{"lab": "Greedy uses more coins than needed", "val": "{wrong} of {upto} amounts", "tone": "bad"}],
+   "p": ["A plausible-looking greedy rule needs a proof before you trust it."]}
+ ]
+}
