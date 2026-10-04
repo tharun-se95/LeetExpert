@@ -1,0 +1,43 @@
+{
+ "name": "sort, then only neighbours can clash",
+ "roadmap": null,
+ "date": "2026-10-04",
+ "lesson": "courses/dsa/intervals/meeting-rooms.md",
+ "module": "Intervals",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Do any two of {n} meetings clash? You don't compare {pairs} pairs. You sort, and compare {neighbours} neighbours.",
+ "hook_slide": "{pairs} pairs of meetings. *Check {neighbours}.*",
+ "hook_sub": "Sort by start, and overlap becomes a question about neighbours.",
+ "caption": [
+  "Can one person attend every meeting? Only if no two overlap, and a meeting that ends exactly when the next begins is fine.",
+  "Comparing every pair of {n} meetings is {pairs} comparisons when nothing clashes. Sort by start first, and you compare each meeting only with the one before it: {neighbours} comparisons.",
+  "Why that is enough: say meeting j overlaps some earlier meeting i. The meeting right before j starts no earlier than i and no later than j, so i is still running when it starts too. Push that down and some adjacent pair must clash. So if no neighbours clash, nothing does.",
+  "One detail: the comparison is <, not <=. With <=, [[1,5],[5,8]] is wrongly rejected.",
+  "Where else does sorting turn an all-pairs question into a neighbour question? 👇"
+ ],
+ "tags": "#intervals #sorting #meetingrooms #dsa #codinginterview",
+ "cta": "Next in the module: Insert Interval.",
+ "slides": [
+  {"k": "THE PROBLEM", "h": "Can one person attend them all?",
+   "p": ["Only if no two meetings overlap. One ending exactly when another begins is fine."],
+   "rows": [{"lab": "[[0,30],[5,10],[15,20]]", "val": "false", "tone": "bad"},
+            {"lab": "[[7,10],[2,4]]", "val": "true", "tone": "good"}]},
+  {"k": "BRUTE FORCE", "h": "Compare every pair",
+   "code": {"file": "meetings.py", "lines": [1, 7], "marks": {"2": "hint", "3": "hint"}},
+   "rows": [{"lab": "{n} meetings, nothing clashes", "val": "{pairs} pairs compared", "tone": "bad"}]},
+  {"k": "THE INSIGHT", "h": "Sort, and it's a neighbour question",
+   "p": ["Sort by start. If two meetings anywhere in the list overlap, then two *adjacent* meetings must overlap.",
+         "So one pass decides it: compare each meeting's start against the previous meeting's end. That end is the only state you carry."]},
+  {"k": "THE CODE", "h": "One sort, one pass",
+   "code": {"file": "meetings.py", "lines": [9, 14], "marks": {"2": "add", "4": "add"}},
+   "p": ["`<`, not `<=`: with `<=`, `[[1,5],[5,8]]` would be wrongly rejected."]},
+  {"k": "WHY IT HOLDS", "h": "Why neighbours are enough",
+   "p": ["Say meeting *j* overlaps some earlier meeting *i*.",
+         "The meeting right before *j* starts no earlier than *i* and no later than *j*. So *i* is still running when it starts too.",
+         "Push that down and some adjacent pair must clash. If no adjacent pair clashes, no pair does."]},
+  {"k": "COUNT IT", "h": "{n} meetings, nothing clashes",
+   "rows": [{"lab": "Every pair", "val": "{pairs} comparisons", "tone": "bad"},
+            {"lab": "Sort, then neighbours", "val": "{neighbours} comparisons", "tone": "good"}],
+   "p": ["The sort costs O(n log n). The scan after it carries one value."]}
+ ]
+}
