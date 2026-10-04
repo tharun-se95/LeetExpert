@@ -19,6 +19,8 @@ MEDIA = {
  "p17": {"video":"7bf0f9ea9ac00854c02139a7bfa717cc","cover":"a95504c381009ab0250fff70391b686b"},
  "p18": {"video":"f1c1830c81e83506b35b9abafb411666","cover":"60141626831f6b780f406e1372f0ea59"},
 }
+# the carousel and single-image packages, uploaded 2026-10-04 (#203): {post: {kind, files: [[label, asset id, ext]]}}
+MEDIA.update({k: {"kind": v["kind"], "files": [tuple(f) for f in v["files"]]} for k, v in json.load(open("carousel_media.json")).items()})
 def dur(d):
     s = float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",root+d+"/reel.mp4"]))
     return f"{int(s//60)}:{round(s%60):02d}"
