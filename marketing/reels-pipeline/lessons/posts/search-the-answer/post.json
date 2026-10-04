@@ -1,0 +1,42 @@
+{
+ "name": "binary search with no array",
+ "roadmap": null,
+ "date": "2026-10-04",
+ "lesson": "courses/dsa/binary-search/koko-eating-bananas.md",
+ "module": "Binary Search",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Binary search needs a sorted array. This problem has none, and binary search still solves it: {binary_checks} checks instead of {brute_checks}.",
+ "hook_slide": "Binary search *with no array.*",
+ "hook_sub": "Nothing is sorted. So search the answers instead.",
+ "caption": [
+  "Koko eats bananas at k per hour, one pile at a time, and has h hours. Find the minimum k that finishes in time.",
+  "There is no sorted array here. But a faster speed never takes more hours, so every speed below the answer fails and every speed from it up works. The answers themselves are sorted: no, no, no, yes, yes, yes.",
+  "Trying every speed from 1 upward on piles of up to {big_max} bananas takes {brute_checks} checks. Binary search over the speeds takes {binary_checks}, and lands on the same {big_answer}.",
+  "Three signals that it applies: you are asked for a minimum value that satisfies a condition, you can check a candidate, and once a candidate works, every larger one does.",
+  "Which problem taught you this one? 👇"
+ ],
+ "tags": "#binarysearch #algorithms #dsa #leetcode #codinginterview",
+ "cta": "Next in the module: Find Minimum in Rotated Sorted Array.",
+ "slides": [
+  {"k": "THE PROBLEM", "h": "The slowest speed that still finishes",
+   "p": ["Koko eats `k` bananas an hour, one pile at a time, and has `h` hours. Find the minimum `k`."],
+   "rows": [{"lab": "piles = [3,6,7,11], h = 8", "val": "k = 4", "tone": "mark"}]},
+  {"k": "NO ARRAY", "h": "Nothing here is sorted. The answers are.",
+   "rows": [{"lab": "Speed 3", "val": "{hours_slow} hours: too slow", "tone": "bad"},
+            {"lab": "Speed 4", "val": "{hours_ok} hours: in time", "tone": "good"}],
+   "p": ["A faster speed never takes more hours. So every speed below the answer fails, and every speed from it up works."]},
+  {"k": "THE SLOW WAY", "h": "Try every speed",
+   "code": {"file": "koko.py", "lines": [3, 7], "marks": {"3": "hint", "4": "hint"}},
+   "rows": [{"lab": "Piles of up to {big_max}, {big_h} hours", "val": "{brute_checks} speeds checked", "tone": "bad"}]},
+  {"k": "THE CODE", "h": "Halve the range of speeds",
+   "code": {"file": "koko.py", "lines": [9, 20], "marks": {"7": "hint", "8": "add", "9": "add", "11": "add"}}},
+  {"k": "COUNT IT", "h": "Same piles, same answer",
+   "rows": [{"lab": "Try every speed", "val": "{brute_checks} checks", "tone": "bad"},
+            {"lab": "Binary search the speeds", "val": "{binary_checks} checks", "tone": "good"},
+            {"lab": "Minimum speed, both ways", "val": "{big_answer}", "tone": "mark"}]},
+  {"k": "WHEN IT APPLIES", "h": "Three signals",
+   "p": ["You are asked for a *minimum value* that satisfies a condition.",
+         "You can *check a candidate*: here, add up the hours at that speed.",
+         "Feasibility is *monotonic*: once a speed works, every faster one does."]}
+ ]
+}
