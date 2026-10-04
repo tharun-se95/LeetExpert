@@ -1,0 +1,40 @@
+{
+ "name": "binary search on a grid",
+ "roadmap": 10,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/matrix/search-a-2d-matrix.md",
+ "module": "Matrix / 2D Traversal",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "You can binary search a 2D matrix without ever flattening it.",
+ "hook_slide": "Binary search a 2D matrix. *No flattening needed.*",
+ "hook_sub": "It's a sorted array wearing a grid costume.",
+ "caption": [
+  "Search a 2D Matrix makes two promises: each row is sorted, and each row starts above where the previous one ended. Chain them and the whole grid, read row by row, is one sorted sequence.",
+  "So binary search the index range 0 to rows × cols − 1 and turn each midpoint k back into a cell: row = k // cols, col = k % cols. The flattened array is never built.",
+  "On a {big} × {big} matrix that's at most {worst} cell reads instead of {cells}.",
+  "When a problem hands you a stronger promise, use it.",
+  "What does k = 6 map to in a 3 × 4 grid? 👇"
+ ],
+ "tags": "#binarysearch #matrix #algorithms #python #codinginterview",
+ "cta": "Solve it in the sandbox, in Python or JavaScript.",
+ "slides": [
+  {"k": "THE SETUP", "h": "Two promises about the matrix",
+   "p": ["Each row is sorted, left to right.",
+         "The first value of each row is greater than the last value of the row before.",
+         "Chain them: read row by row, the whole grid is *one sorted sequence*."]},
+  {"k": "THE TRICK", "h": "One index, two coordinates",
+   "rows": [{"lab": "Which row", "val": "k // cols", "tone": "mark"},
+            {"lab": "Which column", "val": "k % cols", "tone": "mark"}],
+   "p": ["Binary search the virtual indices from 0 to rows × cols − 1 and translate each midpoint back into the grid. The flattened array is never built."]},
+  {"k": "THE CODE", "h": "Ordinary binary search, one new line",
+   "code": {"file": "search_matrix.py", "marks": {"6": "hint"}}},
+  {"k": "ONE STEP", "h": "Find 3 in the {rows} × {cols} example",
+   "rows": [{"lab": "First midpoint, k = {mid0}", "val": "row {row0}, col {col0} · value {val0}", "tone": "warn"},
+            {"lab": "Cells read to find it", "val": "{checks_example}", "tone": "good"}],
+   "p": ["{val0} is too big, so everything from k = {mid0} onward is discarded in one move."]},
+  {"k": "AT THE LIMIT", "h": "A {big} × {big} matrix",
+   "rows": [{"lab": "Scan every cell", "val": "{cells} reads · O(m·n)", "tone": "bad"},
+            {"lab": "Binary search, worst case", "val": "{worst} reads · O(log(m·n))", "tone": "good"}],
+   "p": ["When a problem hands you a stronger promise, use it."]}
+ ]
+}

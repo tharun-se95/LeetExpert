@@ -1,0 +1,39 @@
+{
+ "name": "a tree with no pointers",
+ "roadmap": null,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/heaps/heap-property-and-array-representation.md",
+ "module": "Heaps",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "A heap is a tree with no pointers. Just an array and three lines of arithmetic.",
+ "hook_slide": "A heap is a tree with *no pointers*.",
+ "hook_sub": "Just an array and three lines of arithmetic.",
+ "caption": [
+  "A heap is always a complete binary tree: every level full except possibly the last, and the last filled left to right with no gaps.",
+  "Number the nodes in reading order and write them into an array. A node at index i has its children at 2i + 1 and 2i + 2, and its parent at (i − 1) // 2. No pointer is ever stored.",
+  "In [1, 3, 2, 7, 4, 5, 8], index {i}'s children are indices {l} and {r} (values {lv} and {rv}), and index {c}'s parent is index {pc}.",
+  "It only works because there are no gaps. And it saves real memory: a pointer-based tree of {n} nodes spends {pointer_bytes} bytes on child references alone.",
+  "Did you know the heap in your standard library is just a list? 👇"
+ ],
+ "tags": "#heap #priorityqueue #binarytree #python #codinginterview",
+ "cta": "Next: sift up and sift down, the two moves that keep it a heap.",
+ "slides": [
+  {"k": "THE RULE", "h": "Complete: no gaps, ever",
+   "p": ["Every level is entirely full except possibly the last, and the last is filled strictly left to right.",
+         "Number the nodes in reading order, write them into a flat array, and the whole tree is still there."]},
+  {"k": "THE ARITHMETIC", "h": "Three index helpers",
+   "code": {"file": "heap_index.py"},
+   "p": ["A node's parent and children are found by pure index arithmetic. Not a single pointer is stored."]},
+  {"k": "TRY IT", "h": "[1, 3, 2, 7, 4, 5, 8]",
+   "rows": [{"lab": "Children of index {i}", "val": "indices {l} and {r} · values {lv} and {rv}", "tone": "good"},
+            {"lab": "Parent of index {c}", "val": "index {pc} · value {pv}", "tone": "mark"}],
+   "p": ["Every parent is no bigger than its children: a min-heap, stored flat."]},
+  {"k": "WHY NO GAPS", "h": "Completeness is the precondition",
+   "p": ["With no gaps, the level sizes are exact powers of two. That counting is what collapses the algebra to `2i + 1` and `2i + 2`.",
+         "A node missing in the middle of a level would break the arithmetic. Completeness is not cosmetic: it lets the array *be* the tree."]},
+  {"k": "WHAT IT SAVES", "h": "{n} nodes",
+   "rows": [{"lab": "Pointer-based tree: child references", "val": "{pointer_bytes} bytes", "tone": "bad"},
+            {"lab": "Array heap: child references", "val": "none", "tone": "good"}],
+   "p": ["Two child references are {ref_bytes} bytes on a 64-bit machine. For an int-sized payload, the pointers can outweigh the data."]}
+ ]
+}

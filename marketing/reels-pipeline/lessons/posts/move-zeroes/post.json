@@ -1,0 +1,39 @@
+{
+ "name": "zeroes to the end, in place",
+ "roadmap": 15,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/arrays/move-zeroes.md",
+ "module": "Arrays & Dynamic Arrays",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Move every zero to the end of an array, in place, without shifting anything twice.",
+ "hook_slide": "Move the zeroes to the end. *No second array.*",
+ "hook_sub": "And without shifting the whole array on every zero.",
+ "caption": [
+  "Move Zeroes: push every 0 to the end, keep the other numbers in order, use O(1) extra space.",
+  "The tempting way: find a zero, shift everything after it left, drop the zero at the end. Correct, and accidentally quadratic.",
+  "The insight: zeroes are all identical, so they don't need carrying. Compact the non-zeroes to the front with a write pointer, then fill the tail with zeroes.",
+  "On {n} numbers with every other one a zero, that's {ref_writes} writes against {shuffle_writes} for the shuffle: {ratio} times fewer.",
+  "There's a one-pass swap version too. Which would you write? 👇"
+ ],
+ "tags": "#arrays #inplace #twopointers #python #codinginterview",
+ "cta": "Then try the one-pass swap version and its three-region invariant.",
+ "slides": [
+  {"k": "THE PROBLEM", "h": "In place, order kept",
+   "rows": [{"lab": "nums", "val": "[0, 1, 0, 3, 12]", "tone": "mark"},
+            {"lab": "After", "val": "{example_out}", "tone": "good"}],
+   "p": ["O(1) auxiliary space: building a new array fails the requirement."]},
+  {"k": "THE TEMPTING WAY", "h": "Shift left on every zero",
+   "p": ["Find a zero, shift everything after it one step left, place the zero at the end.",
+         "Correct, and *accidentally quadratic*: every zero moves the rest of the array."]},
+  {"k": "THE INSIGHT", "h": "Zeroes don't need carrying",
+   "p": ["They are all identical, so they can be *reconstructed*.",
+         "Compact the non-zeroes to the front, in order. Then fill the tail with zeroes."]},
+  {"k": "THE CODE", "h": "One write pointer",
+   "code": {"file": "move_zeroes.py", "marks": {"5": "hint", "8": "add"}},
+   "p": ["Everything before `w` is a non-zero, in order. Whatever is left past `w` gets overwritten with zeroes."]},
+  {"k": "COUNT THE WRITES", "h": "{n} numbers, every other one a zero",
+   "rows": [{"lab": "Shift left on every zero", "val": "{shuffle_writes} writes", "tone": "bad"},
+            {"lab": "Compact, then fill", "val": "{ref_writes} writes", "tone": "good"}],
+   "p": ["One write per slot, however many zeroes there are."]}
+ ]
+}

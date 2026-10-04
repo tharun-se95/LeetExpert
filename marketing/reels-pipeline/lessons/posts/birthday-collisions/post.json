@@ -1,0 +1,38 @@
+{
+ "name": "the birthday paradox in your hash table",
+ "roadmap": 9,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/hash-tables/hashing-fundamentals.md",
+ "module": "Hash Tables",
+ "archetype": "why DSA? (lesson carousel)",
+ "hook": "A hash table with a million slots collides after about a thousand inserts, not half a million.",
+ "hook_slide": "A million-slot hash table collides after about *a thousand* inserts.",
+ "hook_sub": "Not half a million.",
+ "caption": [
+  "Even with a perfectly uniform hash, two keys land in the same slot far sooner than intuition suggests.",
+  "It's the birthday paradox. With {days} slots, one per birthday, {people} people already give a {p_days}% chance that two share one.",
+  "Scale it up: {slots} slots, and after just {thousand} inserts there's a {p_thousand}% chance of a collision. Better than even comes at {k_half} inserts, nowhere near the {half_full} you'd guess.",
+  "So a collision isn't your hash function making a mistake. It's arithmetic about slots and keys: a certainty to manage, not a defect to eliminate.",
+  "Did you expect it to be that early? 👇"
+ ],
+ "tags": "#hashmap #birthdayparadox #collisions #python #codinginterview",
+ "cta": "Next in the module: the two ways a table manages collisions.",
+ "slides": [
+  {"k": "THE INTUITION", "h": "Surely not until it is half full?",
+   "p": ["A table with {slots} slots and a perfectly uniform hash.",
+         "You might assume two keys won't share a slot until around {half_full} inserts."]},
+  {"k": "THE BIRTHDAY VERSION", "h": "{days} slots, one per birthday",
+   "rows": [{"lab": "People needed for a better-than-even chance of a shared slot", "val": "{people}", "tone": "warn"},
+            {"lab": "The chance at {people} people", "val": "{p_days}%", "tone": "mark"}]},
+  {"k": "THE MATH", "h": "Every new key must miss every taken slot",
+   "code": {"file": "chance.py", "marks": {"4": "hint"}},
+   "p": ["Those chances multiply, and the product shrinks fast."]},
+  {"k": "SCALE IT", "h": "{slots} slots",
+   "rows": [{"lab": "Chance of a collision after {thousand} inserts", "val": "{p_thousand}%", "tone": "warn"},
+            {"lab": "Inserts for a better-than-even chance", "val": "{k_half}", "tone": "bad"}],
+   "p": ["About a thousand, not half a million."]},
+  {"k": "SO WHAT", "h": "A guarantee, not a bug",
+   "p": ["A collision isn't the hash function making a mistake. It is simple arithmetic about slots and keys.",
+         "Collisions aren't a defect to eliminate. They are a certainty to *manage*."]}
+ ]
+}

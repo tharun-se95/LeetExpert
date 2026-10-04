@@ -1,0 +1,38 @@
+{
+ "name": "two runners find the loop",
+ "roadmap": null,
+ "date": "2026-10-03",
+ "lesson": "courses/dsa/linked-lists/linked-list-cycle.md",
+ "module": "Linked Lists",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Find a loop in a linked list with two pointers and no extra memory. One walks, one runs.",
+ "hook_slide": "Find a loop in a linked list with *two pointers and no memory*.",
+ "hook_sub": "One walks. One runs. If there is a loop, they meet.",
+ "caption": [
+  "A linked list has a cycle when some node's next points back to an earlier node, so walking it never reaches null.",
+  "The first answer: remember every node you visit. A revisit means a cycle. Correct, and O(n) space: {set_nodes} nodes stored for a list of {n}.",
+  "Floyd's tortoise and hare: slow moves one node, fast moves two. No cycle and fast falls off the end. A cycle and both end up inside it, where the gap between them shrinks by exactly one per step, so it must hit zero.",
+  "On [3, 2, 0, -4] with the tail linked back to 2, they meet after {ex_steps} steps. On {n} nodes looping to the head: {loop_steps} steps, and {pointers} pointers of memory.",
+  "Why must the comparison come after the step, not before? 👇"
+ ],
+ "tags": "#linkedlist #fastandslowpointers #floydcycle #python #codinginterview",
+ "cta": "Solve it in the sandbox, in Python or JavaScript.",
+ "slides": [
+  {"k": "THE PROBLEM", "h": "A list that never ends",
+   "p": ["A cycle: some node's `next` points back to an earlier node, so traversal never reaches null.",
+         "In [3, 2, 0, -4], the last node links back to 2. Walk it and you loop forever."]},
+  {"k": "THE FIRST ANSWER", "h": "Remember every node",
+   "p": ["Walk with a set of visited nodes. A revisit means a cycle; null means none. Correct, and the right first answer."],
+   "rows": [{"lab": "A list of {n}: nodes stored", "val": "{set_nodes} · O(n) space", "tone": "warn"}]},
+  {"k": "THE CODE", "h": "One walks, one runs",
+   "code": {"file": "has_cycle.py", "marks": {"6": "hint"}},
+   "p": ["The comparison is node identity, not value, and it happens after stepping."]},
+  {"k": "WHY THEY MUST MEET", "h": "The gap shrinks by exactly one",
+   "p": ["Inside the loop, fast gains one step on slow every move. The gap cannot skip from 1 to −1, so it reaches 0.",
+         "A guaranteed meeting within one lap. No probability, no luck."]},
+  {"k": "COUNT IT", "h": "{n} nodes",
+   "rows": [{"lab": "Tail loops back to the head: steps to meet", "val": "{loop_steps}", "tone": "mark"},
+            {"lab": "No cycle: steps until fast falls off", "val": "{none_steps}", "tone": "mark"},
+            {"lab": "Extra memory either way", "val": "{pointers} pointers · O(1)", "tone": "good"}]}
+ ]
+}

@@ -47,6 +47,19 @@ for r in K:
     # a quiz single's answer goes up as the first comment, so the card carries it to copy
     first = r.get("comment", "").strip()
     copy_first = f'<button class="cp" data-src="com-{r["post"]}">Copy first comment</button>' if first else ""
+    # the day's story (storykit): which frames to post and what each sticker says
+    story = r.get("story")
+    show_story = ""
+    if story:
+        notes = []
+        for i, f in enumerate(story["frames"], 1):
+            if f["kind"] == "answer":
+                notes.append(f'Frame {i} (slide{i}.png): no sticker. Yesterday\'s answer: {f["question"]} → {f["answer"]}')
+            else:
+                opts = " / ".join(o + (" ✓" if o == f.get("answer") else "") for o in f["options"])
+                notes.append(f'Frame {i} (slide{i}.png): {f["sticker"]} sticker. {f["question"]}\n  Options: {opts}')
+        show_story = (f'<details><summary>Story · {len(story["frames"])} frame{"s" if len(story["frames"]) > 1 else ""} · media not uploaded yet</summary>'
+                      f'<pre id="story-{r["post"]}">{e(chr(10).join(notes))}\nFiles: marketing/instagram/{e(story["dir"])}/</pre></details>')
     show_first = f'<details><summary>First comment (post it right after publishing)</summary><pre id="com-{r["post"]}">{e(first)}</pre></details>' if first else ""
     weeks.setdefault(wk, []).append(f'''<article class="post" id="{r["post"]}">
  <div class="when"><span class="day">{d.strftime("%a")}</span><span class="date">{d.strftime("%b")} {d.day}</span><span class="slot">{e(r.get("slot", ""))}</span></div>
@@ -60,6 +73,7 @@ for r in K:
   <details><summary>Caption</summary><pre id="cap-{r["post"]}">{e(caption)}</pre></details>
   <details><summary>Alt text</summary><pre id="alt-{r["post"]}">{e(r["alt"].strip())}</pre></details>
   {show_first}
+  {show_story}
  </div>
 </article>''')
 body = "".join(f'<section><h2>{e(w)}</h2>{"".join(c)}</section>' for w, c in weeks.items())
