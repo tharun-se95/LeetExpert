@@ -1,0 +1,11 @@
+{
+ "small": "[1, 2, 3]",
+ "small_k": 3,
+ "small_with": 2,
+ "small_without": 1,
+ "n": 1000,
+ "k": 7,
+ "brute_reads": 500500,
+ "map_reads": 1000,
+ "count": 4402
+}
