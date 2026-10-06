@@ -1,0 +1,43 @@
+{
+ "name": "track the reach, never the path",
+ "roadmap": null,
+ "date": "2026-10-04",
+ "lesson": "courses/dsa/greedy/jump-game.md",
+ "module": "Greedy",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Jump Game looks like a search over every sequence of jumps. On one array of {n} numbers that search makes {brute_reads} lookups. Tracking a single number makes {sweep_reads}.",
+ "hook_slide": "{brute_reads} lookups, or {sweep_reads}. *Same {n} numbers.*",
+ "hook_sub": "Jump Game: track the farthest reach, never the path.",
+ "caption": [
+  "Each number is the maximum jump from that index. Can you reach the last index?",
+  "The literal reading is a search: from each index try every jump length and recurse. On {trap}, an array built so that every path ends on the same 0, that is {brute_reads} array lookups before it answers false.",
+  "The reframe: you never have to decide which jump to take. Sweep left to right keeping one number, the farthest index reachable so far. If the index you're standing on is ever past it, you're stuck. {sweep_reads} lookups, same answer.",
+  "It is safe because the reachable indices are always a solid prefix: reach index i and you can reach everything up to i + nums[i], with no index skipped. A prefix is fully described by its right end. The number records a capability, not a decision.",
+  "Greedy or DP: how do you tell which one a problem wants? 👇"
+ ],
+ "tags": "#greedy #jumpgame #algorithms #dsa #codinginterview",
+ "cta": "Next in the module: Jump Game II.",
+ "slides": [
+  {"k": "THE PROBLEM", "h": "Can you reach the last index?",
+   "p": ["`nums[i]` is the *maximum* jump from index `i`."],
+   "rows": [{"lab": "[2,3,1,1,4]", "val": "true", "tone": "good"},
+            {"lab": "[3,2,1,0,4]", "val": "false: stuck at index 3", "tone": "bad"}]},
+  {"k": "THE LITERAL READING", "h": "Try every jump",
+   "code": {"file": "jump.py", "lines": [1, 7], "marks": {"4": "hint", "5": "hint"}},
+   "rows": [{"lab": "{trap}: {n} numbers", "val": "{brute_reads} lookups", "tone": "bad"}]},
+  {"k": "THE REFRAME", "h": "You don't choose a jump",
+   "p": ["Don't ask which sequence of jumps reaches the end.",
+         "Ask: what is the *farthest index I can possibly reach* as I move left to right?",
+         "If that ever falls behind the index you're standing on, you're stuck."]},
+  {"k": "THE CODE", "h": "One number, one sweep",
+   "code": {"file": "jump.py", "lines": [9, 18], "marks": {"5": "hint", "7": "add"}}},
+  {"k": "WHY IT'S SAFE", "h": "What you can reach is a solid prefix",
+   "p": ["Reach index `i` and you can reach every index up to `i + nums[i]`. You are never forced to skip one.",
+         "So the reachable indices are always `[0, max_reach]`, and a prefix is fully described by its right end.",
+         "The number records *a capability, not a decision*."]},
+  {"k": "COUNT IT", "h": "The same {n} numbers",
+   "rows": [{"lab": "Try every jump", "val": "{brute_reads} lookups", "tone": "bad"},
+            {"lab": "Track the farthest reach", "val": "{sweep_reads} lookups", "tone": "good"},
+            {"lab": "Both answer", "val": "false", "tone": "mark"}]}
+ ]
+}

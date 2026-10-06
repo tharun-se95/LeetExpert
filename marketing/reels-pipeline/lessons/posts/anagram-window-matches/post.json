@@ -1,0 +1,128 @@
+{
+ "name": "two letters change per slide",
+ "roadmap": null,
+ "date": "2026-10-04",
+ "lesson": "courses/dsa/sliding-window/permutation-in-string.md",
+ "module": "Sliding Window",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "Looking for an anagram of one string inside another? Don't re-sort every window. Each slide changes two letters: {brute_reads} characters read becomes {fast_reads}.",
+ "hook_slide": "Don't re-check the window. *Two letters changed.*",
+ "hook_sub": "Finding an anagram of one string inside another.",
+ "caption": [
+  "Does s2 contain a permutation of s1 as a contiguous substring? Two strings are anagrams exactly when their letter counts match, so slide a window the length of s1 across s2 and compare counts.",
+  "Re-reading and sorting every window: with s1 of {k} letters and s2 of {n}, that is {windows} windows and {brute_reads} characters read.",
+  "But the window never changes size. Each slide, one character leaves and one enters, so at most 2 letters' counts change. Keep a single number, how many of the 26 letters currently have equal counts, and update it for just those letters. {fast_reads} characters read, same answer.",
+  "It is the fixed-window sum trick with a frequency map underneath instead of a number.",
+  "What else can you slide instead of recompute? 👇"
+ ],
+ "tags": "#slidingwindow #anagram #strings #dsa #codinginterview",
+ "cta": "Next in the module: Minimum Window Substring.",
+ "slides": [
+  {
+   "k": "THE PROBLEM",
+   "h": "Is an anagram of `s1` inside `s2`?",
+   "rows": [
+    {
+     "lab": "Contains one: ba, at index 3",
+     "val": "\"ab\" in \"eidbaooo\"",
+     "tone": "good"
+    },
+    {
+     "lab": "Contains none",
+     "val": "\"ab\" in \"eidboaoo\"",
+     "tone": "bad"
+    }
+   ],
+   "p": [
+    "Two strings are anagrams exactly when their letter counts match."
+   ]
+  },
+  {
+   "k": "BRUTE FORCE",
+   "h": "Re-sort every window",
+   "code": {
+    "file": "window.py",
+    "lines": [
+     1,
+     8
+    ],
+    "marks": {
+     "5": "hint",
+     "6": "hint"
+    }
+   },
+   "rows": [
+    {
+     "lab": "s1 of {k} letters, s2 of {n}",
+     "val": "{brute_reads} characters read",
+     "tone": "bad"
+    }
+   ]
+  },
+  {
+   "k": "THE INSIGHT",
+   "h": "The window never changes size",
+   "p": [
+    "It is always `len(s1)` long. Each slide, one character leaves and one enters.",
+    "So at most 2 letters' counts change. Keep one number: how many of the 26 letters currently have *equal counts* in the window and in `s1`."
+   ]
+  },
+  {
+   "k": "THE UPDATE",
+   "h": "One letter changed? Re-check one letter.",
+   "code": {
+    "file": "window.py",
+    "lines": [
+     23,
+     29
+    ],
+    "marks": {
+     "3": "hint",
+     "4": "hint",
+     "6": "add",
+     "7": "add"
+    }
+   },
+   "p": [
+    "A match can only be broken, or made, at the letter that just changed."
+   ]
+  },
+  {
+   "k": "THE SLIDE",
+   "h": "One out, one in",
+   "code": {
+    "file": "window.py",
+    "lines": [
+     37,
+     42
+    ],
+    "marks": {
+     "3": "add",
+     "4": "add"
+    }
+   },
+   "p": [
+    "When `matches` is 26, every letter agrees: the window is an anagram."
+   ]
+  },
+  {
+   "k": "COUNT IT",
+   "h": "{windows} windows",
+   "rows": [
+    {
+     "lab": "Re-sort every window",
+     "val": "{brute_reads} characters read",
+     "tone": "bad"
+    },
+    {
+     "lab": "Slide the match count",
+     "val": "{fast_reads} characters read",
+     "tone": "good"
+    }
+   ],
+   "p": [
+    "The fixed-window sum trick, with a frequency map underneath instead of a number."
+   ]
+  }
+ ]
+}

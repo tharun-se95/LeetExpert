@@ -6,7 +6,7 @@
 - **Family:** arrays
 - **Format:** Reel, 1080×1920, ~106s on estimated timing (the recorded take sets the final length), loops to frame 1; tutor stills; Hope narration
 - **Plan:** ledger post `p08`, planned as a carousel and made a reel at the owner's request on 2026-09-29. Issue #121.
-- **Status:** narrated and rendered 2026-09-30 (`reel.mp4`, 1:56), not posted. Hope take; the tutor on cue only (hook, the key reaction, the challenge, the brand); a data-structure stage under each code walkthrough, built from the shown code's own run. `hyperframes check`: 0 errors.
+- **Status:** posted to @leetexpert 2026-10-06: https://www.instagram.com/reel/DeJ2PJcCglU/. Before that: narrated and rendered 2026-09-30 (`reel.mp4`, 1:56), not posted. Hope take; the tutor on cue only (hook, the key reaction, the challenge, the brand); a data-structure stage under each code walkthrough, built from the shown code's own run. `hyperframes check`: 0 errors.
 - **Media (when final):** `reel.mp4`, `cover.png`
 
 ## Hook (first line — all most people read)

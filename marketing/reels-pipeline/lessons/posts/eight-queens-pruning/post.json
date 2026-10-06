@@ -1,0 +1,43 @@
+{
+ "name": "eight queens, 2,056 placements",
+ "roadmap": null,
+ "date": "2026-10-04",
+ "lesson": "courses/dsa/recursion-backtracking/n-queens.md",
+ "module": "Recursion & Backtracking",
+ "archetype": "general educational (lesson carousel)",
+ "hook": "There are {choose} ways to put {n} queens on a chessboard. Backtracking finds every solution after placing {placed}.",
+ "hook_slide": "{choose} ways to place {n} queens. *Backtracking tries {placed}.*",
+ "hook_sub": "What pruning is worth, counted.",
+ "caption": [
+  "Place n queens on an n by n board so that no two share a row, a column or a diagonal.",
+  "The naive way chooses any {n} of the {cells} cells and validates the whole board only once a full placement is proposed. That is {choose} candidates.",
+  "First prune: no two queens can share a row, so each row gets exactly one, and the only choice is which column. Second: check a placement before making it. Along one diagonal direction row - col is constant, along the other row + col is, so three sets answer 'is this square attacked?' in O(1).",
+  "Choose, explore, unchoose: {placed} queens placed, all {solutions} solutions found. A dead end is abandoned at the first conflict, with everything that would have been built on top of it.",
+  "What was the first backtracking problem that clicked for you? 👇"
+ ],
+ "tags": "#backtracking #nqueens #recursion #dsa #codinginterview",
+ "cta": "The capstone of the module, after Subsets, Permutations and Generate Parentheses.",
+ "slides": [
+  {"k": "THE PROBLEM", "h": "`n` queens, none attacking",
+   "p": ["No two queens share a row, a column or a diagonal. For `n = 4` there are {small_solutions} boards:"],
+   "pre": {"lines": [".Q..    ..Q.", "...Q    Q...", "Q...    ...Q", "..Q.    .Q.."],
+           "alt": "The two solutions for a 4 by 4 board, drawn as dots and Qs, one queen in each row and column."}},
+  {"k": "BRUTE FORCE", "h": "Choose {n} of {cells} cells",
+   "rows": [{"lab": "Candidate placements", "val": "{choose}", "tone": "bad"}],
+   "p": ["Each needs a pairwise check, and the whole board is validated only once a full placement is proposed."]},
+  {"k": "FIRST PRUNE", "h": "One queen per row",
+   "p": ["No two queens can share a row, so each row gets exactly one. The choice at each level is *which column*."],
+   "rows": [{"lab": "1 of {n} columns, {n} times", "val": "{per_row}", "tone": "warn"}]},
+  {"k": "THE CHECK", "h": "Is this square attacked?",
+   "p": ["Along one diagonal direction `row - col` is constant. Along the other, `row + col` is.",
+         "So keep three sets: used columns, used `row - col`, used `row + col`. A placement is legal exactly when all three are absent.",
+         "Three O(1) lookups instead of a scan over every queen placed so far."]},
+  {"k": "THE CODE", "h": "Choose, explore, unchoose",
+   "code": {"file": "queens.py", "marks": {"6": "hint", "7": "hint", "8": "add", "9": "add", "10": "add", "12": "add", "13": "add", "14": "add"}}},
+  {"k": "COUNT IT", "h": "{n} queens",
+   "rows": [{"lab": "Choose {n} of {cells} cells", "val": "{choose}", "tone": "bad"},
+            {"lab": "One per row, no pruning", "val": "{per_row}", "tone": "warn"},
+            {"lab": "Queens placed by backtracking", "val": "{placed}", "tone": "good"},
+            {"lab": "Solutions found", "val": "{solutions}", "tone": "mark"}]}
+ ]
+}

@@ -1,0 +1,9 @@
+{
+ "one_min_says": -3,
+ "right": -2,
+ "left": "[-2, 0]",
+ "mins": "[-2, -2, -3]",
+ "n": 1000,
+ "scan_reads": 500500,
+ "snap_reads": 1000
+}
