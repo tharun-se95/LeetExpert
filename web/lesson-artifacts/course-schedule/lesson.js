@@ -71,7 +71,7 @@ function mountExplore(host){
     if(msg){out.innerHTML=msg;return;}
     if(left===0)out.innerHTML='All '+b.n+' built, in the order <b>'+list(built)+'</b>. An order exists, so the answer is <b>true</b>.';
     else if(!ready.length)out.innerHTML='<b>Stuck.</b> '+left+' course'+(left===1?'':'s')+' left ('+list(b.run.stuck)+') and none is ready: each waits on another that is also waiting. That loop is a cycle, so the answer is <b>false</b>.';
-    else out.innerHTML=built.length+' built. Ready now: <b>'+list(ready)+'</b>. Click a ready (blue) course to build it, or try clicking one that is not ready.';
+    else out.innerHTML=built.length+' built. Ready now: <b>'+list(ready)+'</b>. Click a ready course to build it, or try clicking one that is not ready.';
   }
   function pick(i){
     var b=BUILDS[cur];flash=-1;
@@ -85,6 +85,7 @@ function mountExplore(host){
     tabs.querySelectorAll('button').forEach(function(x,j){x.setAttribute('aria-pressed',j===k);});
     view=graphView(tv,BUILDS[k].G,{onPick:pick});draw();
   }
+  stateKey(host,[['win','ready'],['done','built'],['bad','picked too early']],host.querySelector('.tv-wrap'));
   BUILDS.forEach(function(b,k){var x=el('button','tab',b.name);x.type='button';x.addEventListener('click',function(){load(k);});tabs.appendChild(x);});
   host.querySelector('.reset').addEventListener('click',function(){load(cur);});
   host.querySelector('.best').addEventListener('click',function(){
@@ -101,7 +102,7 @@ function mountGuess(host){
     question:function(c){return c.b.name+': '+c.b.n+' courses and '+c.b.prereqs.length+' arrows. Can every course be finished?';},
     choices:function(){return ['Yes','No'];},
     draw:function(view,c){var inner=el('div');view.appendChild(inner);var v=graphView(inner,c.b.G);v.update(nodeCells(c.b,function(){return 'idle';}),c.b.G.edges.map(function(){return 0;}));return {reveal:function(){v.update(nodeCells(c.b,function(i){return c.b.run.stuck.indexOf(i)>=0?'bad':'done';}),c.b.G.edges.map(function(e){return c.b.run.stuck.indexOf(e[0])<0?1:0;}));}};},
-    why:function(c){var r=c.b.run;return r.ok?'A valid order is <code>'+list(r.order)+'</code>: each course comes after everything it needs.':'Courses <code>'+list(r.stuck)+'</code> can never be built: each waits on another in the loop'+(r.order.length?', after <code>'+list(r.order)+'</code> have been built':'')+'. Red marks them.';}
+    why:function(c){var r=c.b.run;return r.ok?'A valid order is <code>'+list(r.order)+'</code>: each course comes after everything it needs.':'Courses <code>'+list(r.stuck)+'</code> can never be built: each waits on another in the loop'+(r.order.length?', after <code>'+list(r.order)+'</code> have been built':'')+'.';}
   });
 }
 
@@ -136,10 +137,11 @@ function buildFrames(b){
   });
   var last=r.steps.length?r.steps[r.steps.length-1]:null,doneAll=r.order,wEnd=last?last.waiting:w0;
   frames.push({b:{g:cellsG(doneAll,-1,[],r.stuck),deg:degCells(wEnd,doneAll,null),ord:ordCells(doneAll)},e:{g:edgesG(doneAll,-1)},
-    note:r.ok?'Done: all '+n+' courses built, in the order '+list(r.order)+'. An order exists, so the answer is true.':'Nothing is ready, but only '+r.order.length+' of '+n+' courses were built. Courses '+list(r.stuck)+' (red) each wait on another course that is also waiting, so none of them can ever reach 0. The answer is false.',
+    note:r.ok?'Done: all '+n+' courses built, in the order '+list(r.order)+'. An order exists, so the answer is true.':'Nothing is ready, but only '+r.order.length+' of '+n+' courses were built. Courses '+list(r.stuck)+', marked stuck, each wait on another course that is also waiting, so none of them can ever reach 0. The answer is false.',
     stats:[['built',r.order.length],['of',n],['answer',r.ok?'true':'false']],ev:r.ok?'key':'bad'});
   if(r.ok===dfsHasCycle(n,b.prereqs))throw new Error('frames disagree with the depth-first search');
   return {frames:frames,step:1.15,poster:frames.length-1,
+    legend:[['cur','building now'],['win','ready'],['done','built'],['bad','stuck'],['acc','a count that just fell']],
     boards:[{id:'g',label:'the build (arrows: must be built before)',g:0,tree:G,wide:true},
             {id:'deg',label:'prerequisites still unbuilt',g:1,cols:n,rows:1,cap:40},{id:'ord',label:'build order',g:1,cols:n,rows:1,cap:40}],
     label:'Peeling off ready courses in "'+b.name.toLowerCase()+'".'};
@@ -204,7 +206,7 @@ var FACTS=(function(){
       return function(){M.animate(0,1,{duration:1.2,onUpdate:function(v){a.textContent=v>.5?'can be built':'';b.textContent=v>.9?'cannot: a loop':'';}});};
     },
     trap:function(svg){
-      var big=S('text',{x:360,y:52,class:'bn-big red','text-anchor':'middle'},svg);big.textContent='1 order';
+      var big=S('text',{x:360,y:52,class:'bn-big bad','text-anchor':'middle'},svg);big.textContent='1 order';
       S('text',{x:360,y:88,class:'bn-t','text-anchor':'middle'},svg).textContent='10 courses have 3,628,800 possible build orders';
       return function(){M.animate(1,factorial(10),{duration:2.6,ease:'easeIn',onUpdate:function(v){big.textContent=fmt(Math.round(v))+' orders';}});};
     },

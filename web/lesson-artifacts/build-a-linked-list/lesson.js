@@ -89,7 +89,7 @@ var banners={
     var gx=X(2)+30,g=S('rect',{x:gx,y:74,width:70,height:36,rx:8,class:'bn-mid',style:'stroke-dasharray:5 4;fill:none'},svg),gt=S('text',{x:gx+24,y:97,class:'bn-t','text-anchor':'middle',style:'font-size:14px'},svg);gt.textContent='12';
     var nx=gx+104,n=S('rect',{x:nx,y:74,width:70,height:36,rx:8,class:'bn-mid',style:'stroke-dasharray:5 4;fill:none;opacity:0'},svg),nt=S('text',{x:nx+24,y:97,class:'bn-t','text-anchor':'middle',style:'font-size:14px;opacity:0'},svg);nt.textContent='5';
     var ln=S('line',{x1:gx+60,y1:92,x2:gx+60,y2:92,class:'bn-path b2'},svg),tag=S('text',{x:gx+35,y:66,class:'bn-t','text-anchor':'middle'},svg);
-    var big=S('text',{x:560,y:48,class:'bn-big red'},svg),sub=S('text',{x:560,y:72,class:'bn-t'},svg);
+    var big=S('text',{x:560,y:48,class:'bn-big bad'},svg),sub=S('text',{x:560,y:72,class:'bn-t'},svg);
     return function(){M.animate(0,1,{duration:.3,delay:.3,onUpdate:function(v){tag.textContent=v>.5?'tail (stale)':'';}});
       M.animate(0,1,{duration:.6,delay:.9,onUpdate:function(v){n.style.opacity=v;nt.style.opacity=v;ln.setAttribute('x2',gx+60+(nx-gx-63)*v);}});
       M.animate(0,1,{duration:.3,delay:1.6,onUpdate:function(v){big.textContent=v>.5?'size 3':'';sub.textContent=v>.5?'head reaches 2':'';}});};

@@ -19,13 +19,28 @@ function playerHtml(id,label){
     '<div class="track"><div class="ticks"></div><div class="head"></div><input type="range" id="'+id+'-rg" min="0" max="1000" value="0" aria-label="Scrub the walkthrough"></div><span class="cnt"></span><button type="button" class="btn spd" id="'+id+'-sp" aria-label="Playback speed">1×</button></div></div>';
 }
 
-/* A stepper widget: tabs choose an example, each builds a fresh Scene. `make(i)` returns a scene definition. */
+/* A key to the cell states a widget paints, as [state, what it means] pairs. Its swatches paint from
+   PAL, the cells' own source, so the key cannot disagree with the drawing in either theme: a state's
+   hue differs by theme (bad is red in light and pink in dark), so prose and captions name the state,
+   never its colour (#64). set() refills it, so a widget whose tabs rebuild keeps one key. */
+function stateKey(host,pairs,before){
+  var k=el('ul','skey');k.setAttribute('aria-label','Key');
+  function paint(){[].forEach.call(k.children,function(li){li.firstChild.style.background=rgb(PAL[li.dataset.k].f);});}
+  function set(ps){k.innerHTML='';k.hidden=!ps||!ps.length;(ps||[]).forEach(function(p){
+    if(KINDS.indexOf(p[0])<0)throw new Error('stateKey: unknown state "'+p[0]+'"');
+    var li=el('li',null,'<i aria-hidden="true"></i>'+p[1]);li.dataset.k=p[0];k.appendChild(li);});paint();}
+  host.insertBefore(k,before||null);set(pairs);onRepaint(paint);
+  return {el:k,set:set};
+}
+
+/* A stepper widget: tabs choose an example, each builds a fresh Scene. `make(i)` returns a scene
+   definition; its `legend` pairs fill the widget's one state key. */
 function mountStepper(host,examples,make,id){
-  var tabs=host.querySelector('.extabs'),pl=host.querySelector('.plhost'),scene=null;
+  var tabs=host.querySelector('.extabs'),pl=host.querySelector('.plhost'),scene=null,key=stateKey(pl.parentNode,null,pl);
   function load(i){
     tabs.querySelectorAll('button').forEach(function(b,k){b.setAttribute('aria-pressed',k===i);});
     if(scene&&scene.stop)scene.stop();
-    var d=make(i);pl.innerHTML=playerHtml(id||'walk',d.label);
+    var d=make(i);key.set(d.legend);pl.innerHTML=playerHtml(id||'walk',d.label);
     scene=new Scene(d,pl.querySelector('.player'));scene.start();
   }
   examples.forEach(function(e,i){var b=el('button','tab',e.name);b.type='button';b.addEventListener('click',function(){load(i);});tabs.appendChild(b);});

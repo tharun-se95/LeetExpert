@@ -232,7 +232,7 @@ var FACTS=(function(){
     trap:function(svg){
       arrowDefs(svg);var g1=S('g',{},svg),g2=S('g',{},svg);chainArt(g1,[1],120,40);var X=chainArt(g2,[2,3,4],224,40);
       [0,1].forEach(function(i){S('line',{x1:X(i)+60,y1:58,x2:X(i+1)-3,y2:58,class:'bn-path','marker-end':'url(#bnRA)'},g2);});
-      var big=S('text',{x:600,y:58,class:'bn-big red','text-anchor':'middle'},svg),sub=S('text',{x:600,y:84,class:'bn-t','text-anchor':'middle'},svg);
+      var big=S('text',{x:600,y:58,class:'bn-big bad','text-anchor':'middle'},svg),sub=S('text',{x:600,y:84,class:'bn-t','text-anchor':'middle'},svg);
       return function(){M.animate(0,1,{duration:.8,delay:.6,onUpdate:function(v){g2.style.opacity=1-.62*v;big.textContent=v>.5?'3 lost':'';sub.textContent=v>.5?'nothing names 2':'';}});};
     },
     /* two chains: one node at a time crosses from untouched to flipped */

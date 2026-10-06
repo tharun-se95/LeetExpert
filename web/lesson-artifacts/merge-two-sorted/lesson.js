@@ -223,7 +223,7 @@ var FACTS=(function(){
     /* a leftover left hanging */
     trap:function(svg){
       chainArt(svg,[1,2,3],80,30);var g=S('g',{},svg);chainArt(g,[5],420,74);
-      var big=S('text',{x:620,y:58,class:'bn-big red','text-anchor':'middle'},svg),sub=S('text',{x:620,y:84,class:'bn-t','text-anchor':'middle'},svg);
+      var big=S('text',{x:620,y:58,class:'bn-big bad','text-anchor':'middle'},svg),sub=S('text',{x:620,y:84,class:'bn-t','text-anchor':'middle'},svg);
       return function(){M.animate(0,1,{duration:.8,delay:.5,onUpdate:function(v){g.style.opacity=1-.6*v;big.textContent=v>.5?'[5] lost':'';sub.textContent=v>.5?'never linked on':'';}});};
     },
     /* the picture kept true */

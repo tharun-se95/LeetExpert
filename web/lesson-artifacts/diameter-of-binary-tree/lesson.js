@@ -229,7 +229,7 @@ var FACTS=(function(){
       var n=8,rows=[];
       for(var i=0;i<n;i++){S('circle',{cx:40,cy:12+i*14,r:5,class:'bn-mid'},svg);var bar=S('rect',{x:60,y:8+i*14,width:0,height:8,rx:2,class:'bn-bar'},svg);rows.push(bar);}
       S('text',{x:380,y:30,class:'bn-t'},svg).textContent='naive: every switch re-walks everything below it';
-      var c1=S('text',{x:380,y:64,class:'bn-big red'},svg);c1.textContent='0';
+      var c1=S('text',{x:380,y:64,class:'bn-big bad'},svg);c1.textContent='0';
       S('text',{x:380,y:96,class:'bn-t'},svg).textContent='one pass: each switch is visited once, 8';
       return function(){var total=0;rows.forEach(function(r,i){var len=(n-i)*22;M.animate(0,len,{duration:.35,delay:i*.28,ease:'easeOut',onUpdate:function(v){r.setAttribute('width',v);}});M.animate(0,n-i,{duration:.35,delay:i*.28,onUpdate:function(v){}});});
         var cur=0;M.animate(0,36,{duration:8*.28+.3,ease:'linear',onUpdate:function(v){c1.textContent=count(Math.round(v),'visit','visits');}});};

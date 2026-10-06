@@ -169,7 +169,7 @@ var FACTS=(function(){
     },
     /* one step too many */
     trap:function(svg){
-      var X=chainArt(svg,[1,2,3,4,5],100,30),t=S('text',{y:92,class:'bn-t','text-anchor':'middle'},svg),big=S('text',{x:650,y:58,class:'bn-big red','text-anchor':'middle'},svg);t.textContent='trail';
+      var X=chainArt(svg,[1,2,3,4,5],100,30),t=S('text',{y:92,class:'bn-t','text-anchor':'middle'},svg),big=S('text',{x:650,y:58,class:'bn-big bad','text-anchor':'middle'},svg);t.textContent='trail';
       return function(){M.animate(2,3,{duration:.8,delay:.6,onUpdate:function(v){t.setAttribute('x',X(v)+35);big.textContent=v>2.5?'on the target':'';}});};
     },
     /* the gap stays n */

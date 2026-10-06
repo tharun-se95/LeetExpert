@@ -196,7 +196,7 @@ var FACTS=(function(){
     },
     /* equal values, different nodes */
     trap:function(svg){
-      var X=chainArt(svg,[1,1,1,1],150,40),q=S('text',{x:600,y:58,class:'bn-big red','text-anchor':'middle'},svg),sub=S('text',{x:600,y:84,class:'bn-t','text-anchor':'middle'},svg);
+      var X=chainArt(svg,[1,1,1,1],150,40),q=S('text',{x:600,y:58,class:'bn-big bad','text-anchor':'middle'},svg),sub=S('text',{x:600,y:84,class:'bn-t','text-anchor':'middle'},svg);
       return function(){M.animate(0,1,{duration:.4,delay:.6,onUpdate:function(v){q.textContent=v>.5?'1 == 1':'';sub.textContent=v>.5?'but not the same node':'';}});};
     },
     /* the gap counting down */

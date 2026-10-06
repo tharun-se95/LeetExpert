@@ -34,7 +34,7 @@
 #heroCap{font-size:14px;color:var(--mut);width:min(32ch,100%);min-height:3.2em;text-align:right} #heroCap b{color:var(--fg);font-weight:500}
 .banner{margin:0 0 22px;border:1px solid var(--hair2);border-radius:14px;background-color:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden}
 .banner svg{width:100%;height:auto;display:block}
-.bn-t{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)} .bn-big{font:700 22px 'Space Mono',monospace;fill:var(--fg)} .bn-big.red{fill:var(--r-ink)}
+.bn-t{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)} .bn-big{font:700 22px 'Space Mono',monospace;fill:var(--fg)} .bn-big.bad{fill:var(--r-ink)}
 /* a number drawn on an accent fill (.bn-end) takes the accent's own ink: --fg on the dark theme's light blue read 1.79:1 */
 .bn-big.on{fill:var(--fam-on)}
 .bn-path{fill:none;stroke:var(--fam);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round} .bn-path.b2{stroke:var(--o-ink)}
@@ -99,6 +99,10 @@ button.cell.node{cursor:pointer;border:0}
 .reveal-btn .i{font-size:16px;color:var(--fam)} .reveal-btn[aria-expanded="true"]{box-shadow:none;background:transparent}
 .reveal-body{margin-top:14px;display:flex;flex-direction:column;gap:14px}
 .reveal-body p{max-width:66ch;margin:0}
+/* a widget's state key (kit.js stateKey): a cell-shaped swatch, framed by the hairline so a pale state
+   (win) still reads against the card */
+.skey{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 10px;padding:0;list-style:none;font:12px 'JetBrains Mono',monospace;color:var(--mut)}
+.skey li{display:flex;align-items:center;gap:7px} .skey i{flex:none;width:13px;height:13px;border-radius:3px;box-shadow:inset 0 0 0 1px var(--hair2)}
 .cost-note{font-size:14.5px}
 .extabs{display:inline-flex;flex-wrap:wrap;align-self:flex-start;gap:2px;padding:3px;border:1px solid var(--hair);border-radius:11px;background:var(--deep)}
 .tab{border:0;background:none;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12.5px;color:var(--mut)}

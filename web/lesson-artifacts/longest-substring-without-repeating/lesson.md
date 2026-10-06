@@ -89,7 +89,7 @@ In the code | In the system
 `best` | the longest clean stretch on record
 ```
 
-Watch it happen. The top row is the log. Blue cells are inside the window, the orange cell is the request that just arrived, and a red cell is the earlier copy of a repeated backend. Below it is the set.
+Watch it happen. The top row is the log. The key above it names each marking: the cells inside the window, the request that just arrived, and the earlier copy of a repeated backend. Below it is the set.
 
 ```widget #stepper "Walk the window through a log"
 <div class="extabs" role="group" aria-label="Choose a log"></div><div class="plhost"></div>

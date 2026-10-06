@@ -120,6 +120,7 @@ function windowFrames(s){
   frames.push({b:{s:cellsFor({mode:'end'}),u:setCells([])},note:'Done. The longest clean stretch is '+s.slice(t.bl,t.br+1)+', so the answer is '+t.best+'. The right edge moved '+n+' times and the left edge '+t.removes+' times, and neither ever moved backward.',stats:[['answer',t.best]],ev:'key'});
   if(t.best!==bruteLongest(s).len)throw new Error('frames disagree with brute force');
   return {frames:frames,step:1.0,poster:frames.length-1,
+    legend:[['win','in the window'],['cur','just arrived'],['bad','its earlier copy'],['warn','leaving'],['acc','the longest window'],['dim','already left']],
     boards:[{id:'s',label:'the log',g:0,cols:n,rows:1,cap:46,wide:true},{id:'u',label:'backends in the window',g:1,cols:order.length,rows:1,cap:40,wide:true}],
     label:'The window over the log "'+s+'": expand on a new backend, shrink on a repeat.'};
 }
@@ -202,7 +203,7 @@ var FACTS=(function(){
     trap:function(svg){
       var rows=[];for(var i=0;i<5;i++){S('text',{x:40,y:24+i*20,class:'bn-t','text-anchor':'end'},svg).textContent='start '+i;var bar=S('rect',{x:52,y:14+i*20,width:0,height:11,rx:3,class:'bn-bar'},svg);rows.push(bar);}
       S('text',{x:430,y:36,class:'bn-t'},svg).textContent='each restart re-reads the same requests';
-      var c=S('text',{x:430,y:74,class:'bn-big red'},svg);c.textContent='0 reads';
+      var c=S('text',{x:430,y:74,class:'bn-big bad'},svg);c.textContent='0 reads';
       return function(){rows.forEach(function(r,i){M.animate(0,(5-i)*26,{duration:.4,delay:i*.3,ease:'easeOut',onUpdate:function(v){r.setAttribute('width',v);}});});
         M.animate(0,15,{duration:5*.3+.4,ease:'linear',onUpdate:function(v){c.textContent=Math.round(v)+' reads';}});};
     },
