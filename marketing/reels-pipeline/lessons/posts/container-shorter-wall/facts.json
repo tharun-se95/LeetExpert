@@ -1,0 +1,10 @@
+{
+ "answer": 49,
+ "small_pairs": 36,
+ "small_steps": 8,
+ "first_area": 8,
+ "line0_best": 8,
+ "n": 1000,
+ "pairs": 499500,
+ "steps": 999
+}
