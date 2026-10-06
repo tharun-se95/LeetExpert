@@ -165,7 +165,7 @@ var FACTS=(function(){
   mountWalk($('#stepper'));
 })();
 
-/* ================= systems layer: the build hero and the animated banners ================= */
+/* ================= systems layer: the build hero ================= */
 (function(){
   var NAMES=['core','log','db','api','ui','app'],PR=[[1,0],[2,0],[3,1],[3,2],[5,3],[5,4]],P=[[280,50],[170,120],[390,120],[280,190],[500,190],[390,255]],R=kahnRun(6,PR);
   function heroBuild(){
@@ -188,40 +188,5 @@ var FACTS=(function(){
       var last=-1;M.animate(0,8,{duration:8*.9,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(6,Math.floor(v));if(k!==last){last=k;draw(k);}}});
     }
   }
-  var banners={
-    problem:function(svg){
-      var xs=[110,250,390,530];
-      svg.insertAdjacentHTML('afterbegin','<defs><marker id="bnArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="context-stroke"/></marker></defs>');
-      var lines=[0,1,2].map(function(i){return S('line',{x1:xs[i]+22,y1:64,x2:xs[i]+22,y2:64,class:'bn-path'},svg);});
-      // A line of zero length has no direction, so its arrowhead would point anywhere: add it once the line has grown.
-      function grow(l,i,v){l.setAttribute('x2',xs[i]+22+(xs[i+1]-xs[i]-50)*v);if(v>.05)l.setAttribute('marker-end','url(#bnArrow)');}
-      xs.forEach(function(x,i){S('rect',{x:x-24,y:44,width:48,height:40,rx:9,class:'bn-mid'},svg);S('text',{x:x,y:70,class:'bn-t','text-anchor':'middle'},svg).textContent=['A','B','C','D'][i];});
-      S('text',{x:360,y:110,class:'bn-t','text-anchor':'middle'},svg).textContent='each arrow: must be built before';
-      return function(){lines.forEach(function(l,i){M.animate(0,1,{duration:.5,delay:i*.5,onUpdate:function(v){grow(l,i,v);}});});};
-    },
-    attempt:function(svg){
-      S('text',{x:180,y:58,class:'bn-big','text-anchor':'middle'},svg).textContent='4 courses, 4 arrows';
-      S('text',{x:540,y:58,class:'bn-big','text-anchor':'middle'},svg).textContent='5 courses, 5 arrows';
-      var a=S('text',{x:180,y:96,class:'bn-t','text-anchor':'middle'},svg),b=S('text',{x:540,y:96,class:'bn-t','text-anchor':'middle'},svg);
-      return function(){M.animate(0,1,{duration:1.2,onUpdate:function(v){a.textContent=v>.5?'can be built':'';b.textContent=v>.9?'cannot: a loop':'';}});};
-    },
-    trap:function(svg){
-      var big=S('text',{x:360,y:52,class:'bn-big bad','text-anchor':'middle'},svg);big.textContent='1 order';
-      S('text',{x:360,y:88,class:'bn-t','text-anchor':'middle'},svg).textContent='10 courses have 3,628,800 possible build orders';
-      return function(){M.animate(1,factorial(10),{duration:2.6,ease:'easeIn',onUpdate:function(v){big.textContent=fmt(Math.round(v))+' orders';}});};
-    },
-    insight:function(svg){
-      var cs=[0,1,2].map(function(i){var c=S('circle',{cx:160+i*200,cy:56,r:20,class:'bn-mid'},svg);return c;});
-      var nums=[0,1,2].map(function(i){var t=S('text',{x:160+i*200,y:62,class:'bn-big','text-anchor':'middle'},svg);t.textContent=String(2-i>0?2-i:0);return t;});
-      S('text',{x:360,y:108,class:'bn-t','text-anchor':'middle'},svg).textContent='a course is ready when its waiting count reaches 0';
-      var vals=[2,1,0];
-      return function(){[0,1,2].forEach(function(i){M.animate(0,1,{duration:.4,delay:i*.6,onUpdate:function(v){nums[i].textContent=String(Math.max(0,Math.round(vals[i]+(0-vals[i])*v)));cs[i].setAttribute('class',v>.9?'bn-end':'bn-mid');nums[i].setAttribute('class',v>.9?'bn-big on':'bn-big');}});});};
-    },
-    solution:function(svg){
-      var cells=R.order.map(function(c,i){var r=S('rect',{x:120+i*80,y:44,width:60,height:40,rx:9,class:'bn-mid'},svg);var t=S('text',{x:150+i*80,y:70,class:'bn-t','text-anchor':'middle'},svg);return t;});
-      S('text',{x:360,y:110,class:'bn-t','text-anchor':'middle'},svg).textContent='the order the scheduler found';
-      return function(){R.order.forEach(function(c,i){M.animate(0,1,{duration:.2,delay:i*.3,onUpdate:function(v){cells[i].textContent=v>.5?NAMES[c]:'';}});});};
-    }
-  };
-  heroBuild();mountBanners(banners);kinetic();riseIn();
+  heroBuild();kinetic();riseIn();
 })();

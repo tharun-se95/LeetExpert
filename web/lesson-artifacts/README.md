@@ -23,7 +23,7 @@ python3 web/lesson-artifacts/build.py coin-change            # rebuild one
     directed arrows with `tree.directed`).
   - `trees.js`: binary-tree layout helpers.
   - `kit.js`: reveals, code blocks, quiz, predict widget, stepper, letter strip, graph view,
-    banners, contents rail, language switch, theme repaint and the embedding contract.
+    the split layout's flow, contents rail, language switch, theme repaint and the embedding contract.
   - `kit.css`: layout, widgets and the scaled-down type scale.
 - `<lesson>/`: `lesson.md` (the page's content), `lesson.js` (its own widgets, animation, checks and
   `FACTS`), optional `extra.css`, and `code/<name>.py` + `code/<name>.ts`, the code the page shows.
@@ -37,7 +37,11 @@ python3 web/lesson-artifacts/build.py coin-change            # rebuild one
 
 Spec: `docs/superpowers/specs/2026-09-26-lesson-content-as-data-design.md`. The dialect is the course's:
 YAML front matter (`title`, `kicker`, `headline`, `lede`, `chips`, `hero`) and fenced directives.
-`## Heading {#id toc="Short" banner}` opens a section, and the contents rail is built from them.
+`## Heading {#id toc="Short"}` opens a section, and the contents rail is built from them. Straight
+after it, in either order, a section may carry a `caption` fence (the one sentence it concludes, as
+text under the heading) and a `vig "description"` fence (its spot drawing, checked: drawing elements
+and the kit's `.vig` classes only). In prose, `==term==` marks a key term in the family's text ink.
+The animated banners were removed (#63); a `banner` flag fails the build.
 
 - The course's own fences keep their course meaning: `examples` (`input → output  (note)`),
   `constraint`/`key`/`warn` callouts, and `quiz` (the course's JSON:

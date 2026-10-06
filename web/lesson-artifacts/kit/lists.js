@@ -264,17 +264,6 @@ function ListPlayer(host,o){
   return p;
 }
 
-/* ---------- banner art: a row of boxes with next ports, shared by the module's lessons ---------- */
-function chainArt(svg,vals,x0,y,o){
-  o=o||{};var w=70,g=34,out=[];
-  vals.forEach(function(v,i){var x=x0+i*(w+g);
-    out.push(S('rect',{x:x,y:y,width:w,height:36,rx:8,class:'bn-mid'},svg));
-    S('line',{x1:x+w-22,x2:x+w-22,y1:y,y2:y+36,class:'bn-edge'},svg);
-    var t=S('text',{x:x+(w-22)/2,y:y+23,class:'bn-t','text-anchor':'middle',style:'font-size:14px;font-weight:600'},svg);t.textContent=v;
-    var nt=S('text',{x:x+w-11,y:y+22,class:'bn-t','text-anchor':'middle'},svg);nt.textContent=i===vals.length-1||o.cut===i?'∅':'•';});
-  return function(i){return x0+i*(w+g);};
-}
-
 /* ---------- tabbed walkthroughs of the list ---------- */
 function mountTabs(w,examples,id){return mountPlayerTabs(w,examples,function(h,o){return new ListPlayer(h,o);},{id:id});}
 function scripted(start,ops,intro,leaky,outro){

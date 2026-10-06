@@ -5,7 +5,7 @@
     node lesson-artifacts/browser-gate.mjs <module/slug> <light|dark>     (run from web/)
 
   At 1366x900 and 375x812 it fails on: a console or page error (which includes the page's own
-  load checks), layout shift while every widget and banner plays, horizontal page overflow, text
+  load checks), layout shift while every widget plays, horizontal page overflow, text
   below WCAG AA against what is actually painted behind it, a color-scheme that does not match the
   theme (so native scrollbars paint the wrong theme, #107), a control or diagram without an
   accessible name, a revealed solution in the DOM before its reveal is opened, and, under reduced
@@ -341,8 +341,8 @@ try {
     const before = await page.evaluate(() => document.querySelectorAll(".reveal-body").length &&
       [...document.querySelectorAll(".reveal-body")].filter((b) => b.innerHTML.trim()).length);
     if (before) note(w, `${before} reveal(s) have content before being opened`);
-    // play the page: stop at every widget and banner so its animation runs in view
-    const stops = await page.evaluate(() => [...document.querySelectorAll(".hero2, .banner, .widget, .callout, .code, .vgrid, .qcard")].map((e) => e.getBoundingClientRect().top + scrollY));
+    // play the page: stop at every widget so its animation runs in view
+    const stops = await page.evaluate(() => [...document.querySelectorAll(".hero2, .widget, .callout, .code, .vgrid, .qcard")].map((e) => e.getBoundingClientRect().top + scrollY));
     const issues = { contrast: new Set(), names: new Set() };
     for (const y of stops) {
       await page.evaluate((top) => { document.documentElement.style.scrollBehavior = "auto"; scrollTo(0, Math.max(0, top - 80)); }, y);
@@ -388,13 +388,13 @@ try {
     issues.names.forEach((c) => note(w, "no accessible name: " + c));
     await ctx.close();
 
-    // reduced motion: nothing autoplays, and every banner and the hero hold their finished frame
+    // reduced motion: nothing autoplays, and the hero holds its finished frame
     const rctx = await browser.newContext({ viewport: { width: w, height: h }, colorScheme: theme, reducedMotion: "reduce" });
     const rp = await rctx.newPage();
     rp.on("pageerror", (e) => note(w, "reduced-motion page error: " + String(e.message).slice(0, 160)));
     await rp.goto(URL_, { waitUntil: "load" });
     await rp.waitForTimeout(800);
-    const snap = () => rp.evaluate(() => [...document.querySelectorAll(".banner svg, .hero-art svg, .lp-count, .cnt")].map((e) => e.innerHTML || e.textContent).join("|"));
+    const snap = () => rp.evaluate(() => [...document.querySelectorAll(".hero-art svg, .lp-count, .cnt")].map((e) => e.innerHTML || e.textContent).join("|"));
     const a = await snap();
     await rp.evaluate(() => [...document.querySelectorAll(".widget")].forEach((e) => e.scrollIntoView()));
     await rp.waitForTimeout(3000);

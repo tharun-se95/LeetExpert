@@ -12,5 +12,3 @@
 .hf-ch{font:500 14px 'JetBrains Mono',monospace;fill:var(--fg)}
 .hf-cell.base+.hf-ch,.hf-cell.cur+.hf-ch{fill:var(--bg)}
 
-/* the insight banner's end cell: a ring, so its label stays ink on card (text on the solid family fill fell below AA) */
-.bn-ring{stroke:var(--fam);stroke-width:2.5}

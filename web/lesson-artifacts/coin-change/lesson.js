@@ -182,7 +182,7 @@ var FACTS=(function(){
   mountWalk($('#stepper'));
 })();
 
-/* ================= systems layer: the table hero and the animated banners ================= */
+/* ================= systems layer: the table hero ================= */
 (function(){
   var COINS=[1,2,5],AMT=11,tr=dpTrace(COINS,AMT),CW=38,X0=(560-12*CW)/2;
   function heroFleet(){
@@ -225,45 +225,5 @@ var FACTS=(function(){
       M.animate(0,total,{duration:total*.85,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(AMT,Math.floor(v));if(k!==last){last=k;draw(k);}}});
     }
   }
-  var banners={
-    problem:function(svg){
-      var parts=[5,5,1],x=60,segs=[];
-      S('rect',{x:60,y:44,width:600,height:30,rx:8,class:'bn-track'},svg);
-      parts.forEach(function(p,i){var w=p/11*600,r=S('rect',{x:x,y:44,width:0,height:30,rx:8,class:'bn-bar'},svg);segs.push([r,x,w]);x+=w;});
-      var big=S('text',{x:60,y:28,class:'bn-big'},svg);big.textContent='0 of 11 vCPUs';
-      S('text',{x:360,y:104,class:'bn-t','text-anchor':'middle'},svg).textContent='5 + 5 + 1: three instances add up to exactly 11';
-      return function(){segs.forEach(function(s,i){M.animate(0,s[2]-4,{duration:.5,delay:i*.6,ease:'easeOut',onUpdate:function(v){s[0].setAttribute('width',v);}});});
-        M.animate(0,11,{duration:1.9,ease:'linear',onUpdate:function(v){big.textContent=Math.round(v)+' of 11 vCPUs';}});};
-    },
-    attempt:function(svg){
-      S('text',{x:180,y:28,class:'bn-t','text-anchor':'middle'},svg).textContent='greedy: 4 + 1 + 1';
-      S('text',{x:540,y:28,class:'bn-t','text-anchor':'middle'},svg).textContent='best: 3 + 3';
-      var a=[4,1,1].map(function(p,i){return S('rect',{x:70+[0,4,5][i]*22,y:40,width:0,height:26,rx:6,class:'bn-bar'},svg);}),
-          b=[3,3].map(function(p,i){var r=S('rect',{x:430+i*3*22,y:40,width:0,height:26,rx:6,class:'bn-bar'},svg);r.style.fill='var(--o-ink)';return r;});
-      S('text',{x:180,y:104,class:'bn-big bad','text-anchor':'middle'},svg).textContent='3 instances';
-      S('text',{x:540,y:104,class:'bn-big','text-anchor':'middle'},svg).textContent='2 instances';
-      return function(){a.forEach(function(r,i){M.animate(0,[4,1,1][i]*22-3,{duration:.4,delay:i*.4,onUpdate:function(v){r.setAttribute('width',v);}});});b.forEach(function(r,i){M.animate(0,66-3,{duration:.5,delay:.3+i*.5,onUpdate:function(v){r.setAttribute('width',v);}});});};
-    },
-    trap:function(svg){
-      var big=S('text',{x:360,y:50,class:'bn-big bad','text-anchor':'middle'},svg);big.textContent='1 call';
-      S('text',{x:360,y:84,class:'bn-t','text-anchor':'middle'},svg).textContent='to make 25, the recursion asks about the same amounts again and again';
-      S('text',{x:360,y:104,class:'bn-t','text-anchor':'middle'},svg).textContent='but there are only 26 different amounts';
-      var last=recursionCost([1,2,5],25).calls;
-      return function(){M.animate(1,last,{duration:2.6,ease:'easeIn',onUpdate:function(v){big.textContent=count(Math.round(v),'call','calls');}});};
-    },
-    insight:function(svg){
-      var xs=[100,220,340,460,580];S('line',{x1:100,y1:74,x2:580,y2:74,class:'bn-edge'},svg);
-      var cs=xs.map(function(x,i){return S('circle',{cx:x,cy:74,r:14,class:i===4?'bn-mid bn-ring':'bn-mid'},svg);});
-      xs.forEach(function(x,i){S('text',{x:x,y:78,class:'bn-t','text-anchor':'middle'},svg).textContent=i===4?'a':'a−'+(4-i);});
-      var arcs=[3,2,0].map(function(i){var p=S('path',{d:'M580,60 Q'+((xs[i]+580)/2)+',6 '+xs[i]+',60',class:'bn-path',fill:'none'},svg);p.style.opacity=0;return p;});
-      S('text',{x:360,y:112,class:'bn-t','text-anchor':'middle'},svg).textContent='dp[a] reads the cells one size behind it';
-      return function(){arcs.forEach(function(p,i){M.animate(0,1,{duration:.5,delay:i*.5,onUpdate:function(v){p.style.opacity=v;}});});};
-    },
-    solution:function(svg){
-      var cells=[];for(var i=0;i<12;i++){var r=S('rect',{x:60+i*50,y:40,width:44,height:36,rx:8,class:'bn-mid'},svg);var t=S('text',{x:82+i*50,y:64,class:'bn-t','text-anchor':'middle'},svg);cells.push([r,t]);}
-      S('text',{x:360,y:104,class:'bn-t','text-anchor':'middle'},svg).textContent='each cell is filled once, from the ones before it';
-      return function(){tr.dp.forEach(function(v,i){M.animate(0,1,{duration:.2,delay:i*.18,onUpdate:function(p){cells[i][1].textContent=p>.5?String(v):'';}});});};
-    }
-  };
-  heroFleet();mountBanners(banners);kinetic();riseIn();
+  heroFleet();kinetic();riseIn();
 })();

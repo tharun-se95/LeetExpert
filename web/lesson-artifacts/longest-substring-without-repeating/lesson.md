@@ -1,7 +1,7 @@
 ---
 title: "Longest Substring Without Repeating Characters"
 kicker: "Longest Substring Without Repeating Characters · Sliding Window module · problem lesson"
-headline: "How long can traffic run before one server is hit twice?"
+headline: "How long can traffic run before one server is hit *twice*?"
 lede: "A load balancer hands each request to one of a few backends. Watch a stretch of that traffic and ask how long it can go on before some backend gets a second request. That longest clean stretch is the longest substring without repeating characters, and finding it needs one idea: never look at the same request twice."
 chips:
   - "needs **a set**"
@@ -12,7 +12,15 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> in a row</div><div id="heroCap"></div></div></div></div>
 ---
 
-## Problem {#problem banner}
+## Problem {#problem}
+
+```caption
+One request per tile: the window grows while every backend is new.
+```
+
+```vig "A log of eight requests with its longest clean stretch bracketed, and a curve joining the first backend to its repeat"
+<rect class="fk" x="12" y="44" width="24" height="24" rx="4"/><rect class="fk" x="40" y="44" width="24" height="24" rx="4"/><rect class="fk" x="68" y="44" width="24" height="24" rx="4"/><rect class="fr" x="96" y="44" width="24" height="24" rx="4"/><rect class="fa" x="124" y="44" width="24" height="24" rx="4"/><rect class="fa" x="152" y="44" width="24" height="24" rx="4"/><rect class="fa" x="180" y="44" width="24" height="24" rx="4"/><rect class="fa" x="208" y="44" width="24" height="24" rx="4"/><path class="sc" d="M12 34V26H92V34"/><path class="st" stroke-dasharray="3 4" d="M24 76C24 98 108 98 108 76"/>
+```
 
 Given a string `s`, return the length of the longest **substring** that has no repeating characters. A substring is a stretch of consecutive characters, so it cannot skip any.
 
@@ -26,15 +34,19 @@ s = "pwwkew" → 3 ("wke", and note "pwke" is not a substring)
 0 ≤ n ≤ 5·10⁴ characters: letters, digits, symbols and spaces.
 ```
 
-Read the string as a log of requests: each character is the backend that served one request, in order. A stretch is clean when no backend appears in it twice, which is what a well-spread burst of traffic looks like. The question is how long the longest clean stretch is. You are choosing two things, where the stretch starts and where it ends, and that is the whole difficulty: there are far too many pairs to try naively.
+Read the string as a log of requests: each character is the backend that served one request, in order. A stretch is ==clean== when no backend appears in it twice, which is what a well-spread burst of traffic looks like. The question is how long the longest clean stretch is. You are choosing two things, where the stretch starts and where it ends, and that is the whole difficulty: there are far too many pairs to try naively.
 
 ```widget #explore "Explore: pick a stretch and see whether it is clean"
 <div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 best">Show a longest clean stretch</button><button type="button" class="btn2 clear">Clear</button></div>
 ```
 
-## Attempt it first {#attempt banner}
+## Attempt it first {#attempt}
 
-This is the "longest window that stays valid" shape from the dynamic-window lesson, and it is the mirror image of Minimum Size Subarray Sum, which looked for the shortest one. Two questions decide everything, so settle them before opening anything.
+```vig "A dashed stretch over a log, with one marker where it might start and another where it might end"
+<rect class="st fp" x="12" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="40" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="68" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="96" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="124" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="152" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="180" y="44" width="24" height="24" rx="4"/><rect class="st fp" x="208" y="44" width="24" height="24" rx="4"/><rect class="st" stroke-dasharray="4 4" x="64" y="38" width="116" height="36" rx="7"/><polygon class="fk" points="74,18 86,18 80,29"/><polygon class="fc" points="158,18 170,18 164,29"/><path class="st" d="M80 84V94M164 84V94M80 89H164"/>
+```
+
+This is the ==longest window that stays valid== shape from the dynamic-window lesson, and it is the mirror image of Minimum Size Subarray Sum, which looked for the shortest one. Two questions decide everything, so settle them before opening anything.
 
 First, what single piece of state answers "is the request that just arrived a repeat of one already in my stretch?" in constant time? Second, when the answer is yes, what must happen to the stretch, and how far must it shrink?
 
@@ -52,14 +64,22 @@ A window that is invalid stays invalid as it grows, so extending is pointless: r
 Record the length only once the window is clean.
 ```
 
-## The restart trap {#trap banner}
+## The restart trap {#trap}
+
+```caption
+Each restart re-reads the same requests.
+```
+
+```vig "Five reads of the log, each restarting one step later and running over the same characters again"
+<rect class="fa" x="20" y="10" width="100" height="10" rx="5"/><circle class="fr" cx="120" cy="15" r="4.5"/><rect class="fa" x="40" y="29" width="100" height="10" rx="5"/><circle class="fr" cx="140" cy="34" r="4.5"/><rect class="fa" x="60" y="48" width="100" height="10" rx="5"/><circle class="fr" cx="160" cy="53" r="4.5"/><rect class="fa" x="80" y="67" width="100" height="10" rx="5"/><circle class="fr" cx="180" cy="72" r="4.5"/><rect class="fa" x="100" y="86" width="100" height="10" rx="5"/><circle class="fr" cx="200" cy="91" r="4.5"/><path class="st" stroke-dasharray="3 4" d="M100 4V108"/>
+```
 
 The direct approach is to fix every possible start and read forward until a backend repeats, remembering the longest run seen. It is correct, and it is what most people write first:
 
 ```code naive "Restart from every position"
 ```
 
-Look at what it throws away. When the run from start 0 stops at position 5 because position 5 repeats position 2, the run from start 1 will read positions 1 to 4 again, and the run from start 2 will read 2 to 4 once more. Every one of those characters was already checked and known to be clean. The restart forgets everything and re-derives it.
+Look at what it throws away. When the run from start 0 stops at position 5 because position 5 repeats position 2, the run from start 1 will read positions 1 to 4 again, and the run from start 2 will read 2 to 4 once more. Every one of those characters was already checked and known to be clean. The restart ==forgets everything== and re-derives it.
 
 How much is wasted depends on how long clean stretches run. A stretch can never be longer than the number of distinct characters in play, so each start re-reads at most that many. In a string cycling through 26 letters each start re-reads about 26 characters, so the total is about 26 times the length. If identifiers were unbounded, as request IDs are in a real system, clean stretches could be as long as the log and the cost would be quadratic. Either way the same characters are read again and again.
 
@@ -67,11 +87,19 @@ How much is wasted depends on how long clean stretches run. A stretch can never 
 <div class="chart" id="cost"></div><p class="cost-note"></p>
 ```
 
-## The insight {#insight banner}
+## The insight {#insight}
+
+```caption
+The right edge advances every step; the left edge only ever chases it.
+```
+
+```vig "A window over the log whose right edge advances while its left edge follows, with the set of backends inside it below"
+<rect class="fa" x="12" y="44" width="24" height="24" rx="4"/><rect class="fa" x="40" y="44" width="24" height="24" rx="4"/><rect class="fa" x="68" y="44" width="24" height="24" rx="4"/><rect class="fa" x="96" y="44" width="24" height="24" rx="4"/><rect class="fa" x="124" y="44" width="24" height="24" rx="4"/><rect class="fa" x="152" y="44" width="24" height="24" rx="4"/><rect class="fa" x="180" y="44" width="24" height="24" rx="4"/><rect class="fa" x="208" y="44" width="24" height="24" rx="4"/><rect class="sc" x="64" y="38" width="88" height="36" rx="8"/><path class="st" d="M152 24H176M170 18L176 24L170 30"/><path class="st" d="M64 24H78M73 19L78 24L73 29"/><rect class="st" x="78" y="84" width="64" height="22" rx="11"/><circle class="fk" cx="94" cy="95" r="4.5"/><circle class="fk" cx="110" cy="95" r="4.5"/><circle class="fk" cx="126" cy="95" r="4.5"/>
+```
 
 Two facts, and the second one is what makes a single pass possible.
 
-**First: keep the stretch, not the restarts.** Hold a window over the log, with a left edge and a right edge, and a set of the backends currently inside it. Each new request extends the right edge by one. Checking the set answers "is it a repeat?" in constant time.
+**First: keep the stretch, not the restarts.** Hold a ==window== over the log, with a left edge and a right edge, and a ==set== of the backends currently inside it. Each new request extends the right edge by one. Checking the set answers "is it a repeat?" in constant time.
 
 **Second: a repeat can only be cured by shrinking.** If a stretch contains a repeated backend, every longer stretch that contains it also does, because adding requests can never remove a duplicate. So when the newcomer repeats a backend in the window, extending further is pointless and the only way back to clean is to move the left edge forward. So drop requests from the left, one at a time, until the earlier copy of that backend has left. Stopping sooner leaves the duplicate inside. Going further would discard requests that are still clean. The window that remains is therefore the longest clean stretch that ends at the newcomer, and since every clean stretch ends somewhere, taking the best over all right edges misses nothing.
 
@@ -95,7 +123,11 @@ Watch it happen. The top row is the log. The key above it names each marking: th
 <div class="extabs" role="group" aria-label="Choose a log"></div><div class="plhost"></div>
 ```
 
-## Solution {#solution banner}
+## Solution {#solution}
+
+```vig "Bars for the clean window's length at each step, and a line marking the record they reach"
+<path class="st" d="M14 96H226"/><rect class="fa" x="22" y="74" width="16" height="22" rx="3"/><rect class="fa" x="48" y="52" width="16" height="44" rx="3"/><rect class="fk" x="74" y="30" width="16" height="66" rx="3"/><rect class="fa" x="100" y="30" width="16" height="66" rx="3"/><rect class="fa" x="126" y="30" width="16" height="66" rx="3"/><rect class="fa" x="152" y="30" width="16" height="66" rx="3"/><rect class="fa" x="178" y="52" width="16" height="44" rx="3"/><rect class="fa" x="204" y="74" width="16" height="22" rx="3"/><path class="sc" stroke-dasharray="6 5" d="M14 30H226"/>
+```
 
 Attempt it on paper first: write the loop, decide where the shrinking happens, and decide exactly where `best` is updated. Then compare. Read it as one clerk at the load balancer, who keeps a list of the backends in the current stretch, ticks off the oldest request whenever a repeat shows up, and updates the record only when the stretch is clean.
 
@@ -104,7 +136,7 @@ Attempt it on paper first: write the loop, decide where the shrinking happens, a
 ```
 
 ```notes
-The `while` loop is the shrink: while the newcomer is already in the set, drop the leftmost character and move `left` forward. When it stops, the window is clean, so the newcomer is added and the length is measured. `best` is read once per request, after the repair, which is the only moment the window is guaranteed to be a clean stretch.
+The `while` loop is ==the shrink==: while the newcomer is already in the set, drop the leftmost character and move `left` forward. When it stops, the window is clean, so the newcomer is added and the length is measured. `best` is read once per request, after the repair, which is the only moment the window is guaranteed to be a clean stretch.
 ```
 
 ```derivation
@@ -123,7 +155,11 @@ Do not record the length before the shrink. Counting `right - left + 1` while a 
 
 ## Variants {#variants}
 
-Once you see "grow while valid, shrink until valid again", a family of problems opens up. Only the meaning of valid changes.
+```vig "Three logs, each holding a window of a different width under a different rule, the last one sliding at a fixed size"
+<rect class="fa" x="30" y="14" width="18" height="18" rx="3"/><rect class="fa" x="52" y="14" width="18" height="18" rx="3"/><rect class="fa" x="74" y="14" width="18" height="18" rx="3"/><rect class="fa" x="96" y="14" width="18" height="18" rx="3"/><rect class="fa" x="118" y="14" width="18" height="18" rx="3"/><rect class="fa" x="140" y="14" width="18" height="18" rx="3"/><rect class="fa" x="162" y="14" width="18" height="18" rx="3"/><rect class="fa" x="184" y="14" width="18" height="18" rx="3"/><rect class="fa" x="30" y="46" width="18" height="18" rx="3"/><rect class="fa" x="52" y="46" width="18" height="18" rx="3"/><rect class="fa" x="74" y="46" width="18" height="18" rx="3"/><rect class="fa" x="96" y="46" width="18" height="18" rx="3"/><rect class="fa" x="118" y="46" width="18" height="18" rx="3"/><rect class="fa" x="140" y="46" width="18" height="18" rx="3"/><rect class="fa" x="162" y="46" width="18" height="18" rx="3"/><rect class="fa" x="184" y="46" width="18" height="18" rx="3"/><rect class="fa" x="30" y="78" width="18" height="18" rx="3"/><rect class="fa" x="52" y="78" width="18" height="18" rx="3"/><rect class="fa" x="74" y="78" width="18" height="18" rx="3"/><rect class="fa" x="96" y="78" width="18" height="18" rx="3"/><rect class="fa" x="118" y="78" width="18" height="18" rx="3"/><rect class="fa" x="140" y="78" width="18" height="18" rx="3"/><rect class="fa" x="162" y="78" width="18" height="18" rx="3"/><rect class="fa" x="184" y="78" width="18" height="18" rx="3"/><rect class="sc" x="48" y="10" width="70" height="26" rx="6"/><rect class="sc" x="26" y="42" width="114" height="26" rx="6"/><rect class="sc" x="114" y="74" width="70" height="26" rx="6"/><path class="st" d="M194 87H212M206 81L212 87L206 93"/>
+```
+
+Once you see "grow while valid, shrink until valid again", a family of problems opens up. Only the ==meaning of valid== changes.
 
 ```variants
 [
@@ -146,6 +182,10 @@ Once you see "grow while valid, shrink until valid again", a family of problems 
 ```
 
 ## Check yourself {#quiz}
+
+```vig "Three questions as rows, the first one answered and ticked"
+<circle class="fg" cx="36" cy="24" r="10"/><path class="st" d="M31 24L35 28L42 20"/><circle class="st" cx="36" cy="56" r="10"/><circle class="st" cx="36" cy="88" r="10"/><rect class="fa" x="58" y="19" width="150" height="10" rx="5"/><rect class="fa" x="58" y="51" width="118" height="10" rx="5"/><rect class="fa" x="58" y="83" width="138" height="10" rx="5"/>
+```
 
 ```quiz
 {

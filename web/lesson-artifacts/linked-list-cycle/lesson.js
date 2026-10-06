@@ -151,7 +151,7 @@ var FACTS=(function(){
   mountPlayerTabs($('#stepper'),[CASES[0],CASES[6],CASES[1],CASES[3]].map(function(c){return {name:clShow(c),steps:function(){return floydSteps(c);}};}),make,{id:'walk'});
 })();
 
-/* ================= systems layer: the looping file hero, animated banners ================= */
+/* ================= systems layer: the looping file hero================= */
 (function(){
   function heroLoop(){
     var svg=$('#heroLoop');if(!svg)return;
@@ -180,36 +180,5 @@ var FACTS=(function(){
     var last=-1;M.animate(0,K+2,{duration:(K+2)*1.6,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(K,Math.floor(v));if(k!==last){last=k;show(k);}}});
   }
 
-  var banners={
-    /* a chain whose last link bends back */
-    problem:function(svg){
-      var X=chainArt(svg,[1,2,3,4,5],100,30),back=S('path',{d:'M'+(X(4)+35)+',66 C'+(X(4)+35)+',112 '+(X(2)+35)+',112 '+(X(2)+35)+',70',class:'bn-path b2',style:'fill:none;stroke-dasharray:400;stroke-dashoffset:400'},svg);
-      return function(){M.animate(400,0,{duration:1,delay:.4,onUpdate:function(v){back.style.strokeDashoffset=v;}});};
-    },
-    /* two runners on a loop: the gap closes */
-    attempt:function(svg){
-      var cx=360,cy=60,r=44;S('circle',{cx:cx,cy:cy,r:r,class:'bn-edge',style:'fill:none'},svg);
-      var s=S('circle',{r:8,class:'hn-pk'},svg),f=S('circle',{r:8,class:'bn-end'},svg),t=S('text',{x:520,y:66,class:'bn-t'},svg);
-      function at(e,th){e.setAttribute('cx',cx+r*Math.cos(th));e.setAttribute('cy',cy+r*Math.sin(th));}
-      at(s,0);at(f,-2.4);
-      return function(){M.animate(0,1,{duration:3,ease:'easeInOut',onUpdate:function(v){var ts=v*2.4,tf=-2.4+v*4.8;at(s,ts);at(f,tf);t.textContent='gap '+Math.max(0,Math.round(3-3*v));}});};
-    },
-    /* equal values, different nodes */
-    trap:function(svg){
-      var X=chainArt(svg,[1,1,1,1],150,40),q=S('text',{x:600,y:58,class:'bn-big bad','text-anchor':'middle'},svg),sub=S('text',{x:600,y:84,class:'bn-t','text-anchor':'middle'},svg);
-      return function(){M.animate(0,1,{duration:.4,delay:.6,onUpdate:function(v){q.textContent=v>.5?'1 == 1':'';sub.textContent=v>.5?'but not the same node':'';}});};
-    },
-    /* the gap counting down */
-    insight:function(svg){
-      var big=S('text',{x:360,y:70,class:'bn-big','text-anchor':'middle'},svg),sub=S('text',{x:360,y:100,class:'bn-t','text-anchor':'middle'},svg);sub.textContent='fast +2, slow +1: the gap shrinks by exactly one';
-      return function(){M.animate(4,0,{duration:3,ease:'linear',onUpdate:function(v){var g=Math.ceil(v-1e-9);big.textContent=g?'gap '+g:'met';}});};
-    },
-    /* memory: two references */
-    solution:function(svg){
-      S('rect',{x:60,y:52,width:520,height:14,rx:7,class:'bn-track'},svg);var fill=S('rect',{x:60,y:52,width:0,height:14,rx:7,class:'bn-bar'},svg);
-      var big=S('text',{x:60,y:36,class:'bn-big'},svg);big.textContent='held: 2 references';
-      return function(){M.animate(0,1,{duration:1.6,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',24*v);}});};
-    }
-  };
-  heroLoop();mountBanners(banners);kinetic();riseIn();
+  heroLoop();kinetic();riseIn();
 })();

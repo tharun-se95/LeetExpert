@@ -66,36 +66,6 @@ function mountHero(){
   var last=-1;M.animate(0,7,{duration:7*1.9,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(5,Math.floor(v));if(k!==last){last=k;show(k);}}});
 }
 
-/* ---------- banners ---------- */
-var banners={
-  node:function(svg){
-    var X=chainArt(svg,[7,3,12],200,52),arrows=[0,1].map(function(i){return S('line',{x1:X(i)+60,y1:70,x2:X(i)+60,y2:70,class:'bn-path','marker-end':'url(#bnA)'},svg);});
-    svg.insertAdjacentHTML('afterbegin','<defs><marker id="bnA" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="context-stroke"/></marker></defs>');
-    var hd=S('text',{x:X(0)+35,y:38,class:'bn-t','text-anchor':'middle'},svg),tl=S('text',{x:X(2)+35,y:38,class:'bn-t','text-anchor':'middle'},svg),sz=S('text',{x:560,y:76,class:'bn-big'},svg);
-    return function(){arrows.forEach(function(l,i){M.animate(0,1,{duration:.45,delay:.2+i*.45,onUpdate:function(v){l.setAttribute('x2',X(i)+60+(X(i+1)-X(i)-63)*v);}});});
-      M.animate(0,1,{duration:.3,delay:1.2,onUpdate:function(v){hd.textContent=v>.5?'head':'';tl.textContent=v>.5?'tail':'';}});
-      M.animate(0,3,{duration:.8,delay:1.4,onUpdate:function(v){sz.textContent='size '+Math.round(v);}});};
-  },
-  walk:function(svg){
-    var X=chainArt(svg,[7,3,12,5],150,56),pv=S('text',{class:'bn-t','text-anchor':'middle',y:112},svg),cu=S('text',{class:'bn-t','text-anchor':'middle',y:112},svg);
-    var arc=S('path',{class:'bn-path b2',d:'M'+(X(1)+60)+',56 C'+(X(1)+90)+',8 '+(X(3)-40)+',8 '+(X(3)-4)+',56',style:'stroke-dasharray:400;stroke-dashoffset:400'},svg);
-    var lab=S('text',{x:X(2)+35,y:22,class:'bn-t','text-anchor':'middle'},svg);
-    return function(){M.animate(0,2,{duration:1.6,onUpdate:function(v){var k=Math.round(v);pv.setAttribute('x',X(k)+35);cu.setAttribute('x',X(k+1)+35);pv.textContent=k>=0?'prev':'';cu.textContent='curr';}});
-      M.animate(400,0,{duration:.7,delay:1.8,onUpdate:function(v){arc.style.strokeDashoffset=v;}});
-      M.animate(0,1,{duration:.2,delay:2.4,onUpdate:function(v){lab.textContent=v>.5?'prev.next = curr.next':'';}});};
-  },
-  trap:function(svg){
-    var X=chainArt(svg,[7,3],120,30,{cut:1});
-    var gx=X(2)+30,g=S('rect',{x:gx,y:74,width:70,height:36,rx:8,class:'bn-mid',style:'stroke-dasharray:5 4;fill:none'},svg),gt=S('text',{x:gx+24,y:97,class:'bn-t','text-anchor':'middle',style:'font-size:14px'},svg);gt.textContent='12';
-    var nx=gx+104,n=S('rect',{x:nx,y:74,width:70,height:36,rx:8,class:'bn-mid',style:'stroke-dasharray:5 4;fill:none;opacity:0'},svg),nt=S('text',{x:nx+24,y:97,class:'bn-t','text-anchor':'middle',style:'font-size:14px;opacity:0'},svg);nt.textContent='5';
-    var ln=S('line',{x1:gx+60,y1:92,x2:gx+60,y2:92,class:'bn-path b2'},svg),tag=S('text',{x:gx+35,y:66,class:'bn-t','text-anchor':'middle'},svg);
-    var big=S('text',{x:560,y:48,class:'bn-big bad'},svg),sub=S('text',{x:560,y:72,class:'bn-t'},svg);
-    return function(){M.animate(0,1,{duration:.3,delay:.3,onUpdate:function(v){tag.textContent=v>.5?'tail (stale)':'';}});
-      M.animate(0,1,{duration:.6,delay:.9,onUpdate:function(v){n.style.opacity=v;nt.style.opacity=v;ln.setAttribute('x2',gx+60+(nx-gx-63)*v);}});
-      M.animate(0,1,{duration:.3,delay:1.6,onUpdate:function(v){big.textContent=v>.5?'size 3':'';sub.textContent=v>.5?'head reaches 2':'';}});};
-  }
-};
-
 /* ---------- cost ---------- */
 function appendVisits(n,withTail){
   var head=null,tail=null,visits=0;
@@ -132,7 +102,6 @@ function mountCost(){
     {name:'Delete that forgets the tail',steps:scripted([7,3,12],[['delete',12],['push_back',5]],'The list 7 → 3 → 12. Delete 12 with the version that forgets the tail branch, then append 5.',true,
       function(L){return 'The walk from head gives '+toArr(L).join(' → ')+', but size says '+L.size+'. The append returned normally and its value is gone.';})}
   ],'trap');
-  mountBanners(banners);
   mountCost();
   /* every number here is run, not typed: the walk count by appendVisits (checked against
      n(n - 1)/2 in mountCost), the writes by recording a real push_back */

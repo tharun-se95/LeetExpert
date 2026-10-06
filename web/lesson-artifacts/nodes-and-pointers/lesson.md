@@ -12,9 +12,13 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> <span id="heroUnit">objects</span> moved</div><div id="heroCap"></div></div></div></div>
 ---
 
-## A value and an address {#node banner}
+## A value and an address {#node}
 
-Every structure so far kept its elements in one contiguous block, so the address of element i was a sum: the block's start plus i times the element size. A **linked list** gives that up. Each element is a free-standing **node**: a value, plus a **pointer** to the next node, which is nothing more than that node's address. The last node's pointer is empty (`None` in Python, `null` in TypeScript, drawn here as ∅). The only thing you hold on to is a reference to the first node, the **head**.
+```vig "One node drawn large, a value cell and an address cell, its arrow leaving for the next node"
+<rect class="fa" x="16" y="32" width="78" height="48" rx="6"/><rect class="st" x="94" y="32" width="50" height="48" rx="6"/><circle class="fk" cx="119" cy="56" r="4"/><path class="st" d="M119 56L176 56"/><path class="st" d="M171.9 53.2L176 56L171.9 58.8"/><rect class="fa" x="180" y="44" width="26" height="24" rx="4"/><rect class="st" x="206" y="44" width="16" height="24" rx="4"/><circle class="fk" cx="214" cy="56" r="2.5"/>
+```
+
+Every structure so far kept its elements in one contiguous block, so the address of element i was a sum: the block's start plus i times the element size. A ==linked list== gives that up. Each element is a free-standing ==node==: a value, plus a ==pointer== to the next node, which is nothing more than that node's address. The last node's pointer is empty (`None` in Python, `null` in TypeScript, drawn here as ∅). The only thing you hold on to is a reference to the first node, the **head**.
 
 In Python and TypeScript every object variable is already a reference, so a pointer needs no special syntax: `node.next = other` stores where `other` lives, not a copy of it. Assigning one is a single write, and it never moves any data. That fact is the source of everything a list is good at.
 
@@ -40,7 +44,15 @@ Here is a real list of three nodes. Insert a new value after any of them and wat
 A linked list is nodes that each hold the address of the next; the head is the only way in, and editing the chain means rewriting addresses, never moving nodes.
 ```
 
-## Reaching a node: walk, don't jump {#walk banner}
+## Reaching a node: walk, don't jump {#walk}
+
+```caption
+A position is a walk: node i is i links from the head, and nothing else records where it lives.
+```
+
+```vig "Five nodes in a row, with a walker hopping link by link from the first to the fourth"
+<circle class="fa" cx="24" cy="76" r="8"/><circle class="fa" cx="70" cy="76" r="8"/><circle class="fa" cx="116" cy="76" r="8"/><circle class="fa" cx="162" cy="76" r="8"/><circle class="fa" cx="208" cy="76" r="8"/><path class="st" d="M35 76L59 76"/><path class="st" d="M54.9 73.2L59 76L54.9 78.8"/><path class="st" d="M81 76L105 76"/><path class="st" d="M100.9 73.2L105 76L100.9 78.8"/><path class="st" d="M127 76L151 76"/><path class="st" d="M146.9 73.2L151 76L146.9 78.8"/><path class="st" d="M173 76L197 76"/><path class="st" d="M192.9 73.2L197 76L192.9 78.8"/><path class="sc" d="M24 62Q47 34 70 62" stroke-dasharray="4 4"/><path class="sc" d="M69.6 57L70 62L65.2 60.6"/><path class="sc" d="M70 62Q93 34 116 62" stroke-dasharray="4 4"/><path class="sc" d="M115.6 57L116 62L111.2 60.6"/><path class="sc" d="M116 62Q139 34 162 62" stroke-dasharray="4 4"/><path class="sc" d="M161.6 57L162 62L157.2 60.6"/><polygon class="fk" points="156,16 168,16 162,27"/>
+```
 
 The price of scattering the nodes is that a position means nothing to the machine. With an array, element i is one multiplication and one addition away. In a list, node i can only be reached by starting at the head and following `next` i times, because the only record of where node i lives is inside node i − 1. Reaching node i costs i steps, so finding a position or a value is O(n).
 
@@ -54,7 +66,15 @@ That changes which algorithms are worth running. Binary search needs a cheap jum
 <div class="chart" id="cost"></div><p class="cost-note" id="costNote"></p>
 ```
 
-## Two writes, in the right order {#trap banner}
+## Two writes, in the right order {#trap}
+
+```caption
+Save the old pointer in the new node before you overwrite it.
+```
+
+```vig "A new node above a chain of two: its own pointer aimed at the second node, and the first node's pointer turned up to it"
+<rect class="fa" x="20" y="64" width="26" height="24" rx="4"/><rect class="st" x="46" y="64" width="16" height="24" rx="4"/><circle class="fk" cx="54" cy="76" r="2.5"/><rect class="fa" x="150" y="64" width="26" height="24" rx="4"/><rect class="st" x="176" y="64" width="16" height="24" rx="4"/><circle class="fk" cx="184" cy="76" r="2.5"/><path class="st" d="M184 76L204 76"/><path class="st" d="M199.9 73.2L204 76L199.9 78.8"/><circle class="st" cx="214" cy="76" r="7"/><path class="st" d="M209.1 80.9L218.9 71.1"/><path class="st" d="M56 76L146 76" stroke-dasharray="3 3"/><rect class="fk" x="86" y="14" width="26" height="24" rx="4"/><rect class="st" x="112" y="14" width="16" height="24" rx="4"/><circle class="fk" cx="120" cy="26" r="2.5"/><path class="sc" d="M120 26L158 60"/><path class="sc" d="M156.8 55.1L158 60L153 59.4"/><path class="st" d="M54 76L90 42"/><path class="st" d="M85.1 42.8L90 42L88.9 46.9"/>
+```
 
 Inserting a value after a node you hold is the list's best trick: two writes, whatever the length. Make the new node point where the old one pointed, then point the old one at the new node. The order is not a style choice. The old node's `next` is the only route to everything after it, so it must be copied into the new node before it is overwritten.
 
@@ -70,6 +90,10 @@ Write the new node's `next` before the old node's. Swapped, `node.next = new` ru
 ````
 
 ## What it costs {#cost toc="What it costs"}
+
+```vig "One short bar for a write beside a climbing staircase of bars for a walk"
+<path class="st" d="M10 100H78M96 100H230"/><rect class="fg" x="36" y="84" width="16" height="12" rx="2"/><rect class="fr" x="104" y="86" width="10" height="10" rx="2"/><rect class="fr" x="119" y="76" width="10" height="20" rx="2"/><rect class="fr" x="134" y="66" width="10" height="30" rx="2"/><rect class="fr" x="149" y="56" width="10" height="40" rx="2"/><rect class="fr" x="164" y="46" width="10" height="50" rx="2"/><rect class="fr" x="179" y="36" width="10" height="60" rx="2"/><rect class="fr" x="194" y="26" width="10" height="70" rx="2"/><rect class="fr" x="209" y="16" width="10" height="80" rx="2"/>
+```
 
 Every cost follows from the same two facts: an edit is a few writes, and a position is a walk.
 
@@ -87,6 +111,10 @@ The fourth row is the one to remember. The O(1) insert is conditional on already
 Memory is the cost big-O hides. Each value carries an address beside it and is a separate allocation, so a list spends at least twice the slots per value of an array, and its scattered nodes defeat the cache that makes an array fast to read in order. In practice an array wins most container jobs. Lists earn their place where edits dominate: schedulers, LRU caches, adjacency lists. And they matter in this course because trees and graphs are node-and-pointer structures with more pointers: this module is where that skill is built.
 
 ## Where next {#next}
+
+```vig "Three sketches: a chain with a marker on each end, a chain linked in both directions, and a chain with a placeholder box in front"
+<circle class="fa" cx="14" cy="34" r="6"/><circle class="fa" cx="48" cy="34" r="6"/><circle class="fa" cx="82" cy="34" r="6"/><path class="st" d="M23 34L39 34"/><path class="st" d="M34.9 31.2L39 34L34.9 36.8"/><path class="st" d="M57 34L73 34"/><path class="st" d="M68.9 31.2L73 34L68.9 36.8"/><polygon class="fc" points="8,10 20,10 14,21"/><polygon class="fk" points="76,10 88,10 82,21"/><circle class="fa" cx="136" cy="34" r="6"/><circle class="fa" cx="176" cy="34" r="6"/><circle class="fa" cx="216" cy="34" r="6"/><path class="st" d="M145 31L167 31"/><path class="st" d="M162.9 28.2L167 31L162.9 33.8"/><path class="sc" d="M167 38L145 38"/><path class="sc" d="M149.1 40.8L145 38L149.1 35.2"/><path class="st" d="M185 31L207 31"/><path class="st" d="M202.9 28.2L207 31L202.9 33.8"/><path class="sc" d="M207 38L185 38"/><path class="sc" d="M189.1 40.8L185 38L189.1 35.2"/><rect class="st" x="56" y="72" width="22" height="18" rx="4" stroke-dasharray="3 3"/><path class="st" d="M78 81L98 81"/><path class="st" d="M93.9 78.2L98 81L93.9 83.8"/><circle class="fa" cx="108" cy="81" r="6"/><circle class="fa" cx="148" cy="81" r="6"/><circle class="fa" cx="188" cy="81" r="6"/><path class="st" d="M117 81L139 81"/><path class="st" d="M134.9 78.2L139 81L134.9 83.8"/><path class="st" d="M157 81L179 81"/><path class="st" d="M174.9 78.2L179 81L174.9 83.8"/>
+```
 
 ```variants
 [
@@ -109,6 +137,10 @@ Memory is the cost big-O hides. Each value carries an address beside it and is a
 ```
 
 ## Check yourself {#quiz}
+
+```vig "Three questions as rows, the first one answered and ticked"
+<circle class="fg" cx="36" cy="24" r="10"/><path class="st" d="M31 24L35 28L42 20"/><circle class="st" cx="36" cy="56" r="10"/><circle class="st" cx="36" cy="88" r="10"/><rect class="fa" x="58" y="19" width="150" height="10" rx="5"/><rect class="fa" x="58" y="51" width="118" height="10" rx="5"/><rect class="fa" x="58" y="83" width="138" height="10" rx="5"/>
+```
 
 ```quiz
 {

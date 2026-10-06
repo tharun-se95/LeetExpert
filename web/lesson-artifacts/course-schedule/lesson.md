@@ -12,7 +12,15 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> of 6 built</div><div id="heroCap"></div></div></div></div>
 ---
 
-## Problem {#problem banner}
+## Problem {#problem}
+
+```caption
+Each arrow means “must be built before”.
+```
+
+```vig "Five courses joined by arrows, each arrow pointing from a course to one that must wait for it"
+<path class="st" d="M32.5 32.9L89.6 52.4"/><path class="st" d="M83.8 54L89.6 52.4L86 47.6"/><path class="st" d="M32.4 80.9L89.7 59.8"/><path class="st" d="M86.2 64.7L89.7 59.8L83.9 58.3"/><path class="st" d="M108.3 52.5L159.9 30.3"/><path class="st" d="M156.7 35.4L159.9 30.3L154 29.2"/><path class="st" d="M108.8 57.9L203.2 77.7"/><path class="st" d="M197.7 80L203.2 77.7L199.1 73.4"/><path class="st" d="M175.7 33L207.1 71.5"/><path class="st" d="M201.3 69.8L207.1 71.5L206.5 65.5"/><circle class="fk" cx="24" cy="30" r="9"/><circle class="fk" cx="24" cy="84" r="9"/><circle class="fa" cx="100" cy="56" r="9"/><circle class="fa" cx="170" cy="26" r="9"/><circle class="fa" cx="214" cy="80" r="9"/>
+```
 
 There are `numCourses` courses, numbered `0` to `numCourses - 1`. The list `prerequisites` holds pairs `[a, b]`, each meaning: to take course `a` you must first take course `b`. Return `true` if it is possible to take every course, and `false` if not.
 
@@ -31,7 +39,11 @@ Draw each pair `[a, b]` as an arrow from `b` to `a`, meaning "b must come before
 <div class="extabs" role="group" aria-label="Choose a build"></div><div class="tv-wrap"><div class="tv"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><button type="button" class="btn2 reset">Reset</button><button type="button" class="btn2 best">Show a valid order</button></div>
 ```
 
-## Attempt it first {#attempt banner}
+## Attempt it first {#attempt}
+
+```vig "Two graphs side by side: a chain of courses that can be ordered, and three courses whose arrows loop back on themselves"
+<path class="st" d="M29 56L49 56"/><path class="st" d="M44 59.4L49 56L44 52.6"/><path class="st" d="M69 56L89 56"/><path class="st" d="M84 59.4L89 56L84 52.6"/><circle class="fg" cx="20" cy="56" r="9"/><circle class="fg" cx="60" cy="56" r="9"/><circle class="fg" cx="100" cy="56" r="9"/><path class="st" d="M182.1 28L209 80.2"/><path class="st" d="M203.7 77.4L209 80.2L209.7 74.3"/><path class="st" d="M205 90L153 90"/><path class="st" d="M158 86.6L153 90L158 93.4"/><path class="st" d="M146.1 82L173 29.8"/><path class="st" d="M173.7 35.7L173 29.8L167.7 32.6"/><circle class="fr" cx="178" cy="20" r="9"/><circle class="fr" cx="214" cy="90" r="9"/><circle class="fr" cx="142" cy="90" r="9"/>
+```
 
 The module's topological-sort lesson asks one question about a directed graph: does a valid ordering exist at all? Before opening anything, work out what property of the arrows decides it.
 
@@ -51,7 +63,15 @@ Keep, for every course, the number of prerequisites not yet taken. When it reach
 Then ask how many courses you managed to take, and what it means if that is fewer than all of them.
 ```
 
-## Two traps {#trap banner}
+## Two traps {#trap}
+
+```caption
+Trying every build order grows factorially with the number of courses.
+```
+
+```vig "Stacked rows of the same five courses in different orders, the pile of orderings growing downward"
+<circle class="fk" cx="30" cy="14" r="7"/><circle class="fa" cx="56" cy="14" r="7"/><circle class="fa" cx="82" cy="14" r="7"/><circle class="fa" cx="108" cy="14" r="7"/><circle class="fa" cx="134" cy="14" r="7"/><circle class="fa" cx="30" cy="35" r="7"/><circle class="fa" cx="56" cy="35" r="7"/><circle class="fa" cx="82" cy="35" r="7"/><circle class="fa" cx="108" cy="35" r="7"/><circle class="fk" cx="134" cy="35" r="7"/><circle class="fa" cx="30" cy="56" r="7"/><circle class="fa" cx="56" cy="56" r="7"/><circle class="fa" cx="82" cy="56" r="7"/><circle class="fk" cx="108" cy="56" r="7"/><circle class="fa" cx="134" cy="56" r="7"/><circle class="fa" cx="30" cy="77" r="7"/><circle class="fa" cx="56" cy="77" r="7"/><circle class="fk" cx="82" cy="77" r="7"/><circle class="fa" cx="108" cy="77" r="7"/><circle class="fa" cx="134" cy="77" r="7"/><circle class="fa" cx="30" cy="98" r="7"/><circle class="fk" cx="56" cy="98" r="7"/><circle class="fa" cx="82" cy="98" r="7"/><circle class="fa" cx="108" cy="98" r="7"/><circle class="fa" cx="134" cy="98" r="7"/><path class="st" stroke-dasharray="3 4" d="M180 10V100"/><path class="st" d="M174 94L180 102L186 94"/>
+```
 
 **The first trap is trying every build order.** An order is valid if every prerequisite comes before the course that needs it, so generate the orders and test them:
 
@@ -66,7 +86,15 @@ It is correct and it is hopeless. There are n! orders of n courses, and when no 
 
 **The second trap is a good idea used half-way.** The approach in the next section builds courses that are ready and stops when nothing is ready. The mistake is to conclude "the queue is empty, so we finished". An empty queue happens in two very different situations: everything was built, or what is left is locked in a loop. The warning at the end of the solution shows the code that mixes them up.
 
-## The insight {#insight banner}
+## The insight {#insight}
+
+```caption
+A course is ready when its waiting count reaches 0.
+```
+
+```vig "Three courses with dots for the prerequisites they still wait on; the one with none left is ready and moves into the queue"
+<circle class="fa" cx="40" cy="30" r="11"/><circle class="fc" cx="34" cy="56" r="3"/><circle class="fc" cx="46" cy="56" r="3"/><circle class="fa" cx="100" cy="30" r="11"/><circle class="fc" cx="100" cy="56" r="3"/><circle class="fg" cx="160" cy="30" r="11"/><path class="sc" d="M160 46L160 74"/><path class="sc" d="M156.6 69L160 74L163.4 69"/><rect class="st" x="118" y="78" width="84" height="26" rx="8"/><circle class="fk" cx="136" cy="91" r="6"/><circle class="fk" cx="154" cy="91" r="6"/>
+```
 
 Think about how a real build starts. Some packages depend on nothing, so they can be built immediately. Once they are built, some other packages have had all their prerequisites satisfied, and those can be built next. Keep going: build whatever is ready, and record what it releases.
 
@@ -94,7 +122,11 @@ Watch it run. The arrows read "must be built before". The number under a course 
 <div class="extabs" role="group" aria-label="Choose a build"></div><div class="plhost"></div>
 ```
 
-## Solution {#solution banner}
+## Solution {#solution}
+
+```vig "A queue of ready courses emptying into a build order, the order's length compared against the number of courses"
+<rect class="st" x="10" y="36" width="78" height="34" rx="9"/><circle class="fk" cx="30" cy="53" r="7"/><circle class="fk" cx="50" cy="53" r="7"/><circle class="fa" cx="70" cy="53" r="7"/><path class="sc" d="M94 53L118 53"/><path class="sc" d="M113 56.4L118 53L113 49.6"/><rect class="fk" x="124" y="42" width="22" height="22" rx="4"/><rect class="fk" x="150" y="42" width="22" height="22" rx="4"/><rect class="fk" x="176" y="42" width="22" height="22" rx="4"/><rect class="st fp" x="202" y="42" width="22" height="22" rx="4"/><path class="st" d="M124 82V88H224V82"/><path class="st" stroke-dasharray="3 4" d="M124 24V18H224V24"/>
+```
 
 Attempt it on paper first: decide what you keep per course, how a course becomes ready, and exactly what the final answer compares. Then compare. Read it as the build scheduler: a table of unmet dependencies, a queue of ready packages, and a count of what actually shipped.
 
@@ -124,6 +156,10 @@ Do not return `true` just because the queue ran out. A loop of courses never ent
 
 ## Variants {#variants}
 
+```vig "Courses sorted into three columns by semester beside a staggered timeline of jobs"
+<circle class="fk" cx="24" cy="22" r="8"/><circle class="fk" cx="24" cy="56" r="8"/><circle class="fk" cx="24" cy="90" r="8"/><circle class="fa" cx="60" cy="22" r="8"/><circle class="fa" cx="60" cy="56" r="8"/><circle class="fa" cx="96" cy="22" r="8"/><circle class="fa" cx="96" cy="56" r="8"/><path class="st" stroke-dasharray="3 4" d="M42 10V102M78 10V102"/><rect class="fk" x="130" y="16" width="50" height="12" rx="6"/><rect class="fa" x="150" y="38" width="44" height="12" rx="6"/><rect class="fa" x="184" y="60" width="42" height="12" rx="6"/><rect class="fa" x="140" y="82" width="70" height="12" rx="6"/><path class="st" d="M124 104H230"/>
+```
+
 The same peeling process, asked a different question.
 
 ```variants
@@ -147,6 +183,10 @@ The same peeling process, asked a different question.
 ```
 
 ## Check yourself {#quiz}
+
+```vig "Three questions as rows, the first one answered and ticked"
+<circle class="fg" cx="36" cy="24" r="10"/><path class="st" d="M31 24L35 28L42 20"/><circle class="st" cx="36" cy="56" r="10"/><circle class="st" cx="36" cy="88" r="10"/><rect class="fa" x="58" y="19" width="150" height="10" rx="5"/><rect class="fa" x="58" y="51" width="118" height="10" rx="5"/><rect class="fa" x="58" y="83" width="138" height="10" rx="5"/>
+```
 
 ```quiz
 {
