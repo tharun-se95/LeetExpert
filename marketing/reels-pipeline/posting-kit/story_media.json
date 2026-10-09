@@ -1,0 +1,94 @@
+{
+ "p08": [
+  "2a098845730261059437fcd6417d598f"
+ ],
+ "p11": [
+  "cebf8f24b5897eda76e76e029b8924fe",
+  "7ddcb650860dc5f18e1779810cf7e898"
+ ],
+ "p12": [
+  "baefd06cee825a9750588451de495ff1",
+  "9ae2eaab641ac5e69d588c8a0f348f9b"
+ ],
+ "p14": [
+  "361d4e6556f6bb3aee2095fef4d004a7",
+  "629441b446cbe560d16822a2fcd40fd2"
+ ],
+ "p17": [
+  "fc6d2ae2167abed394c7a6d684dbea3f",
+  "c37cb478c20da76bb6395996ada046c4"
+ ],
+ "p18": [
+  "a74994955392379ea07f501b2940b450",
+  "8078ee691e6540e105c450172be88ae4"
+ ],
+ "cs-arrays": [
+  "e1f220a9bcc605b19c75c9d71eea4949",
+  "ddfed4dc32ebe0e94874f42f58cf8c77"
+ ],
+ "p13": [
+  "fe3e1ef7692bdd009e8daaf463313655"
+ ],
+ "cs-sliding-window": [
+  "24c3013e33d12922ad94cb4169341722",
+  "e756481e0f9c8909d6ad469cc806a2aa"
+ ],
+ "p10": [
+  "2356d537edef9dee1966675a337ed380"
+ ],
+ "cs-strings": [
+  "8abbcd80eac6f034f532dbe23063b27b",
+  "734205debc6e75c7ac1169130231cf77"
+ ],
+ "cs-linked-lists": [
+  "2c871f5897ead22d13828f98d578ebb0"
+ ],
+ "cs-stacks": [
+  "058b8d2dfa07591870b85ff22a02a9ef"
+ ],
+ "cs-binary-search": [
+  "1133890c7e4cc8f2b7515e1f12e5b5df"
+ ],
+ "cs-recursion-backtracking": [
+  "562a56ca305642c092e2906e7337444b"
+ ],
+ "cs-binary-trees": [
+  "ab0b98e88ae6fa0a8e8d9f6ef00178e1"
+ ],
+ "cs-heaps": [
+  "1526083a755c68ff21d5d972409f9224"
+ ],
+ "cs-graphs": [
+  "572875248a9b42f480094bffa3daa4b1"
+ ],
+ "cs-intervals": [
+  "69b3076245bdb9e18149a28aeaa4b421"
+ ],
+ "rc-anagram-tally": [
+  "99ac9bd8e61a6d01b216d91675fe13da"
+ ],
+ "rc-two-pointers-reel": [
+  "86bab6b9809f2263439c2b92afad8889"
+ ],
+ "rc-coach-wont-answer": [
+  "3cbc99796ce991c55e1a6665ced20e4c"
+ ],
+ "rc-monotonic-stack": [
+  "f1489961b24d48097da544f1a74ff438"
+ ],
+ "rc-remove-while-iterating": [
+  "05492648e54c9e6ca1dbdea71b33b847"
+ ],
+ "rc-sliding-window-inchworm": [
+  "b69e4d1925b138e648f6aaacbd9fbde8"
+ ],
+ "rc-max-sum-k-window": [
+  "a5efbaeebfc55136b25e0e33d8fc739d"
+ ],
+ "rc-js-float-mid": [
+  "0ce25dc43833fc75ab75e817c9f54469"
+ ],
+ "rc-call-stack-trays": [
+  "94730fec36bdfcc1082c138008d64072"
+ ]
+}

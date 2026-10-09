@@ -19,6 +19,10 @@ MEDIA = {
  "p17": {"video":"7bf0f9ea9ac00854c02139a7bfa717cc","cover":"a95504c381009ab0250fff70391b686b"},
  "p18": {"video":"f1c1830c81e83506b35b9abafb411666","cover":"60141626831f6b780f406e1372f0ea59"},
 }
+# the carousel and single-image packages, uploaded 2026-10-04 (#203): {post: {kind, files: [[label, asset id, ext]]}}
+MEDIA.update({k: {"kind": v["kind"], "files": [tuple(f) for f in v["files"]]} for k, v in json.load(open("carousel_media.json")).items()})
+# story frames uploaded 2026-10-04 (#203): {post: [asset id per frame, in order]}
+STORY = json.load(open("story_media.json"))
 def dur(d):
     s = float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",root+d+"/reel.mp4"]))
     return f"{int(s//60)}:{round(s%60):02d}"
@@ -58,8 +62,13 @@ for r in K:
             else:
                 opts = " / ".join(o + (" ✓" if o == f.get("answer") else "") for o in f["options"])
                 notes.append(f'Frame {i} (slide{i}.png): {f["sticker"]} sticker. {f["question"]}\n  Options: {opts}')
-        show_story = (f'<details><summary>Story · {len(story["frames"])} frame{"s" if len(story["frames"]) > 1 else ""} · media not uploaded yet</summary>'
-                      f'<pre id="story-{r["post"]}">{e(chr(10).join(notes))}\nFiles: marketing/instagram/{e(story["dir"])}/</pre></details>')
+        ids = STORY.get(r["post"], [])
+        # the frames are saved from here; the uploaded flag is what the summary says, so a missing id shows
+        frames_html = "".join(f'<img src="/_blob/{i}" alt="" style="width:min(100%,160px)">' for i in ids)
+        story_saves = "".join(f'<button class="sv" data-id="{i}" data-name="story-{e(r["post"])}-frame{n}.png">Save frame {n}</button>' for n, i in enumerate(ids, 1))
+        show_story = (f'<details><summary>Story · {len(story["frames"])} frame{"s" if len(story["frames"]) > 1 else ""}{"" if ids else " · media not uploaded yet"}</summary>'
+                      f'<div class="media">{frames_html}</div><div class="saves">{story_saves}</div>'
+                      f'<pre id="story-{r["post"]}">{e(chr(10).join(notes))}</pre></details>')
     show_first = f'<details><summary>First comment (post it right after publishing)</summary><pre id="com-{r["post"]}">{e(first)}</pre></details>' if first else ""
     weeks.setdefault(wk, []).append(f'''<article class="post" id="{r["post"]}">
  <div class="when"><span class="day">{d.strftime("%a")}</span><span class="date">{d.strftime("%b")} {d.day}</span><span class="slot">{e(r.get("slot", ""))}</span></div>

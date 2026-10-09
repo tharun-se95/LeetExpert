@@ -1,0 +1,2712 @@
+{
+ "cs-hash-tables": {
+  "kind": "Carousel \u00b7 9 slides",
+  "files": [
+   [
+    "slide 1",
+    "723659cff3e1a4a79c3f1b1c0ee72fba",
+    "png"
+   ],
+   [
+    "slide 2",
+    "72a86838908ecc77c7bb335ff9fa354f",
+    "png"
+   ],
+   [
+    "slide 3",
+    "e780acdfff382b18dac52935da0cdfbe",
+    "png"
+   ],
+   [
+    "slide 4",
+    "c342d9d443804d6065784088685ca1b0",
+    "png"
+   ],
+   [
+    "slide 5",
+    "2fa9c839d2ddaf19089efe42c2c13099",
+    "png"
+   ],
+   [
+    "slide 6",
+    "018fa3be98753daedf4a0371c94e4a5e",
+    "png"
+   ],
+   [
+    "slide 7",
+    "203a8876238a3cedce728f1bd7128630",
+    "png"
+   ],
+   [
+    "slide 8",
+    "7d75a41a6b6cf051bfb070a401b5e5cb",
+    "png"
+   ],
+   [
+    "slide 9",
+    "281a8bd50416c0ddd971035c2423dfc2",
+    "png"
+   ]
+  ]
+ },
+ "cs-dynamic-programming": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "c243ec990cdfb261139fd3dfcc7cb81e",
+    "png"
+   ],
+   [
+    "slide 2",
+    "9b7a671fe3f59a899f22d941a97b068b",
+    "png"
+   ],
+   [
+    "slide 3",
+    "d3e63cbac8d7ccc430d11b0ed5e64f42",
+    "png"
+   ],
+   [
+    "slide 4",
+    "cdc83212c5354400e4dcd39a8fa1f5ee",
+    "png"
+   ],
+   [
+    "slide 5",
+    "7fdf3628f5fbab7d4ccf916714ef85e8",
+    "png"
+   ],
+   [
+    "slide 6",
+    "00913f5016b0bb697dada03f4ed9875c",
+    "png"
+   ],
+   [
+    "slide 7",
+    "ac98afc3b50accfc85d33a3c5ee7cd2e",
+    "png"
+   ],
+   [
+    "slide 8",
+    "8b53e29f452b6cb4d5ac3ce98af0d9e5",
+    "png"
+   ]
+  ]
+ },
+ "cs-arrays": {
+  "kind": "Carousel \u00b7 9 slides",
+  "files": [
+   [
+    "slide 1",
+    "622a92b8a722044b160caf5d95fd990d",
+    "png"
+   ],
+   [
+    "slide 2",
+    "e49cbbdfd503933aa4a712cde5f2243c",
+    "png"
+   ],
+   [
+    "slide 3",
+    "0d2992e03884c69a96f8e68c8df8b0a7",
+    "png"
+   ],
+   [
+    "slide 4",
+    "893e0c883dc58dfecbe4902253379ff3",
+    "png"
+   ],
+   [
+    "slide 5",
+    "a6513a9108d4018ba5214f7697a70752",
+    "png"
+   ],
+   [
+    "slide 6",
+    "e94741526f1a2526c39a9d518de2436d",
+    "png"
+   ],
+   [
+    "slide 7",
+    "2ace5f372fed27fce3d4a814ede2a9e0",
+    "png"
+   ],
+   [
+    "slide 8",
+    "423bac00cee24b8d1e8823f65e9b404e",
+    "png"
+   ],
+   [
+    "slide 9",
+    "618f9f27a3f8d4c7e4fe65874c331403",
+    "png"
+   ]
+  ]
+ },
+ "cs-sliding-window": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "ee7ee67b49da185f7100df048808893d",
+    "png"
+   ],
+   [
+    "slide 2",
+    "43913c14e9faf95594d922f35ca81545",
+    "png"
+   ],
+   [
+    "slide 3",
+    "e1d06966a7bee59d3084ce10938b8f8a",
+    "png"
+   ],
+   [
+    "slide 4",
+    "41bc68945306a043616e91ef79e8042a",
+    "png"
+   ],
+   [
+    "slide 5",
+    "cf415b71f27ea7d58381c1077acc44d0",
+    "png"
+   ],
+   [
+    "slide 6",
+    "5e67504e21c3355281a83f3fb35fbaea",
+    "png"
+   ],
+   [
+    "slide 7",
+    "bf6dd66e6fa8b22451291fd6936c0fab",
+    "png"
+   ],
+   [
+    "slide 8",
+    "eb916fa7d5ed425c240e9bc861d8b708",
+    "png"
+   ]
+  ]
+ },
+ "cs-strings": {
+  "kind": "Carousel \u00b7 9 slides",
+  "files": [
+   [
+    "slide 1",
+    "54d93a4da277facc39e3de9a5b24e862",
+    "png"
+   ],
+   [
+    "slide 2",
+    "027acca21f194e8326ba0b4c0418bd52",
+    "png"
+   ],
+   [
+    "slide 3",
+    "8ed869578c692b7b663cd05cd060dadd",
+    "png"
+   ],
+   [
+    "slide 4",
+    "5d2f6c59cbf7bf66ff5ec611458a662c",
+    "png"
+   ],
+   [
+    "slide 5",
+    "ba7162ec3884313ce251abe51f2668df",
+    "png"
+   ],
+   [
+    "slide 6",
+    "5d4dfb265ee93079b5b64d8bf7e63ce5",
+    "png"
+   ],
+   [
+    "slide 7",
+    "bb9b9d23f8a7602db2214ac04c72f078",
+    "png"
+   ],
+   [
+    "slide 8",
+    "310a136e50a32c5e9ef6233708548ed8",
+    "png"
+   ],
+   [
+    "slide 9",
+    "3c5a34d5c79a1460761f397544cdc80a",
+    "png"
+   ]
+  ]
+ },
+ "cs-linked-lists": {
+  "kind": "Carousel \u00b7 9 slides",
+  "files": [
+   [
+    "slide 1",
+    "e31219cbfb256164e09714b5bd118274",
+    "png"
+   ],
+   [
+    "slide 2",
+    "7433ca3a521e772a24efefd38e102d6c",
+    "png"
+   ],
+   [
+    "slide 3",
+    "bdf5e3cada1b139ce52a5f6fd6d0a09f",
+    "png"
+   ],
+   [
+    "slide 4",
+    "591d92df5bb5a91cf2cd1a1387f07552",
+    "png"
+   ],
+   [
+    "slide 5",
+    "44e2a7696a9640111737a8a93c5fe02c",
+    "png"
+   ],
+   [
+    "slide 6",
+    "bc165b4bca8272a11e90a7d9024fb45a",
+    "png"
+   ],
+   [
+    "slide 7",
+    "88b0bfc66772e403283e88125cf4fffe",
+    "png"
+   ],
+   [
+    "slide 8",
+    "8edd58c243b9b5ec0bd1e9ede0a91d74",
+    "png"
+   ],
+   [
+    "slide 9",
+    "2e03d0a66b789ca04344949401e45481",
+    "png"
+   ]
+  ]
+ },
+ "cs-stacks": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "27a2ada20c2d8093d31d111d9bfe7bfa",
+    "png"
+   ],
+   [
+    "slide 2",
+    "29c060fe9bfbdd3c3d5607a53ffcc81c",
+    "png"
+   ],
+   [
+    "slide 3",
+    "3622ffc4f4cc03e26b3e021ee294d3b3",
+    "png"
+   ],
+   [
+    "slide 4",
+    "9d3d842995b4b9d7c5b5626942d2a9bc",
+    "png"
+   ],
+   [
+    "slide 5",
+    "bc91ea14e16a23aacc8dbca5e0262c94",
+    "png"
+   ],
+   [
+    "slide 6",
+    "67218dc4077a3897f9d4f5fee430335b",
+    "png"
+   ],
+   [
+    "slide 7",
+    "5772e682e56dc1a230f8d02b0435b343",
+    "png"
+   ],
+   [
+    "slide 8",
+    "faf5d1d00c5f228e6c50cb09f6593b6f",
+    "png"
+   ]
+  ]
+ },
+ "cs-binary-search": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "0da216bd8f7ed54be86b26ac4dd40965",
+    "png"
+   ],
+   [
+    "slide 2",
+    "da8d608aa1e20b301a2cbc03718f2d2b",
+    "png"
+   ],
+   [
+    "slide 3",
+    "adba2900f595957d82d62d586b315d04",
+    "png"
+   ],
+   [
+    "slide 4",
+    "e11b97a526d94d4af13d9f2ebbf76556",
+    "png"
+   ],
+   [
+    "slide 5",
+    "0fa26e9de005d88c9c528246918c62b7",
+    "png"
+   ],
+   [
+    "slide 6",
+    "7544d25b858a93feb3860c1eeedfc50f",
+    "png"
+   ],
+   [
+    "slide 7",
+    "02e55d3d5274ac67956b8e784a375891",
+    "png"
+   ],
+   [
+    "slide 8",
+    "c77f65223c3c2d62c40664a4a7a1272d",
+    "png"
+   ]
+  ]
+ },
+ "cs-recursion-backtracking": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "80a719f9544d401ecb8e8fb9a585e177",
+    "png"
+   ],
+   [
+    "slide 2",
+    "bdbafcc5a8fdb87520feaf8b16aa8104",
+    "png"
+   ],
+   [
+    "slide 3",
+    "4e480ebcf6f7bb15399f3def8ca90e86",
+    "png"
+   ],
+   [
+    "slide 4",
+    "776504f3915bb0db962ec4cbf3001590",
+    "png"
+   ],
+   [
+    "slide 5",
+    "34c53806937a94e37b4e7c0ab4dd317f",
+    "png"
+   ],
+   [
+    "slide 6",
+    "60258bb58066ccc0e35526e4c562e66a",
+    "png"
+   ],
+   [
+    "slide 7",
+    "a17c32812ecbffdf3cb2927dbca3476c",
+    "png"
+   ],
+   [
+    "slide 8",
+    "8f1a9644b5a900bcff4f0a616d2f652c",
+    "png"
+   ]
+  ]
+ },
+ "cs-binary-trees": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "cb34c1f30d8d354b2d496b013cf1b020",
+    "png"
+   ],
+   [
+    "slide 2",
+    "d8eaf8cfe2ddbd4ad4d56b96c22cc1e8",
+    "png"
+   ],
+   [
+    "slide 3",
+    "e4a0bf4574a66d1cd46fd66dbeb390ad",
+    "png"
+   ],
+   [
+    "slide 4",
+    "5c044ef3406c41b0e37c40a79fac9e0a",
+    "png"
+   ],
+   [
+    "slide 5",
+    "38f12944e17dc66e8eded2d5012699eb",
+    "png"
+   ],
+   [
+    "slide 6",
+    "15169e3ebc7fa6beeed6a14d0412f298",
+    "png"
+   ],
+   [
+    "slide 7",
+    "ed95b154434da2636cbeb6d9df9e61ac",
+    "png"
+   ],
+   [
+    "slide 8",
+    "73892c989981b94777e954a6adfa4a3c",
+    "png"
+   ]
+  ]
+ },
+ "cs-heaps": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "fddbc85e91daef7268c5b9ce9b40e177",
+    "png"
+   ],
+   [
+    "slide 2",
+    "ba7304d1d1a87f15d50e0a12775becfa",
+    "png"
+   ],
+   [
+    "slide 3",
+    "b5e1c2dbb7e6ec3fb5498c4a55fd3fc2",
+    "png"
+   ],
+   [
+    "slide 4",
+    "23df40537a4f75c20c30353b93e64469",
+    "png"
+   ],
+   [
+    "slide 5",
+    "c756b9577ebe472527cb9763a8b57315",
+    "png"
+   ],
+   [
+    "slide 6",
+    "09c81ae5a3bc568709f46d94fdd69c02",
+    "png"
+   ],
+   [
+    "slide 7",
+    "40d590413780ddb9e13379c482ba7729",
+    "png"
+   ],
+   [
+    "slide 8",
+    "e872fa57f1e77909aac37d08ca3066e9",
+    "png"
+   ]
+  ]
+ },
+ "cs-graphs": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "62b9c280b3e3d9b6c8fa324ad5ce2718",
+    "png"
+   ],
+   [
+    "slide 2",
+    "aa0b1ec347de5f742045a9fcf1fba18e",
+    "png"
+   ],
+   [
+    "slide 3",
+    "90eedd360714ec12d822d396b3fcd588",
+    "png"
+   ],
+   [
+    "slide 4",
+    "0c302f8da866cdc649242c5906fc2ed3",
+    "png"
+   ],
+   [
+    "slide 5",
+    "06578f2400b8930ff523b2a852993ad6",
+    "png"
+   ],
+   [
+    "slide 6",
+    "970f88d04a604d971e72ddfcdbfa913e",
+    "png"
+   ],
+   [
+    "slide 7",
+    "ac0e27155f5873e2ea9d8f81d3461116",
+    "png"
+   ],
+   [
+    "slide 8",
+    "25149765e3dcb24024ecae18d05c781a",
+    "png"
+   ]
+  ]
+ },
+ "cs-intervals": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "c94402d4f6f20981bdb27e65aae0621b",
+    "png"
+   ],
+   [
+    "slide 2",
+    "34d78cb47ae12dd86f8f0a9f3fca316f",
+    "png"
+   ],
+   [
+    "slide 3",
+    "e6d244956cd4ef47f98383b7f14d2a84",
+    "png"
+   ],
+   [
+    "slide 4",
+    "08c502a0f8831203b254f4557dde5941",
+    "png"
+   ],
+   [
+    "slide 5",
+    "63fafbf12c52bd8922fad9dc3da3442a",
+    "png"
+   ],
+   [
+    "slide 6",
+    "571ddea22fa33e98475d9574218391f7",
+    "png"
+   ],
+   [
+    "slide 7",
+    "40cf08e6804184b8faf8f184aed3adce",
+    "png"
+   ],
+   [
+    "slide 8",
+    "9cf8906dba26206cfcdb9b97ab7a211d",
+    "png"
+   ]
+  ]
+ },
+ "rc-anagram-tally": {
+  "kind": "Carousel \u00b7 9 slides",
+  "files": [
+   [
+    "slide 1",
+    "b4382bdbe95034010b6ac7e215f239f5",
+    "png"
+   ],
+   [
+    "slide 2",
+    "71d96931a4457943e2a0264810219613",
+    "png"
+   ],
+   [
+    "slide 3",
+    "8df0a1e62dabc3870d8d819a7e529ebd",
+    "png"
+   ],
+   [
+    "slide 4",
+    "35490626ddab4ffdd64b380ea3c81916",
+    "png"
+   ],
+   [
+    "slide 5",
+    "8b83b218072a70546de19b4d1a606844",
+    "png"
+   ],
+   [
+    "slide 6",
+    "c556d8f1b93dcbf5bd2ecf02acf9b848",
+    "png"
+   ],
+   [
+    "slide 7",
+    "c5c32e25a4d632785b35d27324d31774",
+    "png"
+   ],
+   [
+    "slide 8",
+    "322004f971060eae3cc560c17c7a07cc",
+    "png"
+   ],
+   [
+    "slide 9",
+    "73cffa5a52e75f527004ca9c418e072c",
+    "png"
+   ]
+  ]
+ },
+ "rc-two-pointers-reel": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "bd4a7397d20feae42c4d40a1e6a10098",
+    "png"
+   ],
+   [
+    "slide 2",
+    "ffd6e636ab29292834e71dd4d452c9f0",
+    "png"
+   ],
+   [
+    "slide 3",
+    "a8fabfe188084edb66fe6bb879803bf2",
+    "png"
+   ],
+   [
+    "slide 4",
+    "b1c5b592d23c249f9d546f7e83b4d0f5",
+    "png"
+   ],
+   [
+    "slide 5",
+    "051eb7ca4df8ad24479d81cc950c8eb3",
+    "png"
+   ],
+   [
+    "slide 6",
+    "156d8667aaf51130725c1428d9d5563a",
+    "png"
+   ],
+   [
+    "slide 7",
+    "edd57a6ce13f7ef9cd4875478b7e47b5",
+    "png"
+   ],
+   [
+    "slide 8",
+    "11fc9d8ba1b856b7ca6abf31b07aeb30",
+    "png"
+   ]
+  ]
+ },
+ "rc-coach-wont-answer": {
+  "kind": "Carousel \u00b7 9 slides",
+  "files": [
+   [
+    "slide 1",
+    "23b24c2a1fb498c22c6fbdb8df7b54d0",
+    "png"
+   ],
+   [
+    "slide 2",
+    "3349dced67415f64dd03b4afb3ac9a84",
+    "png"
+   ],
+   [
+    "slide 3",
+    "2b4e199a38d5bf89b1cfc034be9b03d5",
+    "png"
+   ],
+   [
+    "slide 4",
+    "ac8c8a99238431bd53d836d11e81027e",
+    "png"
+   ],
+   [
+    "slide 5",
+    "611509c1fb9ff8a55b9d9201dee9669e",
+    "png"
+   ],
+   [
+    "slide 6",
+    "68f8bb321b3eb3d9759f37bce2d40252",
+    "png"
+   ],
+   [
+    "slide 7",
+    "6d7ad99e4cdfa50daa5216b3ef43c711",
+    "png"
+   ],
+   [
+    "slide 8",
+    "f5676b4a44e22f662829aa2126276159",
+    "png"
+   ],
+   [
+    "slide 9",
+    "a5806e40f2ae2428f9ff2715500d607d",
+    "png"
+   ]
+  ]
+ },
+ "rc-monotonic-stack": {
+  "kind": "Carousel \u00b7 10 slides",
+  "files": [
+   [
+    "slide 1",
+    "18b177b3dc78324c551959c60159c236",
+    "png"
+   ],
+   [
+    "slide 2",
+    "a0207e7c41ab43953071241ae362c166",
+    "png"
+   ],
+   [
+    "slide 3",
+    "344d8eaf6215c19510860820fe6b9a1b",
+    "png"
+   ],
+   [
+    "slide 4",
+    "3202ca52c0091214bf95827a580356c2",
+    "png"
+   ],
+   [
+    "slide 5",
+    "8028dd7eee0a4c030ad25c78a5d47b8c",
+    "png"
+   ],
+   [
+    "slide 6",
+    "f1e84bb6789bfe73a6c96539faccec0e",
+    "png"
+   ],
+   [
+    "slide 7",
+    "0d39255ef89b384cab5141a485c16e96",
+    "png"
+   ],
+   [
+    "slide 8",
+    "60dd4fde9b98112e438d971c6fc88794",
+    "png"
+   ],
+   [
+    "slide 9",
+    "7fd23207450cd19c414abe5805cb8b76",
+    "png"
+   ],
+   [
+    "slide 10",
+    "877e00374fca69dda0321f955fb40878",
+    "png"
+   ]
+  ]
+ },
+ "rc-remove-while-iterating": {
+  "kind": "Carousel \u00b7 9 slides",
+  "files": [
+   [
+    "slide 1",
+    "24de8709f33d1fc2d45211a3184266a0",
+    "png"
+   ],
+   [
+    "slide 2",
+    "5f8bc4e5bc5426de3824cc2cb59c66d7",
+    "png"
+   ],
+   [
+    "slide 3",
+    "5fb5f823e764c589b6c4f169bb87eb1d",
+    "png"
+   ],
+   [
+    "slide 4",
+    "bf477fca3d3197abc4ac243d52468062",
+    "png"
+   ],
+   [
+    "slide 5",
+    "a1c91d910c249963bf63b22362ecca00",
+    "png"
+   ],
+   [
+    "slide 6",
+    "0962d1b00841444f2d42644f9ccc4402",
+    "png"
+   ],
+   [
+    "slide 7",
+    "8f8555e5155e696a7f5cfe514dd85ace",
+    "png"
+   ],
+   [
+    "slide 8",
+    "cc5883afbc334bebb5074a910e114e07",
+    "png"
+   ],
+   [
+    "slide 9",
+    "e148406012805f64bb47dc127e2fef2a",
+    "png"
+   ]
+  ]
+ },
+ "rc-sliding-window-inchworm": {
+  "kind": "Carousel \u00b7 10 slides",
+  "files": [
+   [
+    "slide 1",
+    "5a339842cfeb4dee5c985b767ee61321",
+    "png"
+   ],
+   [
+    "slide 2",
+    "42577298bd2f93b25fbcc54a0780cbdf",
+    "png"
+   ],
+   [
+    "slide 3",
+    "7455aec98e1523b53a6077d16aa4f8a1",
+    "png"
+   ],
+   [
+    "slide 4",
+    "72b73aeb85eb362b1a443f556ea7759c",
+    "png"
+   ],
+   [
+    "slide 5",
+    "eb0e53eaeb2d2efb37989ebd92080e64",
+    "png"
+   ],
+   [
+    "slide 6",
+    "7351f51f2105cc724d091ff00d19e973",
+    "png"
+   ],
+   [
+    "slide 7",
+    "a0ed3fc3f6ed5a0ab465ce4fb593ffae",
+    "png"
+   ],
+   [
+    "slide 8",
+    "0a98d0cba1b8d23e7e3676a664d55cbd",
+    "png"
+   ],
+   [
+    "slide 9",
+    "856c1cfb89088c21bec096c743e13d1a",
+    "png"
+   ],
+   [
+    "slide 10",
+    "7485cc0511ecbb2ea4696d4a895ee46f",
+    "png"
+   ]
+  ]
+ },
+ "rc-max-sum-k-window": {
+  "kind": "Carousel \u00b7 9 slides",
+  "files": [
+   [
+    "slide 1",
+    "02999a8b4c132d423032f61ebd1ad26e",
+    "png"
+   ],
+   [
+    "slide 2",
+    "547d0171b00a8aa6fc9ba00c3083e40d",
+    "png"
+   ],
+   [
+    "slide 3",
+    "f14c9f7bb2137fb775d23306c9cd835f",
+    "png"
+   ],
+   [
+    "slide 4",
+    "350dacfbb10c08dbf239ea2fb44edec6",
+    "png"
+   ],
+   [
+    "slide 5",
+    "52848c40c9d9901cb6accf3503cc8e2d",
+    "png"
+   ],
+   [
+    "slide 6",
+    "0b39ad03eced07841c90e956c0b206aa",
+    "png"
+   ],
+   [
+    "slide 7",
+    "53786438ed22a3cf45b67860036c06ca",
+    "png"
+   ],
+   [
+    "slide 8",
+    "0943261d92704c0a3b47b15f13c9640c",
+    "png"
+   ],
+   [
+    "slide 9",
+    "317d765ee4099603b03d47cd7f90f5a3",
+    "png"
+   ]
+  ]
+ },
+ "rc-js-float-mid": {
+  "kind": "Carousel \u00b7 9 slides",
+  "files": [
+   [
+    "slide 1",
+    "04de0c3b2cfcd07d0449bffa2b45ce90",
+    "png"
+   ],
+   [
+    "slide 2",
+    "bc19d3c1d526d3f3ae4d5a24f0cff278",
+    "png"
+   ],
+   [
+    "slide 3",
+    "67fce97458f7c3764c8e64e59cda8e0a",
+    "png"
+   ],
+   [
+    "slide 4",
+    "d8aac0576e2a157b48bba104a8e18f66",
+    "png"
+   ],
+   [
+    "slide 5",
+    "9cea0506823c114e2b133cbfff512074",
+    "png"
+   ],
+   [
+    "slide 6",
+    "ffd60df06f47925e339e3a2bce9f8ac9",
+    "png"
+   ],
+   [
+    "slide 7",
+    "03fe1ee44ba195cf447de8f94d432c6d",
+    "png"
+   ],
+   [
+    "slide 8",
+    "3bec5e7180c2e45e9635a7ff2afb9e77",
+    "png"
+   ],
+   [
+    "slide 9",
+    "3efa42f852f501e8c2aa1dd5c6e23384",
+    "png"
+   ]
+  ]
+ },
+ "rc-call-stack-trays": {
+  "kind": "Carousel \u00b7 10 slides",
+  "files": [
+   [
+    "slide 1",
+    "a84e7614a44e319e456826edd88cce82",
+    "png"
+   ],
+   [
+    "slide 2",
+    "4de6cc35c961407087c251a5afe788cd",
+    "png"
+   ],
+   [
+    "slide 3",
+    "e2c029ecc5297f689863308b838e6ddc",
+    "png"
+   ],
+   [
+    "slide 4",
+    "e474d2130399aa56520364f5149198a6",
+    "png"
+   ],
+   [
+    "slide 5",
+    "317c64c988541c1b8a2d4ddeb2a99fcc",
+    "png"
+   ],
+   [
+    "slide 6",
+    "584a4534bd41ee5721085529d38d9ed4",
+    "png"
+   ],
+   [
+    "slide 7",
+    "30a758de0afc25451d74350a01ce3943",
+    "png"
+   ],
+   [
+    "slide 8",
+    "9fa2c9b6cd7a9130c2eccef151cd351e",
+    "png"
+   ],
+   [
+    "slide 9",
+    "f11ded46afa443648d27fecce1728305",
+    "png"
+   ],
+   [
+    "slide 10",
+    "f14fbc6fd67b11d2b14489262d28d4ce",
+    "png"
+   ]
+  ]
+ },
+ "rc-fib-memo": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "c915c17d44041148e1c1ef2af17dd59d",
+    "png"
+   ],
+   [
+    "slide 2",
+    "89ea89f294f75d2dda88e6a94396448c",
+    "png"
+   ],
+   [
+    "slide 3",
+    "96d7a6a1bd69eda6b88880ea07ec65ff",
+    "png"
+   ],
+   [
+    "slide 4",
+    "6be25ed0dcb8f65e94a326ff7966fa73",
+    "png"
+   ],
+   [
+    "slide 5",
+    "9c5ddd4be0aff50a9f6b43b991e161e2",
+    "png"
+   ],
+   [
+    "slide 6",
+    "b42ad75fa5cdf11f857a4232e2bc8755",
+    "png"
+   ],
+   [
+    "slide 7",
+    "e80cbd074779ff7717b4c7605ee738ef",
+    "png"
+   ],
+   [
+    "slide 8",
+    "048114f64ade3e2248868ba1b8edc943",
+    "png"
+   ]
+  ]
+ },
+ "rc-binary-search-halves": {
+  "kind": "Carousel \u00b7 10 slides",
+  "files": [
+   [
+    "slide 1",
+    "f3beb51898e27887ed5a50d698714c87",
+    "png"
+   ],
+   [
+    "slide 2",
+    "32ddbffeb9db545641ae687322589be4",
+    "png"
+   ],
+   [
+    "slide 3",
+    "1ac4c9071dc27ed5903a8943b0af56e8",
+    "png"
+   ],
+   [
+    "slide 4",
+    "159a15d328c2be8fc1b08d987f6d8664",
+    "png"
+   ],
+   [
+    "slide 5",
+    "22cca9600a80985e5ee82a3edc2d1341",
+    "png"
+   ],
+   [
+    "slide 6",
+    "f7475b331a7616c0bb4dbb27db58fb3e",
+    "png"
+   ],
+   [
+    "slide 7",
+    "c66c371d38012ae59b02d97b384163da",
+    "png"
+   ],
+   [
+    "slide 8",
+    "61dbdeb2fa14c9d709d5d7eb416d833e",
+    "png"
+   ],
+   [
+    "slide 9",
+    "7b2af9d884fd60d752eb5f09329cf0f4",
+    "png"
+   ],
+   [
+    "slide 10",
+    "814755855eac7765739b6b2453d9cb87",
+    "png"
+   ]
+  ]
+ },
+ "rc-prefix-sum-odometer": {
+  "kind": "Carousel \u00b7 10 slides",
+  "files": [
+   [
+    "slide 1",
+    "04f44600d0949d184a31bbeb9403d0e5",
+    "png"
+   ],
+   [
+    "slide 2",
+    "306e614715bbb548535027f8148d519f",
+    "png"
+   ],
+   [
+    "slide 3",
+    "a95c115f79d34f73d7739476e9e32a19",
+    "png"
+   ],
+   [
+    "slide 4",
+    "0c22ba0bdeb3fe4c3d67d3a625072ad3",
+    "png"
+   ],
+   [
+    "slide 5",
+    "34c301cd6b074bab9865dead364f5dc8",
+    "png"
+   ],
+   [
+    "slide 6",
+    "99b61b5b1d068172501545ce486bafff",
+    "png"
+   ],
+   [
+    "slide 7",
+    "f5adbbf54bd59df865008611adb75abd",
+    "png"
+   ],
+   [
+    "slide 8",
+    "39823b429133df3178a2ed88b51a9ecf",
+    "png"
+   ],
+   [
+    "slide 9",
+    "4580bd70db478e17277cdd46bde2211d",
+    "png"
+   ],
+   [
+    "slide 10",
+    "98c93fc6d51f29e51584a85664b38997",
+    "png"
+   ]
+  ]
+ },
+ "sb-rotate-array": {
+  "kind": "Carousel \u00b7 6 slides",
+  "files": [
+   [
+    "slide 1",
+    "a83de9e3e20684ccb7d9d93482a264d2",
+    "png"
+   ],
+   [
+    "slide 2",
+    "6b30871e98f4fbc24862669ee5c76635",
+    "png"
+   ],
+   [
+    "slide 3",
+    "f53e89a63a8fadde8f9d6e6d3985e711",
+    "png"
+   ],
+   [
+    "slide 4",
+    "e6254ef6ec84fbb64fce12dedcf39fde",
+    "png"
+   ],
+   [
+    "slide 5",
+    "fd293da78fb717aa29fb39843189043f",
+    "png"
+   ],
+   [
+    "slide 6",
+    "d1c8ba224e64a57552500dfe1ef6059e",
+    "png"
+   ]
+  ]
+ },
+ "sb-subsets": {
+  "kind": "Carousel \u00b7 6 slides",
+  "files": [
+   [
+    "slide 1",
+    "02d06901e3fccc14b884006050e069ba",
+    "png"
+   ],
+   [
+    "slide 2",
+    "b470370fbd6541adc53dfd1cb4a79db9",
+    "png"
+   ],
+   [
+    "slide 3",
+    "f0363ed03ab95c5887c82b45686e71b3",
+    "png"
+   ],
+   [
+    "slide 4",
+    "1cae5d186d2c3a200dfa6400c3f6c56d",
+    "png"
+   ],
+   [
+    "slide 5",
+    "163a35c843bd471e489be7ef61343d68",
+    "png"
+   ],
+   [
+    "slide 6",
+    "c4404e45c25bb2f0f18e642204e5d5c5",
+    "png"
+   ]
+  ]
+ },
+ "sb-partition-equal-subset-sum": {
+  "kind": "Carousel \u00b7 6 slides",
+  "files": [
+   [
+    "slide 1",
+    "684732862234d3c9b05cf7e5f885ee85",
+    "png"
+   ],
+   [
+    "slide 2",
+    "4cfd176583fdb18b90d61d934cbc0ef7",
+    "png"
+   ],
+   [
+    "slide 3",
+    "8229b198a69601643c4af1cd31510e1c",
+    "png"
+   ],
+   [
+    "slide 4",
+    "cc1adf1ab54dabef9c1a7a32321f29b3",
+    "png"
+   ],
+   [
+    "slide 5",
+    "33e9dd203e6c1f9b23f63da204f0be68",
+    "png"
+   ],
+   [
+    "slide 6",
+    "4fb68b7b5a5c7b81c3ca1f0201f2fd04",
+    "png"
+   ]
+  ]
+ },
+ "sb-evaluate-rpn": {
+  "kind": "Carousel \u00b7 6 slides",
+  "files": [
+   [
+    "slide 1",
+    "b374f64ae5937c90cb275282b45ec6e6",
+    "png"
+   ],
+   [
+    "slide 2",
+    "6c5bebde863004b1bd2ed17ab6785f0f",
+    "png"
+   ],
+   [
+    "slide 3",
+    "dfb4fb53a72f9fda7bf3d68c105f8fe4",
+    "png"
+   ],
+   [
+    "slide 4",
+    "05a51b8b5bfd848c1b6e1fb851f0f9ee",
+    "png"
+   ],
+   [
+    "slide 5",
+    "ee557a2575c4c8e013dc7d2e968b2ccc",
+    "png"
+   ],
+   [
+    "slide 6",
+    "46792aea5cd649cd2f6c4cd9ad85b4c8",
+    "png"
+   ]
+  ]
+ },
+ "sb-non-overlapping-intervals": {
+  "kind": "Carousel \u00b7 6 slides",
+  "files": [
+   [
+    "slide 1",
+    "7d6f016843512bdfa8144892a1d9f689",
+    "png"
+   ],
+   [
+    "slide 2",
+    "ca24e2b66df5e2baeeb0e05d09387582",
+    "png"
+   ],
+   [
+    "slide 3",
+    "c411327fed279343de47d3cb69393d03",
+    "png"
+   ],
+   [
+    "slide 4",
+    "0b5a4180e872b935cb034713eb09bc67",
+    "png"
+   ],
+   [
+    "slide 5",
+    "67190cd9710c04ae871173801c8fe4aa",
+    "png"
+   ],
+   [
+    "slide 6",
+    "67a41a6c3b47569694ecd88b9c4331b8",
+    "png"
+   ]
+  ]
+ },
+ "sb-sort-colors": {
+  "kind": "Carousel \u00b7 6 slides",
+  "files": [
+   [
+    "slide 1",
+    "9aaf4a60e936b5f7333d6f64517a43a3",
+    "png"
+   ],
+   [
+    "slide 2",
+    "24c8f38d47f0dce02ac456e43cb29fdd",
+    "png"
+   ],
+   [
+    "slide 3",
+    "f6b16c313da4e6215b6f543720726653",
+    "png"
+   ],
+   [
+    "slide 4",
+    "40e5e493e8e53d0d365187fb1147bdee",
+    "png"
+   ],
+   [
+    "slide 5",
+    "c030dda7ff432d48757cc6e31cc8bd81",
+    "png"
+   ],
+   [
+    "slide 6",
+    "4e5060c602c20eaa01e62a30a855b76d",
+    "png"
+   ]
+  ]
+ },
+ "bq-find-target": {
+  "kind": "Single image",
+  "files": [
+   [
+    "slide 1",
+    "a573915325673f7e8e78fda5fb4eb076",
+    "png"
+   ]
+  ]
+ },
+ "bq-doublings": {
+  "kind": "Single image",
+  "files": [
+   [
+    "slide 1",
+    "524b9f2715de3af19939834a8c04665f",
+    "png"
+   ]
+  ]
+ },
+ "bq-zero-pairs": {
+  "kind": "Single image",
+  "files": [
+   [
+    "slide 1",
+    "941fdd0018c385300a65634db61502c1",
+    "png"
+   ]
+  ]
+ },
+ "bq-split-twice": {
+  "kind": "Single image",
+  "files": [
+   [
+    "slide 1",
+    "f48161d5dbb163f7b18496b478c74892",
+    "png"
+   ]
+  ]
+ },
+ "bq-two-passes": {
+  "kind": "Single image",
+  "files": [
+   [
+    "slide 1",
+    "cda59036d36a8e1f648fd98a86fa41b3",
+    "png"
+   ]
+  ]
+ },
+ "bq-naive-fib": {
+  "kind": "Single image",
+  "files": [
+   [
+    "slide 1",
+    "e94475501b6d290cb58c42984421b2b5",
+    "png"
+   ]
+  ]
+ },
+ "bq-halving-rounds": {
+  "kind": "Single image",
+  "files": [
+   [
+    "slide 1",
+    "c8e71ee9ae07abe6640db486fe7ef131",
+    "png"
+   ]
+  ]
+ },
+ "bq-grid-max": {
+  "kind": "Single image",
+  "files": [
+   [
+    "slide 1",
+    "ea33a2dbd381210ea03555afd5ffd86c",
+    "png"
+   ]
+  ]
+ },
+ "lc-dynamic-array-append": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "f266a3a34027b1cd188c154540e46397",
+    "png"
+   ],
+   [
+    "slide 2",
+    "4073d7a0997420ecdf04345432ada488",
+    "png"
+   ],
+   [
+    "slide 3",
+    "4600702f8677f7101404914007bfd826",
+    "png"
+   ],
+   [
+    "slide 4",
+    "027af5f33f3dbcd3226f645640466363",
+    "png"
+   ],
+   [
+    "slide 5",
+    "1438825f6b8cc08d05151992617de67a",
+    "png"
+   ],
+   [
+    "slide 6",
+    "82068539291adb95611257459670fa47",
+    "png"
+   ],
+   [
+    "slide 7",
+    "32e9a6e1b7a1b00ddcc6821e49308cf1",
+    "png"
+   ]
+  ]
+ },
+ "lc-string-concat-loop": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "e45a56c7cefdcbc1061238bb40c0f8f3",
+    "png"
+   ],
+   [
+    "slide 2",
+    "781df27771b49b7e10112bbb7e62b943",
+    "png"
+   ],
+   [
+    "slide 3",
+    "e08fe396f954d8d2b45184275946fbb7",
+    "png"
+   ],
+   [
+    "slide 4",
+    "4da6e0769cfc8cb264862e57f7251dc5",
+    "png"
+   ],
+   [
+    "slide 5",
+    "43dc25b418b53645ad62de0c847fc613",
+    "png"
+   ],
+   [
+    "slide 6",
+    "116feb99cbf42a7b11bfd4d434f29f3a",
+    "png"
+   ],
+   [
+    "slide 7",
+    "b27bfe8f25c41cce76f41d000458b341",
+    "png"
+   ]
+  ]
+ },
+ "lc-mutable-key": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "2bd2b3ac1eab6e799dcea447869a8f28",
+    "png"
+   ],
+   [
+    "slide 2",
+    "9908c3c4969fa36c072da04b48d9356e",
+    "png"
+   ],
+   [
+    "slide 3",
+    "79aa8d3202e850eacbefddc6c3c5bdc1",
+    "png"
+   ],
+   [
+    "slide 4",
+    "1ea90e2c21760efdb9295caabd1a15ef",
+    "png"
+   ],
+   [
+    "slide 5",
+    "93ccbbe02854e0e806c8874ec50e81c8",
+    "png"
+   ],
+   [
+    "slide 6",
+    "6a63acf0d1d4772acd51da07d70b6ef3",
+    "png"
+   ],
+   [
+    "slide 7",
+    "3ea17c82d10ba81901bec4a93c6b74f0",
+    "png"
+   ]
+  ]
+ },
+ "lc-matrix-binary-search": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "59512ab4b1f2fbf2ecf90cdb7c249239",
+    "png"
+   ],
+   [
+    "slide 2",
+    "ffcac208e525b1e52f20a54aeea3d5fa",
+    "png"
+   ],
+   [
+    "slide 3",
+    "ed6c7678f68c2d61dea4e76a583a67de",
+    "png"
+   ],
+   [
+    "slide 4",
+    "bf6031f73e78b6dd4be7c80fda2badf0",
+    "png"
+   ],
+   [
+    "slide 5",
+    "f90ac013da0b040786a0d4a91c1d29f7",
+    "png"
+   ],
+   [
+    "slide 6",
+    "f6f5e5838b3b3f3ec855277863949142",
+    "png"
+   ],
+   [
+    "slide 7",
+    "26e806c26c9f8685e9c8522b8f953bbe",
+    "png"
+   ]
+  ]
+ },
+ "lc-move-zeroes": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "52a0431765c36e3700ab3b5e78b0cb70",
+    "png"
+   ],
+   [
+    "slide 2",
+    "65eb8b8c2a37fedd4f6e0a891e8589c3",
+    "png"
+   ],
+   [
+    "slide 3",
+    "2d1dafecf9bb8e698a599263797878df",
+    "png"
+   ],
+   [
+    "slide 4",
+    "bbd0aefaeee644e2aa83957737ab69f6",
+    "png"
+   ],
+   [
+    "slide 5",
+    "2837efd67ed0b5641ecdf6a4e9f36c83",
+    "png"
+   ],
+   [
+    "slide 6",
+    "b3dc31c5a0ade067bcf5051f7cdaae09",
+    "png"
+   ],
+   [
+    "slide 7",
+    "79e2d7a8787cddda00a20402d6f5ffd9",
+    "png"
+   ]
+  ]
+ },
+ "lc-hash-collisions": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "2de0c6aac713707357237250638ca054",
+    "png"
+   ],
+   [
+    "slide 2",
+    "e33173f822eb47ac40571be2a076a302",
+    "png"
+   ],
+   [
+    "slide 3",
+    "50032364b1c0035883cb068477a07a09",
+    "png"
+   ],
+   [
+    "slide 4",
+    "a263f8145fcbdeaa40daff96780bb2f4",
+    "png"
+   ],
+   [
+    "slide 5",
+    "214627b1cf1a7a88a3dfc15e0301e97b",
+    "png"
+   ],
+   [
+    "slide 6",
+    "02afa5cd4cd28f5c079566a74ffdb395",
+    "png"
+   ],
+   [
+    "slide 7",
+    "2fc0d92638e916ede51c0d19a312b481",
+    "png"
+   ]
+  ]
+ },
+ "lc-build-order": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "f56353579b30bc249d86f3efe819d00e",
+    "png"
+   ],
+   [
+    "slide 2",
+    "32fa34c02b491df35bf8c635de4a3f95",
+    "png"
+   ],
+   [
+    "slide 3",
+    "372976716482e66e229c96eb8da59980",
+    "png"
+   ],
+   [
+    "slide 4",
+    "b9c782dd0166178b2f06ca545a387aa1",
+    "png"
+   ],
+   [
+    "slide 5",
+    "47d212ac90fa72dec74fe39cc80653c3",
+    "png"
+   ],
+   [
+    "slide 6",
+    "2a5c0312ff40218ed79eb65838be3053",
+    "png"
+   ],
+   [
+    "slide 7",
+    "4540fa6f972ec59fda968aebcfc2e32d",
+    "png"
+   ]
+  ]
+ },
+ "lc-provinces": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "a0b89202becfdb74679fcd05e8371f94",
+    "png"
+   ],
+   [
+    "slide 2",
+    "2a5727ef7febfef986f9b6e8a9cc1b99",
+    "png"
+   ],
+   [
+    "slide 3",
+    "4ec002ce47f4cc92fca5fc18a82d9169",
+    "png"
+   ],
+   [
+    "slide 4",
+    "99c8ab1b8e0d1e077323f893fcb0161f",
+    "png"
+   ],
+   [
+    "slide 5",
+    "1f161c695db1ad1ac1fb2f96562c7cf6",
+    "png"
+   ],
+   [
+    "slide 6",
+    "fd56b812684567403175e9336e41dacf",
+    "png"
+   ],
+   [
+    "slide 7",
+    "0f4122339d521df0ad90f0c73f2a4874",
+    "png"
+   ]
+  ]
+ },
+ "lc-growth-beats-hardware": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "6ddcb1c64da11d839fd105158d696621",
+    "png"
+   ],
+   [
+    "slide 2",
+    "039ae8e866145c12499712ab6d61b703",
+    "png"
+   ],
+   [
+    "slide 3",
+    "67eba35ef725bb36b3dba5acafcc31a4",
+    "png"
+   ],
+   [
+    "slide 4",
+    "bb5218727ebabea73de83bc5269c3704",
+    "png"
+   ],
+   [
+    "slide 5",
+    "7e30c3c6b194fee5f1762e44331ad84e",
+    "png"
+   ],
+   [
+    "slide 6",
+    "1e22eda17de85e030fee70506cae87ab",
+    "png"
+   ],
+   [
+    "slide 7",
+    "16d5eea4fb5da719bc1583077864d668",
+    "png"
+   ]
+  ]
+ },
+ "lc-space-complexity": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "4f069c12ab68a2966769470e10c5c2b5",
+    "png"
+   ],
+   [
+    "slide 2",
+    "c259a9d28311283e103688583886dc27",
+    "png"
+   ],
+   [
+    "slide 3",
+    "67da6b8068fbcecad4f13046920bab44",
+    "png"
+   ],
+   [
+    "slide 4",
+    "8bbf293cb4564070cdac26e782db3e30",
+    "png"
+   ],
+   [
+    "slide 5",
+    "7044c50c973e17c13fe8163556b15191",
+    "png"
+   ],
+   [
+    "slide 6",
+    "b6a02bc8d7c35d5ab9478b5e8a19619b",
+    "png"
+   ],
+   [
+    "slide 7",
+    "0c751ba2280d6fec2448c22bc844e9ea",
+    "png"
+   ]
+  ]
+ },
+ "lc-lowest-common-ancestor": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "ad887c0d4a037379807662592004153a",
+    "png"
+   ],
+   [
+    "slide 2",
+    "4a61a87cddeed109b22fda5ea2ee75a0",
+    "png"
+   ],
+   [
+    "slide 3",
+    "3dd6627ac576a652c9c3a0c50f2081dd",
+    "png"
+   ],
+   [
+    "slide 4",
+    "335a8ab55ebc553aca41d559ca7df283",
+    "png"
+   ],
+   [
+    "slide 5",
+    "05d16cd44499a7695c6c4de987dafdf6",
+    "png"
+   ],
+   [
+    "slide 6",
+    "c0b09f3eac458af922f9c63ae1aaccbc",
+    "png"
+   ],
+   [
+    "slide 7",
+    "9eef301c4821280c986612eda7f6c275",
+    "png"
+   ]
+  ]
+ },
+ "lc-arrays-in-memory": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "5febf3266535f0b04b3369b6fc722dbc",
+    "png"
+   ],
+   [
+    "slide 2",
+    "7efcc5e548a6c70b081001d5e2afeea8",
+    "png"
+   ],
+   [
+    "slide 3",
+    "261c35add6dfcce076e7feabd420517f",
+    "png"
+   ],
+   [
+    "slide 4",
+    "5d643659181fbaf1f935012dbc1e77b6",
+    "png"
+   ],
+   [
+    "slide 5",
+    "c7f90dc75f243cb74b0db5b22f7ff121",
+    "png"
+   ],
+   [
+    "slide 6",
+    "5dc3b8ed8d0f2a1c07f51244f8d9177a",
+    "png"
+   ],
+   [
+    "slide 7",
+    "c9daeae2ce84552f20235dfa2e531183",
+    "png"
+   ]
+  ]
+ },
+ "lc-birthday-collisions": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "c1dadad29c6c24a1bc05d943b9b017a2",
+    "png"
+   ],
+   [
+    "slide 2",
+    "9bf87f58c44b4715ed3335b56b3510d1",
+    "png"
+   ],
+   [
+    "slide 3",
+    "54dfea863e76ec08df512d88f026b217",
+    "png"
+   ],
+   [
+    "slide 4",
+    "65bb03544ec16a9cdb90330275105b0b",
+    "png"
+   ],
+   [
+    "slide 5",
+    "86ddbcbc6da0bd67fca177b95fcc96a1",
+    "png"
+   ],
+   [
+    "slide 6",
+    "843041234aaf25826e7b4f45ee375741",
+    "png"
+   ],
+   [
+    "slide 7",
+    "79748c1b851d4e9656e78c2aa464a26d",
+    "png"
+   ]
+  ]
+ },
+ "lc-queue-pop-front": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "b2f02b9e475389456f0e3bdf32ee19c2",
+    "png"
+   ],
+   [
+    "slide 2",
+    "823ae0860fe8c7f60198ed6ca20d83f0",
+    "png"
+   ],
+   [
+    "slide 3",
+    "8862904af2c42042d04051b471b3b44a",
+    "png"
+   ],
+   [
+    "slide 4",
+    "aa8e2826f4a4da1fadc4cdc34d5c898a",
+    "png"
+   ],
+   [
+    "slide 5",
+    "d80234667035ec60d8e36bcc18c0727b",
+    "png"
+   ],
+   [
+    "slide 6",
+    "9fe80be85e36a3884fc2eb72eca08261",
+    "png"
+   ],
+   [
+    "slide 7",
+    "7c9e8da112e89b3f0500b8c7e48b66ef",
+    "png"
+   ]
+  ]
+ },
+ "lc-skewed-bst": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "c7a88a214f9cefd651da0efc85f1a5f3",
+    "png"
+   ],
+   [
+    "slide 2",
+    "a67aaa623fd1c57e9bced5a212f1e36c",
+    "png"
+   ],
+   [
+    "slide 3",
+    "21069dc32c6c7a5d8c4125f4b8c60962",
+    "png"
+   ],
+   [
+    "slide 4",
+    "8cfd131755d66bc807e6beebaaa4a43d",
+    "png"
+   ],
+   [
+    "slide 5",
+    "b65c3f1cd5041a909bf3f1cf599cc92f",
+    "png"
+   ],
+   [
+    "slide 6",
+    "9e4215f511e515e4fb84e247dd0cec56",
+    "png"
+   ],
+   [
+    "slide 7",
+    "d72d3bcaad826a80c3f007ecb24ca2eb",
+    "png"
+   ]
+  ]
+ },
+ "lc-greedy-coins": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "b959ba2f42ed36e61918696140dcbe55",
+    "png"
+   ],
+   [
+    "slide 2",
+    "0476818413c9b34e13295421c8f8e415",
+    "png"
+   ],
+   [
+    "slide 3",
+    "1378c239f336774c5335223f301093a0",
+    "png"
+   ],
+   [
+    "slide 4",
+    "aa7dedcc10a8a67bcc9e417a8c11f57f",
+    "png"
+   ],
+   [
+    "slide 5",
+    "ee08ba5e9dd074a11f4dba8ffd562106",
+    "png"
+   ],
+   [
+    "slide 6",
+    "1105dd5387786bb4e95a69e0cd9e1174",
+    "png"
+   ],
+   [
+    "slide 7",
+    "bf75612bc2445b11ff90fc4b910c84b7",
+    "png"
+   ]
+  ]
+ },
+ "lc-insertion-sort-inversions": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "8eadbf4874e9a41606a33519eb4a5ff8",
+    "png"
+   ],
+   [
+    "slide 2",
+    "b405f72e0eab06eea8925bb95df95cf0",
+    "png"
+   ],
+   [
+    "slide 3",
+    "8cd69d0370fe66a44fc1579ff15c55f4",
+    "png"
+   ],
+   [
+    "slide 4",
+    "c64a966c306c657b806c9fa20c8ff5f3",
+    "png"
+   ],
+   [
+    "slide 5",
+    "ecfbfcae6b8052a61b13188dd293c23c",
+    "png"
+   ],
+   [
+    "slide 6",
+    "d096089f31865f8d8e7a2d0ffdb82f31",
+    "png"
+   ],
+   [
+    "slide 7",
+    "c2c54be8a2ee9da385b42c5690f68e5b",
+    "png"
+   ]
+  ]
+ },
+ "lc-heap-as-array": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "c7dadee07826f537754b719ddbd43bfd",
+    "png"
+   ],
+   [
+    "slide 2",
+    "6e33428d00f58abc28b37345550d2660",
+    "png"
+   ],
+   [
+    "slide 3",
+    "68e1f85500265bed303f481eead26b2a",
+    "png"
+   ],
+   [
+    "slide 4",
+    "8364a3b308578fde75da174db97f6a95",
+    "png"
+   ],
+   [
+    "slide 5",
+    "f7ad7cee0d7c1779d0ef18ee38a0011d",
+    "png"
+   ],
+   [
+    "slide 6",
+    "08bce1eeb61ea1c8bc07542694788c69",
+    "png"
+   ],
+   [
+    "slide 7",
+    "ae85e97f7e24f41ef0e8c5d104943d15",
+    "png"
+   ]
+  ]
+ },
+ "lc-trie-prefix": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "311b1878214dfd057ca57229484e539a",
+    "png"
+   ],
+   [
+    "slide 2",
+    "500f7459be46bb28339b53997e2dbc3a",
+    "png"
+   ],
+   [
+    "slide 3",
+    "7bbb734fcd7033794850d9c095ea9bee",
+    "png"
+   ],
+   [
+    "slide 4",
+    "9943749aaf9efd82a02123fcb04836e0",
+    "png"
+   ],
+   [
+    "slide 5",
+    "2604700622018f7fae0c8589a1a0164b",
+    "png"
+   ],
+   [
+    "slide 6",
+    "56bc286c692a3751d3b57af22e55885b",
+    "png"
+   ],
+   [
+    "slide 7",
+    "71cdad023d632ace8d5b9f02e4dd1355",
+    "png"
+   ]
+  ]
+ },
+ "lc-cycle-detection": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "4bbc1489b0843f26adfc98d18bc9afbf",
+    "png"
+   ],
+   [
+    "slide 2",
+    "88b051077734ea1db912c819b852739f",
+    "png"
+   ],
+   [
+    "slide 3",
+    "d3ef3cb3f9fe24b1bf15807f0fc188c3",
+    "png"
+   ],
+   [
+    "slide 4",
+    "688ce52fa87579d77912057377f48813",
+    "png"
+   ],
+   [
+    "slide 5",
+    "ec518e47c71572509ca869e68311aafb",
+    "png"
+   ],
+   [
+    "slide 6",
+    "eb5f5d210229442b5623a832e2c5bad4",
+    "png"
+   ],
+   [
+    "slide 7",
+    "c04cb8f36eb56ab33607a7de79249d95",
+    "png"
+   ]
+  ]
+ },
+ "lc-subarray-sum-seed": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "382f99b94ac4d8964cb9c1d27edac469",
+    "png"
+   ],
+   [
+    "slide 2",
+    "46df6e66980e0ef0c3a3da8f619fd8c0",
+    "png"
+   ],
+   [
+    "slide 3",
+    "971a65b97a4f30b267c569c32663d350",
+    "png"
+   ],
+   [
+    "slide 4",
+    "f681b2bf166710eb391d06d46f3e8e55",
+    "png"
+   ],
+   [
+    "slide 5",
+    "e708baaf2622bff00388aa5d39327426",
+    "png"
+   ],
+   [
+    "slide 6",
+    "a6d442652007dfe98743b31f3ee11e46",
+    "png"
+   ],
+   [
+    "slide 7",
+    "875757d34d31886e31f2c594dad1296f",
+    "png"
+   ],
+   [
+    "slide 8",
+    "a0e3d34dce2cf25a0f6ab616af98bc37",
+    "png"
+   ]
+  ]
+ },
+ "lc-min-stack-snapshots": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "4d65160a64e863e94e440035675c4aba",
+    "png"
+   ],
+   [
+    "slide 2",
+    "03db711b8f1f133663ba63b97633f8ce",
+    "png"
+   ],
+   [
+    "slide 3",
+    "9a2d6d2520ff732d4ab9a59af98890f8",
+    "png"
+   ],
+   [
+    "slide 4",
+    "9ab73d04ec7866d2854d614cc7c3db2c",
+    "png"
+   ],
+   [
+    "slide 5",
+    "5b2b25c4517b7ff5644eaec1596ec58c",
+    "png"
+   ],
+   [
+    "slide 6",
+    "e8e1fbbca0a58e800c7959beae3a8cbc",
+    "png"
+   ],
+   [
+    "slide 7",
+    "7c4cd06e6e61ede94b6b2dc1df24ab51",
+    "png"
+   ],
+   [
+    "slide 8",
+    "529f632c52ca834e976f8d178d0e8d21",
+    "png"
+   ]
+  ]
+ },
+ "lc-container-shorter-wall": {
+  "kind": "Carousel \u00b7 7 slides",
+  "files": [
+   [
+    "slide 1",
+    "ab33e50832b05e7ac7f50f8ad28447ae",
+    "png"
+   ],
+   [
+    "slide 2",
+    "21e79ba9e827525e009fdb1b94b9163c",
+    "png"
+   ],
+   [
+    "slide 3",
+    "f213ae3e68e05695e647f8f8997ff043",
+    "png"
+   ],
+   [
+    "slide 4",
+    "92cccb0480c9cded1c2eebc23afc7a84",
+    "png"
+   ],
+   [
+    "slide 5",
+    "f6413a9cd297450d337c50709f775c6d",
+    "png"
+   ],
+   [
+    "slide 6",
+    "5ccdfbef5cfceabf536ebac83e70ce57",
+    "png"
+   ],
+   [
+    "slide 7",
+    "c1270f938bf6ad390ff2fbc11665b638",
+    "png"
+   ]
+  ]
+ },
+ "lc-search-the-answer": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "a10cd3983c1cb51b14aeecef1b612563",
+    "png"
+   ],
+   [
+    "slide 2",
+    "792b79523bbafc0f1af93efaed2205ff",
+    "png"
+   ],
+   [
+    "slide 3",
+    "f6156b5926004fac1f2a74290e34a6b2",
+    "png"
+   ],
+   [
+    "slide 4",
+    "55879dd0922cd24fcfba712a37f91c2b",
+    "png"
+   ],
+   [
+    "slide 5",
+    "6ee765c1308c0bd1699340ed50379394",
+    "png"
+   ],
+   [
+    "slide 6",
+    "aff8cb91b52fb0699a449a0f72186e49",
+    "png"
+   ],
+   [
+    "slide 7",
+    "3e11a3f0829986b80e0a6e8030bd049e",
+    "png"
+   ],
+   [
+    "slide 8",
+    "fa95172fa80019f6962790d69e762b16",
+    "png"
+   ]
+  ]
+ },
+ "lc-eight-queens-pruning": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "ce079c7f743e7aaa887f9fb101ff22eb",
+    "png"
+   ],
+   [
+    "slide 2",
+    "f5923958a41950544f6ef5dddccf305a",
+    "png"
+   ],
+   [
+    "slide 3",
+    "e0c59150ca9973fcac6d85cee67badca",
+    "png"
+   ],
+   [
+    "slide 4",
+    "f8e3cb5aef611359c95f54a23e2fce4b",
+    "png"
+   ],
+   [
+    "slide 5",
+    "4dfe4ebedacd0c319e495dfc378565ed",
+    "png"
+   ],
+   [
+    "slide 6",
+    "c901b7d9224c69107408e5ffc75b0273",
+    "png"
+   ],
+   [
+    "slide 7",
+    "47a59b493cbf13087e3586596f6c4e29",
+    "png"
+   ],
+   [
+    "slide 8",
+    "b60f24980eaf16bf0de9c8c62c38c0b7",
+    "png"
+   ]
+  ]
+ },
+ "lc-meeting-neighbours": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "9afc899565e513cda8a7f78722302940",
+    "png"
+   ],
+   [
+    "slide 2",
+    "31e754290ff863e61dcc99e9ee85aae5",
+    "png"
+   ],
+   [
+    "slide 3",
+    "45a059175f2385e7ed6e9a78bb6e8dc8",
+    "png"
+   ],
+   [
+    "slide 4",
+    "ba800cbadb8a2e4c48200b5e569d9daa",
+    "png"
+   ],
+   [
+    "slide 5",
+    "a6dfe64d55346675411859182a5f0770",
+    "png"
+   ],
+   [
+    "slide 6",
+    "2abe984770be7d44423d1258a7b0d80b",
+    "png"
+   ],
+   [
+    "slide 7",
+    "75b6c3f9066bff593f24ccea0fc678e5",
+    "png"
+   ],
+   [
+    "slide 8",
+    "fddc3b66cb197c8f0dfdfcd45e922457",
+    "png"
+   ]
+  ]
+ },
+ "lc-jump-farthest-reach": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "e5e42fd0c44aae0538fd862d7b8c2fe0",
+    "png"
+   ],
+   [
+    "slide 2",
+    "a8dfe5a182c05747d140d218e0b3568f",
+    "png"
+   ],
+   [
+    "slide 3",
+    "89d8c2d5068689cd05b48ae037dd20b7",
+    "png"
+   ],
+   [
+    "slide 4",
+    "a228eee92e273bc74411a0efce293f9e",
+    "png"
+   ],
+   [
+    "slide 5",
+    "de3758b0d865e79f98f2c816d7655bbc",
+    "png"
+   ],
+   [
+    "slide 6",
+    "a8a1106bcb0028f4c89dc17bac9340c1",
+    "png"
+   ],
+   [
+    "slide 7",
+    "b54a6b725e0f5698978305620cbd6c18",
+    "png"
+   ],
+   [
+    "slide 8",
+    "2620c9642333d1a4a3d5fdf3947f2a77",
+    "png"
+   ]
+  ]
+ },
+ "lc-anagram-window-matches": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "9a089b4a2d857404021d683008c702ae",
+    "png"
+   ],
+   [
+    "slide 2",
+    "89a8c5766495fe8ad371f0c63dea193f",
+    "png"
+   ],
+   [
+    "slide 3",
+    "74dc9cd64b51906d57c637592bc8eaa3",
+    "png"
+   ],
+   [
+    "slide 4",
+    "43fa1284295a14e1931e4fd8d330bb45",
+    "png"
+   ],
+   [
+    "slide 5",
+    "69769a74fcef1e9d2ffb821e52247935",
+    "png"
+   ],
+   [
+    "slide 6",
+    "0a64c384d83d277ac5a7e19e02b8b91d",
+    "png"
+   ],
+   [
+    "slide 7",
+    "b9e1724ea1fbbcd57598d1fd81a8b58b",
+    "png"
+   ],
+   [
+    "slide 8",
+    "ea84ffbceacc47ae46d165df9f504a7c",
+    "png"
+   ]
+  ]
+ },
+ "lc-prime-check-sqrt": {
+  "kind": "Carousel \u00b7 8 slides",
+  "files": [
+   [
+    "slide 1",
+    "c095da834ea1db2156ad4fc13d05a91a",
+    "png"
+   ],
+   [
+    "slide 2",
+    "dfab85a1629d0f21332829b330a38620",
+    "png"
+   ],
+   [
+    "slide 3",
+    "6cefbb4dd111898c321c8bbb64adf3ea",
+    "png"
+   ],
+   [
+    "slide 4",
+    "c6c771a5b64a75c5ed2394cf3efa1d7c",
+    "png"
+   ],
+   [
+    "slide 5",
+    "0ce66aa24ce96a3380209e7c4e1c4b5e",
+    "png"
+   ],
+   [
+    "slide 6",
+    "2144e00c7a117a2543542274ac908ffb",
+    "png"
+   ],
+   [
+    "slide 7",
+    "a740e3f783f0ca333900a1d62a70ec36",
+    "png"
+   ],
+   [
+    "slide 8",
+    "e097bb37e97a3be479fe32de6919b878",
+    "png"
+   ]
+  ]
+ }
+}
