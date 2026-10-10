@@ -1579,6 +1579,19 @@ describe("lesson artifacts kit: cell states separate from idle on the navy card 
     expect(readFileSync(join(ARTIFACTS, "shared.py"), "utf8")).toContain(".cell.win{box-shadow:inset 0 0 0 2px var(--k-win-ring)}");
     expect(readFileSync(join(ARTIFACTS, "kit", "kit.css"), "utf8")).toContain('.skey li[data-k="win"] i{box-shadow:inset 0 0 0 2px var(--k-win-ring)}');
   });
+  // a frame blends the fill from the last state, so at the start of a step a cell leaving win still
+  // wears win's fill; CI caught that cell ringless mid-play on sliding-window
+  it("a cell keeps its ring while its fill is still leaving win", () => {
+    const src = readFileSync(join(ARTIFACTS, "kit", "engine.js"), "utf8").match(/^function ringKind\(.*$/m);
+    expect(src).not.toBeNull();
+    const ringKind = runInNewContext(`(${src![0]})`) as (from: string, to: string, p: number) => string;
+    expect(ringKind("win", "idle", 0)).toBe("win");
+    expect(ringKind("win", "acc", 0.6)).toBe("win");
+    expect(ringKind("win", "idle", 1)).toBe("idle");
+    expect(ringKind("idle", "win", 0)).toBe("win");
+    expect(ringKind("idle", "acc", 0.5)).toBe("acc");
+    expect(readFileSync(join(ARTIFACTS, "kit", "engine.js"), "utf8")).toContain("markState(e,rk)");
+  });
   // the ring is a class, the fill an inline style: a path that set one without the other drew a ready
   // course that looked idle (course-schedule). Every statement that paints a cell's fill marks its state.
   it("every path that paints a cell's fill marks its state too, in the kit and in a lesson's own script", () => {
