@@ -63,7 +63,7 @@ function paintTree(host,T,opts){
   var lastCells=null,lastEdges=null;
   function update(cells,edges){
     lastCells=cells;lastEdges=edges;
-    els.forEach(function(c,i){var s=styleOf(cells[i]);c.style.background=rgb(s.f);c.style.color=rgb(s.i);c.textContent=cells[i].t;});
+    els.forEach(function(c,i){var s=styleOf(cells[i]);c.style.background=rgb(s.f);c.style.color=rgb(s.i);markState(c,cells[i].k);c.textContent=cells[i].t;});
     lines.forEach(function(ln,i){var on=edges&&edges[i];ln.style.stroke=rgb(on?EDGE.path:EDGE.idle);ln.style.strokeWidth=on?4:2;});
   }
   var api={update:update,els:els,repaint:function(){if(lastCells)update(lastCells,lastEdges);}};onRepaint(api.repaint);return api;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { runInNewContext } from "node:vm";
@@ -1549,5 +1549,61 @@ describe("lesson artifacts kit: cost plots (plots.js)", () => {
     for (const s of [...loops, ...appends, ...hw]) for (const [short, , f] of [...K.PL_INV, ...(s.plot.inv || [])]) expect(f(s), `${s.note.slice(0, 40)}: ${short}`).toBe(true);
     // no counters: a count that grows from "–" to "100,000,000" wrapped the phone's invariant line mid-walkthrough
     expect(K.plotRead(hw[0]!).counts).toEqual([]);
+  });
+});
+
+describe("lesson artifacts kit: cell states separate from idle on the navy card (#72)", () => {
+  // the accent state's fill changes with the family, the rest do not
+  const families = ["linear-traversal", "ordering-search", "pointer-movement", "priority-structures", "recursive-exploration", "relationships", "state-transition"];
+  type Row = { theme: string; state: string; fillVsIdle: number; ringVsIdle: number | null; ringVsFill: number | null; inkOnFill: number };
+  const report = (family: string) => {
+    const run = spawnSync("python3", ["-c", `import sys,json;sys.path.insert(0,${JSON.stringify(ARTIFACTS)});import shared as S;print(json.dumps(S.state_report(*S.tokens(${JSON.stringify(family)}))))`], { encoding: "utf8" });
+    if (run.status) throw new Error(run.stderr);
+    return JSON.parse(run.stdout) as Row[];
+  };
+  it.each(families)("%s: each state stands 3:1 off idle by fill or ring, and its ink is AA, in both themes", (family) => {
+    const rows = report(family);
+    expect(new Set(rows.map((r) => r.theme))).toEqual(new Set(["light", "dark"]));
+    for (const r of rows) {
+      if (r.state !== "dim") {
+        const ring = r.ringVsIdle !== null && r.ringVsIdle >= 3 && r.ringVsFill !== null && r.ringVsFill >= 3;
+        expect(r.fillVsIdle >= 3 || ring, `${family} ${r.theme} ${r.state} vs idle`).toBe(true);
+      }
+      expect(r.inkOnFill, `${family} ${r.theme} ${r.state} ink`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+  it("win's fill cannot separate alone, so it carries a ring, in the cell and in the state key", () => {
+    const win = report("relationships").filter((r) => r.state === "win");
+    expect(win).toHaveLength(2);
+    expect(win.every((r) => r.fillVsIdle < 3 && r.ringVsIdle !== null)).toBe(true);
+    expect(readFileSync(join(ARTIFACTS, "shared.py"), "utf8")).toContain(".cell.win{box-shadow:inset 0 0 0 2px var(--k-win-ring)}");
+    expect(readFileSync(join(ARTIFACTS, "kit", "kit.css"), "utf8")).toContain('.skey li[data-k="win"] i{box-shadow:inset 0 0 0 2px var(--k-win-ring)}');
+  });
+  // a frame blends the fill from the last state, so at the start of a step a cell leaving win still
+  // wears win's fill; CI caught that cell ringless mid-play on sliding-window
+  it("a cell keeps its ring while its fill is still leaving win", () => {
+    const src = readFileSync(join(ARTIFACTS, "kit", "engine.js"), "utf8").match(/^function ringKind\(.*$/m);
+    expect(src).not.toBeNull();
+    const ringKind = runInNewContext(`(${src![0]})`) as (from: string, to: string, p: number) => string;
+    expect(ringKind("win", "idle", 0)).toBe("win");
+    expect(ringKind("win", "acc", 0.6)).toBe("win");
+    expect(ringKind("win", "idle", 1)).toBe("idle");
+    expect(ringKind("idle", "win", 0)).toBe("win");
+    expect(ringKind("idle", "acc", 0.5)).toBe("acc");
+    expect(readFileSync(join(ARTIFACTS, "kit", "engine.js"), "utf8")).toContain("markState(e,rk)");
+  });
+  // the ring is a class, the fill an inline style: a path that set one without the other drew a ready
+  // course that looked idle (course-schedule). Every statement that paints a cell's fill marks its state.
+  it("every path that paints a cell's fill marks its state too, in the kit and in a lesson's own script", () => {
+    const files = readdirSync(join(ARTIFACTS, "kit")).filter((n) => n.endsWith(".js")).map((n) => join("kit", n));
+    for (const d of readdirSync(ARTIFACTS, { withFileTypes: true }))
+      if (d.isDirectory() && existsSync(join(ARTIFACTS, d.name, "lesson.js"))) files.push(join(d.name, "lesson.js"));
+    const paints: string[] = [];
+    for (const f of files)
+      for (const line of readFileSync(join(ARTIFACTS, f), "utf8").split("\n"))
+        if (/styleOf\(/.test(line) && /\.style\.background=/.test(line) || (f === join("kit", "engine.js") && /e\.style\.background=f;/.test(line))) paints.push(`${f}: ${line.trim()}`);
+    // the engine's scene, strip, graphView, and diameter-of-binary-tree's own tree view
+    expect(paints.map((p) => p.split(":")[0]).sort()).toEqual(["diameter-of-binary-tree/lesson.js", "kit/engine.js", "kit/kit.js", "kit/kit.js"]);
+    for (const p of paints) expect(p).toContain("markState(");
   });
 });

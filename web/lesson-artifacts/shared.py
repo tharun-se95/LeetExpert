@@ -159,7 +159,35 @@ def tokens(family):
     # The dark theme is the Grid's (D6): D for the page, ND for its navy cards (inks only, so
     # .navy's own ladder mapping still applies).
     D, ND = grid_dark()
+    bad = [r for r in state_report(L, D, N, ND) if not r["ok"]]
+    if bad:
+        raise SystemExit("cell states not separable from idle (WCAG 1.4.11 / 1.4.3): " + "; ".join(str(r) for r in bad))
     return L, D, N, ND
+
+
+def state_report(L, D, N, ND):
+    """Every cell state against the idle cell, resolved on the navy card in both themes. A state
+    passes when its fill stands 3:1 off idle, or its ring stands 3:1 off idle and off its own fill
+    (non-text, 1.4.11), and its ink reads 4.5:1 on its fill (1.4.3). `dim` recedes by design."""
+    kv = dict(x.split(":", 1) for x in K.split(";"))
+    rows = []
+    for theme, base, nav in (("light", L, N), ("dark", D, ND)):
+        t = {**_decls(base), **_decls(nav)}
+        # .navy re-maps the ladder: the card is --nv-card, the recessed well --nv-deep
+        t.update({"--bg": t["--nv-bg"], "--card": t["--nv-card"], "--well": t["--nv-deep"], "--mut": t["--nv-mut"]})
+        val = lambda name: t[re.match(r"var\((--[\w-]+)\)", kv[name]).group(1)]
+        idle = val("--k-idle")
+        for state in ("cur", "acc", "done", "bad", "warn", "viol", "win", "dim"):
+            fill, ink = val("--k-" + state), val("--k-" + state + "-ink")
+            ring = val("--k-win-ring") if state == "win" else None
+            vs_idle = contrast(fill, idle)
+            ring_idle, ring_fill = (contrast(ring, idle), contrast(ring, fill)) if ring else (None, None)
+            separates = vs_idle >= 3 or (ring is not None and ring_idle >= 3 and ring_fill >= 3)
+            rows.append({"theme": theme, "state": state, "fill": fill, "idle": idle, "fillVsIdle": round(vs_idle, 2),
+                         "ring": ring, "ringVsIdle": ring_idle and round(ring_idle, 2), "ringVsFill": ring_fill and round(ring_fill, 2),
+                         "ink": ink, "inkOnFill": round(contrast(ink, fill), 2),
+                         "ok": (state == "dim" or separates) and contrast(ink, fill) >= 4.5})
+    return rows
 
 
 GLOBALS = os.path.join(HERE, "..", "src", "app", "globals.css")
@@ -191,9 +219,15 @@ def app_surfaces():
 
 # The state colours the engine paints cells with. Declared again on .navy: a custom
 # property resolves where it is declared, so the :root copy would keep paper values.
+# --k-win is level 1 of the blue ramp. On the navy card (idle #2b405a light, #223145 dark) it measures
+# 1.09:1 and 1.14:1 against the idle cell, and no fill can do better while keeping its ink AA: one light
+# enough to stand 3:1 off idle loses the 4.5:1 ink, and none is 3:1 darker than the card. So win keeps
+# its fill and takes a ring, --k-win-ring (the blue text ink), as `hi` does in the lane player: 4.98:1
+# (light) / 6.14:1 (dark) off idle and 5.43 / 5.38 off the win fill. state_report() measures it and
+# tokens() fails the build below 3:1 (WCAG 1.4.11). `dim` is exempt: it is meant to recede (#72).
 K = ("--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-ink:var(--bg);--k-acc:var(--k-acc-fill);--k-acc-ink:var(--k-acc-on);"
      "--k-done:var(--g-ink);--k-done-ink:var(--bg);--k-bad:var(--r-ink);--k-bad-ink:var(--bg);--k-warn:var(--y-ink);--k-warn-ink:var(--bg);"
-     "--k-viol:var(--p-ink);--k-viol-ink:var(--bg);--k-dim:var(--well);--k-dim-ink:var(--mut);--k-win:var(--b-1);--k-win-ink:var(--fg);"
+     "--k-viol:var(--p-ink);--k-viol-ink:var(--bg);--k-dim:var(--well);--k-dim-ink:var(--mut);--k-win:var(--b-1);--k-win-ink:var(--fg);--k-win-ring:var(--b-ink);"
      "--e-idle:var(--mut);--e-path:var(--fam);--e-cur:var(--o-ink)")
 
 # @@L@@ and @@D@@ become the light and dark token lists, @@N@@ the navy card's inks in the light
@@ -290,6 +324,7 @@ main[data-code="py"] .c-ts,main[data-code="ts"] .c-py{display:none}
 .edges{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
 .edges line{stroke:var(--e-idle);stroke-width:2;stroke-linecap:round}
 .cell{width:var(--cs);height:var(--cs);border-radius:calc(var(--cs)*.16);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:var(--fs);line-height:1;will-change:transform;user-select:none;box-shadow:inset 0 0 0 1px var(--hair2)}
+.cell.win{box-shadow:inset 0 0 0 2px var(--k-win-ring)}
 .cell.node{position:absolute;border-radius:50%;--cs:auto;overflow:hidden;white-space:nowrap}
 .note{padding:12px 18px;min-height:76px;font-size:14px;line-height:1.5;border-top:1px solid var(--hair2)}
 .stats{display:flex;flex-wrap:wrap;gap:6px 8px;padding:0 18px 12px}
