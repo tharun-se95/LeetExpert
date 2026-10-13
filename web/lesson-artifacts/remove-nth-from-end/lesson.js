@@ -126,7 +126,7 @@ var FACTS=(function(){
   mountPlayerTabs($('#stepper'),CASES.slice(0,5).map(function(c){return {name:rmShow(c[0])+', n = '+c[1],steps:function(){return removeSteps(c[0],c[1]);}};}),make,{id:'walk'});
 })();
 
-/* ================= systems layer: the scout and the reader, animated banners ================= */
+/* ================= systems layer: the scout and the reader================= */
 (function(){
   function heroGap(){
     var svg=$('#heroGap');if(!svg)return;
@@ -155,34 +155,5 @@ var FACTS=(function(){
     var last=-1;M.animate(0,K+2,{duration:(K+2)*1.2,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(K,Math.floor(v));if(k!==last){last=k;show(k);}}});
   }
 
-  var banners={
-    /* the node n from the end, counted back */
-    problem:function(svg){
-      var X=chainArt(svg,[1,2,3,4,5],100,40),t=S('text',{y:110,class:'bn-t','text-anchor':'middle'},svg);
-      return function(){M.animate(0,2,{duration:1.2,delay:.4,onUpdate:function(v){var k=Math.round(v);t.setAttribute('x',X(4-Math.max(0,k-1))+35);t.textContent=k?k+' from the end':'';}});};
-    },
-    /* a dummy before the head */
-    attempt:function(svg){
-      var X=chainArt(svg,['·',1,2,3],170,40),d=S('text',{x:X(0)+35,y:30,class:'bn-t','text-anchor':'middle'},svg);d.textContent='dummy';
-      var l=S('text',{y:100,class:'bn-t','text-anchor':'middle'},svg),t=S('text',{y:116,class:'bn-t','text-anchor':'middle'},svg);l.textContent='lead';t.textContent='trail';
-      return function(){M.animate(0,2,{duration:1.6,ease:'easeInOut',onUpdate:function(v){l.setAttribute('x',X(v)+35);t.setAttribute('x',X(0)+35);}});};
-    },
-    /* one step too many */
-    trap:function(svg){
-      var X=chainArt(svg,[1,2,3,4,5],100,30),t=S('text',{y:92,class:'bn-t','text-anchor':'middle'},svg),big=S('text',{x:650,y:58,class:'bn-big bad','text-anchor':'middle'},svg);t.textContent='trail';
-      return function(){M.animate(2,3,{duration:.8,delay:.6,onUpdate:function(v){t.setAttribute('x',X(v)+35);big.textContent=v>2.5?'on the target':'';}});};
-    },
-    /* the gap stays n */
-    insight:function(svg){
-      var big=S('text',{x:360,y:66,class:'bn-big','text-anchor':'middle'},svg),sub=S('text',{x:360,y:98,class:'bn-t','text-anchor':'middle'},svg);sub.textContent='both move one node per step';
-      return function(){M.animate(0,1,{duration:1.2,onUpdate:function(v){big.textContent='gap = n';}});};
-    },
-    /* one pass, L steps */
-    solution:function(svg){
-      S('rect',{x:60,y:52,width:520,height:14,rx:7,class:'bn-track'},svg);var fill=S('rect',{x:60,y:52,width:0,height:14,rx:7,class:'bn-bar'},svg);
-      var big=S('text',{x:60,y:36,class:'bn-big'},svg);
-      return function(){M.animate(0,5,{duration:2.2,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/5);big.textContent='lead: '+Math.round(v)+' of 5 steps';}});};
-    }
-  };
-  heroGap();mountBanners(banners);kinetic();riseIn();
+  heroGap();kinetic();riseIn();
 })();

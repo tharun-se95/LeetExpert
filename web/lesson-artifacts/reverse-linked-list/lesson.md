@@ -12,9 +12,13 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> <span id="heroUnit">entries</span> rewritten</div><div id="heroCap"></div></div></div></div>
 ---
 
-## Problem {#problem banner}
+## Problem {#problem}
 
-Given the `head` of a singly linked list, reverse the list **in place** and return the new head.
+```vig "Four nodes in a row with every arrow pointing backwards, the first one now ending the chain"
+<circle class="st" cx="22" cy="56" r="7"/><path class="st" d="M17.1 60.9L26.9 51.1"/><circle class="fa" cx="66" cy="56" r="9"/><circle class="fa" cx="114" cy="56" r="9"/><circle class="fa" cx="162" cy="56" r="9"/><circle class="fa" cx="210" cy="56" r="9"/><path class="sc" d="M102 56L78 56"/><path class="sc" d="M82.1 58.8L78 56L82.1 53.2"/><path class="sc" d="M150 56L126 56"/><path class="sc" d="M130.1 58.8L126 56L130.1 53.2"/><path class="sc" d="M198 56L174 56"/><path class="sc" d="M178.1 58.8L174 56L178.1 53.2"/><path class="sc" d="M54 56L31 56"/><path class="sc" d="M35.1 58.8L31 56L35.1 53.2"/>
+```
+
+Given the `head` of a singly linked list, reverse the list ==in place== and return the new head.
 
 ```examples
 head = [1,2,3,4,5] → [5,4,3,2,1]
@@ -34,7 +38,15 @@ Try it by hand. These are the four statements the solution is made of. Run them 
 <div class="lvhost"></div><div class="actions stmts"><button type="button" class="btn2" data-op="save"><code>nxt = curr.next</code></button><button type="button" class="btn2" data-op="flip"><code>curr.next = prev</code></button><button type="button" class="btn2" data-op="prev"><code>prev = curr</code></button><button type="button" class="btn2" data-op="curr"><code>curr = nxt</code></button></div><div class="actions"><button type="button" class="btn2 reset">Start again</button><span class="lv-hint" id="byhandHint"></span></div>
 ```
 
-## Attempt it first {#attempt banner}
+## Attempt it first {#attempt}
+
+```caption
+`prev` heads the part already reversed; `curr` heads the part not yet touched.
+```
+
+```vig "A chain with two markers on neighbouring nodes: behind them the arrows are turned, ahead they are not"
+<circle class="fa" cx="28" cy="70" r="8"/><circle class="fa" cx="74" cy="70" r="8"/><path class="sc" d="M63 70L39 70"/><path class="sc" d="M43.1 72.8L39 70L43.1 67.2"/><circle class="fa" cx="120" cy="70" r="8"/><circle class="fa" cx="166" cy="70" r="8"/><circle class="fa" cx="212" cy="70" r="8"/><path class="st" d="M131 70L155 70"/><path class="st" d="M150.9 67.2L155 70L150.9 72.8"/><path class="st" d="M177 70L201 70"/><path class="st" d="M196.9 67.2L201 70L196.9 72.8"/><polygon class="fc" points="68,40 80,40 74,51"/><polygon class="fk" points="114,40 126,40 120,51"/>
+```
 
 This is the canonical pointer exercise. Sub-range reversal turns up inside harder problems constantly (reversing a window, reversing in groups, checking a palindrome), and all of them assume you can write this loop cold. So take paper, draw four nodes, and run the walk by hand before reading on.
 
@@ -50,7 +62,15 @@ Each node's `next` is the only handle on the rest of the list. If you rewrite it
 When the walk finishes, `curr` is null: it has walked off the original tail. The new head is the last node flipped, which is `prev`.
 ```
 
-## The trap: flip first {#trap toc="The trap" banner}
+## The trap: flip first {#trap toc="The trap"}
+
+```caption
+Flip before saving, and the last pointer to the rest of the list is gone.
+```
+
+```vig "One node pointing back at nothing, and the rest of the chain cut off behind a broken link"
+<circle class="st" cx="20" cy="56" r="7"/><path class="st" d="M15.1 60.9L24.9 51.1"/><circle class="fk" cx="66" cy="56" r="9"/><path class="sc" d="M54 56L29 56"/><path class="sc" d="M33.1 58.8L29 56L33.1 53.2"/><path class="st" d="M80 56L118 56" stroke-dasharray="3 3"/><circle class="fr" cx="99" cy="56" r="3.5"/><circle class="fa" cx="134" cy="56" r="8"/><circle class="fa" cx="172" cy="56" r="8"/><circle class="fa" cx="210" cy="56" r="8"/><path class="st" d="M145 56L161 56"/><path class="st" d="M156.9 53.2L161 56L156.9 58.8"/><path class="st" d="M183 56L199 56"/><path class="st" d="M194.9 53.2L199 56L194.9 58.8"/>
+```
 
 The tempting loop does exactly the two things the problem names, flip and move on, and nothing else:
 
@@ -72,7 +92,11 @@ The other way out of the trap is to give up on in place: walk the list once, kee
 <div class="chart" id="cost"></div><p class="cost-note" id="costNote"></p>
 ```
 
-## The insight {#insight banner}
+## The insight {#insight}
+
+```vig "Two separate chains, one reversed and one untouched, with a single node crossing from one to the other"
+<circle class="st" cx="16" cy="30" r="7"/><path class="st" d="M11.1 34.9L20.9 25.1"/><circle class="fa" cx="58" cy="30" r="8"/><circle class="fa" cx="106" cy="30" r="8"/><path class="sc" d="M95 30L69 30"/><path class="sc" d="M73.1 32.8L69 30L73.1 27.2"/><path class="sc" d="M47 30L25 30"/><path class="sc" d="M29.1 32.8L25 30L29.1 27.2"/><circle class="fa" cx="156" cy="84" r="8"/><circle class="fa" cx="200" cy="84" r="8"/><path class="st" d="M167 84L189 84"/><path class="st" d="M184.9 81.2L189 84L184.9 86.8"/><circle class="fk" cx="132" cy="60" r="9"/><path class="sc" d="M124 52L113 39"/><path class="sc" d="M113.5 44L113 39L117.8 40.3"/>
+```
 
 Stop the correct loop at the top of any pass and look at the pointers. The list is always two separate chains. `prev` heads the nodes already flipped, in reverse order, ending at null. `curr` heads the nodes not yet touched, in their original order, also ending at null. Every node is in exactly one of them.
 
@@ -101,7 +125,15 @@ Watch it on each of the lesson's lists. The panel checks the two-chain invariant
 <div class="extabs" role="group" aria-label="Choose a list"></div><div class="lvhost"></div>
 ```
 
-## Solution {#solution banner}
+## Solution {#solution}
+
+```caption
+One pointer write per node, with three names held at a time.
+```
+
+```vig "A chain in the middle of being reversed, with three markers on consecutive nodes"
+<circle class="fa" cx="28" cy="74" r="8"/><circle class="fa" cx="74" cy="74" r="8"/><path class="sc" d="M63 74L39 74"/><path class="sc" d="M43.1 76.8L39 74L43.1 71.2"/><circle class="fa" cx="120" cy="74" r="8"/><circle class="fa" cx="166" cy="74" r="8"/><circle class="fa" cx="212" cy="74" r="8"/><path class="st" d="M131 74L155 74"/><path class="st" d="M150.9 71.2L155 74L150.9 76.8"/><path class="st" d="M177 74L201 74"/><path class="st" d="M196.9 71.2L201 74L196.9 76.8"/><polygon class="fc" points="68,44 80,44 74,55"/><polygon class="fk" points="114,44 126,44 120,55"/><polygon class="fa" points="160,44 172,44 166,55"/>
+```
 
 Attempt it on paper first: write the loop, decide what `prev` and `curr` start as, and say what you return. Then compare.
 
@@ -146,6 +178,10 @@ Recursion earns its keep when the structure branches, as a tree does; on a chain
 
 ## Variants {#variants}
 
+```vig "Three sketches: a middle stretch of a chain boxed, a chain boxed in groups of three, and a chain with a marker at each end"
+<circle class="fa" cx="30" cy="18" r="5"/><circle class="fa" cx="70" cy="18" r="5"/><circle class="fa" cx="110" cy="18" r="5"/><circle class="fa" cx="150" cy="18" r="5"/><circle class="fa" cx="190" cy="18" r="5"/><path class="st" d="M38 18L62 18"/><path class="st" d="M57.9 15.2L62 18L57.9 20.8"/><path class="st" d="M78 18L102 18"/><path class="st" d="M97.9 15.2L102 18L97.9 20.8"/><path class="st" d="M118 18L142 18"/><path class="st" d="M137.9 15.2L142 18L137.9 20.8"/><path class="st" d="M158 18L182 18"/><path class="st" d="M177.9 15.2L182 18L177.9 20.8"/><rect class="st" x="58" y="8" width="104" height="20" rx="6" stroke-dasharray="3 3"/><circle class="fa" cx="20" cy="56" r="5"/><circle class="fa" cx="60" cy="56" r="5"/><circle class="fa" cx="100" cy="56" r="5"/><circle class="fa" cx="140" cy="56" r="5"/><circle class="fa" cx="180" cy="56" r="5"/><circle class="fa" cx="220" cy="56" r="5"/><path class="st" d="M28 56L52 56"/><path class="st" d="M47.9 53.2L52 56L47.9 58.8"/><path class="st" d="M68 56L92 56"/><path class="st" d="M87.9 53.2L92 56L87.9 58.8"/><path class="st" d="M108 56L132 56"/><path class="st" d="M127.9 53.2L132 56L127.9 58.8"/><path class="st" d="M148 56L172 56"/><path class="st" d="M167.9 53.2L172 56L167.9 58.8"/><path class="st" d="M188 56L212 56"/><path class="st" d="M207.9 53.2L212 56L207.9 58.8"/><rect class="st" x="9" y="46" width="102" height="20" rx="6" stroke-dasharray="3 3"/><rect class="st" x="129" y="46" width="102" height="20" rx="6" stroke-dasharray="3 3"/><circle class="fa" cx="30" cy="100" r="5"/><circle class="fa" cx="70" cy="100" r="5"/><circle class="fa" cx="110" cy="100" r="5"/><circle class="fa" cx="150" cy="100" r="5"/><circle class="fa" cx="190" cy="100" r="5"/><path class="st" d="M38 100L62 100"/><path class="st" d="M57.9 97.2L62 100L57.9 102.8"/><path class="st" d="M78 100L102 100"/><path class="st" d="M97.9 97.2L102 100L97.9 102.8"/><path class="st" d="M118 100L142 100"/><path class="st" d="M137.9 97.2L142 100L137.9 102.8"/><path class="st" d="M158 100L182 100"/><path class="st" d="M177.9 97.2L182 100L177.9 102.8"/><polygon class="fc" points="24,80 36,80 30,91"/><polygon class="fk" points="184,80 196,80 190,91"/>
+```
+
 ```variants
 [
   {
@@ -167,6 +203,10 @@ Recursion earns its keep when the structure branches, as a tree does; on a chain
 ```
 
 ## Check yourself {#quiz}
+
+```vig "Three questions as rows, the first one answered and ticked"
+<circle class="fg" cx="36" cy="24" r="10"/><path class="st" d="M31 24L35 28L42 20"/><circle class="st" cx="36" cy="56" r="10"/><circle class="st" cx="36" cy="88" r="10"/><rect class="fa" x="58" y="19" width="150" height="10" rx="5"/><rect class="fa" x="58" y="51" width="118" height="10" rx="5"/><rect class="fa" x="58" y="83" width="138" height="10" rx="5"/>
+```
 
 ```quiz
 {

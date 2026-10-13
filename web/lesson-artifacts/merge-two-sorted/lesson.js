@@ -169,7 +169,7 @@ var FACTS=(function(){
     .concat([{name:'a tie, with <=',steps:function(){return mergeSteps([1,2],[1,3]);}},{name:'a tie, with <',steps:function(){return mergeSteps([1,2],[1,3],{strict:true});}}]),make,{id:'walk'});
 })();
 
-/* ================= systems layer: the two logs hero, animated banners ================= */
+/* ================= systems layer: the two logs hero================= */
 (function(){
   function heroMerge(){
     var svg=$('#heroMerge');if(!svg)return;
@@ -206,38 +206,5 @@ var FACTS=(function(){
     var lastK=-1;M.animate(0,N+2,{duration:(N+2)*1.5,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(N,Math.floor(v));if(k!==lastK){lastK=k;show(k);}}});
   }
 
-  var banners={
-    /* two rows become one zigzag */
-    problem:function(svg){
-      var up=[1,4,6],dn=[2,3,7],P=[];up.forEach(function(v,i){P.push([v,180+i*150,32]);});dn.forEach(function(v,i){P.push([v,255+i*150,92]);});
-      P.sort(function(a,b){return a[0]-b[0];});
-      var line=S('polyline',{points:P.map(function(p){return p[1]+','+p[2];}).join(' '),class:'bn-path',style:'fill:none;stroke-dasharray:1400;stroke-dashoffset:1400'},svg);
-      P.forEach(function(p){var g=S('g',{},svg);S('rect',{x:p[1]-20,y:p[2]-14,width:40,height:28,rx:7,class:'bn-mid'},g);var t=S('text',{x:p[1],y:p[2]+5,class:'bn-t','text-anchor':'middle',style:'font-size:13px;font-weight:600'},g);t.textContent=p[0];});
-      return function(){M.animate(1400,0,{duration:1.6,delay:.3,onUpdate:function(v){line.style.strokeDashoffset=v;}});};
-    },
-    /* a dummy and a tail walking on */
-    attempt:function(svg){
-      var X=chainArt(svg,['·',1,2,3],150,36),t=S('text',{y:98,class:'bn-t','text-anchor':'middle'},svg),d=S('text',{x:X(0)+35,y:26,class:'bn-t','text-anchor':'middle'},svg);d.textContent='dummy';t.textContent='tail';
-      return function(){M.animate(0,3,{duration:2.2,ease:'easeInOut',onUpdate:function(v){t.setAttribute('x',X(v)+35);}});};
-    },
-    /* a leftover left hanging */
-    trap:function(svg){
-      chainArt(svg,[1,2,3],80,30);var g=S('g',{},svg);chainArt(g,[5],420,74);
-      var big=S('text',{x:620,y:58,class:'bn-big bad','text-anchor':'middle'},svg),sub=S('text',{x:620,y:84,class:'bn-t','text-anchor':'middle'},svg);
-      return function(){M.animate(0,1,{duration:.8,delay:.5,onUpdate:function(v){g.style.opacity=1-.6*v;big.textContent=v>.5?'[5] lost':'';sub.textContent=v>.5?'never linked on':'';}});};
-    },
-    /* the picture kept true */
-    insight:function(svg){
-      var big=S('text',{x:360,y:64,class:'bn-big','text-anchor':'middle'},svg),sub=S('text',{x:360,y:96,class:'bn-t','text-anchor':'middle'},svg);
-      sub.textContent='merged part sorted · tail ≤ both fronts';
-      return function(){M.animate(0,6,{duration:2.4,ease:'easeOut',onUpdate:function(v){big.textContent=Math.round(v)+' of 6 linked';}});};
-    },
-    /* comparisons, bounded */
-    solution:function(svg){
-      S('rect',{x:60,y:52,width:520,height:14,rx:7,class:'bn-track'},svg);var fill=S('rect',{x:60,y:52,width:0,height:14,rx:7,class:'bn-bar'},svg);
-      var big=S('text',{x:60,y:36,class:'bn-big'},svg);
-      return function(){M.animate(0,5,{duration:2.4,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/6);big.textContent=Math.round(v)+' comparisons, at most m + n − 1';}});};
-    }
-  };
-  heroMerge();mountBanners(banners);kinetic();riseIn();
+  heroMerge();kinetic();riseIn();
 })();

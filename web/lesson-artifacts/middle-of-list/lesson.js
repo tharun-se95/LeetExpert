@@ -119,7 +119,7 @@ var FACTS=(function(){
   mountPlayerTabs($('#stepper'),CASES.map(function(c){return {name:mlShow(c),steps:function(){return midSteps(c);}};}),make,{id:'walk'});
 })();
 
-/* ================= systems layer: the commit chain hero, animated banners ================= */
+/* ================= systems layer: the commit chain hero================= */
 (function(){
   function heroRace(){
     var svg=$('#heroRace');if(!svg)return;
@@ -143,38 +143,5 @@ var FACTS=(function(){
     var last=-1;M.animate(0,passes+2,{duration:(passes+2)*1.6,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(passes,Math.floor(v));if(k!==last){last=k;show(k);}}});
   }
 
-  var banners={
-    /* a chain with its middle marked */
-    problem:function(svg){
-      var X=chainArt(svg,[1,2,3,4,5],100,42),ring=S('rect',{x:X(2)-6,y:36,width:82,height:48,rx:11,class:'bn-path',style:'fill:none;opacity:0'},svg);
-      var t=S('text',{x:X(2)+35,y:110,class:'bn-t','text-anchor':'middle'},svg);
-      return function(){M.animate(0,1,{duration:.6,delay:.5,onUpdate:function(v){ring.style.opacity=v;t.textContent=v>.5?'the middle':'';}});};
-    },
-    /* two walkers, speeds one and two */
-    attempt:function(svg){
-      var X=chainArt(svg,[1,2,3,4,5],100,30),s=S('text',{y:92,class:'bn-t','text-anchor':'middle'},svg),f=S('text',{y:110,class:'bn-t','text-anchor':'middle'},svg);s.textContent='slow';f.textContent='fast';
-      return function(){M.animate(0,2,{duration:2,ease:'easeInOut',onUpdate:function(v){s.setAttribute('x',X(v)+35);f.setAttribute('x',X(Math.min(4,2*v))+35);}});};
-    },
-    /* the honest count: two bars that end level */
-    trap:function(svg){
-      var a=S('rect',{x:200,y:30,width:0,height:16,rx:6,class:'bn-bar'},svg),b=S('rect',{x:200,y:70,width:0,height:16,rx:6,class:'bn-bar'},svg);
-      S('text',{x:190,y:43,class:'bn-t','text-anchor':'end'},svg).textContent='two passes';S('text',{x:190,y:83,class:'bn-t','text-anchor':'end'},svg).textContent='two walkers';
-      var ta=S('text',{y:43,class:'bn-t'},svg),tb=S('text',{y:83,class:'bn-t'},svg);
-      return function(){M.animate(0,150,{duration:1.6,ease:'easeOut',onUpdate:function(v){var w=v*2.4;a.setAttribute('width',w);b.setAttribute('width',w);ta.setAttribute('x',208+w);tb.setAttribute('x',208+w);ta.textContent=Math.round(v)+' links';tb.textContent=Math.round(v)+' links';}});};
-    },
-    /* indices k and 2k */
-    insight:function(svg){
-      for(var i=0;i<=8;i++){S('line',{x1:80+i*70,x2:80+i*70,y1:56,y2:64,class:'bn-edge'},svg);S('text',{x:80+i*70,y:84,class:'bn-t','text-anchor':'middle'},svg).textContent=i;}
-      S('line',{x1:80,x2:640,y1:60,y2:60,class:'bn-edge'},svg);
-      var s=S('circle',{cx:80,cy:60,r:8,class:'hn-pk'},svg),f=S('circle',{cx:80,cy:60,r:8,class:'bn-end'},svg),lab=S('text',{x:360,y:24,class:'bn-t','text-anchor':'middle'},svg);
-      return function(){M.animate(0,4,{duration:3.2,ease:'linear',onUpdate:function(v){s.setAttribute('cx',80+v*70);f.setAttribute('cx',80+2*v*70);var k=Math.round(v);lab.textContent='slow on '+k+', fast on '+2*k;}});};
-    },
-    /* passes: n ÷ 2 */
-    solution:function(svg){
-      S('rect',{x:60,y:52,width:520,height:14,rx:7,class:'bn-track'},svg);var fill=S('rect',{x:60,y:52,width:0,height:14,rx:7,class:'bn-bar'},svg);
-      var big=S('text',{x:60,y:36,class:'bn-big'},svg);
-      return function(){M.animate(0,50,{duration:2.6,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/100);big.textContent=Math.round(v)+' passes for 100 nodes';}});};
-    }
-  };
-  heroRace();mountBanners(banners);kinetic();riseIn();
+  heroRace();kinetic();riseIn();
 })();

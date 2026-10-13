@@ -179,7 +179,7 @@ var FACTS=(function(){
     function(h,o){return new ListPlayer(h,Object.assign(o,RL_OPTS));},{id:'walk'});
 })();
 
-/* ================= systems layer: the FAT chain hero, animated banners ================= */
+/* ================= systems layer: the FAT chain hero================= */
 (function(){
   function heroFlip(){
     var svg=$('#heroFlip');if(!svg)return;
@@ -214,46 +214,5 @@ var FACTS=(function(){
     var last=-1;M.animate(0,7,{duration:7*1.9,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(5,Math.floor(v));if(k!==last){last=k;show(k);}}});
   }
 
-  function arrowDefs(svg){svg.insertAdjacentHTML('afterbegin','<defs><marker id="bnRA" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="context-stroke"/></marker></defs>');}
-  var banners={
-    /* four nodes; their arrows turn round one at a time */
-    problem:function(svg){
-      arrowDefs(svg);var X=chainArt(svg,[1,2,3,4],170,42),fw=[],bw=[];
-      for(var i=0;i<3;i++){fw.push(S('line',{x1:X(i)+60,y1:56,x2:X(i+1)-3,y2:56,class:'bn-path','marker-end':'url(#bnRA)'},svg));
-        bw.push(S('line',{x1:X(i+1),y1:70,x2:X(i)+73,y2:70,class:'bn-path b2','marker-end':'url(#bnRA)',style:'opacity:0'},svg));}
-      return function(){for(var i=0;i<3;i++)(function(i){M.animate(0,1,{duration:.4,delay:.4+i*.6,onUpdate:function(v){fw[i].style.opacity=1-v;bw[i].style.opacity=v;}});})(i);};
-    },
-    /* three names walk the chain together */
-    attempt:function(svg){
-      var X=chainArt(svg,[1,2,3,4,5],100,30),tags=['prev','curr','nxt'].map(function(t){var e=S('text',{y:96,class:'bn-t','text-anchor':'middle'},svg);e.textContent=t;return e;});
-      return function(){M.animate(0,3,{duration:2.4,ease:'easeInOut',onUpdate:function(v){tags.forEach(function(e,j){var p=v+j-1;e.style.opacity=p<0||p>4?0:1;e.setAttribute('x',X(Math.max(0,Math.min(4,p)))+35);});}});};
-    },
-    /* flip first: the first node's next goes to ∅ and the rest fades out */
-    trap:function(svg){
-      arrowDefs(svg);var g1=S('g',{},svg),g2=S('g',{},svg);chainArt(g1,[1],120,40);var X=chainArt(g2,[2,3,4],224,40);
-      [0,1].forEach(function(i){S('line',{x1:X(i)+60,y1:58,x2:X(i+1)-3,y2:58,class:'bn-path','marker-end':'url(#bnRA)'},g2);});
-      var big=S('text',{x:600,y:58,class:'bn-big bad','text-anchor':'middle'},svg),sub=S('text',{x:600,y:84,class:'bn-t','text-anchor':'middle'},svg);
-      return function(){M.animate(0,1,{duration:.8,delay:.6,onUpdate:function(v){g2.style.opacity=1-.62*v;big.textContent=v>.5?'3 lost':'';sub.textContent=v>.5?'nothing names 2':'';}});};
-    },
-    /* two chains: one node at a time crosses from untouched to flipped */
-    insight:function(svg){
-      S('line',{x1:360,x2:360,y1:18,y2:104,class:'bn-edge',style:'stroke-dasharray:4 4'},svg);
-      var l=S('text',{x:180,y:20,class:'bn-t','text-anchor':'middle'},svg),r=S('text',{x:540,y:20,class:'bn-t','text-anchor':'middle'},svg);l.textContent='flipped';r.textContent='untouched';
-      var boxes=[1,2,3,4].map(function(v){var g=S('g',{},svg);S('rect',{x:-26,y:-16,width:52,height:32,rx:8,class:'bn-mid'},g);var t=S('text',{y:5,class:'bn-t','text-anchor':'middle',style:'font-size:14px;font-weight:600'},g);t.textContent=v;return g;});
-      /* k nodes flipped, node k u of the way across: the flipped ones make room, the untouched close up */
-      function place(k,u){boxes.forEach(function(g,i){
-        var x=i<k?300-(k-1-i)*62-62*u:(i===k?420-120*u:420+(i-k)*62-62*u);
-        g.setAttribute('transform','translate('+x+',64)');});}
-      place(0,0);
-      return function(){M.animate(0,4,{duration:4,ease:'linear',onUpdate:function(v){var k=Math.min(3,Math.floor(v)),u=v-k;if(v>=4){k=4;u=0;}place(k,Math.min(1,u*1.6));}});};
-    },
-    /* one write per node: a counter that ends on n */
-    solution:function(svg){
-      S('rect',{x:60,y:52,width:520,height:14,rx:7,class:'bn-track'},svg);var fill=S('rect',{x:60,y:52,width:0,height:14,rx:7,class:'bn-bar'},svg);
-      var big=S('text',{x:60,y:36,class:'bn-big'},svg);big.textContent='0 writes';
-      var memo=S('text',{x:580,y:96,class:'bn-t','text-anchor':'end'},svg);memo.textContent='held at once: prev, curr, nxt';
-      return function(){M.animate(0,5,{duration:2.6,ease:'easeOut',onUpdate:function(v){fill.setAttribute('width',520*v/5);var k=Math.round(v);big.textContent=k+(k===1?' write':' writes')+' for 5 nodes';}});};
-    }
-  };
-  heroFlip();mountBanners(banners);kinetic();riseIn();
+  heroFlip();kinetic();riseIn();
 })();

@@ -98,7 +98,7 @@ var PS_OPTS={inv:function(s){return PS_INV[s.data.kind];},check:psCheck,fields:p
   $('#movesNote').innerHTML='Guarding only <code>fast</code>, run on every length from 1 to '+GUARD_N+': it throws on '+odd.join(', ')+' and returns normally on '+even.join(', ')+'. On an even length <code>fast.next.next</code> happens to be null rather than unreadable, so tests that use only even lengths never see the bug.';
 })();
 
-/* ================= systems layer: the sentinel hero, animated banners ================= */
+/* ================= systems layer: the sentinel hero================= */
 (function(){
   function heroSentinel(){
     var svg=$('#heroSentinel');if(!svg)return;
@@ -124,27 +124,5 @@ var PS_OPTS={inv:function(s){return PS_INV[s.data.kind];},check:psCheck,fields:p
     var last=-1,K=frames.length-1;M.animate(0,K+2,{duration:(K+2)*1.6,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(K,Math.floor(v));if(k!==last){last=k;show(k);}}});
   }
 
-  var banners={
-    /* a dummy before the head */
-    node:function(svg){
-      var X=chainArt(svg,['·',7,3],200,42),d=S('text',{x:X(0)+35,y:30,class:'bn-t','text-anchor':'middle'},svg),p=S('text',{x:X(0)+35,y:104,class:'bn-t','text-anchor':'middle'},svg);
-      return function(){M.animate(0,1,{duration:.6,delay:.3,onUpdate:function(v){d.textContent=v>.5?'dummy':'';p.textContent=v>.5?'prev':'';}});};
-    },
-    /* the 7 that a careless advance steps over */
-    trap:function(svg){
-      var X=chainArt(svg,[7,7,3],180,42),t=S('text',{y:104,class:'bn-t','text-anchor':'middle'},svg),big=S('text',{x:640,y:66,class:'bn-big bad','text-anchor':'middle'},svg);t.textContent='prev';
-      return function(){M.animate(0,1,{duration:1,delay:.4,onUpdate:function(v){t.setAttribute('x',X(v)+35);big.textContent=v>.9?'7 skipped':'';}});};
-    },
-    /* three names on one list */
-    walk:function(svg){
-      var X=chainArt(svg,[1,2,3,4],180,36),names=['prev','curr','nxt'].map(function(n,i){var e=S('text',{y:98,class:'bn-t','text-anchor':'middle'},svg);e.textContent=n;return e;});
-      return function(){M.animate(0,2,{duration:2.2,ease:'easeInOut',onUpdate:function(v){names.forEach(function(e,i){var p=v+i-1;e.style.opacity=p<0||p>3?0:1;e.setAttribute('x',X(Math.max(0,Math.min(3,p)))+35);});}});};
-    },
-    /* nothing moved */
-    insight:function(svg){
-      var big=S('text',{x:360,y:64,class:'bn-big','text-anchor':'middle'},svg),sub=S('text',{x:360,y:96,class:'bn-t','text-anchor':'middle'},svg);sub.textContent='pointers re-aimed; values never copied';
-      return function(){M.animate(0,1,{duration:.8,onUpdate:function(v){big.textContent='0 values moved';}});};
-    }
-  };
-  heroSentinel();mountBanners(banners);kinetic();riseIn();
+  heroSentinel();kinetic();riseIn();
 })();

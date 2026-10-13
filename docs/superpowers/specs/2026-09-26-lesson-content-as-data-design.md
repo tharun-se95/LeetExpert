@@ -43,9 +43,10 @@ The quiz and the variants are fences in the body, not front matter, so they sit 
 styles it), `*em*` and links. Inline HTML passes through, which is how a dual-language pair is
 written (`<span class="c-py">…</span><span class="c-ts">…</span>`); the build rejects a half pair.
 
-- `## Heading {#id toc="Short label" banner}` opens a section. `toc` defaults to the heading
-  text; `banner` adds the section's animated banner (`data-b` = the id). The contents rail is
-  generated from the sections, so it cannot miss one.
+- `## Heading {#id toc="Short label"}` opens a section. `toc` defaults to the heading text. The
+  contents rail is generated from the sections, so it cannot miss one. The `banner` flag was
+  removed in #63 (`2026-10-06-lesson-artifact-split-layout-design.md`): a section now takes an
+  optional `caption` fence and a `vig` fence straight after its heading.
 
 **Fences.** The course's own fences keep their course meaning and syntax:
 

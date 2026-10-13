@@ -55,6 +55,18 @@ def accent_cell(fam_hex, on_hex, card_hex, ink_hex):
     raise SystemExit(f"no AA pairing for accent {fam_hex} on card {card_hex} with ink {ink_hex}")
 
 
+def text_ink(fam_hex, ink_hex, surfaces):
+    """The family colour as body-size text: a key term. The family's light variant clears 4.5:1 on
+    white only, and the page's cool-grey paper took it to 4.10:1 (#63), so it is mixed toward the ink
+    until it clears AA on every surface prose sits on, keeping as much family colour as reads.
+    Measured, per family and theme."""
+    for pct in range(100, 0, -2):
+        c = mix(fam_hex, ink_hex, pct / 100)
+        if all(contrast(c, s_) >= 4.5 for s_ in surfaces):
+            return c
+    raise SystemExit(f"no AA text ink for accent {fam_hex} with ink {ink_hex}")
+
+
 FAMILY_THEME = os.path.join(HERE, "..", "src", "lib", "visual", "familyTheme.ts")
 
 
@@ -94,6 +106,8 @@ def grid_dark():
             # --fam is text and icons as well as bars in the kit, so it is the Grid's text accent (acc-ink);
             # the mid blue (acc) is only ever a cell fill, paired with its own dark ink below
             "--fam": g["acc-ink"], "--fam-on": g["acc-on"], "--fam-raw": g["acc-raw"], "--lamp": g["lamp"],
+            # a key term: acc-ink is already held to AA on every surface in the pairs below
+            "--fam-ink": g["acc-ink"],
             "--lamp-glow": "rgba({},{},{},.55)".format(*_rgb(g["lamp"]))}
     page = {"--bg": g["ground"], "--card": g["panel"], "--well": g["sunk"], "--deep": g["sunk"], "--mut": g["dim"], "--hair2": g["rule"],
             "--pdot": g["dot"], **inks,
@@ -152,10 +166,13 @@ def tokens(family):
     # cells are painted on navy cards, whose card and ink are the navy ladder's in the light theme
     acc_l = accent_cell(fam["--accent"], fam["--on-accent"], nv_light["--nv-card"], dark["--ink"])
     ka_l = {"--k-acc-fill": acc_l[0], "--k-acc-on": acc_l[1]}
-    L = page(light, fam_light, "#2b7a3b", "rgba(43,122,59,.45)") + extra(nv_light, sh_light, cw_light, ka_l) + ";--pdot:transparent"
+    # key terms: on the paper ladder in the page, on the navy ladder in a navy card
+    ink_l = text_ink(fam_light["--accent"], light["--ink"], [light[k] for k in ("--ground", "--panel", "--code", "--surface")])
+    ink_n = text_ink(fam["--accent"], dark["--ink"], [nv_light[k] for k in ("--nv-bg", "--nv-card", "--nv-deep")])
+    L = page(light, fam_light, "#2b7a3b", "rgba(43,122,59,.45)") + extra(nv_light, sh_light, cw_light, ka_l) + ";--pdot:transparent;--fam-ink:" + ink_l
     # N: the light theme's navy card takes the app's dark inks and the family's dark hue (as a navy
     # card in the app does), but keeps the navy ladder .navy maps.
-    N = page(dark, fam, "#5be07a", "rgba(91,224,122,.55)")
+    N = page(dark, fam, "#5be07a", "rgba(91,224,122,.55)") + ";--fam-ink:" + ink_n
     # The dark theme is the Grid's (D6): D for the page, ND for its navy cards (inks only, so
     # .navy's own ladder mapping still applies).
     D, ND = grid_dark()

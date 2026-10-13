@@ -12,9 +12,17 @@ hero: |
   <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> <span id="heroUnit">entries</span> linked</div><div id="heroCap"></div></div></div></div>
 ---
 
-## Problem {#problem banner}
+## Problem {#problem}
 
-Given the heads of two **sorted** linked lists, merge them into one sorted list by **splicing together the existing nodes**, and return its head.
+```caption
+The next node of the merge is always at the front of one list or the other.
+```
+
+```vig "Two short chains feeding into one, whose nodes alternate between them"
+<circle class="fa" cx="20" cy="26" r="7"/><circle class="fa" cx="58" cy="26" r="7"/><circle class="fa" cx="96" cy="26" r="7"/><path class="st" d="M30 26L48 26"/><path class="st" d="M43.9 23.2L48 26L43.9 28.8"/><path class="st" d="M68 26L86 26"/><path class="st" d="M81.9 23.2L86 26L81.9 28.8"/><circle class="fk" cx="20" cy="86" r="7"/><circle class="fk" cx="58" cy="86" r="7"/><circle class="fk" cx="96" cy="86" r="7"/><path class="st" d="M30 86L48 86"/><path class="st" d="M43.9 83.2L48 86L43.9 88.8"/><path class="st" d="M68 86L86 86"/><path class="st" d="M81.9 83.2L86 86L81.9 88.8"/><path class="st" d="M106 30L138 50"/><path class="st" d="M136 45.4L138 50L133 50.2"/><path class="st" d="M106 82L138 62"/><path class="st" d="M133 61.8L138 62L136 66.6"/><circle class="fa" cx="150" cy="56" r="7"/><circle class="fk" cx="186" cy="56" r="7"/><circle class="fa" cx="222" cy="56" r="7"/><path class="st" d="M160 56L176 56"/><path class="st" d="M171.9 53.2L176 56L171.9 58.8"/><path class="st" d="M196 56L212 56"/><path class="st" d="M207.9 53.2L212 56L207.9 58.8"/>
+```
+
+Given the heads of two **sorted** linked lists, merge them into one sorted list by ==splicing together the existing nodes==, and return its head.
 
 ```examples
 list1 = [1,2,4], list2 = [1,3,4] → [1,1,2,3,4,4]
@@ -34,7 +42,11 @@ Merge two lists yourself. Each button takes the front node of one list and links
 <div class="lvhost"></div><div class="actions"><button type="button" class="btn2" data-take="l1"></button><button type="button" class="btn2" data-take="l2"></button><button type="button" class="btn2" data-take="rest">Attach the rest</button><button type="button" class="btn2 reset">Start again</button></div>
 ```
 
-## Attempt it first {#attempt banner}
+## Attempt it first {#attempt}
+
+```vig "A placeholder and a short merged chain with a tail marker, and two front nodes waiting to be linked on"
+<rect class="st" x="10" y="46" width="24" height="20" rx="4" stroke-dasharray="3 3"/><path class="st" d="M34 56L52 56"/><path class="st" d="M47.9 53.2L52 56L47.9 58.8"/><circle class="fa" cx="62" cy="56" r="8"/><circle class="fa" cx="104" cy="56" r="8"/><path class="st" d="M73 56L93 56"/><path class="st" d="M88.9 53.2L93 56L88.9 58.8"/><polygon class="fc" points="98,26 110,26 104,37"/><circle class="fa" cx="176" cy="28" r="8"/><circle class="fk" cx="176" cy="86" r="8"/><path class="st" d="M114 51L165 32" stroke-dasharray="3 3"/><path class="st" d="M160.1 30.8L165 32L162.1 36.1"/><path class="st" d="M114 61L165 82" stroke-dasharray="3 3"/><path class="st" d="M162.3 77.8L165 82L160.1 83"/>
+```
 
 This is the dummy node's signature problem, and it is the merge step inside merge sort and the k-way merge of a later module, so it is worth writing cold. Sketch two short lists and stitch them on paper. Before you do, predict how many times the loop compares two fronts: the answer says something about where the work ends.
 
@@ -46,7 +58,15 @@ This is the dummy node's signature problem, and it is the merge step inside merg
 Start the merged list from a fake node, the dummy, and keep `tail` on the last node of the merged part. Then the first splice is the same as every later one: `tail.next` gets the smaller front, and `tail` moves onto it. The real head is `dummy.next` at the end. When one list runs out, the other is already sorted and every value in it is at least the merged tail's, so one write, `tail.next = what is left`, finishes the job.
 ```
 
-## Two traps {#trap banner}
+## Two traps {#trap}
+
+```caption
+When one list runs out, the rest of the other is linked on with a single write.
+```
+
+```vig "A merged chain, and below it a leftover chain that nothing links to yet"
+<circle class="fa" cx="30" cy="36" r="8"/><circle class="fa" cx="70" cy="36" r="8"/><circle class="fa" cx="110" cy="36" r="8"/><path class="st" d="M41 36L59 36"/><path class="st" d="M54.9 33.2L59 36L54.9 38.8"/><path class="st" d="M81 36L99 36"/><path class="st" d="M94.9 33.2L99 36L94.9 38.8"/><circle class="fk" cx="150" cy="84" r="8"/><circle class="fk" cx="186" cy="84" r="8"/><circle class="fk" cx="222" cy="84" r="8"/><path class="st" d="M161 84L175 84"/><path class="st" d="M170.9 81.2L175 84L170.9 86.8"/><path class="st" d="M197 84L211 84"/><path class="st" d="M206.9 81.2L211 84L206.9 86.8"/><path class="st" d="M118 44L142 76" stroke-dasharray="3 3"/><circle class="fr" cx="130" cy="60" r="3.5"/>
+```
 
 The first trap is forgetting the leftover. The loop stops as soon as **either** list is empty, and the other may still hold nodes. Without one last write they are never linked on:
 
@@ -70,7 +90,15 @@ The leftover's single write also matters for the work done. A version that keeps
 <div class="chart" id="cost"></div><p class="cost-note" id="costNote"></p>
 ```
 
-## The insight {#insight banner}
+## The insight {#insight}
+
+```caption
+The merged part stays sorted, and its tail is never larger than either front.
+```
+
+```vig "Four bars rising in order with a marker on the last, and two taller bars waiting beside them"
+<path class="st" d="M10 98H230"/><rect class="fg" x="22" y="82" width="12" height="14" rx="2"/><rect class="fg" x="42" y="72" width="12" height="24" rx="2"/><rect class="fg" x="62" y="62" width="12" height="34" rx="2"/><rect class="fg" x="82" y="52" width="12" height="44" rx="2"/><polygon class="fc" points="82,34 94,34 88,45"/><rect class="fa" x="140" y="38" width="14" height="58" rx="2"/><rect class="fk" x="180" y="24" width="14" height="72" rx="2"/>
+```
 
 Keep one picture true from start to finish: the nodes from `dummy.next` to `tail` are exactly the nodes taken so far, in sorted order, and `tail` holds a value no larger than either list's front.
 
@@ -99,7 +127,11 @@ In the code | In the logs
 <div class="extabs" role="group" aria-label="Choose an input"></div><div class="lvhost"></div>
 ```
 
-## Solution {#solution banner}
+## Solution {#solution}
+
+```vig "One chain threading back and forth between the nodes of two rows"
+<circle class="fa" cx="30" cy="30" r="8"/><circle class="fa" cx="110" cy="30" r="8"/><circle class="fa" cx="190" cy="30" r="8"/><circle class="fk" cx="70" cy="84" r="8"/><circle class="fk" cx="150" cy="84" r="8"/><path class="st" d="M36.5 38.8L63.5 75.2"/><path class="st" d="M63.3 70.2L63.5 75.2L58.7 73.5"/><path class="st" d="M76.5 75.2L103.5 38.8"/><path class="st" d="M98.7 40.5L103.5 38.8L103.3 43.8"/><path class="st" d="M116.5 38.8L143.5 75.2"/><path class="st" d="M143.3 70.2L143.5 75.2L138.7 73.5"/><path class="st" d="M156.5 75.2L183.5 38.8"/><path class="st" d="M178.7 40.5L183.5 38.8L183.3 43.8"/>
+```
 
 Attempt it on paper first: set up the dummy and `tail`, write the loop, and say how the leftover gets attached. Then compare.
 
@@ -127,6 +159,10 @@ Attach the leftover. The loop stops when either list is empty, so a version with
 
 ## Variants {#variants}
 
+```vig "Three sketches: three rows funnelling into one, two pairs joined into a row of four, and a row of boxes filled from the back"
+<path class="st" d="M14 14H64M14 30H64M14 46H64"/><path class="st" d="M68 14L95 26"/><path class="st" d="M92.4 21.7L95 26L90.1 26.9"/><path class="st" d="M68 30L94 30"/><path class="st" d="M89.9 27.2L94 30L89.9 32.8"/><path class="st" d="M68 46L95 34"/><path class="st" d="M90.1 33.1L95 34L92.4 38.3"/><circle class="fk" cx="104" cy="30" r="7"/><circle class="fa" cx="150" cy="14" r="5"/><circle class="fa" cx="172" cy="14" r="5"/><circle class="fa" cx="198" cy="14" r="5"/><circle class="fa" cx="220" cy="14" r="5"/><path class="st" d="M161 21L170 38"/><path class="st" d="M170.6 33L170 38L165.6 35.7"/><path class="st" d="M209 21L200 38"/><path class="st" d="M204.4 35.7L200 38L199.4 33"/><circle class="fk" cx="152" cy="46" r="5"/><circle class="fk" cx="174" cy="46" r="5"/><circle class="fk" cx="196" cy="46" r="5"/><circle class="fk" cx="218" cy="46" r="5"/><rect class="fa" x="30" y="82" width="20" height="18" rx="3"/><rect class="fa" x="54" y="82" width="20" height="18" rx="3"/><rect class="fa" x="78" y="82" width="20" height="18" rx="3"/><rect class="st" x="102" y="82" width="20" height="18" rx="3"/><rect class="st" x="126" y="82" width="20" height="18" rx="3"/><rect class="fk" x="150" y="82" width="20" height="18" rx="3"/><rect class="fk" x="174" y="82" width="20" height="18" rx="3"/><rect class="fk" x="198" y="82" width="20" height="18" rx="3"/><polygon class="fc" points="130,64 142,64 136,75"/>
+```
+
 ```variants
 [
   {
@@ -148,6 +184,10 @@ Attach the leftover. The loop stops when either list is empty, so a version with
 ```
 
 ## Check yourself {#quiz}
+
+```vig "Three questions as rows, the first one answered and ticked"
+<circle class="fg" cx="36" cy="24" r="10"/><path class="st" d="M31 24L35 28L42 20"/><circle class="st" cx="36" cy="56" r="10"/><circle class="st" cx="36" cy="88" r="10"/><rect class="fa" x="58" y="19" width="150" height="10" rx="5"/><rect class="fa" x="58" y="51" width="118" height="10" rx="5"/><rect class="fa" x="58" y="83" width="138" height="10" rx="5"/>
+```
 
 ```quiz
 {

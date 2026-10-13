@@ -95,7 +95,7 @@ function mountCost(){
     insertSteps(ns,ns[1],9,sw,0,steps);return steps;}};}),make,{id:'trap'});
 })();
 
-/* ================= systems layer: the heap hero, animated banners ================= */
+/* ================= systems layer: the heap hero================= */
 (function(){
   function heroHeap(){
     var svg=$('#heroHeap');if(!svg)return;
@@ -122,28 +122,5 @@ function mountCost(){
     var last=-1;M.animate(0,5,{duration:5*1.8,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(3,Math.floor(v));if(k!==last){last=k;show(k);}}});
   }
 
-  var banners={
-    /* a node: a value and an address */
-    node:function(svg){
-      var g=S('g',{},svg);S('rect',{x:250,y:30,width:180,height:56,rx:12,class:'bn-mid'},g);S('line',{x1:350,x2:350,y1:30,y2:86,class:'bn-edge'},g);
-      var v=S('text',{x:300,y:64,class:'bn-t','text-anchor':'middle',style:'font-size:18px;font-weight:600'},g);v.textContent='7';
-      var a=S('text',{x:390,y:63,class:'bn-t','text-anchor':'middle'},g);
-      var l1=S('text',{x:300,y:110,class:'bn-t','text-anchor':'middle'},svg),l2=S('text',{x:390,y:110,class:'bn-t','text-anchor':'middle'},svg);l1.textContent='value';l2.textContent='next';
-      return function(){M.animate(0,1,{duration:.6,delay:.4,onUpdate:function(t){a.textContent=t>.5?'0x48':'';}});};
-    },
-    /* one link at a time */
-    walk:function(svg){
-      var X=chainArt(svg,[7,3,12,5],170,36),t=S('text',{y:100,class:'bn-t','text-anchor':'middle'},svg),c=S('text',{x:620,y:62,class:'bn-big','text-anchor':'middle'},svg);t.textContent='node';
-      return function(){M.animate(0,3,{duration:2.4,ease:'linear',onUpdate:function(v){t.setAttribute('x',X(v)+35);c.textContent=Math.floor(v)+' steps';}});};
-    },
-    /* the swapped writes: a node pointing at itself */
-    trap:function(svg){
-      chainArt(svg,[7,3],150,42);var g=S('g',{},svg);chainArt(g,[12],480,42);
-      var loop=S('path',{d:'M392,42 C392,6 352,6 352,40',class:'bn-path b2',style:'fill:none;opacity:0'},svg),n=S('rect',{x:330,y:42,width:70,height:36,rx:8,class:'bn-mid',style:'opacity:0'},svg);
-      var t=S('text',{x:356,y:65,class:'bn-t','text-anchor':'middle',style:'font-size:14px;font-weight:600;opacity:0'},svg);t.textContent='9';
-      var big=S('text',{x:660,y:66,class:'bn-big bad','text-anchor':'middle'},svg);
-      return function(){M.animate(0,1,{duration:1,delay:.4,onUpdate:function(v){n.style.opacity=v;t.style.opacity=v;loop.style.opacity=v;g.style.opacity=1-.6*v;big.textContent=v>.5?'12 lost':'';}});};
-    }
-  };
-  heroHeap();mountBanners(banners);kinetic();riseIn();
+  heroHeap();kinetic();riseIn();
 })();

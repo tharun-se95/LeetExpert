@@ -14,6 +14,7 @@ A lesson folder holds:
     python3 web/lesson-artifacts/build.py --overviews          the overviews' declarations as JSON, nothing built
 """
 import re, json, os, shutil, subprocess, sys
+from html.parser import HTMLParser
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.join(ROOT, "kit")
@@ -101,12 +102,129 @@ def _icon(sec):
     return f'<svg class="i" aria-hidden="true"><use href="#{SECTION_ICONS[sec]}"/></svg>'
 
 
-def decorate(body):
+VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+
+
+def _top_level(fragment):
+    """[(start, end, tag, attrs)] for each top-level element of an HTML fragment, by offset."""
+    starts = [0]
+    for line in fragment.splitlines(keepends=True):
+        starts.append(starts[-1] + len(line))
+    out = []
+
+    class P(HTMLParser):
+        depth = 0
+
+        def at(self):
+            ln, col = self.getpos()
+            return starts[ln - 1] + col
+
+        def handle_starttag(self, tag, attrs):
+            if self.depth == 0:
+                out.append([self.at(), None, tag, dict(attrs)])
+            if tag in VOID:
+                if self.depth == 0:
+                    out[-1][1] = self.at() + len(self.get_starttag_text())
+            else:
+                self.depth += 1
+
+        # <use/> inside an svg: opens and closes at once, so the depth never moves
+        def handle_startendtag(self, tag, attrs):
+            if self.depth == 0:
+                out.append([self.at(), self.at() + len(self.get_starttag_text()), tag, dict(attrs)])
+
+        def handle_endtag(self, tag):
+            if tag in VOID:
+                return
+            self.depth -= 1
+            if self.depth == 0:
+                out[-1][1] = fragment.index(">", self.at()) + 1
+
+    P(convert_charrefs=False).feed(fragment)
+    return [tuple(x) for x in out]
+
+
+def _kind(attrs):
+    """What a top-level element of a section is to the split layout: 'vis' (a picture the prose
+    points at, drawn beside it), 'full' (spans both columns: the heading's caption and vignette, a
+    grid of cards, the quiz, an authored duo) or 'text' (prose, callouts and anything unknown, which
+    keeps the reading column)."""
+    cls = set((attrs.get("class") or "").split())
+    if cls & {"ex", "widget", "rosetta"} or "data-code-file" in attrs or attrs.get("id") == "solbox":
+        return "vis"
+    if cls & {"sec-sub", "duo", "vgrid", "vig"} or attrs.get("id") == "qlist":
+        return "full"
+    return "text"
+
+
+def split_section(inner):
+    """One section's content (after its h2) as beats: each visual beside the prose that introduces
+    it. A visual joins the text run just before it; visuals that open a section, before any prose,
+    join the first text run and are marked .lead, so a stacked (narrow) page still shows them first.
+    Reading order within a beat is unchanged: the text, then what it points at.
+
+    The beats and loose prose between two full-width rows share one .flow: on a wide page kit.js
+    lays its text out as one unbroken column and hangs each scene beside its own paragraph, so a
+    short paragraph beside a tall scene no longer leaves a gap under it (owner, 2026-09-28).
+    A visual with no prose anywhere around it spans the page, like a full row."""
+    parts = [(_kind(a), inner[s:e]) for s, e, _, a in _top_level(inner)]
+    rows, flow, lead, text, vis = [], [], [], [], []
+
+    def close():
+        nonlocal flow
+        if flow:
+            rows.append('<div class="flow">' + "".join(flow) + "</div>")
+        flow = []
+
+    def flush():
+        nonlocal lead, text, vis
+        scene = [f'<div class="lead">{h}</div>' for h in lead] + vis
+        if text and scene:
+            flow.append('<div class="duo beat"><div class="duo-text">' + "".join(text) +
+                        '</div><div class="duo-scene">' + "".join(scene) + "</div></div>")
+        elif text:
+            flow.extend(text)
+        elif scene:
+            close()
+            rows.extend(lead + vis)
+        lead, text, vis = [], [], []
+
+    for kind, h in parts:
+        if kind == "full":
+            flush()
+            close()
+            rows.append(h)
+        elif kind == "vis":
+            if text:
+                vis.append(h)
+            else:
+                (vis if vis else lead).append(h)
+        else:
+            if vis:
+                flush()
+            text.append(h)
+    flush()
+    close()
+    return "".join(rows)
+
+
+# The split layout (#63, owner 2026-09-28): prose on the left, each scene hung beside its paragraph, the
+# contents as an icon rail. Every lesson and the kit specimen get it; an overview keeps its own
+# story-and-visual grid, the design the split was taken from.
+def decorate(body, split=False):
+    if split:
+        body = re.sub(r'(<section class="sec" id="[a-z]+"><h2>.*?</h2>)(.*?)(</section>)',
+                      lambda m: m[1] + split_section(m[2]) + m[3], body, flags=re.S)
+        body = body.replace('<div class="wrap page">', '<div class="wrap page split">', 1)
     body = re.sub(r'<section class="sec" id="([a-z]+)"><h2>(.*?)</h2>',
                   lambda m: f'<section class="sec" id="{m[1]}"><h2><span class="sec-ic">{_icon(m[1])}</span><span>{m[2]}</span></h2>', body)
     nav = re.search(r'<nav class="toc".*?</nav>', body, re.S)
     toc = re.sub(r'<a href="#([a-z]+)">', lambda m: f'<a href="#{m[1]}">{_icon(m[1])}', nav[0])
     body = body[:nav.start()] + toc + body[nav.end():]
+    # the heading, its caption and its vignette share one row; wrapped last, since every splice above
+    # keys on <section><h2>
+    body = re.sub(r'(<h2>.*?</h2>(?:<p class="sec-sub">.*?</p>)?)(<svg class="vig".*?</svg>)',
+                  r'<div class="sec-head"><div class="sec-title">\1</div>\2</div>', body, flags=re.S)
     # The kinetic headline's word spans are made here, not in the browser, where the split re-broke
     # the heading's lines after load and moved the hero card (layout shift). It runs after the
     # contents splice above, whose offsets were taken on the unsplit body.
@@ -170,7 +288,7 @@ def build(module, slug, family, title, stage=None, summary=None):
     lesson = render_lesson(folder)
     if lesson and lesson["data"]["title"] != title:
         raise SystemExit(f"{slug}: lesson.md title {lesson['data']['title']!r} differs from build.py's {title!r}")
-    body = decorate(lesson["html"] if lesson else read(folder, "body.html"))
+    body = decorate(lesson["html"] if lesson else read(folder, "body.html"), split=module != "overviews")
     code = code_bundle(folder)
     js = "\n".join([
         "(function(){\n'use strict';",

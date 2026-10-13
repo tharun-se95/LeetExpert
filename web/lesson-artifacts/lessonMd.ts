@@ -65,12 +65,23 @@ export function fenceAttrs(meta: string | null | undefined) {
   return out;
 }
 
+// `==window==` marks a key term: the word a paragraph turns on, set in the family's ink so the eye
+// finds it again (owner, 2026-09-28, after The Grid Underneath's coloured headline word). Plain text
+// only, and the marks hug the words, as in Markdown's own emphasis: a spaced `a == b` is prose about
+// equality (a quiz says "built == num_courses"), while an opened `==word` never closed is a typo, so it
+// fails the build instead of showing its marks.
+function term(html: string): string {
+  const out = html.replace(/==(\S(?:[^=\n]*?\S)?)==/g, '<span class="term">$1</span>');
+  if (/==[^\s=]/.test(out)) fail(`unclosed ==term== in: ${html}`);
+  return out;
+}
+
 function inline(nodes: PhrasingContent[]): string {
   return nodes
     .map((n) => {
       switch (n.type) {
         case "text":
-          return esc(n.value);
+          return term(esc(n.value));
         case "inlineCode":
           return `<code>${esc(n.value)}</code>`;
         case "strong":
@@ -237,6 +248,31 @@ function fence(node: Code, ctx: Ctx): string {
   }
 }
 
+// A section's vignette (owner, 2026-09-28, after The Grid Underneath's `.vig` spot drawings): a small
+// line drawing beside its heading, in the kit's .vig classes so it repaints with the theme. The markup
+// is checked here rather than trusted: drawing elements only, and colour only through a class (an SVG
+// presentation attribute is not CSS, so a fill= would survive a theme change; CLAUDE.md §4).
+const VIG_TAGS = new Set(["g", "rect", "circle", "ellipse", "line", "path", "polyline", "polygon"]);
+const VIG_ATTRS = new Set(["class", "x", "y", "width", "height", "rx", "ry", "cx", "cy", "r", "d", "points", "x1", "y1", "x2", "y2", "transform", "stroke-dasharray"]);
+const VIG_CLASSES = new Set(["st", "sc", "fa", "fk", "fc", "fr", "fg", "fp"]);
+
+function vignette(a: ReturnType<typeof fenceAttrs>, body: string): string {
+  if (!a.label.trim()) fail("a vig fence needs a quoted description");
+  const box = a.kv.viewBox ?? "0 0 240 112";
+  if (!/^0 0 \d+ \d+$/.test(box)) fail(`vig viewBox must be "0 0 w h": ${box}`);
+  const rest = body.replace(/<(\/?)([a-z]+)((?:\s+[\w-]+="[^"<>]*")*)\s*(\/?)>/g, (_, close: string, tag: string, attrs: string) => {
+    if (!VIG_TAGS.has(tag)) fail(`vig: <${tag}> is not a drawing element`);
+    if (close) return "";
+    for (const [, k, v] of attrs.matchAll(/([\w-]+)="([^"]*)"/g)) {
+      if (!VIG_ATTRS.has(k!)) fail(`vig: attribute ${k} on <${tag}> (colour goes through a class)`);
+      if (k === "class") for (const c of v!.split(/\s+/)) if (!VIG_CLASSES.has(c)) fail(`vig: class "${c}" is not a vignette class`);
+    }
+    return "";
+  });
+  if (rest.trim()) fail(`vig: text or markup outside drawing elements: ${rest.trim().slice(0, 60)}`);
+  return `<svg class="vig" viewBox="${box}" role="img" aria-label="Illustration: ${attr(a.label)}">${body.trim()}</svg>`;
+}
+
 const isCallout = (html: string) => html.startsWith('<div class="callout ');
 
 function blocks(nodes: RootContent[], ctx: Ctx): string {
@@ -258,7 +294,7 @@ function blocks(nodes: RootContent[], ctx: Ctx): string {
 
 interface Section { id: string; toc: string; html: string }
 
-/** `## Heading {#id toc="Short" banner}` */
+/** `## Heading {#id toc="Short"}` */
 function sectionHead(h: Heading) {
   const last = h.children[h.children.length - 1];
   const m = last?.type === "text" ? last.value.match(/\s*\{([^}]*)\}\s*$/) : null;
@@ -266,7 +302,32 @@ function sectionHead(h: Heading) {
   const kids = [...h.children];
   kids[kids.length - 1] = { ...(last as { type: "text"; value: string }), value: (last as { value: string }).value.slice(0, m!.index) };
   const a = fenceAttrs(m![1]);
-  return { id: a.id, toc: a.kv.toc, banner: a.words.includes("banner"), title: inline(kids as PhrasingContent[]) };
+  // The animated banners were removed (owner, 2026-09-28, #63): drawn text in a scaled SVG, ~6px on a
+  // phone, hidden from screen readers, and mostly repeating a widget beside them. What they said in a
+  // line is a caption fence now; say so rather than dropping the flag silently.
+  if (a.words.includes("banner")) fail(`#${a.id}: banners were removed (#63); put its one line in a caption fence`);
+  return { id: a.id, toc: a.kv.toc, title: inline(kids as PhrasingContent[]) };
+}
+
+/* The fences that belong to a section's heading rather than its body: its one-line caption (the
+   sentence the section concludes, as real text) and its vignette. Each at most once, straight after
+   the heading, in either order. */
+function headFences(id: string, nodes: RootContent[]) {
+  const isHead = (n: RootContent | undefined): n is Code => n?.type === "code" && (n.lang === "caption" || n.lang === "vig");
+  const lead: Code[] = [];
+  while (isHead(nodes[0])) lead.push(nodes.shift() as Code);
+  if (nodes.some(isHead)) fail(`#${id}: a caption or vig fence goes straight after the heading`);
+  const one = (lang: string) => {
+    const f = lead.filter((n) => n.lang === lang);
+    if (f.length > 1) fail(`#${id}: one ${lang} fence per section`);
+    return f[0];
+  };
+  const cap = one("caption"), vig = one("vig");
+  if (cap && !cap.value.trim()) fail(`#${id}: an empty caption`);
+  return {
+    caption: cap ? `<p class="sec-sub">${inlineMd(cap.value.trim())}</p>` : "",
+    vig: vig ? vignette(fenceAttrs(vig.meta), vig.value) : "",
+  };
 }
 
 export function renderLesson(source: string): Rendered {
@@ -280,9 +341,9 @@ export function renderLesson(source: string): Rendered {
     if (!open) return;
     const { head, nodes } = open;
     claimId(ctx, head.id, "section");
-    const banner = head.banner ? `<div class="banner" data-b="${head.id}"></div>` : "";
+    const { caption, vig } = headFences(head.id, nodes);
     const plain = head.title.replace(/<[^>]+>/g, "");
-    sections.push({ id: head.id, toc: head.toc ?? plain, html: `<section class="sec" id="${head.id}"><h2>${head.title}</h2>${banner}\n${blocks(nodes, ctx)}\n</section>` });
+    sections.push({ id: head.id, toc: head.toc ?? plain, html: `<section class="sec" id="${head.id}"><h2>${head.title}</h2>${caption}${vig}\n${blocks(nodes, ctx)}\n</section>` });
   };
   for (const n of root.children) {
     if (n.type === "heading" && n.depth === 2) {
