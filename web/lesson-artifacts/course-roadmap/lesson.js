@@ -209,9 +209,9 @@ function mountOrder(w){
 (function(){
   function heroStages(){
     var svg=$('#heroMap');if(!svg)return;
-    var S=RM_STAGES.length,cw=84,gap=14,x0=(560-(S*cw+(S-1)*gap))/2,top=70,dot=11,pitch=20,h='<text class="hd-lab" x="'+x0+'" y="46">modules, grouped by stage, each stage built on the ones before</text>',cum=[],tot=0;
+    var S=RM_STAGES.length,cw=84,gap=14,x0=(560-(S*cw+(S-1)*gap))/2,top=84,dot=11,pitch=20,h='<text class="hd-lab" x="'+x0+'" y="46">modules, grouped by stage, each stage built on the ones before</text>',cum=[],tot=0;
     RM_STAGES.forEach(function(s,si){var mods=RM_MODS.filter(function(m){return m.stage===s.n;}),x=x0+si*(cw+gap);
-      h+='<g id="hsS'+si+'" class="hs-stage"><rect class="hs-col" x="'+x+'" y="'+top+'" width="'+cw+'" height="190" rx="8"/><text class="hs-tag" x="'+(x+cw/2)+'" y="'+(top+22)+'" text-anchor="middle">stage '+s.n+'</text>';
+      h+='<g id="hsS'+si+'" class="hs-stage"><rect class="hs-col" x="'+x+'" y="'+top+'" width="'+cw+'" height="124" rx="8"/><text class="hs-tag" x="'+(x+cw/2)+'" y="'+(top+22)+'" text-anchor="middle">stage '+s.n+'</text>';
       mods.forEach(function(m,mi){var cx=x+16+(mi%3)*26+dot/2,cy=top+50+Math.floor(mi/3)*pitch*1.4;h+='<circle class="hs-dot" cx="'+cx+'" cy="'+cy+'" r="'+dot/2+'"/>';});
       h+='</g>';tot+=mods.length;cum.push(tot);});
     svg.innerHTML=h;

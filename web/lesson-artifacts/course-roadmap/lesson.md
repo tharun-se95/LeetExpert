@@ -4,7 +4,7 @@ kicker: "The Roadmap · Getting Started module · concept lesson"
 headline: "Why do the 24 modules come in this order?"
 lede: "A serious culinary program does not teach dishes at random. Knife skills come before sauces and sauces before composed plates, because each course leans on what the last one built into your hands. The 24 modules of this course are grouped into five stages the same way. This page lays the course out as a map, lets you ask what any module leans on, and then turns the ordering rule into a function you can run."
 chips:
-  - "**five stages**, in a fixed order"
+  - "the course has **five stages**"
   - "each module **leans on earlier ones**"
   - "an order is valid when **nothing comes first that needs something later**"
 hero: |
@@ -165,14 +165,14 @@ Do not stockpile theory. A stage's techniques only settle once you have done its
       "explanation": "Stage 2 techniques are algorithms over Stage 1 structures: a dynamic window is typically an array plus a hash map tracking what is in the window, which is the link the map shows. Difficulty alone does not order the modules, and Sorting is itself a Stage 2 module, taught after Stage 1."
     },
     {
-      "question": "The order Binary Trees, Heaps, Recursion & Backtracking has no module directly before one it leans on. What does the full check do with it?",
+      "question": "Recursion & Backtracking is moved to just after Heaps in the course order, so no module sits directly before one it leans on. What does the full check say?",
       "options": [
-        "It returns True, because every module appears once and no neighbouring pair is out of order.",
-        "It returns False, because Binary Trees is placed before the Recursion & Backtracking module that it leans on.",
-        "It returns True, because Heaps sits between the other two and a module in the middle always repairs the order."
+        "It returns True, because every module still appears once and no neighbouring pair is out of order.",
+        "It returns False, because Binary Trees now sits before the Recursion & Backtracking it leans on.",
+        "It returns True, because Heaps now sits between the two modules and a module in between repairs the order."
       ],
       "answer": 1,
-      "explanation": "The full check compares positions, not neighbours: Binary Trees sits at position one and Recursion at position three, so the module that needs recursion comes first. Only the neighbour-only shortcut accepts this order, because Binary Trees and Recursion are two places apart, so no adjacent pair shows the break."
+      "explanation": "The full check compares positions, not neighbours: Binary Trees now comes several places before Recursion & Backtracking, so the module that needs recursion is placed first. Only the neighbour-only shortcut accepts this order, because BST & Ordered Structures and Heaps now sit between Binary Trees and Recursion, so no adjacent pair shows the break."
     },
     {
       "question": "Suppose the table gains a link saying Sliding Window leans on Heaps, which the course teaches in a later stage. What does the full check say about the course's own order?",

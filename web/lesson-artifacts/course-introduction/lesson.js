@@ -27,7 +27,7 @@ var PROBLEMS=[
 ];
 /* the recipe shelf: one card, filed under the exact title it was written for */
 var SHELF={'Duplicate numbers in an array':'compare each number with the ones before it'};
-function frCard(p){return SHELF.hasOwnProperty(p.title)?frNested(p.items).answer:undefined;}
+function frCard(p){return Object.prototype.hasOwnProperty.call(SHELF,p.title)?frNested(p.items).answer:undefined;}
 /* worst case for both versions: a list with no repeat, so each does all of its work */
 function frDistinct(n){var a=[];for(var i=0;i<n;i++)a.push(i);return a;}
 var COSTS=[10,20,30,40,50,60,70,80,90,100].map(function(n){return [n,frNested(frDistinct(n)).compares,frRepeat(frDistinct(n)).checks];});
@@ -56,7 +56,7 @@ function frSteps(p){
   rec('Read the '+p.what+' left to right. <code>seen</code> starts empty: nothing has been read yet.');
   for(var i=0;i<items.length;i++){
     var v=items[i],cell=cells[i];scanned=i+1;M2.mark('in','i',i);M2.tone(cell,'cur');
-    if(seenItems.hasOwnProperty(String(v))){
+    if(Object.prototype.hasOwnProperty.call(seenItems,String(v))){
       var twin=seenItems[String(v)];M2.tone(cell,'good');M2.tone(twin,'good');answer=v;
       rec('Read '+frShow(v)+'. Is it in <code>seen</code>? Yes: it was read earlier. Return '+frShow(v)+', after '+scanned+' step'+(scanned===1?'':'s')+'.',[laneHi(cell),laneHi(twin),'answer']);
       break;

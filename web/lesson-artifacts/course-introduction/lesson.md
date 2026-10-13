@@ -160,20 +160,20 @@ The road is laid out below, stage by stage. The next lesson shows how a lesson i
       "options": [
         "It asks only whether items are equal and whether one is in the set, which numbers, letters and words all answer.",
         "It converts every item to a number first, so the set only ever stores numbers and the three problems become one.",
-        "It looks the problem up by its title, and the three titles are close enough for one shelf card to match each of them."
+        "It relies on sets accepting any kind of value, even a list, so whatever the items are the set can always store them."
       ],
       "answer": 0,
-      "explanation": "The function never asks what the items are, only the two questions equality and membership, and anything that can be compared and stored in a set answers both. That is what makes a technique transfer. The shelf is the other thing entirely: it matches an exact title, which is why it answered one problem of the three."
+      "explanation": "The function never asks what the items are, only the two questions equality and membership, and anything that can be compared and stored in a set answers both. That is what makes a technique transfer. It is not that a set takes any value: a Python set refuses a list, because a list can change after it is stored. Numbers, strings and words are the kind of value a set can hold, which is all three problems need."
     },
     {
       "question": "What does the set buy over comparing each item with every item before it?",
       "options": [
         "It remembers what was read, so each item costs one check instead of a re-scan of the items before it.",
-        "It uses less memory than the nested loops, because a set stores each distinct item once and the loops store nothing at all.",
+        "It keeps the items in sorted order as they arrive, so a repeat lands beside its twin and one neighbour check finds it.",
         "It finds the repeat in fewer comparisons only when the repeat comes early; on a list with no repeat the two do the same work."
       ],
       "answer": 0,
-      "explanation": "The nested loops re-read the past for every item: n(n - 1) ÷ 2 comparisons on a list with no repeat. The set remembers it and answers in one check per item. The memory claim is backwards, since the set is the version that spends memory, up to every item, and the loops spend none. And the gap is widest exactly when there is no repeat, not narrowest."
+      "explanation": "The nested loops re-read the past for every item: n(n - 1) ÷ 2 comparisons on a list with no repeat. The set remembers it and answers in one check per item. A set keeps no order at all, sorted or otherwise: it finds an item from the item itself, not from its neighbours, and it pays for that in memory, up to every item, where the loops spend none. And the gap is widest exactly when there is no repeat, not narrowest."
     },
     {
       "question": "<code>first_repeat_swapped</code> adds each item to <code>seen</code> before checking whether it is in <code>seen</code>. What does it return for <code>[4, 9, 2, 7, 9, 5]</code>?",

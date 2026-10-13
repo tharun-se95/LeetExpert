@@ -10,7 +10,7 @@ Spec: docs/superpowers/specs/2026-09-24-lesson-artifacts-rollout-design.md (sect
     python3 web/lesson-artifacts/ledger.py gate ID [THEME]   # run every gate a page holds, or one theme's half, recording nothing (CI)
 
 Overviews (pages across several modules, e.g. overviews/linear-structures) are not lessons in the app's
-manifest, so they sit in their own table, declared by build.py LESSONS under "overviews". They pass the
+manifest, so they sit in their own table, declared by lessons.py LESSONS under "overviews". They pass the
 same build, code and theme gates and go stale the same way, but are not counted in the lessons' totals
 and have no app gate until it is decided where an overview lives in the app (spec section 6).
 
@@ -106,6 +106,9 @@ def source_hash(lesson_id):
     h = hashlib.sha256()
     for s in SHARED:
         _feed(h, os.path.join(HERE, s), HERE)
+    # the lesson's own row in lessons.py (title, family) shapes its page; the other rows do not
+    module, slug = lesson_id.split("/", 1)
+    h.update(repr([r for r in build_lessons() if r[:2] == (module, slug)]).encode())
     for root, _, files in sorted(os.walk(d)):
         if "__pycache__" in root:
             continue
@@ -180,16 +183,16 @@ def problems(led, rows):
         slug = lid.split("/")[1]
         has_folder = os.path.isdir(folder_of(lid))
         if has_folder and slug not in built:
-            out.append(f"{lid}: has a folder but is not in build.py LESSONS")
+            out.append(f"{lid}: has a folder but is not in lessons.py LESSONS")
         if slug in built and not has_folder:
-            out.append(f"{lid}: in build.py LESSONS but has no folder")
+            out.append(f"{lid}: in lessons.py LESSONS but has no folder")
     return out
 
 
 def build_lessons():
     sys.path.insert(0, HERE)
-    import build  # noqa: E402  (build.py only runs its builds under __main__)
-    return build.LESSONS
+    import lessons  # noqa: E402
+    return lessons.LESSONS
 
 
 def cmd_check():

@@ -1,7 +1,32 @@
 {
  "lessons": {
   "getting-started/course-introduction": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "917e198473579928",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "getting-started/course-introduction: 203,871 bytes -> lesson-artifacts/dist/getting-started/course-introduction.html"
+    },
+    "code": {
+     "source": "917e198473579928",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "all claims hold"
+    },
+    "light": {
+     "source": "917e198473579928",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "917e198473579928",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "getting-started",
    "moduleNumber": 1,
@@ -10,7 +35,32 @@
    "family": null
   },
   "getting-started/how-lessons-work": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "12d2a578ef70af52",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "getting-started/how-lessons-work: 166,859 bytes -> lesson-artifacts/dist/getting-started/how-lessons-work.html"
+    },
+    "code": {
+     "source": "12d2a578ef70af52",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "all claims hold"
+    },
+    "light": {
+     "source": "12d2a578ef70af52",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "12d2a578ef70af52",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "getting-started",
    "moduleNumber": 1,
@@ -19,7 +69,32 @@
    "family": null
   },
   "getting-started/writing-and-running-code": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "c6d7acec9d2df767",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "getting-started/writing-and-running-code: 145,136 bytes -> lesson-artifacts/dist/getting-started/writing-and-running-code.html"
+    },
+    "code": {
+     "source": "c6d7acec9d2df767",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "all claims hold"
+    },
+    "light": {
+     "source": "c6d7acec9d2df767",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "c6d7acec9d2df767",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "getting-started",
    "moduleNumber": 1,
@@ -28,7 +103,32 @@
    "family": null
   },
   "getting-started/course-roadmap": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "a248d314ff0a6e95",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "getting-started/course-roadmap: 139,149 bytes -> lesson-artifacts/dist/getting-started/course-roadmap.html"
+    },
+    "code": {
+     "source": "a248d314ff0a6e95",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "all claims hold"
+    },
+    "light": {
+     "source": "a248d314ff0a6e95",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "a248d314ff0a6e95",
+     "on": "2026-10-14",
+     "commit": "d287109",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "getting-started",
    "moduleNumber": 1,
