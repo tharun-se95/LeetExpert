@@ -338,6 +338,10 @@ if(document.fonts&&document.fonts.load)Promise.all(['400 16px "Space Grotesk"','
 # it spans (manifest.ts STAGES number) and a one-line card summary: the app's hub card comes from these two,
 # through `--overviews` (spec 2026-09-29-overview-pages-on-hub-design.md).
 LESSONS = [
+    ("getting-started", "course-introduction", "foundations", "Course Introduction"),
+    ("getting-started", "how-lessons-work", "foundations", "How Lessons & Problems Work"),
+    ("getting-started", "writing-and-running-code", "foundations", "Writing & Running Code"),
+    ("getting-started", "course-roadmap", "foundations", "The Roadmap"),
     ("binary-trees", "diameter-of-binary-tree", "recursive-exploration", "Diameter of Binary Tree"),
     ("sliding-window", "longest-substring-without-repeating", "pointer-movement", "Longest Substring Without Repeating Characters"),
     ("dynamic-programming", "coin-change", "state-transition", "Coin Change"),
