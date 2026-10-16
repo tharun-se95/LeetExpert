@@ -11,8 +11,6 @@ const read = (...p: string[]) => readFileSync(join(src, ...p), "utf8");
 
 const html = renderToStaticMarkup(<LandingHeader onOpenSearch={() => {}} />);
 const headerTag = html.match(/<header[^>]*>/)![0];
-const navHtml = html.match(/<nav[\s\S]*?<\/nav>/)![0];
-
 type Props = { children?: ReactNode; onClick?: unknown };
 
 /** First element in the tree (depth-first, through children) matching `hit`. */
@@ -33,9 +31,9 @@ function findElement(
 }
 
 describe("LandingHeader", () => {
-  it("links to Lessons and Practice", () => {
-    expect(navHtml).toMatch(/<a[^>]*href="\/courses\/dsa"[^>]*>Lessons<\/a>/);
-    expect(navHtml).toMatch(/<a[^>]*href="\/courses\/dsa\/problems"[^>]*>Practice<\/a>/);
+  it("carries no lessons or practice links", () => {
+    expect(html).not.toMatch(/href="\/courses\/dsa"/);
+    expect(html).not.toMatch(/href="\/courses\/dsa\/problems"/);
   });
 
   it("stays pinned: clear over the paper at rest, a translucent paper once scrolled", () => {
@@ -58,11 +56,6 @@ describe("LandingHeader", () => {
     expect(scrolled).toMatch(/\bshadow-edge-bottom\b/);
     // Same padding either way, so nothing below jumps when it changes.
     expect(scrolled.match(/\bpy-\d+\b/)?.[0]).toBe(headerTag.match(/\bpy-\d+\b/)?.[0]);
-  });
-
-  it("sets the nav in the UI face, not the display face", () => {
-    // CLAUDE.md §4: Space Mono is for the wordmark and headings only.
-    expect(navHtml).not.toMatch(/\bfont-(display|mono)\b/);
   });
 
   it("hands the search button the shell's opener", () => {

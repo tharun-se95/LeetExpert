@@ -26,6 +26,9 @@ export function activeModuleSlug(
       if (navModule.lessons.some((l) => isActivePath(pathname, l.href))) {
         return navModule.slug;
       }
+      if ((navModule.problems ?? []).some((p) => isActivePath(pathname, p.href))) {
+        return navModule.slug;
+      }
       // Extras must open the module too: without this, following a module's
       // concept map drops the nav back to the module list, and the link the
       // reader just followed is no longer on screen.

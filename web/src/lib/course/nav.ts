@@ -34,6 +34,8 @@ export interface CourseNavModule {
   href: string;
   status: ModuleMeta["status"];
   lessons: CourseNavLesson[];
+  /** Problem drills for practice mode filtering. */
+  problems?: CourseNavLesson[];
   /** Optional: the Next.js course nav does not build these. */
   extras?: CourseNavExtra[];
 }
@@ -96,6 +98,14 @@ export function buildCourseNav(): CourseNavStage[] {
         href: lessonHref(m.slug, l.slug),
         type: l.type,
       })),
+      problems: m.lessons
+        .filter((l) => l.type === "problem")
+        .map((l) => ({
+          id: lessonId(m.slug, l.slug),
+          title: l.title,
+          href: problemHref(l.slug),
+          type: l.type,
+        })),
       // Every module has a concept map (CONCEPT_MAPS covers all 24, asserted in
       // tests/conceptMapCoverage.test.ts), so this is unconditional — and the
       // registry stays out of the client bundle, which importing it here to

@@ -30,13 +30,15 @@ export function SignInButtons() {
   return (
     <>
       <Providers next={next} failedBefore={params.get("error") !== null} />
-      {/* Accounts are optional: the landing's links arrive here first (spec 2026-09-24-sign-in-prompt-design.md). */}
-      <Link
-        href={next}
-        className="mt-3 inline-flex h-11 w-full items-center justify-center rounded-full text-sm font-medium text-muted transition hover:bg-surface hover:text-foreground"
-      >
-        {SIGN_IN_COPY.later}
-      </Link>
+      {/* Accounts are optional for non-course routes; course access enforces sign-in. */}
+      {!next.startsWith("/courses") && (
+        <Link
+          href={next}
+          className="mt-3 inline-flex h-11 w-full items-center justify-center rounded-full text-sm font-medium text-muted transition hover:bg-surface hover:text-foreground"
+        >
+          {SIGN_IN_COPY.later}
+        </Link>
+      )}
     </>
   );
 }

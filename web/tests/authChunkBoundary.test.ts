@@ -17,6 +17,8 @@ const SHELLS = [
   "components/auth/SyncHint.tsx",
   // The once-per-visit sign-in prompt's gate (spec 2026-09-24-sign-in-prompt-design.md).
   "components/auth/SignInPromptGate.tsx",
+  // The gate enforcing sign-in for /courses routes.
+  "components/auth/CourseAuthGate.tsx",
 ];
 // Everything that renders on every page: the shells' parents and the root
 // layout. A static import from any of them (say, a header reaching for
@@ -96,6 +98,7 @@ describe("what the always-loaded auth components pull in statically", () => {
       ["components/auth/AccountRuntime.tsx", "SessionSync"],
       ["components/auth/SyncHint.tsx", "SignedOutLine"],
       ["components/auth/SignInPromptGate.tsx", "SignInPrompt"],
+      ["components/auth/CourseAuthGate.tsx", "CourseAuthCheck"],
     ] as const) {
       const source = readFileSync(join(SRC, file), "utf8");
       expect(source, file).toMatch(new RegExp(`authChunk\\(\\(\\) => import\\("@/components/auth/${target}"\\)`));
@@ -116,6 +119,7 @@ describe("who may import the auth client at all", () => {
     "components/auth/SessionSync.tsx",
     "components/auth/SignedOutLine.tsx",
     "components/auth/SignInPrompt.tsx",
+    "components/auth/CourseAuthCheck.tsx",
     "lib/auth/endSession.ts",
     "lib/auth/client.ts",
   ]);

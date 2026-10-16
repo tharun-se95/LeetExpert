@@ -28,7 +28,7 @@ export function FloatingLessonsButton() {
       aria-label="Open lessons drawer"
       aria-controls="lessons-sidebar"
       aria-expanded={false}
-      className={cn(ROUND_CONTROL, "floating-invert fixed bottom-6 left-6 z-40 hidden h-11 w-11 shadow-elevation lg:flex")}
+      className={cn(ROUND_CONTROL, "floating-invert fixed bottom-6 left-6 z-40 hidden h-11 w-11 shadow-elevation cursor-pointer transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:scale-105 active:scale-95 lg:flex")}
     >
       <List className="h-5 w-5" weight="bold" />
     </button>

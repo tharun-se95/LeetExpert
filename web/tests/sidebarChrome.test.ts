@@ -6,8 +6,6 @@ const read = (...p: string[]) =>
   readFileSync(join(__dirname, "..", "src", ...p), "utf8");
 const sidebar = read("components", "layout", "Sidebar.tsx");
 const floating = read("components", "layout", "FloatingLessonsButton.tsx");
-const tree = read("components", "layout", "CourseNavTree.tsx");
-const panel = read("components", "layout", "CourseNavPanel.tsx");
 const shell = read("components", "layout", "AppShell.tsx");
 const header = read("components", "layout", "Header.tsx");
 const globals = read("app", "globals.css");
@@ -22,15 +20,10 @@ describe("Sidebar chrome", () => {
     expect(sidebar).not.toMatch(/>\s*Lessons\s*</);
   });
 
-  it("always offers a close button, on every pointer type", () => {
-    // FloatingLessonsButton hides itself while the drawer is open, so the
-    // drawer's own pinned header row is the only close control on desktop —
-    // and touch has no hover at all. Tab order and placement are rendered in
-    // courseNavPanel.test.tsx ("CourseNavPanel header row").
-    expect(jsx).toMatch(/<CourseNavTree[^>]*\bonClose=\{onClose\}/);
-    expect(tree).toMatch(/<CourseNavPanel[\s\S]*?\bonClose=\{onClose\}/);
-    expect(panel).toContain('aria-label="Close lessons drawer"');
-    expect(floating).toContain("if (open) return null;");
+  it("offers a drawer toggle button in the header, on every pointer type", () => {
+    // Open and close button moved to Header with drawer open/close icon (SidebarSimple)
+    expect(header).toContain('aria-label={sidebar.open ? "Close lessons drawer" : "Open lessons drawer"}');
+    expect(header).toContain('SidebarSimple');
   });
 
   it("keeps the close button inside the drawer, not hanging off its edge", () => {
@@ -143,11 +136,10 @@ describe("problem page drawer opener", () => {
   /** The problem header's className. */
   const headerCls = () => workspace.match(/<header className="([^"]*)"/)![1];
 
-  it("uses the same opener tab as lesson pages, not an inline header toggle", () => {
-    // One opener idiom app-wide: the inline toggle beside the title was a
-    // second, differently shaped control for the same drawer — and with the
-    // drawer open it relabelled itself a second "Close lessons drawer".
-    expect(shell).toMatch(/\{showCourseNav \? <FloatingLessonsButton \/> : null\}/);
+  it("uses the header drawer toggle across pages, not an inline header toggle", () => {
+    // One opener idiom app-wide: the drawer toggle in the app Header
+    expect(shell).toMatch(/showLessonsMenu=\{showCourseNav\}/);
+    expect(header).toContain("SidebarSimple");
     expect(workspace).not.toContain('aria-controls="lessons-sidebar"');
     expect(workspace).not.toMatch(/toggleSidebar|useSidebar/);
   });

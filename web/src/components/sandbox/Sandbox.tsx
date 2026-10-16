@@ -23,7 +23,7 @@ import {
   type Icon,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { useRunner } from "@/components/sandbox/useRunner";
+import { useRunner, starterResults } from "@/components/sandbox/useRunner";
 import { parseSandboxSpec } from "@/components/sandbox/parseSpec";
 import {
   LANG_LABEL,
@@ -77,6 +77,7 @@ export function Sandbox({
   extractedComplexity = null,
   embedded = false,
   syncDraft = false,
+  initialResults = false,
 }: {
   source: string;
   onSolved?: () => void;
@@ -91,6 +92,8 @@ export function Sandbox({
   embedded?: boolean;
   /** Problem sandboxes only: their ids are in the sync registry; the landing sandbox's is not. */
   syncDraft?: boolean;
+  /** Show evaluated starter test case results initially (e.g. landing showcase). */
+  initialResults?: boolean;
 }) {
   const spec = useMemo(() => parseSandboxSpec(source), [source]);
   if (!spec) return <ErrorCard message="Invalid sandbox block." />;
@@ -103,6 +106,7 @@ export function Sandbox({
       extractedComplexity={extractedComplexity}
       embedded={embedded}
       syncDraft={syncDraft}
+      initialResults={initialResults}
     />
   );
 }
@@ -115,6 +119,7 @@ function SandboxBody({
   extractedComplexity,
   embedded = false,
   syncDraft,
+  initialResults = false,
 }: {
   spec: SandboxSpec;
   onSolved?: () => void;
@@ -123,6 +128,7 @@ function SandboxBody({
   extractedComplexity: ExtractedComplexity | null;
   embedded?: boolean;
   syncDraft: boolean;
+  initialResults?: boolean;
 }) {
   // One preference for every surface, picked from any of their menus.
   const [codeLang] = useCodeLang();
@@ -202,10 +208,19 @@ function SandboxBody({
   ) : null;
 
   const busy = state.status === "running" || state.status === "booting";
-  const results = state.status === "done" ? state.results : null;
+  const defaultResults = useMemo(
+    () => (initialResults ? starterResults(spec, lang) : null),
+    [initialResults, spec, lang],
+  );
+  const results =
+    state.status === "done"
+      ? state.results
+      : state.status === "idle"
+        ? defaultResults
+        : null;
   const passed = results?.filter((r) => r.passed).length ?? 0;
   const total = spec.cases.length;
-  const allPassed = results !== null && passed === total;
+  const allPassed = state.status === "done" && results !== null && passed === total;
 
   // A side effect synchronized to derived state, not a write during
   // render — the standard React idiom for "call this once when a value
@@ -394,7 +409,7 @@ function SandboxBody({
       </div>
 
       <div aria-live="polite">
-        {state.status === "idle" ? (
+        {state.status === "idle" && !results ? (
           <p className="px-3.5 py-2.5 text-[0.72rem] text-muted">
             {total} test {total === 1 ? "case" : "cases"} are waiting. Keep the
             given function name — they call it directly.

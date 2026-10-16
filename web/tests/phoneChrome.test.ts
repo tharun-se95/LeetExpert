@@ -11,12 +11,11 @@ describe("the phone lessons sheet's left edge (owner, 2026-09-24)", () => {
     expect(sheet).not.toMatch(/before:bg-accent|before:w-1/);
   });
 
-  it("gives the back row's hanging caret room inside the screen at the phone's 13px root", () => {
-    const caret = Number(panel.match(/left-\[-(\d+)px\]/)?.[1]);
+  it("keeps rows in-flow without hanging carets that would poke past the screen's edge", () => {
+    // Single-level navigation eliminates the hanging back-row caret
+    expect(panel).not.toMatch(/left-\[-(\d+)px\]/);
     const pad = Number(sheet.match(/<CourseNavTree[^>]*className="[^"]*\bpx-(\d+)\b/)?.[1]);
-    expect(caret, "caret offset").toBeGreaterThan(0);
-    // Tailwind spacing is 0.25rem a step; the phone root is 13px (globals.css).
-    expect(pad * 0.25 * 13).toBeGreaterThan(caret);
+    expect(pad, "sheet padding").toBeGreaterThan(0);
   });
 });
 

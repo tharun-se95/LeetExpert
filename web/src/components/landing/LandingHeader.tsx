@@ -3,13 +3,8 @@ import { MagnifyingGlass } from "@phosphor-icons/react";
 import { AccountControl } from "@/components/auth/AccountControl";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Lamp } from "@/components/brand/Lamp";
-import { LOGO_LAMP_SIZE, NAV_LINK, ROUND_CONTROL, WORDMARK, TRANSLUCENT_PAPER, THEME_TOGGLE } from "@/components/layout/headerChrome";
+import { LOGO_LAMP_SIZE, ROUND_CONTROL, WORDMARK, TRANSLUCENT_PAPER, THEME_TOGGLE } from "@/components/layout/headerChrome";
 import { cn } from "@/lib/utils";
-
-const NAV = [
-  { href: "/courses/dsa", label: "Lessons" },
-  { href: "/courses/dsa/problems", label: "Practice" },
-] as const;
 
 /**
  * The home page's header: transparent over the page paper with a hairline
@@ -49,7 +44,7 @@ export function LandingHeader({
     >
       {/* Same centred container as HomePage (max-w-landing, px-6 md:px-16),
           so the logo's left edge sits on the hero heading's left edge. */}
-      <div className="mx-auto grid h-11 max-w-landing grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-6 md:h-10 md:px-16">
+      <div className="mx-auto grid h-11 max-w-landing grid-cols-[1fr_auto] items-center gap-3 px-6 md:h-10 md:px-16">
         <Link
           href="/"
           className="lamp-link flex min-w-0 items-center gap-2 justify-self-start sm:gap-2.5 rounded-[length:var(--radius-md)]"
@@ -69,21 +64,6 @@ export function LandingHeader({
               wordmark is visible beside it. */}
           <Lamp size={LOGO_LAMP_SIZE} bloom className="min-[360px]:-ml-1" />
         </Link>
-
-        <nav
-          aria-label="Product modes"
-          className="flex items-center gap-3 justify-self-center sm:gap-8"
-        >
-          {NAV.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={NAV_LINK}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
 
         <div className="flex items-center justify-end gap-2 justify-self-end sm:gap-3">
           {/* h-11 below md matches Header.tsx's touch target; the pill takes

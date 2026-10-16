@@ -547,7 +547,7 @@ html {
     font-size in one face, so 60ch at this size is 60ch * scale at the pane's
     own 1rem.
   */
-  --problem-prose-scale: 0.875;
+  --problem-prose-scale: 0.95;
   /*
     The coach column (spec 2026-09-17-coach-column-design.md): the editor's and
     the coach's minimum widths decide whether the workspace can hold the column
@@ -1446,7 +1446,11 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 .problem-prose .handbook-prose {
   max-width: 60ch;
   font-size: calc(var(--problem-prose-scale) * 1rem);
-  line-height: 1.5;
+  line-height: 1.62;
+}
+
+.problem-prose .handbook-prose p {
+  color: color-mix(in oklab, var(--foreground) 95%, transparent);
 }
 
 /*
@@ -1902,19 +1906,23 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   background-color: var(--card-navy);
   color: #e6edf4;
   border-color: rgba(230, 237, 244, 0.22);
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 .floating-invert:hover {
-  border-color: rgba(230, 237, 244, 0.4);
+  border-color: rgba(230, 237, 244, 0.45);
   color: #ffffff;
+  background-color: #223247;
 }
 .dark .floating-invert {
-  background-color: #e4e9f2;
-  color: #16202e;
-  border-color: rgba(22, 32, 46, 0.2);
+  background-color: #222f42;
+  color: #f1f5f9;
+  border-color: rgba(141, 176, 255, 0.22);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 .dark .floating-invert:hover {
-  border-color: rgba(22, 32, 46, 0.35);
-  color: #0e1726;
+  border-color: rgba(141, 176, 255, 0.45);
+  color: #ffffff;
+  background-color: #2c3c54;
 }
 
 .lab-mesh::before {

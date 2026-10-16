@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AccountRuntime } from "@/components/auth/AccountRuntime";
+import { CourseAuthGate } from "@/components/auth/CourseAuthGate";
 import { SignInPromptGate } from "@/components/auth/SignInPromptGate";
 import { Header } from "@/components/layout/Header";
-import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { MobileLessonsSheet } from "@/components/layout/MobileLessonsSheet";
 import { SearchDialog } from "@/components/layout/SearchDialog";
@@ -60,18 +60,6 @@ export function isOverviewPath(pathname: string): boolean {
   return /^\/courses\/dsa\/overviews\/[^/]+\/?$/.test(pathname);
 }
 
-/**
- * The problems list also needs a viewport-locked main — its filter sidebar
- * and result list scroll internally, not the page, so a fixed height chrome
- * above them doesn't leave `main` scrolling to reveal blank space beneath a
- * shorter column (see ProblemsListClient.tsx).
- */
-function isProblemsListPath(pathname: string): boolean {
-  return (
-    pathname === "/courses/dsa/problems" ||
-    pathname === "/courses/dsa/problems/"
-  );
-}
 
 /** The home page is a full-width landing — no course nav chrome.
  *  /courses/dsa/marketing used to be a second route rendering the same
@@ -144,7 +132,6 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
   const ideViewport = isIdePath(pathname);
   const fillMain =
     ideViewport ||
-    isProblemsListPath(pathname) ||
     isConceptMapPath(pathname) ||
     isOverviewPath(pathname);
   // Every /courses/nextjs/* route 404s while the course is disabled (see
@@ -265,13 +252,6 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
               onClose={() => setMobileNavOpen(false)}
             />
           ) : null}
-          {/*
-            The drawer opener: one round floating button, bottom-left, on every
-            page with the course nav, problem pages included — never in the app
-            Header, which carries only search, progress and theme. Hidden while
-            the drawer is open (FloatingLessonsButton), which it is by default.
-          */}
-          {showCourseNav ? <FloatingLessonsButton /> : null}
           <div className="relative flex h-dvh flex-col overflow-hidden">
             {/*
               The app header overlays the page (absolute, translucent with blur;
@@ -342,7 +322,9 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
                       />
                     </>
                   ) : null}
-                  <PageEnter fill={fillMain}>{children}</PageEnter>
+                  <PageEnter fill={fillMain}>
+                    <CourseAuthGate>{children}</CourseAuthGate>
+                  </PageEnter>
                 </div>
               </main>
             </div>

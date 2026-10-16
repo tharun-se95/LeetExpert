@@ -14,33 +14,9 @@ describe("CourseNavTree wiring", () => {
     expect(tree).toContain("<CourseNavPanel");
   });
 
-  it("derives the level instead of storing it, and drops the override on navigation", () => {
-    expect(tree).toContain("resolveNavView");
-    // The override is the only stored piece; a stored level would go stale
-    // against the route.
-    expect(tree).toMatch(/useState<boolean>\(false\)|useState\(false\)/);
-    // Both the override and the return-focus slug describe "where the reader
-    // just was"; a navigation answers that, so both are dropped together.
-    expect(tree).toMatch(
-      /useEffect\(\(\) => \{\s*setBackToModules\(false\);\s*setReturnSlug\(null\);\s*\}, \[pathname\]\)/,
-    );
-  });
-
-  it("skips the animation under prefers-reduced-motion", () => {
-    expect(tree).toContain("useReducedMotion");
-    expect(tree).toContain("AnimatePresence");
-  });
-
-  it("moves focus from a callback ref, not an effect", () => {
-    // mode="wait" mounts the incoming level only after the exit finishes, so
-    // an effect (or onExitComplete) fires while the row is still unmounted —
-    // both were tried and left focus on <body>.
-    expect(tree).toMatch(
-      /useCallback\(\(el: HTMLAnchorElement \| null\) => \{[\s\S]*?el\.focus\(\)/,
-    );
-    // The prop, not the word: the component's comment explains why it is
-    // the wrong hook here.
-    expect(tree).not.toMatch(/onExitComplete=/);
+  it("renders the single-level navigation panel directly without 2-level slide transitions", () => {
+    expect(tree).not.toContain("resolveNavView");
+    expect(tree).not.toContain("AnimatePresence");
   });
 
   it("keeps the call-site props", () => {

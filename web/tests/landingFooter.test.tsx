@@ -37,10 +37,10 @@ describe("landing footer", () => {
     expect(resolves("/privacy")).toBe(false);
   });
 
-  it("carries every topic and the course's own routes", () => {
+  it("carries every topic and no direct lessons or problems route links", () => {
     for (const { href } of TOPIC_CHIPS) expect(hrefs).toContain(href);
-    expect(hrefs).toContain("/courses/dsa");
-    expect(hrefs).toContain("/courses/dsa/problems");
+    expect(hrefs).not.toContain("/courses/dsa");
+    expect(hrefs).not.toContain("/courses/dsa/problems");
   });
 
   it("invents no outbound links: every external or mail link comes from CONNECT_LINKS", () => {

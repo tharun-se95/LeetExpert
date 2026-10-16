@@ -129,10 +129,19 @@ describe("SignInPromptGate", () => {
 });
 
 describe("/sign-in", () => {
-  it("offers a way on without an account, to the page it was sent from", () => {
+  it("offers a way on without an account for non-course paths, but suppresses it for course routes", () => {
+    params.set("next", "/about");
+    render(<SignInButtons />);
+    const later = [...host.querySelectorAll("a")].find((a) => a.textContent === SIGN_IN_COPY.later);
+    expect(later).not.toBeUndefined();
+    expect(later!.getAttribute("href")).toBe("/about");
+
+    act(() => root?.unmount());
+    root = null;
+
     params.set("next", "/courses/dsa");
     render(<SignInButtons />);
-    const later = [...host.querySelectorAll("a")].find((a) => a.textContent === SIGN_IN_COPY.later)!;
-    expect(later.getAttribute("href")).toBe("/courses/dsa");
+    const courseLater = [...host.querySelectorAll("a")].find((a) => a.textContent === SIGN_IN_COPY.later);
+    expect(courseLater).toBeUndefined();
   });
 });
