@@ -14,9 +14,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  Brain,
   Check,
-  Code,
   CaretLeft,
   FileText,
   PencilSimple,
@@ -38,44 +36,38 @@ import { extractComplexityFromMarkdown } from "@/lib/insight/extractComplexity";
 import { CoachProvider, useCoach } from "@/components/coach/CoachProvider";
 import { CoachPanel } from "@/components/coach/CoachPanel";
 import { IdeWithCoach } from "@/components/coach/IdeWithCoach";
+import { ProblemAccordion } from "@/components/problems/ProblemAccordion";
+import { PROBLEM_DIFFICULTY, type Difficulty } from "@/lib/course/problemDifficulty";
 
 interface NeighborLink {
   href: string;
   title: string;
 }
 
-type ContentTab = "description" | "explanation" | "solution" | "quiz";
+type ContentTab = "problem" | "quiz";
 type WorkspaceTab = ContentTab | "code" | "coach";
 
 /**
  * One icon per tab, chosen to be distinct from its neighbours in the SAME
- * bar rather than globally unique across the app — Code (reference, static)
- * next to PencilSimple (the live editor you write in) is the pairing that
- * has to hold up, not whether some other panel elsewhere also uses a pencil.
+ * bar rather than globally unique across the app.
  */
 const TAB_ICON: Record<WorkspaceTab, Icon> = {
-  description: FileText,
-  explanation: Brain,
-  solution: Code,
+  problem: FileText,
   quiz: Question,
   code: PencilSimple,
   coach: Sparkle,
 };
 
 const CONTENT_TABS: { id: ContentTab; label: string }[] = [
-  { id: "description", label: "Description" },
-  { id: "explanation", label: "Explanation" },
-  { id: "solution", label: "Solution" },
+  { id: "problem", label: "Problem" },
   { id: "quiz", label: "Quiz" },
 ];
 
-/** Mobile: Code sits between Description and Explanation so reading comes first. */
+/** Mobile: Problem sits first, Code (IDE), Coach, then Quiz. */
 const MOBILE_TABS: { id: WorkspaceTab; label: string }[] = [
-  { id: "description", label: "Description" },
+  { id: "problem", label: "Problem" },
   { id: "code", label: "Code" },
   { id: "coach", label: "Coach" },
-  { id: "explanation", label: "Explanation" },
-  { id: "solution", label: "Solution" },
   { id: "quiz", label: "Quiz" },
 ];
 
@@ -96,8 +88,8 @@ interface ProblemWorkspaceProps {
 
 /**
  * LeetCode-style IDE shell for problem lessons and `/problems/[slug]`.
- * Desktop (`lg+`): description pane + Sandbox side-by-side.
- * Mobile: Description | Code | Explanation | Solution — Sandbox only in Code.
+ * Desktop (`lg+`): problem accordion pane + Sandbox side-by-side.
+ * Mobile: Problem (Accordion) | Code | Coach | Quiz.
  */
 export function ProblemWorkspace({
   lesson,
@@ -111,7 +103,7 @@ export function ProblemWorkspace({
   const { solved, markSolved } = useProgress();
   const id = lessonId(lesson.moduleSlug, lesson.lessonSlug);
   const isSolved = solved.has(id);
-  const [tab, setTab] = useState<WorkspaceTab>("description");
+  const [tab, setTab] = useState<WorkspaceTab>("problem");
   const [wide, setWide] = useState(false);
   const tabsId = useId();
 
@@ -122,7 +114,7 @@ export function ProblemWorkspace({
       setWide(nextWide);
       // Desktop has no Code tab — fall back so the left pane stays valid.
       if (nextWide) {
-        setTab((t) => (t === "code" || t === "coach" ? "description" : t));
+        setTab((t) => (t === "code" || t === "coach" ? "problem" : t));
       }
     };
     sync();
@@ -149,17 +141,22 @@ export function ProblemWorkspace({
     [lesson.markdown],
   );
 
-  const contentTab: ContentTab =
-    tab === "code" || tab === "coach" ? "description" : tab;
+  const difficulty = PROBLEM_DIFFICULTY[lesson.lessonSlug];
 
-  const tabSource =
-    contentTab === "description"
-      ? lesson.sandbox.beforeSandbox
-      : contentTab === "explanation"
-        ? explanation
-        : contentTab === "solution"
-          ? solution
-          : quiz;
+  const contentTab: ContentTab =
+    tab === "code" || tab === "coach" ? "problem" : tab;
+
+  const activeContentTabs = useMemo(() => {
+    return quiz.trim()
+      ? CONTENT_TABS
+      : CONTENT_TABS.filter((t) => t.id !== "quiz");
+  }, [quiz]);
+
+  const activeMobileTabs = useMemo(() => {
+    return quiz.trim()
+      ? MOBILE_TABS
+      : MOBILE_TABS.filter((t) => t.id !== "quiz");
+  }, [quiz]);
 
   const sandbox = (
     <Sandbox
@@ -193,13 +190,6 @@ export function ProblemWorkspace({
               {backLabel}
             </span>
           </Link>
-          {/*
-            Divides the way back from what this problem is: everything left
-            of it moves you, everything right of it describes the problem. It
-            used to follow an inline drawer toggle too; the drawer's opener is
-            now the floating button every course page shares
-            (FloatingLessonsButton).
-          */}
           <span
             className="hidden h-6 w-px shrink-0 bg-border sm:block"
             aria-hidden
@@ -210,12 +200,6 @@ export function ProblemWorkspace({
             </h1>
             <p className="truncate text-[0.7rem] text-muted">{eyebrow}</p>
           </div>
-          {/*
-            Solved is the only state worth a chip. The old "Problem" pill it
-            replaced was constant — every page this component renders IS a
-            problem — so it spent prime space next to the nav saying nothing,
-            and its absence now carries "not solved yet" on its own.
-          */}
           {isSolved ? (
             <span className="inline-flex shrink-0 items-center gap-1 rounded-[length:var(--radius-md)] bg-good/15 px-2 py-0.5 text-[0.7rem] font-medium text-good">
               <Check size={11} strokeWidth={3} aria-hidden />
@@ -269,8 +253,7 @@ export function ProblemWorkspace({
 
         {wide ? (
           /*
-          Desktop: description pane + Sandbox side-by-side. Unchanged from the
-          prior IDE shell — do not stack Code into the left tablist here.
+          Desktop: problem accordion pane + Sandbox side-by-side.
           The row is marked so the coach can read its width to choose column
           or floating (IdeWithCoach).
         */
@@ -285,10 +268,18 @@ export function ProblemWorkspace({
                 <LeftPane
                   tab={contentTab}
                   onTabChange={setTab}
-                  source={tabSource}
+                  tabs={activeContentTabs}
+                  descriptionSource={lesson.sandbox.beforeSandbox}
+                  explanationSource={explanation}
+                  solutionSource={solution}
+                  quizSource={quiz}
                   highlightedBlocks={lesson.highlightedBlocks}
                   highlightedTabs={lesson.highlightedTabs}
                   tabsId={tabsId}
+                  difficulty={difficulty}
+                  moduleTitle={eyebrow}
+                  complexity={extractedComplexity}
+                  isSolved={isSolved}
                 />
               }
               secondary={<IdeWithCoach sandbox={sandbox} />}
@@ -298,11 +289,19 @@ export function ProblemWorkspace({
           <MobileWorkspace
             tab={tab}
             onTabChange={setTab}
-            source={tabSource}
+            tabs={activeMobileTabs}
+            descriptionSource={lesson.sandbox.beforeSandbox}
+            explanationSource={explanation}
+            solutionSource={solution}
+            quizSource={quiz}
             highlightedBlocks={lesson.highlightedBlocks}
             highlightedTabs={lesson.highlightedTabs}
             tabsId={tabsId}
             sandbox={sandbox}
+            difficulty={difficulty}
+            moduleTitle={eyebrow}
+            complexity={extractedComplexity}
+            isSolved={isSolved}
           />
         )}
       </div>
@@ -313,19 +312,35 @@ export function ProblemWorkspace({
 function MobileWorkspace({
   tab,
   onTabChange,
-  source,
+  tabs,
+  descriptionSource,
+  explanationSource,
+  solutionSource,
+  quizSource,
   highlightedBlocks,
   highlightedTabs,
   tabsId,
   sandbox,
+  difficulty,
+  moduleTitle,
+  complexity,
+  isSolved,
 }: {
   tab: WorkspaceTab;
   onTabChange: (tab: WorkspaceTab) => void;
-  source: string;
+  tabs: readonly { id: WorkspaceTab; label: string }[];
+  descriptionSource: string;
+  explanationSource: string;
+  solutionSource: string;
+  quizSource: string;
   highlightedBlocks: Record<string, string | null>;
   highlightedTabs: Record<string, TabBlock[]>;
   tabsId: string;
   sandbox: ReactNode;
+  difficulty?: Difficulty;
+  moduleTitle?: string;
+  complexity?: { time?: string; space?: string } | null;
+  isSolved?: boolean;
 }) {
   const panelId = `${tabsId}-panel`;
   const showCode = tab === "code";
@@ -340,13 +355,12 @@ function MobileWorkspace({
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-elevated">
       <TabList
-        tabs={MOBILE_TABS}
+        tabs={tabs}
         active={tab}
         onChange={onTabChange}
         tabsId={tabsId}
         label="Problem workspace"
         panelId={panelId}
-        // Full-height touch targets on the only tab bar below lg.
         className="h-11"
         badgeId={unread ? "coach" : null}
       />
@@ -357,18 +371,28 @@ function MobileWorkspace({
           aria-labelledby={`${tabsId}-tab-${tab}`}
           className="min-h-0 flex-1 overflow-y-auto px-4 py-4"
         >
-          <ContentBody
-            tab={tab}
-            source={source}
-            highlightedBlocks={highlightedBlocks}
-            highlightedTabs={highlightedTabs}
-          />
+          {tab === "problem" ? (
+            <ProblemAccordion
+              descriptionSource={descriptionSource}
+              explanationSource={explanationSource}
+              solutionSource={solutionSource}
+              highlightedBlocks={highlightedBlocks}
+              highlightedTabs={highlightedTabs}
+              difficulty={difficulty}
+              moduleTitle={moduleTitle}
+              complexity={complexity}
+              isSolved={isSolved}
+            />
+          ) : (
+            <ContentBody
+              tab="quiz"
+              source={quizSource}
+              highlightedBlocks={highlightedBlocks}
+              highlightedTabs={highlightedTabs}
+            />
+          )}
         </div>
       ) : null}
-      {/*
-        Keep Sandbox mounted while hidden so drafts/runner state survive tab
-        switches. Drafts also live in localStorage if the tree remounts at lg.
-      */}
       <div
         role={showCode ? "tabpanel" : undefined}
         id={showCode ? panelId : undefined}
@@ -397,46 +421,75 @@ function MobileWorkspace({
 function LeftPane({
   tab,
   onTabChange,
-  source,
+  tabs,
+  descriptionSource,
+  explanationSource,
+  solutionSource,
+  quizSource,
   highlightedBlocks,
   highlightedTabs,
   tabsId,
+  difficulty,
+  moduleTitle,
+  complexity,
+  isSolved,
 }: {
   tab: ContentTab;
   onTabChange: (tab: WorkspaceTab) => void;
-  source: string;
+  tabs: readonly { id: ContentTab; label: string }[];
+  descriptionSource: string;
+  explanationSource: string;
+  solutionSource: string;
+  quizSource: string;
   highlightedBlocks: Record<string, string | null>;
   highlightedTabs: Record<string, TabBlock[]>;
   tabsId: string;
+  difficulty?: Difficulty;
+  moduleTitle?: string;
+  complexity?: { time?: string; space?: string } | null;
+  isSolved?: boolean;
 }) {
   const panelId = `${tabsId}-panel`;
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-elevated">
-      <TabList
-        tabs={CONTENT_TABS}
-        active={tab}
-        onChange={onTabChange}
-        tabsId={tabsId}
-        label="Problem content"
-        panelId={panelId}
-        className="h-9"
-      />
+      {tabs.length > 1 ? (
+        <TabList
+          tabs={tabs}
+          active={tab}
+          onChange={onTabChange}
+          tabsId={tabsId}
+          label="Problem content"
+          panelId={panelId}
+          className="h-9"
+        />
+      ) : null}
       <div
         role="tabpanel"
         id={panelId}
-        aria-labelledby={`${tabsId}-tab-${tab}`}
-        // The pane runs to the viewport's bottom-left corner, where the
-        // lessons-drawer opener floats from lg: the bottom padding lets the
-        // last lines scroll clear of it (bottom-6 + h-11, plus a 1rem gap).
+        aria-labelledby={tabs.length > 1 ? `${tabsId}-tab-${tab}` : undefined}
         className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 lg:pb-21"
       >
-        <ContentBody
-          tab={tab}
-          source={source}
-          highlightedBlocks={highlightedBlocks}
-          highlightedTabs={highlightedTabs}
-        />
+        {tab === "problem" ? (
+          <ProblemAccordion
+            descriptionSource={descriptionSource}
+            explanationSource={explanationSource}
+            solutionSource={solutionSource}
+            highlightedBlocks={highlightedBlocks}
+            highlightedTabs={highlightedTabs}
+            difficulty={difficulty}
+            moduleTitle={moduleTitle}
+            complexity={complexity}
+            isSolved={isSolved}
+          />
+        ) : (
+          <ContentBody
+            tab="quiz"
+            source={quizSource}
+            highlightedBlocks={highlightedBlocks}
+            highlightedTabs={highlightedTabs}
+          />
+        )}
       </div>
     </div>
   );
@@ -466,11 +519,7 @@ function ContentBody({
   }
   return (
     <p className="text-sm text-muted">
-      {tab === "solution"
-        ? "This problem’s solution walkthrough lives under Explanation."
-        : tab === "quiz"
-          ? "No quiz for this problem yet."
-          : "Nothing here yet."}
+      {tab === "quiz" ? "No quiz for this problem yet." : "Nothing here yet."}
     </p>
   );
 }
@@ -535,7 +584,7 @@ function TabList({
         // -mb-px stretches the scroller over the wrapper's rule, so each
         // underline at bottom-0 still lands exactly on it; overflow-y-hidden
         // pins the axis the browser would otherwise make scrollable. Horizontal
-        // scroll stays: six mobile tabs are 324px wide on a 320px screen.
+        // scroll stays: mobile tabs fit cleanly.
         className="-mb-px flex min-w-0 flex-1 items-stretch overflow-x-auto overflow-y-hidden"
       >
         {tabs.map((t, i) => {
@@ -555,12 +604,6 @@ function TabList({
               tabIndex={selected ? 0 : -1}
               onClick={() => onChange(t.id)}
               className={cn(
-                // Underline indicator, not a filled pill: a bottom bar sitting
-                // exactly on the tab bar's rule (after:bottom-0 — the scroller
-                // extends over the wrapper's border-b) reads as "this tab owns
-                // the rule beneath it" — the modern convention (GitHub, Linear) —
-                // rather than a colour block. The focus ring is inset: an outline
-                // drawn outside the tab is clipped by the scroll box.
                 "relative h-full min-w-11 touch-manipulation px-3.5 text-[0.75rem] font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent",
                 "after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:rounded-full after:transition-colors after:duration-[var(--dur-fast)] after:content-['']",
                 selected
@@ -569,12 +612,6 @@ function TabList({
               )}
             >
               <span className="inline-flex items-center gap-1.5">
-                {/*
-                weight stays at the app-wide bold default (IconContext,
-                ThemeProvider.tsx) when unselected — only the selected tab
-                steps up to fill, echoing the same rest/active weight bump
-                CoachThread's mark uses.
-              */}
                 <TabIcon
                   className="h-3.5 w-3.5 shrink-0"
                   weight={selected ? "fill" : undefined}

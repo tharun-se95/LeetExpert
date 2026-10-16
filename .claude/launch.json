@@ -27,7 +27,13 @@
     {
       "name": "lesson-artifacts",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "4777", "--directory", "web/lesson-artifacts/dist"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4777",
+        "--directory",
+        "web/lesson-artifacts/dist"
+      ],
       "port": 4777
     },
     {
@@ -43,6 +49,130 @@
         "3105"
       ],
       "port": 3105
+    },
+    {
+      "name": "lesson-artifacts-review",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4788",
+        "--directory",
+        ".claude/worktrees/agent-abf7cfe15f45504e0/web/lesson-artifacts/dist"
+      ],
+      "port": 4788
+    },
+    {
+      "name": "nextjs-reader",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        ".claude/worktrees/nextjs-reader/web",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "3120"
+      ],
+      "port": 3120
+    },
+    {
+      "name": "fix-72",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4790",
+        "--directory",
+        "/Users/tharunk/leetExpert/.claude/worktrees/agent-aa8e3fb1f2c871b5c/web/lesson-artifacts/dist"
+      ],
+      "port": 4790
+    },
+    {
+      "name": "artifacts-79",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4779",
+        "--directory",
+        "/Users/tharunk/leetExpert/.claude/worktrees/costplot-79/web/lesson-artifacts/dist"
+      ],
+      "port": 4779
+    },
+    {
+      "name": "artifacts-107",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4807",
+        "-d",
+        "/Users/tharunk/leetExpert/.claude/worktrees/scheme-107/web/lesson-artifacts/dist"
+      ],
+      "port": 4807
+    },
+    {
+      "name": "artifacts-106",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4806",
+        "-d",
+        "/Users/tharunk/leetExpert/.claude/worktrees/lanes-106/web/lesson-artifacts/dist"
+      ],
+      "port": 4806
+    },
+    {
+      "name": "artifacts-26",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4826",
+        "-d",
+        "/Users/tharunk/leetExpert/.claude/worktrees/ll-26/web/lesson-artifacts/dist"
+      ],
+      "port": 4826
+    },
+    {
+      "name": "web-prcheck",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "/Users/tharunk/leetExpert/.claude/worktrees/pr-check/web",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "3160"
+      ],
+      "port": 3160
+    },
+    {
+      "name": "artifacts-key64",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4778",
+        "--directory",
+        "/Users/tharunk/leetExpert/.claude/worktrees/key-64/web/lesson-artifacts/dist"
+      ],
+      "port": 4778
+    },
+    {
+      "name": "artifacts-72",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4772",
+        "--directory",
+        ".claude/worktrees/win-72/web/lesson-artifacts/dist"
+      ],
+      "port": 4772
     }
   ]
 }

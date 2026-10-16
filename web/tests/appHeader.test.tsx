@@ -28,9 +28,10 @@ function navLinks(path: string) {
 
 describe("app header", () => {
   it("shares its parts with the landing header, so the two cannot drift", () => {
+    expect(header).toContain("NAV_LINK");
     for (const file of [header, read("components", "landing", "LandingHeader.tsx")]) {
       expect(file).toMatch(/from "@\/components\/layout\/headerChrome"/);
-      for (const name of ["LOGO_LAMP_SIZE", "WORDMARK", "NAV_LINK", "ROUND_CONTROL"]) {
+      for (const name of ["LOGO_LAMP_SIZE", "WORDMARK", "ROUND_CONTROL"]) {
         expect(file).toContain(name);
       }
     }

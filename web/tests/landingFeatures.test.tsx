@@ -260,7 +260,7 @@ describe("Build: the worked problem", () => {
 
   it("shows the live editor, the tracer without its code and the complexity stage alone", () => {
     const windows = read("components", "landing", "FeatureWindows.tsx");
-    expect(windows).toContain('<Sandbox source={FIND_PAIR_SOURCE} variant="card" embedded />');
+    expect(windows).toContain('<Sandbox source={FIND_PAIR_SOURCE} variant="card" embedded initialResults />');
     expect(windows).toContain("<Viz source={data.learn.viz} embedded code={false} />");
     expect(windows).toContain("<BigOObservatory />");
     expect(windows).not.toMatch(/InsightPanel|Try it/);

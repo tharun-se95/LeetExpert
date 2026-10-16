@@ -68,7 +68,6 @@ export function featureWindows(
     },
     learn: {
       label: `${data.learn.title}: the frequency count tracer`,
-      link: { label: "Open the lesson", href: data.learn.href },
       body: near.understand ? (
         // The embedded tracer has no card of its own; the paper card frames it like the others.
         <div className="rounded-[length:var(--radius-lg)] border border-border bg-elevated p-4 shadow-elevation">
@@ -99,7 +98,7 @@ export function featureWindows(
     },
     code: {
       label: "The find_pair editor",
-      body: near.build ? <Sandbox source={FIND_PAIR_SOURCE} variant="card" embedded /> : <Standin label="Editor" />,
+      body: near.build ? <Sandbox source={FIND_PAIR_SOURCE} variant="card" embedded initialResults /> : <Standin label="Editor" />,
     },
     review: {
       label: "The coach on a broken find_pair draft",
@@ -120,7 +119,6 @@ export function featureWindows(
     },
     practice: {
       label: "Every problem in the course",
-      link: { label: "Open practice", href: data.practice.href },
       fill: true,
       body: near.keep ? (
         // A dark card (owner, 2026-09-21: the module art's navy) with padding,

@@ -144,7 +144,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           {/* No top padding here: the nav's pinned header row carries it along
               with the close button, so rows scrolling under the row have no
               gap above it to show through. */}
-          <CourseNavTree compact onClose={onClose} className="px-5 pb-6" />
+          <CourseNavTree compact onClose={onClose} className="px-5 pt-3 pb-6" />
         </div>
       </div>
       {/*

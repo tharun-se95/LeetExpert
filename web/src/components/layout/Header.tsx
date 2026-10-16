@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { List, MagnifyingGlass } from "@phosphor-icons/react";
+import { MagnifyingGlass, SidebarSimple } from "@phosphor-icons/react";
 import { AccountControl } from "@/components/auth/AccountControl";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Lamp } from "@/components/brand/Lamp";
+import { CodeLangSwitch } from "@/components/layout/CodeLangSwitch";
 import {
   LOGO_LAMP_SIZE,
   NAV_LINK,
@@ -14,6 +15,7 @@ import {
   WORDMARK,
   THEME_TOGGLE,
 } from "@/components/layout/headerChrome";
+import { useSidebarOptional } from "@/components/layout/SidebarContext";
 import { useProgress } from "@/components/providers/ProgressProvider";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
 import { COURSES } from "@/lib/courses/registry";
@@ -28,6 +30,8 @@ interface HeaderProps {
   onToggleLessonsMenu?: () => void;
   /** Progress chip is course chrome — hidden on the marketing landing. */
   showProgress?: boolean;
+  /** Show the JS/Python code language switch (course chrome, DSA). */
+  showCodeLang?: boolean;
 }
 
 export function Header({
@@ -36,8 +40,10 @@ export function Header({
   lessonsMenuOpen = false,
   onToggleLessonsMenu,
   showProgress = true,
+  showCodeLang = true,
 }: HeaderProps) {
   const pathname = usePathname();
+  const sidebar = useSidebarOptional();
   const { visitedCount, totalCount } = useProgress();
   const pct = totalCount > 0 ? Math.round((visitedCount / totalCount) * 100) : 0;
 
@@ -62,19 +68,44 @@ export function Header({
   const modeLinkClass = (active: boolean) => cn(NAV_LINK, active && NAV_LINK_ACTIVE);
 
   return (
-    <header className="print:hidden absolute inset-x-0 top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-background/90 backdrop-blur-md shadow-edge-bottom px-3 sm:gap-3 sm:px-4">
+    <header className="print:hidden absolute inset-x-0 top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-background/90 backdrop-blur-md shadow-edge-bottom px-3 sm:gap-3 sm:px-4 lg:flex lg:justify-between">
       <div className="flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
-        {showLessonsMenu && onToggleLessonsMenu ? (
-          <button
-            type="button"
-            onClick={onToggleLessonsMenu}
-            aria-expanded={lessonsMenuOpen}
-            aria-controls="mobile-lessons-sheet"
-            aria-label={lessonsMenuOpen ? "Close lessons menu" : "Open lessons menu"}
-            className={cn(ROUND_CONTROL, "h-11 w-11 lg:hidden")}
-          >
-            <List className="h-5 w-5" weight="bold" aria-hidden />
-          </button>
+        {showLessonsMenu ? (
+          <>
+            {onToggleLessonsMenu ? (
+              <button
+                type="button"
+                onClick={onToggleLessonsMenu}
+                aria-expanded={lessonsMenuOpen}
+                aria-controls="mobile-lessons-sheet"
+                aria-label={lessonsMenuOpen ? "Close lessons menu" : "Open lessons menu"}
+                className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-[length:var(--radius-xs)] text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
+              >
+                <SidebarSimple
+                  className="h-5 w-5"
+                  weight={lessonsMenuOpen ? "fill" : "regular"}
+                  aria-hidden
+                />
+              </button>
+            ) : null}
+
+            {sidebar ? (
+              <button
+                type="button"
+                onClick={sidebar.toggle}
+                aria-expanded={sidebar.open}
+                aria-controls="lessons-sidebar"
+                aria-label={sidebar.open ? "Close lessons drawer" : "Open lessons drawer"}
+                className="hidden lg:inline-flex h-8 w-8 items-center justify-center rounded-[length:var(--radius-xs)] text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
+              >
+                <SidebarSimple
+                  className="h-[18px] w-[18px]"
+                  weight={sidebar.open ? "fill" : "regular"}
+                  aria-hidden
+                />
+              </button>
+            ) : null}
+          </>
         ) : null}
         <Link href="/" className="lamp-link flex min-w-0 items-center gap-2.5">
           <span className="flex min-w-0 items-baseline gap-2">
@@ -120,7 +151,7 @@ export function Header({
       </div>
 
       <nav
-        className="flex shrink-0 items-center gap-5 justify-self-center sm:gap-8"
+        className="max-lg:flex lg:hidden shrink-0 items-center gap-5 justify-self-center sm:gap-8"
         aria-label="Product modes"
       >
         {courseSlug === "nextjs" && routeCourse?.status === "available" ? (
@@ -151,7 +182,9 @@ export function Header({
         )}
       </nav>
 
-      <div className="flex min-w-0 items-center justify-end gap-1.5 justify-self-end sm:gap-2 md:gap-3">
+      <div className="col-start-3 ml-auto flex min-w-0 items-center justify-end gap-1.5 justify-self-end sm:gap-2 md:gap-3">
+        {showCodeLang && courseSlug !== "nextjs" ? <CodeLangSwitch /> : null}
+
         {/*
           Icon-only below md: the Search+⌘K pill was the main collision with
           centered Lessons/Practice in the 640–768px band (1fr_auto_1fr).

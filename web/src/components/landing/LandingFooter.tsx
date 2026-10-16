@@ -4,7 +4,7 @@ import type { ComponentType } from "react";
 import { Lamp } from "@/components/brand/Lamp";
 import { FooterWordmark } from "@/components/landing/FooterWordmark";
 import { LOGO_LAMP_SIZE } from "@/components/layout/headerChrome";
-import { CURRICULUM, FIRST_LESSON, PRACTICE, TOPIC_CHIPS } from "@/lib/landing/content";
+import { FIRST_LESSON, TOPIC_CHIPS } from "@/lib/landing/content";
 import { CONNECT_LINKS, FOOTER_TAGLINE, type ConnectLink } from "@/lib/landing/footer";
 
 const COLUMN_LABEL = "text-xs font-medium tracking-[0.14em] text-mark uppercase";
@@ -16,8 +16,6 @@ const CONNECT_ICONS: Record<ConnectLink["kind"], ComponentType<{ className?: str
 };
 
 const COURSE_LINKS = [
-  { label: "Lessons", href: CURRICULUM },
-  { label: "Practice", href: PRACTICE },
   { label: "Start the first lesson", href: FIRST_LESSON },
 ] as const;
 

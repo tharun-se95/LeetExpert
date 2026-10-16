@@ -15,20 +15,20 @@ function OutputValue({ output }: { output: string }) {
   // them to content width.
   if (bool === "true") {
     return (
-      <span className="inline-flex justify-self-start rounded-[length:var(--radius-xs)] border border-good/40 bg-good/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-good">
+      <span className="inline-flex justify-self-start rounded-[length:var(--radius-xs)] border border-good/40 bg-good/10 px-2 py-0.5 font-mono text-xs font-semibold text-good">
         {output.trim()}
       </span>
     );
   }
   if (bool === "false") {
     return (
-      <span className="inline-flex justify-self-start rounded-[length:var(--radius-xs)] border border-bad/40 bg-bad/10 px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-bad">
+      <span className="inline-flex justify-self-start rounded-[length:var(--radius-xs)] border border-bad/40 bg-bad/10 px-2 py-0.5 font-mono text-xs font-semibold text-bad">
         {output.trim()}
       </span>
     );
   }
   return (
-    <code className="block overflow-x-auto font-mono text-[0.8rem] leading-snug font-semibold break-normal whitespace-pre-wrap text-foreground">
+    <code className="block overflow-x-auto font-mono text-xs sm:text-sm leading-normal font-semibold break-normal whitespace-pre-wrap text-foreground">
       {output}
     </code>
   );
@@ -80,28 +80,28 @@ export function ExamplesBlock({
             i > 0 && "border-t border-border/80",
           )}
         >
-          <p className="mb-2 font-mono text-[0.65rem] font-semibold tracking-wide text-muted uppercase">
+          <p className="mb-2 font-mono text-xs font-semibold tracking-wider text-muted uppercase">
             Example {i + 1}
           </p>
           {/*
             `auto` sizes the label column to the wider of the two words, so
             both values start on the same left edge and read as a block.
           */}
-          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1.5">
-            <span className="text-[0.65rem] font-semibold tracking-wide text-muted uppercase">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3.5 gap-y-2">
+            <span className="text-xs font-semibold tracking-wider text-muted uppercase">
               Input
             </span>
-            <code className="block overflow-x-auto font-mono text-[0.8rem] leading-snug break-normal whitespace-pre-wrap text-foreground">
+            <code className="block overflow-x-auto font-mono text-xs sm:text-sm leading-normal break-normal whitespace-pre-wrap text-foreground">
               {row.input}
             </code>
-            <span className="text-[0.65rem] font-semibold tracking-wide text-muted uppercase">
+            <span className="text-xs font-semibold tracking-wider text-muted uppercase">
               Output
             </span>
             <OutputValue output={row.output} />
           </div>
           {row.note ? (
-            <p className="mt-2 border-t border-border/60 pt-2 text-[0.75rem] leading-snug text-muted">
-              <span className="font-medium text-foreground/80">Explanation. </span>
+            <p className="mt-2.5 border-t border-border/60 pt-2 text-xs sm:text-sm leading-relaxed text-foreground/80">
+              <span className="font-semibold text-foreground">Explanation: </span>
               {row.note}
             </p>
           ) : null}

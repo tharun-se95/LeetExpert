@@ -16,6 +16,7 @@ import {
 import { Quiz } from "@/components/course/Quiz";
 import { CodeTabs } from "@/components/course/CodeTabs";
 import { Reveal } from "@/components/course/Reveal";
+import { BlurReveal } from "@/components/md/BlurReveal";
 import { Scratchpad } from "@/components/course/Scratchpad";
 import { Complexity } from "@/components/course/Complexity";
 import { Viz } from "@/components/viz/Viz";
@@ -59,10 +60,12 @@ export function Markdown({
   source,
   highlightedBlocks,
   highlightedTabs,
+  unwrapReveal = false,
 }: {
   source: string;
   highlightedBlocks: Record<string, string | null>;
   highlightedTabs: Record<string, TabBlock[]>;
+  unwrapReveal?: boolean;
 }) {
   const components: Components = {
     pre({ children }) {
@@ -123,6 +126,7 @@ export function Markdown({
                 source={text()}
                 highlightedBlocks={highlightedBlocks}
                 highlightedTabs={highlightedTabs}
+                unwrapReveal={unwrapReveal}
               />
             </Callout>
           );
@@ -141,12 +145,31 @@ export function Markdown({
                 source={text()}
                 highlightedBlocks={highlightedBlocks}
                 highlightedTabs={highlightedTabs}
+                unwrapReveal={unwrapReveal}
               />
             </MarginNote>
           );
         }
         if (className.includes("language-reveal")) {
-          const label = codeEl.props.node?.data?.meta?.trim() || "Reveal";
+          const rawLabel = codeEl.props.node?.data?.meta?.trim() || "";
+          if (unwrapReveal) {
+            const isHint = /hint/i.test(rawLabel);
+            const isSolution = /solution/i.test(rawLabel);
+            const type = isHint ? "hint" : isSolution ? "solution" : "default";
+
+            return (
+              <BlurReveal label={rawLabel || "Solution"} type={type}>
+                <Markdown
+                  source={text()}
+                  highlightedBlocks={highlightedBlocks}
+                  highlightedTabs={highlightedTabs}
+                  unwrapReveal={unwrapReveal}
+                />
+              </BlurReveal>
+            );
+          }
+
+          const label = rawLabel || "Reveal";
           return (
             <Reveal label={label}>
               <Markdown
@@ -176,6 +199,7 @@ export function Markdown({
                       source={chunk}
                       highlightedBlocks={highlightedBlocks}
                       highlightedTabs={highlightedTabs}
+                      unwrapReveal={unwrapReveal}
                     />
                   ),
                 };

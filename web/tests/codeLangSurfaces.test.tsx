@@ -114,13 +114,9 @@ describe("dead tab styles", () => {
 });
 
 describe("app and landing headers", () => {
-  it("carry no code-language control; it is picked on the code surfaces", () => {
-    for (const rel of [
-      ["components", "layout", "Header.tsx"],
-      ["components", "landing", "LandingHeader.tsx"],
-    ]) {
-      expect(read(...rel), rel.join("/")).not.toMatch(/CodeLang/);
-    }
-    expect(existsSync(join(__dirname, "..", "src", "components", "layout", "CodeLangSwitch.tsx"))).toBe(false);
+  it("carries CodeLangSwitch on app header and none on landing header", () => {
+    expect(read("components", "layout", "Header.tsx")).toMatch(/CodeLangSwitch/);
+    expect(read("components", "landing", "LandingHeader.tsx")).not.toMatch(/CodeLang/);
+    expect(existsSync(join(__dirname, "..", "src", "components", "layout", "CodeLangSwitch.tsx"))).toBe(true);
   });
 });

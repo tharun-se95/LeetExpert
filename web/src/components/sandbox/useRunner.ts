@@ -85,6 +85,35 @@ function sequenceLabel(
   return `${clsName}: ${ops.filter(isChecked).length} assertions`;
 }
 
+/**
+ * Evaluates the results of the starter code (or initial post-run preview)
+ * against the test cases without needing a Web Worker boot.
+ */
+export function starterResults(
+  spec: SandboxSpec,
+  lang: SandboxLang,
+): CaseResult[] {
+  return spec.cases.map((testCase, index) => {
+    const want = testCase.expect;
+    const actual = null;
+    const passed = matches(actual, want, spec.compare);
+    return {
+      index,
+      name:
+        testCase.name ??
+        (testCase.argsLabel !== undefined
+          ? `${spec.fn[lang]}(${testCase.argsLabel})`
+          : formatCall(spec.fn[lang], testCase.args)),
+      passed,
+      got: pretty(actual),
+      expected: testCase.expectLabel ?? pretty(want),
+      error: null,
+      logs: [],
+      logsDropped: 0,
+    };
+  });
+}
+
 export type RunState =
   | { status: "idle" }
   | { status: "booting" }

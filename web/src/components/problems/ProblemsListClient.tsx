@@ -1,176 +1,233 @@
 "use client";
 
 import { useState } from "react";
-import { FunnelSimple } from "@phosphor-icons/react";
-import { useProgress } from "@/components/providers/ProgressProvider";
+import { FunnelSimple, Code, Sparkle, Target, ShieldCheck } from "@phosphor-icons/react";
 import type { ProblemGroup } from "@/lib/course/manifest";
-import { ProblemFilterPanel } from "@/components/problems/ProblemFilterPanel";
-import { ProblemFilterSheet } from "@/components/problems/ProblemFilterSheet";
-import { ProblemsFlatList } from "@/components/problems/ProblemsFlatList";
+import { CatalogTrackShowcase } from "@/components/problems/CatalogTrackShowcase";
+import { CatalogCategoryCards } from "@/components/problems/CatalogCategoryCards";
+import { CatalogMetricsBar, type ViewMode } from "@/components/problems/CatalogMetricsBar";
+import { CatalogCuratedListTabs } from "@/components/problems/CatalogCuratedListTabs";
+import { CatalogFilterPanel } from "@/components/problems/CatalogFilterPanel";
+import { CatalogFilterSheet } from "@/components/problems/CatalogFilterSheet";
+import { CatalogFlatList } from "@/components/problems/CatalogFlatList";
 import { ProblemSearch } from "@/components/problems/ProblemSearch";
-import { useProblemFilters } from "@/components/problems/useProblemFilters";
-import { cn } from "@/lib/utils";
+import { useCatalogFilters } from "@/components/problems/useCatalogFilters";
 
-export function ProblemsListClient({ groups }: { groups: ProblemGroup[] }) {
-  const { solvedCount, totalProblemCount } = useProgress();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function ProblemsListClient(_props: {
+  groups?: ProblemGroup[];
+} = {}) {
   const {
     query,
     setQuery,
-    solved,
+    activeList,
+    setActiveList,
+    difficulty,
+    setDifficulty,
+    status,
+    setStatus,
+    selectedTopics,
+    toggleTopic,
+    clearTopics,
+    sortBy,
+    setSortBy,
+    listCounts,
+    topicCountMap,
+    topics,
     filtered,
+    combinedSolved,
+    toggleSolved,
     activeFilterCount,
     hasActiveFilters,
     emptyMessage,
     clearFilters,
-    filterPanelProps,
-  } = useProblemFilters(groups);
+  } = useCatalogFilters();
+
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const remaining = Math.max(0, totalProblemCount - solvedCount);
-  const pct =
-    totalProblemCount > 0 ? Math.round((solvedCount / totalProblemCount) * 100) : 0;
-
   return (
-    <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
+    <div className="relative flex min-h-full flex-col">
+      {/* Background radial gradient accent */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[22rem] bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_14%,transparent),_transparent_62%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[30rem] bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_14%,transparent),_transparent_65%)]"
       />
 
-      <div className="relative mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col px-4 py-10 lg:px-8 lg:py-14">
-        <div className="shrink-0">
-          <p className="text-xs font-medium tracking-[0.14em] text-mark uppercase">
-            Drill the course
-          </p>
-          <h1 className="mt-3 max-w-2xl font-display text-4xl font-bold tracking-tight text-balance uppercase sm:text-5xl">
-            Practice
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
-            {totalProblemCount} solve-first problems, one list. Search, filter
-            to exactly what you need, and drill it.
-          </p>
-
-          <div className="mt-8 grid grid-cols-3 gap-2 sm:gap-3">
-            <StatCard label="Problems" value={String(totalProblemCount)} hint="In the hub" />
-            <StatCard
-              label="Solved"
-              value={String(solvedCount)}
-              hint={`${pct}% complete`}
-              tone="good"
-            />
-            <StatCard label="Remaining" value={String(remaining)} hint="Still to crack" />
-          </div>
-
-          <div
-            className="mt-4 h-1.5 overflow-hidden rounded-full bg-border/60"
-            role="progressbar"
-            aria-valuenow={pct}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`${pct}% of problems solved`}
-          >
-            <div
-              className="h-full rounded-full bg-pop transition-[width] duration-[var(--dur)] ease-[var(--ease)] motion-reduce:transition-none"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-
-          <ProblemSearch query={query} onQueryChange={setQuery} className="mt-6" />
-
-          <button
-            type="button"
-            onClick={() => setMobileFiltersOpen(true)}
-            aria-label={
-              activeFilterCount > 0
-                ? `Open filters, ${activeFilterCount} active`
-                : "Open filters"
-            }
-            className="mt-3 flex min-h-11 w-full touch-manipulation items-center justify-center gap-2 rounded-[length:var(--radius-md)] border border-border bg-elevated text-sm font-medium text-foreground lg:hidden"
-          >
-            <FunnelSimple className="h-4 w-4" aria-hidden />
-            Filters
-            {activeFilterCount > 0 ? (
-              <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-pop px-1 text-[10px] font-bold text-on-pop">
-                {activeFilterCount}
-              </span>
-            ) : null}
-          </button>
-        </div>
-
-        {/*
-          The chrome above is shrink-0 (fixed height); this row fills
-          whatever's left of the viewport and is the ONLY thing that
-          scrolls — each column scrolls internally instead of growing the
-          page, matching the app-shell's own fixed-viewport main (see
-          isProblemsListPath in AppShell.tsx).
-
-          overflow-hidden alongside min-h-0 on both this grid and the list
-          column below: Chrome shrinks a min-h-0 flex/grid item to its
-          container correctly on its own, but WebKit (mobile Safari) doesn't
-          reliably apply that shrink without an explicit overflow-hidden
-          backstop — without it, the row can render at its content's full
-          height and the list spills past the viewport instead of scrolling
-          in its own box, the same failure mode `main` in AppShell.tsx
-          already guards against with this exact pairing.
-        */}
-        <div className="mt-6 grid min-h-0 flex-1 gap-6 overflow-hidden lg:grid-cols-[272px_1fr]">
-          <aside className="hidden lg:flex lg:h-full lg:min-h-0 lg:flex-col">
-            <ProblemFilterPanel {...filterPanelProps} />
-          </aside>
-
-          <div className="flex h-full min-h-0 flex-col overflow-hidden">
-            <p className="mb-3 shrink-0 text-sm text-muted">
-              Showing <span className="font-medium text-foreground">{filtered.length}</span>{" "}
-              of {totalProblemCount}
+      {/* Main container: Full-width on large screens with max-w-[1720px] */}
+      <div className="relative mx-auto flex w-full max-w-[1720px] flex-col px-4 py-6 sm:px-6 lg:px-8 xl:px-12">
+        {/* Header and Visual Showcase */}
+        <div className="space-y-6">
+          <div>
+            <p className="text-xs font-medium tracking-[0.14em] text-mark uppercase">
+              Curated Problem Library · Dual-Runtime Sandboxes
             </p>
-            <div className="min-h-0 flex-1 overflow-y-auto">
-              <ProblemsFlatList
-                problems={filtered}
-                solved={solved}
-                hasActiveFilters={hasActiveFilters}
-                emptyMessage={emptyMessage}
-                onClearFilters={clearFilters}
+            <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-balance uppercase sm:text-3xl lg:text-4xl">
+              DSA Problem Catalog
+            </h1>
+            <p className="mt-1.5 max-w-3xl text-xs sm:text-sm leading-relaxed text-muted">
+              Master canonical interview algorithms across 21 core topics.
+              Solve all 157 canonical problems directly in live Python &amp; JavaScript sandboxes, or drill targeted tracks.
+            </p>
+          </div>
+
+          {/* Production Feature Highlights */}
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
+            <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border/80 bg-elevated p-3 shadow-elevation">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+                <Code size={16} weight="bold" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-bold text-foreground">Dual Python &amp; JS</p>
+                <p className="truncate text-[10px] text-muted">In-browser Pyodide &amp; Node</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border/80 bg-elevated p-3 shadow-elevation">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+                <Sparkle size={16} weight="bold" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-bold text-foreground">157 Live Sandboxes</p>
+                <p className="truncate text-[10px] text-muted">Interactive test runners</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border/80 bg-elevated p-3 shadow-elevation">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+                <Target size={16} weight="bold" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-bold text-foreground">4 Mastery Tracks</p>
+                <p className="truncate text-[10px] text-muted">Blind 75 &amp; NeetCode 150</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border/80 bg-elevated p-3 shadow-elevation">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+                <ShieldCheck size={16} weight="bold" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-bold text-foreground">Zero Leaked Solutions</p>
+                <p className="truncate text-[10px] text-muted">Solve-first derivation</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Featured Visual Track Showcase (Real Module Art) */}
+          <CatalogTrackShowcase
+            activeList={activeList}
+            onListChange={setActiveList}
+            listCounts={listCounts}
+          />
+
+          {/* Visual Category Cards Carousel */}
+          <CatalogCategoryCards
+            selectedTopics={selectedTopics}
+            onToggleTopic={toggleTopic}
+            topicCounts={topicCountMap}
+          />
+
+          {/* Metrics & Layout Switcher Toolbar */}
+          <CatalogMetricsBar
+            problems={filtered}
+            solvedIds={combinedSolved}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+          />
+
+          {/* Sticky Toolbar: Curated list selection pills & Search */}
+          <div className="sticky top-14 z-20 -mx-4 border-y border-border/70 bg-surface/95 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 xl:-mx-12 xl:px-12">
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+              <CatalogCuratedListTabs
+                activeList={activeList}
+                onListChange={setActiveList}
+                listCounts={listCounts}
               />
+
+              <div className="flex items-center gap-2 sm:w-80 shrink-0">
+                <ProblemSearch
+                  query={query}
+                  onQueryChange={setQuery}
+                  className="w-full"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(true)}
+                  aria-label={
+                    activeFilterCount > 0
+                      ? `Open filters, ${activeFilterCount} active`
+                      : "Open filters"
+                  }
+                  className="flex min-h-10 min-w-10 shrink-0 touch-manipulation items-center justify-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-elevated text-xs font-medium text-foreground lg:hidden"
+                >
+                  <FunnelSimple className="h-4 w-4" aria-hidden />
+                  {activeFilterCount > 0 ? (
+                    <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-pop px-1 text-[10px] font-bold text-on-pop">
+                      {activeFilterCount}
+                    </span>
+                  ) : null}
+                </button>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Two-Column Responsive Workspace Layout */}
+        <div className="mt-6 grid items-start gap-8 lg:grid-cols-[280px_1fr] xl:grid-cols-[310px_1fr]">
+          {/* Desktop Left Sidebar: Sticky Filter Panel */}
+          <aside className="hidden lg:block sticky top-36 max-h-[calc(100vh-10rem)] overflow-y-auto pr-2 pb-6 [scrollbar-width:thin]">
+            <CatalogFilterPanel
+              activeList={activeList}
+              onListChange={setActiveList}
+              listCounts={listCounts}
+              status={status}
+              onStatusChange={setStatus}
+              difficulty={difficulty}
+              onDifficultyChange={setDifficulty}
+              topics={topics}
+              selectedTopics={selectedTopics}
+              onToggleTopic={toggleTopic}
+              onClearTopics={clearTopics}
+              hasActiveFilters={hasActiveFilters}
+              onClearFilters={clearFilters}
+            />
+          </aside>
+
+          {/* Main Content Area: Problem List or Card Grid */}
+          <section className="min-w-0 flex-1 pb-20">
+            <CatalogFlatList
+              problems={filtered}
+              solved={combinedSolved}
+              onToggleSolved={toggleSolved}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              hasActiveFilters={hasActiveFilters}
+              emptyMessage={emptyMessage}
+              onClearFilters={clearFilters}
+              viewMode={viewMode}
+            />
+          </section>
+        </div>
       </div>
 
-      <ProblemFilterSheet
+      {/* Mobile Filter Sheet */}
+      <CatalogFilterSheet
         open={mobileFiltersOpen}
         onClose={() => setMobileFiltersOpen(false)}
         resultCount={filtered.length}
-        {...filterPanelProps}
+        activeList={activeList}
+        onListChange={setActiveList}
+        listCounts={listCounts}
+        status={status}
+        onStatusChange={setStatus}
+        difficulty={difficulty}
+        onDifficultyChange={setDifficulty}
+        topics={topics}
+        selectedTopics={selectedTopics}
+        onToggleTopic={toggleTopic}
+        onClearTopics={clearTopics}
+        hasActiveFilters={hasActiveFilters}
+        onClearFilters={clearFilters}
       />
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  hint,
-  tone,
-}: {
-  label: string;
-  value: string;
-  hint: string;
-  tone?: "good";
-}) {
-  return (
-    <div className="rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation px-2.5 py-3 sm:px-4 sm:py-3.5">
-      <p className="text-[10px] font-medium tracking-[0.12em] text-muted uppercase sm:text-[11px]">
-        {label}
-      </p>
-      <p
-        className={cn(
-          "mt-1 font-display text-xl font-bold tracking-tight tabular-nums sm:text-2xl",
-          tone === "good" && "text-good",
-        )}
-      >
-        {value}
-      </p>
-      <p className="mt-0.5 truncate text-[11px] text-muted sm:text-xs">{hint}</p>
     </div>
   );
 }
