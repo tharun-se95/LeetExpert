@@ -1,0 +1,43 @@
+.lv-hint{font-size:12.5px;color:var(--mut);margin:0}
+/* the map: one lane per stage, a button per module */
+.rm-lanes{display:flex;flex-direction:column;gap:8px}
+.rm-lane{display:grid;grid-template-columns:11rem minmax(0,1fr);gap:4px 14px;align-items:start;padding:10px 12px;border:1px solid var(--hair);border-radius:10px;background:var(--card)}
+.rm-lh{display:flex;flex-direction:column;gap:1px} .rm-lh b{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)} .rm-lh span{font-size:14px;font-weight:500}
+.rm-ld{grid-column:1;margin:0;font-size:12.5px;color:var(--mut)}
+.rm-mods{grid-column:2;grid-row:1 / span 2;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.rm-mod{border:1px solid var(--hair2);border-radius:8px;background:var(--deep);color:var(--fg);padding:5px 11px;font:500 13px 'Space Grotesk',sans-serif;cursor:pointer;transition:background-color .15s,border-color .15s}
+.rm-mod:hover{border-color:var(--fam)}
+.rm-mod:focus-visible,.rm-chip:focus-visible{outline:2px solid var(--fam);outline-offset:2px}
+.rm-mod.sel{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.rm-mod.dep{background:color-mix(in srgb,var(--fam) 28%,var(--card));border-color:var(--fam)}
+.rm-mod.ind{background:color-mix(in srgb,var(--fam) 12%,var(--card));border-color:var(--fam);border-style:dashed}
+.rm-mod.use{border-color:var(--fg);border-width:2px;padding:4px 10px}
+.rm-key{display:flex;flex-wrap:wrap;gap:6px 16px;list-style:none;margin:10px 0 0;padding:0;font-size:12.5px;color:var(--mut)}
+.rm-key li{display:flex;align-items:center;gap:6px} .rm-key i{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid var(--fam)}
+.rm-key .sel{background:var(--fg);border-color:var(--fg)} .rm-key .dep{background:color-mix(in srgb,var(--fam) 28%,var(--card))} .rm-key .ind{background:color-mix(in srgb,var(--fam) 12%,var(--card));border-style:dashed} .rm-key .use{border:2px solid var(--fg)}
+.rm-read{margin-top:10px;padding:10px 14px;border:1px solid var(--hair);border-left:4px solid var(--fam);border-radius:10px;background:var(--card);font-size:14px;min-height:7rem}
+.rm-read h4{margin:0 0 4px;font-size:15px} .rm-read p{margin:4px 0} .rm-read ul{margin:2px 0 6px;padding-left:18px}
+.rm-st{font:500 11px 'JetBrains Mono',monospace;color:var(--mut);margin-left:6px}
+.rm-lab{font:500 11px 'JetBrains Mono',monospace!important;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-top:8px!important}
+/* every link and its reason */
+.rm-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(19rem,1fr));gap:8px;margin:0}
+.rm-lk{border:1px solid var(--hair);border-radius:10px;background:var(--card);padding:8px 12px}
+.rm-lk dt{font-weight:500;font-size:14px} .rm-lk dt span{font:500 11px 'JetBrains Mono',monospace;color:var(--mut);margin-left:4px;text-transform:uppercase;letter-spacing:.06em}
+.rm-lk dd{margin:2px 0 0} .rm-lk ul{margin:0;padding-left:16px;font-size:13px;color:var(--mut)} .rm-lk li b{color:var(--fg);font-weight:500}
+/* the checker */
+.rm-order{display:flex;flex-wrap:wrap;gap:5px;list-style:none;margin:0;padding:0}
+.rm-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--hair2);border-radius:8px;background:var(--card);color:var(--fg);padding:4px 10px 4px 6px;font:500 12.5px 'Space Grotesk',sans-serif;cursor:pointer}
+.rm-chip i{font:500 10.5px 'JetBrains Mono',monospace;font-style:normal;color:var(--mut);min-width:1.4rem;text-align:right}
+.rm-chip.bad{border-color:var(--r-ink);background:color-mix(in srgb,var(--r-1) 55%,var(--card))}
+.rm-chip.pick{outline:2px solid var(--fg);outline-offset:1px}
+.rm-verdict{padding:8px 12px;border:1px solid var(--hair);border-radius:10px;background:var(--deep);font-size:13.5px}
+.rm-vl{display:inline-block;min-width:8rem;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.rm-verdict b.ok{color:var(--g-ink)} .rm-verdict b.no{color:var(--r-ink)}
+@media (max-width:640px){.rm-lane{grid-template-columns:minmax(0,1fr)}.rm-mods{grid-column:1;grid-row:auto}.rm-vl{display:block}}
+/* hero: five stage columns that light up in turn */
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hs-col{fill:var(--card);stroke:var(--hair2);stroke-width:1.4;transition:stroke .35s ease}
+.hs-tag{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hs-dot{fill:var(--card);stroke:var(--hair2);stroke-width:1.4;transition:fill .35s ease,stroke .35s ease}
+.hs-stage.lit .hs-col{stroke:var(--fam)} .hs-stage.lit .hs-dot{fill:var(--fam);stroke:var(--fam)}
+@media (prefers-reduced-motion:reduce){.hs-col,.hs-dot{transition:none}}

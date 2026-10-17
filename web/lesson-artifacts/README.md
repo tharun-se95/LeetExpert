@@ -14,7 +14,7 @@ python3 web/lesson-artifacts/build.py coin-change            # rebuild one
 
 ## Layout
 
-- `build.py`: assembles a page from a lesson folder plus the kit. `LESSONS` at its foot lists them.
+- `build.py`: assembles a page from a lesson folder plus the kit. `LESSONS` in `lessons.py` lists them, kept out of `build.py` so adding a row does not stale every lesson's evidence (`ledger.py` hashes `build.py` with the kit, and hashes only a lesson's own row).
 - `shared.py`: the page CSS, the icon sprite and the colour tokens. The tokens come from
   `hyperframes/assets/brand.css` (generated from `globals.css` and `familyTheme.ts`), so a page wears
   the app's light and dark themes and its family colour. Rebuild after they change.
@@ -186,12 +186,12 @@ light-mode learner never sees the OS theme flash.
 ## Adding a lesson
 
 1. Copy a lesson folder that resembles it, write `lesson.md`, `lesson.js` and the `code/` files.
-2. Add it to `LESSONS` in `build.py` (family colour ids are in `familyTheme.ts`) and to `LESSON_ARTIFACTS`.
+2. Add it to `LESSONS` in `lessons.py` (family colour ids are in `familyTheme.ts`) and to `LESSON_ARTIFACTS`.
 3. Build and run the two test files. Plant a fault in a solution and see it fail before trusting them.
 
 ## Status
 
-`LESSONS` in `build.py` lists the pages, and `LEDGER.md` is their status; this file does not repeat either. A page has
+`LESSONS` in `lessons.py` lists the pages, and `LEDGER.md` is their status; this file does not repeat either. A page has
 no sandbox of its own (the workspace's editor is beside it), no progress hook, and its colours are copied in at
 build time. The Diameter lesson still carries its own tree painter and predict widget beside the kit's.
 

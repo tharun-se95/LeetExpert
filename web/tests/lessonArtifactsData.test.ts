@@ -49,8 +49,11 @@ describe("lesson artifacts: lesson.md", () => {
     expect(lessons.sort()).toEqual([
       "build-a-linked-list",
       "coin-change",
+      "course-introduction",
+      "course-roadmap",
       "course-schedule",
       "diameter-of-binary-tree",
+      "how-lessons-work",
       "linked-list-cycle",
       "longest-substring-without-repeating",
       "merge-two-sorted",
@@ -59,6 +62,7 @@ describe("lesson artifacts: lesson.md", () => {
       "pointer-surgery",
       "remove-nth-from-end",
       "reverse-linked-list",
+      "writing-and-running-code",
     ]);
     for (const l of lessons) expect(existsSync(join(ARTIFACTS, l, "body.html")), `${l}/body.html`).toBe(false);
   });

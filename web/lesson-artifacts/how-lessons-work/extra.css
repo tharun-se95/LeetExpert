@@ -1,0 +1,41 @@
+/* the two arcs, stepped */
+.hw-track{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 8px}
+.hw-dot{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--hair2);background:var(--card);color:var(--fg);cursor:pointer;font:600 13px 'JetBrains Mono',monospace;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.hw-dot i{font-style:normal}
+.hw-dot.done{border-color:var(--fam)}
+.hw-dot.on{background:var(--fam);border-color:var(--fam);color:var(--on-fam,var(--bg))}
+.hw-dot:focus-visible{outline:2px solid var(--fam);outline-offset:2px}
+.hw-panel{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:12px 14px;margin-bottom:10px}
+.hw-h{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;font-size:15px}
+.hw-n{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.hw-d{margin:6px 0 10px;font-size:14px}
+.hw-row{display:grid;grid-template-columns:4.2rem 1fr;gap:8px;align-items:baseline;font-size:13.5px;margin-top:4px}
+.hw-k{font:700 11px 'Space Mono',monospace;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.hw-b{display:inline-block;margin:0 6px 4px 0;padding:2px 9px;border:1px solid var(--hair2);border-radius:999px;font:500 12px 'JetBrains Mono',monospace;background:var(--deep)}
+.cost-note{font-size:13.5px;color:var(--mut);margin:10px 0 0}
+.cost-note b{color:var(--fg)}
+/* hints per problem lesson */
+.hbars{display:flex;flex-direction:column;gap:8px;padding:2px}
+.hb-row{display:grid;grid-template-columns:5rem minmax(0,1fr) 6rem;gap:10px;align-items:center;font-size:13.5px}
+.hb-k{font:500 12px 'JetBrains Mono',monospace;color:var(--mut)}
+.hb-bar{display:block;height:14px;border-radius:5px;background:var(--deep);overflow:hidden}
+.hb-bar i{display:block;height:100%;background:var(--fam);border-radius:5px}
+.hb-c{font-size:12.5px;color:var(--mut);text-align:right}
+.hb-total{margin-top:4px;font-size:13.5px;color:var(--mut)} .hb-total b{color:var(--fg)}
+/* the progress model */
+.pg-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.pg-chipbox{display:inline-flex;gap:8px;align-items:baseline;font-size:13px;color:var(--mut)}
+.pg-chip{font:700 15px 'Space Mono',monospace;color:var(--fg);border:1px solid var(--hair2);border-radius:999px;padding:2px 12px;background:var(--card)}
+.btn2[aria-pressed="true"]{border-color:var(--fam)}
+.pg-rows{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.pg-row{display:grid;grid-template-columns:10rem 8.5rem 1fr;gap:4px 12px;align-items:baseline;padding:8px 12px;border:1px solid var(--hair);border-radius:10px;background:var(--card);font-size:13.5px}
+.pg-k{font-weight:600}
+.pg-c{font:500 12.5px 'JetBrains Mono',monospace;color:var(--mut)}
+.pg-w{font-size:13px;color:var(--mut)} .pg-w.sync{color:var(--g-ink)}
+@media (max-width:560px){.pg-row{grid-template-columns:1fr}.hb-row{grid-template-columns:4.2rem minmax(0,1fr) 5rem}.hw-row{grid-template-columns:1fr;gap:2px}}
+/* hero: two rows of numbered steps */
+.hd-lab{font:500 13px 'JetBrains Mono',monospace;fill:var(--mut)}
+.ha-line{stroke:var(--hair2);stroke-width:2}
+.ha-dot{fill:var(--card);stroke:var(--hair2);stroke-width:1.8;transition:fill .3s ease,stroke .3s ease}
+.ha-dot.on{fill:var(--k-done);stroke:var(--fam)} .ha-dot.now{fill:var(--card);stroke:var(--fam);stroke-width:2.6}
+@media (prefers-reduced-motion:reduce){.ha-dot{transition:none}}

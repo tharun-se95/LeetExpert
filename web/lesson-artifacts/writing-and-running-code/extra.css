@@ -1,0 +1,49 @@
+.lv-hint{font-size:12.5px;color:var(--mut);align-self:center}
+/* the draft model: a monospace editor stand-in and the two slots under it */
+.wr-editor{width:100%;box-sizing:border-box;resize:vertical;min-height:9rem;padding:12px 14px;border:1px solid var(--hair2);border-radius:10px;background:var(--deep);color:var(--fg);font:500 13px/1.55 'JetBrains Mono',monospace;tab-size:4}
+.wr-editor:focus-visible{outline:2px solid var(--fam);outline-offset:2px}
+.wr-slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+.wr-slot{border:1px solid var(--hair);border-radius:10px;padding:9px 12px;background:var(--card)}
+.wr-slot.on{border-color:var(--fam)}
+.wr-slot dt{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.wr-slot dd{margin:2px 0 0;font-size:13.5px}
+@media (max-width:520px){.wr-slots{grid-template-columns:minmax(0,1fr)}}
+/* the rail: verdict beside the three tabs, then the folded-away panel */
+.wr-rail{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.wr-verdict{font:600 13px 'JetBrains Mono',monospace;color:var(--mut)}
+.wr-verdict.ok{color:var(--g-ink)} .wr-verdict.no{color:var(--r-ink)}
+.wr-n{font:500 11px 'JetBrains Mono',monospace;margin-left:4px;color:var(--mut)}
+.wr-panel{border:1px solid var(--hair);border-radius:12px;background:var(--deep);min-height:9.5rem;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.wr-panel[hidden]{display:none}
+.wr-cases{display:flex;flex-wrap:wrap;gap:6px}
+.wr-case{border:1px solid var(--hair2);border-radius:8px;background:var(--card);color:var(--fg);padding:4px 10px;font:500 12px 'JetBrains Mono',monospace;cursor:pointer}
+.wr-case.ok{background:color-mix(in srgb,var(--g-1) 55%,var(--card));color:var(--g-ink);border-color:var(--g-ink)}
+.wr-case.no{background:color-mix(in srgb,var(--r-1) 55%,var(--card));color:var(--r-ink);border-color:var(--r-ink)}
+.wr-case.on{outline:2px solid var(--fg);outline-offset:1px}
+.wr-body{display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.wr-st{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+.wr-st.ok,.wr-body code.ok,.wr-vars dd.ok{color:var(--g-ink)} .wr-st.no,.wr-body code.no,.wr-vars dd.no{color:var(--r-ink)}
+.wr-f{display:flex;flex-direction:column;gap:2px}
+.wr-fl{font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.wr-body code{font-size:13px;background:none;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.wr-why{margin:0;color:var(--mut);font-size:13px}
+.wr-empty{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;text-align:center;min-height:7rem;color:var(--mut);font-size:13px}
+.wr-empty b{color:var(--fg);font-weight:500}
+.wr-log{margin:0;white-space:pre-wrap;font:500 13px 'JetBrains Mono',monospace}
+.wr-h{margin:6px 0 0;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.wr-cells{display:flex;flex-wrap:wrap;gap:4px}
+.wr-cell{min-width:2.2rem;text-align:center;border:1px solid var(--hair2);border-radius:6px;background:var(--card);padding:3px 6px;font:500 13px 'JetBrains Mono',monospace}
+.wr-vars{display:grid;grid-template-columns:max-content 1fr;gap:2px 14px;margin:0;font:500 13px 'JetBrains Mono',monospace}
+.wr-vars dt{color:var(--mut)} .wr-vars dd{margin:0}
+.wr-list{margin:0;padding-left:18px;font-size:13px}
+.wr-coach{display:flex;gap:10px;align-items:baseline;border:1px solid var(--hair2);border-left:4px solid var(--fam);border-radius:10px;padding:9px 12px;background:var(--card);font-size:13.5px}
+.wr-coach[hidden]{display:none}
+.wr-cl{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mk)}
+/* hero: six cases that turn to a tick or a cross as the run reaches them */
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hr-case{fill:var(--card);stroke:var(--hair2);stroke-width:1.5;transition:fill .35s ease,stroke .35s ease}
+.hr-case.ok{fill:color-mix(in srgb,var(--g-1) 70%,var(--card));stroke:var(--g-ink)}
+.hr-case.no{fill:color-mix(in srgb,var(--r-1) 70%,var(--card));stroke:var(--r-ink)}
+.hr-id{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hr-mark{font:700 24px 'JetBrains Mono',monospace;fill:var(--fg)}
+@media (prefers-reduced-motion:reduce){.hr-case{transition:none}}
