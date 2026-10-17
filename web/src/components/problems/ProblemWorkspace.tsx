@@ -19,6 +19,7 @@ import {
   FileText,
   PencilSimple,
   Question,
+  ShareNetwork,
   Sparkle,
   type Icon,
 } from "@phosphor-icons/react";
@@ -38,6 +39,7 @@ import { CoachPanel } from "@/components/coach/CoachPanel";
 import { IdeWithCoach } from "@/components/coach/IdeWithCoach";
 import { ProblemAccordion } from "@/components/problems/ProblemAccordion";
 import { PROBLEM_DIFFICULTY, type Difficulty } from "@/lib/course/problemDifficulty";
+import { ShareProblemModal } from "@/components/problems/ShareProblemModal";
 
 interface NeighborLink {
   href: string;
@@ -105,6 +107,7 @@ export function ProblemWorkspace({
   const isSolved = solved.has(id);
   const [tab, setTab] = useState<WorkspaceTab>("problem");
   const [wide, setWide] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const tabsId = useId();
 
   useEffect(() => {
@@ -206,6 +209,17 @@ export function ProblemWorkspace({
               Solved
             </span>
           ) : null}
+          <button
+            type="button"
+            onClick={() => setShareOpen(true)}
+            className="inline-flex min-h-8 items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-elevated px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-pop/40 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Share Challenge"
+            title="Challenge a peer on this problem"
+          >
+            <ShareNetwork size={14} weight="bold" className="text-accent" aria-hidden />
+            <span className="hidden sm:inline">Share Challenge</span>
+            <span className="sm:hidden">Share</span>
+          </button>
           <span
             className="hidden h-6 w-px shrink-0 bg-border sm:block"
             aria-hidden
@@ -304,6 +318,16 @@ export function ProblemWorkspace({
             isSolved={isSolved}
           />
         )}
+
+        <ShareProblemModal
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          problemTitle={lesson.title}
+          lessonSlug={lesson.lessonSlug}
+          moduleSlug={lesson.moduleSlug}
+          difficulty={difficulty}
+          complexity={extractedComplexity}
+        />
       </div>
     </CoachProvider>
   );

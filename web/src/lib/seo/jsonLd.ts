@@ -7,8 +7,9 @@ import { SITE_ORIGIN, absoluteUrl } from "./site";
  * from the WebSite and Course nodes lets a crawler merge them into one entity
  * instead of reading three unrelated organisations with the same name.
  */
-const ORG_ID = `${SITE_ORIGIN}/#organization`;
-const COURSE_ID = `${SITE_ORIGIN}/courses/dsa#course`;
+export const ORG_ID = `${SITE_ORIGIN}/#organization`;
+export const COURSE_ID = `${SITE_ORIGIN}/courses/dsa#course`;
+export const CREDENTIAL_ID = `${SITE_ORIGIN}/courses/dsa#credential`;
 
 const CONTEXT = "https://schema.org" as const;
 
@@ -72,6 +73,48 @@ export function websiteLd() {
   };
 }
 
+export interface EducationalOccupationalCredentialLd {
+  "@context": typeof CONTEXT;
+  "@type": "EducationalOccupationalCredential";
+  "@id": string;
+  name: string;
+  description: string;
+  credentialCategory: string;
+  educationalLevel: string;
+  url: string;
+  recognizedBy: { "@id": string };
+  about: { "@id": string };
+  competencyRequired: string[];
+}
+
+/**
+ * EducationalOccupationalCredential certifying completion and mastery of
+ * the Data Structures & Algorithms curriculum.
+ */
+export function educationalCredentialLd(): EducationalOccupationalCredentialLd {
+  return {
+    "@context": CONTEXT,
+    "@type": "EducationalOccupationalCredential",
+    "@id": CREDENTIAL_ID,
+    name: "leetExpert Data Structures & Algorithms Mastery Credential",
+    description:
+      "Demonstrates practical mastery of foundational and advanced data structures, algorithmic paradigms, asymptotic analysis, and real-time coding implementation through interactive sandboxes and verified challenge evaluations.",
+    credentialCategory: "Certificate of Completion",
+    educationalLevel: "Intermediate to Advanced",
+    url: absoluteUrl("/courses/dsa"),
+    recognizedBy: { "@id": ORG_ID },
+    about: { "@id": COURSE_ID },
+    competencyRequired: [
+      "Time and space asymptotic complexity analysis (Big-O, Big-Omega, amortized runtime)",
+      "Fundamental data structures: dynamic arrays, linked lists, hash tables, stacks, queues",
+      "Hierarchical data structures: binary search trees, AVL/red-black self-balancing trees, heaps, tries",
+      "Graph representations, traversals (BFS, DFS), shortest path (Dijkstra, Bellman-Ford), and spanning trees",
+      "Algorithmic paradigms: divide-and-conquer, greedy strategies, dynamic programming, and backtracking",
+      "Bit manipulation, two-pointer techniques, sliding window patterns, and in-place transformations",
+    ],
+  };
+}
+
 /**
  * The DSA course as one entity, with its 24 modules as parts.
  *
@@ -85,17 +128,36 @@ export function courseLd() {
     "@type": "Course" as const,
     "@id": COURSE_ID,
     name: "Data Structures & Algorithms",
+    courseCode: "DSA-101",
     description:
       "A 24-module data structures and algorithms course — every concept paired with a visualization, a live Python and JavaScript sandbox, and solve-first practice problems.",
     url: absoluteUrl("/courses/dsa"),
     provider: { "@id": ORG_ID },
     inLanguage: "en",
+    isAccessibleForFree: true,
+    educationalLevel: "Beginner to Advanced",
+    coursePrerequisites:
+      "Basic programming proficiency in Python, JavaScript, or TypeScript.",
     teaches: [
       "Data structures",
       "Algorithms",
       "Big-O complexity analysis",
       "Technical interview preparation",
+      "Problem-solving patterns",
     ],
+    educationalCredentialAwarded: {
+      "@type": "EducationalOccupationalCredential" as const,
+      "@id": CREDENTIAL_ID,
+      name: "leetExpert Data Structures & Algorithms Mastery Credential",
+      credentialCategory: "Certificate of Completion",
+      url: absoluteUrl("/courses/dsa"),
+      recognizedBy: { "@id": ORG_ID },
+    },
+    hasCourseInstance: {
+      "@type": "CourseInstance" as const,
+      courseMode: "online",
+      courseWorkload: "PT60H",
+    },
     hasPart: MODULES.map((mod) => ({
       "@type": "Course" as const,
       name: mod.title,

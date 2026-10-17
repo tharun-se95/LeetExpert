@@ -216,14 +216,18 @@ describe("structured data is emitted where it belongs", () => {
   const readSrc = (...p: string[]) =>
     readFileSync(join(SRC, ...p), "utf8");
 
-  it("the root layout declares the Organization and WebSite entities", () => {
+  it("the root layout declares the Organization, WebSite, Course, and Credential entities", () => {
     const layout = readSrc("app", "layout.tsx");
     expect(layout).toContain("organizationLd");
     expect(layout).toContain("websiteLd");
+    expect(layout).toContain("courseLd");
+    expect(layout).toContain("educationalCredentialLd");
   });
 
-  it("the DSA hub declares the Course", () => {
-    expect(readSrc("app", "courses", "dsa", "page.tsx")).toContain("courseLd");
+  it("the DSA hub declares the Course and EducationalOccupationalCredential", () => {
+    const hub = readSrc("app", "courses", "dsa", "page.tsx");
+    expect(hub).toContain("courseLd");
+    expect(hub).toContain("educationalCredentialLd");
   });
 
   it("Breadcrumbs emits the list it renders, from the same items", () => {

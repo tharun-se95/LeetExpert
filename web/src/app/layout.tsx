@@ -8,7 +8,12 @@ import { isAuthConfigured } from "@/lib/auth/env";
 import { CODE_LANG_CSS, CODE_LANG_INIT_SCRIPT } from "@/lib/codeLangScript";
 import { SITE_ORIGIN } from "@/lib/seo/site";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { organizationLd, websiteLd } from "@/lib/seo/jsonLd";
+import {
+  courseLd,
+  educationalCredentialLd,
+  organizationLd,
+  websiteLd,
+} from "@/lib/seo/jsonLd";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -112,11 +117,13 @@ export default function RootLayout({
             HTML parses, so the header paints the avatar or Sign in at once
             (lib/auth/accountHint.ts). Only where sign-in exists. */}
         {isAuthConfigured() ? <script id="account-hint" dangerouslySetInnerHTML={{ __html: ACCOUNT_HINT_SCRIPT }} /> : null}
-        {/* Site-wide entity graph. Both carry stable @ids so the per-page
-            Course and LearningResource nodes can reference them instead of
-            re-declaring a second, unlinked publisher. */}
+        {/* Site-wide entity graph. Stable @ids allow search engine crawlers
+            to unify Organization, WebSite, Course, and Credential entities into
+            a single rich knowledge graph. */}
         <JsonLd data={organizationLd()} />
         <JsonLd data={websiteLd()} />
+        <JsonLd data={courseLd()} />
+        <JsonLd data={educationalCredentialLd()} />
         <ThemeProvider>
           <AppShell authEnabled={isAuthConfigured()}>{children}</AppShell>
         </ThemeProvider>

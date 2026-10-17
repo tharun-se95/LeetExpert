@@ -16,7 +16,7 @@ import { overviewHref, overviewsByStage } from "@/lib/course/overviews";
 import { cn } from "@/lib/utils";
 import { canonicalFor } from "@/lib/seo/site";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { courseLd } from "@/lib/seo/jsonLd";
+import { courseLd, educationalCredentialLd } from "@/lib/seo/jsonLd";
 import { SyncHint } from "@/components/auth/SyncHint";
 
 /**
@@ -44,6 +44,7 @@ export default function CourseOverviewPage() {
   return (
     <div className="relative overflow-hidden">
       <JsonLd data={courseLd()} />
+      <JsonLd data={educationalCredentialLd()} />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_12%,transparent),_transparent_60%)]"

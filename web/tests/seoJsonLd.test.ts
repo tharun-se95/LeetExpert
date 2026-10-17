@@ -1,7 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
+  CREDENTIAL_ID,
+  COURSE_ID,
+  ORG_ID,
   breadcrumbLd,
   courseLd,
+  educationalCredentialLd,
   learningResourceLd,
   organizationLd,
   serializeJsonLd,
@@ -107,12 +111,57 @@ describe("courseLd", () => {
     }
   });
 
+  it("declares rich schema.org/Course metadata including courseCode, free accessibility, and prerequisites", () => {
+    expect(ld.courseCode).toBe("DSA-101");
+    expect(ld.isAccessibleForFree).toBe(true);
+    expect(ld.educationalLevel).toBe("Beginner to Advanced");
+    expect(typeof ld.coursePrerequisites).toBe("string");
+    expect(ld.hasCourseInstance).toMatchObject({
+      "@type": "CourseInstance",
+      courseMode: "online",
+    });
+  });
+
+  it("links to the EducationalOccupationalCredential awarded upon completion", () => {
+    expect(ld.educationalCredentialAwarded).toMatchObject({
+      "@type": "EducationalOccupationalCredential",
+      "@id": CREDENTIAL_ID,
+      recognizedBy: { "@id": ORG_ID },
+    });
+  });
+
   // Schema must describe what is actually on the page — inventing ratings,
   // prices or enrolment counts we do not display would be misleading markup.
   it("claims no ratings, offers or enrolment figures", () => {
     expect(ld).not.toHaveProperty("aggregateRating");
     expect(ld).not.toHaveProperty("offers");
     expect(ld).not.toHaveProperty("review");
+  });
+});
+
+describe("educationalCredentialLd", () => {
+  const ld = educationalCredentialLd();
+
+  it("is an EducationalOccupationalCredential with stable @id", () => {
+    expect(ld["@context"]).toBe("https://schema.org");
+    expect(ld["@type"]).toBe("EducationalOccupationalCredential");
+    expect(ld["@id"]).toBe(CREDENTIAL_ID);
+  });
+
+  it("links to the Organization and Course entities", () => {
+    expect(ld.recognizedBy).toEqual({ "@id": ORG_ID });
+    expect(ld.about).toEqual({ "@id": COURSE_ID });
+    expect(ld.url).toBe(`${SITE_ORIGIN}/courses/dsa`);
+  });
+
+  it("describes the credential category, level, and required competencies", () => {
+    expect(ld.credentialCategory).toBe("Certificate of Completion");
+    expect(ld.educationalLevel).toBe("Intermediate to Advanced");
+    expect(Array.isArray(ld.competencyRequired)).toBe(true);
+    expect(ld.competencyRequired.length).toBeGreaterThanOrEqual(4);
+    for (const comp of ld.competencyRequired) {
+      expect(comp.length).toBeGreaterThan(10);
+    }
   });
 });
 
