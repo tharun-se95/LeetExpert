@@ -760,6 +760,24 @@ body {
   }
 }
 
+@keyframes hero-reading-note-float {
+  from {
+    transform: translateZ(95px) rotateX(12deg) rotateY(16deg) rotateZ(-8deg);
+  }
+  to {
+    transform: translateZ(125px) rotateX(16deg) rotateY(12deg) rotateZ(-4deg);
+  }
+}
+
+@keyframes hero-paper-float {
+  from {
+    transform: translateZ(75px) rotateX(14deg) rotateY(-12deg) rotateZ(10deg);
+  }
+  to {
+    transform: translateZ(105px) rotateX(10deg) rotateY(-16deg) rotateZ(14deg);
+  }
+}
+
 /* 3D Hero Floor Artifacts */
 .hero-artifact-tome {
   position: absolute;
@@ -996,6 +1014,30 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.25);
   transform-style: preserve-3d;
   white-space: nowrap;
+}
+
+.hero-artifact-reading-note {
+  position: absolute;
+  width: 215px;
+  transform-style: preserve-3d;
+  animation: hero-reading-note-float 8.5s ease-in-out infinite alternate;
+}
+.hero-reading-note-3d {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+}
+
+.hero-artifact-paper {
+  position: absolute;
+  width: 195px;
+  transform-style: preserve-3d;
+  animation: hero-paper-float 9.5s ease-in-out infinite alternate;
+}
+.hero-paper-3d {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
 }
 
 /* Living Status Badges & Tactile Hero CTAs */
@@ -1351,6 +1393,8 @@ html[data-account="in"] [data-account-placeholder]::after {
   .hero-artifact-tome,
   .hero-artifact-chip,
   .hero-artifact-beacon,
+  .hero-artifact-reading-note,
+  .hero-artifact-paper,
   .hero-block,
   .hero-word,
   .hero-caret,

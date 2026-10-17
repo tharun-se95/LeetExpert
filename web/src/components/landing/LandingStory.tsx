@@ -136,8 +136,9 @@ function Hero({ counts, links }: { counts: CurriculumCounts; links: { start: str
           }}
         />
 
-        <div className="landing-hero-copy relative z-10 shrink-0 px-6 pt-10 md:px-16 lg:pt-16">
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="landing-hero-copy relative z-10 shrink-0 px-6 pt-8 text-center md:px-16 lg:pt-12">
+          {/* Living ticker / live badge centered */}
+          <div className="mx-auto flex flex-wrap items-center justify-center gap-3">
             <p className={cn(KICKER, "hero-kicker-pill inline-flex items-center gap-2 rounded-full border border-good-line/60 bg-good-surface/70 px-3.5 py-1 text-xs font-mono font-semibold text-good")}>
               <span aria-hidden className="relative flex h-2 w-2">
                 <span className="absolute inset-0 animate-ping rounded-full bg-good opacity-75 motion-reduce:animate-none" />
@@ -169,7 +170,7 @@ function Hero({ counts, links }: { counts: CurriculumCounts; links: { start: str
           <HeroHeadline />
 
           {/* Technical rigor badge below the headline */}
-          <div className="mt-5 flex flex-wrap items-center gap-3">
+          <div className="mx-auto mt-4 flex flex-wrap items-center justify-center gap-3">
             <div className="hero-beacon-glow-warn inline-flex items-center gap-2 rounded-full border border-warn-line/70 bg-warn-surface/70 px-3.5 py-1 text-xs font-mono font-medium text-warn">
               <span className="font-bold text-insight">★</span>
               <span className="font-semibold text-foreground">FAANG-Calibrated Rigor</span>
@@ -178,24 +179,25 @@ function Hero({ counts, links }: { counts: CurriculumCounts; links: { start: str
             </div>
           </div>
 
-          <p className="mt-7 max-w-2xl text-xl leading-relaxed text-muted">{leadAndTail(HERO.lede)}</p>
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground">{HERO.descriptor}</p>
-          <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <p className="mx-auto mt-6 max-w-3xl text-center text-lg leading-relaxed text-muted sm:text-xl md:text-2xl">{leadAndTail(HERO.lede)}</p>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-base leading-relaxed text-foreground sm:text-lg">{HERO.descriptor}</p>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-5">
             <Link
               href={links.start}
-              className="hero-start-cta inline-flex items-center gap-2 rounded-full bg-good px-7 py-3.5 text-base font-semibold text-on-pop shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:brightness-110 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] motion-reduce:transition-none"
+              className="hero-start-cta inline-flex items-center gap-2 rounded-full bg-good px-7 py-3.5 text-base font-semibold text-on-pop shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:brightness-110 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] sm:text-lg motion-reduce:transition-none"
             >
               {HERO.start}
-              <ArrowRight className="h-4 w-4" aria-hidden />
+              <ArrowRight className="h-5 w-5" aria-hidden />
             </Link>
             <Link
               href={links.curriculum}
-              className="hero-explore-cta inline-flex items-center gap-2 rounded-full border border-border bg-elevated/70 px-6 py-3.5 text-base font-medium text-foreground shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-foreground/50 hover:bg-elevated hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
+              className="hero-explore-cta inline-flex items-center gap-2 rounded-full border border-border bg-elevated/70 px-6 py-3.5 text-base font-medium text-foreground shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-foreground/50 hover:bg-elevated hover:-translate-y-0.5 active:translate-y-0 sm:text-lg motion-reduce:transition-none"
             >
               {HERO.explore}
             </Link>
           </div>
-          <p className="mt-6 text-sm text-muted tabular-nums">{countsLine(counts)}</p>
+          <p className="mt-6 text-center text-sm text-muted tabular-nums">{countsLine(counts)}</p>
         </div>
 
         {/* The floor takes the height the copy leaves, to the hero's foot (never
@@ -243,7 +245,7 @@ function HeroHeadline() {
   return (
     <h1
       aria-label={HERO.title}
-      className="mt-7 font-display text-4xl leading-[1.06] font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl"
+      className="mx-auto mt-7 max-w-5xl text-center font-display text-5xl font-bold tracking-tight leading-[1.04] sm:text-6xl md:text-7xl lg:text-8xl"
       style={{ perspective: "600px" }}
     >
       <span aria-hidden className="block">
@@ -364,6 +366,40 @@ const STAGE_THEMES: Record<
   },
 };
 
+const STAGE_HIGHLIGHTS: Record<number, readonly string[]> = {
+  0: [
+    "+ First-principles invariants",
+    "+ Zero-install interactive execution",
+    "+ Asymptotic edge case proofs",
+  ],
+  1: [
+    "+ Pointer arithmetic & two-pointer technique",
+    "+ Sliding window dynamic state",
+    "+ In-place memory mutations",
+  ],
+  2: [
+    "+ Recursion tree unwinding & call stacks",
+    "+ Binary search partitions & bifurcations",
+    "+ Tree traversals & balancing invariants",
+  ],
+  3: [
+    "+ Graph cycle detection & topological sorts",
+    "+ Dynamic programming state transitions",
+    "+ Memoization tables & DAG traversals",
+  ],
+  4: [
+    "+ Monotonic stacks & priority heaps",
+    "+ Bitwise arithmetic & segment trees",
+    "+ Hard FAANG-calibrated problem sets",
+  ],
+};
+
+const DEFAULT_HIGHLIGHTS = [
+  "+ First-principles invariants",
+  "+ Zero-install interactive execution",
+  "+ Asymptotic edge case proofs",
+];
+
 /**
  * One stage as a rich, tangible physical 3D notebook/binder:
  * - Left spine band with physical book stitching/rivet accents.
@@ -381,11 +417,13 @@ function StageCardLink({ stage }: { stage: StageCard }) {
   };
   // Fanned from the middle: the centre card on top, its neighbours tipped out.
   const fan = art.length === 1 ? [0] : art.length === 2 ? [-1, 1] : [-1, 0, 1];
+  const highlights = STAGE_HIGHLIGHTS[stage.number] ?? DEFAULT_HIGHLIGHTS;
+
   return (
     <Link
       href={stage.href}
       className={cn(
-        "track-binder group relative flex h-full flex-col overflow-hidden rounded-[length:var(--radius-lg)] border bg-elevated shadow-elevation group-hover:[transform:translateY(-0.5rem)_rotateX(3deg)_rotateY(-2deg)]",
+        "track-binder group relative flex h-[500px] sm:h-[520px] flex-col overflow-hidden rounded-[length:var(--radius-lg)] border bg-elevated shadow-elevation transition-all duration-300 group-hover:[transform:translateY(-0.5rem)_rotateX(3deg)_rotateY(-2deg)]",
         theme.binder,
         theme.border,
       )}
@@ -410,8 +448,14 @@ function StageCardLink({ stage }: { stage: StageCard }) {
         </div>
       </div>
 
+      {/* 3D folder tab on the right edge of the binder */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute right-0 top-7 z-20 h-14 w-3 rounded-r-[length:var(--radius-sm)] border-r-2 border-y border-foreground/20 bg-foreground/10 transition-transform duration-300 group-hover:translate-x-0.5"
+      />
+
       {art.length > 0 ? (
-        <div aria-hidden className="stage-art relative h-44 overflow-hidden bg-surface/40 pl-4 [perspective:900px]">
+        <div aria-hidden className="stage-art relative h-56 sm:h-64 overflow-hidden bg-surface/40 pl-4 [perspective:900px]">
           {art.map((still, k) => (
             <div
               key={still.title}
@@ -440,9 +484,29 @@ function StageCardLink({ stage }: { stage: StageCard }) {
             aria-hidden
           />
         </span>
-        <span className="mt-2 font-display text-xl font-bold tracking-tight">{stage.title}</span>
-        <span className="mt-1 text-sm leading-relaxed text-muted">{stage.description}</span>
-        <span className="mt-auto pt-4 text-xs text-muted tabular-nums">{stageMeta(stage)}</span>
+        <span className="mt-2.5 font-display text-xl sm:text-2xl font-bold tracking-tight text-foreground">{stage.title}</span>
+        <span className="mt-1 text-sm leading-relaxed text-muted line-clamp-2">{stage.description}</span>
+
+        {/* 3 key syllabus highlights with bullet marks */}
+        <ul className="mt-3.5 space-y-1.5 text-xs font-mono text-muted/90">
+          {highlights.map((bullet, idx) => (
+            <li key={idx} className="flex items-center gap-1.5">
+              <span className="font-bold text-good">{bullet.slice(0, 1)}</span>
+              <span>{bullet.slice(2)}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Telemetry pill at bottom & Open -> action row */}
+        <div className="mt-auto flex items-center justify-between pt-4 border-t border-border/40">
+          <span className="rounded-full border border-border/80 bg-surface/80 px-3 py-1 text-xs font-mono text-muted tabular-nums">
+            {stageMeta(stage)}
+          </span>
+          <span className="inline-flex items-center gap-1 text-xs font-mono font-semibold text-foreground group-hover:text-good transition-colors">
+            <span>Open</span>
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+          </span>
+        </div>
       </div>
     </Link>
   );

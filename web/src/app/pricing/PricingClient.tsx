@@ -14,7 +14,15 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { ReviewerAvatar } from "@/components/landing/ReviewerAvatar";
 import { cn } from "@/lib/utils";
+
+const SOCIAL_PROOF_ENGINEERS = [
+  "Sarah Chen",
+  "Marcus Webb",
+  "Elena Rostova",
+  "Priya Raman",
+];
 
 type Currency = "USD" | "INR" | "EUR" | "GBP";
 
@@ -171,7 +179,7 @@ export function PricingClient() {
         }}
       />
 
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Breadcrumbs
           items={[
             { label: "Pricing" },
@@ -185,10 +193,10 @@ export function PricingClient() {
             <span>TRANSPARENT VALUE · NO RECURRING SUBSCRIPTIONS</span>
           </div>
 
-          <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground uppercase sm:text-5xl">
+          <h1 className="mt-4 font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground uppercase">
             Invest in Algorithmic Mastery.
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
+          <p className="mx-auto mt-4 max-w-3xl text-lg sm:text-xl leading-relaxed text-muted">
             Master asymptotic analysis, data structures, and LeetCode-grade problem solving with zero-install browser execution, real-time memory visualizers, and non-leaking Socratic guidance.
           </p>
 
@@ -231,7 +239,7 @@ export function PricingClient() {
               <div
                 key={plan.id}
                 className={cn(
-                  "relative flex flex-col justify-between rounded-[length:var(--radius-lg)] border p-6 sm:p-8 transition-all duration-[var(--dur)]",
+                  "relative flex flex-col justify-between rounded-[length:var(--radius-lg)] border p-8 sm:p-10 lg:p-12 transition-all duration-[var(--dur)]",
                   plan.popular
                     ? "border-good/60 bg-gradient-to-b from-elevated via-elevated to-good-surface/15 shadow-elevation ring-1 ring-good/40"
                     : plan.id === "team"
@@ -255,28 +263,28 @@ export function PricingClient() {
                 ) : null}
 
                 <div>
-                  <h3 className="font-display text-xl font-bold tracking-tight text-foreground uppercase">
+                  <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground uppercase">
                     {plan.name}
                   </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-muted min-h-[2.5rem]">
+                  <p className="mt-2 text-sm leading-relaxed text-muted min-h-[2.5rem]">
                     {plan.tagline}
                   </p>
 
                   <div className="mt-6 flex items-baseline gap-2 border-b border-border/80 pb-6">
-                    <span className="font-mono text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+                    <span className="font-mono text-5xl sm:text-6xl font-bold tracking-tight text-foreground">
                       {price.amount}
                     </span>
                     {price.original ? (
-                      <span className="font-mono text-sm line-through text-muted">
+                      <span className="font-mono text-base line-through text-muted">
                         {price.original}
                       </span>
                     ) : null}
-                    <span className="text-xs font-mono text-muted">/ {price.period}</span>
+                    <span className="text-sm font-mono text-muted">/ {price.period}</span>
                   </div>
 
-                  <ul className="mt-6 space-y-3.5 text-xs">
+                  <ul className="mt-8 space-y-4 text-sm">
                     {plan.features.map((feat, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5">
+                      <li key={idx} className="flex items-start gap-3">
                         {feat.included ? (
                           <Check
                             className="h-4 w-4 shrink-0 mt-0.5 text-good"
@@ -306,30 +314,49 @@ export function PricingClient() {
                     <Link
                       href={plan.ctaHref}
                       className={cn(
-                        "inline-flex w-full items-center justify-center gap-2 rounded-[length:var(--radius-md)] px-4 py-3 text-xs font-semibold tracking-wide transition-all cursor-pointer",
+                        "inline-flex w-full items-center justify-center gap-2 rounded-[length:var(--radius-md)] px-4 py-3.5 text-sm sm:text-base font-semibold tracking-wide transition-all cursor-pointer",
                         plan.ctaVariant === "primary"
                           ? "bg-accent text-on-pop hover:opacity-95"
                           : "border border-border bg-surface text-foreground hover:bg-pop/15",
                       )}
                     >
                       <span>{plan.cta}</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
+                      <ArrowRight className="h-4 w-4" />
                     </Link>
                   ) : (
                     <button
                       type="button"
                       onClick={() => handleOpenCheckout(plan)}
                       className={cn(
-                        "inline-flex w-full items-center justify-center gap-2 rounded-[length:var(--radius-md)] px-4 py-3 text-xs font-semibold tracking-wide transition-all cursor-pointer shadow-elevation",
+                        "inline-flex w-full items-center justify-center gap-2 rounded-[length:var(--radius-md)] px-4 py-3.5 text-sm sm:text-base font-semibold tracking-wide transition-all cursor-pointer shadow-elevation",
                         plan.popular
                           ? "bg-good text-on-pop hover:brightness-105 hover:scale-[1.01]"
                           : "border border-border bg-surface text-foreground hover:bg-pop/15",
                       )}
                     >
                       <span>{plan.cta}</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
+                      <ArrowRight className="h-4 w-4" />
                     </button>
                   )}
+
+                  {plan.popular ? (
+                    <div className="mt-4 flex items-center justify-center gap-2.5">
+                      <div className="flex -space-x-2 overflow-hidden">
+                        {SOCIAL_PROOF_ENGINEERS.map((name) => (
+                          <div
+                            key={name}
+                            className="inline-block rounded-full ring-2 ring-elevated overflow-hidden"
+                            title={name}
+                          >
+                            <ReviewerAvatar name={name} size={28} />
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-xs font-medium text-muted">
+                        Joined by 10,000+ senior engineers
+                      </span>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             );

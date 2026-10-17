@@ -102,7 +102,7 @@ export default function CourseOverviewPage() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] bg-[radial-gradient(ellipse_80%_55%_at_50%_-10%,_color-mix(in_srgb,var(--good)_16%,transparent),_color-mix(in_srgb,var(--info)_14%,transparent)_50%,_color-mix(in_srgb,var(--accent)_10%,transparent)_75%,_transparent_90%)]"
       />
-      <div className="relative mx-auto max-w-6xl px-4 py-8 sm:py-12 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Navigation Breadcrumbs */}
         <Breadcrumbs
           items={[
@@ -112,7 +112,7 @@ export default function CourseOverviewPage() {
         />
 
         {/* Flagship Hero Card with 3D Banner */}
-        <div className="relative overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated/85 backdrop-blur-md p-6 shadow-elevation sm:p-8 lg:p-10">
+        <div className="relative overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated/85 backdrop-blur-md p-8 sm:p-10 lg:p-12 shadow-elevation">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-good/35 to-transparent" aria-hidden />
 
           <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
@@ -338,7 +338,7 @@ export default function CourseOverviewPage() {
               ))}
 
               {/* Modules Grid */}
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-5 sm:grid-cols-2 lg:gap-6">
                 {stageModules.map((module) => {
                   const available = module.status === "available";
                   const family = moduleFamily(module);
@@ -353,34 +353,36 @@ export default function CourseOverviewPage() {
                       href={moduleHref(module.slug)}
                       style={family ? familyCssVars(family) : undefined}
                       className={cn(
-                        "module-card group block overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5 hover:border-accent/60 hover:shadow-elevation focus-visible:-translate-y-1.5 motion-reduce:hover:transform-none motion-reduce:transition-none",
+                        "module-card group block min-h-[240px] overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5 hover:border-accent/60 hover:shadow-elevation focus-visible:-translate-y-1.5 motion-reduce:hover:transform-none motion-reduce:transition-none",
                         !available && "opacity-70",
                       )}
                     >
-                      <div className="module-card-inner h-full">
+                      <div className="module-card-inner h-full min-h-[240px]">
                         {/* Front Face */}
-                        <div className="module-card-face module-card-front relative bg-elevated bg-gradient-to-r from-[color:var(--family-accent)]/10 via-[color:var(--family-accent)]/[0.02] to-transparent">
-                          {/* Physical left spine strip with binder stitching/rivets */}
+                        <div className="module-card-face module-card-front relative min-h-[240px] bg-elevated bg-gradient-to-r from-[color:var(--family-accent)]/10 via-[color:var(--family-accent)]/[0.02] to-transparent">
+                          {/* Physical prominent binder spine & tab */}
                           <div
                             aria-hidden
-                            className="pointer-events-none absolute inset-y-0 left-0 z-20 flex w-3.5 flex-col items-center justify-between border-r border-border/60 bg-gradient-to-r from-[color:var(--family-accent)]/15 via-foreground/[0.02] to-transparent py-3"
+                            className="pointer-events-none absolute inset-y-0 left-0 z-20 flex w-5 sm:w-6 flex-col items-center justify-between border-r border-border/70 bg-gradient-to-r from-[color:var(--family-accent)]/20 via-surface/40 to-transparent py-4"
                           >
-                            <div className="absolute inset-y-0 right-0.5 w-px border-r border-dashed border-border/70" />
-                            <span className="relative flex h-1.5 w-1.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
-                              <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
+                            {/* Binder spine indicator tab */}
+                            <div className="absolute top-4 -left-0.5 h-12 w-1.5 rounded-r-[length:var(--radius-sm)] bg-[color:var(--family-accent)]" />
+                            <div className="absolute inset-y-0 right-1 w-px border-r border-dashed border-border/80" />
+                            <span className="relative flex h-2.5 w-2.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
+                              <span className="h-1 w-1 rounded-full bg-foreground/50" />
                             </span>
-                            <span className="relative flex h-1.5 w-1.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
-                              <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
+                            <span className="relative flex h-2.5 w-2.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
+                              <span className="h-1 w-1 rounded-full bg-foreground/50" />
                             </span>
-                            <span className="relative flex h-1.5 w-1.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
-                              <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
+                            <span className="relative flex h-2.5 w-2.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
+                              <span className="h-1 w-1 rounded-full bg-foreground/50" />
                             </span>
                           </div>
 
                           <div
                             className={cn(
                               "relative border-b border-border bg-accent/[0.08]",
-                              !art && "px-3 pt-3 pb-2",
+                              !art && "px-4 pt-4 pb-3 sm:px-5 sm:pt-5 sm:pb-4",
                             )}
                           >
                             {art ? (
@@ -389,24 +391,24 @@ export default function CourseOverviewPage() {
                                   src={art.light}
                                   alt=""
                                   fill
-                                  sizes="(min-width: 1024px) 560px, (min-width: 640px) 46vw, 92vw"
+                                  sizes="(min-width: 1280px) 600px, (min-width: 640px) 50vw, 100vw"
                                   className="module-art-light object-cover"
                                 />
                                 <Image
                                   src={art.dark}
                                   alt=""
                                   fill
-                                  sizes="(min-width: 1024px) 560px, (min-width: 640px) 46vw, 92vw"
+                                  sizes="(min-width: 1280px) 600px, (min-width: 640px) 50vw, 100vw"
                                   className="module-art-dark object-cover"
                                 />
                               </div>
                             ) : (
-                              <div className="h-16 w-full sm:h-[4.5rem]">
+                              <div className="h-20 w-full sm:h-24">
                                 <ModuleGlyph slug={module.slug} />
                               </div>
                             )}
                             {available && familyLabel ? (
-                              <span className="absolute top-2.5 right-2.5 z-20 inline-flex items-center gap-1.5 rounded-[length:var(--radius-xs)] border border-accent/40 bg-elevated/95 px-2.5 py-0.5 shadow-elevation backdrop-blur-sm">
+                              <span className="absolute top-3 right-3 z-20 inline-flex items-center gap-1.5 rounded-[length:var(--radius-xs)] border border-accent/40 bg-elevated/95 px-2.5 py-0.5 shadow-elevation backdrop-blur-sm">
                                 <span
                                   className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"
                                   aria-hidden
@@ -417,13 +419,13 @@ export default function CourseOverviewPage() {
                               </span>
                             ) : null}
                             {!available ? (
-                              <span className="absolute top-2.5 right-2.5 z-20 inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted shadow-elevation backdrop-blur-sm">
+                              <span className="absolute top-3 right-3 z-20 inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted shadow-elevation backdrop-blur-sm">
                                 <Lock weight="bold" className="h-3 w-3" />
                                 Soon
                               </span>
                             ) : null}
                           </div>
-                          <div className="flex flex-1 flex-col py-4 pr-4 pl-6">
+                          <div className="flex flex-1 flex-col p-6 sm:p-7 pl-8 sm:pl-9">
                             <div className="flex items-center gap-2">
                               <span className="inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border/80 bg-surface/80 px-2 py-0.5 text-xs tabular-nums text-mark font-mono font-bold shadow-elevation">
                                 #{String(module.number).padStart(2, "0")}
@@ -434,42 +436,42 @@ export default function CourseOverviewPage() {
                                 </span>
                               ) : null}
                             </div>
-                            <h3 className="mt-2 font-display text-sm font-bold tracking-tight text-foreground group-hover:text-mark transition-colors">
+                            <h3 className="mt-2.5 font-display text-base sm:text-lg font-bold tracking-tight text-foreground group-hover:text-mark transition-colors">
                               {module.title}
                             </h3>
                           </div>
                         </div>
 
                         {/* Back Face */}
-                        <div className="module-card-face module-card-back relative bg-elevated bg-gradient-to-r from-[color:var(--family-accent)]/10 via-[color:var(--family-accent)]/[0.02] to-transparent">
-                          {/* Physical left spine strip with binder stitching/rivets */}
+                        <div className="module-card-face module-card-back relative min-h-[240px] bg-elevated bg-gradient-to-r from-[color:var(--family-accent)]/10 via-[color:var(--family-accent)]/[0.02] to-transparent">
+                          {/* Physical prominent binder spine & tab */}
                           <div
                             aria-hidden
-                            className="pointer-events-none absolute inset-y-0 left-0 z-20 flex w-3.5 flex-col items-center justify-between border-r border-border/60 bg-gradient-to-r from-[color:var(--family-accent)]/15 via-foreground/[0.02] to-transparent py-3"
+                            className="pointer-events-none absolute inset-y-0 left-0 z-20 flex w-5 sm:w-6 flex-col items-center justify-between border-r border-border/70 bg-gradient-to-r from-[color:var(--family-accent)]/20 via-foreground/[0.02] to-transparent py-4"
                           >
-                            <span className="h-1 w-1 rounded-full bg-border/80" />
-                            <span className="h-1 w-1 rounded-full bg-border/80" />
-                            <span className="h-1 w-1 rounded-full bg-border/80" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-border/80" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-border/80" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-border/80" />
                           </div>
 
-                          <div className="flex flex-1 flex-col py-4 pr-4 pl-6">
+                          <div className="flex flex-1 flex-col p-6 sm:p-7 pl-8 sm:pl-9">
                             <div className="module-card-back-head" aria-hidden>
                               <span className="inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border/80 bg-surface/80 px-2 py-0.5 text-xs tabular-nums text-muted font-mono font-bold">
                                 #{String(module.number).padStart(2, "0")}
                               </span>
-                              <p className="mt-1.5 text-sm font-bold text-mark">
+                              <p className="mt-2 font-display text-base sm:text-lg font-bold text-mark">
                                 {module.title}
                               </p>
                             </div>
-                            <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">
+                            <p className="mt-2.5 flex-1 text-sm leading-relaxed text-muted">
                               {module.description}
                             </p>
                             <span
                               aria-hidden
-                              className="mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wide text-mark"
+                              className="mt-4 inline-flex items-center gap-1.5 font-mono text-xs font-bold tracking-wide text-mark"
                             >
                               Open module
-                              <ArrowRight weight="bold" className="h-3 w-3" />
+                              <ArrowRight weight="bold" className="h-3.5 w-3.5" />
                             </span>
                           </div>
                         </div>

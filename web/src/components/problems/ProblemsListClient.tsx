@@ -57,59 +57,62 @@ export function ProblemsListClient(_props: {
         <div className="absolute inset-x-0 top-0 h-full bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,_color-mix(in_oklab,var(--mark)_14%,transparent),_transparent_60%)]" />
       </div>
 
-      {/* Main container: Full-width on large screens with max-w-[1720px] */}
-      <div className="relative mx-auto flex w-full max-w-[1720px] flex-col px-4 py-6 sm:px-6 lg:px-8 xl:px-12">
+      {/* Main container: Expansive max-w-7xl matching Fanout scaling */}
+      <div className="relative mx-auto flex w-full max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
         {/* Header and Visual Showcase */}
         <div className="space-y-6">
-          <div>
-            <p className="text-xs font-medium tracking-[0.14em] text-mark uppercase">
-              Curated Problem Library · Dual-Runtime Sandboxes
-            </p>
-            <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-balance uppercase sm:text-3xl lg:text-4xl">
+          {/* Hero Header Card */}
+          <div className="relative overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated/85 backdrop-blur-md p-6 sm:p-8 lg:p-10 shadow-elevation">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/35 to-transparent" aria-hidden />
+            <div className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/[0.1] px-3 py-1 font-mono text-xs uppercase tracking-wider text-mark font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" aria-hidden />
+              <span>Curated Problem Library · Dual-Runtime Sandboxes</span>
+            </div>
+            <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-balance uppercase sm:text-3xl lg:text-4xl">
               DSA Problem Catalog
             </h1>
-            <p className="mt-1.5 max-w-3xl text-xs sm:text-sm leading-relaxed text-muted">
+            <p className="mt-2.5 max-w-3xl text-sm sm:text-base leading-relaxed text-muted">
               Master canonical interview algorithms across 21 core topics.
               Solve all 157 canonical problems directly in live Python &amp; JavaScript sandboxes, or drill targeted tracks.
             </p>
           </div>
 
           {/* Production Feature Highlights */}
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
-            <div className="group flex items-center gap-3 rounded-[length:var(--radius-md)] border border-info-line/30 bg-elevated p-3 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-info-line/60">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border border-info-line/30 bg-info-surface/40 text-info">
-                <Code size={16} weight="bold" />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+            <div className="group flex items-center gap-4 rounded-[length:var(--radius-lg)] border border-info-line/30 bg-elevated p-5 sm:p-6 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-info-line/60">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-info-line/30 bg-info-surface/40 text-info">
+                <Code size={22} weight="bold" />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-xs font-bold text-foreground">Dual Python &amp; JS</p>
-                <p className="truncate text-[10px] text-muted">In-browser Pyodide &amp; Node</p>
+                <p className="truncate text-sm sm:text-base font-bold text-foreground">Dual Python &amp; JS</p>
+                <p className="truncate text-xs text-muted mt-0.5">In-browser Pyodide &amp; Node</p>
               </div>
             </div>
-            <div className="group flex items-center gap-3 rounded-[length:var(--radius-md)] border border-accent/25 bg-elevated p-3 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-accent/50">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border border-accent/30 bg-accent/[0.1] text-accent">
-                <Sparkle size={16} weight="bold" />
+            <div className="group flex items-center gap-4 rounded-[length:var(--radius-lg)] border border-accent/25 bg-elevated p-5 sm:p-6 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-accent/50">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-accent/30 bg-accent/[0.1] text-accent">
+                <Sparkle size={22} weight="bold" />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-xs font-bold text-foreground">157 Live Sandboxes</p>
-                <p className="truncate text-[10px] text-muted">Interactive test runners</p>
+                <p className="truncate text-sm sm:text-base font-bold text-foreground">157 Live Sandboxes</p>
+                <p className="truncate text-xs text-muted mt-0.5">Interactive test runners</p>
               </div>
             </div>
-            <div className="group flex items-center gap-3 rounded-[length:var(--radius-md)] border border-warn-line/30 bg-elevated p-3 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-warn-line/60">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border border-warn-line/30 bg-warn-surface/40 text-warn">
-                <Target size={16} weight="bold" />
+            <div className="group flex items-center gap-4 rounded-[length:var(--radius-lg)] border border-warn-line/30 bg-elevated p-5 sm:p-6 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-warn-line/60">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-warn-line/30 bg-warn-surface/40 text-warn">
+                <Target size={22} weight="bold" />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-xs font-bold text-foreground">4 Mastery Tracks</p>
-                <p className="truncate text-[10px] text-muted">Blind 75 &amp; NeetCode 150</p>
+                <p className="truncate text-sm sm:text-base font-bold text-foreground">4 Mastery Tracks</p>
+                <p className="truncate text-xs text-muted mt-0.5">Blind 75 &amp; NeetCode 150</p>
               </div>
             </div>
-            <div className="group flex items-center gap-3 rounded-[length:var(--radius-md)] border border-good-line/30 bg-elevated p-3 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-good-line/60">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border border-good-line/30 bg-good-surface/40 text-good">
-                <ShieldCheck size={16} weight="bold" />
+            <div className="group flex items-center gap-4 rounded-[length:var(--radius-lg)] border border-good-line/30 bg-elevated p-5 sm:p-6 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-good-line/60">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[length:var(--radius-md)] border border-good-line/30 bg-good-surface/40 text-good">
+                <ShieldCheck size={22} weight="bold" />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-xs font-bold text-foreground">Zero Leaked Solutions</p>
-                <p className="truncate text-[10px] text-muted">Solve-first derivation</p>
+                <p className="truncate text-sm sm:text-base font-bold text-foreground">Zero Leaked Solutions</p>
+                <p className="truncate text-xs text-muted mt-0.5">Solve-first derivation</p>
               </div>
             </div>
           </div>
@@ -137,7 +140,7 @@ export function ProblemsListClient(_props: {
           />
 
           {/* Sticky Toolbar: Curated list selection pills & Search */}
-          <div className="sticky top-14 z-20 -mx-4 border-y border-border/70 bg-surface/95 px-4 py-3 backdrop-blur-md shadow-edge-bottom sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 xl:-mx-12 xl:px-12">
+          <div className="sticky top-14 z-20 -mx-4 border-y border-border/70 bg-surface/95 px-4 py-3 backdrop-blur-md shadow-edge-bottom sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
             <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
               <CatalogCuratedListTabs
                 activeList={activeList}

@@ -219,6 +219,85 @@ function LiveEngineBeacon() {
 }
 
 /**
+ * Artifact 4: Reading Note: "Master Theorem & Recurrence Invariants"
+ * Pure 3D CSS / SVG card with study checkpoint pill, matching Fanout's reading card.
+ */
+function ReadingNoteArtifact() {
+  return (
+    <div
+      className="hero-artifact-reading-note"
+      style={{
+        left: 890,
+        top: 340,
+      }}
+    >
+      <div className="hero-reading-note-3d">
+        <div className="hero-reading-note-card rounded-[length:var(--radius-md)] border border-border/80 bg-elevated/95 p-3.5 shadow-elevation backdrop-blur-sm">
+          <div className="flex items-center justify-between font-mono text-[9px] tracking-wider uppercase text-muted">
+            <span>READING NOTE · 042</span>
+            <span className="font-semibold text-good">T(n) = 2T(n/2) + O(n)</span>
+          </div>
+          <p className="mt-2 font-display text-xs font-bold leading-snug text-foreground">
+            Master Theorem &amp; Recurrences
+          </p>
+          <p className="mt-1.5 text-[10px] leading-relaxed text-muted">
+            The recurrence splits into subproblems with linear merge work.
+            By Case 2, runtime resolves strictly to O(n log n).
+          </p>
+          <div className="mt-3 flex items-center justify-between rounded-[length:var(--radius-sm)] border border-border/70 bg-surface/90 px-2 py-1">
+            <span className="font-mono text-[9px] text-muted">Study checkpoint</span>
+            <div className="flex items-center gap-1.5 font-mono text-[9px]">
+              <span className="flex gap-0.5" aria-hidden>
+                <span className="h-2 w-0.5 rounded-full bg-good" />
+                <span className="h-2 w-0.5 rounded-full bg-good" />
+                <span className="h-2 w-0.5 rounded-full bg-good" />
+                <span className="h-2 w-0.5 rounded-full bg-good" />
+                <span className="h-2 w-0.5 rounded-full bg-muted/40" />
+              </span>
+              <span className="font-semibold text-foreground">18 / 25 min</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Artifact 5: Scientific Preprint Paper: "Amortized Bounds on Trees"
+ * Tilted research paper artifact framing the lower-left corner.
+ */
+function ResearchPaperArtifact() {
+  return (
+    <div
+      className="hero-artifact-paper"
+      style={{
+        left: 200,
+        top: 660,
+      }}
+    >
+      <div className="hero-paper-3d">
+        <div className="hero-paper-card rounded-[length:var(--radius-md)] border border-border/80 bg-elevated/95 p-3.5 shadow-elevation backdrop-blur-sm">
+          <div className="flex items-center justify-between">
+            <span className="rounded-[length:var(--radius-xs)] bg-warn-surface px-1.5 py-0.5 font-mono text-[9px] font-bold text-warn border border-warn-line/50">arXiv</span>
+            <span className="font-mono text-[9px] text-muted">cs.DS / 2409.1120</span>
+          </div>
+          <p className="mt-2 font-display text-[11px] font-bold leading-tight text-foreground">
+            Amortized Bounds on Search Trees
+          </p>
+          <p className="mt-1 font-mono text-[9px] text-muted">Tarjan &amp; Sleator · ACM STOC</p>
+          <div className="mt-2.5 space-y-1" aria-hidden>
+            <div className="h-1 w-full rounded-full bg-muted/20" />
+            <div className="h-1 w-4/5 rounded-full bg-muted/20" />
+            <div className="h-1 w-3/5 rounded-full bg-muted/15" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
  * The landing hero's 3D floor (owner, 2026-09-23: "instead of 2.5D lets go full
  * 3d"; spec docs/superpowers/specs/2026-09-23-landing-natural-scroll-3d-hero-design.md).
  * A perspective plane of hairline cells below the hero copy, with vibrant data
@@ -275,10 +354,12 @@ export function HeroFloor() {
                   <span className="t" />
                 </div>
               ))}
-              {/* Floating Tangible 3D Physical Artifacts */}
+              {/* Floating Tangible 3D Physical Artifacts Framing All Quadrants */}
               <HardcoverTome />
               <CodeChipVisualizer />
               <LiveEngineBeacon />
+              <ReadingNoteArtifact />
+              <ResearchPaperArtifact />
             </div>
           </div>
         </div>
