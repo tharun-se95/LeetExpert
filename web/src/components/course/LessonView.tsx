@@ -112,9 +112,9 @@ export function LessonView({
           {prev ? (
             <Link
               href={prev.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-sm transition hover:opacity-90"
+              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-sm transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition group-hover:bg-on-pop/25">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:bg-on-pop/25 motion-reduce:transition-none">
                 <ArrowLeft weight="bold" className="h-4 w-4" />
               </span>
               <span className="min-w-0">
@@ -130,7 +130,7 @@ export function LessonView({
           {next ? (
             <Link
               href={next.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-right text-sm transition hover:opacity-90"
+              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-right text-sm transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
             >
               <span className="min-w-0">
                 <span className="block text-xs text-on-pop/70">
@@ -138,7 +138,7 @@ export function LessonView({
                 </span>
                 <span className="block truncate font-medium">{next.title}</span>
               </span>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition group-hover:bg-on-pop/25">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:bg-on-pop/25 motion-reduce:transition-none">
                 <ArrowRight weight="bold" className="h-4 w-4" />
               </span>
             </Link>

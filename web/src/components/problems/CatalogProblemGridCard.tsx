@@ -30,10 +30,10 @@ export function CatalogProblemGridCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col justify-between rounded-[length:var(--radius-lg)] border p-4.5 transition-[background-color,border-color,transform] duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation motion-reduce:transition-none touch-manipulation",
+        "group relative flex flex-col justify-between rounded-[length:var(--radius-lg)] border p-4.5 transition-[background-color,border-color,transform,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation motion-reduce:transition-none touch-manipulation",
         isSolved
-          ? "border-border bg-good/[0.03] hover:border-good/40"
-          : "border-border bg-elevated hover:-translate-y-0.5 hover:border-accent/40",
+          ? "border-good/30 bg-good/[0.03] hover:border-good/50"
+          : "border-border/70 bg-elevated hover:-translate-y-0.5 hover:border-accent/40",
       )}
     >
       <div>
@@ -62,7 +62,7 @@ export function CatalogProblemGridCard({
                 : `Mark #${problem.id} as solved`
             }
             className={cn(
-              "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all hover:scale-105 touch-manipulation",
+              "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:scale-105 active:scale-95 touch-manipulation focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent",
               isSolved
                 ? "border-good bg-good text-on-pop"
                 : "border-border bg-transparent hover:border-mark",
@@ -73,7 +73,7 @@ export function CatalogProblemGridCard({
         </div>
 
         {/* Title */}
-        <h3 className="font-display text-base font-bold text-foreground group-hover:text-mark transition-colors line-clamp-2">
+        <h3 className="font-display text-base font-bold text-foreground group-hover:text-mark transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] line-clamp-2">
           {problem.title}
         </h3>
 
@@ -89,7 +89,7 @@ export function CatalogProblemGridCard({
           {problem.topics.map((t) => (
             <span
               key={t}
-              className="rounded-[length:var(--radius-xs)] bg-accent/[0.08] px-2 py-0.5 text-[11px] text-muted font-medium"
+              className="rounded-[length:var(--radius-xs)] bg-surface/80 px-2 py-0.5 text-[11px] text-muted font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:text-foreground"
             >
               {t}
             </span>
@@ -98,18 +98,18 @@ export function CatalogProblemGridCard({
       </div>
 
       {/* Action CTA */}
-      <div className="mt-4 pt-3 border-t border-border/50">
+      <div className="mt-4 pt-3 border-t border-border/40">
         <Link
           href={href}
           className={cn(
-            "flex w-full min-h-9 items-center justify-center gap-1.5 rounded-[length:var(--radius-md)] border text-xs font-semibold transition-colors touch-manipulation",
+            "flex w-full min-h-9 items-center justify-center gap-1.5 rounded-[length:var(--radius-md)] text-xs font-semibold transition-all duration-[var(--dur-fast)] ease-[var(--ease)] touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
             isCourseProblem
-              ? "border-accent/30 bg-accent/10 text-accent hover:bg-accent/20"
-              : "border-border bg-surface text-foreground hover:bg-code hover:border-accent/40",
+              ? "bg-accent/10 text-accent hover:bg-accent/20"
+              : "bg-surface/80 text-foreground hover:bg-code hover:text-mark",
           )}
         >
           <span>{isCourseProblem ? "Launch Curriculum Sandbox" : "Launch Sandbox Workspace"}</span>
-          <ArrowRight size={12} weight="bold" aria-hidden />
+          <ArrowRight size={12} weight="bold" className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-0.5" aria-hidden />
         </Link>
       </div>
     </div>

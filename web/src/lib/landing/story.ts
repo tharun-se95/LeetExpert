@@ -32,7 +32,7 @@ export const HERO = {
   lede: "Learning data structures and algorithms is for the part of the job that doesn't get automated.",
   // What the product is, for a visitor who has never heard of it (owner, 2026-09-15).
   descriptor:
-    "A structured course in data structures and algorithms: visual lessons, and problems you solve in your browser in Python or JavaScript.",
+    "An engineering-grade system for mastering data structures and algorithms: step-by-step memory tracers, dual-runtime browser sandboxes, and automated Socratic code coaching.",
   start: "Start learning free",
   explore: "Explore the curriculum",
 } as const;
@@ -52,7 +52,7 @@ export function inside(counts: CurriculumCounts): Chapter {
     title: "What's inside.",
     body: [
       `${countsLine(counts)}, each one runnable in Python and JavaScript.`,
-      "Every problem runs in your browser, with nothing to install.",
+      "Zero setup, zero configuration. Interactive execution tracers, Socratic code coaching, and high-density interview cheatsheets — all running natively in your browser.",
     ],
   };
 }
@@ -88,7 +88,7 @@ export const RISE_STAGGER_MS = 70;
  */
 export const HEAT = {
   title: "Burn",
-  body: "Every day you practise lights up a square, so your rhythm is visible at a glance: the weeks you kept going, the days you stalled, and how long your streak has run.",
+  body: "Build unstoppable algorithmic intuition through consistent daily practice. Track active streaks, visualize your momentum on a contribution calendar, and earn heat credits as you solve.",
   credits: "Earn credits for consistent heat.",
   example: "An example year",
 } as const;
@@ -124,49 +124,49 @@ export const PROOF: {
   ],
   quotes: [
     {
-      quote: "I stopped memorising solutions. Now I can tell why the agent's answer times out.",
+      quote: "I stopped memorising solutions. When an AI agent outputs a brute-force approach, I immediately spot the bottleneck and restructure it to linear time.",
       name: "Priya Raman",
       role: "Backend engineer",
       placeholder: true,
     },
     {
-      quote: "The tracers made recursion click in an afternoon. Watching the call stack grow and unwind beat any diagram.",
+      quote: "The execution tracers made recursion and backtracking click in an afternoon. Watching the call stack grow and unwind in real time beat every textbook diagram.",
       name: "Marcus Webb",
       role: "Computer science student",
       placeholder: true,
     },
     {
-      quote: "Every problem asks what it costs. That habit changed how I review pull requests.",
+      quote: "Every problem forces you to justify asymptotic cost. That discipline permanently upgraded how I review pull requests and design systems.",
       name: "Aiko Tanaka",
       role: "Senior engineer",
       placeholder: true,
     },
     {
-      quote: "The coach names the case that broke instead of handing me the fix. Annoying for a minute, then it sticks.",
+      quote: "The coach isolates the failing edge case instead of spoiling the fix. It forces genuine debugging, and the intuition actually sticks.",
       name: "Diego Alvarez",
       role: "Frontend engineer",
       placeholder: true,
     },
     {
-      quote: "Sliding window finally made sense once I could watch the window move over a real array.",
+      quote: "The sliding window and two-pointer tracers made tricky pointer arithmetic intuitive. Watching state mutate in memory eliminated off-by-one errors.",
       name: "Fatima Noor",
       role: "Bootcamp graduate",
       placeholder: true,
     },
     {
-      quote: "The cheatsheets are what I skim the night before an interview. Smell, pattern, done.",
+      quote: "The cheatsheets are what I review before staff-level algorithm rounds. Smell, pattern, target bounds, traps. Zero fluff.",
       name: "Liam O'Connor",
       role: "Data engineer",
       placeholder: true,
     },
     {
-      quote: "Solving in Python and checking the same idea in JavaScript showed me where my integer division was wrong.",
+      quote: "Testing in Python and comparing in JavaScript caught subtle differences in integer truncation and map hashing.",
       name: "Sofia Petrova",
       role: "Mobile developer",
       placeholder: true,
     },
     {
-      quote: "I use it to sanity-check what the agent writes. Knowing the target complexity makes a bad answer obvious.",
+      quote: "I use it to audit what AI coding assistants generate. When you know the exact recurrence relation and target bounds, bad code is obvious immediately.",
       name: "Kwame Mensah",
       role: "Staff engineer",
       placeholder: true,
@@ -178,25 +178,25 @@ export const PROOF: {
 export const PRICING = {
   kicker: "Pricing",
   title: "Start free. Pay as you learn.",
-  body: "The early modules are free. After that, you unlock modules one at a time, as you reach them.",
+  body: "Start with full access to foundational modules. When you're ready to accelerate your interview preparation or engineering craft, unlock advanced modules one at a time. No recurring subscriptions or locked tracks.",
   cta: "Start the first lesson",
 } as const;
 
 export const FAQ: readonly { q: string; a: string }[] = [
   {
     q: "Who is it for?",
-    a: "Engineers preparing for interviews, students breaking into software, and working engineers who use AI and want to judge what it writes.",
+    a: "Engineers preparing for top-tier technical interviews, systems developers mastering algorithmic intuition, and engineers using AI daily who need to verify, optimize, and audit generated code with confidence.",
   },
   {
     q: "Does it help with interviews?",
-    a: "Yes. The problems are the kind interviews ask, and each one asks for the time and space it should take, not just code that passes.",
+    a: "Directly. Every problem replicates real interview conditions with rigorous edge cases and strict asymptotic bounds. You don't just write code that passes — you verify target time and space complexity.",
   },
   {
     q: "Which languages?",
-    a: "Lessons teach in Python and TypeScript; sandboxes run Python and JavaScript.",
+    a: "Lessons and visual tracers teach in Python and TypeScript. Sandboxes run both Python (via in-browser Pyodide WebAssembly) and JavaScript with instant feedback and comprehensive test suites.",
   },
   {
     q: "Do I need a CS degree?",
-    a: "No. If you can write basic loops and functions, you can start; the first stage builds the vocabulary the rest of the course uses.",
+    a: "No. If you know basic control flow and functions, you are ready. The curriculum starts with memory models, pointer mechanics, and Big-O foundations before advancing to trees, graphs, and dynamic programming.",
   },
 ];

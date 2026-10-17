@@ -72,7 +72,7 @@ export function ProblemsFlatList({
                 className={cn(
                   "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
                   isSolved
-                    ? "bg-good text-white"
+                    ? "bg-good text-on-pop"
                     : "border border-border bg-transparent",
                 )}
               >

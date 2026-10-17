@@ -113,10 +113,10 @@ export function FeatureSection({
                 {content.link ? (
                   <Link
                     href={content.link.href}
-                    className="mt-5 inline-flex min-h-9 items-center gap-1.5 text-base font-medium text-foreground hover:underline"
+                    className="group/link mt-5 inline-flex min-h-9 items-center gap-1.5 text-base font-medium text-foreground transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-mark"
                   >
                     {content.link.label}
-                    <ArrowRight className="h-4 w-4" aria-hidden />
+                    <ArrowRight className="h-4 w-4 transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover/link:translate-x-1" aria-hidden />
                   </Link>
                 ) : null}
               </div>

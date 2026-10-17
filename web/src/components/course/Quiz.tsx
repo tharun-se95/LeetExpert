@@ -149,12 +149,12 @@ function QuestionBlock({
               disabled={answered}
               aria-pressed={isSelected}
               className={cn(
-                "group/opt flex w-full items-center gap-3 rounded-[length:var(--radius-md)] border px-3 py-2.5 text-left text-sm leading-relaxed transition",
+                "group/opt flex w-full items-center gap-3 rounded-[length:var(--radius-md)] border px-3.5 py-2.5 text-left text-sm leading-relaxed transition-[background-color,border-color,transform,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                 // The quiz also renders outside a reading page (problem Quiz
                 // tab); inside one, the page is already white, so options
                 // step down to a well instead of lifting.
                 !answered &&
-                  "border-border bg-elevated in-[.reading-page]:bg-background hover:border-accent/40 hover:bg-accent/[0.06]",
+                  "border-border bg-elevated in-[.reading-page]:bg-background hover:border-accent/50 hover:bg-accent/[0.06] hover:-translate-y-px hover:shadow-elevation",
                 answered &&
                   isAnswer &&
                   "border-good/50 bg-good/10 text-foreground",
@@ -170,7 +170,7 @@ function QuestionBlock({
             >
               <span
                 className={cn(
-                  "inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition",
+                  "inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-[border-color,background-color,transform] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none",
                   !answered &&
                     "border-border group-hover/opt:border-accent/50",
                   answered && isAnswer && "border-good bg-good text-on-pop",

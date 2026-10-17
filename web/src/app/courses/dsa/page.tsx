@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Lock } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, Code, Cpu, FileText, Lock, MapTrifold, Sparkle, TreeStructure } from "@phosphor-icons/react/dist/ssr";
 import { ModuleGlyph } from "@/app/courses/dsa/_components/ModuleGlyph";
 import {
   MODULES,
@@ -70,13 +70,68 @@ export default function CourseOverviewPage() {
             <ArrowRight weight="bold" className="h-4 w-4" />
           </Link>
           <Link
+            href="/courses/dsa/roadmap"
+            className="inline-flex h-10 items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border px-4 text-sm font-medium transition hover:bg-surface"
+          >
+            <MapTrifold weight="bold" className="h-4 w-4 text-accent" />
+            Curriculum Roadmap
+          </Link>
+          <Link
+            href="/courses/dsa/cheatsheets"
+            className="inline-flex h-10 items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border px-4 text-sm font-medium transition hover:bg-surface"
+          >
+            <FileText weight="bold" className="h-4 w-4 text-accent" />
+            Cheatsheets Hub
+          </Link>
+          <Link
             href="/"
             className="inline-flex h-10 items-center rounded-[length:var(--radius-md)] border border-border px-4 text-sm font-medium transition hover:bg-surface"
           >
             Back to home
           </Link>
         </div>
-        <p className="mt-4 text-sm text-muted">
+
+        {/* Engineering Highlights Strip */}
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="flex items-center gap-2.5 rounded-[length:var(--radius-md)] border border-border bg-elevated p-3 shadow-elevation">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+              <Code weight="bold" className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="truncate font-display text-xs font-bold text-foreground">Dual Python &amp; JS</p>
+              <p className="truncate text-[11px] text-muted">In-browser Pyodide &amp; V8</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5 rounded-[length:var(--radius-md)] border border-border bg-elevated p-3 shadow-elevation">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+              <TreeStructure weight="bold" className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="truncate font-display text-xs font-bold text-foreground">Memory Tracers</p>
+              <p className="truncate text-[11px] text-muted">Live pointer &amp; stack visualizers</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5 rounded-[length:var(--radius-md)] border border-border bg-elevated p-3 shadow-elevation">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+              <Sparkle weight="bold" className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="truncate font-display text-xs font-bold text-foreground">Socratic Coach</p>
+              <p className="truncate text-[11px] text-muted">Automated edge-case hints</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5 rounded-[length:var(--radius-md)] border border-border bg-elevated p-3 shadow-elevation">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+              <Cpu weight="bold" className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="truncate font-display text-xs font-bold text-foreground">Zero Local Setup</p>
+              <p className="truncate text-[11px] text-muted">Instant WebAssembly sandbox</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-5 text-sm text-muted">
           {availableCount} of {MODULES.length} modules live — the rest are
           being written in curriculum order.
         </p>

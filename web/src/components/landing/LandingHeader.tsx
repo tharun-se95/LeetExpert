@@ -38,7 +38,7 @@ export function LandingHeader({
         // Sticky within <main>, the page's scroller. Transparent over the paper
         // at rest; once content passes beneath, a translucent paper keeps the
         // nav legible over it. The height never changes, so nothing below jumps.
-        "print:hidden sticky top-0 z-30 border-b border-border py-6 transition-[background-color,box-shadow] duration-300",
+        "print:hidden sticky top-0 z-30 border-b border-border py-6 transition-[background-color,box-shadow] duration-[var(--dur)] ease-[var(--ease)] motion-reduce:transition-none",
         scrolled && cn(TRANSLUCENT_PAPER, "shadow-edge-bottom"),
       )}
     >

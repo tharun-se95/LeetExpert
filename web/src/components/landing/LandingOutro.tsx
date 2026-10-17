@@ -40,7 +40,7 @@ export function LandingOutro({ firstLessonHref }: { firstLessonHref: string }) {
             <p className="landing-pop max-w-2xl text-xl leading-relaxed text-muted">{PRICING.body}</p>
             <Link
               href={firstLessonHref}
-              className="inline-flex items-center gap-2 rounded-full bg-pop px-5 py-2.5 text-base font-medium text-on-pop transition-opacity hover:opacity-90"
+              className="inline-flex items-center gap-2 rounded-full bg-pop px-5 py-2.5 text-base font-medium text-on-pop shadow-elevation transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
             >
               {PRICING.cta}
               <ArrowRight className="h-4 w-4" aria-hidden />
@@ -104,7 +104,7 @@ function Questions() {
           <details key={q} name="landing-faq" className="landing-faq group py-1">
             <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 font-display text-base font-bold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-accent/40 [&::-webkit-details-marker]:hidden">
               {q}
-              <Plus className="h-4 w-4 shrink-0 text-muted transition-transform group-open:rotate-45 motion-reduce:transition-none" aria-hidden />
+              <Plus className="h-4 w-4 shrink-0 text-muted transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-open:rotate-45 motion-reduce:transition-none" aria-hidden />
             </summary>
             <p className="pb-3 text-sm leading-relaxed text-muted">{a}</p>
           </details>

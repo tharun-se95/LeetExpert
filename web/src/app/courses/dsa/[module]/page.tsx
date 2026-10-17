@@ -4,10 +4,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   BookOpen,
-  // CheckCircle, — stat strip, commented out below
+  FileText,
   Target,
-  // Timer, — stat strip
-  // Lock, — stat strip
+  TreeStructure,
 } from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ModuleGlyph } from "@/app/courses/dsa/_components/ModuleGlyph";
@@ -164,6 +163,24 @@ export default async function ModulePage({ params }: PageProps) {
             <p className="mt-3 max-w-2xl text-lg leading-relaxed text-muted">
               {mod.description}
             </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2.5">
+              <Link
+                href={`/courses/dsa/${mod.slug}/concept-map`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-[length:var(--radius-xs)] border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-surface/80 hover:border-accent/40 transition"
+              >
+                <TreeStructure weight="bold" className="h-3.5 w-3.5 text-accent" />
+                <span>Concept Map</span>
+              </Link>
+              {practice ? (
+                <Link
+                  href={lessonHref(mod.slug, "practice")}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-[length:var(--radius-xs)] border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-surface/80 hover:border-accent/40 transition"
+                >
+                  <FileText weight="bold" className="h-3.5 w-3.5 text-accent" />
+                  <span>Cheatsheet & Practice</span>
+                </Link>
+              ) : null}
+            </div>
           </div>
         </div>
 

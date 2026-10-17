@@ -138,14 +138,14 @@ function Hero({ counts, links }: { counts: CurriculumCounts; links: { start: str
           <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
             <Link
               href={links.start}
-              className="inline-flex items-center gap-2 rounded-full bg-pop px-6 py-3 text-base font-medium text-on-pop shadow-elevation transition-opacity hover:opacity-90"
+              className="inline-flex items-center gap-2 rounded-full bg-pop px-6 py-3 text-base font-medium text-on-pop shadow-elevation transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
             >
               {HERO.start}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
             <Link
               href={links.curriculum}
-              className="inline-flex items-center gap-2 border-b border-border pb-0.5 text-base text-foreground transition-colors hover:border-foreground"
+              className="inline-flex items-center gap-2 border-b border-border pb-0.5 text-base text-foreground transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-foreground motion-reduce:transition-none"
             >
               {HERO.explore}
             </Link>
@@ -318,7 +318,7 @@ function StageCardLink({ stage }: { stage: StageCard }) {
         <span className="flex items-center justify-between gap-3">
           <span className={KICKER}>Stage {stage.number}</span>
           <ArrowRight
-            className="h-4 w-4 text-muted transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-foreground"
+            className="h-4 w-4 text-muted transition-[color,transform] duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-1 group-hover:text-foreground motion-reduce:transition-none"
             aria-hidden
           />
         </span>

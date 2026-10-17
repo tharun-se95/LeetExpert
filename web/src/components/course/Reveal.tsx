@@ -14,20 +14,25 @@ export function Reveal({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="my-4 rounded-[length:var(--radius-md)] border border-border bg-surface/40">
+    <div className="my-4 overflow-hidden rounded-[length:var(--radius-md)] border border-border/70 bg-surface/30 transition-colors duration-[var(--dur-fast)] ease-[var(--ease)]">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-medium text-muted transition hover:text-foreground"
+        className="group flex w-full min-h-11 items-center gap-2.5 px-4 py-2.5 text-left text-sm font-medium text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground touch-manipulation focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
         aria-expanded={open}
       >
         <ChevronRight
-          className={cn("h-4 w-4 shrink-0 transition-transform", open && "rotate-90")}
+          size={14}
+          weight="bold"
+          className={cn(
+            "shrink-0 transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] text-muted group-hover:text-foreground",
+            open && "rotate-90 text-foreground",
+          )}
         />
-        {label}
+        <span>{label}</span>
       </button>
       {open ? (
-        <div className="border-t border-border px-4 pb-3 pt-1">{children}</div>
+        <div className="border-t border-border/50 px-4 pt-2 pb-3.5">{children}</div>
       ) : null}
     </div>
   );

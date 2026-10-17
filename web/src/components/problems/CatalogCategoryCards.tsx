@@ -67,14 +67,14 @@ export function CatalogCategoryCards({
               )}
             >
               {/* 3D Marketing Image Thumbnail */}
-              <div className="relative mb-2 aspect-[16/9] w-full overflow-hidden rounded-[length:var(--radius-sm)] bg-surface border border-border/50">
+              <div className="relative mb-2 aspect-[16/9] w-full overflow-hidden rounded-[length:var(--radius-sm)] bg-surface">
                 {categoryImage ? (
                   <Image
                     src={categoryImage}
                     alt={info?.title ?? catName}
                     fill
                     sizes="176px"
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-108"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-108 motion-reduce:transition-none"
                   />
                 ) : null}
 
@@ -85,7 +85,7 @@ export function CatalogCategoryCards({
                 />
 
                 {/* Themed corner glowing indicator */}
-                <div className="absolute top-1.5 right-1.5 flex items-center justify-center rounded-full bg-surface/90 px-1.5 py-0.5 border border-border/60 backdrop-blur-xs">
+                <div className="absolute top-1.5 right-1.5 flex items-center justify-center rounded-full bg-surface/85 px-1.5 py-0.5 border border-border/40 backdrop-blur-sm shadow-elevation">
                   <span
                     className="h-1.5 w-1.5 rounded-full"
                     style={{ backgroundColor: "var(--family-accent)" }}
@@ -95,7 +95,7 @@ export function CatalogCategoryCards({
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="truncate text-xs font-bold text-foreground group-hover:text-mark transition-colors">
+                <span className="truncate text-xs font-bold text-foreground group-hover:text-mark transition-colors duration-[var(--dur-fast)] ease-[var(--ease)]">
                   {info?.title ?? catName}
                 </span>
               </div>

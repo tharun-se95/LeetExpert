@@ -18,7 +18,7 @@ export function ChapterInfographic({ src, alt }: ChapterInfographicProps) {
         <ImageSquare weight="bold" className="h-4 w-4 text-accent" />
         This lesson, at a glance
       </p>
-      <div className="overflow-hidden rounded-[length:var(--radius-lg)] border border-border">
+      <div className="overflow-hidden rounded-[length:var(--radius-lg)] border border-border/80 bg-surface/30">
         <Image
           src={src}
           alt={alt}

@@ -8,7 +8,7 @@
  * empty. landingFooter.test.tsx checks every entry is https or mailto.
  */
 
-export const FOOTER_TAGLINE = "Data structures & algorithms, for engineers who solve problems.";
+export const FOOTER_TAGLINE = "The developer-first DSA learning platform. Dual-runtime sandboxes, interactive tracers, and Socratic code coaching.";
 
 export type ConnectLink = {
   kind: "github" | "email";

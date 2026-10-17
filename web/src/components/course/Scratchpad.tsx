@@ -79,7 +79,7 @@ export function Scratchpad({
           type="button"
           onClick={reset}
           title="Restore the starter code"
-          className="inline-flex items-center gap-1.5 rounded-[length:var(--radius-md)] px-2 py-1 text-[0.7rem] text-muted transition-colors hover:bg-code hover:text-foreground"
+          className="inline-flex items-center gap-1.5 rounded-[length:var(--radius-md)] px-2 py-1 text-[0.7rem] text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-code hover:text-foreground motion-reduce:transition-none"
         >
           <RotateCcw size={12} aria-hidden />
           Reset

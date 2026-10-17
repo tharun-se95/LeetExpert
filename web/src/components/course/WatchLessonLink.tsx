@@ -33,7 +33,7 @@ export function WatchLessonLink({ videoSrc, lessonTitle }: WatchLessonLinkProps)
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/[0.08] py-1 pr-3 pl-2.5 font-medium text-mark transition hover:border-accent/50 hover:bg-accent/[0.14]"
+        className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/[0.08] py-1 pr-3 pl-2.5 font-medium text-mark transition-[background-color,border-color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/50 hover:bg-accent/[0.14] motion-reduce:transition-none"
       >
         <FilmSlate weight="fill" className="h-3.5 w-3.5 text-accent" />
         Watch this lesson
@@ -57,7 +57,7 @@ export function WatchLessonLink({ videoSrc, lessonTitle }: WatchLessonLinkProps)
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label="Close video"
-                  className="absolute -top-11 right-0 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-elevated shadow-elevation text-foreground transition hover:bg-surface"
+                  className="absolute -top-11 right-0 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-elevated shadow-elevation text-foreground transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface motion-reduce:transition-none"
                 >
                   <X weight="bold" className="h-4 w-4" />
                 </button>
