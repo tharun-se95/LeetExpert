@@ -37,27 +37,27 @@
   "getting-started/how-lessons-work": {
    "evidence": {
     "build": {
-     "source": "49b203dbd18f25ea",
-     "on": "2026-10-14",
-     "commit": "527ff62",
-     "result": "getting-started/how-lessons-work: 166,859 bytes -> lesson-artifacts/dist/getting-started/how-lessons-work.html"
+     "source": "ca8bd51ca73c9bbc",
+     "on": "2026-10-17",
+     "commit": "af8fd35",
+     "result": "getting-started/how-lessons-work: 167,260 bytes -> lesson-artifacts/dist/getting-started/how-lessons-work.html"
     },
     "code": {
-     "source": "49b203dbd18f25ea",
-     "on": "2026-10-14",
-     "commit": "527ff62",
+     "source": "ca8bd51ca73c9bbc",
+     "on": "2026-10-17",
+     "commit": "af8fd35",
      "result": "all claims hold"
     },
     "light": {
-     "source": "49b203dbd18f25ea",
-     "on": "2026-10-14",
-     "commit": "527ff62",
+     "source": "ca8bd51ca73c9bbc",
+     "on": "2026-10-17",
+     "commit": "af8fd35",
      "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     },
     "dark": {
-     "source": "49b203dbd18f25ea",
-     "on": "2026-10-14",
-     "commit": "527ff62",
+     "source": "ca8bd51ca73c9bbc",
+     "on": "2026-10-17",
+     "commit": "af8fd35",
      "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     }
    },

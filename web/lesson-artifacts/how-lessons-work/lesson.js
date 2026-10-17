@@ -15,15 +15,15 @@ var HW={
     {t:'Trade-offs',d:'When to reach for it, and when an alternative wins.',b:['prose']},
     {t:'Quiz',d:'A short check that it stuck, with an explanation either way.',b:['quiz']}]},
   problem:{name:'Problem lesson',role:'cook-off',steps:[
-    {t:'Statement and constraints',d:'The task, worked examples and the limits the input obeys.',b:['examples','constraints'],tab:'Description'},
-    {t:'Your attempt',d:'Write code in the editor beside the description and run it against the cases.',b:['sandbox'],tab:'Code (beside the description on a wide screen)'},
-    {t:'Hints',d:'Progressive nudges, one reveal each. Take the smallest push you need, then go back to your attempt.',b:['reveals'],tab:'Explanation'},
-    {t:'Brute force and its cost',d:'The obvious solution and exactly what it costs, so the improvement has something to beat.',b:['code in both languages','complexity box'],tab:'Explanation'},
-    {t:'The key insight',d:'The one observation that removes the waste, derived rather than asserted.',b:['prose'],tab:'Explanation'},
-    {t:'The optimal solution',d:'The improved solution in both languages, with its complexity and the reason for it.',b:['reveal','code in both languages','complexity box'],tab:'Solution'},
-    {t:'Variants',d:'The same idea under changed conditions, to see what transfers.',b:['prose'],tab:'Solution'}]}
+    {t:'Statement and constraints',d:'The task, worked examples and the limits the input obeys.',b:['examples','constraints'],tab:'Problem tab, Description section'},
+    {t:'Your attempt',d:'Write code in the editor beside the problem and run it against the cases.',b:['sandbox'],tab:'Code (beside the Problem tab on a wide screen)'},
+    {t:'Hints',d:'Progressive nudges, one reveal each. Take the smallest push you need, then go back to your attempt.',b:['reveals'],tab:'Problem tab, Explanation section'},
+    {t:'Brute force and its cost',d:'The obvious solution and exactly what it costs, so the improvement has something to beat.',b:['code in both languages','complexity box'],tab:'Problem tab, Explanation section'},
+    {t:'The key insight',d:'The one observation that removes the waste, derived rather than asserted.',b:['prose'],tab:'Problem tab, Explanation section'},
+    {t:'The optimal solution',d:'The improved solution in both languages, with its complexity and the reason for it.',b:['reveal','code in both languages','complexity box'],tab:'Problem tab, Solution section'},
+    {t:'Variants',d:'The same idea under changed conditions, to see what transfers.',b:['prose'],tab:'Problem tab, Solution section'}]}
 };
-/* the course tables the page quotes; check.py compares each with the manifest and the lesson files (and asserts every problem lesson has a Solution tab) */
+/* the course tables the page quotes; check.py compares each with the manifest and the lesson files (and asserts every problem lesson has a Solution section) */
 var CORPUS={types:{concept:83,practice:21,problem:116},hints:{1:75,2:37,3:4}};
 CORPUS.navTotal=CORPUS.types.concept+CORPUS.types.practice;
 CORPUS.hintLessons=CORPUS.hints[1]+CORPUS.hints[2]+CORPUS.hints[3];
