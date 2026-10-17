@@ -27,7 +27,7 @@ When sorting mail at your warehouse desk, time is not the only physical constrai
 - ==Total space==: every byte occupied during execution, including the original input data sitting on the desk.
 - ==Auxiliary space==: only the *extra* scratch memory the algorithm itself allocates to do its job.
 
-If you read through a bin of $n$ letters and maintain a single running variable recording the heaviest letter seen so far, the entire desk holds $n$ incoming letters (O(n) total space). But your scratch footprint is just one variable (**O(1) auxiliary space**). Unless stated otherwise, algorithm analysis focuses on auxiliary space: the input size is determined by the caller, but the extra memory used is the algorithm's choice.
+If you read through a bin of n letters and maintain a single running variable recording the heaviest letter seen so far, the entire desk holds n incoming letters (O(n) total space). But your scratch footprint is just one variable (**O(1) auxiliary space**). Unless stated otherwise, algorithm analysis focuses on auxiliary space: the input size is determined by the caller, but the extra memory used is the algorithm's choice.
 
 ## Live model: three functions on the same input {#build toc="Live model"}
 
@@ -39,7 +39,7 @@ A loop uses 1 variable, a copy allocates n cells, and recursion piles up n stack
 <rect class="fa" x="16" y="44" width="36" height="36" rx="4"/><rect class="fa" x="70" y="52" width="20" height="20" rx="3"/><rect class="fa" x="94" y="52" width="20" height="20" rx="3"/><rect class="fa" x="118" y="52" width="20" height="20" rx="3"/><rect class="fa" x="164" y="24" width="56" height="18" rx="3"/><rect class="fa" x="164" y="46" width="56" height="18" rx="3"/><rect class="fa" x="164" y="68" width="56" height="18" rx="3"/>
 ```
 
-Three different functions can process the exact same input of $n$ items with radically different memory profiles. Toggle between the functions below to see how memory is arranged on the desk.
+Three different functions can process the exact same input of n items with radically different memory profiles. Toggle between the functions below to see how memory is arranged on the desk.
 
 ```widget #model "Interactive memory model: peak auxiliary space"
 <div class="model-ctrls">
@@ -75,7 +75,7 @@ Three different functions can process the exact same input of $n$ items with rad
 <p class="m-note" id="modelNote"></p>
 ```
 
-Notice how `sum_iter` and `sum_recursive` produce the exact same numerical result in $O(n)$ time, yet their memory footprints diverge completely: the iterative loop stays in $O(1)$ space, while the recursive call stack expands linearly with $n$.
+Notice how `sum_iter` and `sum_recursive` produce the exact same numerical result in O(n) time, yet their memory footprints diverge completely: the iterative loop stays in O(1) space, while the recursive call stack expands linearly with n.
 
 ## The memory you do not see: the call stack {#trap toc="The call stack"}
 
@@ -100,7 +100,7 @@ Assuming recursive functions use O(1) space because they allocate no arrays. Eac
 ```
 ````
 
-Stack depth varies by algorithm structure. In binary search, halving the search space each step produces a stack only $\log_2 n$ frames deep: **O(log n) auxiliary space**. In depth-first search along an unbranched path, the recursion reaches $n$ frames deep: **O(n) auxiliary space**.
+Stack depth varies by algorithm structure. In binary search, halving the search space each step produces a stack only log₂ n frames deep: **O(log n) auxiliary space**. In depth-first search along an unbranched path, the recursion reaches n frames deep: **O(n) auxiliary space**.
 
 ## Implementing the O(1) solution {#solution toc="Implementation"}
 
@@ -131,7 +131,7 @@ A major principle of algorithm design is buying time with memory.
 <path class="st" d="M120 24V88M70 88H170"/><line class="st" x1="50" y1="40" x2="190" y2="40"/><circle class="fa" cx="50" cy="56" r="16"/><rect class="fk" x="174" y="42" width="32" height="28" rx="4"/>
 ```
 
-A central theme in algorithm design is **trading memory for speed**. In Lesson 1, checking pairs with nested loops required $O(n^2)$ time but only $O(1)$ auxiliary space. Introducing a `seen` hash set dropped the time to $O(n)$ by spending $O(n)$ auxiliary space to remember past elements.
+A central theme in algorithm design is **trading memory for speed**. In Lesson 1, checking pairs with nested loops required O(n²) time but only O(1) auxiliary space. Introducing a `seen` hash set dropped the time to O(n) by spending O(n) auxiliary space to remember past elements.
 
 ```rosetta "Common space complexity patterns"
 Pattern | Auxiliary space | Why

@@ -27,7 +27,7 @@ Complexity analysis is a reading skill. When you encounter code in an interview 
 For each of the six drills below:
 1. Read the drill's code, in either language: the menu on the code block switches both.
 2. Pick your prediction for **time complexity** and **auxiliary space**.
-3. The page then runs an instrumented copy of the code and shows what it counted at $n$, $2n$ and $4n$, and why those counts follow the rule you were applying.
+3. The page then runs an instrumented copy of the code and shows what it counted at n, 2n and 4n, and why those counts follow the rule you were applying.
 
 ## Drill 1: Sequential passes {#solution toc="Drill 1"}
 
@@ -75,7 +75,7 @@ Two loops, but only one of them is as long as the input: find out how long each 
 <path class="st" d="M30 30H110M30 55H70M30 80H50"/><rect class="fk" x="140" y="24" width="80" height="66" rx="4"/>
 ```
 
-**The scenario:** An outer loop halves a round size while an inner loop re-weighs the whole shelf of $n$ packages on every single round.
+**The scenario:** An outer loop halves a round size while an inner loop re-weighs the whole shelf of n packages on every single round.
 
 ```code drill3 "Drill 3: weigh_in_rounds, halving outer loop"
 ```
@@ -138,7 +138,7 @@ Here n is the side of the grid, not the number of cells: be clear which one you 
 <rect class="fa" x="40" y="24" width="22" height="22" rx="3"/><rect class="fa" x="66" y="24" width="22" height="22" rx="3"/><rect class="fa" x="92" y="24" width="22" height="22" rx="3"/><rect class="fa" x="40" y="50" width="22" height="22" rx="3"/><rect class="fa" x="66" y="50" width="22" height="22" rx="3"/><rect class="fa" x="92" y="50" width="22" height="22" rx="3"/><rect class="fa" x="40" y="76" width="22" height="22" rx="3"/><rect class="fa" x="66" y="76" width="22" height="22" rx="3"/><rect class="fk" x="92" y="76" width="22" height="22" rx="3"/>
 ```
 
-**The scenario:** Packages arranged in a full $n \times n$ grid; the job is to find the single heaviest package.
+**The scenario:** Packages arranged in a full n × n grid; the job is to find the single heaviest package.
 
 ```code drill6 "Drill 6: heaviest, an n by n grid"
 ```

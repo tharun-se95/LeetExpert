@@ -44,11 +44,11 @@ Scanning elements one by one reveals three distinct, mathematically rigorous ans
 <rect class="fa" x="15" y="45" width="22" height="26" rx="4"/><rect class="fa" x="42" y="45" width="22" height="26" rx="4"/><rect class="fa" x="69" y="45" width="22" height="26" rx="4"/><rect class="fa" x="96" y="45" width="22" height="26" rx="4"/><rect class="fa" x="123" y="45" width="22" height="26" rx="4"/><rect class="fk" x="150" y="45" width="22" height="26" rx="4"/><polygon class="fc" points="155,25 167,25 161,38"/><path class="st" d="M15 85H225"/>
 ```
 
-Linear search makes all three bounds concrete. Given an array of $n$ elements, we search for a target value from index $0$ onward:
+Linear search makes all three bounds concrete. Given an array of n elements, we search for a target value from index 0 onward:
 
-- **Target at index 0** $\rightarrow$ found on the very first comparison $\rightarrow$ best case **$\Theta(1)$**.
-- **Target missing entirely** $\rightarrow$ every index must be checked $\rightarrow$ worst case **$\Theta(n)$**.
-- **Target equally likely at any slot** $\rightarrow$ expected comparisons average halfway through $\rightarrow$ **$\Theta(n)$**.
+- **Target at index 0** → found on the very first comparison → best case **Θ(1)**.
+- **Target missing entirely** → every index must be checked → worst case **Θ(n)**.
+- **Target equally likely at any slot** → expected comparisons average halfway through → **Θ(n)**.
 
 ```widget #mailSearch "Linear search: place the target anywhere and see comparisons"
 <div class="mail-stage">
@@ -79,7 +79,7 @@ Linear search makes all three bounds concrete. Given an array of $n$ elements, w
 
 **Worst case: n comparisons, so Θ(n) time.** When the target is in the last slot or absent, the loop executes all n iterations.
 
-**Average case: (n + 1) / 2 comparisons, so Θ(n) time.** Assuming each index is equally likely, the expected count is $\frac{1}{n} \sum_{i=1}^n i = \frac{n(n+1)}{2n} = \frac{n+1}{2}$.
+**Average case: (n + 1) / 2 comparisons, so Θ(n) time.** Assuming each index is equally likely, the expected count is (1/n) · Σᵢ₌₁ⁿ i = n(n + 1)/(2n) = (n+1)/2.
 ```
 
 ```key
@@ -120,9 +120,9 @@ Input ordering alters insertion sort from an efficient linear pass into an expen
 
 A second dramatic case-split occurs in ==insertion sort==. When inserting each new element into an already-sorted prefix:
 
-- **Already sorted list:** Each element is compared once with its predecessor, finds its correct place immediately, and triggers zero shifts. Total comparisons: $n - 1 \rightarrow$ **$\Theta(n)$**.
-- **Reversed list:** Every new item must be compared with every single preceding element and shifted all the way to the front. Total comparisons: $1 + 2 + \dots + (n-1) = \frac{n(n-1)}{2} \rightarrow$ **$\Theta(n^2)$**.
-- **Random list:** Every shift fixes exactly one out-of-order pair, and in a random order each of the $\frac{n(n-1)}{2}$ pairs is out of order with probability one half. So the expected number of shifts is $\frac{n(n-1)}{4}$, and comparisons are that plus at most $n - 1$ (one stopping comparison per element) $\rightarrow$ **$\Theta(n^2)$**.
+- **Already sorted list:** Each element is compared once with its predecessor, finds its correct place immediately, and triggers zero shifts. Total comparisons: n - 1 → **Θ(n)**.
+- **Reversed list:** Every new item must be compared with every single preceding element and shifted all the way to the front. Total comparisons: 1 + 2 + … + (n-1) = n(n − 1)/2 → **Θ(n²)**.
+- **Random list:** Every shift fixes exactly one out-of-order pair, and in a random order each of the n(n − 1)/2 pairs is out of order with probability one half. So the expected number of shifts is n(n − 1)/4, and comparisons are that plus at most n - 1 (one stopping comparison per element) → **Θ(n²)**.
 
 ```widget #sortSplit "Insertion sort across three input orderings"
 <div class="sort-stage">
@@ -152,8 +152,8 @@ Quicksort and hash table lookups quietly depend on the distinction between avera
 
 Two algorithms encountered throughout system design rely heavily on case-splits:
 
-1. **Quicksort:** Averages $\Theta(n \log n)$ time when partitioning splits subarrays roughly in half. But with a naive pivot strategy like always picking the last element, an *already sorted* input degenerates into partitions of size $0$ and $n-1$, creating an $n$-level recursion chain that costs **$\Theta(n^2)$ worst case**. Randomizing the pivot guarantees that bad splits are extremely unlikely on any fixed input.
-2. **Hash Table Lookup:** Quoted everywhere as $O(1)$. This is an **average-case** claim assuming a uniform hash distribution with few bucket collisions. If all keys collide into the exact same bucket, lookup degenerates into a linear scan through a single chain: **$O(n)$ worst case**.
+1. **Quicksort:** Averages Θ(n log n) time when partitioning splits subarrays roughly in half. But with a naive pivot strategy like always picking the last element, an *already sorted* input degenerates into partitions of size 0 and n-1, creating an n-level recursion chain that costs **Θ(n²) worst case**. Randomizing the pivot guarantees that bad splits are extremely unlikely on any fixed input.
+2. **Hash Table Lookup:** Quoted everywhere as O(1). This is an **average-case** claim assuming a uniform hash distribution with few bucket collisions. If all keys collide into the exact same bucket, lookup degenerates into a linear scan through a single chain: **O(n) worst case**.
 
 ```rosetta "Famous algorithms and their case bounds"
 Algorithm | Best Case | Average Case | Worst Case

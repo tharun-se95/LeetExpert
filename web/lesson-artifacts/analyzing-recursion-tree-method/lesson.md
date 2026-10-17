@@ -24,7 +24,7 @@ A manager delegates pieces of a large task to clerks, creating a branching pyram
 
 Imagine you are the general manager of a busy post office, and a giant assignment arrives. Rather than tackling the entire job alone, you divide the work and delegate chunks to subordinate clerks. Each clerk does the same with their assistants, creating a branching pyramid of delegation throughout the office hierarchy.
 
-Unlike iterative loops where you count repetitions of a counter, a recursive function expresses its runtime as a ==recurrence relation==: the cost at size $n$ in terms of smaller subproblems.
+Unlike iterative loops where you count repetitions of a counter, a recursive function expresses its runtime as a ==recurrence relation==: the cost at size n in terms of smaller subproblems.
 
 Drawing every execution as a node in a recursion tree reveals the total cost:
 - The root represents the initial top-level call.
@@ -47,9 +47,9 @@ Three canonical recurrence shapes illustrate logarithmic chains, balanced pyrami
 
 Three recurrence shapes cover most of the recursive algorithms you will meet in this course:
 
-1. **Binary Search ($T(n) = T(n/2) + O(1)$):** Halves the input and recurses exactly once. The tree is a single unbranched chain about $\log_2 n$ nodes long ($\log_2 n + 1$ when $n$ is a power of two), each taking $O(1)$ time $\rightarrow$ **$O(\log n)$**.
-2. **Merge Sort ($T(n) = 2T(n/2) + O(n)$):** Splits into two halves and merges them in linear time. The number of subproblems doubles at each level while their size halves, keeping the work per level constant at $n$. With $\log_2 n$ levels that merge, total work is $n \cdot \log_2 n \rightarrow$ **$O(n \log n)$**.
-3. **Naive Fibonacci ($T(n) = T(n-1) + T(n-2) + O(1)$):** Branches twice while only shrinking input size by a tiny constant ($1$ or $2$). The tree grows nearly $2^k$ wide at level $k$ and reaches depth $n \rightarrow$ **$O(2^n)$** exponential explosion!
+1. **Binary Search (T(n) = T(n/2) + O(1)):** Halves the input and recurses exactly once. The tree is a single unbranched chain about log₂ n nodes long (log₂ n + 1 when n is a power of two), each taking O(1) time → **O(log n)**.
+2. **Merge Sort (T(n) = 2T(n/2) + O(n)):** Splits into two halves and merges them in linear time. The number of subproblems doubles at each level while their size halves, keeping the work per level constant at n. With log₂ n levels that merge, total work is n · log₂ n → **O(n log n)**.
+3. **Naive Fibonacci (T(n) = T(n-1) + T(n-2) + O(1)):** Branches twice while only shrinking input size by a tiny constant (1 or 2). The tree grows nearly 2ᵏ wide at level k and reaches depth n → **O(2ⁿ)** exponential explosion!
 
 ```widget #treeWidget "Recursion trees traced from real calls: level-by-level work against the closed form"
 <div class="tree-stage">
@@ -76,11 +76,11 @@ Three recurrence shapes cover most of the recursive algorithms you will meet in 
 Every number in this widget comes from running the real function. Binary search probes once per call while looking for a key larger than everything, its worst case; merge sort counts the elements each call's merge writes; Fibonacci counts calls. The right-hand column sums each level, and the closed form is computed separately from the recurrence.
 
 ```derivation
-**Depth vs Branching Factor:** Branching twice does not inherently make an algorithm exponential. Merge sort branches twice per call and finishes in $O(n \log n)$ time.
+**Depth vs Branching Factor:** Branching twice does not inherently make an algorithm exponential. Merge sort branches twice per call and finishes in O(n log n) time.
 
 What separates merge sort from naive Fibonacci is the **shrinkage rate**:
-- Shrinking by a factor ($n \rightarrow n/2$) limits tree depth to $\log_2 n$ levels.
-- Shrinking by a constant ($n \rightarrow n-1$) stretches tree depth to $n$ levels, allowing an unchecked geometric doubling of nodes to explode exponentially.
+- Shrinking by a factor (n → n/2) limits tree depth to log₂ n levels.
+- Shrinking by a constant (n → n-1) stretches tree depth to n levels, allowing an unchecked geometric doubling of nodes to explode exponentially.
 ```
 
 ```key
@@ -98,9 +98,9 @@ Breaking down each depth level into subproblem count, node size, and level work 
 ```
 
 When evaluating any recursion tree, determine:
-1. **Nodes at level $k$:** how many subproblems exist at depth $k$?
-2. **Work per node at level $k$:** how much non-recursive computation does one subproblem perform?
-3. **Total work at level $k$:** multiply nodes by work per node.
+1. **Nodes at level k:** how many subproblems exist at depth k?
+2. **Work per node at level k:** how much non-recursive computation does one subproblem perform?
+3. **Total work at level k:** multiply nodes by work per node.
 4. **Tree depth:** when does the subproblem reach the base case?
 
 ```rosetta "Recurrence classification and level work patterns"
@@ -143,7 +143,7 @@ Reusing solutions to overlapping subproblems collapses an exponential tree into 
 <path class="st" d="M30 90C70 90 100 80 130 20"/><path class="fc" d="M30 90L190 30"/><circle class="fa" cx="130" cy="20" r="6"/><circle class="fa" cx="190" cy="30" r="6"/>
 ```
 
-Comparing the exact call counts between naive and memoized recursion exposes the staggering divergence in effort as $n$ grows:
+Comparing the exact call counts between naive and memoized recursion exposes the staggering divergence in effort as n grows:
 
 ```widget #memoTable "Call counts, counted by running both versions"
 <div class="memo-wrap">
@@ -154,7 +154,7 @@ Comparing the exact call counts between naive and memoized recursion exposes the
 </div>
 ```
 
-The naive column grows like the Fibonacci numbers themselves: the call count satisfies $C(n) = C(n-1) + C(n-2) + 1$, which solves to $2F(n+1) - 1$. The memoized column grows by two per step, because each new `n` makes one real call that recurses and one that is answered from the cache, giving $2n - 1$.
+The naive column grows like the Fibonacci numbers themselves: the call count satisfies C(n) = C(n-1) + C(n-2) + 1, which solves to 2F(n+1) - 1. The memoized column grows by two per step, because each new `n` makes one real call that recurses and one that is answered from the cache, giving 2n - 1.
 
 ```key
 Exponential recursion in algorithms like Fibonacci is caused by re-solving overlapping subproblems; storing intermediate results in a cache restores linear complexity.

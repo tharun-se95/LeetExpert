@@ -24,17 +24,17 @@ Summer camp cookie planning illustrates why real systems need an asymptotic ceil
 
 Imagine you are the volunteer in charge of planning the cookie budget for a summer camp. Your job: guarantee the kitchen never runs short, no matter how many campers show up.
 
-The actual demand follows a messy formula: you need a baseline of 50 cookies for staff, plus 10 cookies per cabin for group leaders, plus the friendship games, where every cabin sends 3 cookies to every cabin (its own included), which is $3 \cdot n \cdot n$:
+The actual demand follows a messy formula: you need a baseline of 50 cookies for staff, plus 10 cookies per cabin for group leaders, plus the friendship games, where every cabin sends 3 cookies to every cabin (its own included), which is 3 · n · n:
 
-$$f(n) = 3n^2 + 10n + 50$$
+> f(n) = 3n² + 10n + 50
 
-When the camp is tiny — only 1 or 2 cabins — the staff baseline (50 cookies) dominates demand. But as the camp scales to dozens of cabins, the friendship-game cookies (growing with the square of cabins $n^2$) completely drown out staff and leader portions.
+When the camp is tiny — only 1 or 2 cabins — the staff baseline (50 cookies) dominates demand. But as the camp scales to dozens of cabins, the friendship-game cookies (growing with the square of cabins n²) completely drown out staff and leader portions.
 
 The camp director asks for a simple guarantee: a "cookie ceiling" to ensure the kitchen bakes enough. You propose a simple rule: take the square of the cabins, multiplied by a buffer factor of 4:
 
-$$\text{Ceiling}(n) = 4n^2$$
+> Ceiling(n) = 4n²
 
-The buffer adds $n^2$ spare cookies on top of the $3n^2$ the games need, and those spares must cover the $10n + 50$ for leaders and staff. Under 14 cabins they fall short: at 13 cabins the spares are $169$ against $180$ needed, so the ceiling of $676$ sits below the true demand of $687$. But once you cross **$n_0 = 14$ cabins**, the formula becomes an absolute, unbreakable ceiling guaranteed to stay above actual demand.
+The buffer adds n² spare cookies on top of the 3n² the games need, and those spares must cover the 10n + 50 for leaders and staff. Under 14 cabins they fall short: at 13 cabins the spares are 169 against 180 needed, so the ceiling of 676 sits below the true demand of 687. But once you cross **n₀ = 14 cabins**, the formula becomes an absolute, unbreakable ceiling guaranteed to stay above actual demand.
 
 ```key
 Big O is an upper bound on growth: past threshold n₀, f(n) is guaranteed to stay below a constant multiple c · g(n).
@@ -50,11 +50,9 @@ An interactive playground to test candidate bounds g(n) and witness pairs (c, n�
 <line class="st" x1="20" y1="85" x2="220" y2="85"/><line class="st" x1="20" y1="15" x2="20" y2="85"/><path class="st" d="M20 85Q90 80 180 20"/><path class="st" d="M20 70Q80 60 180 10" stroke-dasharray="4 3"/><circle class="fc" cx="95" cy="55" r="4"/><line class="st" x1="95" y1="15" x2="95" y2="85" stroke-dasharray="2 2"/>
 ```
 
-::: note Formal Definition
-**$f(n) = O(g(n))$** means there exist a constant **$c > 0$** and a threshold **$n_0$** such that for all **$n \ge n_0$**: $f(n) \le c \cdot g(n)$.
-:::
+**Formal definition.** f(n) = O(g(n)) means there exist a constant **c > 0** and a threshold **n₀** such that for all **n ≥ n₀**: f(n) ≤ c · g(n).
 
-The pair $(c, n_0)$ is called a ==witness== to the bound. You only need to find one valid witness pair to prove the relationship.
+The pair (c, n₀) is called a ==witness== to the bound. You only need to find one valid witness pair to prove the relationship.
 
 ```widget #witnessExplorer "Budget ceiling: test a candidate bound and witnesses c, n₀"
 <div class="witness-stage">
@@ -96,14 +94,14 @@ The pair $(c, n_0)$ is called a ==witness== to the bound. You only need to find 
 ```
 
 ```derivation
-Claim: $3n^2 + 10n + 50 = O(n^2)$.
-Pick $c = 4$ and $n_0 = 14$.
-For all $n \ge 14$:
-1. $50 \le 4n$ (since $4 \times 14 = 56 \ge 50$).
-2. Thus $10n + 50 \le 10n + 4n = 14n$.
-3. Since $n \ge 14$, $14n \le n \cdot n = n^2$.
-4. Therefore, $3n^2 + 10n + 50 \le 3n^2 + n^2 = 4n^2$.
-Done: $(c = 4, n_0 = 14)$ rigorously witnesses $f(n) = O(n^2)$.
+Claim: 3n² + 10n + 50 = O(n²).
+Pick c = 4 and n₀ = 14.
+For all n ≥ 14:
+1. 50 ≤ 4n (since 4 × 14 = 56 ≥ 50).
+2. Thus 10n + 50 ≤ 10n + 4n = 14n.
+3. Since n ≥ 14, 14n ≤ n · n = n².
+4. Therefore, 3n² + 10n + 50 ≤ 3n² + n² = 4n².
+Done: (c = 4, n₀ = 14) rigorously witnesses f(n) = O(n²).
 ```
 
 ```key
@@ -122,9 +120,9 @@ Big O is a ceiling, Big Ω is a floor, and Big Θ is a tight sandwich.
 
 Big O has two sibling notations that complete the vocabulary of asymptotic analysis:
 
-- **$O(g(n))$ (Big O — Upper Bound):** $f(n) \le c_1 \cdot g(n)$ for $n \ge n_0$. The ceiling guarantee: "this algorithm takes *at most* this much work."
-- **$\Omega(g(n))$ (Big Omega — Lower Bound):** $f(n) \ge c_2 \cdot g(n)$ for $n \ge n_0$. The floor guarantee: "this problem requires *at least* this much work."
-- **$\Theta(g(n))$ (Big Theta — Tight Bound):** $c_2 \cdot g(n) \le f(n) \le c_1 \cdot g(n)$ for $n \ge n_0$. The exact growth rate: $f$ and $g$ scale at the identical asymptotic pace.
+- **O(g(n)) (Big O — Upper Bound):** f(n) ≤ c₁ · g(n) for n ≥ n₀. The ceiling guarantee: "this algorithm takes *at most* this much work."
+- **Ω(g(n)) (Big Omega — Lower Bound):** f(n) ≥ c₂ · g(n) for n ≥ n₀. The floor guarantee: "this problem requires *at least* this much work."
+- **Θ(g(n)) (Big Theta — Tight Bound):** c₂ · g(n) ≤ f(n) ≤ c₁ · g(n) for n ≥ n₀. The exact growth rate: f and g scale at the identical asymptotic pace.
 
 ```widget #threeBounds "Upper, lower, and tight bounds on growth"
 <div class="bounds-stage">
@@ -161,13 +159,13 @@ Verifying a witness computationally requires checking that the bound holds acros
 <rect class="fa" x="25" y="25" width="100" height="60" rx="5"/><line class="st" x1="40" y1="40" x2="110" y2="40"/><line class="st" x1="40" y1="55" x2="95" y2="55"/><line class="st" x1="40" y1="70" x2="105" y2="70"/><circle class="fc" cx="160" cy="55" r="22"/><line class="st" x1="176" y1="71" x2="202" y2="95"/>
 ```
 
-In code, verifying whether $(c, n_0)$ witnesses $f = O(g)$ over a range requires validating that $f(n) \le c \cdot g(n)$ holds at **every single integer** from $n_0$ up to $n_{\max}$.
+In code, verifying whether (c, n₀) witnesses f = O(g) over a range requires validating that f(n) ≤ c · g(n) holds at **every single integer** from n₀ up to nₘₐₓ.
 
 ```code solution "is_witness: check that c * g(n) bounds f(n) for all n in n0..n_max"
 ```
 
 ````warn
-Checking only at $n_0$. Checking the bound condition only at the threshold $n_0$ (or only at $n_{\max}$) accepts invalid pairs where $f(n)$ dips beneath $c \cdot g(n)$ at $n_0$ but crosses back above it as $n$ expands.
+Checking only at n₀. Checking the bound condition only at the threshold n₀ (or only at nₘₐₓ) accepts invalid pairs where f(n) dips beneath c · g(n) at n₀ but crosses back above it as n expands.
 
 ```code mistake "is_witness_mistake: checking only n0"
 ```
@@ -185,11 +183,11 @@ Why Big O permits dropping constant multipliers and lower-order terms.
 
 The mathematical definition of Big O gives you license to perform three essential simplifications:
 
-1. **Dropping constant multipliers.** $5n = O(n)$ — absorb the multiplier 5 into $c$. This isolates the growth law from hardware clock speeds and language compilers.
-2. **Dropping lower-order terms.** $n^2 + n = O(n^2)$ — for $n \ge 1$, $n \le n^2$, so $n^2 + n \le 2n^2$. At $n = 1,000,000$, the $n^2$ term accounts for $99.9999\%$ of the total value; the linear term is negligible.
-3. **Keeping the dominant term of a sum.** If an algorithm performs an $O(n \log n)$ sort followed by an $O(n)$ linear scan, total time is $O(n \log n + n) = O(n \log n)$.
+1. **Dropping constant multipliers.** 5n = O(n) — absorb the multiplier 5 into c. This isolates the growth law from hardware clock speeds and language compilers.
+2. **Dropping lower-order terms.** n² + n = O(n²) — for n ≥ 1, n ≤ n², so n² + n ≤ 2n². At n = 1,000,000, the n² term accounts for 99.9999% of the total value; the linear term is negligible.
+3. **Keeping the dominant term of a sum.** If an algorithm performs an O(n log n) sort followed by an O(n) linear scan, total time is O(n log n + n) = O(n log n).
 
-What it does **not** license: dropping factors that depend on $n$ ($n \cdot n$ is not "$n$ times a constant"), or treating different exponential bases as equivalent ($2^n \ne 3^n$).
+What it does **not** license: dropping factors that depend on n (n · n is not "n times a constant"), or treating different exponential bases as equivalent (2ⁿ ≠ 3ⁿ).
 
 ```rosetta "Algebraic expressions and their simplified Big O classes"
 Raw Expression | Dominant Term | Simplified Class | Absorbed Terms

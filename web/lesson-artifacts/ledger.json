@@ -137,7 +137,26 @@
    "family": null
   },
   "big-o/why-efficiency-matters": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "fd6fd92bd7d0fbdb",
+     "on": "2026-10-17",
+     "commit": "48539b0",
+     "result": "big-o/why-efficiency-matters: 172,306 bytes -> lesson-artifacts/dist/big-o/why-efficiency-matters.html"
+    },
+    "code": {
+     "source": "fd6fd92bd7d0fbdb",
+     "on": "2026-10-17",
+     "commit": "48539b0",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "fd6fd92bd7d0fbdb",
+     "on": "2026-10-17",
+     "commit": "48539b0",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "big-o",
    "moduleNumber": 2,

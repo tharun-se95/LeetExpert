@@ -96,19 +96,19 @@ Charge 3 tokens per append: 1 pays for today, 2 wait in the bank to pay for movi
 <rect class="fa" x="20" y="54" width="36" height="36" rx="4"/><circle class="fg" cx="38" cy="22" r="7"/><circle class="fg" cx="38" cy="34" r="7"/><circle class="fg" cx="38" cy="46" r="7"/><rect class="fa" x="66" y="54" width="36" height="36" rx="4"/><circle class="fg" cx="84" cy="22" r="7"/><circle class="fg" cx="84" cy="34" r="7"/><circle class="fg" cx="84" cy="46" r="7"/><path class="st" d="M120 72H160M155 67L160 72L155 77"/><rect class="st" x="176" y="44" width="50" height="46" rx="8" stroke-dasharray="4 4"/><circle class="fc" cx="201" cy="67" r="14"/>
 ```
 
-Summing the series $1 + 2 + 4 + \dots + n/2 \approx n$ works when the whole sequence is known in advance. But there is an even more powerful proof technique: the ==accounting method== (or Banker's view).
+Summing the series 1 + 2 + 4 + … + n/2 ≈ n works when the whole sequence is known in advance. But there is an even more powerful proof technique: the ==accounting method== (or Banker's view).
 
 Imagine that on every append, you charge an amortized fee of **3 tokens**:
 1. **1 token** pays for writing the new package into its shelf slot right now.
 2. **2 tokens** are deposited into a bank account linked to that package.
 
-Now consider the moment the shelf fills up at capacity $n$, triggering a resize. The shelf must move all $n$ packages. When was the last resize? At capacity $n/2$, which doubled the shelf to $n$. That means exactly the newest $n/2$ packages were inserted since the last move!
+Now consider the moment the shelf fills up at capacity n, triggering a resize. The shelf must move all n packages. When was the last resize? At capacity n/2, which doubled the shelf to n. That means exactly the newest n/2 packages were inserted since the last move!
 
-Each of those $n/2$ packages is still holding its 2 banked tokens:
+Each of those n/2 packages is still holding its 2 banked tokens:
 
-$$(n/2) \times 2 = n \text{ tokens in the bank}$$
+> (n/2) × 2 = n tokens in the bank
 
-That is exactly enough to pay for copying all $n$ packages at 1 token each. The older half of the packages already spent their savings on the previous move; the newer half's savings cover this move in full. The bank balance never drops below zero, which proves that a flat charge of 3 operations per append covers every spike unconditionally.
+That is exactly enough to pay for copying all n packages at 1 token each. The older half of the packages already spent their savings on the previous move; the newer half's savings cover this move in full. The bank balance never drops below zero, which proves that a flat charge of 3 operations per append covers every spike unconditionally.
 
 ```key
 Amortized analysis guarantees the average cost over any sequence by charging quiet operations a small fee to pay for rare expensive peaks.

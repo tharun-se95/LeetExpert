@@ -58,6 +58,7 @@
 .ex div{padding:10px 0;border-bottom:1px solid var(--hair);font-family:'JetBrains Mono',monospace;font-size:13px;display:flex;flex-wrap:wrap;gap:6px 14px}
 .ex div:last-child{border-bottom:0} .ex em{font-style:normal;color:var(--mut)}
 .callout{display:flex;flex-direction:column;gap:6px;border:1px solid var(--hair2);border-left-width:4px;border-radius:10px;padding:14px 16px;margin:20px 0;max-width:66ch;background:var(--card)}
+.formula{margin:18px 0;padding:10px 16px;border-left:2px solid var(--hair2);font-size:1.05em;font-weight:500;letter-spacing:.01em;max-width:66ch}
 .callout .cl{display:flex;align-items:center;gap:8px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
 .callout p{margin:0!important} .callout code{background:var(--well)}
 .callout.constraint{border-left-color:var(--g-ink);background:color-mix(in srgb,var(--g-1) 45%,var(--card))} .callout.constraint .cl{color:var(--g-ink)}

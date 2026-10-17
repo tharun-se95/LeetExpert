@@ -47,8 +47,8 @@ Watch both algorithms step through the exact same card delivery side by side.
 
 Stepping through a concrete list of guest cards reveals the mechanics of this divergence.: on the first preset the only pair arrives last, so watch how far apart the two operation counters end up.
 
-- **Version A** compares card $i$ against every card $j > i$. If no match occurs, it must evaluate all $n(n-1)/2$ combinations. Doubling the crowd quadruples the comparisons.
-- **Version B** performs a single lookup in `seen` and a single insertion per card. The work scales in direct lockstep with the number of arrivals $n$.
+- **Version A** compares card i against every card j > i. If no match occurs, it must evaluate all n(n-1)/2 combinations. Doubling the crowd quadruples the comparisons.
+- **Version B** performs a single lookup in `seen` and a single insertion per card. The work scales in direct lockstep with the number of arrivals n.
 
 ```widget #pairStepper "Gift-card matching: step Version A (every pair) against Version B (seen-set)"
 <div class="stepper-stage">
@@ -97,13 +97,13 @@ The seen-set strategy checks for the complement before recording the current car
 <rect class="fa" x="25" y="25" width="105" height="65" rx="6"/><line class="st" x1="38" y1="42" x2="112" y2="42"/><line class="st" x1="38" y1="56" x2="90" y2="56"/><line class="st" x1="38" y1="70" x2="100" y2="70"/><circle class="fc" cx="160" cy="55" r="22"/><line class="st" x1="176" y1="71" x2="202" y2="95"/>
 ```
 
-In production code, the seen-set algorithm iterates through each number, computing `target - x` and probing the set in average $O(1)$ time before inserting `x`.
+In production code, the seen-set algorithm iterates through each number, computing `target - x` and probing the set in average O(1) time before inserting `x`.
 
 ```code solution "has_pair: find pair summing to target using a seen-set"
 ```
 
 ````warn
-Adding before checking. Adding the current card to `seen` before checking for its complement pairs a single card with itself whenever $2x = \text{target}$ (such as a single $50 card when target is $100), incorrectly reporting a match where no two distinct cards exist.
+Adding before checking. Adding the current card to `seen` before checking for its complement pairs a single card with itself whenever 2x = target (such as a single $50 card when target is $100), incorrectly reporting a match where no two distinct cards exist.
 
 ```code mistake "has_pair_mistake: adding before checking"
 ```
@@ -121,7 +121,7 @@ A 10× faster machine running a quadratic algorithm quickly loses to a 1× machi
 
 Can we solve Version A's scaling problem by upgrading our hardware? Suppose we hire a super-speedy assistant who walks **10× faster** than us, running Version A on a 10× faster machine.
 
-At first, the faster assistant easily beats Version B running on our slow baseline machine: checking small lists takes a tenth of the time. But because Version A's work grows with $n^2$, doubling the crowd quadruples the handshakes needed.
+At first, the faster assistant easily beats Version B running on our slow baseline machine: checking small lists takes a tenth of the time. But because Version A's work grows with n², doubling the crowd quadruples the handshakes needed.
 
 ```widget #growthHardware "Growth beats hardware: the 10× assistant crossover"
 <div class="growth-stage">
@@ -162,11 +162,11 @@ At first, the faster assistant easily beats Version B running on our slow baseli
 ```
 
 ```derivation
-Let Version A do $n(n-1)/2$ operations and Version B do $n$ operations.
-On an assistant that is $S\times$ faster, Version A takes $\frac{n(n-1)}{2S}$ time units. Version B on a $1\times$ baseline takes $n$ time units.
+Let Version A do n(n-1)/2 operations and Version B do n operations.
+On an assistant that is S× faster, Version A takes n(n − 1)/(2S) time units. Version B on a 1× baseline takes n time units.
 Setting them equal to find the crossover threshold:
-$$\frac{n(n-1)}{2S} = n \implies n - 1 = 2S \implies n^* = 2S + 1$$
-For a $10\times$ faster assistant, $n^* = 2(10) + 1 = 21$: below it the assistant wins, at it they tie, and past it the $1\times$ machine running Version B is faster for every larger crowd. At 1,000 guests with no pair, Version A takes $499{,}500 / 10 = 49{,}950$ time units against Version B's $1{,}000$, so Version B finishes about $50\times$ sooner despite running on $10\times$ slower hardware.
+n(n − 1)/(2S) = n ⟹ n - 1 = 2S ⟹ n* = 2S + 1
+For a 10× faster assistant, n* = 2(10) + 1 = 21: below it the assistant wins, at it they tie, and past it the 1× machine running Version B is faster for every larger crowd. At 1,000 guests with no pair, Version A takes 499,500 / 10 = 49,950 time units against Version B's 1,000, so Version B finishes about 50× sooner despite running on 10× slower hardware.
 ```
 
 ```key
@@ -185,7 +185,7 @@ Stopwatch timing measures the computer; operation counting measures the algorith
 
 If you timed both algorithms with a stopwatch, your numbers would fluctuate based on CPU clock speed, background operating system tasks, compiler optimizations, and memory caches. Measuring wall-clock time ties the result to the machine rather than the strategy.
 
-Instead, computer scientists count ==basic operations== — card comparisons, set additions, lookups — as a function of the input size $n$.
+Instead, computer scientists count ==basic operations== — card comparisons, set additions, lookups — as a function of the input size n.
 
 ```widget #opsVsSeconds "Measuring machines vs measuring algorithms"
 <div class="ops-stage">

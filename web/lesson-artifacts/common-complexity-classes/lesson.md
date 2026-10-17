@@ -22,10 +22,10 @@ The effort and time to reach a population scales drastically depending on your a
 <circle class="fc" cx="60" cy="40" r="10"/><path class="st" d="M60 50V80M45 60H75M60 80L45 102M60 80L75 102"/><path class="sc" d="M80 35Q110 30 140 20M80 40Q120 40 160 40M80 45Q110 50 140 60"/><circle class="fa" cx="170" cy="20" r="7"/><circle class="fa" cx="190" cy="40" r="7"/><circle class="fa" cx="170" cy="60" r="7"/>
 ```
 
-Imagine you need to spread an urgent message to everyone in a town. The effort and time it takes will scale based on the town's population $n$ — and depending on which communication strategy you use, that scaling looks wildly different:
+Imagine you need to spread an urgent message to everyone in a town. The effort and time it takes will scale based on the town's population n — and depending on which communication strategy you use, that scaling looks wildly different:
 
 - **The megaphone:** You stand on a balcony in the town square and shout once. Whether the town has 10 residents or 10 billion, you shout once and you are done. Your effort is flat: ==constant time==.
-- **The phone tree:** You call two friends, each of whom calls two more friends, and so on. The calls happen in rounds, and each round doubles how many people know. If the town's population doubles, the tree needs only one more round before everyone has heard: ==logarithmic time== to finish, even though the total number of calls still grows with $n$.
+- **The phone tree:** You call two friends, each of whom calls two more friends, and so on. The calls happen in rounds, and each round doubles how many people know. If the town's population doubles, the tree needs only one more round before everyone has heard: ==logarithmic time== to finish, even though the total number of calls still grows with n.
 - **Door-to-door delivery:** You walk to every house individually to deliver a physical envelope. Your work scales one-to-one with the population: ==linear time==.
 - **The handshake greeting:** Every resident must meet every other resident in person to shake hands. In a small village this is fine, but in a large city the total handshakes explode quadratically: ==quadratic time==.
 - **The committee and route planning:** Evaluating every possible subset of citizens yields an exponential explosion, while calculating the optimal visiting sequence among all permutations yields a factorial nightmare.
@@ -46,7 +46,7 @@ Seven canonical complexity classes define the standard performance landscape of 
 <line class="st" x1="30" y1="95" x2="210" y2="95"/><line class="st" x1="30" y1="95" x2="45" y2="90"/><line class="st" x1="45" y1="90" x2="80" y2="82"/><line class="st" x1="80" y1="82" x2="130" y2="65"/><line class="st" x1="130" y1="65" x2="175" y2="35"/><line class="st" x1="175" y1="35" x2="200" y2="10"/><rect class="fa" x="35" y="91" width="6" height="4" rx="1"/><rect class="fa" x="70" y="81" width="6" height="4" rx="1"/><rect class="fa" x="120" y="66" width="6" height="4" rx="1"/><rect class="fk" x="165" y="38" width="6" height="4" rx="1"/><circle class="fc" cx="200" cy="10" r="5"/>
 ```
 
-In asymptotic analysis, algorithms are grouped into a hierarchy called the **complexity ladder**. As $n$ increases, the curves separate with brutal finality:
+In asymptotic analysis, algorithms are grouped into a hierarchy called the **complexity ladder**. As n increases, the curves separate with brutal finality:
 
 ```rosetta "The seven canonical complexity classes"
 Class | Name | Characteristic Behavior
@@ -59,7 +59,7 @@ O(2ⁿ) | Exponential | Each element makes an independent binary choice (all sub
 O(n!) | Factorial | You enumerate every ordering or permutation
 ```
 
-Drag the slider below across input sizes from $1$ to $1{,}000{,}000$ to watch the operation counts and wall clock times diverge. The dashed budget mark on each bar sits at $10^8$ operations — the standard one-second budget allowance of automated judges:
+Drag the slider below across input sizes from 1 to 1,000,000 to watch the operation counts and wall clock times diverge. The dashed budget mark on each bar sits at 10⁸ operations — the standard one-second budget allowance of automated judges:
 
 ```widget #complexityLadder "The complexity ladder: operations and wall clock time across input sizes"
 <div class="ladder-stage">
@@ -97,24 +97,24 @@ Repeatedly dividing a candidate space by two reaches a single element in exactly
 <circle class="fa" cx="120" cy="20" r="8"/><circle class="fa" cx="70" cy="50" r="7"/><circle class="fa" cx="170" cy="50" r="7"/><circle class="fa" cx="45" cy="80" r="6"/><circle class="fa" cx="95" cy="80" r="6"/><circle class="fa" cx="145" cy="80" r="6"/><circle class="fk" cx="195" cy="80" r="6"/><line class="st" x1="114" y1="26" x2="76" y2="44"/><line class="st" x1="126" y1="26" x2="164" y2="44"/><line class="st" x1="66" y1="56" x2="49" y2="74"/><line class="st" x1="74" y1="56" x2="91" y2="74"/><line class="st" x1="166" y1="56" x2="149" y2="74"/><line class="st" x1="174" y1="56" x2="191" y2="74"/>
 ```
 
-When beginners see $O(\log n)$, they often wonder where the logarithm comes from. In computer science, logarithms arise from **repeated division**.
+When beginners see O(log n), they often wonder where the logarithm comes from. In computer science, logarithms arise from **repeated division**.
 
-Consider ==binary search==: you inspect the midpoint of a sorted array. With one single comparison, you discard half of the entire array. How many times can you divide $n$ items in half before only 1 item remains? By definition, that number is $\log_2 n$:
+Consider ==binary search==: you inspect the midpoint of a sorted array. With one single comparison, you discard half of the entire array. How many times can you divide n items in half before only 1 item remains? By definition, that number is log₂ n:
 
 ```derivation
 **Deriving logarithmic halving:**
-At step 0, we have $n$ candidates.
-At step 1, we discard half, leaving $\frac{n}{2}$ candidates.
-At step 2, we discard half again, leaving $\frac{n}{4} = \frac{n}{2^2}$ candidates.
-At step $k$, there are $\frac{n}{2^k}$ candidates remaining.
+At step 0, we have n candidates.
+At step 1, we discard half, leaving n/2 candidates.
+At step 2, we discard half again, leaving n/4 = n/2² candidates.
+At step k, there are n/2ᵏ candidates remaining.
 
 The process stops when exactly 1 candidate remains:
-$$\frac{n}{2^k} = 1 \implies 2^k = n \implies k = \log_2 n$$
+n/2ᵏ = 1 ⟹ 2ᵏ = n ⟹ k = log₂ n
 
-Doubling the universe of data adds only one additional halving step: $\log_2(2n) = \log_2 n + 1$.
+Doubling the universe of data adds only one additional halving step: log₂(2n) = log₂ n + 1.
 ```
 
-Use the stepper below to watch numbers collapse to $1$ under repeated halving:
+Use the stepper below to watch numbers collapse to 1 under repeated halving:
 
 ```widget #halvingStepper "Halving stepper: tracing divisions by 2 down to 1"
 <div class="halve-stage">
@@ -152,7 +152,7 @@ Implementing an explicit halving loop reveals how quickly numbers collapse to on
 <rect class="fa" x="30" y="25" width="100" height="60" rx="6"/><line class="st" x1="45" y1="45" x2="115" y2="45"/><line class="st" x1="45" y1="60" x2="95" y2="60"/><circle class="fc" cx="160" cy="50" r="22"/><line class="st" x1="176" y1="66" x2="200" y2="90"/>
 ```
 
-In code, the number of halvings before reaching $1$ is computed with a while loop that performs integer division. Notice that in Python we write `n //= 2` (floor division), while in TypeScript we explicitly write `Math.floor(n / 2)`:
+In code, the number of halvings before reaching 1 is computed with a while loop that performs integer division. Notice that in Python we write `n //= 2` (floor division), while in TypeScript we explicitly write `Math.floor(n / 2)`:
 
 ```code solution "halvings: count divisions by 2 before reaching 1"
 ```
@@ -174,11 +174,11 @@ Problem input limits announce the intended complexity class before you write a s
 <circle class="fa" cx="120" cy="56" r="38"/><circle class="fk" cx="120" cy="56" r="32"/><line class="st" x1="120" y1="18" x2="120" y2="10"/><rect class="fa" x="112" y="6" width="16" height="5" rx="1"/><line class="st" x1="120" y1="56" x2="138" y2="38"/><circle class="fc" cx="120" cy="56" r="4"/>
 ```
 
-Modern CPU cores execute roughly $10^8$ to $10^9$ cycles per second. On technical interview platforms and competitive programming judges, your code is typically allotted **1 to 2 seconds** of execution time before triggering a Time Limit Exceeded (TLE) error. This gives a reliable rule of thumb:
+Modern CPU cores execute roughly 10⁸ to 10⁹ cycles per second. On technical interview platforms and competitive programming judges, your code is typically allotted **1 to 2 seconds** of execution time before triggering a Time Limit Exceeded (TLE) error. This gives a reliable rule of thumb:
 
-$$\text{Operation budget} \approx 10^8 \text{ simple operations}$$
+> Operation budget ≈ 10⁸ simple operations
 
-When you read a problem description, the stated constraint on $n$ instantly narrows down the viable algorithmic strategies:
+When you read a problem description, the stated constraint on n instantly narrows down the viable algorithmic strategies:
 
 ```widget #constraintsWidget "Constraints table: matching input limits to viable algorithm classes"
 <div class="cons-stage">

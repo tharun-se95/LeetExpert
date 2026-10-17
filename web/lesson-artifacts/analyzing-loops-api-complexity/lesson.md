@@ -24,8 +24,8 @@ Watching how repetitive floor actions are structured determines how the whole sh
 
 Back on the postal sorting floor, daily duties consist of repetitive operations on stacks of letters and boxes. How those tasks combine governs whether total work remains manageable or balloons uncontrollably:
 
-- **Two separate tasks (sequence).** First, you stamp each letter in a stack of $n$. Next, you scan each parcel in a cart of $n$. Because these actions happen one after another, total effort is the **sum** of the two passes: $n + n = 2n \rightarrow$ **$\Theta(n)$**.
-- **Box inside box (nesting).** Next, you receive a crate holding $n$ shipping boxes. Inside each box lie $n$ parcel slots, and you must apply an individual label to every item. Here your work **multiplies**: $n$ boxes $\times$ $n$ items per box = $n^2 \rightarrow$ **$\Theta(n^2)$**.
+- **Two separate tasks (sequence).** First, you stamp each letter in a stack of n. Next, you scan each parcel in a cart of n. Because these actions happen one after another, total effort is the **sum** of the two passes: n + n = 2n → **Θ(n)**.
+- **Box inside box (nesting).** Next, you receive a crate holding n shipping boxes. Inside each box lie n parcel slots, and you must apply an individual label to every item. Here your work **multiplies**: n boxes × n items per box = n² → **Θ(n²)**.
 
 The difference is not the raw number of loops—it is whether one loop runs **inside** the other.
 
@@ -43,11 +43,11 @@ When loop variables double or depend on outer indices, closed-form math predicts
 <path class="st" d="M30 80C50 80 70 70 90 50S110 20 130 20"/><rect class="fa" x="160" y="70" width="16" height="16" rx="2"/><rect class="fa" x="180" y="50" width="16" height="36" rx="2"/><rect class="fa" x="200" y="30" width="16" height="56" rx="2"/>
 ```
 
-The intuition that "one loop equals $O(n)$" only holds when the loop counter steps by a constant offset. When it multiplies or depends on an outer bound, you must count iterations explicitly:
+The intuition that "one loop equals O(n)" only holds when the loop counter steps by a constant offset. When it multiplies or depends on an outer bound, you must count iterations explicitly:
 
-1. **Loop A (Doubling counter):** `i` begins at $1$ and doubles each pass ($1, 2, 4, 8, \dots$). It halts when $i \ge n$, executing $\lceil \log_2 n \rceil$ times $\rightarrow$ **$O(\log n)$**.
-2. **Loop B (Two sequential loops):** First loop runs $n$ times; second loop runs $n$ times. Total work: $n + n = 2n \rightarrow$ **$O(n)$**.
-3. **Loop C (Nested dependent bound):** Inner loop runs from $0$ up to $i$. On iteration $i$, it executes $i$ steps. Summing across all passes yields $0 + 1 + 2 + \dots + (n - 1) = \frac{n(n-1)}{2} \rightarrow$ **$O(n^2)$**.
+1. **Loop A (Doubling counter):** `i` begins at 1 and doubles each pass (1, 2, 4, 8, …). It halts when i ≥ n, executing ⌈log₂ n⌉ times → **O(log n)**.
+2. **Loop B (Two sequential loops):** First loop runs n times; second loop runs n times. Total work: n + n = 2n → **O(n)**.
+3. **Loop C (Nested dependent bound):** Inner loop runs from 0 up to i. On iteration i, it executes i steps. Summing across all passes yields 0 + 1 + 2 + … + (n - 1) = n(n − 1)/2 → **O(n²)**.
 
 ```widget #loopShapes "Loop shapes: count iterations vs closed form"
 <div class="loop-stage">
@@ -66,11 +66,11 @@ The intuition that "one loop equals $O(n)$" only holds when the loop counter ste
 ```
 
 ```derivation
-**Loop A (i doubles): ⌈log₂ n⌉ iterations, so O(log n) time.** Doubling $k$ times reaches $2^k \ge n$, which solves to $k = \lceil \log_2 n \rceil$.
+**Loop A (i doubles): ⌈log₂ n⌉ iterations, so O(log n) time.** Doubling k times reaches 2ᵏ ≥ n, which solves to k = ⌈log₂ n⌉.
 
-**Loop B (sequential loops): 2n iterations, so O(n) time.** Statements back-to-back sum: $n + n = 2n$, with constants discarded in asymptotic analysis.
+**Loop B (sequential loops): 2n iterations, so O(n) time.** Statements back-to-back sum: n + n = 2n, with constants discarded in asymptotic analysis.
 
-**Loop C (dependent bound j < i): n(n - 1) / 2 iterations, so O(n²) time.** Pairing smallest and largest terms $(0 + (n-1)) + (1 + (n-2)) + \dots$ yields $\frac{n(n-1)}{2}$ steps.
+**Loop C (dependent bound j < i): n(n - 1) / 2 iterations, so O(n²) time.** Pairing smallest and largest terms (0 + (n-1)) + (1 + (n-2)) + … yields n(n − 1)/2 steps.
 ```
 
 ```key
@@ -93,7 +93,7 @@ We write an explicit function to execute and count each shape. In production sys
 ```
 
 ````warn
-Pricing `x in list` as O(1). Checking membership in a list of size $k$ scans all $k$ elements under the hood. Inside an $n$-iteration loop over distinct items, every search scans the whole accumulating output and misses, which turns what looks like a single loop into $0 + 1 + 2 + \dots + (n-1) = \frac{n(n-1)}{2}$ comparisons: quadratic $O(n^2)$ time!
+Pricing `x in list` as O(1). Checking membership in a list of size k scans all k elements under the hood. Inside an n-iteration loop over distinct items, every search scans the whole accumulating output and misses, which turns what looks like a single loop into 0 + 1 + 2 + … + (n-1) = n(n − 1)/2 comparisons: quadratic O(n²) time!
 
 ```code mistake "dedupe_list: hidden quadratic loop inside list scan"
 ```
@@ -111,11 +111,11 @@ Library methods like in list, .includes(), slice(), and string concatenation con
 
 The multiplication rule requires the *true* cost of the loop body. Modern standard libraries pack high-level operations into single expressions that mask significant asymptotic work:
 
-- `x in list` (Python) / `arr.includes(x)` (JavaScript) $\rightarrow$ linear scan: **$O(k)$**
-- `list.insert(0, val)` / `arr.unshift(val)` $\rightarrow$ shifts all existing elements: **$O(n)$**
-- `s += piece` in a loop: strings are immutable, so each `+=` may copy everything built so far $\rightarrow$ **$O(n^2)$** for the whole loop (CPython sometimes extends in place, but nothing in the language promises it)
+- `x in list` (Python) / `arr.includes(x)` (JavaScript) → linear scan: **O(k)**
+- `list.insert(0, val)` / `arr.unshift(val)` → shifts all existing elements: **O(n)**
+- `s += piece` in a loop: strings are immutable, so each `+=` may copy everything built so far → **O(n²)** for the whole loop (CPython sometimes extends in place, but nothing in the language promises it)
 
-Replacing the list membership test with a ==hash set== drops each check from $O(k)$ to $O(1)$, restoring overall complexity to linear $O(n)$.
+Replacing the list membership test with a ==hash set== drops each check from O(k) to O(1), restoring overall complexity to linear O(n).
 
 ```widget #apiPricing "Price the body honestly: Set vs List membership"
 <div class="api-stage">
