@@ -88,7 +88,13 @@ export default async function ConceptMapPage({ params }: PageProps) {
           className="dark navy-card mt-8 flex min-h-[22rem] flex-1 flex-col p-5"
           style={family ? familyCssVars(family) : undefined}
         >
-          <ConceptMindMap root={conceptMap} label={mod.title} size="xl" fill />
+          <ConceptMindMap
+            root={conceptMap}
+            label={mod.title}
+            moduleSlug={slug}
+            size="xl"
+            fill
+          />
         </div>
       </div>
     </div>

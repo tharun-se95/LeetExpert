@@ -1,8 +1,10 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-import { CaretRight } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
+import { ArrowUpRight, CaretRight } from "@phosphor-icons/react/dist/ssr";
 
 export interface ConceptMapNodeData extends Record<string, unknown> {
   label: string;
+  href?: string;
   isRoot: boolean;
   isLeaf: boolean;
   isExpanded: boolean;
@@ -22,37 +24,54 @@ export interface ConceptMapNodeData extends Record<string, unknown> {
  * full keyboard and screen-reader access.
  */
 export function ConceptMapNode({ data }: NodeProps & { data: ConceptMapNodeData }) {
-  const { label, isRoot, isLeaf, isExpanded, childCount, maxWidth, textSize, circleSize, onToggle } =
+  const { label, href, isRoot, isLeaf, isExpanded, childCount, maxWidth, textSize, circleSize, onToggle } =
     data;
   const hasChildren = !isLeaf;
+
+  const cardClasses = isRoot
+    ? `flex w-fit min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] bg-accent px-3.5 py-2 font-semibold text-on-pop ${textSize}`
+    : isLeaf
+      ? `flex w-fit min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] border border-border/70 bg-surface px-3.5 py-2 leading-snug text-foreground ${textSize}`
+      : `flex w-fit min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] border border-border bg-elevated px-3.5 py-2 leading-snug font-medium text-foreground ${textSize}`;
+
+  const content = (
+    <>
+      <span className="line-clamp-2 break-words">{label}</span>
+      {href ? (
+        <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-70 group-hover/node:opacity-100 transition-opacity" />
+      ) : null}
+      {hasChildren && !isExpanded ? (
+        <span
+          className={
+            isRoot
+              ? "shrink-0 rounded-full bg-black/15 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums"
+              : "shrink-0 rounded-full bg-accent/12 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-mark"
+          }
+        >
+          {childCount}
+        </span>
+      ) : null}
+    </>
+  );
 
   return (
     // w-max: the row is as wide as the card it holds, not a fixed column.
     <div className="flex w-max items-center gap-1.5">
       <Handle type="target" position={Position.Left} className="!pointer-events-none !opacity-0" />
-      <div
-        className={
-          isRoot
-            ? `flex w-fit min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] bg-accent px-3.5 py-2 font-semibold text-on-pop ${textSize}`
-            : isLeaf
-              ? `flex w-fit min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] border border-border/70 bg-surface px-3.5 py-2 leading-snug text-foreground ${textSize}`
-              : `flex w-fit min-h-9 items-center gap-2 rounded-[length:var(--radius-md)] border border-border bg-elevated px-3.5 py-2 leading-snug font-medium text-foreground ${textSize}`
-        }
-        style={{ maxWidth }}
-      >
-        <span className="line-clamp-2 break-words">{label}</span>
-        {hasChildren && !isExpanded ? (
-          <span
-            className={
-              isRoot
-                ? "shrink-0 rounded-full bg-black/15 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums"
-                : "shrink-0 rounded-full bg-accent/12 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-mark"
-            }
-          >
-            {childCount}
-          </span>
-        ) : null}
-      </div>
+      {href ? (
+        <Link
+          href={href}
+          className={`nodrag nopan pointer-events-auto group/node cursor-pointer transition hover:border-accent hover:brightness-105 ${cardClasses}`}
+          style={{ maxWidth }}
+          title={`Open: ${label}`}
+        >
+          {content}
+        </Link>
+      ) : (
+        <div className={cardClasses} style={{ maxWidth }}>
+          {content}
+        </div>
+      )}
       {hasChildren ? (
         <button
           type="button"

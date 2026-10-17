@@ -230,6 +230,41 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
     return () => observer.disconnect();
   }, [landing]);
 
+  const mainRef = useRef<HTMLElement>(null);
+
+  // Restore scroll position to top or anchor target on route / hash change.
+  // Next.js default scroll restoration only scrolls window, while AppShell
+  // contains the scrollable viewport in the overflow-y-auto main element.
+  useEffect(() => {
+    const scrollToCurrentHashOrTop = () => {
+      if (!mainRef.current) return;
+      const hash = window.location.hash;
+      if (hash) {
+        const target = document.getElementById(hash.replace("#", ""));
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth" });
+          return;
+        }
+      }
+      mainRef.current.scrollTop = 0;
+    };
+
+    scrollToCurrentHashOrTop();
+
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash && mainRef.current) {
+        const target = document.getElementById(hash.replace("#", ""));
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, [pathname]);
+
   return (
     <SyncBridgeProvider authEnabled={authEnabled}>
     <ProgressProvider
@@ -290,6 +325,7 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
                     ? "flex min-h-0 flex-col overflow-hidden"
                     : "overflow-y-auto",
                 )}
+                ref={mainRef}
               >
                 {/*
                   The app's desk, inside the scroller so it moves with the

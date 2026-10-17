@@ -74,10 +74,9 @@ export default async function ProblemPage({ params }: PageProps) {
     const hasPractice = hit.module.lessons.some(
       (l) => l.type === "practice" && l.slug === "practice",
     );
-    const backHref = hasPractice
+    const moduleUrl = hasPractice
       ? lessonHref(hit.module.slug, "practice")
       : moduleHref(hit.module.slug);
-    const backLabel = hasPractice ? "Practice" : hit.module.shortTitle;
     const { explanation } = splitProblemTabs(lesson.sandbox.afterSandbox);
     const hintLabels = extractHints(explanation).map((h) => h.label);
 
@@ -104,8 +103,9 @@ export default async function ProblemPage({ params }: PageProps) {
         <ProblemWorkspace
           lesson={{ ...lesson, sandbox: lesson.sandbox }}
           eyebrow={`Module ${hit.module.number} · ${hit.module.title}`}
-          backHref={backHref}
-          backLabel={backLabel}
+          backHref="/courses/dsa/problems"
+          backLabel="Problems"
+          moduleHref={moduleUrl}
           hintLabels={hintLabels}
           prev={prev ? { href: problemHref(prev.slug), title: prev.title } : null}
           next={next ? { href: problemHref(next.slug), title: next.title } : null}

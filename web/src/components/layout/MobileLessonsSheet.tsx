@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { X } from "@phosphor-icons/react";
+import { FileText, Gear, MapTrifold, X } from "@phosphor-icons/react";
 import { CourseNavTree } from "@/components/layout/CourseNavTree";
 
 const FOCUSABLE =
@@ -126,6 +127,33 @@ export function MobileLessonsSheet({
               >
                 <X className="h-5 w-5" weight="bold" />
               </button>
+            </div>
+            {/* Quick-access utility strip for mobile navigation discoverability */}
+            <div className="grid grid-cols-3 gap-2 border-b border-border bg-surface/40 p-3">
+              <Link
+                href="/courses/dsa/cheatsheets"
+                onClick={onClose}
+                className="flex items-center justify-center gap-1.5 rounded-[length:var(--radius-xs)] border border-border/80 bg-background/80 px-2 py-2 text-xs font-medium text-foreground transition-colors hover:bg-surface"
+              >
+                <FileText className="h-3.5 w-3.5 text-accent" />
+                <span className="truncate">Cheatsheets</span>
+              </Link>
+              <Link
+                href="/courses/dsa/roadmap"
+                onClick={onClose}
+                className="flex items-center justify-center gap-1.5 rounded-[length:var(--radius-xs)] border border-border/80 bg-background/80 px-2 py-2 text-xs font-medium text-foreground transition-colors hover:bg-surface"
+              >
+                <MapTrifold className="h-3.5 w-3.5 text-accent" />
+                <span className="truncate">Roadmap</span>
+              </Link>
+              <Link
+                href="/settings"
+                onClick={onClose}
+                className="flex items-center justify-center gap-1.5 rounded-[length:var(--radius-xs)] border border-border/80 bg-background/80 px-2 py-2 text-xs font-medium text-foreground transition-colors hover:bg-surface"
+              >
+                <Gear className="h-3.5 w-3.5 text-muted" />
+                <span className="truncate">Settings</span>
+              </Link>
             </div>
             {/* px-6, not px-4: the back row's caret hangs 16px into this gutter
                 (CourseNavPanel), and px-4 is 13px at the phone's 13px root, so
