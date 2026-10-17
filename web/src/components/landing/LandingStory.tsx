@@ -126,13 +126,23 @@ function Hero({ counts, links }: { counts: CurriculumCounts; links: { start: str
       className="sticky top-[var(--landing-header-h)] -mx-6 h-[var(--landing-hero-h)] overflow-clip md:-mx-16"
     >
       <div className="landing-hero-stage flex h-full flex-col">
+        {/* Ambient hero spotlight to lift the 3D floor and copy */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -top-20 -z-10 h-[520px] overflow-hidden opacity-75 dark:opacity-35"
+          style={{
+            background:
+              "radial-gradient(ellipse 65% 50% at 50% 15%, color-mix(in srgb, var(--good) 22%, transparent), color-mix(in srgb, var(--info) 14%, transparent) 50%, transparent 80%)",
+          }}
+        />
+
         <div className="landing-hero-copy relative z-10 shrink-0 px-6 pt-10 md:px-16 lg:pt-16">
           <p className={cn(KICKER, "flex items-center gap-2.5")}>
             <span aria-hidden className="relative flex h-2.5 w-2.5">
-              <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-50 motion-reduce:animate-none" />
-              <span className="relative h-2.5 w-2.5 rounded-full bg-accent" />
+              <span className="absolute inset-0 animate-ping rounded-full bg-good opacity-60 motion-reduce:animate-none" />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-good" />
             </span>
-            {HERO.kicker}
+            <span className="font-semibold text-good">{HERO.kicker}</span>
           </p>
           <HeroHeadline />
           <p className="mt-8 max-w-2xl text-xl leading-relaxed text-muted">{leadAndTail(HERO.lede)}</p>
@@ -140,7 +150,7 @@ function Hero({ counts, links }: { counts: CurriculumCounts; links: { start: str
           <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
             <Link
               href={links.start}
-              className="inline-flex items-center gap-2 rounded-full bg-pop px-6 py-3 text-base font-medium text-on-pop shadow-elevation transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
+              className="inline-flex items-center gap-2 rounded-full bg-good px-6 py-3 text-base font-semibold text-on-pop shadow-elevation transition-[opacity,transform,filter] duration-[var(--dur-fast)] ease-[var(--ease)] hover:brightness-105 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
             >
               {HERO.start}
               <ArrowRight className="h-4 w-4" aria-hidden />
@@ -205,7 +215,7 @@ function HeroHeadline() {
     >
       <span aria-hidden className="block">
         {words(firstWords.slice(0, -1).join(" "), 0.1)}{" "}
-        <span className="hero-word text-accent" style={{ animationDelay: "0.31s" }}>
+        <span className="hero-word font-bold text-good" style={{ animationDelay: "0.31s" }}>
           {firstWords.at(-1)}
         </span>
         <span className="hero-caret" />
@@ -223,7 +233,7 @@ function HeroHeadline() {
               <path
                 d="M20 58 C 18 22, 150 8, 184 40 C 206 64, 150 92, 90 90 C 40 88, 6 70, 22 46 C 30 34, 60 26, 96 24"
                 fill="none"
-                stroke="var(--accent)"
+                stroke="var(--good)"
                 strokeWidth="3.2"
                 strokeLinecap="round"
               />
@@ -233,7 +243,7 @@ function HeroHeadline() {
             <path
               d="M4 22 L 17 34 L 42 5"
               fill="none"
-              stroke="var(--accent)"
+              stroke="var(--good)"
               strokeWidth="5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -286,6 +296,14 @@ function Inside({ chapter, stages, started }: { chapter: Chapter; stages: readon
   );
 }
 
+const STAGE_THEMES: Record<number, { border: string; pill: string }> = {
+  0: { border: "border-t-2 border-t-good hover:border-good/60", pill: "border border-good/40 bg-good-surface/30 text-good font-semibold" },
+  1: { border: "border-t-2 border-t-warn hover:border-warn/60", pill: "border border-warn/40 bg-warn-surface/30 text-warn font-semibold" },
+  2: { border: "border-t-2 border-t-info hover:border-info/60", pill: "border border-info/40 bg-info-surface/30 text-info font-semibold" },
+  3: { border: "border-t-2 border-t-accent hover:border-accent/60", pill: "border border-accent/40 bg-pop/10 text-mark font-semibold" },
+  4: { border: "border-t-2 border-t-good hover:border-good/60", pill: "border border-good/40 bg-good-surface/30 text-good font-semibold" },
+};
+
 /**
  * One stage as an image card (owner, 2026-09-23: "beautiful image cards … that
  * pop"): the art of its first modules fanned like a hand of cards over a
@@ -295,12 +313,16 @@ function Inside({ chapter, stages, started }: { chapter: Chapter; stages: readon
  */
 function StageCardLink({ stage }: { stage: StageCard }) {
   const art = stage.art ?? [];
+  const theme = STAGE_THEMES[stage.number] ?? { border: "hover:border-accent/45", pill: "text-muted" };
   // Fanned from the middle: the centre card on top, its neighbours tipped out.
   const fan = art.length === 1 ? [0] : art.length === 2 ? [-1, 1] : [-1, 0, 1];
   return (
     <Link
       href={stage.href}
-      className="group flex h-full flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition-[transform,border-color] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5 hover:border-accent/45 focus-visible:-translate-y-1.5"
+      className={cn(
+        "group flex h-full flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition-[transform,border-color] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5 focus-visible:-translate-y-1.5",
+        theme.border,
+      )}
     >
       {art.length > 0 ? (
         <div aria-hidden className="stage-art relative h-44 overflow-hidden bg-surface [perspective:900px]">
@@ -318,7 +340,9 @@ function StageCardLink({ stage }: { stage: StageCard }) {
       ) : null}
       <div className="flex flex-1 flex-col p-5">
         <span className="flex items-center justify-between gap-3">
-          <span className={KICKER}>Stage {stage.number}</span>
+          <span className={cn(KICKER, "rounded-full px-2.5 py-0.5 text-[10px] font-mono", theme.pill)}>
+            Stage {stage.number}
+          </span>
           <ArrowRight
             className="h-4 w-4 text-muted transition-[color,transform] duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-1 group-hover:text-foreground motion-reduce:transition-none"
             aria-hidden

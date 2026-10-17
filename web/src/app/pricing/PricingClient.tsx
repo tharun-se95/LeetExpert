@@ -161,6 +161,16 @@ export function PricingClient() {
 
   return (
     <div className="relative min-h-screen py-10 lg:py-16">
+      {/* Ambient background glow to eliminate washed-out flat canvas */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[650px] overflow-hidden opacity-70 dark:opacity-35"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 55% at 50% -10%, color-mix(in srgb, var(--good) 20%, transparent), color-mix(in srgb, var(--info) 14%, transparent) 55%, transparent 85%)",
+        }}
+      />
+
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <Breadcrumbs
           items={[
@@ -170,7 +180,7 @@ export function PricingClient() {
 
         {/* Hero Header */}
         <div className="mt-8 text-center sm:mt-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3.5 py-1 text-xs font-mono font-medium tracking-wide text-mark">
+          <div className="inline-flex items-center gap-2 rounded-full border border-good/40 bg-good-surface/40 px-3.5 py-1 text-xs font-mono font-medium tracking-wide text-good">
             <Sparkle className="h-3.5 w-3.5" weight="fill" />
             <span>TRANSPARENT VALUE · NO RECURRING SUBSCRIPTIONS</span>
           </div>
@@ -204,7 +214,7 @@ export function PricingClient() {
             </div>
 
             {currentCurrency.pppBadge ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-pop/10 px-3 py-1 text-[11px] font-mono font-medium text-mark">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-good/40 bg-good-surface/40 px-3 py-1 text-[11px] font-mono font-medium text-good">
                 <Check className="h-3 w-3" weight="bold" />
                 <span>{currentCurrency.pppBadge}</span>
               </span>
@@ -223,13 +233,29 @@ export function PricingClient() {
                 className={cn(
                   "relative flex flex-col justify-between rounded-[length:var(--radius-lg)] border p-6 sm:p-8 transition-all duration-[var(--dur)]",
                   plan.popular
-                    ? "border-accent bg-elevated/90 shadow-elevation ring-1 ring-accent/30"
-                    : "border-border bg-surface/40 hover:border-border/80",
+                    ? "border-good/60 bg-gradient-to-b from-elevated via-elevated to-good-surface/15 shadow-elevation ring-1 ring-good/40"
+                    : plan.id === "team"
+                      ? "border-warn/40 bg-gradient-to-b from-elevated via-elevated to-warn-surface/10 hover:border-warn/70"
+                      : "border-border bg-elevated/70 hover:border-border/90",
                 )}
               >
+                {/* Top vibrant edge bar */}
+                {plan.popular ? (
+                  <div className="absolute inset-x-0 -top-px h-1 rounded-t-[length:var(--radius-lg)] bg-gradient-to-r from-good via-accent to-info" />
+                ) : plan.id === "team" ? (
+                  <div className="absolute inset-x-0 -top-px h-1 rounded-t-[length:var(--radius-lg)] bg-gradient-to-r from-warn via-insight to-accent" />
+                ) : null}
+
                 {plan.badge ? (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-mono font-bold tracking-wider text-on-pop uppercase">
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-[10px] font-mono font-bold tracking-wider uppercase shadow-elevation",
+                        plan.popular
+                          ? "bg-good text-on-pop"
+                          : "border border-warn/40 bg-warn-surface text-warn",
+                      )}
+                    >
                       {plan.badge}
                     </span>
                   </div>
@@ -260,14 +286,11 @@ export function PricingClient() {
                       <li key={idx} className="flex items-start gap-2.5">
                         {feat.included ? (
                           <Check
-                            className={cn(
-                              "h-4 w-4 shrink-0 mt-0.5",
-                              feat.highlight ? "text-mark font-bold" : "text-muted",
-                            )}
+                            className="h-4 w-4 shrink-0 mt-0.5 text-good"
                             weight="bold"
                           />
                         ) : (
-                          <X className="h-4 w-4 shrink-0 mt-0.5 text-muted/40" />
+                          <X className="h-4 w-4 shrink-0 mt-0.5 text-muted/30" />
                         )}
                         <span
                           className={cn(
@@ -275,7 +298,7 @@ export function PricingClient() {
                               ? feat.highlight
                                 ? "font-medium text-foreground"
                                 : "text-muted"
-                              : "text-muted/40 line-through",
+                              : "text-muted/30 line-through",
                           )}
                         >
                           {feat.text}
@@ -304,9 +327,9 @@ export function PricingClient() {
                       type="button"
                       onClick={() => handleOpenCheckout(plan)}
                       className={cn(
-                        "inline-flex w-full items-center justify-center gap-2 rounded-[length:var(--radius-md)] px-4 py-3 text-xs font-semibold tracking-wide transition-all cursor-pointer",
-                        plan.ctaVariant === "primary"
-                          ? "bg-accent text-on-pop hover:opacity-95 hover:scale-[1.01]"
+                        "inline-flex w-full items-center justify-center gap-2 rounded-[length:var(--radius-md)] px-4 py-3 text-xs font-semibold tracking-wide transition-all cursor-pointer shadow-elevation",
+                        plan.popular
+                          ? "bg-good text-on-pop hover:brightness-105 hover:scale-[1.01]"
                           : "border border-border bg-surface text-foreground hover:bg-pop/15",
                       )}
                     >
@@ -321,9 +344,9 @@ export function PricingClient() {
         </div>
 
         {/* 7-Day Money-Back Guarantee Seal */}
-        <div className="mt-14 rounded-[length:var(--radius-lg)] border border-border bg-surface/50 p-6 sm:p-8">
+        <div className="mt-14 rounded-[length:var(--radius-lg)] border border-good/40 bg-good-surface/30 p-6 sm:p-8">
           <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-accent/40 bg-pop/15 text-mark">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-good/50 bg-good-surface text-good shadow-elevation">
               <ShieldCheck className="h-6 w-6" weight="fill" />
             </div>
             <div className="space-y-1 text-center sm:text-left">
@@ -338,14 +361,14 @@ export function PricingClient() {
         </div>
 
         {/* Corporate Reimbursement Note */}
-        <div className="mt-6 flex flex-col items-center justify-between gap-4 rounded-[length:var(--radius-md)] border border-border/80 bg-background/80 px-6 py-4 sm:flex-row">
+        <div className="mt-6 flex flex-col items-center justify-between gap-4 rounded-[length:var(--radius-md)] border border-info/40 bg-info-surface/30 px-6 py-4 sm:flex-row">
           <div className="flex items-center gap-3">
-            <Buildings className="h-5 w-5 text-muted" aria-hidden />
+            <Buildings className="h-5 w-5 text-info" aria-hidden />
             <p className="text-xs text-muted">
               <strong className="text-foreground">Expensable with your learning stipend:</strong> Most engineers expense leetExpert via Concur, Expensify, or corporate educational budgets.
             </p>
           </div>
-          <span className="font-mono text-[11px] font-medium text-mark">
+          <span className="font-mono text-[11px] font-semibold text-info">
             Receipts with Tax IDs Included
           </span>
         </div>
