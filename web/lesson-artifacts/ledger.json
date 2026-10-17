@@ -139,22 +139,28 @@
   "big-o/why-efficiency-matters": {
    "evidence": {
     "build": {
-     "source": "fd6fd92bd7d0fbdb",
+     "source": "8cc889e6f3e98744",
      "on": "2026-10-17",
-     "commit": "48539b0",
-     "result": "big-o/why-efficiency-matters: 172,306 bytes -> lesson-artifacts/dist/big-o/why-efficiency-matters.html"
+     "commit": "1f8d39f",
+     "result": "big-o/why-efficiency-matters: 172,467 bytes -> lesson-artifacts/dist/big-o/why-efficiency-matters.html"
     },
     "code": {
-     "source": "fd6fd92bd7d0fbdb",
+     "source": "8cc889e6f3e98744",
      "on": "2026-10-17",
-     "commit": "48539b0",
+     "commit": "1f8d39f",
      "result": "All checks passed."
     },
     "light": {
-     "source": "fd6fd92bd7d0fbdb",
+     "source": "8cc889e6f3e98744",
      "on": "2026-10-17",
-     "commit": "48539b0",
+     "commit": "1f8d39f",
      "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "8cc889e6f3e98744",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     }
    },
    "notes": "",
@@ -165,7 +171,32 @@
    "family": null
   },
   "big-o/big-o-notation": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "4b02651a3eac9afa",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "big-o/big-o-notation: 163,142 bytes -> lesson-artifacts/dist/big-o/big-o-notation.html"
+    },
+    "code": {
+     "source": "4b02651a3eac9afa",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "4b02651a3eac9afa",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0008 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "4b02651a3eac9afa",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0008 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "big-o",
    "moduleNumber": 2,
@@ -174,7 +205,32 @@
    "family": null
   },
   "big-o/common-complexity-classes": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "b10ef52f5d053717",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "big-o/common-complexity-classes: 137,836 bytes -> lesson-artifacts/dist/big-o/common-complexity-classes.html"
+    },
+    "code": {
+     "source": "b10ef52f5d053717",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "b10ef52f5d053717",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "b10ef52f5d053717",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "big-o",
    "moduleNumber": 2,
@@ -183,7 +239,32 @@
    "family": null
   },
   "big-o/input-dependency-best-worst-average": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "95d04a4dee2e2d30",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "big-o/input-dependency-best-worst-average: 164,786 bytes -> lesson-artifacts/dist/big-o/input-dependency-best-worst-average.html"
+    },
+    "code": {
+     "source": "95d04a4dee2e2d30",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "95d04a4dee2e2d30",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "95d04a4dee2e2d30",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "big-o",
    "moduleNumber": 2,
@@ -192,7 +273,32 @@
    "family": null
   },
   "big-o/analyzing-loops-api-complexity": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "f2506a0f9c7753e0",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "big-o/analyzing-loops-api-complexity: 133,527 bytes -> lesson-artifacts/dist/big-o/analyzing-loops-api-complexity.html"
+    },
+    "code": {
+     "source": "f2506a0f9c7753e0",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "f2506a0f9c7753e0",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "f2506a0f9c7753e0",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "big-o",
    "moduleNumber": 2,
@@ -201,7 +307,32 @@
    "family": null
   },
   "big-o/analyzing-recursion-tree-method": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "c7d4958a04fe13b9",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "big-o/analyzing-recursion-tree-method: 143,254 bytes -> lesson-artifacts/dist/big-o/analyzing-recursion-tree-method.html"
+    },
+    "code": {
+     "source": "c7d4958a04fe13b9",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "c7d4958a04fe13b9",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "c7d4958a04fe13b9",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "big-o",
    "moduleNumber": 2,
@@ -210,7 +341,32 @@
    "family": null
   },
   "big-o/amortized-analysis-dynamic-arrays": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "46b456cb43432a2f",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "big-o/amortized-analysis-dynamic-arrays: 159,782 bytes -> lesson-artifacts/dist/big-o/amortized-analysis-dynamic-arrays.html"
+    },
+    "code": {
+     "source": "46b456cb43432a2f",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "All amortized analysis checks PASSED."
+    },
+    "light": {
+     "source": "46b456cb43432a2f",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "46b456cb43432a2f",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "big-o",
    "moduleNumber": 2,
@@ -219,7 +375,32 @@
    "family": null
   },
   "big-o/space-complexity": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "5c765fb023c5b74f",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "big-o/space-complexity: 120,046 bytes -> lesson-artifacts/dist/big-o/space-complexity.html"
+    },
+    "code": {
+     "source": "5c765fb023c5b74f",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "All space complexity checks PASSED."
+    },
+    "light": {
+     "source": "5c765fb023c5b74f",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "5c765fb023c5b74f",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "big-o",
    "moduleNumber": 2,
@@ -228,7 +409,32 @@
    "family": null
   },
   "big-o/complexity-drills": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "d4145c388e047f86",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "big-o/complexity-drills: 144,970 bytes -> lesson-artifacts/dist/big-o/complexity-drills.html"
+    },
+    "code": {
+     "source": "d4145c388e047f86",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "All complexity drills checks PASSED."
+    },
+    "light": {
+     "source": "d4145c388e047f86",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "d4145c388e047f86",
+     "on": "2026-10-17",
+     "commit": "1f8d39f",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "big-o",
    "moduleNumber": 2,
