@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MagnifyingGlass, SidebarSimple } from "@phosphor-icons/react";
+import { Gear, MagnifyingGlass, SidebarSimple } from "@phosphor-icons/react";
 import { AccountControl } from "@/components/auth/AccountControl";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Lamp } from "@/components/brand/Lamp";
@@ -219,6 +219,13 @@ export function Header({
           ) : null}
         </div>
 
+        <Link
+          href="/settings"
+          aria-label="Settings and preferences"
+          className={cn(ROUND_CONTROL, "h-11 w-11 md:h-10 md:w-10 max-sm:hidden")}
+        >
+          <Gear className="h-4 w-4" aria-hidden />
+        </Link>
         <ThemeToggle className={THEME_TOGGLE} />
         <AccountControl />
       </div>

@@ -140,7 +140,7 @@ export function ProblemAccordion({
         const isOpen = currentSection === item.id;
 
         return (
-          <div key={item.id} className="transition-colors">
+          <div key={item.id} className="transition-colors duration-[var(--dur-fast)] ease-[var(--ease)]">
             <button
               type="button"
               id={`accordion-trigger-${item.id}`}
@@ -157,7 +157,7 @@ export function ProblemAccordion({
               <div className="flex min-w-0 items-baseline gap-3">
                 <span
                   className={cn(
-                    "font-mono text-xs transition-colors",
+                    "font-mono text-xs transition-colors duration-[var(--dur-fast)] ease-[var(--ease)]",
                     isOpen
                       ? "text-mark font-bold"
                       : "text-muted font-medium group-hover:text-foreground",
@@ -174,7 +174,7 @@ export function ProblemAccordion({
               </div>
 
               <div className="flex shrink-0 items-center gap-2 pl-3">
-                <span className="font-mono text-xs text-muted/80 transition-colors group-hover:text-foreground hidden xs:inline">
+                <span className="font-mono text-xs text-muted/80 transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:text-foreground hidden xs:inline">
                   {isOpen ? "Close" : "Open"}
                 </span>
                 <CaretDown
@@ -200,17 +200,17 @@ export function ProblemAccordion({
                   {item.id === "description" ? (
                     <>
                       {difficulty || complexity || moduleTitle ? (
-                        <div className="mb-6 rounded-[length:var(--radius-md)] border border-border/70 bg-surface/30 p-3.5 sm:p-4">
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                        <div className="mb-6 rounded-[length:var(--radius-md)] border border-border/60 bg-surface/25 px-4 py-3">
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                             {difficulty ? (
                               <span
                                 className={cn(
                                   "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold font-mono",
                                   difficulty === "Easy"
-                                    ? "bg-good/15 text-good border border-good/30"
+                                    ? "bg-good/15 text-good"
                                     : difficulty === "Medium"
-                                      ? "bg-warn/15 text-warn border border-warn/30"
-                                      : "bg-bad/15 text-bad border border-bad/30",
+                                      ? "bg-warn/15 text-warn"
+                                      : "bg-bad/15 text-bad",
                                 )}
                               >
                                 <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />
@@ -219,13 +219,13 @@ export function ProblemAccordion({
                             ) : null}
 
                             {moduleTitle ? (
-                              <span className="inline-flex items-center rounded-full border border-border/80 bg-surface/80 px-2.5 py-0.5 text-xs font-mono text-foreground/80">
+                              <span className="inline-flex items-center text-xs font-mono text-muted">
                                 {moduleTitle}
                               </span>
                             ) : null}
 
                             {complexity?.time ? (
-                              <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-surface/60 px-2.5 py-0.5 text-xs font-mono text-foreground/85">
+                              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-foreground/85">
                                 <Clock size={13} className="text-accent" aria-hidden />
                                 <span className="text-muted">Target:</span>
                                 <span className="font-semibold">{complexity.time}</span>
@@ -233,7 +233,7 @@ export function ProblemAccordion({
                             ) : null}
 
                             {complexity?.space ? (
-                              <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-surface/60 px-2.5 py-0.5 text-xs font-mono text-foreground/85">
+                              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-foreground/85">
                                 <Cpu size={13} className="text-mark" aria-hidden />
                                 <span className="text-muted">Aux Space:</span>
                                 <span className="font-semibold">{complexity.space}</span>
@@ -241,7 +241,7 @@ export function ProblemAccordion({
                             ) : null}
 
                             {isSolved ? (
-                              <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-good/15 border border-good/30 px-2.5 py-0.5 text-xs font-medium text-good">
+                              <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-good/15 px-2.5 py-0.5 text-xs font-medium text-good">
                                 <Check size={12} weight="bold" aria-hidden />
                                 Solved
                               </span>
@@ -302,13 +302,13 @@ export function ProblemAccordion({
                       <button
                         type="button"
                         onClick={() => handleToggle("explanation")}
-                        className="group inline-flex items-center gap-1.5 text-accent font-medium transition-colors hover:text-mark touch-manipulation"
+                        className="group inline-flex items-center gap-1.5 text-accent font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-mark touch-manipulation"
                       >
                         <span>Continue to Explanation</span>
                         <ArrowRight
                           size={12}
                           weight="bold"
-                          className="transition-transform group-hover:translate-x-0.5"
+                          className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-0.5"
                           aria-hidden
                         />
                       </button>
@@ -318,7 +318,7 @@ export function ProblemAccordion({
                       <button
                         type="button"
                         onClick={() => handleToggle("description")}
-                        className="inline-flex items-center gap-1 text-muted transition-colors hover:text-foreground touch-manipulation"
+                        className="inline-flex items-center gap-1 text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground touch-manipulation"
                       >
                         <ArrowLeft size={12} weight="bold" aria-hidden />
                         <span>Description</span>
@@ -326,13 +326,13 @@ export function ProblemAccordion({
                       <button
                         type="button"
                         onClick={() => handleToggle("solution")}
-                        className="group inline-flex items-center gap-1.5 text-accent font-medium transition-colors hover:text-mark touch-manipulation"
+                        className="group inline-flex items-center gap-1.5 text-accent font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-mark touch-manipulation"
                       >
                         <span>Continue to Solution</span>
                         <ArrowRight
                           size={12}
                           weight="bold"
-                          className="transition-transform group-hover:translate-x-0.5"
+                          className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-0.5"
                           aria-hidden
                         />
                       </button>
@@ -342,7 +342,7 @@ export function ProblemAccordion({
                       <button
                         type="button"
                         onClick={() => handleToggle("explanation")}
-                        className="inline-flex items-center gap-1 text-muted transition-colors hover:text-foreground touch-manipulation"
+                        className="inline-flex items-center gap-1 text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground touch-manipulation"
                       >
                         <ArrowLeft size={12} weight="bold" aria-hidden />
                         <span>Explanation</span>
@@ -350,7 +350,7 @@ export function ProblemAccordion({
                       <button
                         type="button"
                         onClick={() => handleToggle("description")}
-                        className="inline-flex items-center gap-1 text-muted transition-colors hover:text-foreground touch-manipulation"
+                        className="inline-flex items-center gap-1 text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground touch-manipulation"
                       >
                         <span>Back to Description</span>
                         <ArrowRight size={12} weight="bold" aria-hidden />

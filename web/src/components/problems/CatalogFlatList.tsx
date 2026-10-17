@@ -71,7 +71,7 @@ export function CatalogFlatList({
               <button
                 type="button"
                 onClick={onClearFilters}
-                className="inline-flex items-center gap-1.5 rounded-[length:var(--radius-md)] bg-pop px-3.5 py-1.5 text-xs font-semibold text-on-pop shadow-elevation transition hover:opacity-90 touch-manipulation"
+                className="inline-flex items-center gap-1.5 rounded-[length:var(--radius-md)] bg-pop px-3.5 py-1.5 text-xs font-semibold text-on-pop shadow-elevation transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-90 active:scale-95 motion-reduce:transition-none touch-manipulation"
               >
                 Clear all filters
               </button>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -276,6 +277,11 @@ function AccountMenu({ user, sessionId }: { user: { id: string; name: string; em
                 <p className="truncate text-sm font-medium">{user.name}</p>
                 <p className="truncate text-xs text-muted">{user.email}</p>
                 <p data-sync-status className={cn("mt-1 text-xs", status.warn ? "text-warn" : "text-muted")}>{status.text}</p>
+                <div className="mt-2 pt-1 border-t border-border/50">
+                  <Link href="/settings" onClick={close} className="text-xs font-medium text-accent hover:underline">
+                    Settings &amp; Preferences →
+                  </Link>
+                </div>
               </div>
               {notice ? <p role="alert" className="border-b border-border px-3 py-2 text-xs text-warn">{notice.text}</p> : null}
               <div role="menu" aria-label="Account" onKeyDown={onMenuKeyDown}>

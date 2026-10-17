@@ -47,7 +47,7 @@ export function AudioMini({ src, ariaLabel }: AudioMiniProps) {
   const progress = duration ? currentTime / duration : 0;
 
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/[0.08] py-1 pr-3 pl-1 transition hover:border-accent/50 hover:bg-accent/[0.14]">
+    <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/[0.08] py-1 pr-3 pl-1 transition-[background-color,border-color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/50 hover:bg-accent/[0.14] motion-reduce:transition-none">
       <audio
         ref={audioRef}
         src={src}
@@ -63,7 +63,7 @@ export function AudioMini({ src, ariaLabel }: AudioMiniProps) {
         type="button"
         onClick={toggle}
         aria-label={playing ? "Pause lesson audio" : "Listen to this lesson"}
-        className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-on-pop transition hover:scale-105 motion-reduce:hover:scale-100"
+        className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-on-pop transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] hover:scale-105 active:scale-95 motion-reduce:hover:scale-100"
       >
         {playing ? (
           <span

@@ -32,31 +32,29 @@ export function Complexity({ source }: { source: string }) {
   }
 
   return (
-    <div className="my-6 overflow-hidden rounded-[length:var(--radius-lg)] border border-accent/30">
-      <div className="border-b border-accent/20 bg-accent/5 px-4 py-2">
+    <div className="my-6 overflow-hidden rounded-[length:var(--radius-lg)] border border-border/70 bg-surface/20 shadow-elevation">
+      <div className="flex items-center justify-between border-b border-border/60 bg-surface/40 px-4 py-2.5">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-mark">
           Complexity
         </p>
       </div>
-      <div className="grid gap-3 px-4 py-3">
-        {spec.time ? (
-          <div className="flex items-start gap-2.5">
-            <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-            <p className="text-sm">
-              <span className="font-mono font-medium">{spec.time}</span>
-              <span className="ml-2 text-muted">time</span>
-            </p>
-          </div>
-        ) : null}
-        {spec.space ? (
-          <div className="flex items-start gap-2.5">
-            <Database weight="bold" className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-            <p className="text-sm">
-              <span className="font-mono font-medium">{spec.space}</span>
-              <span className="ml-2 text-muted">space</span>
-            </p>
-          </div>
-        ) : null}
+      <div className="grid gap-3.5 px-4 py-3.5">
+        <div className="flex flex-wrap items-center gap-3">
+          {spec.time ? (
+            <div className="inline-flex items-center gap-2 rounded-[length:var(--radius-sm)] border border-border/60 bg-surface/50 px-2.5 py-1 text-xs">
+              <Clock3 className="h-3.5 w-3.5 shrink-0 text-accent" />
+              <span className="font-mono font-semibold text-foreground">{spec.time}</span>
+              <span className="text-muted">time</span>
+            </div>
+          ) : null}
+          {spec.space ? (
+            <div className="inline-flex items-center gap-2 rounded-[length:var(--radius-sm)] border border-border/60 bg-surface/50 px-2.5 py-1 text-xs">
+              <Database weight="bold" className="h-3.5 w-3.5 shrink-0 text-accent" />
+              <span className="font-mono font-semibold text-foreground">{spec.space}</span>
+              <span className="text-muted">space</span>
+            </div>
+          ) : null}
+        </div>
         {spec.why ? (
           <p className="text-sm leading-relaxed text-muted">{spec.why}</p>
         ) : null}
@@ -65,13 +63,13 @@ export function Complexity({ source }: { source: string }) {
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr>
-                  <th className="border-b border-border py-1.5 pr-3 text-left font-medium">
+                  <th className="border-b border-border/60 py-2 pr-3 text-left font-mono text-xs uppercase tracking-wider text-muted font-medium">
                     Operation
                   </th>
-                  <th className="border-b border-border py-1.5 pr-3 text-left font-medium">
+                  <th className="border-b border-border/60 py-2 pr-3 text-left font-mono text-xs uppercase tracking-wider text-muted font-medium">
                     Cost
                   </th>
-                  <th className="border-b border-border py-1.5 text-left font-medium">
+                  <th className="border-b border-border/60 py-2 text-left font-mono text-xs uppercase tracking-wider text-muted font-medium">
                     Why
                   </th>
                 </tr>
@@ -79,13 +77,13 @@ export function Complexity({ source }: { source: string }) {
               <tbody>
                 {spec.operations.map((op) => (
                   <tr key={op.name}>
-                    <td className="border-b border-border/60 py-1.5 pr-3 align-top font-mono text-[0.85em]">
+                    <td className="border-b border-border/30 py-2 pr-3 align-top font-mono text-[0.85em]">
                       {op.name}
                     </td>
-                    <td className="border-b border-border/60 py-1.5 pr-3 align-top font-mono text-[0.85em]">
+                    <td className="border-b border-border/30 py-2 pr-3 align-top font-mono text-[0.85em] font-medium text-foreground">
                       {op.time}
                     </td>
-                    <td className="border-b border-border/60 py-1.5 align-top text-muted">
+                    <td className="border-b border-border/30 py-2 align-top text-muted text-xs leading-relaxed">
                       {op.why ?? ""}
                     </td>
                   </tr>
