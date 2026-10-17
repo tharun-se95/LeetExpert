@@ -275,6 +275,12 @@ export function CourseNavPanel({
   const [internalFilter, setInternalFilter] = useState<"lessons" | "practice">(
     isPracticeRoute ? "practice" : "lessons",
   );
+
+  // Synchronize internal filter state if route changes externally (e.g. clicking top tabs)
+  useEffect(() => {
+    setInternalFilter(isPracticeRoute ? "practice" : "lessons");
+  }, [isPracticeRoute]);
+
   const filter = activeFilter ?? internalFilter;
 
   const handleFilterChange = (nextFilter: "lessons" | "practice") => {

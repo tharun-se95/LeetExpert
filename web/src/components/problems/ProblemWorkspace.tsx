@@ -84,6 +84,7 @@ interface ProblemWorkspaceProps {
   /** Hub or module link for the compact back control */
   backHref: string;
   backLabel?: string;
+  moduleHref?: string;
   /** Hint reveal labels only — bodies stay on the server corpus. */
   hintLabels: string[];
 }
@@ -100,6 +101,7 @@ export function ProblemWorkspace({
   next,
   backHref,
   backLabel = "Problems",
+  moduleHref,
   hintLabels,
 }: ProblemWorkspaceProps) {
   const { solved, markSolved } = useProgress();
@@ -201,7 +203,16 @@ export function ProblemWorkspace({
             <h1 className="truncate font-display text-sm font-bold tracking-tight uppercase sm:text-base">
               {lesson.title}
             </h1>
-            <p className="truncate text-[0.7rem] text-muted">{eyebrow}</p>
+            {moduleHref ? (
+              <Link
+                href={moduleHref}
+                className="inline-block max-w-full truncate text-[0.7rem] text-muted transition-colors hover:text-foreground"
+              >
+                {eyebrow}
+              </Link>
+            ) : (
+              <p className="truncate text-[0.7rem] text-muted">{eyebrow}</p>
+            )}
           </div>
           {isSolved ? (
             <span className="inline-flex shrink-0 items-center gap-1 rounded-[length:var(--radius-md)] bg-good/15 px-2 py-0.5 text-[0.7rem] font-medium text-good">

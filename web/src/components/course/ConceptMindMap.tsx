@@ -14,11 +14,14 @@ import {
 import "@xyflow/react/dist/style.css";
 import { ConceptMapNode, type ConceptMapNodeData } from "@/app/courses/dsa/_components/ConceptMapNode";
 import type { MindMapNode } from "@/lib/course/conceptMaps/types";
+import { getModule } from "@/lib/course/manifest";
 
 interface ConceptMindMapProps {
   root: MindMapNode;
   /** Announced to screen readers; the canvas itself is a visual/pointer surface. */
   label: string;
+  /** Module slug to wire concept nodes directly to their lesson routes */
+  moduleSlug?: string;
   /** "xl" for the dedicated concept-map page, "lg" for a full-width home, "md" elsewhere. */
   size?: "md" | "lg" | "xl";
   /**
@@ -112,6 +115,17 @@ const AUTO_FIT = { padding: 0.08, maxZoom: 1 };
 
 type Mode = "tree" | "outline";
 
+function resolveNodeHref(node: MindMapNode, depth: number, moduleSlug?: string): string | undefined {
+  if (node.href) return node.href;
+  if (!moduleSlug) return undefined;
+  if (depth === 0) return `/courses/dsa/${moduleSlug}`;
+  const mod = getModule(moduleSlug);
+  if (mod?.lessons.some((l) => l.slug === node.id)) {
+    return `/courses/dsa/${moduleSlug}/${node.id}`;
+  }
+  return undefined;
+}
+
 /** Exported for tests. */
 export function layoutTree(
   root: MindMapNode,
@@ -119,8 +133,9 @@ export function layoutTree(
   dims: Dims,
   onToggle: (id: string) => void,
   mode: Mode = "tree",
+  moduleSlug?: string,
 ): { nodes: Node<ConceptMapNodeData>[]; edges: Edge[] } {
-  if (mode === "outline") return layoutOutline(root, expanded, dims, onToggle);
+  if (mode === "outline") return layoutOutline(root, expanded, dims, onToggle, moduleSlug);
   const nodes: Node<ConceptMapNodeData>[] = [];
   const edges: Edge[] = [];
   let row = 0;
@@ -186,6 +201,7 @@ export function layoutTree(
       style: { transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)" },
       data: {
         label: node.label,
+        href: resolveNodeHref(node, depth, moduleSlug),
         isRoot: depth === 0,
         isLeaf: !hasChildren,
         isExpanded,
@@ -214,6 +230,7 @@ function layoutOutline(
   expanded: Set<string>,
   dims: Dims,
   onToggle: (id: string) => void,
+  moduleSlug?: string,
 ): { nodes: Node<ConceptMapNodeData>[]; edges: Edge[] } {
   const nodes: Node<ConceptMapNodeData>[] = [];
   const edges: Edge[] = [];
@@ -236,6 +253,7 @@ function layoutOutline(
       style: { transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)" },
       data: {
         label: node.label,
+        href: resolveNodeHref(node, depth, moduleSlug),
         isRoot: depth === 0,
         isLeaf: !hasChildren,
         isExpanded,
@@ -271,6 +289,7 @@ const NODE_HEIGHT = 56;
 function ConceptMindMapInner({
   root,
   label,
+  moduleSlug,
   size = "md",
   fill = false,
   scrollThrough = false,
@@ -329,7 +348,7 @@ function ConceptMindMapInner({
         // Focus the toggled node and whatever is now visible beneath it —
         // not the whole tree — so expanding a deep branch doesn't zoom out
         // to fit unrelated siblings.
-        const { nodes: nextNodes } = layoutTree(root, next, dims, () => {}, mode);
+        const { nodes: nextNodes } = layoutTree(root, next, dims, () => {}, mode, moduleSlug);
         const nodeBoxWidth = dims.nodeWidth + dims.circleR * 2;
         const targets = nextNodes.filter(
           (n) => n.id === id || n.id.startsWith(`${id}-`),
@@ -367,12 +386,12 @@ function ConceptMindMapInner({
         return next;
       });
     },
-    [fitBounds, root, dims, mode],
+    [fitBounds, root, dims, mode, moduleSlug],
   );
 
   const { nodes, edges } = useMemo(
-    () => layoutTree(root, expanded, dims, toggle, mode),
-    [root, expanded, dims, toggle, mode],
+    () => layoutTree(root, expanded, dims, toggle, mode, moduleSlug),
+    [root, expanded, dims, toggle, mode, moduleSlug],
   );
 
   // fitView on the canvas only runs at mount; a layout switch (a resize across

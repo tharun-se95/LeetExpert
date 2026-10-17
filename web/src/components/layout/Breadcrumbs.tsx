@@ -33,7 +33,9 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
                 {item.label}
               </Link>
             ) : (
-              <span className="text-foreground">{item.label}</span>
+              <span className="text-foreground" aria-current="page">
+                {item.label}
+              </span>
             )}
           </li>
         ))}

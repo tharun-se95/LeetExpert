@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ArtifactFrame } from "@/components/course/ArtifactFrame";
-import { STAGES } from "@/lib/course/manifest";
+import { MODULES, STAGES } from "@/lib/course/manifest";
 import {
   OVERVIEWS,
   getOverview,
   overviewHref,
   overviewSrc,
 } from "@/lib/course/overviews";
+import { lessonHref } from "@/lib/course/nav";
 import { canonicalFor } from "@/lib/seo/site";
 
 interface PageProps {
@@ -49,6 +52,9 @@ export default async function OverviewPage({ params }: PageProps) {
   const overview = getOverview(slug);
   if (!overview) notFound();
   const stage = STAGES.find((s) => s.number === overview.stage);
+  const stageModules = stage ? MODULES.filter((m) => m.stage === stage.number) : [];
+  const firstModule = stageModules[0];
+  const firstLesson = firstModule?.lessons[0];
 
   return (
     <div className="relative mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col px-4 pt-6 pb-4 lg:px-8">
@@ -70,6 +76,26 @@ export default async function OverviewPage({ params }: PageProps) {
           src={overviewSrc(overview.slug)}
           title={`${overview.title}, interactive overview`}
         />
+      </div>
+      <div className="mt-3 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-t border-border pt-3">
+        {stage ? (
+          <Link
+            href={`/courses/dsa#stage-${stage.number}`}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-muted transition hover:text-foreground"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to Stage {stage.number} ({stage.title})</span>
+          </Link>
+        ) : <div />}
+        {firstModule && firstLesson ? (
+          <Link
+            href={lessonHref(firstModule.slug, firstLesson.slug)}
+            className="inline-flex items-center justify-center gap-2 rounded-[length:var(--radius-md)] bg-accent px-3.5 py-1.5 text-xs font-semibold text-on-pop transition hover:opacity-90"
+          >
+            <span>Start Stage {stage?.number ?? 1}: {firstModule.title}</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        ) : null}
       </div>
     </div>
   );
