@@ -113,7 +113,7 @@ export default function CourseOverviewPage() {
 
         {/* Flagship Hero Card with 3D Banner */}
         <div className="relative overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated/85 backdrop-blur-md p-6 shadow-elevation sm:p-8 lg:p-10">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-good/40 via-accent to-info/40" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-good/35 to-transparent" aria-hidden />
 
           <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
             <div className="lg:col-span-7">

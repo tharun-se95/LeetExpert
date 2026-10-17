@@ -176,7 +176,7 @@ export function RoadmapClient() {
 
         {/* Visual Banner Header */}
         <div className="relative mt-6 overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated/85 backdrop-blur-md shadow-elevation">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-good/40 via-info to-accent" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-good/35 to-transparent" aria-hidden />
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 lg:p-8">
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-info/40 bg-info-surface/30 px-3 py-1 text-xs font-mono uppercase tracking-wider text-info mb-3 font-medium">

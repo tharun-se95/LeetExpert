@@ -107,7 +107,7 @@ export function CheatsheetsClient() {
 
         {/* Visual Banner Header */}
         <div className="relative mt-6 overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated/85 backdrop-blur-md shadow-elevation">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent via-info to-warn/60" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/35 to-transparent" aria-hidden />
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 lg:p-8">
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-pop/10 px-3 py-1 text-xs font-mono uppercase tracking-wider text-mark mb-3 font-medium">

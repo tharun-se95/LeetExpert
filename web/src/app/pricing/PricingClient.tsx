@@ -239,21 +239,14 @@ export function PricingClient() {
                       : "border-border bg-elevated/70 hover:border-border/90",
                 )}
               >
-                {/* Top vibrant edge bar */}
-                {plan.popular ? (
-                  <div className="absolute inset-x-0 -top-px h-1 rounded-t-[length:var(--radius-lg)] bg-gradient-to-r from-good via-accent to-info" />
-                ) : plan.id === "team" ? (
-                  <div className="absolute inset-x-0 -top-px h-1 rounded-t-[length:var(--radius-lg)] bg-gradient-to-r from-warn via-insight to-accent" />
-                ) : null}
-
                 {plan.badge ? (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                     <span
                       className={cn(
                         "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-[10px] font-mono font-bold tracking-wider uppercase shadow-elevation",
                         plan.popular
-                          ? "bg-good text-on-pop"
-                          : "border border-warn/40 bg-warn-surface text-warn",
+                          ? "border border-good-line/60 bg-good text-on-pop badge-glow-good"
+                          : "border border-warn-line/60 bg-warn-surface text-warn badge-glow-warn",
                       )}
                     >
                       {plan.badge}
