@@ -412,19 +412,27 @@ function mountConstraints(host) {
     S('text', { x: X0, y: Y0 + 14, class: 'ha-label' }, svg).textContent = 'n = 1';
 
     var CURVE_CLS = { '1': 'c-1', logn: 'c-log', n: 'c-n', nlogn: 'c-nlogn', n2: 'c-n2', '2n': 'c-2n', nfac: 'c-fac' };
+    var labels = [];
     CLASSES.forEach(function(cls) {
-      var d = '', end = null;
+      var d = '', end = null, exited = false;
       for (var lx = 0; lx <= XMAX + 1e-9; lx += 0.01) {
         var n = Math.round(Math.pow(10, lx));
         var ly = opsLog10(cls.id, n);
-        if (ly > YMAX) break;
+        if (ly > YMAX) { exited = true; break; }
         d += (d ? ' L ' : 'M ') + px(lx).toFixed(1) + ' ' + py(ly).toFixed(1);
         end = [px(lx), py(ly)];
       }
       S('path', { d: d, class: 'ha-curve ' + CURVE_CLS[cls.id] }, svg);
+      labels.push({ text: cls.badge, x: end[0], y: end[1], top: exited, id: cls.id });
+    });
+    // Labels at the right edge sit close in height, so space them 11px apart from the bottom up.
+    var right = labels.filter(function(l) { return !l.top; }).sort(function(a, b) { return b.y - a.y; });
+    var floor = Y0 - 2;
+    right.forEach(function(l) { l.ty = Math.min(l.y + 4, floor); floor = l.ty - 11; });
+    labels.forEach(function(l) {
       // n! leaves the plot just left of 2^n, so its label sits on the left of its exit.
-      var left = cls.id === 'nfac';
-      if (end) S('text', { x: end[0] + (left ? -5 : 5), y: end[1] + (cls.id === '1' ? 8 : 4), class: 'ha-label', 'text-anchor': left ? 'end' : 'start' }, svg).textContent = cls.badge;
+      var left = l.id === 'nfac';
+      S('text', { x: l.x + (left ? -5 : 5), y: l.top ? l.y + 4 : l.ty, class: 'ha-label', 'text-anchor': left ? 'end' : 'start' }, svg).textContent = l.text;
     });
 
     var num = $('#heroNum'), unit = $('#heroUnit'), cap = $('#heroCap');
