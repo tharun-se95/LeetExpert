@@ -109,7 +109,10 @@ function mountModel() {
       if (valTotalCopies) valTotalCopies.className = 'm-v good';
       if (note) note.innerHTML = 'Doubling strategy: across <b>' + n + '</b> appends, only <b>' + sim.totalCopies + '</b> total copies occurred (under <b>2n</b> bound). Average copy cost: <b>' + (sim.totalCopies / sim.size).toFixed(2) + '</b> copies/append.';
     } else {
-      if (valBank) valBank.textContent = 'Bank empty';
+      // Same 3-token charge as doubling: 2 banked per append, 1 token per copy. Showing the real
+      // (negative) balance is the point: the flat charge cannot pay for +1 growth.
+      var debt = 2 * sim.size - sim.totalCopies;
+      if (valBank) valBank.textContent = debt < 0 ? '\u2212' + (-debt) + ' tokens (overdrawn)' : debt + ' tokens';
       if (valAvg) {
         valAvg.textContent = (sim.totalCopies / sim.size).toFixed(2);
         valAvg.className = 'm-v bad';

@@ -104,7 +104,12 @@ def run_pure():
 process.stdout.write(JSON.stringify({
   FACTS: FACTS,
   SHAPE_TESTS: SHAPE_TESTS,
-  DEDUPE_STATS: DEDUPE_STATS
+  API_COSTS: API_COSTS,
+  closedVsCounted: ['doubling', 'sequential', 'dependent'].map(function(s) {
+    var bad = [];
+    for (var n = 0; n <= 300; n++) if (closedFormValue(s, n) !== countLoopIterations(s, n)) bad.push(n);
+    return [s, bad];
+  })
 }));
 """
     res = subprocess.run(["node", "-e", probe], capture_output=True, text=True)
@@ -181,6 +186,23 @@ def main():
         problems.append(f"FACTS.dep16 {facts['dep16']} != {closed_form('dependent', 16)}")
     if facts["quad100"] != 100 * 99 // 2:
         problems.append(f"FACTS.quad100 {facts['quad100']} != 4950")
+    # The widget's closed form must agree with its own counter at every slider value and beyond.
+    for shape, bad in pure_data["closedVsCounted"]:
+        if bad:
+            problems.append(f"lesson.js closedFormValue({shape}) disagrees with the counter at n={bad[:5]}")
+    for row in pure_data["API_COSTS"]:
+        n = row["n"]
+        if row["set"] != n or row["list"] != n * (n - 1) // 2:
+            problems.append(f"API_COSTS n={n}: {row} != set {n}, list {n * (n - 1) // 2}")
+    print("widget closed forms and dedupe counts recounted")
+
+    # Both dedupes must return the distinct items in first-seen order, in both runtimes.
+    for tc, res in zip(test_cases, ts_dedupe_results):
+        want = list(dict.fromkeys(tc))
+        (ps, _), (pl, _) = run_py_dedupe(tc)
+        for label, got in [("py set", ps), ("py list", pl), ("ts set", res["set"][0]), ("ts list", res["list"][0])]:
+            if got != want:
+                problems.append(f"dedupe {label} returned {got[:6]} for {tc[:6]}, want {want[:6]}")
 
     # 4. Built HTML check (if exists)
     dist = os.path.join(WEB, "lesson-artifacts", "dist", "big-o", "analyzing-loops-api-complexity.html")

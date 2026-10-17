@@ -98,7 +98,14 @@ def pure_block():
 def run_pure():
     probe = pure_block() + r"""
 process.stdout.write(JSON.stringify({
-  FACTS: FACTS
+  FACTS: FACTS,
+  MEMO_ROWS: MEMO_ROWS,
+  traces: TREE_KINDS.map(function(k) {
+    return k.sizes.map(function(n) {
+      var t = traceCalls(k.id, n);
+      return { kind: k.id, n: n, levels: t.levels, total: t.total, closed: closedForm(k.id, n).value };
+    });
+  })
 }));
 """
     res = subprocess.run(["node", "-e", probe], capture_output=True, text=True)
@@ -151,17 +158,37 @@ def main():
     pure_data = run_pure()
     facts = pure_data["FACTS"]
 
-    # Verify FACTS
-    if facts["bsN"] != 16 or facts["bsLevels"] != 5 or facts["bsTotalWork"] != 5:
-        problems.append(f"FACTS Binary Search mismatch: {facts}")
-    if facts["msN"] != 16 or facts["msLevels"] != 5 or facts["msWorkPerLevel"] != 16 or facts["msTotalWork"] != 80:
-        problems.append(f"FACTS Merge Sort mismatch: {facts}")
-    if facts["fibN"] != 4 or facts["fibNaiveCalls"] != expected_naive_calls(4) or facts["fibMemoCalls"] != expected_memo_calls(4):
-        problems.append(f"FACTS fib(4) mismatch: {facts}")
-    if facts["fib6NaiveCalls"] != expected_naive_calls(6) or facts["fib6MemoCalls"] != expected_memo_calls(6):
-        problems.append(f"FACTS fib(6) mismatch: {facts}")
+    # Independent per-level models of the three recurrences, written from the recurrence
+    # itself (not from the traces): (nodes, work) at each level.
+    def model_levels(kind, n):
+        if kind == "bs":
+            return [(1, 1)] * (n.bit_length())  # n = 2^k gives k + 1 single-probe levels
+        if kind == "ms":
+            k = n.bit_length() - 1
+            return [(2 ** d, n if d < k else 0) for d in range(k + 1)]
+        levels = {}
+        def walk(m, d):
+            nodes, work = levels.get(d, (0, 0))
+            levels[d] = (nodes + 1, work + 1)
+            if m > 1:
+                walk(m - 1, d + 1); walk(m - 2, d + 1)
+        walk(n, 0)
+        return [levels[d] for d in range(len(levels))]
+
+    for group in pure_data["traces"]:
+        for t in group:
+            got = [(l["nodes"], l["work"]) for l in t["levels"]]
+            want = model_levels(t["kind"], t["n"])
+            if got != want:
+                problems.append(f"trace {t['kind']} n={t['n']} levels {got} != model {want}")
+            if t["total"] != sum(w for _, w in want) or t["closed"] != t["total"]:
+                problems.append(f"trace {t['kind']} n={t['n']} total {t['total']} / closed {t['closed']} disagree")
+    for r in pure_data["MEMO_ROWS"]:
+        if r["naive"] != expected_naive_calls(r["n"]) or r["memo"] != expected_memo_calls(r["n"]):
+            problems.append(f"MEMO_ROWS n={r['n']} {r} wrong")
     if facts["fib8NaiveCalls"] != expected_naive_calls(8) or facts["fib8MemoCalls"] != expected_memo_calls(8):
         problems.append(f"FACTS fib(8) mismatch: {facts}")
+    print("tree traces (every level, every n) and memo table match independent models")
 
     # 3. Built HTML check (if exists)
     dist = os.path.join(WEB, "lesson-artifacts", "dist", "big-o", "analyzing-recursion-tree-method.html")

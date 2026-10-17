@@ -164,7 +164,13 @@ process.stdout.write(JSON.stringify({
   sim9_double: SIM9_DOUBLE,
   sim32_double: SIM32_DOUBLE,
   sim9_fixed: SIM9_FIXED,
-  sim32_fixed: SIM32_FIXED
+  sim32_fixed: SIM32_FIXED,
+  // the banker's claim: charging 3 per append, the balance 2i - copies never goes negative
+  // after any append i under doubling, and does go negative under +1 growth
+  bankMin: ['d', 'f'].map(function(k) {
+    var h = (k === 'd' ? simulateDoubling(1000, 1) : simulateFixed(1000, 1, 1)).history;
+    return h.reduce(function(m, st) { return Math.min(m, 2 * st.append - st.totalCopies); }, Infinity);
+  })
 }));"""
     res = subprocess.run(["node", "-e", probe], capture_output=True, text=True)
     if res.returncode:
@@ -222,7 +228,7 @@ def main():
                     problems.append(f"{label}: len {n} violated total_copies < 2 * n ({last_step['total_copies']} >= {2 * n})")
                     continue
             matched += 1
-        print(f"{label:15} {matched}/{len(cases)} test cases matched doubling model with copies < n")
+        print(f"{label:15} {matched}/{len(cases)} test cases matched doubling model with copies < 2n")
 
     # 2. Verify DynArrayFixed (mistake) in Python and TypeScript
     py_mis = run_py_mistake(cases)
@@ -266,6 +272,12 @@ def main():
     if F["fixed_copies_32"] != 496 or F["fixed_total_work_32"] != 528:
         problems.append(f"FACTS 32 appends fixed: {F}")
 
+    bank_double, bank_fixed = pure_data["bankMin"]
+    if bank_double < 0:
+        problems.append(f"banker's argument broken: doubling balance reached {bank_double}")
+    if bank_fixed >= 0:
+        problems.append(f"+1 growth never overdrew the bank (min {bank_fixed}); the page claims it does")
+    print(f"banker's balance over 1000 appends: doubling min {bank_double}, +1 growth min {bank_fixed}")
     print(f"PURE block facts verified: 9 appends = {F['double_copies_9']} copies / {F['double_total_work_9']} work; 32 appends = {F['double_copies_32']} copies")
 
     # 4. Check built HTML embeds PURE block

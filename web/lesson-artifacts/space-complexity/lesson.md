@@ -51,7 +51,7 @@ Three different functions can process the exact same input of $n$ items with rad
   <div class="model-slider-wrap">
     <span>Input n:</span>
     <input type="range" id="sliderN" min="1" max="24" value="8" aria-label="Input size n">
-    <b id="lblN">8</b>
+    <b id="lblN"></b>
   </div>
 </div>
 <div class="desk-board">
@@ -67,10 +67,10 @@ Three different functions can process the exact same input of $n$ items with rad
   </div>
 </div>
 <div class="m-metrics">
-  <div class="m-card"><span class="m-k">Peak Extra Memory</span><span class="m-v good" id="mPeakAux">1 variable</span><span class="m-sub">scratch space</span></div>
-  <div class="m-card"><span class="m-k">Auxiliary Class</span><span class="m-v good" id="mClass">O(1)</span><span class="m-sub">growth rate</span></div>
-  <div class="m-card"><span class="m-k">Stack Depth</span><span class="m-v pop" id="mStackDepth">1 frame</span><span class="m-sub">active frames</span></div>
-  <div class="m-card"><span class="m-k">Heap Cells</span><span class="m-v" id="mHeapCells">0 cells</span><span class="m-sub">allocated objects</span></div>
+  <div class="m-card"><span class="m-k">Peak Extra Memory</span><span class="m-v good" id="mPeakAux"></span><span class="m-sub">scratch space</span></div>
+  <div class="m-card"><span class="m-k">Auxiliary Class</span><span class="m-v good" id="mClass"></span><span class="m-sub">growth rate</span></div>
+  <div class="m-card"><span class="m-k">Stack Depth</span><span class="m-v pop" id="mStackDepth"></span><span class="m-sub">active frames</span></div>
+  <div class="m-card"><span class="m-k">Heap Cells</span><span class="m-v" id="mHeapCells"></span><span class="m-sub">allocated objects</span></div>
 </div>
 <p class="m-note" id="modelNote"></p>
 ```
@@ -94,7 +94,7 @@ Every active function call occupies a ==stack frame== in memory. That frame stor
 Recursion therefore costs auxiliary memory proportional to its maximum call ==depth== — even if the function body allocates no data structures whatsoever.
 
 ````warn
-Assuming recursive functions use O(1) space because they allocate no arrays. Each recursive invocation adds a stack frame. A linear recursion n levels deep consumes O(n) auxiliary space. In Python, large inputs exceed the default recursion limit (~1000) and crash with a RecursionError.
+Assuming recursive functions use O(1) space because they allocate no arrays. Each recursive invocation adds a stack frame. A linear recursion n levels deep consumes O(n) auxiliary space. In Python the default recursion limit is 1,000 frames, so the recursive sum crashes with a RecursionError long before an iterative loop would notice the input was large.
 
 ```code mistake "Recursive sum: hidden O(n) call stack depth"
 ```
@@ -197,7 +197,7 @@ Seen set or hash table | O(n) | Up to n elements stored to achieve O(1) lookups
     {
       "question": "Reversing an array by swapping ends toward the middle, versus building a reversed copy — what is the auxiliary-space comparison?",
       "options": [
-        "O(1) versus O(n)",
+        "O(1) versus O(n): one temporary per swap, against n newly allocated slots",
         "O(n) for both — the array contains n elements, so any operation performed on it inherits that linear space footprint",
         "O(log n) versus O(n) — swapping ends toward the middle still needs a small logarithmic amount of pointer bookkeeping"
       ],
@@ -209,7 +209,7 @@ Seen set or hash table | O(n) | Up to n elements stored to achieve O(1) lookups
       "options": [
         "It measures only the memory the algorithm itself controls, isolating its cost from the size of the given problem",
         "Total space cannot be measured accurately because different operating systems report input buffer footprints differently",
-        "Auxiliary space is always strictly smaller than O(1) for any algorithm that processes input without modifying it in place"
+        "Total space is always auxiliary space plus a constant, so reporting it would only repeat the same growth class"
       ],
       "answer": 0,
       "explanation": "An algorithm cannot control the size of the input data handed to it by the caller. Auxiliary space isolates the extra scratch memory allocated by the algorithm itself."

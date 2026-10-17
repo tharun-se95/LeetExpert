@@ -10,21 +10,6 @@
   #heroCap { min-height: 3.6em; text-align: left; }
 }
 
-/* Drill cards */
-.drill-card { border: 1px solid var(--hair2); border-radius: 10px; background: var(--card); padding: 16px; margin: 16px 0; }
-.drill-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
-.drill-title { font: 700 13px 'Space Mono', monospace; color: var(--fg); text-transform: uppercase; letter-spacing: 0.04em; }
-.drill-badge { font: 600 12px 'JetBrains Mono', monospace; padding: 2px 8px; border-radius: 4px; background: var(--well); color: var(--mut); }
-.drill-badge.revealed { background: var(--well); color: var(--fg); border: 1px solid var(--fam); }
-
-/* Predict choices */
-.drill-choices { display: flex; flex-direction: column; gap: 8px; margin: 14px 0; }
-.drill-opt { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border: 1px solid var(--hair2); border-radius: 6px; background: var(--card); color: var(--fg); font: 500 13px 'Space Grotesk', sans-serif; cursor: pointer; transition: all 0.15s; }
-.drill-opt:hover { border-color: var(--fam); }
-.drill-opt[aria-pressed="true"] { background: var(--fam); color: var(--fam-on); border-color: var(--fam); }
-.drill-opt.correct { border-color: var(--g-ink); background: var(--well); color: var(--fg); }
-.drill-opt.wrong { border-color: var(--r-ink); opacity: 0.6; }
-
 /* Operation table in reveal */
 .drill-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; text-align: left; }
 .drill-table th { padding: 6px 10px; border-bottom: 1px solid var(--hair2); font: 700 11px 'Space Mono', monospace; color: var(--mut); }

@@ -45,32 +45,35 @@ Three canonical recurrence shapes illustrate logarithmic chains, balanced pyrami
 <line class="st" x1="30" y1="20" x2="30" y2="100"/><circle class="fc" cx="30" cy="20" r="5"/><circle class="fa" cx="30" cy="60" r="5"/><circle class="fa" cx="30" cy="100" r="5"/><path class="st" d="M110 20L85 60M110 20L135 60M85 60L75 100M85 60L95 100M135 60L125 100M135 60L145 100"/><circle class="fc" cx="110" cy="20" r="5"/><path class="st" d="M190 20L170 50M190 20L210 50M170 50L155 80M170 50L185 80M210 50L200 80M210 50L225 80"/><circle class="fc" cx="190" cy="20" r="5"/>
 ```
 
-Three recurrence shapes govern the majority of algorithms in technical interviews:
+Three recurrence shapes cover most of the recursive algorithms you will meet in this course:
 
-1. **Binary Search ($T(n) = T(n/2) + O(1)$):** Halves the input and recurses exactly once. The tree is a single unbranched chain of $\lceil \log_2 n \rceil$ nodes, each taking $O(1)$ time $\rightarrow$ **$O(\log n)$**.
-2. **Merge Sort ($T(n) = 2T(n/2) + O(n)$):** Splits into two halves and merges them in linear time. The number of subproblems doubles at each level while their size halves, keeping the work per level constant at $n$. With $\log_2 n$ levels, total work is $n \cdot \log n \rightarrow$ **$O(n \log n)$**.
+1. **Binary Search ($T(n) = T(n/2) + O(1)$):** Halves the input and recurses exactly once. The tree is a single unbranched chain about $\log_2 n$ nodes long ($\log_2 n + 1$ when $n$ is a power of two), each taking $O(1)$ time $\rightarrow$ **$O(\log n)$**.
+2. **Merge Sort ($T(n) = 2T(n/2) + O(n)$):** Splits into two halves and merges them in linear time. The number of subproblems doubles at each level while their size halves, keeping the work per level constant at $n$. With $\log_2 n$ levels that merge, total work is $n \cdot \log_2 n \rightarrow$ **$O(n \log n)$**.
 3. **Naive Fibonacci ($T(n) = T(n-1) + T(n-2) + O(1)$):** Branches twice while only shrinking input size by a tiny constant ($1$ or $2$). The tree grows nearly $2^k$ wide at level $k$ and reaches depth $n \rightarrow$ **$O(2^n)$** exponential explosion!
 
-```widget #treeWidget "Recursion trees: level-by-level work and closed forms"
+```widget #treeWidget "Recursion trees traced from real calls: level-by-level work against the closed form"
 <div class="tree-stage">
   <div class="extabs" role="group" aria-label="Choose recurrence relation"></div>
+  <div class="extabs" id="treeSizes" role="group" aria-label="Choose input size n"></div>
   <div class="tree-card">
     <div class="tree-head">
-      <span class="tree-rec" id="treeRec">T(n) = T(n/2) + O(1)</span>
-      <span class="tree-asymp" id="treeAsymp">Θ(log n)</span>
+      <span class="tree-rec" id="treeRec"></span>
+      <span class="tree-asymp" id="treeAsymp"></span>
     </div>
     <div class="tree-svg-wrap">
-      <svg id="treeSvg" role="img" aria-label="Visual recursion tree layout showing nodes, branches, and level totals"></svg>
+      <svg id="treeSvg" role="img" aria-label="Recursion tree"></svg>
     </div>
     <div class="tree-stats">
-      <div class="stat-box"><span class="stat-label">Tree Depth</span><span class="stat-val" id="depthVal"></span></div>
-      <div class="stat-box"><span class="stat-label">Total Work</span><span class="stat-val good" id="totalWorkVal"></span></div>
-      <div class="stat-box"><span class="stat-label">Formula</span><span class="stat-val accent" id="formulaVal"></span></div>
-      <div class="stat-box"><span class="stat-label">Classification</span><span class="stat-val" id="verdictVal"></span></div>
+      <div class="stat-box"><span class="stat-label">Tree depth</span><span class="stat-val" id="depthVal"></span></div>
+      <div class="stat-box"><span class="stat-label">Counted work, by level</span><span class="stat-val good" id="totalWorkVal"></span></div>
+      <div class="stat-box"><span class="stat-label">Closed form</span><span class="stat-val accent" id="formulaVal"></span></div>
+      <div class="stat-box"><span class="stat-label">Check</span><span class="stat-val" id="verdictVal"></span></div>
     </div>
   </div>
 </div>
 ```
+
+Every number in this widget comes from running the real function. Binary search probes once per call while looking for a key larger than everything, its worst case; merge sort counts the elements each call's merge writes; Fibonacci counts calls. The right-hand column sums each level, and the closed form is computed separately from the recurrence.
 
 ```derivation
 **Depth vs Branching Factor:** Branching twice does not inherently make an algorithm exponential. Merge sort branches twice per call and finishes in $O(n \log n)$ time.
@@ -142,20 +145,16 @@ Reusing solutions to overlapping subproblems collapses an exponential tree into 
 
 Comparing the exact call counts between naive and memoized recursion exposes the staggering divergence in effort as $n$ grows:
 
-```widget #memoTable "Call count explosion: Naive vs Memoized"
-<div class="memo-compare">
-  <div class="memo-card naive-card">
-    <div class="memo-title">Naive Recursive fib(n)</div>
-    <div class="memo-count bad">2 · Fib(n+1) - 1 calls</div>
-    <div class="memo-desc">Recomputes identical subproblems repeatedly across independent branches. For n = 4 it takes 9 calls; for n = 8 it balloons to 67 calls!</div>
-  </div>
-  <div class="memo-card memo-card-ok">
-    <div class="memo-title">Memoized fib(n) with Cache</div>
-    <div class="memo-count good">2n - 1 calls</div>
-    <div class="memo-desc">Calculates each distinct input exactly once and answers all subsequent requests in O(1) from the cache. For n = 4 it takes 7 calls; for n = 8 only 15 calls!</div>
-  </div>
+```widget #memoTable "Call counts, counted by running both versions"
+<div class="memo-wrap">
+  <table class="memo-table">
+    <thead><tr><th>n</th><th>naive calls</th><th>memoized calls</th><th>ratio</th></tr></thead>
+    <tbody id="memoBody"></tbody>
+  </table>
 </div>
 ```
+
+The naive column grows like the Fibonacci numbers themselves: the call count satisfies $C(n) = C(n-1) + C(n-2) + 1$, which solves to $2F(n+1) - 1$. The memoized column grows by two per step, because each new `n` makes one real call that recurses and one that is answered from the cache, giving $2n - 1$.
 
 ```key
 Exponential recursion in algorithms like Fibonacci is caused by re-solving overlapping subproblems; storing intermediate results in a cache restores linear complexity.

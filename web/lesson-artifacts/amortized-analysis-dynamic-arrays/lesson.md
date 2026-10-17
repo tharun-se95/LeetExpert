@@ -31,7 +31,7 @@ This is a fundamentally different question from best, worst, and average-case an
 ## Live model: doubling against fixed growth {#build toc="Live model"}
 
 ```caption
-Doubling keeps total copies under n; fixed growth repeats copies until work turns quadratic.
+Doubling keeps total copies under 2n; fixed growth repeats copies until the work turns quadratic.
 ```
 
 ```vig "Doubling capacity steps on the left compared to dense repeated copy steps on the right"
@@ -55,23 +55,23 @@ The live model below instruments both strategies on the same sequence of appends
   <div class="model-slider-wrap">
     <span>Items n:</span>
     <input type="range" id="sliderN" min="1" max="32" value="9" aria-label="Number of items appended">
-    <b id="lblN">9</b>
+    <b id="lblN"></b>
   </div>
 </div>
 <div class="shelf-board">
   <div class="shelf-h">
-    <span>Backing buffer: <b id="shelfSize">9</b> / <b id="shelfCap">16</b> slots used</span>
-    <span>Green = copied during resize</span>
+    <span>Backing buffer: <b id="shelfSize"></b> / <b id="shelfCap"></b> slots used</span>
+    <span>Marked cells were copied by the last resize</span>
   </div>
   <div class="shelf-cells" id="shelfCells"></div>
 </div>
 <div class="m-metrics">
-  <div class="m-card"><span class="m-k">Size</span><span class="m-v" id="mSize">9</span><span class="m-sub">elements stored</span></div>
-  <div class="m-card"><span class="m-k">Capacity</span><span class="m-v" id="mCap">16</span><span class="m-sub">allocated slots</span></div>
-  <div class="m-card"><span class="m-k">Last Copies</span><span class="m-v" id="mCopies">8</span><span class="m-sub">on this append</span></div>
-  <div class="m-card"><span class="m-k">Total Copies</span><span class="m-v good" id="mTotalCopies">15</span><span class="m-sub">cumulative moves</span></div>
-  <div class="m-card"><span class="m-k">Bank Balance</span><span class="m-v pop" id="mBank">3 tokens</span><span class="m-sub">saved credits</span></div>
-  <div class="m-card"><span class="m-k">Avg Copies</span><span class="m-v good" id="mAvg">1.67</span><span class="m-sub">copies / append</span></div>
+  <div class="m-card"><span class="m-k">Size</span><span class="m-v" id="mSize"></span><span class="m-sub">elements stored</span></div>
+  <div class="m-card"><span class="m-k">Capacity</span><span class="m-v" id="mCap"></span><span class="m-sub">allocated slots</span></div>
+  <div class="m-card"><span class="m-k">Last Copies</span><span class="m-v" id="mCopies"></span><span class="m-sub">on this append</span></div>
+  <div class="m-card"><span class="m-k">Total Copies</span><span class="m-v good" id="mTotalCopies"></span><span class="m-sub">cumulative moves</span></div>
+  <div class="m-card"><span class="m-k">Bank Balance</span><span class="m-v pop" id="mBank"></span><span class="m-sub">saved credits</span></div>
+  <div class="m-card"><span class="m-k">Avg Copies</span><span class="m-v good" id="mAvg"></span><span class="m-sub">copies / append</span></div>
 </div>
 <div class="m-table-wrap">
   <table class="m-table" aria-label="Append operation history">
@@ -84,7 +84,7 @@ The live model below instruments both strategies on the same sequence of appends
 <p class="m-note" id="modelNote"></p>
 ```
 
-Notice the contrast. With doubling, the spikes get taller (1, 2, 4, 8, 16 copies), but the distance between spikes doubles every time. The quiet O(1) operations vastly outnumber the spikes, keeping the cumulative copies strictly below the number of elements inserted.
+Notice the contrast. With doubling, the spikes get taller (1, 2, 4, 8, 16 copies), but the distance between spikes doubles every time. The quiet O(1) operations vastly outnumber the spikes, keeping the cumulative copies below twice the number of elements inserted. Switch to fixed growth and watch the bank: the same 3-token charge goes overdrawn within a few appends.
 
 ## The accounting method {#insight toc="Banker's method"}
 

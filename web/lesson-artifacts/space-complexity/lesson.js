@@ -4,20 +4,45 @@
 */
 
 /* PURE:begin (no DOM below this line until PURE:end) */
+/* Each function runs for real under a tracker: enter/leave count live stack frames and
+   alloc counts heap cells, so the meters show measured peaks, not asserted classes. */
+function tracker() {
+  return { depth: 0, peakStack: 0, cells: 0, peakHeap: 0,
+    enter: function() { this.depth++; if (this.depth > this.peakStack) this.peakStack = this.depth; },
+    leave: function() { this.depth--; },
+    alloc: function(k) { this.cells += k; if (this.cells > this.peakHeap) this.peakHeap = this.cells; } };
+}
+function report(t, val) {
+  return { val: val, peakStack: t.peakStack, peakHeap: t.peakHeap, peakAux: Math.max(t.peakStack, t.peakHeap) };
+}
+
 function measureIterative(n) {
+  var t = tracker();
+  t.enter();
   var total = 0;
   for (var i = 1; i <= n; i++) total += i;
-  return { val: total, peakStack: 1, peakHeap: 0, peakAux: 1 };
+  t.leave();
+  return report(t, total);
 }
 
 function measureCopy(n) {
+  var t = tracker();
+  t.enter();
   var arr = [];
-  for (var i = 1; i <= n; i++) arr.push(i);
-  return { val: arr.length, peakStack: 1, peakHeap: n, peakAux: n };
+  for (var i = 1; i <= n; i++) { arr.push(i); t.alloc(1); }
+  t.leave();
+  return report(t, arr.length);
 }
 
 function measureRecursive(n) {
-  return { val: (n * (n + 1)) / 2, peakStack: n, peakHeap: 0, peakAux: n };
+  var t = tracker();
+  function sumTo(k) {
+    t.enter();
+    var r = k <= 0 ? 0 : k + sumTo(k - 1);
+    t.leave();
+    return r;
+  }
+  return report(t, sumTo(n));
 }
 
 var FACTS = {
@@ -25,8 +50,7 @@ var FACTS = {
   iter_aux_8: measureIterative(8).peakAux,
   copy_aux_8: measureCopy(8).peakAux,
   rec_aux_8: measureRecursive(8).peakAux,
-  rec_aux_100: measureRecursive(100).peakAux,
-  py_rec_limit: 1000
+  rec_aux_100: measureRecursive(100).peakAux
 };
 /* PURE:end */
 
@@ -68,8 +92,8 @@ function mountModel() {
       valPeak.className = 'm-v good';
       valClass.textContent = 'O(1)';
       valClass.className = 'm-v good';
-      valStack.textContent = '1 frame';
-      valHeap.textContent = '0 cells';
+      valStack.textContent = it.peakStack + ' frame';
+      valHeap.textContent = it.peakHeap + ' cells';
 
       var fr = el('div', 'stack-box top');
       fr.innerHTML = '<span>sum_iter(' + n + ')</span><span>total=' + it.val + '</span>';
@@ -80,12 +104,12 @@ function mountModel() {
       if (note) note.innerHTML = 'Running sum loop: only a single accumulator variable <code>total</code> is maintained regardless of n. Auxiliary space is strictly <b>O(1)</b>.';
     } else if (mode === 'copy') {
       var cp = measureCopy(n);
-      valPeak.textContent = n + ' cells';
+      valPeak.textContent = cp.peakHeap + ' cells';
       valPeak.className = 'm-v pop';
       valClass.textContent = 'O(n)';
       valClass.className = 'm-v pop';
-      valStack.textContent = '1 frame';
-      valHeap.textContent = n + ' cells';
+      valStack.textContent = cp.peakStack + ' frame';
+      valHeap.textContent = cp.peakHeap + ' cells';
 
       var frc = el('div', 'stack-box top');
       frc.innerHTML = '<span>copy_list(' + n + ')</span><span>arr.len=' + cp.val + '</span>';
@@ -100,14 +124,14 @@ function mountModel() {
       if (note) note.innerHTML = 'Building a copy: creates a new array of <b>' + n + '</b> elements in memory. Peak auxiliary space is proportional to n: <b>O(n)</b>.';
     } else {
       var rc = measureRecursive(n);
-      valPeak.textContent = n + ' frames';
+      valPeak.textContent = rc.peakStack + ' frames';
       valPeak.className = 'm-v bad';
       valClass.textContent = 'O(n)';
       valClass.className = 'm-v bad';
-      valStack.textContent = n + ' frames';
-      valHeap.textContent = '0 cells';
+      valStack.textContent = rc.peakStack + ' frames';
+      valHeap.textContent = rc.peakHeap + ' cells';
 
-      for (var f = n; f >= 1; f--) {
+      for (var f = n; f >= n - rc.peakStack + 1; f--) {
         var frr = el('div', 'stack-box' + (f === n ? ' top' : ''));
         frr.innerHTML = '<span>sum_to(' + f + ')</span><span>waiting</span>';
         stackPile.appendChild(frr);
@@ -115,7 +139,7 @@ function mountModel() {
 
       heapGrid.innerHTML = '<span style="color:var(--mut);font-size:12px;padding:8px">0 heap cells (stack holds frames)</span>';
       if (regVal) regVal.textContent = 'waiting for base case';
-      if (note) note.innerHTML = 'Recursive sum: each call adds a frame to the call stack until reaching base case 0. Peak stack depth is <b>' + n + '</b> frames: <b>O(n)</b> auxiliary space.';
+      if (note) note.innerHTML = 'Recursive sum: each call adds a frame to the call stack until reaching base case 0. Peak stack depth is <b>' + rc.peakStack + '</b> frames (sum_to(' + n + ') down to sum_to(0)): <b>O(n)</b> auxiliary space.';
     }
   }
 

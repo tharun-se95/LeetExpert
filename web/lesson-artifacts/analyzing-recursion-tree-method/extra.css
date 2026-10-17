@@ -211,3 +211,11 @@
     transition: none;
   }
 }
+
+/* memo call-count table: counted rows, tabular figures so columns line up */
+.memo-wrap { overflow-x: auto; }
+.memo-table { width: 100%; border-collapse: collapse; font: 500 14px 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+.memo-table th { text-align: right; font-weight: 600; font-size: 12px; color: var(--mut); padding: 6px 10px; border-bottom: 1px solid var(--hair2); }
+.memo-table td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--hair); color: var(--fg); }
+.memo-table td.bad { color: var(--r-ink); }
+.memo-table td.good { color: var(--g-ink); }

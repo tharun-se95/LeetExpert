@@ -36,51 +36,94 @@ function countFibMemo(n) {
   return calls;
 }
 
-function binarySearchTree(n) {
-  var levels = [];
-  var curr = n;
-  while (curr >= 1) {
-    levels.push({ size: curr, nodes: 1, workPerNode: 1, totalWork: 1 });
-    if (curr === 1) break;
-    curr = Math.floor(curr / 2);
+/* The tree widget traces REAL recursive calls: each call records its depth, its parent and
+   the non-recursive work it did, so every level total on the page is a sum of counted work. */
+function traceCalls(kind, n) {
+  var nodes = [];
+  function rec(parent, depth, label, size) {
+    var node = { id: nodes.length, parent: parent, depth: depth, label: label, size: size, work: 0 };
+    nodes.push(node);
+    return node;
   }
-  var totalWork = levels.reduce(function(acc, l) { return acc + l.totalWork; }, 0);
-  return { levels: levels, depth: levels.length, totalWork: totalWork };
+  if (kind === 'bs') {
+    // binary search for a key larger than every element: the worst case, one probe per call
+    var arr = []; for (var i = 0; i < n; i++) arr.push(2 * i);
+    var bs = function(parent, depth, lo, hi) {
+      var node = rec(parent, depth, 'n=' + (hi - lo), hi - lo);
+      node.work++;
+      if (hi - lo <= 1) return arr[lo] === 2 * n ? lo : -1;
+      var mid = (lo + hi) >> 1;
+      return 2 * n < arr[mid] ? bs(node.id, depth + 1, lo, mid) : bs(node.id, depth + 1, mid, hi);
+    };
+    bs(-1, 0, 0, n);
+  } else if (kind === 'ms') {
+    // merge sort on reversed input; work = elements written by this call's merge
+    var ms = function(parent, depth, a) {
+      var node = rec(parent, depth, 'n=' + a.length, a.length);
+      if (a.length <= 1) return a.slice();
+      var m = a.length >> 1;
+      var L = ms(node.id, depth + 1, a.slice(0, m)), R = ms(node.id, depth + 1, a.slice(m));
+      var out = [], x = 0, y = 0;
+      while (x < L.length || y < R.length) {
+        if (y >= R.length || (x < L.length && L[x] <= R[y])) out.push(L[x++]); else out.push(R[y++]);
+        node.work++;
+      }
+      return out;
+    };
+    var input = []; for (var j = n; j > 0; j--) input.push(j);
+    ms(-1, 0, input);
+  } else {
+    // naive Fibonacci; work = 1 per call
+    var fib = function(parent, depth, k) {
+      var node = rec(parent, depth, 'f(' + k + ')', k);
+      node.work++;
+      if (k <= 1) return k;
+      return fib(node.id, depth + 1, k - 1) + fib(node.id, depth + 1, k - 2);
+    };
+    fib(-1, 0, n);
+  }
+  var levels = [];
+  nodes.forEach(function(nd) {
+    if (!levels[nd.depth]) levels[nd.depth] = { nodes: 0, work: 0 };
+    levels[nd.depth].nodes++;
+    levels[nd.depth].work += nd.work;
+  });
+  var total = levels.reduce(function(s, l) { return s + l.work; }, 0);
+  return { nodes: nodes, levels: levels, total: total };
 }
 
-function mergeSortTree(n) {
-  var levels = [];
-  var currSize = n;
-  var currNodes = 1;
-  while (currSize >= 1) {
-    levels.push({ size: currSize, nodes: currNodes, workPerNode: currSize, totalWork: currNodes * currSize });
-    if (currSize === 1) break;
-    currSize = Math.floor(currSize / 2);
-    currNodes *= 2;
-  }
-  var totalWork = levels.reduce(function(acc, l) { return acc + l.totalWork; }, 0);
-  return { levels: levels, depth: levels.length, totalWork: totalWork };
+function fibValue(k) { var a = 0, b = 1; for (var i = 0; i < k; i++) { var t = a + b; a = b; b = t; } return a; }
+
+/* Closed forms, written from the recurrences rather than from the traces, so the widget's
+   "counted = closed form" verdict compares two independent things. n is a power of two for
+   bs and ms. */
+function closedForm(kind, n) {
+  var lg = Math.round(Math.log2(n));
+  if (kind === 'bs') return { value: lg + 1, text: 'log₂ n + 1 = ' + lg + ' + 1 = ' + (lg + 1) };
+  if (kind === 'ms') return { value: n * lg, text: 'n × log₂ n = ' + n + ' × ' + lg + ' = ' + n * lg };
+  var v = 2 * fibValue(n + 1) - 1;
+  return { value: v, text: '2·F(n+1) − 1 = 2·' + fibValue(n + 1) + ' − 1 = ' + v };
 }
+
+var TREE_KINDS = [
+  { id: 'bs', name: 'Binary search (halve once)', rec: 'T(n) = T(n/2) + O(1)', asymp: 'Θ(log n)',
+    unit: 'probe', sizes: [4, 8, 16, 32], start: 2 },
+  { id: 'ms', name: 'Merge sort (split twice, merge)', rec: 'T(n) = 2T(n/2) + O(n)', asymp: 'Θ(n log n)',
+    unit: 'merge write', sizes: [4, 8, 16, 32], start: 2 },
+  { id: 'fib', name: 'Naive Fibonacci (branch twice, shrink by 1)', rec: 'T(n) = T(n−1) + T(n−2) + O(1)',
+    asymp: 'Θ(φⁿ), at most O(2ⁿ)', unit: 'call', sizes: [3, 4, 5, 6], start: 1 }
+];
+
+var MEMO_NS = [4, 6, 8, 10, 12, 16, 20];
+var MEMO_ROWS = MEMO_NS.map(function(n) { return { n: n, naive: countFibNaive(n), memo: countFibMemo(n) }; });
 
 var FACTS = (function() {
-  var bs = binarySearchTree(16);
-  var ms = mergeSortTree(16);
+  var bs = traceCalls('bs', 16), ms = traceCalls('ms', 16), fb = traceCalls('fib', 4);
   return {
-    bsN: 16,
-    bsLevels: bs.depth,
-    bsTotalWork: bs.totalWork,
-    msN: 16,
-    msLevels: ms.depth,
-    msWorkPerLevel: 16,
-    msTotalWork: ms.totalWork,
-    fibN: 4,
-    fibNaiveCalls: countFibNaive(4),
-    fibMemoCalls: countFibMemo(4),
-    fibDistinct: 5,
-    fib6NaiveCalls: countFibNaive(6),
-    fib6MemoCalls: countFibMemo(6),
-    fib8NaiveCalls: countFibNaive(8),
-    fib8MemoCalls: countFibMemo(8)
+    bsN: 16, bsLevels: bs.levels.length, bsTotalWork: bs.total,
+    msN: 16, msLevels: ms.levels.length, msTotalWork: ms.total,
+    fibN: 4, fibNaiveCalls: countFibNaive(4), fibMemoCalls: countFibMemo(4),
+    fib8NaiveCalls: countFibNaive(8), fib8MemoCalls: countFibMemo(8)
   };
 })();
 /* PURE:end */
@@ -96,221 +139,79 @@ function mountRecursionTrees(host) {
   var depthVal = host.querySelector('#depthVal');
   var formulaVal = host.querySelector('#formulaVal');
   var verdictVal = host.querySelector('#verdictVal');
-  var tableBody = host.querySelector('#levelsBody');
 
-  var TREES = [
-    {
-      id: 'bs',
-      name: 'Binary Search (Halve once)',
-      rec: 'T(n) = T(n/2) + O(1)',
-      asymp: '\u0398(log n)',
-      depth: '5 levels (\u2308log\u2082 n\u2309 + 1)',
-      totalWork: '5 operations',
-      formula: '1 + 1 + 1 + 1 + 1 = 5',
-      verdict: 'Logarithmic chain',
-      levels: [
-        { lvl: 0, subproblems: 1, size: 'n = 16', workEach: 1, total: 1 },
-        { lvl: 1, subproblems: 1, size: 'n = 8', workEach: 1, total: 1 },
-        { lvl: 2, subproblems: 1, size: 'n = 4', workEach: 1, total: 1 },
-        { lvl: 3, subproblems: 1, size: 'n = 2', workEach: 1, total: 1 },
-        { lvl: 4, subproblems: 1, size: 'n = 1', workEach: 1, total: 1 }
-      ],
-      draw: function(svg) {
-        var W = 520, H = 220;
-        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-        svg.innerHTML = '';
-        var X = 200, Y0 = 25, dY = 40;
-        var sizes = [16, 8, 4, 2, 1];
-        for (var i = 0; i < sizes.length; i++) {
-          var y = Y0 + i * dY;
-          if (i < sizes.length - 1) {
-            var line = S('line', { x1: X, y1: y + 14, x2: X, y2: y + dY - 14, class: 'tree-edge' }, svg);
-          }
-          var g = S('g', {}, svg);
-          var rect = S('rect', { x: X - 36, y: y - 14, width: 72, height: 28, rx: 6, class: i === 0 ? 'tree-node-bg root' : (i === 4 ? 'tree-node-bg base' : 'tree-node-bg') }, g);
-          var txt = S('text', { x: X, y: y, class: 'tree-node-lbl' }, g);
-          txt.textContent = 'n = ' + sizes[i];
+  var sizeHost = host.querySelector('#treeSizes');
+  var kind = TREE_KINDS[0], sizeIdx = kind.start;
 
-          // level annotation on left and work on right
-          var lvlTxt = S('text', { x: 30, y: y + 4, class: 'tree-level-lbl' }, svg);
-          lvlTxt.textContent = 'Level ' + i;
-          var workTxt = S('text', { x: 480, y: y + 4, class: 'tree-level-work' }, svg);
-          workTxt.textContent = '1 op';
-        }
+  function draw(trace) {
+    var W = 560, top = 22, dY = 40, H = top + trace.levels.length * dY;
+    svgHost.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svgHost.innerHTML = '';
+    var X0 = 64, X1 = W - 92;
+    var kids = trace.nodes.map(function() { return []; });
+    trace.nodes.forEach(function(nd) { if (nd.parent >= 0) kids[nd.parent].push(nd.id); });
+    var leaves = trace.nodes.filter(function(nd) { return !kids[nd.id].length; }).length;
+    var slot = (X1 - X0) / leaves, next = 0, xs = [];
+    (function place(id) {
+      if (!kids[id].length) { xs[id] = X0 + slot * (next++ + 0.5); return; }
+      kids[id].forEach(place);
+      xs[id] = kids[id].reduce(function(s, c) { return s + xs[c]; }, 0) / kids[id].length;
+    })(0);
+    var y = function(nd) { return top + nd.depth * dY + 8; };
+    trace.nodes.forEach(function(nd) {
+      if (nd.parent >= 0) {
+        var p = trace.nodes[nd.parent];
+        S('line', { x1: xs[p.id], y1: y(p) + 10, x2: xs[nd.id], y2: y(nd) - 10, class: 'tree-edge' }, svgHost);
       }
-    },
-    {
-      id: 'ms',
-      name: 'Merge Sort (Split twice + merge)',
-      rec: 'T(n) = 2T(n/2) + O(n)',
-      asymp: '\u0398(n log n)',
-      depth: '5 levels (\u2308log\u2082 n\u2309 + 1)',
-      totalWork: '80 operations (n \u00D7 log n)',
-      formula: '16 \u00D7 5 levels = 80',
-      verdict: 'Balanced flat pyramid',
-      levels: [
-        { lvl: 0, subproblems: 1, size: 'n = 16', workEach: 16, total: 16 },
-        { lvl: 1, subproblems: 2, size: 'n = 8', workEach: 8, total: 16 },
-        { lvl: 2, subproblems: 4, size: 'n = 4', workEach: 4, total: 16 },
-        { lvl: 3, subproblems: 8, size: 'n = 2', workEach: 2, total: 16 },
-        { lvl: 4, subproblems: 16, size: 'n = 1', workEach: 1, total: 16 }
-      ],
-      draw: function(svg) {
-        var W = 520, H = 220;
-        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-        svg.innerHTML = '';
-        var Y0 = 25, dY = 40;
-        var treeData = [
-          [{ label: 'n=16', x: 230 }],
-          [{ label: 'n=8', x: 150 }, { label: 'n=8', x: 310 }],
-          [{ label: 'n=4', x: 110 }, { label: 'n=4', x: 190 }, { label: 'n=4', x: 270 }, { label: 'n=4', x: 350 }],
-          [{ label: 'n=2', x: 90 }, { label: 'n=2', x: 130 }, { label: 'n=2', x: 170 }, { label: 'n=2', x: 210 }, { label: 'n=2', x: 250 }, { label: 'n=2', x: 290 }, { label: 'n=2', x: 330 }, { label: 'n=2', x: 370 }]
-        ];
-
-        // Draw connections
-        for (var l = 0; l < treeData.length - 1; l++) {
-          var parents = treeData[l];
-          var children = treeData[l + 1];
-          var yP = Y0 + l * dY + 12;
-          var yC = Y0 + (l + 1) * dY - 12;
-          for (var p = 0; p < parents.length; p++) {
-            var c1 = children[p * 2];
-            var c2 = children[p * 2 + 1];
-            S('line', { x1: parents[p].x, y1: yP, x2: c1.x, y2: yC, class: 'tree-edge' }, svg);
-            S('line', { x1: parents[p].x, y1: yP, x2: c2.x, y2: yC, class: 'tree-edge' }, svg);
-          }
-        }
-
-        // Draw nodes for first 4 levels (level 4 indicated with ellipsis)
-        for (var l = 0; l < treeData.length; l++) {
-          var y = Y0 + l * dY;
-          var nodes = treeData[l];
-          for (var n = 0; n < nodes.length; n++) {
-            var g = S('g', {}, svg);
-            var rect = S('rect', { x: nodes[n].x - 18, y: y - 11, width: 36, height: 22, rx: 4, class: l === 0 ? 'tree-node-bg root' : 'tree-node-bg' }, g);
-            var txt = S('text', { x: nodes[n].x, y: y, class: 'tree-node-lbl' }, g);
-            txt.setAttribute('font-size', '10px');
-            txt.textContent = nodes[n].label;
-          }
-          // level labels
-          var lvlTxt = S('text', { x: 20, y: y + 4, class: 'tree-level-lbl' }, svg);
-          lvlTxt.textContent = 'Level ' + l;
-          var workTxt = S('text', { x: 500, y: y + 4, class: 'tree-level-work' }, svg);
-          workTxt.textContent = '16 ops';
-        }
-
-        // Base level indication
-        var yBase = Y0 + 4 * dY;
-        var lvl4Txt = S('text', { x: 20, y: yBase + 4, class: 'tree-level-lbl' }, svg);
-        lvl4Txt.textContent = 'Level 4 (n=1 leaves)';
-        var dotTxt = S('text', { x: 230, y: yBase + 4, class: 'tree-node-lbl' }, svg);
-        dotTxt.textContent = '... 16 base leaves of size 1 ...';
-        var work4Txt = S('text', { x: 500, y: yBase + 4, class: 'tree-level-work' }, svg);
-        work4Txt.textContent = '16 ops';
-      }
-    },
-    {
-      id: 'fib',
-      name: 'Naive Fibonacci (Branches twice, shrinks by 1)',
-      rec: 'T(n) = T(n-1) + T(n-2) + O(1)',
-      asymp: '\u0398(\u03C6\u207F) \u2248 O(2\u207F)',
-      depth: '4 levels (depth n)',
-      totalWork: '9 recursive calls',
-      formula: '1 + 2 + 4 + 2 = 9 calls',
-      verdict: 'Exponential explosion',
-      levels: [
-        { lvl: 0, subproblems: 1, size: 'fib(4)', workEach: 1, total: 1 },
-        { lvl: 1, subproblems: 2, size: 'fib(3), fib(2)', workEach: 1, total: 2 },
-        { lvl: 2, subproblems: 4, size: 'fib(2), fib(1), fib(1), fib(0)', workEach: 1, total: 4 },
-        { lvl: 3, subproblems: 2, size: 'fib(1), fib(0)', workEach: 1, total: 2 }
-      ],
-      draw: function(svg) {
-        var W = 520, H = 220;
-        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-        svg.innerHTML = '';
-        var Y0 = 25, dY = 48;
-
-        // Tree structure for fib(4)
-        var nodes = [
-          { id: '4', label: 'fib(4)', x: 230, y: Y0, root: true },
-          // Level 1
-          { id: '3', label: 'fib(3)', x: 130, y: Y0 + dY, p: '4' },
-          { id: '2a', label: 'fib(2)', x: 330, y: Y0 + dY, p: '4', repeat: true },
-          // Level 2
-          { id: '2b', label: 'fib(2)', x: 80, y: Y0 + 2 * dY, p: '3', repeat: true },
-          { id: '1a', label: 'fib(1)', x: 180, y: Y0 + 2 * dY, p: '3', base: true },
-          { id: '1b', label: 'fib(1)', x: 290, y: Y0 + 2 * dY, p: '2a', base: true },
-          { id: '0a', label: 'fib(0)', x: 370, y: Y0 + 2 * dY, p: '2a', base: true },
-          // Level 3
-          { id: '1c', label: 'fib(1)', x: 50, y: Y0 + 3 * dY, p: '2b', base: true },
-          { id: '0b', label: 'fib(0)', x: 110, y: Y0 + 3 * dY, p: '2b', base: true }
-        ];
-
-        var nodeMap = {};
-        nodes.forEach(function(n) { nodeMap[n.id] = n; });
-
-        // Draw edges
-        nodes.forEach(function(n) {
-          if (n.p) {
-            var parent = nodeMap[n.p];
-            S('line', {
-              x1: parent.x,
-              y1: parent.y + 12,
-              x2: n.x,
-              y2: n.y - 12,
-              class: n.repeat ? 'tree-edge repeat-edge' : 'tree-edge'
-            }, svg);
-          }
-        });
-
-        // Draw nodes
-        nodes.forEach(function(n) {
-          var g = S('g', {}, svg);
-          var cls = 'tree-node-bg';
-          if (n.root) cls += ' root';
-          if (n.repeat) cls += ' repeat';
-          if (n.base) cls += ' base';
-          S('rect', { x: n.x - 26, y: n.y - 12, width: 52, height: 24, rx: 5, class: cls }, g);
-          var txt = S('text', { x: n.x, y: n.y, class: 'tree-node-lbl' }, g);
-          txt.setAttribute('font-size', '10.5px');
-          txt.textContent = n.label;
-        });
-
-        // Level labels and work
-        var lvlTotals = [1, 2, 4, 2];
-        for (var l = 0; l < 4; l++) {
-          var y = Y0 + l * dY;
-          var lvlTxt = S('text', { x: 16, y: y + 4, class: 'tree-level-lbl' }, svg);
-          lvlTxt.textContent = 'Level ' + l;
-          var workTxt = S('text', { x: 500, y: y + 4, class: 'tree-level-work' }, svg);
-          workTxt.textContent = lvlTotals[l] + ' calls';
-        }
-      }
-    }
-  ];
-
-  function showTree(tree) {
-    recLabel.textContent = tree.rec;
-    asympLabel.textContent = tree.asymp;
-    depthVal.textContent = tree.depth;
-    totalWorkVal.textContent = tree.totalWork;
-    formulaVal.textContent = tree.formula;
-    verdictVal.textContent = tree.verdict;
-
-    tree.draw(svgHost);
-
-    // Populate levels table
-    if (tableBody) {
-      tableBody.innerHTML = '';
-      tree.levels.forEach(function(row) {
-        var tr = el('tr');
-        tr.innerHTML = '<td>' + row.lvl + '</td><td>' + row.subproblems + '</td><td>' + row.size + '</td><td>' + row.workEach + '</td><td><strong>' + row.total + '</strong></td>';
-        tableBody.appendChild(tr);
-      });
-    }
+    });
+    var bw = Math.min(52, slot * 0.86);
+    trace.nodes.forEach(function(nd) {
+      var cls = 'tree-node-bg' + (nd.id === 0 ? ' root' : (!kids[nd.id].length ? ' base' : ''));
+      S('rect', { x: xs[nd.id] - bw / 2, y: y(nd) - 10, width: bw, height: 20, rx: 4, class: cls }, svgHost);
+      if (bw >= 30) S('text', { x: xs[nd.id], y: y(nd), class: 'tree-node-lbl' }, svgHost).textContent = nd.label;
+    });
+    trace.levels.forEach(function(l, k) {
+      var yy = top + k * dY + 8;
+      S('text', { x: 6, y: yy + 4, class: 'tree-level-lbl' }, svgHost).textContent = 'Level ' + k;
+      S('text', { x: W - 6, y: yy + 4, class: 'tree-level-work', 'text-anchor': 'end' }, svgHost)
+        .textContent = l.nodes + ' × → ' + l.work;
+    });
   }
 
-  TREES.forEach(function(t, i) {
+  function show() {
+    var n = kind.sizes[sizeIdx];
+    var trace = traceCalls(kind.id, n);
+    var cf = closedForm(kind.id, n);
+    recLabel.textContent = kind.rec + ',  n = ' + n;
+    asympLabel.textContent = kind.asymp;
+    depthVal.textContent = trace.levels.length + ' levels';
+    totalWorkVal.textContent = trace.levels.map(function(l) { return l.work; }).join(' + ') + ' = ' +
+      trace.total + ' ' + kind.unit + (trace.total === 1 ? '' : 's');
+    formulaVal.textContent = cf.text;
+    var ok = cf.value === trace.total;
+    verdictVal.textContent = ok ? 'counted = closed form' : 'mismatch';
+    verdictVal.className = 'stat-val ' + (ok ? 'good' : 'bad');
+    svgHost.setAttribute('aria-label', 'Recursion tree for ' + kind.rec + ' at n = ' + n + ': ' +
+      trace.levels.length + ' levels, level work ' + trace.levels.map(function(l) { return l.work; }).join(', ') + '.');
+    draw(trace);
+  }
+
+  function sizeButtons() {
+    sizeHost.innerHTML = '';
+    kind.sizes.forEach(function(n, i) {
+      var b = el('button', 'tab', 'n = ' + n);
+      b.type = 'button';
+      b.setAttribute('aria-pressed', i === sizeIdx ? 'true' : 'false');
+      b.addEventListener('click', function() {
+        sizeIdx = i;
+        sizeHost.querySelectorAll('button').forEach(function(x, k) { x.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+        show();
+      });
+      sizeHost.appendChild(b);
+    });
+  }
+
+  TREE_KINDS.forEach(function(t, i) {
     var btn = el('button', 'tab', t.name);
     btn.type = 'button';
     btn.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
@@ -318,18 +219,33 @@ function mountRecursionTrees(host) {
       tabsHost.querySelectorAll('button').forEach(function(b, k) {
         b.setAttribute('aria-pressed', k === i ? 'true' : 'false');
       });
-      showTree(t);
+      kind = t; sizeIdx = t.start;
+      sizeButtons();
+      show();
     });
     tabsHost.appendChild(btn);
   });
 
-  showTree(TREES[0]);
+  sizeButtons();
+  show();
+}
+
+function mountMemoTable(host) {
+  if (!host) return;
+  var body = host.querySelector('#memoBody');
+  MEMO_ROWS.forEach(function(r) {
+    var tr = el('tr');
+    tr.innerHTML = '<td>' + r.n + '</td><td class="bad">' + r.naive.toLocaleString() + '</td><td class="good">' +
+      r.memo + '</td><td>' + (r.naive / r.memo).toFixed(1) + '×</td>';
+    body.appendChild(tr);
+  });
 }
 
 /* ---------- Boot wiring ---------- */
 (function() {
   mountLesson();
   mountRecursionTrees($('#treeWidget'));
+  mountMemoTable($('#memoTable'));
 })();
 
 /* ---------- Systems hero: office hierarchy delegation ---------- */

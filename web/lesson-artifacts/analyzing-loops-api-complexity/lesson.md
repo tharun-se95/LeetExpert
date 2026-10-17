@@ -53,7 +53,7 @@ The intuition that "one loop equals $O(n)$" only holds when the loop counter ste
 <div class="loop-stage">
   <div class="extabs" role="group" aria-label="Choose loop shape"></div>
   <div class="slider-control">
-    <div class="slider-label"><span>Input size n:</span><b id="nVal">16</b></div>
+    <div class="slider-label"><span>Input size n:</span><b id="nVal"></b></div>
     <input type="range" class="slider-input" id="loopN" min="1" max="64" value="16" aria-label="Input size n">
   </div>
   <div class="loop-stats">
@@ -93,7 +93,7 @@ We write an explicit function to execute and count each shape. In production sys
 ```
 
 ````warn
-Pricing `x in list` as O(1). Checking membership in a list of size $k$ scans all $k$ elements under the hood. Inside an $n$-iteration loop, searching an accumulating output array turns what looks like a single loop into $0 + 1 + 2 + \dots + (n-1) = \frac{n(n-1)}{2}$ comparisons: quadratic $O(n^2)$ time!
+Pricing `x in list` as O(1). Checking membership in a list of size $k$ scans all $k$ elements under the hood. Inside an $n$-iteration loop over distinct items, every search scans the whole accumulating output and misses, which turns what looks like a single loop into $0 + 1 + 2 + \dots + (n-1) = \frac{n(n-1)}{2}$ comparisons: quadratic $O(n^2)$ time!
 
 ```code mistake "dedupe_list: hidden quadratic loop inside list scan"
 ```
@@ -113,7 +113,7 @@ The multiplication rule requires the *true* cost of the loop body. Modern standa
 
 - `x in list` (Python) / `arr.includes(x)` (JavaScript) $\rightarrow$ linear scan: **$O(k)$**
 - `list.insert(0, val)` / `arr.unshift(val)` $\rightarrow$ shifts all existing elements: **$O(n)$**
-- String concatenation in a loop: creates a new string copy each time $\rightarrow$ **$O(n^2)$**
+- `s += piece` in a loop: strings are immutable, so each `+=` may copy everything built so far $\rightarrow$ **$O(n^2)$** for the whole loop (CPython sometimes extends in place, but nothing in the language promises it)
 
 Replacing the list membership test with a ==hash set== drops each check from $O(k)$ to $O(1)$, restoring overall complexity to linear $O(n)$.
 
@@ -123,12 +123,12 @@ Replacing the list membership test with a ==hash set== drops each check from $O(
   <div class="api-compare">
     <div class="api-card set-approach">
       <div class="api-head">Set Membership (O(1) per check)</div>
-      <div class="api-cost good" id="setCost">100 ops (O(n))</div>
+      <div class="api-cost good" id="setCost"></div>
       <div class="api-desc">Uses hash table lookups to check presence in constant time, scaling linearly with n.</div>
     </div>
     <div class="api-card list-approach">
       <div class="api-head">List Membership (O(k) linear scan)</div>
-      <div class="api-cost bad" id="listCost">4,950 ops (O(n²))</div>
+      <div class="api-cost bad" id="listCost"></div>
       <div class="api-desc">Scans the accumulating output array on every element, causing triangular quadratic explosion.</div>
     </div>
   </div>
@@ -179,14 +179,14 @@ Before pricing an outer loop, identify the asymptotic complexity of every method
       "question": "What is the overall complexity of a loop running n times whose inner loop counter triples from 1 up to n?",
       "options": [
         "O(n) — because a multiplicative loop exits so rapidly that its work is swallowed by the outer loop",
-        "O(n log n)",
+        "O(n log n) — n outer passes, each running the tripling loop about log₃ n times",
         "O(n²) — because any loop nested inside another outer loop of size n multiplies into quadratic growth"
       ],
       "answer": 1,
       "explanation": "The outer loop runs n times. The inner loop multiplies by 3 on each pass, running log₃ n times. Multiplying outer iterations by inner passes gives O(n log n)."
     },
     {
-      "question": "A loop runs n times; its body calls an O(n) helper, followed by a separate O(n) loop. What is the total cost?",
+      "question": "A loop runs n times and calls an O(n) helper on every pass. After that loop ends, a second, separate loop runs n times. What is the total cost?",
       "options": [
         "O(n³) — multiplying the nested helper with the sequential loop after it",
         "O(n) + O(n) = O(n) — treating the helper as an independent linear pass",
@@ -199,8 +199,8 @@ Before pricing an outer loop, identify the asymptotic complexity of every method
       "question": "Why does checking x in list inside a loop of size n result in O(n²) time instead of O(n)?",
       "options": [
         "Because list membership tests scan elements one by one, performing up to k comparisons on each pass.",
-        "Because modern Python and JavaScript runtimes automatically compile list lookups into recursive branch trees.",
-        "Because looping over an array always creates a deep copy of the entire collection on every single iteration."
+        "Because appending to the output list copies the whole list each time, so the appends are what cost O(n) per pass.",
+        "Because the outer loop has to restart from the beginning every time a duplicate is found and skipped."
       ],
       "answer": 0,
       "explanation": "An array has no index lookup by value: finding an item requires scanning up to its current length. Repeated inside an n-element loop, this produces 0 + 1 + 2 + ... + (n-1) = n(n-1)/2 total checks, which is Θ(n²)."

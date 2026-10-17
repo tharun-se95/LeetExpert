@@ -46,16 +46,36 @@ var SHAPE_TESTS = {
   dep16: countLoopIterations('dependent', 16)
 };
 
-var DEDUPE_STATS = {
-  n100_set: 100,
-  n100_list: Math.floor(100 * 99 / 2)
-};
+/* The pricing widget runs both dedupes and counts every membership comparison, so the
+   quadratic figure is measured on the list version, not quoted from a formula. Inputs are
+   distinct, the case where every 'x in result' scans the whole output and misses. */
+function dedupeSetCount(items) {
+  var seen = new Set(), checks = 0;
+  for (var i = 0; i < items.length; i++) { checks++; if (!seen.has(items[i])) seen.add(items[i]); }
+  return checks;
+}
+function dedupeListCount(items) {
+  var result = [], checks = 0;
+  for (var i = 0; i < items.length; i++) {
+    var found = false;
+    for (var k = 0; k < result.length; k++) { checks++; if (result[k] === items[i]) { found = true; break; } }
+    if (!found) result.push(items[i]);
+  }
+  return checks;
+}
+function distinctItems(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+
+var API_SIZES = [10, 50, 100, 200, 500];
+var API_COSTS = API_SIZES.map(function(n) {
+  var items = distinctItems(n);
+  return { n: n, set: dedupeSetCount(items), list: dedupeListCount(items) };
+});
 
 var FACTS = {
   doubling16: SHAPE_TESTS.doubling16,
   seq16: SHAPE_TESTS.seq16,
   dep16: SHAPE_TESTS.dep16,
-  quad100: DEDUPE_STATS.n100_list
+  quad100: API_COSTS[2].list
 };
 /* PURE:end */
 
@@ -155,11 +175,10 @@ function mountApiPricing(host) {
   var listCost = host.querySelector('#listCost');
   var ratioBadge = host.querySelector('#ratioBadge');
 
-  var SIZES = [10, 50, 100, 200, 500];
-
-  function updateSize(n) {
-    var sCost = n;
-    var lCost = Math.floor(n * (n - 1) / 2);
+  function updateSize(idx) {
+    var n = API_COSTS[idx].n;
+    var sCost = API_COSTS[idx].set;
+    var lCost = API_COSTS[idx].list;
     setCost.textContent = sCost + ' ops (O(n))';
     listCost.textContent = lCost.toLocaleString() + ' ops (O(n\u00B2))';
 
@@ -167,7 +186,7 @@ function mountApiPricing(host) {
     ratioBadge.textContent = 'List membership does ' + ratio + '\u00D7 more work than Set at n = ' + n;
   }
 
-  SIZES.forEach(function(n, idx) {
+  API_SIZES.forEach(function(n, idx) {
     var btn = el('button', 'tab', 'n = ' + n);
     btn.type = 'button';
     btn.setAttribute('aria-pressed', idx === 2 ? 'true' : 'false'); // default n = 100
@@ -175,12 +194,12 @@ function mountApiPricing(host) {
       tabsHost.querySelectorAll('button').forEach(function(b, k) {
         b.setAttribute('aria-pressed', k === idx ? 'true' : 'false');
       });
-      updateSize(n);
+      updateSize(idx);
     });
     tabsHost.appendChild(btn);
   });
 
-  updateSize(100);
+  updateSize(2);
 }
 
 /* ---------- Boot wiring ---------- */

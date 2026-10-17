@@ -90,7 +90,8 @@ def run_pure():
 process.stdout.write(JSON.stringify({
   FACTS: FACTS,
   MAIL_BIN: MAIL_BIN,
-  SORT_COSTS: SORT_COSTS
+  SORT_COSTS: SORT_COSTS,
+  SORT_CASES: SORT_CASES
 }));
 """
     res = subprocess.run(["node", "-e", probe], capture_output=True, text=True)
@@ -161,13 +162,25 @@ def main():
     if float(facts["avgCompares"]) != avg_c:
         problems.append(f"FACTS.avgCompares {facts['avgCompares']} != {avg_c}")
 
-    # Insertion sort numbers for n = 8
-    ins_sorted = insertion_sort_count(list(range(8)))
-    ins_rev = insertion_sort_count(list(reversed(range(8))))
-    if facts["insSortedCompares"] != ins_sorted:
-        problems.append(f"FACTS.insSortedCompares {facts['insSortedCompares']} != {ins_sorted}")
-    if facts["insReversedCompares"] != ins_rev:
-        problems.append(f"FACTS.insReversedCompares {facts['insReversedCompares']} != {ins_rev}")
+    if facts["sumCompares"] != sum(i + 1 for i in range(n)):
+        problems.append(f"FACTS.sumCompares {facts['sumCompares']} wrong")
+
+    # Insertion sort: every widget case and chart point recounted independently
+    sort_cases = pure_data["SORT_CASES"]
+    orders = [sorted, lambda a: sorted(a, reverse=True), None]
+    for case, order in zip(sort_cases, orders):
+        got = insertion_sort_count(case["arr"])
+        if case["compares"] != got:
+            problems.append(f"SORT_CASES {case['name']}: {case['compares']} != counted {got}")
+        if order and case["arr"] != order(case["arr"]):
+            problems.append(f"SORT_CASES {case['name']} array is not in the order its name claims")
+    for key, case in zip(["insSortedCompares", "insReversedCompares", "insRandomCompares"], sort_cases):
+        if facts[key] != insertion_sort_count(case["arr"]):
+            problems.append(f"FACTS.{key} {facts[key]} != counted")
+    for n_, rev, srt in pure_data["SORT_COSTS"]:
+        if rev != insertion_sort_count(list(range(n_ - 1, -1, -1))) or srt != insertion_sort_count(list(range(n_))):
+            problems.append(f"SORT_COSTS row n={n_} wrong")
+    print("insertion sort counts (cases + chart) recounted in Python")
 
     # 4. Built HTML check (if dist file exists)
     dist = os.path.join(WEB, "lesson-artifacts", "dist", "big-o", "input-dependency-best-worst-average.html")

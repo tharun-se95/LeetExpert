@@ -15,7 +15,7 @@ hero: |
 ## How to drill {#problem toc="How to drill"}
 
 ```caption
-Commit to your prediction, check the growth ratio, and fix any rule you misapplied.
+Commit to a prediction first; the counted ratios then show which rule you applied and which one you missed.
 ```
 
 ```vig "A target bullseye beside a clipboard checklist"
@@ -25,14 +25,14 @@ Commit to your prediction, check the growth ratio, and fix any rule you misappli
 Complexity analysis is a reading skill. When you encounter code in an interview or code review, you need to recognize its growth rate by reading its loop bounds, function calls, and data structures.
 
 For each of the six drills below:
-1. Examine the code snippet in both languages.
-2. Select your prediction for **time complexity** and **auxiliary space**.
-3. Open the counted operations reveal to check the ratio across doubling inputs ($n$, $2n$, $4n$).
+1. Read the drill's code, in either language: the menu on the code block switches both.
+2. Pick your prediction for **time complexity** and **auxiliary space**.
+3. The page then runs an instrumented copy of the code and shows what it counted at $n$, $2n$ and $4n$, and why those counts follow the rule you were applying.
 
 ## Drill 1: Sequential passes {#solution toc="Drill 1"}
 
 ```caption
-Sequential loops add: O(n) + O(n) = O(n) time and O(1) space.
+Two passes over the same list: price each loop on its own, then decide how they combine.
 ```
 
 ```vig "Two separate sequential loop passes over a collection"
@@ -41,39 +41,16 @@ Sequential loops add: O(n) + O(n) = O(n) time and O(1) space.
 
 **The scenario:** Two separate passes over the same collection — first tallying every package's weight, then subtracting half of each one.
 
-```code solution "Drill 1: sequential loops"
+```code drill1 "Drill 1: net_weight, two sequential loops"
 ```
 
 ```widget #drill-card-1 "Drill 1: Predict time and auxiliary space"
-<div class="drill-card">
-  <div class="drill-h">
-    <span class="drill-title">Drill 1: Sequential Passes</span>
-    <span class="drill-badge">Predict below</span>
-  </div>
-  <div class="drill-choices" role="group" aria-label="Drill 1 choices">
-    <button type="button" class="drill-opt" aria-pressed="false"><span>A) O(n) time, O(1) auxiliary space</span><b>Sequential add</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>B) O(n) time, O(n) auxiliary space</span><b>Extra list space</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>C) O(n²) time, O(1) auxiliary space</span><b>Nested multiply</b></button>
-  </div>
-  <button type="button" class="btn2 btn-reveal" aria-expanded="false">Show counted operations</button>
-  <div class="drill-reveal-area" style="display:none">
-    <table class="drill-table">
-      <thead><tr><th>Input n</th><th>Measured Iterations</th><th>Growth Ratio</th></tr></thead>
-      <tbody>
-        <tr><td>n = 10</td><td>20 iterations</td><td>baseline</td></tr>
-        <tr><td>n = 20</td><td>40 iterations</td><td>2.0x</td></tr>
-        <tr><td>n = 40</td><td>80 iterations</td><td>2.0x</td></tr>
-      </tbody>
-    </table>
-    <div class="drill-verdict"><b>Fitted Class: O(n) time, O(1) space.</b> Two sequential loops add: O(n) + O(n) = O(2n) = O(n). One accumulator variable `total`: O(1) space.</div>
-  </div>
-</div>
 ```
 
 ## Drill 2: Triangular dependent bounds {#build toc="Drill 2"}
 
 ```caption
-A nested loop with inner bound j < i yields n(n - 1) / 2 comparisons: O(n²) time.
+The inner loop's start depends on the outer one: count how many comparisons each outer step leaves.
 ```
 
 ```vig "A triangular staircase of comparison blocks"
@@ -82,119 +59,57 @@ A nested loop with inner bound j < i yields n(n - 1) / 2 comparisons: O(n²) tim
 
 **The scenario:** Every package checked against every package that comes after it, searching for a pair that cancels out to zero.
 
+```code drill2 "Drill 2: count_cancelling_pairs, a triangular nest"
+```
+
 ```widget #drill-card-2 "Drill 2: Predict time and auxiliary space"
-<div class="drill-card">
-  <div class="drill-h">
-    <span class="drill-title">Drill 2: Handshake Loop</span>
-    <span class="drill-badge">Predict below</span>
-  </div>
-  <div class="drill-choices" role="group" aria-label="Drill 2 choices">
-    <button type="button" class="drill-opt" aria-pressed="false"><span>A) O(n) time — shrinking bound collapses to one pass</span><b>Shrinking range</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>B) O(n log n) time — shrinking bound halves work</span><b>Logarithmic factor</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>C) O(n²) time — triangular sum halves only the constant</span><b>Quadratic pair</b></button>
-  </div>
-  <button type="button" class="btn2 btn-reveal" aria-expanded="false">Show counted operations</button>
-  <div class="drill-reveal-area" style="display:none">
-    <table class="drill-table">
-      <thead><tr><th>Input n</th><th>Measured Comparisons</th><th>Growth Ratio</th></tr></thead>
-      <tbody>
-        <tr><td>n = 10</td><td>45 comparisons</td><td>baseline</td></tr>
-        <tr><td>n = 20</td><td>190 comparisons</td><td>4.22x</td></tr>
-        <tr><td>n = 40</td><td>780 comparisons</td><td>4.11x</td></tr>
-      </tbody>
-    </table>
-    <div class="drill-verdict"><b>Fitted Class: O(n²) time, O(1) auxiliary space.</b> Inner iterations: (n−1) + (n−2) + … + 1 = n(n−1)/2. The 1/2 is a constant factor; the growth is quadratic.</div>
-  </div>
-</div>
 ```
 
 ## Drill 3: Halving outer with full inner {#insight toc="Drill 3"}
 
 ```caption
-Outer loop halves i across log₂ n steps; inner loop runs n steps each: O(n log n) time.
+Two loops, but only one of them is as long as the input: find out how long each is.
 ```
 
 ```vig "Outer halving loop multiplied by a full linear inner scan"
 <path class="st" d="M30 30H110M30 55H70M30 80H50"/><rect class="fk" x="140" y="24" width="80" height="66" rx="4"/>
 ```
 
-**The scenario:** An outer loop halves an index $i$ while an inner loop runs a full pass of size $n$ on every single round.
+**The scenario:** An outer loop halves a round size while an inner loop re-weighs the whole shelf of $n$ packages on every single round.
+
+```code drill3 "Drill 3: weigh_in_rounds, halving outer loop"
+```
 
 ```widget #drill-card-3 "Drill 3: Predict time and auxiliary space"
-<div class="drill-card">
-  <div class="drill-h">
-    <span class="drill-title">Drill 3: Halving Outer Loop</span>
-    <span class="drill-badge">Predict below</span>
-  </div>
-  <div class="drill-choices" role="group" aria-label="Drill 3 choices">
-    <button type="button" class="drill-opt" aria-pressed="false"><span>A) O(log n) time — halving outer loop dictates the cost</span><b>Halving outer</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>B) O(n log n) time — log₂ n outer rounds × n inner steps</span><b>Multiply bounds</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>C) O(n²) time — nested loops are always quadratic</span><b>Nested loops</b></button>
-  </div>
-  <button type="button" class="btn2 btn-reveal" aria-expanded="false">Show counted operations</button>
-  <div class="drill-reveal-area" style="display:none">
-    <table class="drill-table">
-      <thead><tr><th>Input n</th><th>Measured Iterations</th><th>Growth Ratio</th></tr></thead>
-      <tbody>
-        <tr><td>n = 16</td><td>64 iterations</td><td>baseline</td></tr>
-        <tr><td>n = 32</td><td>160 iterations</td><td>2.50x</td></tr>
-        <tr><td>n = 64</td><td>384 iterations</td><td>2.40x</td></tr>
-      </tbody>
-    </table>
-    <div class="drill-verdict"><b>Fitted Class: O(n log n) time, O(1) space.</b> Outer loop halves i: log₂ n passes. Inner loop executes n times on every pass regardless of i. Product: n · log n.</div>
-  </div>
-</div>
 ```
 
 ## Drill 4: Hidden slice and scan {#trap toc="Drill 4"}
 
 ```caption
-An innocent one-liner slice and scan in the loop body hides O(n²) time and O(n) space.
+One line in the loop body reads like a single question; price what it really does.
 ```
 
 ```vig "A loop icon concealing an expanding buffer underneath"
 <circle class="st" cx="60" cy="56" r="26"/><path class="sc" d="M78 40L86 48L78 56"/><rect class="fr" x="120" y="40" width="90" height="32" rx="4"/>
 ```
 
-**The scenario:** For every package, a check secretly re-slices the remaining array and scans it.
+**The scenario:** For every package, a check looks for the same weight among the packages that come after it.
 
-````warn
-Pricing the loop body as O(1). Creating a slice `nums[1:]` allocates a new array of size n - 1 (O(n) time and space), and the membership check `x in slice` scans it linearly (O(n) time). A linear loop with an O(n) body executes in O(n²) time.
 
-```code mistake "drill4_mistake: hidden linear slice and scan"
+```code drill4 "Drill 4: has_duplicate, a slice in the body"
 ```
-````
 
 ```widget #drill-card-4 "Drill 4: Predict time and auxiliary space"
-<div class="drill-card">
-  <div class="drill-h">
-    <span class="drill-title">Drill 4: Hidden Body Price</span>
-    <span class="drill-badge">Predict below</span>
-  </div>
-  <div class="drill-choices" role="group" aria-label="Drill 4 choices">
-    <button type="button" class="drill-opt" aria-pressed="false"><span>A) O(n) time, O(1) space — only one for-loop is written</span><b>Single loop</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>B) O(n²) time, O(1) space — temporary slice is discarded</span><b>Discarded slice</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>C) O(n²) time, O(n) space — body allocates slice and scans</span><b>Slice + scan</b></button>
-  </div>
-  <button type="button" class="btn2 btn-reveal" aria-expanded="false">Show counted operations</button>
-  <div class="drill-reveal-area" style="display:none">
-    <table class="drill-table">
-      <thead><tr><th>Input n</th><th>Measured Work</th><th>Growth Ratio</th></tr></thead>
-      <tbody>
-        <tr><td>n = 10</td><td>180 operations</td><td>baseline</td></tr>
-        <tr><td>n = 20</td><td>760 operations</td><td>4.22x</td></tr>
-        <tr><td>n = 40</td><td>3,120 operations</td><td>4.11x</td></tr>
-      </tbody>
-    </table>
-    <div class="drill-verdict"><b>Fitted Class: O(n²) time, O(n) space.</b> Pricing the body honestly: slicing copies ~n elements (O(n) auxiliary space), and membership testing is O(n). Outer loop (n) × body (O(n)) = O(n²) time.</div>
-  </div>
-</div>
+```
+
+```warn
+Pricing a loop body by how many lines it has instead of what each line does. `x in nums[i + 1:]` is one expression, but it builds a new list of the remaining items and then walks it, and a loop pays that price once per item. Price every line of the body on its own before you multiply by the number of times the loop runs.
 ```
 
 ## Drill 5: Branching twice and halving {#cost toc="Drill 5"}
 
 ```caption
-Branching twice is not exponential if the input halves each call: O(n) time and O(log n) stack.
+Two calls per call, on half the input each: count the calls, then count the frames alive at once.
 ```
 
 ```vig "A binary recursion tree branching down to leaf nodes"
@@ -203,40 +118,20 @@ Branching twice is not exponential if the input halves each call: O(n) time and 
 
 **The scenario:** A task delegated to two assistants, each getting half the load, repeating recursively.
 
+```code drill5 "Drill 5: halving_sum, two calls per call"
+```
+
 ```widget #drill-card-5 "Drill 5: Predict time and auxiliary space"
-<div class="drill-card">
-  <div class="drill-h">
-    <span class="drill-title">Drill 5: Branching & Halving</span>
-    <span class="drill-badge">Predict below</span>
-  </div>
-  <div class="drill-choices" role="group" aria-label="Drill 5 choices">
-    <button type="button" class="drill-opt" aria-pressed="false"><span>A) O(log n) time — halving dominates the recursion</span><b>Halving dominance</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>B) O(2ⁿ) time — two recursive calls cause exponential blowup</span><b>Exponential tree</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>C) O(n) time — 2 branches × log n depth gives 2^(log n) = n leaves</span><b>Linear leaves</b></button>
-  </div>
-  <button type="button" class="btn2 btn-reveal" aria-expanded="false">Show counted operations</button>
-  <div class="drill-reveal-area" style="display:none">
-    <table class="drill-table">
-      <thead><tr><th>Input n</th><th>Recursive Calls</th><th>Growth Ratio</th></tr></thead>
-      <tbody>
-        <tr><td>n = 16</td><td>31 calls</td><td>baseline</td></tr>
-        <tr><td>n = 32</td><td>63 calls</td><td>2.03x</td></tr>
-        <tr><td>n = 64</td><td>127 calls</td><td>2.01x</td></tr>
-      </tbody>
-    </table>
-    <div class="drill-verdict"><b>Fitted Class: O(n) time, O(log n) auxiliary space.</b> Recursion tree: doubling width each level, log₂ n levels deep: ~2^(log₂ n) = n total calls. Branching twice is not exponential when input halves.</div>
-  </div>
-</div>
 ```
 
 ```key
-Branching twice is not automatically exponential: the depth of the recursion tree decides whether leaf count is 2ⁿ or n.
+Counting how many calls a function makes per call is not enough to price it: the depth of the recursion tree decides how many leaves it ends with.
 ```
 
 ## Drill 6: Full n × n matrix traversal {#node toc="Drill 6"}
 
 ```caption
-Scanning every cell of an n × n matrix is O(n²) in dimension n, but linear in cell count.
+Here n is the side of the grid, not the number of cells: be clear which one you are measuring against.
 ```
 
 ```vig "An n by n grid of cells with an arrow scanning each row"
@@ -245,30 +140,10 @@ Scanning every cell of an n × n matrix is O(n²) in dimension n, but linear in 
 
 **The scenario:** Packages arranged in a full $n \times n$ grid; the job is to find the single heaviest package.
 
+```code drill6 "Drill 6: heaviest, an n by n grid"
+```
+
 ```widget #drill-card-6 "Drill 6: Predict time and auxiliary space"
-<div class="drill-card">
-  <div class="drill-h">
-    <span class="drill-title">Drill 6: Grid Traversal</span>
-    <span class="drill-badge">Predict below</span>
-  </div>
-  <div class="drill-choices" role="group" aria-label="Drill 6 choices">
-    <button type="button" class="drill-opt" aria-pressed="false"><span>A) O(n) time — outer loop over rows dominates</span><b>Row loop</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>B) O(n²) time — quadratic in n, linear in cell count</span><b>Optimal cell scan</b></button>
-    <button type="button" class="drill-opt" aria-pressed="false"><span>C) O(n²) is suboptimal and should be pruned</span><b>Prunable search</b></button>
-  </div>
-  <button type="button" class="btn2 btn-reveal" aria-expanded="false">Show counted operations</button>
-  <div class="drill-reveal-area" style="display:none">
-    <table class="drill-table">
-      <thead><tr><th>Input Grid</th><th>Cells Visited</th><th>Growth Ratio</th></tr></thead>
-      <tbody>
-        <tr><td>10 × 10</td><td>100 visits</td><td>baseline</td></tr>
-        <tr><td>20 × 20</td><td>400 visits</td><td>4.00x</td></tr>
-        <tr><td>40 × 40</td><td>1,600 visits</td><td>4.00x</td></tr>
-      </tbody>
-    </table>
-    <div class="drill-verdict"><b>Fitted Class: O(n²) time in grid dimension, O(1) space.</b> The input contains n² cells; finding a maximum requires examining each cell at least once. Quadratic in dimension is linear in input size.</div>
-  </div>
-</div>
 ```
 
 ## Where next {#next toc="Where next"}
@@ -307,34 +182,34 @@ Scanning every cell of an n × n matrix is O(n²) in dimension n, but linear in 
 {
   "questions": [
     {
-      "question": "Drill 2: what is the time complexity of the nested handshake loop?",
+      "question": "A function is defined by `f(n) = 1 if n <= 1 else f(n - 1) + f(n - 1)`. It branches twice per call, like Drill 5. What is its time complexity?",
       "options": [
-        "O(n) — since the inner loop range shrinks each pass, the total inner iterations collapse to a single pass",
-        "O(n log n) — the inner loop shrinks each pass, and a shrinking iteration bound produces a logarithmic factor",
-        "O(n²) — inner iterations sum to n(n-1)/2, halving only the constant factor"
+        "O(n): two calls per level, but every call does only a constant amount of work itself",
+        "O(2ⁿ): n levels deep, and the width doubles at every level",
+        "O(n²): two calls at each of the n levels multiply into n × n calls"
       ],
-      "answer": 2,
-      "explanation": "Inner iterations: (n−1) + (n−2) + … + 1 = n(n−1)/2. The 1/2 factor is a constant multiplier; the complexity class is quadratic O(n²)."
+      "answer": 1,
+      "explanation": "Drill 5's input halved, so its tree was only log₂ n levels deep. Here the input shrinks by one, so the tree is n levels deep and the calls double at each: {{q1_calls}} calls at n = {{q1_n}} and {{q1_next}} at the next n. Branching twice is cheap only when the depth is logarithmic."
     },
     {
-      "question": "Drill 3: why is the outer halving loop combined with a full inner loop O(n log n)?",
+      "question": "A loop starts with `size = len(nums)`, then repeats: add up the first `size` items of `nums`, then do `size //= 2`, until `size` reaches 0. How does its running time grow?",
       "options": [
-        "The outer loop halves i across log₂ n passes, and each pass performs a full n inner iterations",
-        "The outer loop halving dominates completely, so the inner loop contributes only a negligible constant factor",
-        "The inner loop runs n times and the outer loop runs n times, producing quadratic behavior despite the halving"
+        "O(n log n): about log n rounds, and each round adds up as many as n items",
+        "O(n): the rounds cost n, n/2, n/4, … items, which add up to less than 2n",
+        "O(log n): the size halves every round, so only a logarithmic number of items is ever touched"
       ],
-      "answer": 0,
-      "explanation": "The outer loop executes log₂ n times. In every outer iteration, the inner loop executes n times. Multiplying gives n · log₂ n operations."
+      "answer": 1,
+      "explanation": "This looks like Drill 3 but the inner loop is not a full pass: it shrinks with size. Over the {{q2_rounds}} rounds at n = {{q2_n}} it counted {{q2_work}} items, where the n log n guess predicts {{q2_nlogn}}. A geometric series n + n/2 + n/4 + … is dominated by its first term."
     },
     {
-      "question": "Drill 5 branches twice and halves n each call. What is its time complexity?",
+      "question": "A recursive binary search halves the list each call, but passes `nums[mid + 1:]` or `nums[:mid]` to the next call instead of moving indices. Is it O(log n) time?",
       "options": [
-        "O(log n) — halving is the dominant signal in recursion regardless of how many recursive branches fan out",
-        "O(2ⁿ) — any recursive function that makes two recursive calls per invocation produces exponential blowup",
-        "O(n) — 2 branches per level across log₂ n levels yield about 2^(log₂ n) = n leaf calls"
+        "Yes, O(log n): each call does only a constant amount of work after it halves the list",
+        "No, O(n log n): each of the log n calls copies the whole list again",
+        "No, O(n): the copies are about n/2, n/4, … items, which add up to under n"
       ],
       "answer": 2,
-      "explanation": "The tree depth is log₂ n levels. Because the width doubles at each level, the leaf layer has 2^(log₂ n) = n leaves. Total calls is 2n - 1 = O(n)."
+      "explanation": "Drill 4's rule applies: a slice is a loop. Each call copies only the half it passes on, so the copies shrink geometrically: {{q3_copied}} items copied in total at n = {{q3_n}}, under n. The time is O(n), and the slices alive on the stack add up to O(n) space too, where moving indices needs O(log n) time and copies nothing."
     }
   ]
 }

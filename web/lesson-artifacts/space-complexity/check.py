@@ -189,10 +189,16 @@ def main():
     F = pure_data["FACTS"]
     if F["iter_aux_8"] != 1:
         problems.append(f"FACTS iter_aux_8 expected 1, got {F['iter_aux_8']}")
-    if F["copy_aux_8"] != 8 or F["rec_aux_8"] != 8:
+    # the page's recursion meter must agree with the depth measured on mistake.py: n + 1 frames
+    if F["copy_aux_8"] != 8 or F["rec_aux_8"] != 9:
         problems.append(f"FACTS 8 elements aux memory: {F}")
-    if F["rec_aux_100"] != 100:
-        problems.append(f"FACTS rec_aux_100 expected 100, got {F['rec_aux_100']}")
+    if F["rec_aux_100"] != 101:
+        problems.append(f"FACTS rec_aux_100 expected 101, got {F['rec_aux_100']}")
+    # the warn quotes CPython's default recursion limit; check it in a fresh interpreter
+    lim = subprocess.run([sys.executable, "-c", "import sys; print(sys.getrecursionlimit())"],
+                         capture_output=True, text=True).stdout.strip()
+    if lim != "1000":
+        problems.append(f"the page says the default recursion limit is 1,000; this Python reports {lim}")
     print(f"PURE block facts verified: iter_aux_8={F['iter_aux_8']}, rec_aux_8={F['rec_aux_8']}")
 
     # 4. Built HTML embeds PURE block

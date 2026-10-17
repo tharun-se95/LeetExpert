@@ -55,26 +55,17 @@ Linear search makes all three bounds concrete. Given an array of $n$ elements, w
   <div class="extabs" role="group" aria-label="Search preset targets"></div>
   <div class="bin-slots" id="binSlots"></div>
   <div class="search-readout">
-    <div class="sr-item"><span class="sr-label">Target Zip</span><span class="sr-val" id="targetLabel">142</span></div>
-    <div class="sr-item"><span class="sr-label">Result Index</span><span class="sr-val good" id="idxLabel">index 0</span></div>
-    <div class="sr-item"><span class="sr-label">Comparisons</span><span class="sr-val" id="cmpLabel">1 / 8</span></div>
-    <div class="sr-item"><span class="sr-label">Classification</span><span class="sr-val good" id="classLabel">Best Case: Θ(1)</span></div>
+    <div class="sr-item"><span class="sr-label">Target Zip</span><span class="sr-val" id="targetLabel"></span></div>
+    <div class="sr-item"><span class="sr-label">Result Index</span><span class="sr-val good" id="idxLabel"></span></div>
+    <div class="sr-item"><span class="sr-label">Comparisons</span><span class="sr-val" id="cmpLabel"></span></div>
+    <div class="sr-item"><span class="sr-label">Classification</span><span class="sr-val good" id="classLabel"></span></div>
   </div>
   <div class="avg-panel">
     <div class="avg-head">
-      <span class="avg-title">Average-Case Distribution (uniform over 8 positions)</span>
-      <span class="avg-math">(1 + 2 + 3 + 4 + 5 + 6 + 7 + 8) / 8 = 36 / 8 = 4.5 checks</span>
+      <span class="avg-title" id="avgTitle"></span>
+      <span class="avg-math" id="avgMath"></span>
     </div>
-    <div class="avg-bars">
-      <div class="avg-col"><div class="avg-bar" style="height: 12.5%;"></div><span class="avg-bar-label">1</span></div>
-      <div class="avg-col"><div class="avg-bar" style="height: 25%;"></div><span class="avg-bar-label">2</span></div>
-      <div class="avg-col"><div class="avg-bar" style="height: 37.5%;"></div><span class="avg-bar-label">3</span></div>
-      <div class="avg-col"><div class="avg-bar" style="height: 50%;"></div><span class="avg-bar-label">4</span></div>
-      <div class="avg-col"><div class="avg-bar" style="height: 62.5%;"></div><span class="avg-bar-label">5</span></div>
-      <div class="avg-col"><div class="avg-bar" style="height: 75%;"></div><span class="avg-bar-label">6</span></div>
-      <div class="avg-col"><div class="avg-bar" style="height: 87.5%;"></div><span class="avg-bar-label">7</span></div>
-      <div class="avg-col"><div class="avg-bar" style="height: 100%;"></div><span class="avg-bar-label">8</span></div>
-    </div>
+    <div class="avg-bars" id="avgBars"></div>
     <div class="sim-row">
       <button type="button" class="btn" id="simAvg">Run 1,000 random queries</button>
       <span class="sim-res" id="simRes">Click to simulate uniform random lookups</span>
@@ -131,7 +122,7 @@ A second dramatic case-split occurs in ==insertion sort==. When inserting each n
 
 - **Already sorted list:** Each element is compared once with its predecessor, finds its correct place immediately, and triggers zero shifts. Total comparisons: $n - 1 \rightarrow$ **$\Theta(n)$**.
 - **Reversed list:** Every new item must be compared with every single preceding element and shifted all the way to the front. Total comparisons: $1 + 2 + \dots + (n-1) = \frac{n(n-1)}{2} \rightarrow$ **$\Theta(n^2)$**.
-- **Random list:** On average each element shifts halfway through the sorted prefix $\rightarrow \approx \frac{n(n-1)}{4} \rightarrow$ **$\Theta(n^2)$**.
+- **Random list:** Every shift fixes exactly one out-of-order pair, and in a random order each of the $\frac{n(n-1)}{2}$ pairs is out of order with probability one half. So the expected number of shifts is $\frac{n(n-1)}{4}$, and comparisons are that plus at most $n - 1$ (one stopping comparison per element) $\rightarrow$ **$\Theta(n^2)$**.
 
 ```widget #sortSplit "Insertion sort across three input orderings"
 <div class="sort-stage">
@@ -222,10 +213,10 @@ Hash Table Lookup | Θ(1) | Θ(1) | Θ(n)
       "options": [
         "Because O(1) is the absolute worst-case guarantee regardless of how many hash collisions occur across the buckets.",
         "It is shorthand for average-case lookup with low collisions; worst case is O(n).",
-        "Because modern hash tables dynamically allocate infinite buckets so that collision resolution never requires searching."
+        "Because computing the hash of a key takes constant time, and finding the bucket is the only work a lookup ever does."
       ],
       "answer": 1,
-      "explanation": "The O(1) claim assumes keys distribute evenly across buckets. In the pathological worst case where every key hashes into the exact same bucket, lookup degenerates into scanning an O(n) linked chain."
+      "explanation": "Hashing does find the bucket in constant time, but the lookup must then scan that bucket. The O(1) claim assumes keys distribute evenly, so buckets stay short. In the pathological worst case where every key hashes into the exact same bucket, lookup degenerates into scanning an O(n) linked chain."
     },
     {
       "question": "An algorithm has best-case time Θ(1) and worst-case time Θ(n). What can you conclude about its average-case time?",

@@ -47,6 +47,17 @@ var SORT_COSTS = SORT_SIZES.map(function(n) {
   return [n, insertionSortCount(rangeArray(n, true)), insertionSortCount(rangeArray(n, false))];
 });
 
+/* The three widget arrays; each comparison count is counted by insertionSortCount,
+   never typed, so a changed array cannot leave a stale number on the page. */
+var SORT_CASES = [
+  { name: 'Already Sorted (Best)', arr: [12, 25, 33, 47, 51, 68, 74, 99],
+    bound: '\u0398(n) linear: each element compared once to its predecessor', cls: 'good' },
+  { name: 'Reversed (Worst)', arr: [99, 74, 68, 51, 47, 33, 25, 12],
+    bound: '\u0398(n\u00B2) quadratic: each item shifts across the full sorted prefix', cls: 'bad' },
+  { name: 'Random Mixture (Average)', arr: [51, 12, 74, 33, 99, 25, 47, 68],
+    bound: '\u0398(n\u00B2) quadratic: on average an item shifts past half the sorted prefix', cls: 'accent' }
+].map(function(c) { c.compares = insertionSortCount(c.arr); return c; });
+
 var FACTS = (function() {
   var n = MAIL_BIN.length;
   var sumCompares = 0;
@@ -58,10 +69,11 @@ var FACTS = (function() {
     bestCompares: linearSearchCount(MAIL_BIN, MAIL_BIN[0]).comparisons,
     worstCompares: linearSearchCount(MAIL_BIN, 999).comparisons,
     avgCompares: (sumCompares / n).toFixed(1),
-    insN: 8,
-    insSortedCompares: insertionSortCount(rangeArray(8, false)),
-    insReversedCompares: insertionSortCount(rangeArray(8, true)),
-    insRandomCompares: 14
+    sumCompares: sumCompares,
+    insN: SORT_CASES[0].arr.length,
+    insSortedCompares: SORT_CASES[0].compares,
+    insReversedCompares: SORT_CASES[1].compares,
+    insRandomCompares: SORT_CASES[2].compares
   };
 })();
 /* PURE:end */
@@ -171,8 +183,24 @@ function mountMailSearch(host) {
     });
   }
 
+  var avgMath = host.querySelector('#avgMath');
+  var avgBars = host.querySelector('#avgBars');
+  var avgTitle = host.querySelector('#avgTitle');
+  var terms = MAIL_BIN.map(function(v) { return linearSearchCount(MAIL_BIN, v).comparisons; });
+  avgTitle.textContent = 'Average-case distribution (uniform over ' + FACTS.binSize + ' positions)';
+  avgMath.textContent = '(' + terms.join(' + ') + ') / ' + FACTS.binSize + ' = ' +
+    FACTS.sumCompares + ' / ' + FACTS.binSize + ' = ' + FACTS.avgCompares + ' checks';
+  terms.forEach(function(t) {
+    var col = el('div', 'avg-col');
+    var bar = el('div', 'avg-bar');
+    bar.style.height = (100 * t / FACTS.worstCompares) + '%';
+    col.appendChild(bar);
+    col.appendChild(el('span', 'avg-bar-label', String(t)));
+    avgBars.appendChild(col);
+  });
+
   renderSlots();
-  runSearch(142, PRESETS[0].desc);
+  runSearch(MAIL_BIN[0], PRESETS[0].desc);
 }
 
 /* ---------- 2. Insertion Sort case-split ---------- */
@@ -183,29 +211,7 @@ function mountSortSplit(host) {
   var cmpReadout = host.querySelector('#sortCmp');
   var boundReadout = host.querySelector('#sortBound');
 
-  var CASES = [
-    {
-      name: 'Already Sorted (Best)',
-      arr: [12, 25, 33, 47, 51, 68, 74, 99],
-      compares: 7,
-      bound: '\u0398(n) linear: each element compared once to its predecessor',
-      cls: 'good'
-    },
-    {
-      name: 'Reversed (Worst)',
-      arr: [99, 74, 68, 51, 47, 33, 25, 12],
-      compares: 28,
-      bound: '\u0398(n\u00B2) quadratic: each item shifts across the full sorted prefix',
-      cls: 'bad'
-    },
-    {
-      name: 'Random Mixture (Average)',
-      arr: [51, 12, 74, 33, 99, 25, 47, 68],
-      compares: 14,
-      bound: '\u0398(n\u00B2) quadratic: items shift halfway on average (\u2248 n\u00B2 / 4)',
-      cls: 'accent'
-    }
-  ];
+  var CASES = SORT_CASES;
 
   function showCase(c) {
     arrHost.innerHTML = '';
