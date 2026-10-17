@@ -135,3 +135,11 @@ A cost plot draws how a cost grows with n: named series on one pair of axes, a c
 ```widget #pltabs "Three cost plots"
 <div class="extabs" role="group" aria-label="Choose a cost plot"></div><div class="lvhost"></div>
 ```
+
+## Residue rings {#rings}
+
+A residue ring draws arithmetic mod m as the clock it is: m cells in a circle, cell 0 at the top, and named values that walk forward or backward from where they stand. A value's position is the number it reached, and the cell it lands on is derived from it, so the readout can say how many whole turns it made, and the trail moves out one lane per turn so the turns can be counted on the picture. Where the operator is the point, each row also gives both languages' `%`: JavaScript's computed on this page, Python's checked against Python in the kit test. Every cell is also held to walking the value one cell at a time.
+
+```widget #rgtabs "Three residue rings"
+<div class="extabs" role="group" aria-label="Choose a residue ring"></div><div class="lvhost"></div>
+```

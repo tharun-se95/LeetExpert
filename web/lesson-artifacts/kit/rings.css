@@ -1,0 +1,32 @@
+/* kit/rings.css: residue rings (kit/rings.js). The SVG holds cells, trails and tokens; every word and number is HTML
+   over it or in the readout. A cell's name sits on a solid patch of the surface (--rg-bg), so it reads at AA over a
+   tinted cell and the gate measures it against that patch. Tokens take their colour through `color` + currentColor,
+   never a presentation attribute. */
+.rg{--rg-bg:var(--bg);display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px 22px}
+.rg-box{position:relative;flex:0 0 auto;max-width:100%}
+.lp-stage .rg-svg,.rg-svg{position:absolute;left:0;top:0;width:auto;height:auto;max-height:none;overflow:visible;margin:0}
+.rg-text{position:absolute;inset:0;pointer-events:none}
+.rg-cell{fill:var(--deep);stroke:var(--hair2);stroke-width:1.2;transition:none}
+.rg-cell.on{fill:currentColor;fill-opacity:calc(.2*var(--rg-op,1));stroke:currentColor;stroke-width:2.2}
+.rg-cell.on.hi{stroke-width:3.2}
+.rg-cn{position:absolute;transform:translate(-50%,-50%);font:500 13px 'JetBrains Mono',monospace;color:var(--mut);background:var(--rg-bg);
+  padding:0 4px;border-radius:4px;line-height:1.3;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rg-cn.on{color:var(--fg);font-weight:700}
+.rg-zero{stroke:var(--mut);stroke-width:1.2;stroke-dasharray:2 3}
+.rg-trail polyline{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.rg-trail.hi polyline{stroke-width:3} .rg-trail.dim{opacity:.3}
+.rg-start{fill:var(--rg-bg);stroke:currentColor;stroke-width:1.6}
+.rg-tk>*{fill:currentColor;stroke:var(--rg-bg);stroke-width:1.5} .rg-tk .rg-x{fill:none;stroke:currentColor;stroke-width:2.4}
+.rg-read{flex:1 1 230px;min-width:200px;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.rg-read li{display:grid;grid-template-columns:28px auto 1fr;align-items:center;column-gap:8px;row-gap:2px;font-size:13px;color:var(--fg)}
+.rg-read li>b{font:500 13px 'JetBrains Mono',monospace;text-align:right}
+.rg-read .rg-eq,.rg-read .rg-lang{grid-column:2/4;font-size:12.5px;color:var(--mut)}
+.rg-read .rg-eq,.rg-read .rg-lang code,.rg-read .rg-lang b{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+.rg-read .rg-lang code{background:none;padding:0;font-size:inherit;color:var(--mut)}
+.rg-read .rg-lang i{font-style:normal;color:var(--fg)}
+.rg-read .rg-lang b{color:var(--fg)}
+.rg-read .rg-lang em{font-style:normal;color:var(--r-ink);font-weight:500}
+.rg-read li.hi>b{color:var(--mk)}
+.rg-read li.off{color:var(--mut)} .rg-read li.off>b{font-weight:400;color:var(--mut)} .rg-read li.off .rg-sw{opacity:.45}
+.rg-sw line{stroke:currentColor;stroke-width:2.2} .rg-sw .rg-mk>*{fill:currentColor} .rg-sw .rg-x{fill:none;stroke:currentColor;stroke-width:2}
+@media (max-width:640px){.rg-read{flex-basis:100%}}
