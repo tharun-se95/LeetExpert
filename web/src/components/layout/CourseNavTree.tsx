@@ -40,7 +40,10 @@ export function CourseNavTree({
   return (
     <nav
       ref={scrollRef}
-      className={cn("flex-1 overflow-y-auto", className)}
+      className={cn(
+        "flex-1 overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable]",
+        className,
+      )}
       aria-label="Course"
     >
       <CourseNavPanel
