@@ -13,10 +13,30 @@ import { ImageResponse } from "next/og";
  * produces malformed glyphs. Statically optimized (no request-time data),
  * so this runs once at build and is cached like any other static asset.
  */
+export const OG_METRIC_CHIPS = [
+  "116+ Curated Problems",
+  "24 Modules",
+  "Socratic AI Coach",
+  "Dual Pyodide/Node Runtimes",
+] as const;
+
 export async function renderOgImage() {
-  const backdrop = await readFile(
+  const candidates = [
     join(process.cwd(), "src/assets/brand/og-backdrop.png"),
-  );
+    join(process.cwd(), "web/src/assets/brand/og-backdrop.png"),
+  ];
+  let backdrop: Buffer | undefined;
+  for (const p of candidates) {
+    try {
+      backdrop = await readFile(p);
+      break;
+    } catch {
+      // try next candidate
+    }
+  }
+  if (!backdrop) {
+    throw new Error("og-backdrop.png could not be loaded");
+  }
   const backdropSrc = `data:image/png;base64,${backdrop.toString("base64")}`;
 
   return new ImageResponse(
@@ -57,7 +77,7 @@ export async function renderOgImage() {
             justifyContent: "center",
             padding: "0 88px",
             height: "100%",
-            maxWidth: 760,
+            maxWidth: 860,
           }}
         >
           <div
@@ -65,7 +85,7 @@ export async function renderOgImage() {
               display: "flex",
               alignItems: "center",
               gap: 16,
-              marginBottom: 28,
+              marginBottom: 24,
             }}
           >
             {/* The lamp in its dark-theme colours, straight on the steel
@@ -104,7 +124,7 @@ export async function renderOgImage() {
           <div
             style={{
               display: "flex",
-              fontSize: 58,
+              fontSize: 54,
               fontWeight: 700,
               color: "#FFFFFF",
               lineHeight: 1.12,
@@ -116,13 +136,59 @@ export async function renderOgImage() {
           <div
             style={{
               display: "flex",
-              marginTop: 24,
-              fontSize: 26,
+              marginTop: 18,
+              fontSize: 24,
               color: "#CBD5E1",
-              lineHeight: 1.4,
+              lineHeight: 1.35,
             }}
           >
             Live sandboxes, real visualizations, solve-first problems.
+          </div>
+          {/* High-converting metric chips (WCAG AA/AAA compliant > 9:1 contrast) */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 12,
+              marginTop: 28,
+              alignItems: "center",
+            }}
+          >
+            {OG_METRIC_CHIPS.map((chip) => (
+              <div
+                key={chip}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "8px 18px",
+                  borderRadius: 9999,
+                  backgroundColor: "rgba(15, 23, 42, 0.88)",
+                  border: "1px solid rgba(148, 163, 184, 0.35)",
+                }}
+              >
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 9999,
+                    backgroundColor: "#5be07a",
+                    display: "flex",
+                  }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: "#F8FAFC",
+                    letterSpacing: -0.2,
+                  }}
+                >
+                  {chip}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
