@@ -1,0 +1,58 @@
+/* ================= Amortized Analysis & Dynamic Arrays: extra.css ================= */
+
+/* Hero: Expanding shelf row */
+.ha-muted { font: 500 11px 'JetBrains Mono', monospace; fill: var(--mut); }
+.ha-text { font: 600 12px 'JetBrains Mono', monospace; fill: var(--fg); text-anchor: middle; dominant-baseline: central; }
+.ha-pkg { fill: var(--card); stroke: var(--hair2); stroke-width: 1.2; rx: 4px; }
+.ha-pkg.moved { fill: var(--well); stroke: var(--fam); stroke-width: 1.5; }
+.ha-shelf { fill: var(--deep); stroke: var(--hair2); stroke-width: 1; stroke-dasharray: 3 3; rx: 4px; }
+.ha-coin { fill: var(--fam); stroke: var(--fam-on); stroke-width: 1; }
+
+/* Model controls */
+.model-ctrls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 14px; }
+.model-seg { display: inline-flex; border: 1px solid var(--hair2); border-radius: 8px; overflow: hidden; }
+.model-seg button { background: var(--card); color: var(--fg); border: none; padding: 6px 14px; font: 600 13px 'Space Grotesk', sans-serif; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.model-seg button[aria-pressed="true"] { background: var(--fam); color: var(--fam-on); }
+.model-actions { display: flex; gap: 8px; }
+.btn2 { background: var(--card); color: var(--fg); border: 1px solid var(--hair2); border-radius: 6px; padding: 6px 14px; font: 600 13px 'Space Grotesk', sans-serif; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.btn2:hover { border-color: var(--fam); }
+.model-slider-wrap { display: flex; align-items: center; gap: 8px; font: 500 13px 'Space Grotesk', sans-serif; color: var(--fg); margin-left: auto; }
+.model-slider-wrap input { width: 110px; cursor: pointer; accent-color: var(--fam); }
+.model-slider-wrap b { color: var(--fg); font-family: 'JetBrains Mono', monospace; }
+
+/* Shelf board */
+.shelf-board { display: flex; flex-direction: column; gap: 10px; padding: 14px; background: var(--deep); border: 1px solid var(--hair2); border-radius: 10px; margin-bottom: 14px; }
+.shelf-h { display: flex; justify-content: space-between; font: 500 12px 'JetBrains Mono', monospace; color: var(--mut); }
+.shelf-h b { color: var(--fg); }
+.shelf-cells { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 48px; }
+.shelf-slot { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 38px; height: 44px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; box-sizing: border-box; transition: all 0.15s ease; }
+.shelf-slot.filled { background: var(--card); border: 1px solid var(--fam); color: var(--fg); font-weight: 700; }
+.shelf-slot.copied { background: var(--well); border: 2px solid var(--g-ink); color: var(--fg); font-weight: 700; }
+.shelf-slot.empty { border: 1px dashed var(--hair2); color: var(--mut); background: transparent; }
+.shelf-slot .slot-idx { font-size: 9px; color: var(--mut); font-weight: 400; }
+
+/* Metrics */
+.m-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.m-card { padding: 10px 12px; border: 1px solid var(--hair2); border-radius: 8px; background: var(--card); display: flex; flex-direction: column; gap: 2px; }
+.m-k { font: 700 11px 'Space Mono', monospace; color: var(--mut); text-transform: uppercase; letter-spacing: 0.04em; }
+.m-v { font: 600 18px 'JetBrains Mono', monospace; color: var(--fg); }
+.m-v.good { color: var(--g-ink); }
+.m-v.bad { color: var(--r-ink); }
+.m-v.pop { color: var(--b-ink); }
+.m-sub { font-size: 11px; color: var(--mut); }
+
+/* Table */
+.m-table-wrap { max-height: 200px; overflow-y: auto; border: 1px solid var(--hair2); border-radius: 8px; margin-bottom: 14px; }
+.m-table { width: 100%; border-collapse: collapse; font: 500 12px 'JetBrains Mono', monospace; text-align: left; }
+.m-table th { padding: 8px 12px; background: var(--deep); color: var(--mut); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; position: sticky; top: 0; border-bottom: 1px solid var(--hair2); }
+.m-table td { padding: 6px 12px; border-bottom: 1px solid var(--hair); color: var(--fg); }
+.m-table tr.spike { background: color-mix(in srgb, var(--fam) 12%, transparent); }
+.m-table tr.spike td { font-weight: 700; color: var(--fam); }
+
+/* Note */
+.m-note { font-size: 13.5px; color: var(--mut); line-height: 1.5; }
+.m-note b { color: var(--fg); }
+
+@media (max-width: 600px) {
+  .model-slider-wrap { width: 100%; margin-left: 0; justify-content: space-between; }
+}
