@@ -1,0 +1,206 @@
+/* extra.css for counting-and-combinatorics */
+
+/* Hero */
+#heroCap { min-height: 2.8em; line-height: 1.4; }
+
+/* General stages */
+.dsa-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 12px 0;
+}
+.dsa-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.dsa-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 10px;
+}
+.dsa-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--hair2);
+  padding-bottom: 8px;
+}
+.dsa-title {
+  font: 700 13px 'Space Mono', monospace;
+  color: var(--fg);
+}
+.dsa-badge {
+  font: 600 11px 'JetBrains Mono', monospace;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--deep);
+  color: var(--mut);
+}
+.dsa-badge.good {
+  background: var(--deep);
+  color: var(--g-ink);
+  border: 1px solid var(--g-ink);
+}
+.dsa-badge.warn {
+  background: var(--deep);
+  color: var(--o-ink);
+  border: 1px solid var(--o-ink);
+}
+.dsa-badge.bad {
+  background: var(--deep);
+  color: var(--r-ink);
+  border: 1px solid var(--r-ink);
+}
+
+/* Basket widget */
+.basket-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .basket-slots-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.slot-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: var(--deep);
+  border: 1px solid var(--hair2);
+  border-radius: 8px;
+}
+.slot-name {
+  font: 700 11px 'Space Mono', monospace;
+  color: var(--mut);
+  text-transform: uppercase;
+}
+.slot-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  font: 500 12px 'Space Grotesk', sans-serif;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.slot-btn[aria-pressed="true"] {
+  border-color: var(--fam);
+  background: var(--deep);
+  color: var(--fam);
+  font-weight: 700;
+}
+.basket-formula-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--deep);
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  font: 600 13px 'JetBrains Mono', monospace;
+  color: var(--fg);
+}
+.basket-total {
+  font-size: 16px;
+  color: var(--fam);
+  font-weight: 700;
+}
+
+/* Permutations vs Combinations widget */
+.perm-comb-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 640px) {
+  .perm-comb-cols {
+    grid-template-columns: 1fr;
+  }
+}
+.pc-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--deep);
+  border: 1px solid var(--hair2);
+  border-radius: 8px;
+}
+.pc-title {
+  font: 700 12px 'Space Mono', monospace;
+  color: var(--fg);
+}
+.pc-formula {
+  font: 600 11px 'JetBrains Mono', monospace;
+  color: var(--fam);
+}
+.pc-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.pc-chip {
+  padding: 4px 8px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+  font: 600 12px 'JetBrains Mono', monospace;
+  color: var(--fg);
+}
+.pc-chip.grouped {
+  border-color: var(--fam);
+  background: var(--deep);
+}
+
+/* Space sizes widget */
+.space-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: 500 12px 'JetBrains Mono', monospace;
+  text-align: left;
+}
+.space-table th, .space-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--hair2);
+}
+.space-table th {
+  color: var(--mut);
+  font-weight: 600;
+  border-bottom: 1px solid var(--hair);
+}
+.feas-good {
+  color: var(--g-ink);
+  font-weight: 700;
+}
+.feas-warn {
+  color: var(--o-ink);
+  font-weight: 700;
+}
+.feas-bad {
+  color: var(--r-ink);
+  font-weight: 700;
+}
+
+/* Hero labels are HTML over the SVG, never SVG text in the scaled viewBox */
+.hero-plot { position: relative; }
+.hero-labels { position: absolute; inset: 0; pointer-events: none; }
+.hl { position: absolute; transform: translate(-50%, -50%); font: 600 12px 'JetBrains Mono', monospace; color: var(--fg); white-space: nowrap; line-height: 1; }
+.hl-mut { color: var(--mut); font-weight: 500; }
+.hl-total { color: var(--fam); font-weight: 700; }

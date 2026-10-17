@@ -443,7 +443,32 @@
    "family": null
   },
   "math-for-dsa/logarithms-and-exponents": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "982c42d7e10cc184",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "math-for-dsa/logarithms-and-exponents: 159,961 bytes -> lesson-artifacts/dist/math-for-dsa/logarithms-and-exponents.html"
+    },
+    "code": {
+     "source": "982c42d7e10cc184",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "982c42d7e10cc184",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "982c42d7e10cc184",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "math-for-dsa",
    "moduleNumber": 3,
@@ -452,7 +477,32 @@
    "family": null
   },
   "math-for-dsa/summations-and-series": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "a6be45283fbb68c0",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "math-for-dsa/summations-and-series: 115,856 bytes -> lesson-artifacts/dist/math-for-dsa/summations-and-series.html"
+    },
+    "code": {
+     "source": "a6be45283fbb68c0",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "a6be45283fbb68c0",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "a6be45283fbb68c0",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "math-for-dsa",
    "moduleNumber": 3,
@@ -461,7 +511,32 @@
    "family": null
   },
   "math-for-dsa/modular-arithmetic": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "0cca187581ca29aa",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "math-for-dsa/modular-arithmetic: 154,753 bytes -> lesson-artifacts/dist/math-for-dsa/modular-arithmetic.html"
+    },
+    "code": {
+     "source": "0cca187581ca29aa",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "0cca187581ca29aa",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "0cca187581ca29aa",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "math-for-dsa",
    "moduleNumber": 3,
@@ -470,7 +545,32 @@
    "family": null
   },
   "math-for-dsa/divisibility-primes-gcd": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "4d7023628ed1e760",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "math-for-dsa/divisibility-primes-gcd: 141,910 bytes -> lesson-artifacts/dist/math-for-dsa/divisibility-primes-gcd.html"
+    },
+    "code": {
+     "source": "4d7023628ed1e760",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "ALL CHECKS PASSED: divisibility-primes-gcd"
+    },
+    "dark": {
+     "source": "4d7023628ed1e760",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "light": {
+     "source": "4d7023628ed1e760",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "math-for-dsa",
    "moduleNumber": 3,
@@ -479,7 +579,32 @@
    "family": null
   },
   "math-for-dsa/counting-and-combinatorics": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "a707343a03ff06b7",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "math-for-dsa/counting-and-combinatorics: 132,545 bytes -> lesson-artifacts/dist/math-for-dsa/counting-and-combinatorics.html"
+    },
+    "code": {
+     "source": "a707343a03ff06b7",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "ALL CHECKS PASSED: counting-and-combinatorics"
+    },
+    "light": {
+     "source": "a707343a03ff06b7",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "a707343a03ff06b7",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "math-for-dsa",
    "moduleNumber": 3,
@@ -488,7 +613,32 @@
    "family": null
   },
   "math-for-dsa/math-drills": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "532e5f1da3c738e0",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "math-for-dsa/math-drills: 137,010 bytes -> lesson-artifacts/dist/math-for-dsa/math-drills.html"
+    },
+    "code": {
+     "source": "532e5f1da3c738e0",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "ALL CHECKS PASSED: math-drills"
+    },
+    "light": {
+     "source": "532e5f1da3c738e0",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "532e5f1da3c738e0",
+     "on": "2026-10-18",
+     "commit": "9748ec8",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "math-for-dsa",
    "moduleNumber": 3,

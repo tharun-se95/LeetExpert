@@ -1,0 +1,258 @@
+/* extra.css for divisibility-primes-gcd */
+
+/* Hero stage */
+#heroCap { min-height: 2.8em; line-height: 1.4; }
+
+/* Interactive widgets general styling */
+.dsa-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 12px 0;
+}
+.dsa-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.dsa-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 10px;
+}
+.dsa-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--hair2);
+  padding-bottom: 8px;
+}
+.dsa-title {
+  font: 700 13px 'Space Mono', monospace;
+  color: var(--fg);
+}
+.dsa-badge {
+  font: 600 11px 'JetBrains Mono', monospace;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--deep);
+  color: var(--mut);
+}
+.dsa-badge.good {
+  background: var(--deep);
+  color: var(--g-ink);
+  border: 1px solid var(--g-ink);
+}
+.dsa-badge.warn {
+  background: var(--deep);
+  color: var(--o-ink);
+  border: 1px solid var(--o-ink);
+}
+.dsa-badge.bad {
+  background: var(--deep);
+  color: var(--r-ink);
+  border: 1px solid var(--r-ink);
+}
+
+/* Factor pairs widget */
+.factor-pairs-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pairs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+.pair-bubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--deep);
+  border: 1px solid var(--hair2);
+  border-radius: 8px;
+  font: 600 12px 'JetBrains Mono', monospace;
+  color: var(--fg);
+}
+.pair-bubble .small-d {
+  color: var(--fam);
+  font-weight: 700;
+}
+.pair-bubble .large-d {
+  color: var(--mut);
+}
+.scanned-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.scan-chip {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font: 500 11px 'JetBrains Mono', monospace;
+  background: var(--deep);
+  border: 1px solid var(--hair);
+  color: var(--mut);
+}
+.scan-chip.hit {
+  background: var(--deep);
+  border-color: var(--fam);
+  color: var(--fam);
+  font-weight: 700;
+}
+.scan-chip.tested {
+  border-color: var(--hair2);
+}
+
+/* Sieve widget */
+.sieve-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+  margin: 10px 0;
+}
+@media (max-width: 540px) {
+  .sieve-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+.sieve-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font: 600 12px 'JetBrains Mono', monospace;
+  background: var(--deep);
+  border: 1px solid var(--hair2);
+  border-radius: 6px;
+  color: var(--fg);
+  position: relative;
+  transition: all 0.2s ease;
+}
+.sieve-cell.prime {
+  background: var(--deep);
+  border-color: var(--g-ink);
+  color: var(--g-ink);
+  font-weight: 700;
+}
+.sieve-cell.crossed {
+  background: var(--deep);
+  border-color: var(--hair);
+  color: var(--mut);
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+.sieve-cell.current-prime {
+  background: var(--deep);
+  border-color: var(--fam);
+  box-shadow: 0 0 0 2px var(--fam);
+  color: var(--fam);
+  font-weight: 700;
+}
+.sieve-cell.current-multiple {
+  background: var(--deep);
+  border-color: var(--o-ink);
+  color: var(--o-ink);
+}
+.sieve-stats {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font: 500 12px 'JetBrains Mono', monospace;
+  color: var(--mut);
+  padding: 6px 0;
+}
+
+/* Euclid step table */
+.euclid-table-wrap {
+  overflow-x: auto;
+}
+.euclid-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: 500 12px 'JetBrains Mono', monospace;
+  text-align: left;
+}
+.euclid-table th, .euclid-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--hair2);
+}
+.euclid-table th {
+  color: var(--mut);
+  font-weight: 600;
+  border-bottom: 1px solid var(--hair);
+}
+.euclid-table td.res {
+  color: var(--mk);
+  font-weight: 700;
+}
+.comp-banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+@media (max-width: 600px) {
+  .comp-banner {
+    grid-template-columns: 1fr;
+  }
+}
+.comp-box {
+  padding: 10px 12px;
+  background: var(--deep);
+  border-radius: 8px;
+  border: 1px solid var(--hair);
+}
+.comp-box-title {
+  font: 600 11px 'Space Mono', monospace;
+  color: var(--mut);
+  text-transform: uppercase;
+}
+.comp-box-val {
+  font: 700 16px 'Space Mono', monospace;
+  color: var(--fg);
+  margin-top: 4px;
+}
+
+/* Overflow table */
+.overflow-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: 500 12px 'JetBrains Mono', monospace;
+  text-align: left;
+}
+.overflow-table th, .overflow-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--hair2);
+}
+.overflow-table th {
+  color: var(--mut);
+  font-weight: 600;
+}
+.val-good {
+  color: var(--g-ink);
+  font-weight: 700;
+}
+.val-bad {
+  color: var(--r-ink);
+  font-weight: 700;
+}
+
+/* Hero labels are HTML over the SVG, never SVG text in the scaled viewBox */
+.hero-plot { position: relative; }
+.hero-labels { position: absolute; inset: 0; pointer-events: none; }
+.hl { position: absolute; transform: translate(-50%, -50%); font: 600 12px 'JetBrains Mono', monospace; color: var(--fg); white-space: nowrap; line-height: 1; }
+.hl-pivot { color: var(--fam); font-weight: 700; }
+.hl-chip { min-width: 26px; padding: 4px 6px; text-align: center; border-radius: 12px; background: var(--deep); border: 1.5px solid var(--mut); }
+.hl-chip.hl-small { border-color: var(--fam); }

@@ -1,0 +1,8 @@
+/* Hero labels are HTML over the SVG so they keep a readable size on a phone */
+.hero-box { position: relative; }
+.hero-lab { position: absolute; transform: translate(-50%, -50%); font: 700 12px 'JetBrains Mono', monospace; white-space: nowrap; pointer-events: none; }
+.hero-lab-off { color: var(--mut); }
+.hero-lab-on { color: var(--on-pop); font-size: 13px; }
+.hero-lab-o { color: var(--o-ink); font-weight: 600; }
+.hero-lab-b { color: var(--b-ink); font-weight: 600; }
+#heroCap { min-height: 2.8em; line-height: 1.4; }
