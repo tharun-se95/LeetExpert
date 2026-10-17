@@ -95,7 +95,7 @@ export function CatalogTrackShowcase({
         ) : null}
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory lg:grid lg:grid-cols-2 lg:overflow-visible lg:pb-0 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
         {TRACKS.map((track) => {
           const isActive = activeList === track.id;
           const count = listCounts[track.id] ?? 0;
@@ -108,77 +108,43 @@ export function CatalogTrackShowcase({
               style={familyCssVars(track.familyId)}
               onClick={() => onListChange(isActive ? "all" : track.id)}
               className={cn(
-                "group relative flex shrink-0 w-[280px] sm:w-[320px] lg:w-auto snap-start flex-col overflow-hidden rounded-[length:var(--radius-lg)] border p-3.5 text-left transition-[background-color,border-color,transform,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation motion-reduce:transition-none touch-manipulation",
+                "group relative flex items-center gap-3 overflow-hidden rounded-[length:var(--radius-md)] border p-2 text-left transition-[background-color,border-color,transform,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation motion-reduce:transition-none touch-manipulation cursor-pointer",
                 isActive
-                  ? "border-accent bg-elevated ring-2 ring-accent/30 shadow-elevation"
-                  : "border-border bg-elevated hover:-translate-y-1 hover:border-accent/60 hover:shadow-elevation",
+                  ? "border-accent bg-accent/[0.12] ring-1 ring-accent"
+                  : "border-border bg-elevated hover:border-accent/60",
               )}
             >
-              {/* Marketing Visual Thumbnail */}
-              <div className="relative mb-3 aspect-[16/9] w-full overflow-hidden rounded-[length:var(--radius-md)] bg-surface border border-border/60">
+              {/* Compact Thumbnail */}
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[length:var(--radius-xs)] bg-surface border border-border/60">
                 <Image
                   src={track.image}
                   alt={track.title}
                   fill
-                  sizes="(min-width: 1280px) 340px, (min-width: 640px) 50vw, 100vw"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-108"
+                  sizes="48px"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface/80 via-transparent to-transparent pointer-events-none" aria-hidden />
+              </div>
 
-                {/* Ambient vignette and subtle glow wash */}
-                <div
-                  className="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent pointer-events-none"
-                  aria-hidden
-                />
-
-                {/* Floating pill tag */}
-                <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/90 px-2.5 py-0.5 backdrop-blur-md">
+              {/* Title and stats */}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <Icon size={13} weight="bold" className="text-accent shrink-0" aria-hidden />
+                  <p className="truncate text-xs font-bold text-foreground group-hover:text-mark transition-colors">
+                    {track.title}
+                  </p>
+                </div>
+                <div className="mt-0.5 flex items-center justify-between text-[11px] text-muted">
+                  <span className="font-mono text-[10px] text-muted">{count} Qs</span>
                   <span
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ backgroundColor: "var(--family-accent)" }}
-                    aria-hidden
-                  />
-                  <span className="font-mono text-[9px] font-bold tracking-wider text-foreground">
-                    {track.pillTag}
+                    className={cn(
+                      "font-mono text-[9px] font-bold px-1.5 py-0.5 rounded-full",
+                      isActive ? "bg-accent/20 text-accent" : "text-muted group-hover:text-foreground",
+                    )}
+                  >
+                    {isActive ? "Active ✓" : track.pillTag}
                   </span>
                 </div>
-
-                {/* Question count pill */}
-                <div className="absolute top-2.5 right-2.5 rounded-full border border-border/80 bg-surface/90 px-2 py-0.5 backdrop-blur-md">
-                  <span className="font-mono text-[10px] font-bold text-foreground">
-                    {count} Qs
-                  </span>
-                </div>
-              </div>
-
-              {/* Kicker with themed icon */}
-              <div className="flex items-center gap-1.5 text-[11px] font-medium text-mark">
-                <Icon size={14} weight="bold" />
-                <span className="uppercase tracking-wider">{track.kicker}</span>
-              </div>
-
-              {/* Title */}
-              <h3 className="mt-1 font-display text-base font-bold text-foreground tracking-tight group-hover:text-mark transition-colors">
-                {track.title}
-              </h3>
-
-              {/* Subtitle */}
-              <p className="mt-1 text-xs text-muted line-clamp-2 leading-relaxed">
-                {track.subtitle}
-              </p>
-
-              {/* Action indicator bar */}
-              <div className="mt-3.5 flex items-center justify-between border-t border-border/60 pt-2.5 text-[11px]">
-                <span className="rounded-[length:var(--radius-xs)] bg-accent/[0.1] px-2 py-0.5 text-foreground font-medium">
-                  {track.badge}
-                </span>
-                <span
-                  className={cn(
-                    "font-bold transition-colors",
-                    isActive ? "text-accent" : "text-muted group-hover:text-foreground",
-                  )}
-                >
-                  {isActive ? "Selected ✓" : "Explore Track →"}
-                </span>
               </div>
             </button>
           );

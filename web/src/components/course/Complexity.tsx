@@ -32,7 +32,7 @@ export function Complexity({ source }: { source: string }) {
   }
 
   return (
-    <div className="my-6 overflow-hidden rounded-[length:var(--radius-lg)] border border-border/70 bg-surface/20 shadow-elevation">
+    <div className="my-6 overflow-hidden rounded-[length:var(--radius-lg)] border border-border/70 bg-surface/20">
       <div className="flex items-center justify-between border-b border-border/60 bg-surface/40 px-4 py-2.5">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-mark">
           Complexity
