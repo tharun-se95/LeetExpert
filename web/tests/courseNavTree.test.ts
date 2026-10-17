@@ -23,4 +23,9 @@ describe("CourseNavTree wiring", () => {
     expect(tree).toMatch(/compact = true/);
     expect(tree).toMatch(/className\?: string/);
   });
+
+  it("prevents horizontal layout shift when scrollbar appears by stabilizing the gutter and hiding x-overflow", () => {
+    expect(tree).toContain("[scrollbar-gutter:stable]");
+    expect(tree).toContain("overflow-x-hidden");
+  });
 });
