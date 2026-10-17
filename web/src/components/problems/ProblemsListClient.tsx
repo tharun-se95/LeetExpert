@@ -48,11 +48,14 @@ export function ProblemsListClient(_props: {
 
   return (
     <div className="relative flex min-h-full flex-col">
-      {/* Background radial gradient accent */}
+      {/* Dual-tier atmospheric radial glow backdrop */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[30rem] bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_14%,transparent),_transparent_65%)]"
-      />
+        className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] overflow-hidden"
+      >
+        <div className="absolute inset-x-0 top-0 h-full bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,_color-mix(in_oklab,var(--accent)_18%,transparent),_transparent_70%)]" />
+        <div className="absolute inset-x-0 top-0 h-full bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,_color-mix(in_oklab,var(--mark)_14%,transparent),_transparent_60%)]" />
+      </div>
 
       {/* Main container: Full-width on large screens with max-w-[1720px] */}
       <div className="relative mx-auto flex w-full max-w-[1720px] flex-col px-4 py-6 sm:px-6 lg:px-8 xl:px-12">
@@ -73,8 +76,8 @@ export function ProblemsListClient(_props: {
 
           {/* Production Feature Highlights */}
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
-            <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border/80 bg-elevated p-3 shadow-elevation">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+            <div className="group flex items-center gap-3 rounded-[length:var(--radius-md)] border border-info-line/30 bg-elevated p-3 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-info-line/60">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border border-info-line/30 bg-info-surface/40 text-info">
                 <Code size={16} weight="bold" />
               </div>
               <div className="min-w-0">
@@ -82,8 +85,8 @@ export function ProblemsListClient(_props: {
                 <p className="truncate text-[10px] text-muted">In-browser Pyodide &amp; Node</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border/80 bg-elevated p-3 shadow-elevation">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+            <div className="group flex items-center gap-3 rounded-[length:var(--radius-md)] border border-accent/25 bg-elevated p-3 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-accent/50">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border border-accent/30 bg-accent/[0.1] text-accent">
                 <Sparkle size={16} weight="bold" />
               </div>
               <div className="min-w-0">
@@ -91,8 +94,8 @@ export function ProblemsListClient(_props: {
                 <p className="truncate text-[10px] text-muted">Interactive test runners</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border/80 bg-elevated p-3 shadow-elevation">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+            <div className="group flex items-center gap-3 rounded-[length:var(--radius-md)] border border-warn-line/30 bg-elevated p-3 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-warn-line/60">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border border-warn-line/30 bg-warn-surface/40 text-warn">
                 <Target size={16} weight="bold" />
               </div>
               <div className="min-w-0">
@@ -100,8 +103,8 @@ export function ProblemsListClient(_props: {
                 <p className="truncate text-[10px] text-muted">Blind 75 &amp; NeetCode 150</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border/80 bg-elevated p-3 shadow-elevation">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.1] text-accent">
+            <div className="group flex items-center gap-3 rounded-[length:var(--radius-md)] border border-good-line/30 bg-elevated p-3 shadow-elevation transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-good-line/60">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] border border-good-line/30 bg-good-surface/40 text-good">
                 <ShieldCheck size={16} weight="bold" />
               </div>
               <div className="min-w-0">
@@ -134,7 +137,7 @@ export function ProblemsListClient(_props: {
           />
 
           {/* Sticky Toolbar: Curated list selection pills & Search */}
-          <div className="sticky top-14 z-20 -mx-4 border-y border-border/70 bg-surface/95 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 xl:-mx-12 xl:px-12">
+          <div className="sticky top-14 z-20 -mx-4 border-y border-border/70 bg-surface/95 px-4 py-3 backdrop-blur-md shadow-edge-bottom sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 xl:-mx-12 xl:px-12">
             <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
               <CatalogCuratedListTabs
                 activeList={activeList}
@@ -161,7 +164,7 @@ export function ProblemsListClient(_props: {
                 >
                   <FunnelSimple className="h-4 w-4" aria-hidden />
                   {activeFilterCount > 0 ? (
-                    <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-pop px-1 text-[10px] font-bold text-on-pop">
+                    <span className="badge-glow-accent inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-on-pop ring-2 ring-accent/30">
                       {activeFilterCount}
                     </span>
                   ) : null}

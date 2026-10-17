@@ -11,7 +11,7 @@
    content with data-family, never used for chrome. Body-size accent text uses --mark.
    Measured WCAG contrast:
    dark  ink/ground 13.69 · muted/ground 7.31 · muted/panel 5.86 · muted/code 6.73 · family accents on every dark surface >= 4.29
-   light ink/ground 14.88 · muted/ground 5.78 · muted/panel 6.38 · muted/code 5.23 · family accents on every light surface >= 3.31 */
+   light ink/ground 17.85 · muted/ground 7.58 · muted/panel 7.58 · muted/code 7.24 · family accents on every light surface >= 4.12 */
 
 :root,
 [data-theme="dark"] {
@@ -85,20 +85,20 @@
 }
 
 [data-theme="light"] {
-  --ground: #f1f4f9; /* --background */
+  --ground: #ffffff; /* --background */
   --panel: #ffffff; /* --elevated */
-  --code: #e4e9f2; /* --code */
-  --surface: #d8dde8; /* --surface */
-  --ink: #16202e; /* --foreground */
-  --line: #56606e; /* --muted */
-  --dim: #56606e; /* --muted */
-  --rule: rgba(22, 32, 46, 0.09); /* --border */
-  --rule-strong: rgba(22, 32, 46, 0.18); /* --rule-strong */
-  --dot: rgba(22, 32, 46, 0.09); /* --border */
-  --muted-fill: #e4e9f2; /* --code */
-  --on-ink: #f1f4f9; /* --background */
-  --mark: #1e293b; /* --mark */
-  --accent: #1e293b; /* --accent */
+  --code: #f8fafc; /* --code */
+  --surface: #f1f5f9; /* --surface */
+  --ink: #0f172a; /* --foreground */
+  --line: #475569; /* --muted */
+  --dim: #475569; /* --muted */
+  --rule: rgba(15, 23, 42, 0.08); /* --border */
+  --rule-strong: rgba(15, 23, 42, 0.16); /* --rule-strong */
+  --dot: rgba(15, 23, 42, 0.08); /* --border */
+  --muted-fill: #f8fafc; /* --code */
+  --on-ink: #ffffff; /* --background */
+  --mark: #1d4ed8; /* --mark */
+  --accent: #1d4ed8; /* --accent */
   --good: #067123; /* --good */
   --bad: #b0081d; /* --bad */
   --warn: #8e4805; /* --warn */

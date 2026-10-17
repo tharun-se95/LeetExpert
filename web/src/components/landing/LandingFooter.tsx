@@ -7,7 +7,7 @@ import { LOGO_LAMP_SIZE } from "@/components/layout/headerChrome";
 import { FIRST_LESSON, TOPIC_CHIPS } from "@/lib/landing/content";
 import { CONNECT_LINKS, FOOTER_TAGLINE, type ConnectLink } from "@/lib/landing/footer";
 
-const COLUMN_LABEL = "text-xs font-medium tracking-[0.14em] text-mark uppercase";
+const COLUMN_LABEL = "font-mono text-xs font-bold tracking-[0.16em] text-accent uppercase";
 const LINK = "text-sm text-muted transition-colors hover:text-foreground";
 
 const CONNECT_ICONS: Record<ConnectLink["kind"], ComponentType<{ className?: string; "aria-hidden"?: boolean }>> = {
@@ -29,8 +29,12 @@ const COURSE_LINKS = [
  */
 export function LandingFooter({ year }: { year: number }) {
   return (
-    <footer className="border-t border-border pt-16 pb-10 lg:pt-24">
-      <div className="grid gap-12 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.8fr)]">
+    <footer className="relative border-t border-border/80 bg-gradient-to-b from-transparent via-surface/20 to-surface/50 pt-16 pb-10 lg:pt-24 overflow-hidden">
+      <div
+        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-3/4 max-w-4xl rounded-full bg-accent/5 blur-[100px]"
+        aria-hidden
+      />
+      <div className="relative grid gap-12 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.8fr)]">
         <div>
           <Link href="/" className="inline-flex items-center gap-2.5">
             <span className="text-base font-semibold tracking-tight">

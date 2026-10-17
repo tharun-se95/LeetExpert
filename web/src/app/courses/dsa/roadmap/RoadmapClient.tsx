@@ -49,6 +49,59 @@ const STAGE_UNLOCKS: Record<number, { unlocks: string; prerequisiteText: string 
   },
 };
 
+const STAGE_THEMES: Record<
+  number,
+  {
+    border: string;
+    numberBadge: string;
+    pill: string;
+    filterActive: string;
+    progressFill: string;
+    unlockBadge: string;
+  }
+> = {
+  0: {
+    border: "border-t-2 border-t-good",
+    numberBadge: "bg-good/15 text-good",
+    pill: "text-good",
+    filterActive: "bg-good text-on-pop font-semibold shadow-elevation",
+    progressFill: "bg-good",
+    unlockBadge: "text-good font-semibold",
+  },
+  1: {
+    border: "border-t-2 border-t-warn",
+    numberBadge: "bg-warn/15 text-warn",
+    pill: "text-warn",
+    filterActive: "bg-warn text-on-pop font-semibold shadow-elevation",
+    progressFill: "bg-warn",
+    unlockBadge: "text-warn font-semibold",
+  },
+  2: {
+    border: "border-t-2 border-t-info",
+    numberBadge: "bg-info/15 text-info",
+    pill: "text-info",
+    filterActive: "bg-info text-on-pop font-semibold shadow-elevation",
+    progressFill: "bg-info",
+    unlockBadge: "text-info font-semibold",
+  },
+  3: {
+    border: "border-t-2 border-t-accent",
+    numberBadge: "bg-accent/15 text-accent",
+    pill: "text-mark",
+    filterActive: "bg-accent text-on-pop font-semibold shadow-elevation",
+    progressFill: "bg-mark",
+    unlockBadge: "text-mark font-semibold",
+  },
+  4: {
+    border: "border-t-2 border-t-good",
+    numberBadge: "bg-good/15 text-good",
+    pill: "text-good",
+    filterActive: "bg-good text-on-pop font-semibold shadow-elevation",
+    progressFill: "bg-good",
+    unlockBadge: "text-good font-semibold",
+  },
+};
+
 export function RoadmapClient() {
   const [activeStageFilter, setActiveStageFilter] = useState<number | "all">("all");
   const { visited } = useProgress();
@@ -106,11 +159,11 @@ export function RoadmapClient() {
       : 0;
 
   return (
-    <div className="relative min-h-screen pb-20">
+    <div className="relative min-h-screen pb-20 overflow-hidden">
       {/* Background glow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_12%,transparent),_transparent_65%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[40rem] bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,_color-mix(in_srgb,var(--good)_18%,transparent),_color-mix(in_srgb,var(--info)_14%,transparent)_50%,_color-mix(in_srgb,var(--accent)_10%,transparent)_80%,_transparent_95%)]"
       />
 
       <div className="relative mx-auto max-w-6xl px-4 py-8 lg:px-8 lg:py-12">
@@ -122,10 +175,11 @@ export function RoadmapClient() {
         />
 
         {/* Visual Banner Header */}
-        <div className="relative mt-6 overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-surface/40 shadow-elevation">
+        <div className="relative mt-6 overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated/85 backdrop-blur-md shadow-elevation">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-good/35 to-transparent" aria-hidden />
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 lg:p-8">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-surface/80 px-3 py-1 text-xs font-mono uppercase tracking-wider text-accent mb-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-info/40 bg-info-surface/30 px-3 py-1 text-xs font-mono uppercase tracking-wider text-info mb-3 font-medium">
                 <MapTrifold weight="bold" className="h-3.5 w-3.5" />
                 <span>Dependency-Driven Progression</span>
               </div>
@@ -138,21 +192,21 @@ export function RoadmapClient() {
                 and asymptotic patterns that make subsequent techniques intuitive.
               </p>
               {/* Quick Stats Chip */}
-              <div className="mt-5 inline-block rounded-[length:var(--radius-lg)] border border-border bg-elevated/80 p-3 shadow-elevation min-w-[240px]">
+              <div className="mt-5 inline-block rounded-[length:var(--radius-lg)] border border-good/30 bg-good-surface/15 p-3.5 shadow-elevation min-w-[240px]">
                 <div className="flex items-center justify-between text-xs text-muted mb-1.5">
-                  <span className="font-medium">Total Curriculum</span>
-                  <span className="font-mono tabular-nums text-foreground font-semibold">
+                  <span className="font-medium text-foreground">Total Curriculum</span>
+                  <span className="font-mono tabular-nums text-good font-bold">
                     {overallPercent}%
                   </span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-surface">
                   <div
-                    className="h-full rounded-full bg-accent transition-all duration-500"
+                    className="h-full rounded-full bg-good transition-all duration-500"
                     style={{ width: `${overallPercent}%` }}
                   />
                 </div>
                 <p className="mt-2 text-xs text-muted">
-                  <span className="font-mono text-foreground font-medium">
+                  <span className="font-mono text-foreground font-semibold">
                     {totalVisited}
                   </span>{" "}
                   of {totalCourseLessons} lessons & drills completed
@@ -186,21 +240,24 @@ export function RoadmapClient() {
           >
             All 5 Stages
           </button>
-          {STAGES.map((s) => (
-            <button
-              key={s.number}
-              type="button"
-              onClick={() => setActiveStageFilter(s.number)}
-              className={cn(
-                "rounded-full px-3.5 py-1.5 text-xs font-medium transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                activeStageFilter === s.number
-                  ? "bg-pop text-on-pop font-semibold shadow-elevation"
-                  : "border border-border bg-surface text-muted hover:text-foreground",
-              )}
-            >
-              Stage {s.number}: {s.title}
-            </button>
-          ))}
+          {STAGES.map((s) => {
+            const theme = STAGE_THEMES[s.number];
+            return (
+              <button
+                key={s.number}
+                type="button"
+                onClick={() => setActiveStageFilter(s.number)}
+                className={cn(
+                  "rounded-full px-3.5 py-1.5 text-xs font-medium transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                  activeStageFilter === s.number
+                    ? theme?.filterActive ?? "bg-pop text-on-pop font-semibold"
+                    : "border border-border bg-surface text-muted hover:text-foreground",
+                )}
+              >
+                Stage {s.number}: {s.title}
+              </button>
+            );
+          })}
 
           <Link
             href="/courses/dsa/cheatsheets"
@@ -218,16 +275,19 @@ export function RoadmapClient() {
             <div
               key={stage.number}
               id={`stage-${stage.number}`}
-              className="relative rounded-[length:var(--radius-xl)] border border-border bg-elevated/40 p-5 sm:p-7 shadow-elevation backdrop-blur-xs"
+              className={cn(
+                "relative rounded-[length:var(--radius-xl)] border border-border bg-elevated/80 p-5 sm:p-7 shadow-elevation backdrop-blur-xs",
+                STAGE_THEMES[stage.number]?.border,
+              )}
             >
               {/* Stage Header */}
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-border/80 pb-5">
                 <div>
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/15 font-mono text-xs font-bold text-accent">
+                    <span className={cn("flex h-6 w-6 items-center justify-center rounded-full font-mono text-xs font-bold", STAGE_THEMES[stage.number]?.numberBadge)}>
                       {stage.number}
                     </span>
-                    <span className="font-mono text-xs font-semibold uppercase tracking-wider text-accent">
+                    <span className={cn("font-mono text-xs font-semibold uppercase tracking-wider", STAGE_THEMES[stage.number]?.pill)}>
                       Stage {stage.number}
                     </span>
                   </div>
@@ -245,7 +305,7 @@ export function RoadmapClient() {
                   </span>
                   <div className="h-1.5 w-32 overflow-hidden rounded-full bg-surface">
                     <div
-                      className="h-full rounded-full bg-mark transition-all duration-500"
+                      className={cn("h-full rounded-full transition-all duration-500", STAGE_THEMES[stage.number]?.progressFill)}
                       style={{ width: `${stage.percent}%` }}
                     />
                   </div>
@@ -259,7 +319,7 @@ export function RoadmapClient() {
                   <span className="text-muted">{stage.meta.prerequisiteText}</span>
                 </div>
                 <div>
-                  <span className="font-semibold text-accent">Unlocks:</span>{" "}
+                  <span className={cn("font-semibold", STAGE_THEMES[stage.number]?.unlockBadge)}>Unlocks:</span>{" "}
                   <span className="text-muted">{stage.meta.unlocks}</span>
                 </div>
               </div>
@@ -365,8 +425,8 @@ export function RoadmapClient() {
               {/* Stage Transition Arrow */}
               {idx < filteredStages.length - 1 && activeStageFilter === "all" ? (
                 <div className="mt-8 flex justify-center">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/90 px-3 py-1 font-mono text-[11px] text-muted shadow-elevation">
-                    <ArrowDown weight="bold" className="h-3.5 w-3.5 text-accent" />
+                  <div className="inline-flex items-center gap-2 rounded-full border border-info/30 bg-info-surface/25 px-3.5 py-1 font-mono text-[11px] text-info shadow-elevation">
+                    <ArrowDown weight="bold" className="h-3.5 w-3.5 text-info animate-bounce" />
                     <span>Unlocks Next Stage Techniques</span>
                   </div>
                 </div>

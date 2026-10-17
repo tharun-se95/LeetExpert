@@ -20,8 +20,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Interactive courses with live sandboxes, visualizations, and solve-first problems.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f1f4f9",
-    theme_color: "#1e293b",
+    background_color: "#ffffff",
+    theme_color: "#1d4ed8",
     icons: [
       {
         src: "/android-chrome-192x192.png",

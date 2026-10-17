@@ -58,19 +58,26 @@ export function CatalogCategoryCards({
               style={info?.familyId ? familyCssVars(info.familyId) : undefined}
               onClick={() => onToggleTopic(catName)}
               className={cn(
-                "group inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-[background-color,border-color,color] duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation cursor-pointer touch-manipulation motion-reduce:transition-none",
+                "group inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-[background-color,border-color,color,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation cursor-pointer touch-manipulation motion-reduce:transition-none",
                 isSelected
-                  ? "border-accent bg-accent/[0.15] text-foreground font-semibold ring-1 ring-accent"
-                  : "border-border bg-elevated text-foreground hover:border-accent/60 hover:bg-surface",
+                  ? "border-accent bg-accent/[0.16] text-foreground font-semibold ring-2 ring-accent/40"
+                  : "border-border/80 bg-elevated text-foreground hover:border-accent/60 hover:bg-surface",
               )}
             >
               <span
-                className="h-2 w-2 rounded-full shrink-0"
+                className="topic-dot-glow h-2 w-2 rounded-full shrink-0 transition-transform duration-150 group-hover:scale-110"
                 style={{ backgroundColor: "var(--family-accent)" }}
                 aria-hidden
               />
               <span className="font-medium text-xs">{info?.title ?? catName}</span>
-              <span className="rounded-full bg-surface/80 px-1.5 py-0.5 font-mono text-[10px] text-muted">
+              <span
+                className={cn(
+                  "rounded-full px-1.5 py-0.5 font-mono text-[10px] transition-colors",
+                  isSelected
+                    ? "bg-accent/25 text-foreground font-bold"
+                    : "border border-border/50 bg-surface/90 text-muted group-hover:border-border",
+                )}
+              >
                 {count}
               </span>
             </button>

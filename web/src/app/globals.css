@@ -22,35 +22,28 @@
   color-scheme: light;
   /* --- tier 1: ground (Blueprint light) ------------------- */
   /*
-    Light surfaces are a real paper ladder, not a flat white stack. Elevated
-    (cards) stays #fff; background (#f1f4f9) is the page; code (#e4e9f2) the
-    editor well; sunk (#d8dde8) the deepest recess. Measured adjacent steps:
-    elevated/background 1.10, background/code 1.11, code/sunk 1.12,
-    elevated/sunk 1.36 — visible steps. Every text ink below clears AA
-    4.5:1 on the deepest surface; enforced by web/tests/design-tokens.test.ts.
+    Light surfaces: pure luminous white canvas for page and elevated cards
+    (#ffffff), with layered recessed steps for code well (#f8fafc) and sunk
+    panels (#f1f5f9). Every text ink below clears AA 4.5:1 on all surfaces;
+    enforced by web/tests/design-tokens.test.ts.
   */
-  --press-paper: #f1f4f9; /* sheet Background — app chrome / page */
-  --press-paper-sunk: #d8dde8; /* recessed panel (tests, muted chrome) */
-  --press-ink: #16202e; /* 15.0:1 — sheet Text Primary */
-  --press-ink-soft: #56606e; /* 5.77:1 on paper; 4.67:1 on sunk — AA deepest */
+  --press-paper: #ffffff; /* sheet Background — pure crisp white canvas */
+  --press-paper-sunk: #f1f5f9; /* recessed panel (tests, muted chrome) */
+  --press-ink: #0f172a; /* 17.8:1 — sheet Text Primary */
+  --press-ink-soft: #475569; /* 7.57:1 on paper; 6.94:1 on sunk — AA deepest */
   /* Almost-invisible rule — the tonal ladder now carries the structure */
-  --press-rule: rgba(22, 32, 46, 0.09);
-  --press-rule-strong: rgba(22, 32, 46, 0.18); /* chapter hairline — twice the soft rule */
+  --press-rule: rgba(15, 23, 42, 0.08);
+  --press-rule-strong: rgba(15, 23, 42, 0.16); /* chapter hairline — twice the soft rule */
 
   /*
-    The base theme is MONOCHROME: accent, pop and mark are all steel #1E293B,
-    so no colour is asserted on pages with no topic (landing, course hub,
-    foundations). The "primary" is provided per topic: familyCssVars() re-maps
-    --accent/--pop/--on-pop/--highlight inside a lesson's scope (see the
-    [data-family] block below) to that lesson's family accent. Steel clears
-    ~13.8:1 on paper and ~15.2:1 for white-on-accent — never a contrast risk.
-    Inside a family scope accent is the (often saturated) family colour, so
-    the old rule still applies there: body-size accent text uses --mark
-    (which stays steel everywhere), never --accent.
+    Vibrant technical inks for primary buttons, CTAs, tags, borders, and icons:
+    --press-lime: vibrant saturated primary fill for CTAs & chips (#2563eb)
+    --press-olive: rich text-safe primary accent (#1d4ed8 clearing AA on paper)
+    --press-blue: AA-safe mark ink (#1d4ed8)
   */
-  --press-lime: #1e293b; /* pop = steel */
-  --press-olive: #1e293b; /* accent = steel */
-  --press-blue: #1e293b; /* mark = steel — not overridden by family scopes */
+  --press-lime: #2563eb; /* pop = vibrant cobalt */
+  --press-olive: #1d4ed8; /* accent = rich technical blue */
+  --press-blue: #1d4ed8; /* mark = AA-safe mark ink */
   /*
     Brand lamp — the logo's green and nothing else (CLAUDE.md §4;
     tests/brandLamp.test.tsx confines these to the mark). Deliberately not
@@ -128,7 +121,7 @@
   --hue-pink-line: #cb5a95;
 
   --press-highlight: color-mix(in oklab, var(--press-olive) 14%, transparent);
-  --press-halftone: rgba(22, 32, 46, 0.09);
+  --press-halftone: rgba(15, 23, 42, 0.08);
 
   /* --- tier 2: semantic ----------------------------------- */
   --background: var(--press-paper);
@@ -137,7 +130,7 @@
   --border: var(--press-rule);
   --rule-strong: var(--press-rule-strong);
   --surface: var(--press-paper-sunk); /* test panel / muted — deepest */
-  --code: #e4e9f2; /* editor / code chrome — recessed below the page */
+  --code: #f8fafc; /* editor / code chrome — recessed below the page */
   /*
     The actual code-block/sandbox-editor canvas is deliberately NOT part of
     the light/dark paper ladder above — it is a dark "editor" surface in both
@@ -160,10 +153,10 @@
   --editor-active-line: rgb(255 255 255 / 0.045);
   --elevated: #ffffff; /* sidebar, lesson panel, cards — brightest lift */
   --accent: var(--press-olive);
-  --accent-hover: #334155; /* steel lift for hover */
-  --accent-active: #0f172a;
+  --accent-hover: #1e40af; /* refined technical blue hover state */
+  --accent-active: #1e3a8a;
   --pop: var(--press-lime);
-  --on-pop: #ffffff; /* ~15.2:1 on steel */
+  --on-pop: #ffffff; /* ~5.2:1 on vibrant cobalt */
 
   /*
     Status colours (spec 2026-09-14 §4.2). Text ≥ 4.5:1 on every surface in
@@ -199,7 +192,7 @@
   --callout-tint-mistake: color-mix(in srgb, var(--hue-red-1) 50%, var(--elevated));
   --callout-tint-context: color-mix(in srgb, var(--hue-blue-1) 50%, var(--elevated));
   --callout-tint-requirement: color-mix(in srgb, var(--hue-green-1) 50%, var(--elevated));
-  --callout-tint-advice: color-mix(in srgb, var(--surface) 50%, var(--elevated));
+  --callout-tint-advice: color-mix(in srgb, #cbd5e1 50%, var(--elevated));
   /* Tip's rule: 4.76:1 on --elevated, 4.10:1 on its own tint. */
   --advice-line: #64748b;
 
@@ -239,7 +232,7 @@
      never an arbitrary shadow-[...] value in a component. Applied only to
      genuinely elevated surfaces; --surface/--code (recessed) get none.
   ------------------------------------------------------------- */
-  --shadow-tint: 22 32 46; /* --press-ink as an r g b triplet */
+  --shadow-tint: 15 23 42; /* --press-ink as an r g b triplet */
   --shadow-elevation:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.75),
     0 1px 2px rgb(var(--shadow-tint) / 0.04),
@@ -730,12 +723,306 @@ body {
 .hero-block[data-banded] > .n {
   background-image: repeating-linear-gradient(to top, transparent 0, transparent 55px, var(--floor-edge) 55px, var(--floor-edge) 56px);
 }
+.hero-block[data-lit-block] > .t {
+  box-shadow: 0 0 24px 4px color-mix(in oklab, var(--top) 35%, transparent);
+}
 .dark .hero-block[data-lit-block] > .t {
   box-shadow: 0 0 36px 6px color-mix(in oklab, var(--top) 55%, transparent);
 }
 @keyframes hero-floor-drift { from { transform: rotateZ(-4deg); } to { transform: rotateZ(6deg); } }
 @keyframes hero-block-bob { from { transform: translateZ(0); } to { transform: translateZ(26px); } }
 @keyframes hero-floor-pulse { from { opacity: 0.35; } to { opacity: 1; } }
+
+@keyframes hero-tome-float {
+  from {
+    transform: translateZ(85px) rotateX(10deg) rotateY(-18deg) rotateZ(12deg);
+  }
+  to {
+    transform: translateZ(115px) rotateX(14deg) rotateY(-14deg) rotateZ(16deg);
+  }
+}
+
+@keyframes hero-chip-float {
+  from {
+    transform: translateZ(100px) rotateX(14deg) rotateY(16deg) rotateZ(-6deg);
+  }
+  to {
+    transform: translateZ(130px) rotateX(10deg) rotateY(20deg) rotateZ(-3deg);
+  }
+}
+
+@keyframes hero-beacon-float {
+  from {
+    transform: translateZ(135px) rotateX(15deg) rotateZ(-8deg);
+  }
+  to {
+    transform: translateZ(160px) rotateX(12deg) rotateZ(-5deg);
+  }
+}
+
+/* 3D Hero Floor Artifacts */
+.hero-artifact-tome {
+  position: absolute;
+  width: 140px;
+  height: 195px;
+  transform-style: preserve-3d;
+  animation: hero-tome-float 8s ease-in-out infinite alternate;
+}
+.hero-tome-3d {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.hero-tome-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #121824 0%, #080c14 100%);
+  border: 1px solid rgba(227, 189, 63, 0.45);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), inset 0 0 16px rgba(227, 189, 63, 0.15);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+.hero-tome-border {
+  border: 1px solid rgba(227, 189, 63, 0.35);
+  border-radius: 2px;
+  padding: 8px 6px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+.hero-tome-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--insight) 80%, var(--warn));
+  font-weight: 700;
+}
+.hero-tome-title-wrap {
+  margin-top: 2px;
+}
+.hero-tome-title {
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--insight) 90%, var(--warn));
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.hero-tome-subtitle {
+  font-family: var(--font-mono);
+  font-size: 6.5px;
+  color: color-mix(in srgb, var(--insight) 65%, white);
+  margin-top: 2px;
+  letter-spacing: 0.05em;
+}
+.hero-tome-diagram {
+  width: 72px;
+  height: 44px;
+  color: color-mix(in srgb, var(--insight) 75%, var(--warn));
+  margin: 2px 0;
+  filter: drop-shadow(0 0 4px rgba(227, 189, 63, 0.25));
+}
+.hero-tome-authors {
+  display: flex;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 6px;
+  color: color-mix(in srgb, var(--insight) 70%, white);
+  letter-spacing: 0.08em;
+}
+.hero-tome-spine {
+  position: absolute;
+  left: -18px;
+  top: 0;
+  width: 18px;
+  height: 100%;
+  background: linear-gradient(to right, #070a10, #161e2e);
+  transform-origin: right;
+  transform: rotateY(-90deg);
+  border-radius: 3px 0 0 3px;
+  border-left: 1px solid rgba(227, 189, 63, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.hero-tome-spine-text {
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 6.5px;
+  color: color-mix(in srgb, var(--insight) 80%, var(--warn));
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.hero-tome-pages-edge {
+  position: absolute;
+  right: -14px;
+  top: 3px;
+  width: 14px;
+  height: calc(100% - 6px);
+  background: repeating-linear-gradient(to right, #e8dfc8 0, #e8dfc8 1px, #d2c5a8 1px, #d2c5a8 2px);
+  transform-origin: left;
+  transform: rotateY(90deg);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
+}
+.hero-tome-pages-bottom {
+  position: absolute;
+  left: 3px;
+  bottom: -14px;
+  width: calc(100% - 6px);
+  height: 14px;
+  background: repeating-linear-gradient(to bottom, #e8dfc8 0, #e8dfc8 1px, #d2c5a8 1px, #d2c5a8 2px);
+  transform-origin: top;
+  transform: rotateX(-90deg);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-artifact-chip {
+  position: absolute;
+  width: 270px;
+  transform-style: preserve-3d;
+  animation: hero-chip-float 7s ease-in-out infinite alternate;
+}
+.hero-chip-3d {
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--info) 45%, var(--good));
+  background: color-mix(in srgb, var(--card-navy, #14202e) 94%, black);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 24px color-mix(in srgb, var(--info) 25%, transparent);
+  backdrop-filter: blur(8px);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hero-chip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--press-rule, rgba(163, 174, 188, 0.15));
+  padding-bottom: 6px;
+}
+.hero-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  box-shadow: 0 0 8px var(--good);
+}
+.hero-chip-filename {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.hero-chip-pass-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+.hero-chip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hero-chip-array {
+  display: flex;
+  gap: 4px;
+}
+.hero-chip-cell {
+  flex: 1;
+  text-align: center;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--press-rule, rgba(163, 174, 188, 0.2));
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+}
+.hero-chip-cell-active {
+  border-color: var(--good);
+  background: color-mix(in srgb, var(--good) 25%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--good) 45%, transparent);
+}
+.hero-chip-pointers {
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+}
+.hero-pointer-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-style: solid;
+}
+.hero-chip-code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--code) 70%, transparent);
+  border: 1px solid var(--press-rule, rgba(163, 174, 188, 0.15));
+}
+
+.hero-artifact-beacon {
+  position: absolute;
+  transform-style: preserve-3d;
+  animation: hero-beacon-float 5s ease-in-out infinite alternate;
+}
+.hero-live-engine-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  background: var(--bad);
+  color: #ffffff;
+  padding: 0.35rem 0.85rem;
+  box-shadow: 0 0 16px var(--bad), 0 0 32px color-mix(in srgb, var(--bad) 45%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transform-style: preserve-3d;
+  white-space: nowrap;
+}
+
+/* Living Status Badges & Tactile Hero CTAs */
+.hero-beacon-glow-good {
+  box-shadow: 0 0 14px color-mix(in srgb, var(--good) 35%, transparent);
+}
+.hero-beacon-glow-info {
+  box-shadow: 0 0 14px color-mix(in srgb, var(--info) 35%, transparent);
+}
+.hero-beacon-glow-warn {
+  box-shadow: 0 0 14px color-mix(in srgb, var(--warn) 35%, transparent);
+}
+.hero-kicker-pill {
+  box-shadow: 0 0 14px color-mix(in srgb, var(--good) 30%, transparent);
+}
+.hero-start-cta {
+  box-shadow: 0 0 22px color-mix(in srgb, var(--good) 45%, transparent), var(--shadow-elevation);
+}
+.hero-start-cta:hover {
+  box-shadow: 0 0 30px color-mix(in srgb, var(--good) 65%, transparent), var(--shadow-elevation);
+}
+.hero-explore-cta {
+  box-shadow: var(--shadow-elevation);
+}
+.hero-explore-cta:hover {
+  box-shadow: 0 0 18px color-mix(in srgb, var(--pop) 30%, transparent), var(--shadow-elevation);
+}
 
 /*
   The hero headline arrives word by word on load; "code." carries a caret and
@@ -1061,6 +1348,9 @@ html[data-account="in"] [data-account-placeholder]::after {
 @media (prefers-reduced-motion: reduce) {
   .hero-floor-drift,
   .hero-floor-lit,
+  .hero-artifact-tome,
+  .hero-artifact-chip,
+  .hero-artifact-beacon,
   .hero-block,
   .hero-word,
   .hero-caret,
@@ -2155,6 +2445,126 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 }
 
 /*
+  Ambient glows and interactive halos — token-based visual indicators
+  consumed by chrome, progress meters, and interactive cards.
+*/
+.nav-link-active-halo {
+  position: relative;
+}
+.nav-link-active-halo::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 18%;
+  right: 18%;
+  height: 2px;
+  background-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  border-radius: 9999px;
+}
+
+.progress-glow-accent {
+  box-shadow: 0 0 6px var(--accent);
+}
+
+.progress-glow-good {
+  box-shadow: 0 0 8px var(--good);
+}
+
+.lang-icon-glow {
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 45%, transparent));
+}
+
+.arrow-badge-glow {
+  transition: all var(--dur-fast) var(--ease);
+}
+.group:hover .arrow-badge-glow {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.badge-glow-good {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--good) 30%, transparent);
+}
+
+.badge-glow-warn {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--warn) 30%, transparent);
+}
+
+.badge-glow-bad {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--bad) 30%, transparent);
+}
+
+.badge-glow-accent {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.topic-dot-glow {
+  box-shadow: 0 0 6px var(--family-accent, var(--accent));
+}
+
+.checkbox-glow-good {
+  box-shadow: 0 0 6px color-mix(in srgb, var(--good) 40%, transparent);
+}
+
+.checkbox-glow-accent:hover {
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.tab-indicator-glow::after {
+  box-shadow: 0 0 8px var(--mark);
+}
+
+.run-btn-glow {
+  box-shadow: 0 0 12px color-mix(in srgb, var(--good) 30%, transparent);
+}
+.run-btn-glow:hover:not(:disabled) {
+  box-shadow: 0 0 16px color-mix(in srgb, var(--good) 45%, transparent);
+}
+
+.results-rail-specular {
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+}
+
+.results-tab-beacon::after {
+  box-shadow: 0 0 8px var(--tok-keyword);
+}
+
+.case-chip-active-glow {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--tok-keyword) 35%, transparent);
+}
+
+.rail-passing-glow {
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--good) 40%, transparent), 0 -2px 10px color-mix(in srgb, var(--good) 15%, transparent);
+}
+
+.callout-beacon-insight {
+  box-shadow: -2px 0 8px color-mix(in srgb, var(--insight) 35%, transparent);
+}
+.callout-beacon-bad {
+  box-shadow: -2px 0 8px color-mix(in srgb, var(--bad) 35%, transparent);
+}
+.callout-beacon-advice {
+  box-shadow: -2px 0 8px color-mix(in srgb, var(--mark) 35%, transparent);
+}
+.callout-beacon-info {
+  box-shadow: -2px 0 8px color-mix(in srgb, var(--info) 35%, transparent);
+}
+.callout-beacon-good {
+  box-shadow: -2px 0 8px color-mix(in srgb, var(--good) 35%, transparent);
+}
+
+.cta-glow-pop {
+  box-shadow: 0 0 16px color-mix(in srgb, var(--pop) 35%, transparent);
+}
+
+.sync-dot-glow-good {
+  box-shadow: 0 0 6px color-mix(in srgb, var(--good) 50%, transparent);
+}
+.sync-dot-glow-warn {
+  box-shadow: 0 0 6px color-mix(in srgb, var(--warn) 50%, transparent);
+}
+
+/*
   The lesson reading page (LessonView): prose, infographic and quiz set on a
   sheet of --elevated paper against the --background desk, while header,
   stage and prev/next stay on the desk. The column is the measure plus the
@@ -2318,5 +2728,158 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   .module-card-inner {
     transition: none;
   }
+}
+
+/* ============================================================
+   Tangible 3D Binder Themes (Stages 0–4)
+   Rich physical notebook textures, blueprint grids, coordinates,
+   marbled cover washes, and cyber circuit traces.
+   ============================================================ */
+
+.track-binder {
+  position: relative;
+  transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 300ms ease;
+  transform-style: preserve-3d;
+}
+
+@media (hover: hover) {
+  .track-binder:hover,
+  .track-binder:focus-visible {
+    transform: translateY(-0.5rem) rotateX(3deg) rotateY(-2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track-binder,
+  .track-binder:hover,
+  .track-binder:focus-visible {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Stage 0: Sunny canary / golden amber binder */
+.binder-stage-0 {
+  background-color: var(--elevated);
+  background-image:
+    linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.04) 50%, transparent 100%);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+.binder-stage-0:hover,
+.binder-stage-0:focus-visible {
+  border-color: rgba(245, 158, 11, 0.65);
+}
+.binder-pill-0 {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.24), rgba(217, 119, 6, 0.14));
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #b45309;
+}
+.dark .binder-pill-0 {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.5);
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(217, 119, 6, 0.1));
+}
+
+/* Stage 1: Vintage sage / emerald blueprint binder */
+.binder-stage-1 {
+  background-color: var(--elevated);
+  background-image:
+    linear-gradient(rgba(16, 185, 129, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.08) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 50%, transparent 100%);
+  background-size: 16px 16px, 16px 16px, 100% 100%;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+.binder-stage-1:hover,
+.binder-stage-1:focus-visible {
+  border-color: rgba(16, 185, 129, 0.65);
+}
+.binder-pill-1 {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.24), rgba(5, 150, 105, 0.14));
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #047857;
+}
+.dark .binder-pill-1 {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.5);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+}
+
+/* Stage 2: Electric sky-blue retro grid binder */
+.binder-stage-2 {
+  background-color: var(--elevated);
+  background-image:
+    radial-gradient(circle, rgba(56, 189, 248, 0.18) 1px, transparent 1px),
+    linear-gradient(rgba(59, 130, 246, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.07) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(59, 130, 246, 0.04) 50%, transparent 100%);
+  background-size: 20px 20px, 20px 20px, 20px 20px, 100% 100%;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+.binder-stage-2:hover,
+.binder-stage-2:focus-visible {
+  border-color: rgba(56, 189, 248, 0.65);
+}
+.binder-pill-2 {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(37, 99, 235, 0.14));
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  color: #0369a1;
+}
+.dark .binder-pill-2 {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.5);
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(37, 99, 235, 0.1));
+}
+
+/* Stage 3: Terracotta coral rose / royal violet marbled binder */
+.binder-stage-3 {
+  background-color: var(--elevated);
+  background-image:
+    radial-gradient(ellipse 90% 70% at 90% 10%, rgba(244, 63, 94, 0.14), transparent 60%),
+    radial-gradient(ellipse 70% 90% at 10% 90%, rgba(168, 85, 247, 0.12), transparent 60%),
+    linear-gradient(135deg, rgba(244, 63, 94, 0.10) 0%, rgba(168, 85, 247, 0.05) 50%, transparent 100%);
+  border-color: rgba(244, 63, 94, 0.35);
+}
+.binder-stage-3:hover,
+.binder-stage-3:focus-visible {
+  border-color: rgba(244, 63, 94, 0.65);
+}
+.binder-pill-3 {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.24), rgba(168, 85, 247, 0.14));
+  border: 1px solid rgba(244, 63, 94, 0.45);
+  color: #be123c;
+}
+.dark .binder-pill-3 {
+  color: #fb7185;
+  border-color: rgba(251, 113, 133, 0.5);
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(168, 85, 247, 0.1));
+}
+
+/* Stage 4: Vibrant mint / cyber teal circuit board binder */
+.binder-stage-4 {
+  background-color: var(--elevated);
+  background-image:
+    linear-gradient(rgba(20, 184, 166, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 24px 24px, rgba(20, 184, 166, 0.22) 2px, transparent 2.5px),
+    linear-gradient(135deg, rgba(20, 184, 166, 0.12) 0%, rgba(6, 182, 212, 0.04) 50%, transparent 100%);
+  background-size: 24px 24px, 24px 24px, 48px 48px, 100% 100%;
+  border-color: rgba(20, 184, 166, 0.35);
+}
+.binder-stage-4:hover,
+.binder-stage-4:focus-visible {
+  border-color: rgba(20, 184, 166, 0.65);
+}
+.binder-pill-4 {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.24), rgba(6, 182, 212, 0.14));
+  border: 1px solid rgba(20, 184, 166, 0.45);
+  color: #0f766e;
+}
+.dark .binder-pill-4 {
+  color: #2dd4bf;
+  border-color: rgba(45, 212, 191, 0.5);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(6, 182, 212, 0.1));
 }
 

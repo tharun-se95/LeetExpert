@@ -43,7 +43,7 @@ export function CodeLangSwitch({ className }: CodeLangSwitchProps) {
       role="radiogroup"
       aria-label="Code language"
       className={cn(
-        "inline-flex h-9 items-center rounded-full border border-border bg-surface p-0.5 text-xs font-medium",
+        "inline-flex h-9 items-center rounded-full border border-border/80 bg-surface/80 p-0.5 text-xs font-medium shadow-elevation",
         className,
       )}
     >
@@ -57,13 +57,15 @@ export function CodeLangSwitch({ className }: CodeLangSwitchProps) {
         onClick={() => setPreferred("python")}
         onKeyDown={(e) => handleKeyDown(e, "python")}
         className={cn(
-          "inline-flex h-full items-center gap-1.5 rounded-full px-2 sm:px-2.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer",
+          "inline-flex h-full items-center gap-1.5 rounded-full px-2 sm:px-2.5 text-xs transition-all duration-[var(--dur-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer",
           isPython
-            ? "bg-elevated text-foreground shadow-elevation font-semibold"
-            : "text-muted hover:text-foreground",
+            ? "border border-accent/25 bg-elevated text-foreground shadow-elevation font-semibold"
+            : "border border-transparent text-muted hover:text-foreground",
         )}
       >
-        <LanguageMark language="python" />
+        <span className={cn("inline-flex items-center justify-center", isPython && "lang-icon-glow")}>
+          <LanguageMark language="python" />
+        </span>
         <span className="hidden sm:inline">Python</span>
       </button>
 
@@ -77,13 +79,15 @@ export function CodeLangSwitch({ className }: CodeLangSwitchProps) {
         onClick={() => setPreferred("javascript")}
         onKeyDown={(e) => handleKeyDown(e, "javascript")}
         className={cn(
-          "inline-flex h-full items-center gap-1.5 rounded-full px-2 sm:px-2.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer",
+          "inline-flex h-full items-center gap-1.5 rounded-full px-2 sm:px-2.5 text-xs transition-all duration-[var(--dur-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer",
           isJs
-            ? "bg-elevated text-foreground shadow-elevation font-semibold"
-            : "text-muted hover:text-foreground",
+            ? "border border-accent/25 bg-elevated text-foreground shadow-elevation font-semibold"
+            : "border border-transparent text-muted hover:text-foreground",
         )}
       >
-        <LanguageMark language="javascript" />
+        <span className={cn("inline-flex items-center justify-center", isJs && "lang-icon-glow")}>
+          <LanguageMark language="javascript" />
+        </span>
         <span className="hidden sm:inline">JS</span>
       </button>
     </div>

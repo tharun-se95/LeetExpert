@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Appending isn't always O(1) — storyboard v1</title>
+<link rel="stylesheet" href="../../assets/fonts/fonts-latin.css">
+<style>
+  :root {
+    --ground: #14202e; --panel: #1f3145; --panel-2: #26394f; --elev: #2b405a;
+    --ink: #e6edf4; --muted: #9ca9b8; --rule: rgba(230,237,244,.12); --rule-strong: rgba(230,237,244,.2);
+    --accent: #107d6e; --accent-tint: #062B26; --on-accent: #ffffff;
+    --lamp: #5be07a; --lamp-hi: #cfffd8; --lamp-lo: #2fb455;
+    --sheet: #0b121b;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--sheet); color: var(--ink); font-family: 'Space Grotesk', system-ui, sans-serif; padding: 48px; }
+  header { display: flex; align-items: baseline; gap: 24px; margin-bottom: 8px; flex-wrap: wrap; }
+  h1 { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 28px; }
+  .ver { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--muted); }
+  .tag { font-family: 'JetBrains Mono', monospace; font-size: 13px; border: 1px solid var(--rule-strong); padding: 4px 10px; border-radius: 999px; color: var(--muted); }
+  .dek { color: var(--muted); margin-bottom: 32px; max-width: 70ch; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } }
+  figure { display: flex; flex-direction: column; gap: 10px; }
+  .cell { aspect-ratio: 16 / 9; container-type: inline-size; background: var(--ground); border-radius: 10px; position: relative; overflow: hidden; outline: 1px solid var(--rule); }
+  /* blueprint dot grid, as the house .stage */
+  .cell::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(var(--rule) 1px, transparent 1.2px); background-size: 2.2cqw 2.2cqw; opacity: .7; }
+  .cell > * { position: absolute; }
+  .label { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+  .label b { color: var(--ink); font-weight: 500; }
+  .note { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .note strong { color: var(--ink); font-weight: 700; }
+  .chip { align-self: flex-start; font-family: 'JetBrains Mono', monospace; font-size: 11px; border: 1px solid var(--rule-strong); border-radius: 999px; padding: 2px 8px; color: var(--muted); }
+
+  /* shared atoms, sized in cqw so the sheet matches 1920x1080 */
+  .kicker { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 1.35cqw; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .row { display: flex; gap: .6cqw; }
+  .c { width: 4.4cqw; height: 4.4cqw; border: .16cqw solid var(--ink); border-radius: .7cqw; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.7cqw; }
+  .c.empty { border-color: var(--rule-strong); }
+  .c.hot { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .c.lg { width: 6.4cqw; height: 6.4cqw; font-size: 2.5cqw; border-width: .2cqw; border-radius: .9cqw; }
+  .c.sm { width: 2.6cqw; height: 2.6cqw; font-size: 1.1cqw; border-width: .12cqw; border-radius: .45cqw; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Appending isn't always O(1)</h1><span class="ver">storyboard v1</span>
+  <span class="tag">1920×1080 · ~40s · 8 beats · concept-explainer with process</span>
+</header>
+<p class="dek">A dynamic array's append is amortized O(1): one push into a full array copies every element, and doubling is what keeps that cheap on average. Every number here is computed by <span class="mono">sources/compute.py</span> (mirrored in <span class="mono">compute.mjs</span>) — none typed by hand.</p>
+
+<div class="grid">
+
+<!-- 01 -->
+<figure>
+  <div class="cell" id="frame-01">
+    <div class="kicker" style="left:4.2cqw; top:4.2cqw;">// dynamic arrays</div>
+    <div style="left:0; right:0; top:34%; text-align:center; font-size:9.4cqw; letter-spacing:-.025em; line-height:1;">
+      append( ) is <span style="position:relative; display:inline-block;">O(1)<span style="position:absolute; left:-4%; right:-4%; top:52%; height:.35cqw; background:var(--accent); transform:rotate(-8deg);"></span></span><span style="color:var(--accent); font-weight:700;">?</span>
+    </div>
+    <div class="mono" style="left:0; right:0; bottom:9%; text-align:center; font-size:2.1cqw; color:var(--muted);">not always.</div>
+  </div>
+  <div class="label"><span><b>01 · THE CLAIM</b></span><span>hook · 0–3s</span></div>
+  <p class="note"><strong>Type slams in, then the "?" punches on and a teal crack slashes O(1).</strong> "Not always." lands on the voice. Hard cut out.</p>
+  <span class="chip">in: cut</span>
+</figure>
+
+<!-- 02 -->
+<figure>
+  <div class="cell" id="frame-02">
+    <div class="kicker" style="left:4.2cqw; top:4.2cqw;">capacity 8 · full</div>
+    <div class="row" style="left:4.2cqw; top:20%;">
+      <div class="c lg">a</div><div class="c lg">b</div><div class="c lg">c</div><div class="c lg">d</div><div class="c lg">e</div><div class="c lg">f</div><div class="c lg">g</div><div class="c lg">h</div>
+      <div style="width:.3cqw; background:var(--ink); margin-left:.4cqw;"></div>
+      <div class="c lg hot" style="margin-left:.8cqw;">i</div>
+    </div>
+    <div class="kicker" style="left:4.2cqw; top:52%;">new block · capacity 16</div>
+    <div class="row" style="left:4.2cqw; top:60%;">
+      <div class="c sm">a</div><div class="c sm">b</div><div class="c sm">c</div><div class="c sm">d</div><div class="c sm">e</div><div class="c sm">f</div><div class="c sm">g</div><div class="c sm">h</div>
+      <div class="c sm empty"></div><div class="c sm empty"></div><div class="c sm empty"></div><div class="c sm empty"></div><div class="c sm empty"></div><div class="c sm empty"></div><div class="c sm empty"></div><div class="c sm empty"></div>
+    </div>
+    <div style="right:4.2cqw; bottom:8%; text-align:right;">
+      <div class="mono" style="font-size:1.35cqw; color:var(--muted);">copies</div>
+      <div style="font-size:7.3cqw; line-height:1; color:var(--ink);">8</div>
+    </div>
+    <div class="mono" style="left:4.2cqw; bottom:9%; font-size:2.1cqw;">1 push = <span style="color:var(--ink); font-weight:700;">O(n)</span></div>
+  </div>
+  <div class="label"><span><b>02 · THE FULL ROW</b></span><span>pain · 3–10s</span></div>
+  <p class="note"><strong>Cells a–h fill in a fast stagger; "i" slams the wall.</strong> The 16-slot block draws below, the eight values fly down one by one while the counter ticks 1→8.</p>
+  <span class="chip">in: cut</span>
+</figure>
+
+<!-- 03 -->
+<figure>
+  <div class="cell" id="frame-03">
+    <div class="row" style="left:4.2cqw; top:14%; opacity:.45;">
+      <div class="c sm">a</div><div class="c sm">b</div><div class="c sm">c</div><div class="c sm">d</div><div class="c sm">e</div><div class="c sm">f</div><div class="c sm">g</div><div class="c sm">h</div><div class="c sm">i</div>
+    </div>
+    <div style="left:0; right:0; top:32%; text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:8.2cqw; letter-spacing:.02em;">AMORTIZED</div>
+    <div style="left:14%; right:14%; top:68%; display:flex; justify-content:space-between; align-items:flex-end; height:6cqw;">
+      <!-- the 8 copies smeared evenly over the 9 pushes -->
+      <div style="width:6%; height:60%; background:var(--accent);"></div><div style="width:6%; height:60%; background:var(--accent);"></div><div style="width:6%; height:60%; background:var(--accent);"></div><div style="width:6%; height:60%; background:var(--accent);"></div><div style="width:6%; height:60%; background:var(--accent);"></div><div style="width:6%; height:60%; background:var(--accent);"></div><div style="width:6%; height:60%; background:var(--accent);"></div><div style="width:6%; height:60%; background:var(--accent);"></div><div style="width:6%; height:60%; background:var(--accent);"></div>
+    </div>
+    <div class="mono" style="left:0; right:0; bottom:8%; text-align:center; font-size:1.8cqw; color:var(--muted);">averaged over every push</div>
+  </div>
+  <div class="label"><span><b>03 · AMORTIZED</b></span><span>concept · 10–14s</span></div>
+  <p class="note"><strong>AMORTIZED stamps down over the dimmed row.</strong> The one tall copy-spike from frame 2 melts into nine even slivers, one per push.</p>
+  <span class="chip">in: crossfade</span>
+</figure>
+
+<!-- 04 -->
+<figure>
+  <div class="cell" id="frame-04">
+    <div class="kicker" style="left:4.2cqw; top:4.2cqw;">double the capacity</div>
+    <div class="mono" style="left:4.2cqw; top:13%; font-size:1.6cqw; color:var(--muted);">1 → 2 → 4 → 8 → 16 → … → 1024</div>
+    <div style="left:6%; right:6%; bottom:20%; height:52%; display:flex; align-items:flex-end; gap:1.2%; border-bottom:.15cqw solid var(--rule-strong);">
+      <div style="flex:1; height:.2%; background:var(--ink);"></div>
+      <div style="flex:1; height:.4%; background:var(--ink);"></div>
+      <div style="flex:1; height:.8%; background:var(--ink);"></div>
+      <div style="flex:1; height:1.6%; background:var(--ink);"></div>
+      <div style="flex:1; height:3.1%; background:var(--ink);"></div>
+      <div style="flex:1; height:6.3%; background:var(--ink);"></div>
+      <div style="flex:1; height:12.5%; background:var(--ink);"></div>
+      <div style="flex:1; height:25%; background:var(--ink);"></div>
+      <div style="flex:1; height:50%; background:var(--ink);"></div>
+      <div style="flex:1; height:100%; background:var(--accent);"></div>
+    </div>
+    <div class="mono" style="left:6%; right:6%; bottom:12%; display:flex; justify-content:space-between; font-size:1.2cqw; color:var(--muted);">
+      <span>1</span><span>2</span><span>4</span><span>8</span><span>16</span><span>32</span><span>64</span><span>128</span><span>256</span><span style="color:var(--ink);">512</span>
+    </div>
+    <div class="mono" style="left:0; right:0; bottom:4%; text-align:center; font-size:1.5cqw;">each copy twice as rare as the last</div>
+  </div>
+  <div class="label"><span><b>04 · DOUBLING</b></span><span>mechanism · 14–21s</span></div>
+  <p class="note"><strong>The row doubles on each "one — two — four — eight" cue; every copy drops a bar.</strong> Linear scale on purpose: the early copies are near-invisible next to 512.</p>
+  <span class="chip">in: push-slide LEFT</span>
+</figure>
+
+<!-- 05 -->
+<figure>
+  <div class="cell" id="frame-05">
+    <div class="kicker" style="left:4.2cqw; top:4.2cqw;">1,024 pushes</div>
+    <div style="left:4.2cqw; top:24%;">
+      <div style="font-size:15cqw; line-height:.9; letter-spacing:-.03em; color:var(--ink);">1,023</div>
+      <div class="mono" style="font-size:2.1cqw; margin-top:1.2cqw; color:var(--muted);">copies in total</div>
+    </div>
+    <div style="right:4.2cqw; top:30%; text-align:right; border-left:.15cqw solid var(--accent); padding-left:2cqw;">
+      <div style="font-size:6cqw; line-height:1; color:var(--ink);">≈ 1</div>
+      <div class="mono" style="font-size:1.6cqw; color:var(--muted);">copy per push</div>
+    </div>
+    <!-- the bars laid end to end -->
+    <div style="left:4.2cqw; right:4.2cqw; bottom:10%; height:1.4cqw; display:flex; gap:.2cqw;">
+      <div style="flex:1; background:var(--ink);"></div><div style="flex:2; background:var(--ink);"></div><div style="flex:4; background:var(--ink);"></div><div style="flex:8; background:var(--ink);"></div><div style="flex:16; background:var(--ink);"></div><div style="flex:32; background:var(--ink);"></div><div style="flex:64; background:var(--ink);"></div><div style="flex:128; background:var(--ink);"></div><div style="flex:256; background:var(--ink);"></div><div style="flex:512; background:var(--accent);"></div>
+    </div>
+    <div class="mono" style="left:4.2cqw; bottom:4%; font-size:1.2cqw; color:var(--muted);">1 + 2 + 4 + … + 512 &lt; 2n</div>
+  </div>
+  <div class="label"><span><b>05 · THE BILL</b></span><span>evidence · 21–26s</span></div>
+  <p class="note"><strong>The bars from 04 tip over and line up end to end; the total counts up to 1,023.</strong> "≈ 1 per push" slides in from the right on the last cue.</p>
+  <span class="chip">in: push-slide LEFT</span>
+</figure>
+
+<!-- 06 -->
+<figure>
+  <div class="cell" id="frame-06">
+    <div class="kicker" style="left:4.2cqw; top:4.2cqw;">same 1,024 pushes</div>
+    <div style="left:4.2cqw; right:4.2cqw; top:24%;">
+      <div class="mono" style="font-size:1.6cqw; color:var(--muted); margin-bottom:.8cqw;">double</div>
+      <div style="display:flex; align-items:center; gap:1.4cqw;">
+        <div style="width:.78%; min-width:.5cqw; height:3.2cqw; background:var(--ink);"></div>
+        <span class="mono" style="font-size:2.4cqw;">1,023</span>
+      </div>
+    </div>
+    <div style="left:4.2cqw; right:4.2cqw; top:50%;">
+      <div class="mono" style="font-size:1.6cqw; color:var(--muted); margin-bottom:.8cqw;">grow by 4</div>
+      <div style="width:100%; height:3.2cqw; background:var(--accent);"></div>
+      <div style="font-size:5cqw; line-height:1.1; margin-top:.6cqw;">130,560</div>
+    </div>
+    <div class="mono" style="right:4.2cqw; bottom:6%; text-align:right; font-size:1.8cqw;">per push: ≈1 → <span style="font-weight:700;">127.5</span></div>
+  </div>
+  <div class="label"><span><b>06 · THE TRAP</b></span><span>counterexample · 26–33s</span></div>
+  <p class="note"><strong>Doubling's bar holds as a sliver while the "grow by 4" bar races across the frame.</strong> Its count runs past 1,023 to 130,560; the per-push readout flips on "every push".</p>
+  <span class="chip">in: push-slide LEFT</span>
+</figure>
+
+<!-- 07 -->
+<figure>
+  <div class="cell" id="frame-07">
+    <div style="left:0; right:0; top:30%; text-align:center; font-size:9.9cqw; letter-spacing:-.028em; line-height:1;">Double, don't add.</div>
+    <div class="mono" style="left:0; right:0; top:62%; text-align:center; font-size:2.2cqw; color:var(--muted);">amortized O(1) <span style="color:var(--ink);">≠</span> O(1) every time</div>
+  </div>
+  <div class="label"><span><b>07 · THE RULE</b></span><span>takeaway · 33–37s</span></div>
+  <p class="note"><strong>"Double," then "don't add." punch in on the two voice beats; the sub-line types under them.</strong> The O(1) calls back to frame 1's cracked one, now whole.</p>
+  <span class="chip">in: crossfade</span>
+</figure>
+
+<!-- 08 -->
+<figure>
+  <div class="cell" id="frame-08">
+    <div style="left:0; right:0; top:28%; text-align:center; font-family:'Space Mono',monospace; font-weight:700; font-size:7cqw; letter-spacing:-.01em;">
+      leetExpert <span style="display:inline-block; width:2.2cqw; height:2.2cqw; border-radius:50%; background:radial-gradient(circle at 35% 30%, var(--lamp-hi), var(--lamp) 45%, var(--lamp-lo)); box-shadow:0 0 1.6cqw rgba(91,224,122,.45), 0 0 4cqw rgba(91,224,122,.2); vertical-align:middle;"></span>
+    </div>
+    <div style="left:0; right:0; top:54%; text-align:center; font-size:2.3cqw; color:var(--ink);">Build a dynamic array from scratch — Python &amp; TypeScript</div>
+    <div class="mono" style="left:50%; top:70%; transform:translateX(-50%); font-size:1.8cqw; padding:.8cqw 2cqw; border:.12cqw solid var(--rule-strong); border-radius:99cqw;">leetexpert.com</div>
+  </div>
+  <div class="label"><span><b>08 · BUILD IT</b></span><span>cta · 37–40s</span></div>
+  <p class="note"><strong>The wordmark types on and the lamp blooms last.</strong> Line and URL chip rise under it; the frame holds to the end.</p>
+  <span class="chip">in: crossfade</span>
+</figure>
+
+<!-- seam map -->
+<figure>
+  <div class="cell" style="background:var(--panel);">
+    <div class="kicker" style="left:4.2cqw; top:4.2cqw;">seam map</div>
+    <div class="mono" style="left:4.2cqw; right:4.2cqw; top:30%; display:grid; grid-template-columns:repeat(8,1fr); gap:.6cqw; font-size:1.3cqw; text-align:center;">
+      <div style="border:1px solid var(--rule-strong); padding:1cqw 0;">01</div><div style="border:1px solid var(--rule-strong); padding:1cqw 0;">02</div><div style="border:1px solid var(--rule-strong); padding:1cqw 0;">03</div><div style="border:1px solid var(--rule-strong); padding:1cqw 0;">04</div><div style="border:1px solid var(--rule-strong); padding:1cqw 0;">05</div><div style="border:1px solid var(--rule-strong); padding:1cqw 0;">06</div><div style="border:1px solid var(--rule-strong); padding:1cqw 0;">07</div><div style="border:1px solid var(--rule-strong); padding:1cqw 0;">08</div>
+    </div>
+    <div class="mono" style="left:4.2cqw; right:4.2cqw; top:52%; display:grid; grid-template-columns:repeat(8,1fr); gap:.6cqw; font-size:1.05cqw; color:var(--muted); text-align:center;">
+      <div>—</div><div>cut</div><div>xfade</div><div>push ←</div><div>push ←</div><div>push ←</div><div>xfade</div><div>xfade</div>
+    </div>
+    <div class="mono" style="left:4.2cqw; right:4.2cqw; bottom:10%; font-size:1.3cqw; color:var(--muted); line-height:1.6;">3 seam types. push-slide carries the one growing chart 04→06 as a single shot.</div>
+  </div>
+  <div class="label"><span><b>SEAMS</b></span><span>—</span></div>
+</figure>
+
+<!-- tokens -->
+<figure>
+  <div class="cell" style="background:var(--panel);">
+    <div class="kicker" style="left:4.2cqw; top:4.2cqw;">tokens</div>
+    <div style="left:4.2cqw; top:20%; display:flex; gap:1.2cqw;">
+      <div style="width:6cqw; height:6cqw; background:var(--ground); border:1px solid var(--rule-strong);"></div>
+      <div style="width:6cqw; height:6cqw; background:var(--panel-2); border:1px solid var(--rule-strong);"></div>
+      <div style="width:6cqw; height:6cqw; background:var(--elev);"></div>
+      <div style="width:6cqw; height:6cqw; background:var(--ink);"></div>
+      <div style="width:6cqw; height:6cqw; background:var(--accent);"></div>
+      <div style="width:6cqw; height:6cqw; border-radius:50%; background:var(--lamp);"></div>
+    </div>
+    <div style="left:4.2cqw; top:48%; font-size:2cqw;">Space Grotesk — display &amp; body</div>
+    <div class="mono" style="left:4.2cqw; top:58%; font-size:1.7cqw;">JetBrains Mono — numbers, code, labels</div>
+    <div style="left:4.2cqw; top:67%; font-family:'Space Mono',monospace; font-weight:700; font-size:1.7cqw;">Space Mono 700 — wordmark, AMORTIZED</div>
+    <div class="mono" style="left:4.2cqw; right:4.2cqw; bottom:7%; font-size:1.15cqw; color:var(--muted); line-height:1.5;">bans: italic · accent on body text · hand-typed numbers · a second metaphor</div>
+  </div>
+  <div class="label"><span><b>TOKENS</b></span><span>—</span></div>
+</figure>
+
+</div>
+</body>
+</html>

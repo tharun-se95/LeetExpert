@@ -190,6 +190,7 @@ export function ShareProblemModal({
         open={open}
         onClose={onClose}
         label="Share Challenge"
+        backdropClassName="bg-foreground/35 backdrop-blur-sm"
         className="max-w-lg p-0 overflow-hidden"
       >
         <div className="relative flex flex-col p-5 sm:p-6">
@@ -197,7 +198,7 @@ export function ShareProblemModal({
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-[length:var(--radius-md)] text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-[length:var(--radius-md)] text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
             aria-label="Close dialog"
           >
             <X size={16} weight="bold" />
@@ -218,46 +219,49 @@ export function ShareProblemModal({
           </p>
 
           {/* Problem & Target Complexity Card */}
-          <div className="mt-4 rounded-[length:var(--radius-md)] border border-border bg-surface p-3 sm:p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="font-display text-sm font-bold tracking-tight uppercase sm:text-base">
-                {problemTitle}
-              </span>
-              {difficulty ? (
-                <span
-                  className={cn(
-                    "inline-flex items-center rounded-[length:var(--radius-md)] border px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider",
-                    difficultyBadgeClass(difficulty),
-                  )}
-                >
-                  {difficulty}
+          <div className="relative mt-4 overflow-hidden rounded-[length:var(--radius-md)] border border-border/80 bg-gradient-to-br from-surface/90 via-surface/60 to-surface/30 p-3.5 shadow-elevation sm:p-4">
+            <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-accent/10 blur-xl" aria-hidden />
+            <div className="relative">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-display text-sm font-bold tracking-tight uppercase sm:text-base">
+                  {problemTitle}
                 </span>
-              ) : null}
-            </div>
+                {difficulty ? (
+                  <span
+                    className={cn(
+                      "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider",
+                      difficultyBadgeClass(difficulty),
+                    )}
+                  >
+                    {difficulty}
+                  </span>
+                ) : null}
+              </div>
 
-            {/* Target complexity highlight */}
-            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border/60 pt-2.5 text-xs">
-              <span className="text-[0.7rem] uppercase tracking-wider font-mono text-muted">
-                Benchmark:
-              </span>
-              <div className="flex flex-wrap items-center gap-2">
-                {complexity?.time ? (
-                  <span className="inline-flex items-center gap-1 rounded-[length:var(--radius-sm)] bg-elevated px-2 py-0.5 font-mono text-xs font-medium text-foreground">
-                    <Clock size={12} className="text-accent" aria-hidden />
-                    {complexity.time}
-                  </span>
-                ) : null}
-                {complexity?.space ? (
-                  <span className="inline-flex items-center gap-1 rounded-[length:var(--radius-sm)] bg-elevated px-2 py-0.5 font-mono text-xs font-medium text-foreground">
-                    <Cpu size={12} className="text-accent" aria-hidden />
-                    {complexity.space}
-                  </span>
-                ) : null}
-                {!complexity?.time && !complexity?.space ? (
-                  <span className="rounded-[length:var(--radius-sm)] bg-elevated px-2 py-0.5 font-mono text-xs text-muted">
-                    Optimal time & space
-                  </span>
-                ) : null}
+              {/* Target complexity highlight */}
+              <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border/60 pt-2.5 text-xs">
+                <span className="text-[0.7rem] uppercase tracking-wider font-mono text-muted">
+                  Benchmark:
+                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  {complexity?.time ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/80 shadow-elevation px-2.5 py-0.5 font-mono text-xs font-medium text-foreground">
+                      <Clock size={12} className="text-info" aria-hidden />
+                      {complexity.time}
+                    </span>
+                  ) : null}
+                  {complexity?.space ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/80 shadow-elevation px-2.5 py-0.5 font-mono text-xs font-medium text-foreground">
+                      <Cpu size={12} className="text-info" aria-hidden />
+                      {complexity.space}
+                    </span>
+                  ) : null}
+                  {!complexity?.time && !complexity?.space ? (
+                    <span className="rounded-full border border-border/80 bg-surface/80 shadow-elevation px-2.5 py-0.5 font-mono text-xs text-muted">
+                      Optimal time &amp; space
+                    </span>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
@@ -283,10 +287,10 @@ export function ShareProblemModal({
                 type="button"
                 onClick={handleCopyLink}
                 className={cn(
-                  "inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-[length:var(--radius-md)] px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                  "inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-[length:var(--radius-md)] px-4 text-xs font-semibold transition-all duration-[var(--dur-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer",
                   copiedLink
-                    ? "bg-good/15 text-good border border-good/30"
-                    : "bg-pop text-on-pop hover:bg-pop/90",
+                    ? "bg-good-surface/30 text-good border border-good-line/50 badge-glow-good"
+                    : "bg-pop text-on-pop cta-glow-pop hover:brightness-105 active:brightness-95",
                 )}
                 aria-label="Copy challenge link"
               >

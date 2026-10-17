@@ -323,7 +323,7 @@ function SandboxBody({
           onClick={() => run(lang, drafts[lang])}
           disabled={busy}
           className={cn(
-            "inline-flex items-center gap-1.5 whitespace-nowrap bg-pop font-semibold text-on-pop transition-opacity hover:opacity-90 disabled:opacity-55",
+            "inline-flex items-center gap-1.5 whitespace-nowrap bg-good font-semibold text-on-pop run-btn-glow transition-all hover:brightness-110 active:brightness-95 disabled:opacity-55 cursor-pointer disabled:cursor-not-allowed",
             variant === "ide"
               ? "px-4 text-[0.78rem]"
               : "h-11 rounded-[length:var(--radius-md)] px-3 text-[0.72rem]",
@@ -752,7 +752,12 @@ function ResultsRail({
   const status = railStatus(busy, failed, ran, passed, total, allPassed);
 
   return (
-    <div className="flex min-h-11 shrink-0 items-stretch border-t border-code-editor-border bg-code-editor">
+    <div
+      className={cn(
+        "flex min-h-11 shrink-0 items-stretch border-t border-code-editor-border bg-code-editor results-rail-specular transition-colors duration-[var(--dur-fast)]",
+        ran && allPassed ? "rail-passing-glow border-t-good/30 bg-good/[0.04]" : "",
+      )}
+    >
       <div
         role="tablist"
         aria-label="Insight, tests, and console"
@@ -801,7 +806,7 @@ function ResultsRail({
                 // whose brightness doesn't track the page theme (same
                 // reasoning as the CodeMirror caret in editorTheme.ts).
                 selected
-                  ? "text-[color:var(--tok-name)] after:bg-[var(--tok-keyword)]"
+                  ? "text-[color:var(--tok-name)] after:bg-[var(--tok-keyword)] results-tab-beacon"
                   : "text-[color:var(--tok-comment)] after:bg-transparent hover:text-[color:var(--tok-name)] hover:after:bg-code-editor-border",
               )}
             >
@@ -921,7 +926,7 @@ function IdeTestcases({
                 // identical to a passing one; ring, not fill, now marks
                 // "this is the one you're viewing", so status stays legible
                 // regardless of which case is open.
-                "rounded-[length:var(--radius-md)] px-2.5 py-1 font-mono text-[0.7rem] font-medium transition-colors",
+                "rounded-[length:var(--radius-md)] px-2.5 py-1 font-mono text-[0.7rem] font-medium transition-all duration-[var(--dur-fast)]",
                 r
                   ? r.passed
                     ? "bg-[color:var(--tok-string)]/15 text-[color:var(--tok-string)]"
@@ -932,8 +937,8 @@ function IdeTestcases({
                 // doesn't track the page theme (same reasoning as the
                 // CodeMirror caret in editorTheme.ts).
                 active === i
-                  ? "ring-2 ring-inset ring-[color:var(--tok-keyword)]"
-                  : "",
+                  ? "ring-2 ring-inset ring-[color:var(--tok-keyword)] case-chip-active-glow"
+                  : "border border-code-editor-border/60",
               )}
             >
               <span className="inline-flex items-center gap-1.5">

@@ -72,11 +72,16 @@ export function LandingHeader({
             type="button"
             onClick={onOpenSearch}
             aria-label="Search lessons and problems"
-            className={cn(ROUND_CONTROL, "h-11 w-11 md:h-10 md:w-auto md:gap-2 md:px-3.5 md:text-sm")}
+            className={cn(
+              ROUND_CONTROL,
+              "h-11 w-11 md:h-9 md:w-auto md:gap-2.5 md:rounded-full md:border-border/80 md:bg-surface/50 md:px-3 md:text-sm md:hover:border-accent/40 md:hover:bg-surface cursor-pointer",
+            )}
           >
             <MagnifyingGlass className="h-4 w-4" aria-hidden />
-            <span className="hidden md:inline">Search</span>
-            <kbd className="hidden font-mono text-[11px] md:inline">⌘K</kbd>
+            <span className="hidden text-muted md:inline">Search</span>
+            <kbd className="hidden font-mono text-[10px] md:inline-flex items-center justify-center px-1.5 py-0.5 rounded-[length:var(--radius-xs)] bg-elevated border border-border shadow-elevation text-muted">
+              ⌘K
+            </kbd>
           </button>
           <ThemeToggle className={THEME_TOGGLE} />
           <AccountControl />

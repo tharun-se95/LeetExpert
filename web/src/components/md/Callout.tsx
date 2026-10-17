@@ -46,6 +46,15 @@ const TYPE_STYLE: Record<CalloutType, string> = {
   default: "border-l-2 border-l-rule-strong",
 };
 
+const TYPE_BEACON: Partial<Record<CalloutType, string>> = {
+  key: "border-insight-line/40 callout-beacon-insight",
+  brain: "border-insight-line/40 callout-beacon-insight",
+  warn: "border-bad-line/40 callout-beacon-bad",
+  tip: "border-advice-line/40 callout-beacon-advice",
+  goal: "border-info-line/40 callout-beacon-info",
+  constraint: "border-good-line/40 callout-beacon-good",
+};
+
 const TYPE_LABELS: Partial<Record<CalloutType, string>> = {
   key: "Key idea",
   brain: "Mental model",
@@ -112,11 +121,12 @@ export function Callout({
     <blockquote
       id={id}
       className={cn(
-        "group relative my-4 pr-8 pl-4 not-italic",
+        "group relative my-5 pr-8 pl-4 not-italic",
         labelled
-          ? "border-l-3 py-2.5 rounded-r-[length:var(--radius-sm)]"
+          ? "border-l-3 border border-r border-t border-b py-3 rounded-[length:var(--radius-sm)] shadow-elevation"
           : "py-0.5",
         TYPE_STYLE[type],
+        TYPE_BEACON[type],
       )}
     >
       <button
