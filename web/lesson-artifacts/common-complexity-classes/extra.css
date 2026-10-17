@@ -1,0 +1,237 @@
+/* ================= The Common Complexity Classes: extra.css ================= */
+
+/* Hero: Complexity Curves Ladder */
+.ha-axis { stroke: var(--hair2); stroke-width: 1.5; }
+.ha-grid { stroke: var(--hair); stroke-width: 1; stroke-dasharray: 3 3; }
+.ha-curve { fill: none; stroke-width: 2.2; stroke-linecap: round; }
+.ha-curve.c-1 { stroke: var(--g-ink); }
+.ha-curve.c-log { stroke: var(--b-ink); }
+.ha-curve.c-n { stroke: var(--fam); }
+.ha-curve.c-nlogn { stroke: var(--fam); stroke-dasharray: 4 2; }
+.ha-curve.c-n2 { stroke: var(--o-ink, var(--fam)); }
+.ha-curve.c-2n { stroke: var(--r-ink); }
+.ha-curve.c-fac { stroke: var(--r-ink); stroke-dasharray: 3 2; }
+.ha-label { font: 600 11px 'JetBrains Mono', monospace; fill: var(--mut); }
+.ha-budget-line { stroke: var(--r-ink); stroke-width: 1.5; stroke-dasharray: 4 4; opacity: 0.85; }
+
+/* Ladder Model Widget */
+.ladder-stage { display: flex; flex-direction: column; gap: 14px; margin: 12px 0; }
+.ladder-ctrls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.slider-group { display: flex; align-items: center; gap: 10px; font: 500 13px 'Space Grotesk', sans-serif; color: var(--fg); }
+.slider-group input[type="range"] { width: 140px; cursor: pointer; accent-color: var(--fam); }
+.slider-val { font: 700 14px 'Space Mono', monospace; color: var(--fg); min-width: 80px; }
+
+.ladder-board {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--hair2);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.ladder-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 500 11px 'JetBrains Mono', monospace;
+  color: var(--mut);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--hair);
+  margin-bottom: 4px;
+}
+.legend-budget { color: var(--r-ink); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.legend-budget::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--r-ink); }
+
+.ladder-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 140px 100px 90px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--well);
+  border: 1px solid var(--hair);
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.ladder-row:hover { border-color: var(--hair2); background: var(--card); }
+
+.l-cls { display: flex; flex-direction: column; gap: 2px; }
+.l-badge { font: 700 12.5px 'JetBrains Mono', monospace; color: var(--fg); }
+.l-name { font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.l-bar-wrap {
+  position: relative;
+  height: 14px;
+  background: var(--deep);
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid var(--hair);
+}
+.l-budget-mark {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--r-ink);
+  z-index: 2;
+  opacity: 0.8;
+}
+.l-bar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.25s ease, background-color 0.25s ease;
+  min-width: 3px;
+}
+.l-bar.good { background: var(--g-ink); }
+.l-bar.bad { background: var(--r-ink); }
+
+.l-ops { font: 500 12px 'JetBrains Mono', monospace; color: var(--fg); text-align: right; }
+.l-time { font: 600 12px 'JetBrains Mono', monospace; color: var(--mut); text-align: right; }
+.l-badge-status {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font: 600 10.5px 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.l-badge-status.pass { background: color-mix(in srgb, var(--g-1) 50%, var(--card)); color: var(--g-ink); border: 1px solid var(--g-ink); }
+.l-badge-status.fail { background: color-mix(in srgb, var(--r-1) 50%, var(--card)); color: var(--r-ink); border: 1px solid var(--r-ink); }
+
+.ladder-note {
+  font-size: 13.5px;
+  color: var(--mut);
+  line-height: 1.5;
+  background: var(--well);
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.ladder-note b { color: var(--fg); }
+.ladder-note em { color: var(--mut); font-style: italic; }
+
+/* Halving Stepper Widget */
+.halve-stage { display: flex; flex-direction: column; gap: 14px; margin: 12px 0; }
+.halve-ctrls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.halve-actions { display: flex; align-items: center; gap: 8px; }
+
+.halve-dash {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+.h-card {
+  padding: 10px 12px;
+  border: 1px solid var(--hair2);
+  border-radius: 8px;
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.h-k { font: 700 11px 'Space Mono', monospace; color: var(--mut); text-transform: uppercase; letter-spacing: 0.04em; }
+.h-v { font: 700 20px 'JetBrains Mono', monospace; color: var(--fg); }
+.h-v.good { color: var(--g-ink); }
+.h-v.accent { color: var(--mk); }
+.h-sub { font-size: 11px; color: var(--mut); }
+
+.halve-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+}
+.h-bar-label { display: flex; justify-content: space-between; font: 500 11px 'JetBrains Mono', monospace; color: var(--mut); }
+.h-bar-track { height: 16px; background: var(--deep); border-radius: 8px; overflow: hidden; border: 1px solid var(--hair); }
+.h-bar-fill { height: 100%; background: var(--fam); border-radius: 7px; transition: width 0.3s ease; }
+
+.halve-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  background: var(--well);
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  font: 600 12.5px 'JetBrains Mono', monospace;
+  color: var(--fg);
+}
+.chain-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: var(--card);
+  border: 1px solid var(--hair2);
+  color: var(--fg);
+}
+.chain-step.current { border-color: var(--fam); background: var(--well); color: var(--fg); font-weight: 700; box-shadow: 0 0 0 1px var(--fam); }
+.chain-step.terminal { border-color: var(--g-ink); color: var(--g-ink); }
+.chain-arrow { color: var(--mut); font-weight: 400; }
+
+/* Constraints Widget */
+.cons-stage { display: flex; flex-direction: column; gap: 14px; margin: 12px 0; }
+.cons-detail {
+  padding: 14px;
+  border: 1px solid var(--hair2);
+  border-radius: 10px;
+  background: var(--card);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.cons-panel { display: flex; flex-direction: column; gap: 6px; }
+.cons-h { font: 700 11px 'Space Mono', monospace; color: var(--mut); text-transform: uppercase; letter-spacing: 0.04em; }
+.cons-target { font: 700 16px 'Space Mono', monospace; color: var(--g-ink); }
+.cons-machinery { font-size: 13px; color: var(--fg); line-height: 1.45; }
+.cons-break { font-size: 12.5px; color: var(--r-ink); line-height: 1.45; }
+
+.cons-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--hair2);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 13px;
+  background: var(--card);
+}
+.cons-table th, .cons-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--hair);
+}
+.cons-table th {
+  background: var(--well);
+  font: 700 11px 'JetBrains Mono', monospace;
+  color: var(--mut);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.cons-table tr:last-child td { border-bottom: none; }
+.cons-table tr.active-row td { background: color-mix(in srgb, var(--fam) 12%, var(--card)); }
+.cons-table code { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+@media (max-width: 760px) {
+  .ladder-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .l-bar-wrap { grid-column: 1 / -1; }
+  .l-ops { text-align: left; }
+  .l-time { text-align: right; }
+  .l-badge-status { grid-column: 1 / -1; justify-self: start; }
+  .cons-detail { grid-template-columns: 1fr; }
+}
+
+.ladder-fail { color: var(--r-ink); }

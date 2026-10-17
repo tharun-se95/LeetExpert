@@ -47,13 +47,20 @@ describe("lesson artifacts: lesson.md", () => {
 
   it("every lesson is written as lesson.md, with no body.html left", () => {
     expect(lessons.sort()).toEqual([
+      "amortized-analysis-dynamic-arrays",
+      "analyzing-loops-api-complexity",
+      "analyzing-recursion-tree-method",
+      "big-o-notation",
       "build-a-linked-list",
       "coin-change",
+      "common-complexity-classes",
+      "complexity-drills",
       "course-introduction",
       "course-roadmap",
       "course-schedule",
       "diameter-of-binary-tree",
       "how-lessons-work",
+      "input-dependency-best-worst-average",
       "linked-list-cycle",
       "longest-substring-without-repeating",
       "merge-two-sorted",
@@ -62,6 +69,8 @@ describe("lesson artifacts: lesson.md", () => {
       "pointer-surgery",
       "remove-nth-from-end",
       "reverse-linked-list",
+      "space-complexity",
+      "why-efficiency-matters",
       "writing-and-running-code",
     ]);
     for (const l of lessons) expect(existsSync(join(ARTIFACTS, l, "body.html")), `${l}/body.html`).toBe(false);
@@ -208,7 +217,15 @@ Text.
       ["a vignette class the kit does not paint", '```vig "x"\n<rect class="hot"/>\n```', /not a vignette class/],
       ["text drawn inside a vignette", '```vig "x"\n<text>hi</text>\n```', /not a drawing element/],
       ["loose words in a vignette", '```vig "x"\nhello <rect class="fa"/>\n```', /outside drawing elements/],
+      ["inline TeX, which nothing renders", "The loop runs $n^2$ times.", /TeX math "\$n\^2\$"/],
+      ["display TeX", "$$f(n) = 3n + 1$$", /TeX math/],
+      ["a TeX command without dollars", "It costs \\frac{n}{2} steps.", /TeX math/],
+      ["a > formula of more than one line", "> a\n>\n> b", /one line of inline markdown/],
     ];
+    it("prices are not TeX, and a > line renders as a formula", () => {
+      const r = page("## S {#s}\n\nCards read $5, $40 and $73; a single $50 card when target is $100.\n\n> f(n) = 3n² + 10n + 50\n");
+      expect(r.html).toContain('<p class="formula">f(n) = 3n² + 10n + 50</p>');
+    });
     it("a computed fact inside a reveal is left for the page to fill", () => {
       expect(() => page('## S {#s}\n\n```reveal #r "Show"\nIt returns {{answer}}.\n```\n')).not.toThrow();
     });
