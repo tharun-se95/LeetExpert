@@ -38,13 +38,22 @@ export function LandingOutro({ firstLessonHref }: { firstLessonHref: string }) {
           <MarkedHeading text={PRICING.title} mark={{ word: "free.", style: "underline" }} split={false} />
           <div className="mt-5 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
             <p className="landing-pop max-w-2xl text-xl leading-relaxed text-muted">{PRICING.body}</p>
-            <Link
-              href={firstLessonHref}
-              className="inline-flex items-center gap-2 rounded-full bg-pop px-5 py-2.5 text-base font-medium text-on-pop shadow-elevation transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
-            >
-              {PRICING.cta}
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-5 py-2.5 text-base font-medium text-foreground shadow-elevation transition-[border-color,background-color,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent hover:bg-elevated hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
+              >
+                View Plans & Pricing
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+              <Link
+                href={firstLessonHref}
+                className="inline-flex items-center gap-2 rounded-full bg-pop px-5 py-2.5 text-base font-medium text-on-pop shadow-elevation transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
+              >
+                {PRICING.cta}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            </div>
           </div>
         </div>
         <div data-lit={lit || undefined} className="mt-14 border-t border-border pt-10">

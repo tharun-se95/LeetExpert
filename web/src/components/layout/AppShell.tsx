@@ -76,6 +76,11 @@ export function isSignInPath(pathname: string): boolean {
   return pathname === "/sign-in" || pathname.startsWith("/sign-in/");
 }
 
+/** The pricing page: marketing tier comparison and checkout — no course drawer. */
+export function isPricingPath(pathname: string): boolean {
+  return pathname === "/pricing" || pathname.startsWith("/pricing/");
+}
+
 /**
  * The current lesson's pattern family, derived from the route.
  *
@@ -140,7 +145,7 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
   // and progress chrome would render around content that isn't there.
   const landing = isLandingPath(pathname);
   const showCourseNav =
-    !landing && !isSignInPath(pathname) && (!isNextjs || NEXTJS_COURSE.status === "available");
+    !landing && !isSignInPath(pathname) && !isPricingPath(pathname) && (!isNextjs || NEXTJS_COURSE.status === "available");
   const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 
   // Esc is a second, keyboard-only way to close the drawer (WCAG 1.4.13),
@@ -277,7 +282,7 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
         <VisitTracker />
         <AccountRuntime />
         {/* Once per visit, never on the landing page or /sign-in itself. */}
-        <SignInPromptGate allowed={!landing && !isSignInPath(pathname)} />
+        <SignInPromptGate allowed={!landing && !isSignInPath(pathname) && !isPricingPath(pathname)} />
         <ScrollbarAutoHide />
         <SidebarProvider open={sidebarOpen} toggle={toggleSidebar}>
           <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />

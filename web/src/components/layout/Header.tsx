@@ -59,12 +59,14 @@ export function Header({
   const cheatsheetsActive = pathname.startsWith("/courses/dsa/cheatsheets");
   const roadmapActive = pathname.startsWith("/courses/dsa/roadmap");
   const practiceActive = pathname.startsWith("/courses/dsa/problems");
+  const pricingActive = pathname === "/pricing" || pathname.startsWith("/pricing/");
   const lessonsActive =
     pathname === "/courses/dsa" ||
     (pathname.startsWith("/courses/dsa/") &&
       !practiceActive &&
       !cheatsheetsActive &&
-      !roadmapActive);
+      !roadmapActive &&
+      !pricingActive);
   const nextjsCurriculumActive = pathname.startsWith("/courses/nextjs");
 
   // The landing header's nav: full ink, no pill. The current mode carries a
@@ -195,6 +197,13 @@ export function Header({
               aria-current={roadmapActive ? "page" : undefined}
             >
               Roadmap
+            </Link>
+            <Link
+              href="/pricing"
+              className={cn(modeLinkClass(pricingActive), "hidden sm:inline-flex")}
+              aria-current={pricingActive ? "page" : undefined}
+            >
+              Pricing
             </Link>
           </>
         )}

@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react";
+import { CompanyLogoStrip } from "@/components/landing/CompanyLogoStrip";
 import { FeatureSection } from "@/components/landing/FeatureSection";
 import { featureWindows, type FeatureWindowData } from "@/components/landing/FeatureWindows";
 import { HeroFloor } from "@/components/landing/HeroFloor";
@@ -92,6 +93,7 @@ export function LandingStory({
       */}
       <div className="landing-sheet relative z-20 -mx-6 rounded-t-[length:var(--radius-xl)] bg-background px-6 shadow-edge-top md:-mx-16 md:px-16">
         <div aria-hidden className="landing-cover-sentinel pointer-events-none absolute inset-x-0 top-0 h-[var(--landing-hero-h)]" />
+        <CompanyLogoStrip />
         {sections.map((section) => (
           <FeatureSection key={section.id} section={section} windows={windows} />
         ))}

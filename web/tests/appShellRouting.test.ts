@@ -3,6 +3,7 @@ import {
   isIdePath,
   isLandingPath,
   isSignInPath,
+  isPricingPath,
   activeThemeFor,
   isConceptMapPath,
 } from "../src/components/layout/AppShell";
@@ -51,6 +52,18 @@ describe("isSignInPath (owner, 2026-09-24: no lessons drawer on /sign-in)", () =
     const { readFileSync } = await import("node:fs");
     const shell = readFileSync(new URL("../src/components/layout/AppShell.tsx", import.meta.url), "utf8");
     expect(shell).toMatch(/const showCourseNav =\s*!landing && !isSignInPath\(pathname\)/);
+  });
+});
+
+describe("isPricingPath", () => {
+  it("matches the pricing page, with or without trailing slash or segment", () => {
+    expect(isPricingPath("/pricing")).toBe(true);
+    expect(isPricingPath("/pricing/")).toBe(true);
+  });
+
+  it("does not match unrelated pages", () => {
+    expect(isPricingPath("/")).toBe(false);
+    expect(isPricingPath("/courses/dsa")).toBe(false);
   });
 });
 
