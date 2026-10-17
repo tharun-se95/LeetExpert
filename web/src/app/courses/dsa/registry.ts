@@ -6,7 +6,7 @@ export const DSA_COURSE: CourseRegistryEntry = {
   title: "Data Structures & Algorithms",
   tagline:
     "Learn data structures and algorithms from first principles — interactive lessons, live sandboxes, and solve-first problems.",
-  accent: "#1E293B",
+  accent: "#1D4ED8",
   status: "available",
   href: "/courses/dsa",
   navLabel: "DSA",

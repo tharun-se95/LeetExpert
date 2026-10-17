@@ -85,7 +85,7 @@ export const metadata: Metadata = {
 // out of Metadata in App Router) — tints Android's installed-PWA status bar
 // and task-switcher card with the brand's steel ink.
 export const viewport: Viewport = {
-  themeColor: "#1e293b",
+  themeColor: "#1d4ed8",
 };
 
 export default function RootLayout({

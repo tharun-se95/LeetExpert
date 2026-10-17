@@ -353,13 +353,30 @@ export default function CourseOverviewPage() {
                       href={moduleHref(module.slug)}
                       style={family ? familyCssVars(family) : undefined}
                       className={cn(
-                        "module-card group block overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition hover:border-accent/45",
+                        "module-card group block overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5 hover:border-accent/60 hover:shadow-elevation focus-visible:-translate-y-1.5 motion-reduce:hover:transform-none motion-reduce:transition-none",
                         !available && "opacity-70",
                       )}
                     >
                       <div className="module-card-inner h-full">
                         {/* Front Face */}
-                        <div className="module-card-face module-card-front">
+                        <div className="module-card-face module-card-front relative bg-elevated bg-gradient-to-r from-[color:var(--family-accent)]/10 via-[color:var(--family-accent)]/[0.02] to-transparent">
+                          {/* Physical left spine strip with binder stitching/rivets */}
+                          <div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-y-0 left-0 z-20 flex w-3.5 flex-col items-center justify-between border-r border-border/60 bg-gradient-to-r from-[color:var(--family-accent)]/15 via-foreground/[0.02] to-transparent py-3"
+                          >
+                            <div className="absolute inset-y-0 right-0.5 w-px border-r border-dashed border-border/70" />
+                            <span className="relative flex h-1.5 w-1.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
+                              <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
+                            </span>
+                            <span className="relative flex h-1.5 w-1.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
+                              <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
+                            </span>
+                            <span className="relative flex h-1.5 w-1.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
+                              <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
+                            </span>
+                          </div>
+
                           <div
                             className={cn(
                               "relative border-b border-border bg-accent/[0.08]",
@@ -389,27 +406,27 @@ export default function CourseOverviewPage() {
                               </div>
                             )}
                             {available && familyLabel ? (
-                              <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-elevated/95 px-2.5 py-0.5">
+                              <span className="absolute top-2.5 right-2.5 z-20 inline-flex items-center gap-1.5 rounded-[length:var(--radius-xs)] border border-accent/40 bg-elevated/95 px-2.5 py-0.5 shadow-elevation backdrop-blur-sm">
                                 <span
-                                  className="h-1.5 w-1.5 rounded-full bg-accent"
+                                  className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"
                                   aria-hidden
                                 />
-                                <span className="font-mono text-[10px] font-medium tracking-wide text-foreground">
+                                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-foreground">
                                   {familyLabel}
                                 </span>
                               </span>
                             ) : null}
                             {!available ? (
-                              <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted">
+                              <span className="absolute top-2.5 right-2.5 z-20 inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted shadow-elevation backdrop-blur-sm">
                                 <Lock weight="bold" className="h-3 w-3" />
                                 Soon
                               </span>
                             ) : null}
                           </div>
-                          <div className="flex flex-1 flex-col p-4">
+                          <div className="flex flex-1 flex-col py-4 pr-4 pl-6">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs tabular-nums text-muted font-mono font-medium">
-                                {String(module.number).padStart(2, "0")}
+                              <span className="inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border/80 bg-surface/80 px-2 py-0.5 text-xs tabular-nums text-mark font-mono font-bold shadow-elevation">
+                                #{String(module.number).padStart(2, "0")}
                               </span>
                               {available ? (
                                 <span className="ml-auto inline-flex items-center rounded-[length:var(--radius-xs)] border border-border/80 bg-surface/70 px-2 py-0.5 font-mono text-[10px] font-medium tracking-wide text-foreground">
@@ -424,11 +441,21 @@ export default function CourseOverviewPage() {
                         </div>
 
                         {/* Back Face */}
-                        <div className="module-card-face module-card-back bg-elevated">
-                          <div className="flex flex-1 flex-col p-4">
+                        <div className="module-card-face module-card-back relative bg-elevated bg-gradient-to-r from-[color:var(--family-accent)]/10 via-[color:var(--family-accent)]/[0.02] to-transparent">
+                          {/* Physical left spine strip with binder stitching/rivets */}
+                          <div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-y-0 left-0 z-20 flex w-3.5 flex-col items-center justify-between border-r border-border/60 bg-gradient-to-r from-[color:var(--family-accent)]/15 via-foreground/[0.02] to-transparent py-3"
+                          >
+                            <span className="h-1 w-1 rounded-full bg-border/80" />
+                            <span className="h-1 w-1 rounded-full bg-border/80" />
+                            <span className="h-1 w-1 rounded-full bg-border/80" />
+                          </div>
+
+                          <div className="flex flex-1 flex-col py-4 pr-4 pl-6">
                             <div className="module-card-back-head" aria-hidden>
-                              <span className="text-xs tabular-nums text-muted font-mono">
-                                {String(module.number).padStart(2, "0")}
+                              <span className="inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border/80 bg-surface/80 px-2 py-0.5 text-xs tabular-nums text-muted font-mono font-bold">
+                                #{String(module.number).padStart(2, "0")}
                               </span>
                               <p className="mt-1.5 text-sm font-bold text-mark">
                                 {module.title}
