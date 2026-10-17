@@ -212,7 +212,7 @@ export function ProblemWorkspace({
           <button
             type="button"
             onClick={() => setShareOpen(true)}
-            className="inline-flex min-h-8 items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-elevated px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-pop/40 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="inline-flex min-h-8 items-center gap-1.5 rounded-[length:var(--radius-xs)] border border-border/70 bg-surface/40 px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-accent/50 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
             aria-label="Share Challenge"
             title="Challenge a peer on this problem"
           >

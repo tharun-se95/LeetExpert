@@ -56,11 +56,15 @@ export function Header({
   const course = routeCourse?.status === "available" ? routeCourse : DSA_COURSE;
   const courseLabel = course.navLabel ?? course.title;
 
+  const cheatsheetsActive = pathname.startsWith("/courses/dsa/cheatsheets");
+  const roadmapActive = pathname.startsWith("/courses/dsa/roadmap");
+  const practiceActive = pathname.startsWith("/courses/dsa/problems");
   const lessonsActive =
     pathname === "/courses/dsa" ||
     (pathname.startsWith("/courses/dsa/") &&
-      !pathname.startsWith("/courses/dsa/problems"));
-  const practiceActive = pathname.startsWith("/courses/dsa/problems");
+      !practiceActive &&
+      !cheatsheetsActive &&
+      !roadmapActive);
   const nextjsCurriculumActive = pathname.startsWith("/courses/nextjs");
 
   // The landing header's nav: full ink, no pill. The current mode carries a
@@ -68,7 +72,7 @@ export function Header({
   const modeLinkClass = (active: boolean) => cn(NAV_LINK, active && NAV_LINK_ACTIVE);
 
   return (
-    <header className="print:hidden absolute inset-x-0 top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-background/90 backdrop-blur-md shadow-edge-bottom px-3 sm:gap-3 sm:px-4 lg:flex lg:justify-between">
+    <header className="print:hidden absolute inset-x-0 top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-background/90 backdrop-blur-md shadow-edge-bottom px-3 sm:gap-3 sm:px-4 lg:px-6">
       <div className="flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
         {showLessonsMenu ? (
           <>
@@ -151,7 +155,7 @@ export function Header({
       </div>
 
       <nav
-        className="max-lg:flex lg:hidden shrink-0 items-center gap-5 justify-self-center sm:gap-8"
+        className="flex shrink-0 items-center gap-4 sm:gap-6 lg:gap-7 justify-self-center"
         aria-label="Product modes"
       >
         {courseSlug === "nextjs" && routeCourse?.status === "available" ? (
@@ -177,6 +181,20 @@ export function Header({
               aria-current={practiceActive ? "page" : undefined}
             >
               Practice
+            </Link>
+            <Link
+              href="/courses/dsa/cheatsheets"
+              className={cn(modeLinkClass(cheatsheetsActive), "hidden md:inline-flex")}
+              aria-current={cheatsheetsActive ? "page" : undefined}
+            >
+              Cheatsheets
+            </Link>
+            <Link
+              href="/courses/dsa/roadmap"
+              className={cn(modeLinkClass(roadmapActive), "hidden md:inline-flex")}
+              aria-current={roadmapActive ? "page" : undefined}
+            >
+              Roadmap
             </Link>
           </>
         )}

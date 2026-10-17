@@ -241,6 +241,7 @@
   ------------------------------------------------------------- */
   --shadow-tint: 22 32 46; /* --press-ink as an r g b triplet */
   --shadow-elevation:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.75),
     0 1px 2px rgb(var(--shadow-tint) / 0.04),
     0 8px 20px -4px rgb(var(--shadow-tint) / 0.1);
   --shadow-edge-bottom: 0 4px 16px rgb(var(--shadow-tint) / 0.08);
@@ -428,6 +429,7 @@
      against an already-dark surface. */
   --shadow-tint: 0 0 0;
   --shadow-elevation:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.07),
     0 1px 2px rgb(var(--shadow-tint) / 0.3),
     0 8px 24px -4px rgb(var(--shadow-tint) / 0.45);
   --shadow-edge-bottom: 0 4px 20px rgb(var(--shadow-tint) / 0.35);

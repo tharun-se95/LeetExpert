@@ -52,7 +52,7 @@ export function BlurReveal({
         "group/reveal relative my-5 overflow-hidden rounded-[length:var(--radius-lg)] border transition-all duration-300",
         revealed
           ? "border-border/70 bg-surface/15"
-          : "border-border/90 bg-surface/35 shadow-elevation",
+          : "border-border/90 bg-surface/35",
         className,
       )}
     >

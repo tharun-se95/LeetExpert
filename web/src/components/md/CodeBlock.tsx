@@ -21,7 +21,7 @@ export function CopyButton({ code }: { code: string }) {
     <button
       type="button"
       onClick={copyCode}
-      className="rounded-[length:var(--radius-md)] p-1 text-muted opacity-0 transition group-hover:opacity-100 hover:text-foreground"
+      className="rounded-[length:var(--radius-xs)] p-1.5 text-muted opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent hover:text-foreground cursor-pointer"
       aria-label="Copy code"
     >
       {copied ? (

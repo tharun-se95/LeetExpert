@@ -204,7 +204,7 @@ export function ShareProblemModal({
           </button>
 
           {/* Modal header */}
-          <div className="flex items-center gap-2 text-xs font-mono font-medium text-accent uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-xs font-mono font-medium text-mark uppercase tracking-wider">
             <ShareNetwork size={15} weight="bold" aria-hidden />
             <span>Peer Challenge</span>
           </div>
@@ -367,7 +367,7 @@ export function ShareProblemModal({
         <div
           role="status"
           aria-live="polite"
-          className="fixed bottom-6 right-6 z-[70] flex items-center gap-2.5 rounded-[length:var(--radius-md)] border border-border bg-elevated px-4 py-2.5 shadow-elevation text-xs font-sans font-medium text-foreground animate-in fade-in slide-in-from-bottom-2 duration-150"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-[length:var(--radius-md)] border border-border bg-elevated px-4 py-2.5 shadow-elevation text-xs font-sans font-medium text-foreground animate-in fade-in slide-in-from-bottom-2 duration-150 motion-reduce:animate-none"
         >
           <Check size={16} weight="bold" className="text-good shrink-0" aria-hidden />
           <span>{toastMessage}</span>

@@ -200,53 +200,60 @@ export function ProblemAccordion({
                   {item.id === "description" ? (
                     <>
                       {difficulty || complexity || moduleTitle ? (
-                        <div className="mb-6 rounded-[length:var(--radius-md)] border border-border/60 bg-surface/25 px-4 py-3">
-                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                            {difficulty ? (
-                              <span
-                                className={cn(
-                                  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold font-mono",
-                                  difficulty === "Easy"
-                                    ? "bg-good/15 text-good"
-                                    : difficulty === "Medium"
-                                      ? "bg-warn/15 text-warn"
-                                      : "bg-bad/15 text-bad",
-                                )}
-                              >
-                                <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />
-                                {difficulty}
-                              </span>
-                            ) : null}
+                        <div className="mb-6 flex flex-wrap items-center gap-x-3.5 gap-y-2 border-b border-border/40 pb-3.5 text-xs">
+                          {difficulty ? (
+                            <span
+                              className={cn(
+                                "inline-flex items-center gap-1.5 font-mono font-bold text-xs",
+                                difficulty === "Easy"
+                                  ? "text-good"
+                                  : difficulty === "Medium"
+                                    ? "text-warn"
+                                    : "text-bad",
+                              )}
+                            >
+                              <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />
+                              {difficulty}
+                            </span>
+                          ) : null}
 
-                            {moduleTitle ? (
-                              <span className="inline-flex items-center text-xs font-mono text-muted">
+                          {moduleTitle ? (
+                            <>
+                              <span className="text-border select-none" aria-hidden>/</span>
+                              <span className="font-mono text-muted text-xs">
                                 {moduleTitle}
                               </span>
-                            ) : null}
+                            </>
+                          ) : null}
 
-                            {complexity?.time ? (
-                              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-foreground/85">
+                          {complexity?.time ? (
+                            <>
+                              <span className="text-border select-none" aria-hidden>•</span>
+                              <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/85">
                                 <Clock size={13} className="text-accent" aria-hidden />
                                 <span className="text-muted">Target:</span>
-                                <span className="font-semibold">{complexity.time}</span>
+                                <span className="font-bold">{complexity.time}</span>
                               </span>
-                            ) : null}
+                            </>
+                          ) : null}
 
-                            {complexity?.space ? (
-                              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-foreground/85">
+                          {complexity?.space ? (
+                            <>
+                              <span className="text-border select-none" aria-hidden>•</span>
+                              <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/85">
                                 <Cpu size={13} className="text-mark" aria-hidden />
                                 <span className="text-muted">Aux Space:</span>
-                                <span className="font-semibold">{complexity.space}</span>
+                                <span className="font-bold">{complexity.space}</span>
                               </span>
-                            ) : null}
+                            </>
+                          ) : null}
 
-                            {isSolved ? (
-                              <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-good/15 px-2.5 py-0.5 text-xs font-medium text-good">
-                                <Check size={12} weight="bold" aria-hidden />
-                                Solved
-                              </span>
-                            ) : null}
-                          </div>
+                          {isSolved ? (
+                            <span className="ml-auto inline-flex items-center gap-1.5 font-medium text-good text-xs">
+                              <Check size={12} weight="bold" aria-hidden />
+                              Solved
+                            </span>
+                          ) : null}
                         </div>
                       ) : null}
                       <Markdown
