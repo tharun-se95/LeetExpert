@@ -43,58 +43,88 @@ export function CatalogMetricsBar({
   const totalSolved = easySolved + medSolved + hardSolved;
   const pct = total > 0 ? Math.round((totalSolved / total) * 100) : 0;
 
+  const easyPct = total > 0 ? (easySolved / total) * 100 : 0;
+  const medPct = total > 0 ? (medSolved / total) * 100 : 0;
+  const hardPct = total > 0 ? (hardSolved / total) * 100 : 0;
+
   return (
-    <div className="flex flex-col gap-3 rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation p-3.5 sm:flex-row sm:items-center sm:justify-between">
-      {/* Overall Progress Stats */}
-      <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-        <div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-display text-2xl font-bold tracking-tight text-foreground tabular-nums">
-              {totalSolved}
-            </span>
-            <span className="text-xs text-muted">/ {total} solved</span>
-            <span className="ml-1 rounded-[length:var(--radius-xs)] bg-good/15 px-1.5 py-0.2 font-mono text-[10px] font-bold text-good">
-              {pct}%
-            </span>
-          </div>
-          <p className="text-[10px] uppercase tracking-wider text-muted font-medium">
-            Overall Completion
-          </p>
-        </div>
-
-        {/* Difficulty Breakdown badges */}
-        <div className="flex items-center gap-2 border-l border-border/80 pl-4 sm:pl-6">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-good" aria-hidden />
-              <span className="font-mono text-xs font-bold text-foreground">
-                {easySolved}/{easyTotal}
-              </span>
-            </div>
-            <span className="text-[10px] text-muted uppercase font-medium">Easy</span>
-          </div>
-
-          <div className="flex flex-col pl-2">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-warn" aria-hidden />
-              <span className="font-mono text-xs font-bold text-foreground">
-                {medSolved}/{medTotal}
-              </span>
-            </div>
-            <span className="text-[10px] text-muted uppercase font-medium">Med</span>
-          </div>
-
-          <div className="flex flex-col pl-2">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-bad" aria-hidden />
-              <span className="font-mono text-xs font-bold text-foreground">
-                {hardSolved}/{hardTotal}
-              </span>
-            </div>
-            <span className="text-[10px] text-muted uppercase font-medium">Hard</span>
-          </div>
-        </div>
+    <div className="flex flex-col gap-3.5 rounded-[length:var(--radius-lg)] border border-border/80 bg-elevated shadow-elevation p-3.5">
+      {/* Sleek Segmented Progress Track */}
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface border border-border/40 flex">
+        {easyPct > 0 ? (
+          <div
+            style={{ width: `${easyPct}%` }}
+            className="h-full bg-good transition-all duration-300"
+            title={`Easy Solved: ${easySolved}/${easyTotal}`}
+          />
+        ) : null}
+        {medPct > 0 ? (
+          <div
+            style={{ width: `${medPct}%` }}
+            className="h-full bg-warn transition-all duration-300"
+            title={`Medium Solved: ${medSolved}/${medTotal}`}
+          />
+        ) : null}
+        {hardPct > 0 ? (
+          <div
+            style={{ width: `${hardPct}%` }}
+            className="h-full bg-bad transition-all duration-300"
+            title={`Hard Solved: ${hardSolved}/${hardTotal}`}
+          />
+        ) : null}
       </div>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* Overall Progress Stats */}
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+          <div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-display text-2xl font-bold tracking-tight text-foreground tabular-nums">
+                {totalSolved}
+              </span>
+              <span className="text-xs text-muted">/ {total} solved</span>
+              <span className="ml-1 rounded-[length:var(--radius-xs)] bg-good-surface/60 border border-good-line/40 px-1.5 py-0.5 font-mono text-[10px] font-bold text-good">
+                {pct}%
+              </span>
+            </div>
+            <p className="text-[10px] uppercase tracking-wider text-muted font-medium">
+              Overall Completion
+            </p>
+          </div>
+
+          {/* Difficulty Breakdown semantic badge containers */}
+          <div className="flex flex-wrap items-center gap-2 border-l border-border/80 pl-4 sm:pl-6">
+            <div className="flex items-center gap-2 rounded-[length:var(--radius-sm)] border border-good-line/30 bg-good-surface/30 px-2.5 py-1">
+              <span className="h-2 w-2 rounded-full bg-good shrink-0" aria-hidden />
+              <div className="flex flex-col leading-tight">
+                <span className="text-[9px] font-bold text-good uppercase tracking-wider">Easy</span>
+                <span className="font-mono text-xs font-bold text-foreground">
+                  {easySolved}<span className="text-muted font-normal">/{easyTotal}</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-[length:var(--radius-sm)] border border-warn-line/30 bg-warn-surface/30 px-2.5 py-1">
+              <span className="h-2 w-2 rounded-full bg-warn shrink-0" aria-hidden />
+              <div className="flex flex-col leading-tight">
+                <span className="text-[9px] font-bold text-warn uppercase tracking-wider">Med</span>
+                <span className="font-mono text-xs font-bold text-foreground">
+                  {medSolved}<span className="text-muted font-normal">/{medTotal}</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-[length:var(--radius-sm)] border border-bad-line/30 bg-bad-surface/30 px-2.5 py-1">
+              <span className="h-2 w-2 rounded-full bg-bad shrink-0" aria-hidden />
+              <div className="flex flex-col leading-tight">
+                <span className="text-[9px] font-bold text-bad uppercase tracking-wider">Hard</span>
+                <span className="font-mono text-xs font-bold text-foreground">
+                  {hardSolved}<span className="text-muted font-normal">/{hardTotal}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
       {/* View Switcher: List vs Grid */}
       <div className="flex items-center justify-between sm:justify-end gap-2 border-t border-border/60 pt-2 sm:border-0 sm:pt-0">
@@ -133,5 +163,6 @@ export function CatalogMetricsBar({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

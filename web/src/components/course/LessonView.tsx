@@ -112,16 +112,16 @@ export function LessonView({
           {prev ? (
             <Link
               href={prev.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-sm transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
+              className="group flex max-w-[48%] sm:max-w-[45%] items-center gap-3.5 rounded-[length:var(--radius-md)] bg-elevated border border-border/80 shadow-elevation px-4 py-3.5 text-sm transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/40 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:bg-on-pop/25 motion-reduce:transition-none">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 bg-surface/60 text-muted transition-all duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:border-accent/50 group-hover:bg-accent/10 group-hover:text-accent arrow-badge-glow motion-reduce:transition-none">
                 <ArrowLeft weight="bold" className="h-4 w-4" />
               </span>
               <span className="min-w-0">
-                <span className="block text-xs text-on-pop/70">
+                <span className="block font-mono text-[10px] uppercase tracking-wider text-muted group-hover:text-accent transition-colors">
                   Previous{prev.module ? ` · ${prev.module}` : ""}
                 </span>
-                <span className="block truncate font-medium">{prev.title}</span>
+                <span className="block truncate font-medium text-foreground">{prev.title}</span>
               </span>
             </Link>
           ) : (
@@ -130,15 +130,15 @@ export function LessonView({
           {next ? (
             <Link
               href={next.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-right text-sm transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
+              className="group flex max-w-[48%] sm:max-w-[45%] items-center gap-3.5 rounded-[length:var(--radius-md)] bg-elevated border border-border/80 shadow-elevation px-4 py-3.5 text-right text-sm transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/40 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
             >
               <span className="min-w-0">
-                <span className="block text-xs text-on-pop/70">
+                <span className="block font-mono text-[10px] uppercase tracking-wider text-muted group-hover:text-accent transition-colors">
                   Next{next.module ? ` · ${next.module}` : ""}
                 </span>
-                <span className="block truncate font-medium">{next.title}</span>
+                <span className="block truncate font-medium text-foreground">{next.title}</span>
               </span>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:bg-on-pop/25 motion-reduce:transition-none">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 bg-surface/60 text-muted transition-all duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:border-accent/50 group-hover:bg-accent/10 group-hover:text-accent arrow-badge-glow motion-reduce:transition-none">
                 <ArrowRight weight="bold" className="h-4 w-4" />
               </span>
             </Link>

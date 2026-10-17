@@ -243,7 +243,7 @@ function AccountMenu({ user, sessionId }: { user: { id: string; name: string; em
     }
   };
 
-  const ITEM = "flex min-h-11 w-full items-center px-3 text-left text-sm text-foreground transition-colors hover:bg-surface disabled:opacity-60 md:min-h-9";
+  const ITEM = "flex min-h-11 w-full items-center px-3.5 py-1.5 text-left text-xs font-medium text-foreground/90 transition-all duration-[var(--dur-fast)] hover:bg-surface/80 hover:text-foreground hover:translate-x-0.5 disabled:opacity-60 disabled:hover:translate-x-0 md:min-h-9";
 
   return (
     <>
@@ -264,7 +264,7 @@ function AccountMenu({ user, sessionId }: { user: { id: string; name: string; em
         ) : (
           <span className="flex h-full w-full items-center justify-center rounded-full bg-surface">{initials(user.name)}</span>
         )}
-        {status.warn ? <span data-sync-warning aria-hidden className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background bg-warn" /> : null}
+        {status.warn ? <span data-sync-warning aria-hidden className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background bg-warn sync-dot-glow-warn" /> : null}
       </button>
       {open
         ? createPortal(
@@ -273,14 +273,27 @@ function AccountMenu({ user, sessionId }: { user: { id: string; name: string; em
               style={{ position: "fixed", top: 0, left: 0, visibility: "hidden" }}
               className="z-50 w-64 overflow-hidden rounded-[length:var(--radius-md)] border border-border bg-elevated py-1 font-sans shadow-elevation"
             >
-              <div className="border-b border-border px-3 pt-2 pb-2">
-                <p className="truncate text-sm font-medium">{user.name}</p>
-                <p className="truncate text-xs text-muted">{user.email}</p>
-                <p data-sync-status className={cn("mt-1 text-xs", status.warn ? "text-warn" : "text-muted")}>{status.text}</p>
-                <div className="mt-2 pt-1 border-t border-border/50">
-                  <Link href="/settings" onClick={close} className="text-xs font-medium text-accent hover:underline">
-                    Settings &amp; Preferences →
-                  </Link>
+              <div className="relative overflow-hidden border-b border-border/80 bg-gradient-to-br from-surface/80 via-surface/40 to-transparent px-3.5 pt-3 pb-2.5">
+                <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-accent/15 blur-xl" aria-hidden />
+                <div className="relative">
+                  <p className="truncate text-sm font-bold text-foreground">{user.name}</p>
+                  <p className="truncate text-xs text-muted">{user.email}</p>
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    <span
+                      className={cn(
+                        "h-2 w-2 rounded-full",
+                        status.warn ? "bg-warn sync-dot-glow-warn" : "bg-good sync-dot-glow-good",
+                      )}
+                      aria-hidden
+                    />
+                    <p data-sync-status className={cn("text-xs font-mono", status.warn ? "text-warn" : "text-muted")}>{status.text}</p>
+                  </div>
+                  <div className="mt-2.5 pt-1.5 border-t border-border/60">
+                    <Link href="/settings" onClick={close} className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:text-mark transition-colors">
+                      <span>Settings &amp; Preferences</span>
+                      <span aria-hidden>→</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
               {notice ? <p role="alert" className="border-b border-border px-3 py-2 text-xs text-warn">{notice.text}</p> : null}

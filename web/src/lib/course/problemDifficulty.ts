@@ -153,11 +153,11 @@ export function getProblemDifficulty(slug: string): Difficulty | undefined {
 export function difficultyBadgeClass(difficulty: Difficulty): string {
   switch (difficulty) {
     case "Easy":
-      return "border-good/40 bg-good/10 text-good";
+      return "border-good-line/60 bg-good-surface/40 text-good font-bold badge-glow-good";
     case "Medium":
-      return "border-warn/40 bg-warn/10 text-warn";
+      return "border-warn-line/60 bg-warn-surface/40 text-warn font-bold badge-glow-warn";
     case "Hard":
-      return "border-bad/40 bg-bad/10 text-bad";
+      return "border-bad-line/60 bg-bad-surface/40 text-bad font-bold badge-glow-bad";
   }
 }
 

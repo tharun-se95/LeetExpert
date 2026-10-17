@@ -70,10 +70,11 @@ function NavRow({
       className={cn(
         "group relative flex min-w-0 items-center gap-2 border-l-2 pr-2.5 pl-3 text-[13px] leading-snug transition-all duration-[var(--dur-fast)] ease-[var(--ease)]",
         rowPad(compact),
-        done ? "border-accent" : "border-border",
         active
-          ? "border-accent bg-pop/15 font-semibold text-foreground rounded-r-[length:var(--radius-xs)]"
-          : cn(tone, "hover:bg-surface/80 hover:text-foreground"),
+          ? "border-accent bg-accent/10 font-semibold text-foreground rounded-r-[length:var(--radius-xs)]"
+          : done
+            ? "border-good/50 text-foreground/85 hover:bg-surface/80 hover:text-foreground"
+            : cn("border-border/60", tone, "hover:bg-surface/80 hover:text-foreground"),
       )}
     >
       {active && (
@@ -124,7 +125,7 @@ function LessonRow({
             active
               ? "text-accent font-bold"
               : isDone
-                ? "text-mark font-medium"
+                ? "text-good font-medium"
                 : "text-muted/50 group-hover:text-muted",
           )}
         >
@@ -134,7 +135,7 @@ function LessonRow({
       trailing={
         isDone ? (
           <span
-            className="shrink-0 text-mark text-[11px] font-bold"
+            className="shrink-0 flex items-center justify-center w-4 h-4 rounded-full bg-good-surface text-good border border-good-line/30 text-[10px] font-bold"
             aria-label="Completed"
           >
             ✓
@@ -244,7 +245,7 @@ function ModuleHeader({
             isCurrentModule
               ? "bg-accent/20 text-accent font-semibold"
               : isComplete
-                ? "bg-mark/15 text-mark font-medium"
+                ? "bg-good-surface text-good border border-good-line/30 font-medium"
                 : "text-muted bg-surface/60 group-hover:text-muted-foreground",
           )}
         >
@@ -357,14 +358,20 @@ export function CourseNavPanel({
         {overviewLabel}
       </Link>
 
-      {displayedStages.map((stage) => (
+      {displayedStages.map((stage, idx) => (
         <div
           key={stage.number}
           className={cn(compact ? "mt-5 first:mt-3" : "mt-6 first:mt-4")}
         >
-          <p className="mb-1 px-2 text-[17px] leading-tight font-bold tracking-tight text-foreground font-display">
-            {stage.title}
-          </p>
+          {idx > 0 && <div className="mb-3.5 border-t border-border/80" />}
+          <div className="mb-1.5 px-2">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-accent font-bold">
+              Stage {String(stage.number).padStart(2, "0")}
+            </span>
+            <p className="mt-0.5 text-[15px] leading-tight font-bold tracking-tight text-foreground font-display">
+              {stage.title}
+            </p>
+          </div>
           <div className="space-y-1">
             {stage.modules.map((m) => {
               const isExpanded = expandedModules[m.slug] ?? false;

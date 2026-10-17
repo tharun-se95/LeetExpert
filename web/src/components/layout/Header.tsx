@@ -220,26 +220,36 @@ export function Header({
           type="button"
           onClick={onOpenSearch}
           aria-label="Search lessons and problems"
-          className={cn(ROUND_CONTROL, "h-11 w-11 md:h-10 md:w-auto md:gap-2 md:px-3.5 md:text-sm")}
+          className={cn(
+            ROUND_CONTROL,
+            "h-11 w-11 md:h-9 md:w-auto md:gap-2.5 md:rounded-full md:border-border/80 md:bg-surface/50 md:px-3 md:text-sm md:hover:border-accent/40 md:hover:bg-surface cursor-pointer",
+          )}
         >
           <MagnifyingGlass className="h-4 w-4" aria-hidden />
-          <span className="hidden md:inline">Search</span>
-          <kbd className="hidden font-mono text-[11px] md:inline">⌘K</kbd>
+          <span className="hidden text-muted md:inline">Search</span>
+          <kbd className="hidden font-mono text-[10px] md:inline-flex items-center justify-center px-1.5 py-0.5 rounded-[length:var(--radius-xs)] bg-elevated border border-border shadow-elevation text-muted">
+            ⌘K
+          </kbd>
         </button>
 
         <div className="hidden items-center gap-2 md:flex">
           {showProgress ? (
             <div
-              className="flex h-10 items-center gap-2 rounded-full border border-border px-3 text-[11px] text-muted"
+              className="flex h-9 items-center gap-2.5 rounded-full border border-border/80 bg-surface/50 px-3 text-[11px] text-muted shadow-elevation"
               title={`${visitedCount} of ${totalCount} lessons completed`}
             >
               <span className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-surface lg:block">
                 <span
-                  className="block h-full rounded-full bg-accent transition-all duration-500"
+                  className={cn(
+                    "block h-full rounded-full transition-all duration-500",
+                    pct >= 100
+                      ? "bg-good progress-glow-good"
+                      : "bg-accent progress-glow-accent",
+                  )}
                   style={{ width: `${pct}%` }}
                 />
               </span>
-              <span className="tabular-nums">
+              <span className="font-mono text-[11px] tabular-nums text-foreground">
                 {visitedCount}/{totalCount}
               </span>
             </div>

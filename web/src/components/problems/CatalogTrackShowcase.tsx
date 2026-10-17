@@ -108,13 +108,24 @@ export function CatalogTrackShowcase({
               style={familyCssVars(track.familyId)}
               onClick={() => onListChange(isActive ? "all" : track.id)}
               className={cn(
-                "group relative flex items-center gap-3 overflow-hidden rounded-[length:var(--radius-md)] border p-2 text-left transition-[background-color,border-color,transform,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation motion-reduce:transition-none touch-manipulation cursor-pointer",
+                "group relative flex items-center gap-3 overflow-hidden rounded-[length:var(--radius-md)] border p-2 text-left transition-all duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation motion-reduce:transition-none touch-manipulation cursor-pointer hover:-translate-y-0.5",
                 isActive
                   ? "border-accent bg-accent/[0.12] ring-1 ring-accent"
-                  : "border-border bg-elevated hover:border-accent/60",
+                  : "border-border/80 bg-elevated hover:border-accent/60",
               )}
             >
-              {/* Compact Thumbnail */}
+              {/* Family-themed atmospheric radial back-glow */}
+              <div
+                aria-hidden
+                className={cn(
+                  "pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 rounded-full transition-opacity duration-300",
+                  isActive
+                    ? "bg-[radial-gradient(circle,_color-mix(in_srgb,var(--accent)_28%,transparent),_transparent_70%)] opacity-100"
+                    : "bg-[radial-gradient(circle,_color-mix(in_srgb,var(--accent)_18%,transparent),_transparent_70%)] opacity-35 group-hover:opacity-90",
+                )}
+              />
+
+              {/* Compact Thumbnail with specular inner rim */}
               <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[length:var(--radius-xs)] bg-surface border border-border/60">
                 <Image
                   src={track.image}
@@ -124,10 +135,12 @@ export function CatalogTrackShowcase({
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-surface/80 via-transparent to-transparent pointer-events-none" aria-hidden />
+                {/* 1px specular inner rim */}
+                <div className="pointer-events-none absolute inset-0 rounded-[length:var(--radius-xs)] ring-1 ring-inset ring-elevated/40" aria-hidden />
               </div>
 
               {/* Title and stats */}
-              <div className="min-w-0 flex-1">
+              <div className="relative min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <Icon size={13} weight="bold" className="text-accent shrink-0" aria-hidden />
                   <p className="truncate text-xs font-bold text-foreground group-hover:text-mark transition-colors">

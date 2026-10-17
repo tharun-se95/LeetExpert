@@ -185,7 +185,7 @@ export function ProblemWorkspace({
           read as one sheet. A solid band here read as a second surface under
           the header. The IDE below stays solid.
         */}
-        <header className="flex shrink-0 items-center gap-2 border-b border-border px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2">
+        <header className="relative z-10 flex shrink-0 items-center gap-2 border-b border-border/80 bg-background/95 backdrop-blur-md shadow-edge-bottom px-2 py-1.5 sm:gap-3 sm:px-4 sm:py-2">
           <Link
             href={backHref}
             className="inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-[length:var(--radius-md)] px-2 text-xs text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:bg-surface hover:text-foreground motion-reduce:transition-none"
@@ -215,7 +215,7 @@ export function ProblemWorkspace({
             )}
           </div>
           {isSolved ? (
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-[length:var(--radius-md)] bg-good/15 px-2 py-0.5 text-[0.7rem] font-medium text-good">
+            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-good-line/60 bg-good-surface/40 px-2.5 py-0.5 text-[0.7rem] font-bold text-good badge-glow-good">
               <Check size={11} strokeWidth={3} aria-hidden />
               Solved
             </span>
@@ -223,7 +223,7 @@ export function ProblemWorkspace({
           <button
             type="button"
             onClick={() => setShareOpen(true)}
-            className="inline-flex min-h-8 items-center gap-1.5 rounded-[length:var(--radius-xs)] border border-border/70 bg-surface/40 px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-accent/50 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
+            className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-border/80 bg-surface/80 shadow-elevation px-3 py-1 text-xs font-medium text-foreground transition-all duration-[var(--dur-fast)] hover:border-accent/50 hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
             aria-label="Share Challenge"
             title="Challenge a peer on this problem"
           >
@@ -642,7 +642,7 @@ function TabList({
                 "relative h-full min-w-11 touch-manipulation px-3.5 text-[0.75rem] font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent",
                 "after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:rounded-full after:transition-colors after:duration-[var(--dur-fast)] after:content-['']",
                 selected
-                  ? "text-foreground after:bg-pop"
+                  ? "text-foreground bg-accent/[0.08] rounded-t-[length:var(--radius-sm)] after:bg-mark tab-indicator-glow"
                   : "text-muted after:bg-transparent hover:text-foreground hover:after:bg-border",
               )}
             >
