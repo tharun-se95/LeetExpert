@@ -1,0 +1,198 @@
+/* hero: mail bin scan */
+.hd-lab { font: 500 11px 'JetBrains Mono', monospace; fill: var(--mut); }
+.hs-prob { fill: var(--card); stroke: var(--hair2); stroke-width: 1.4; }
+.hs-pt { font: 600 13px 'JetBrains Mono', monospace; fill: var(--fg); }
+.hs-cell { stroke-width: 1.6; transition: opacity .4s ease; }
+.hs-cell.ok { fill: var(--card); stroke: var(--fam); stroke-width: 2; }
+.hs-cell.no { fill: var(--card); stroke: var(--hair2); stroke-dasharray: 4 3; opacity: 0.7; }
+
+/* Mail search widget */
+.mail-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 12px 0;
+}
+.bin-slots {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+}
+.bin-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 4px;
+  background: var(--card);
+  border: 1px solid var(--hair2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.bin-slot:hover {
+  border-color: var(--fam);
+}
+.bin-slot .slot-idx {
+  font: 500 11px 'JetBrains Mono', monospace;
+  color: var(--mut);
+  margin-bottom: 4px;
+}
+.bin-slot .slot-val {
+  font: 700 14px 'Space Mono', monospace;
+  color: var(--fg);
+}
+.bin-slot.active-probe {
+  background: var(--surface);
+  border-color: var(--pop);
+  box-shadow: 0 0 0 2px var(--pop);
+}
+.bin-slot.match {
+  background: var(--surface);
+  border-color: var(--g-ink);
+  box-shadow: 0 0 0 2px var(--g-ink);
+}
+.bin-slot.match .slot-val {
+  color: var(--g-ink);
+}
+.bin-slot.checked {
+  opacity: 0.65;
+}
+
+.search-readout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 10px;
+}
+.sr-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sr-label {
+  font: 700 11px 'Space Mono', monospace;
+  color: var(--mut);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.sr-val {
+  font: 600 14px 'JetBrains Mono', monospace;
+  color: var(--fg);
+}
+.sr-val.good { color: var(--g-ink); }
+.sr-val.bad { color: var(--r-ink); }
+.sr-val.accent { color: var(--mk); }
+
+/* Average case panel */
+.avg-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 10px;
+  margin-top: 8px;
+}
+.avg-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.avg-title {
+  font: 700 13px 'Space Mono', monospace;
+  color: var(--fg);
+}
+.avg-math {
+  font: 500 12.5px 'JetBrains Mono', monospace;
+  color: var(--mut);
+}
+.avg-bars {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  align-items: end;
+  height: 90px;
+  padding-top: 10px;
+}
+.avg-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.avg-bar {
+  width: 100%;
+  background: var(--fam);
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+}
+.avg-bar-label {
+  font: 500 11px 'JetBrains Mono', monospace;
+  color: var(--mut);
+}
+.sim-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.sim-res {
+  font: 500 13px 'JetBrains Mono', monospace;
+  color: var(--fg);
+}
+
+/* Insertion sort widget */
+.sort-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0;
+}
+.sort-readout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 10px;
+}
+.sort-arr {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sort-chip {
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--hair2);
+  border-radius: 6px;
+  font: 600 13px 'JetBrains Mono', monospace;
+}
+
+@media (max-width: 600px) {
+  .bin-slots {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .search-readout {
+    grid-template-columns: 1fr;
+  }
+  .sort-readout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bin-slot {
+    transition: none;
+  }
+}

@@ -284,6 +284,11 @@ function blocks(nodes: RootContent[], ctx: Ctx): string {
     else if (n.type === "list") {
       const tag = n.ordered ? "ol" : "ul";
       html = `<${tag}>${n.children.map((li) => `<li>${li.children.map((c) => (c.type === "paragraph" ? inline(c.children) : blocks([c], ctx))).join("")}</li>`).join("")}</${tag}>`;
+    } else if (n.type === "blockquote") {
+      // The course's plain `>`: a formula on its own line, never a claim (CLAUDE.md §3)
+      const only = n.children[0];
+      if (n.children.length !== 1 || only?.type !== "paragraph") fail("a > formula is one line of inline markdown");
+      html = `<p class="formula">${inline((only as Paragraph).children)}</p>`;
     } else if (n.type === "html") html = fail(`raw HTML block outside an html fence: ${n.value.slice(0, 60)}`);
     else html = fail(`unsupported block: ${n.type}`);
     if (isCallout(html) && out.length && isCallout(out[out.length - 1]!)) fail("two callouts are adjacent (CLAUDE.md §3)");
@@ -375,6 +380,15 @@ export function renderLesson(source: string): Rendered {
   // body a {{name}} would reach the learner as written
   const stray = html.match(/\{\{(\w+)\}\}/);
   if (stray) fail(`{{${stray[1]}}} sits outside a reveal, quiz or variant, where nothing fills it: give the sentence a widget readout instead`);
+
+  // Nothing renders TeX: a $n^2$ reaches the learner with its dollars and carets. Math is written in
+  // Unicode (n², log₂ n, ≤), as the course does. A bare dollar amount ($40) is still allowed.
+  const prose = [html, ...Object.values(ctx.reveals).map((r) => r.html), JSON.stringify(ctx.quiz), JSON.stringify(ctx.variants)]
+    .join("\n")
+    .replace(/<pre[\s\S]*?<\/pre>|<code[\s\S]*?<\/code>|<script[\s\S]*?<\/script>/g, "");
+  // A span hugs its dollars ($n^2$); prices do not ("$5, $40", "$50 card when target is $100")
+  const tex = prose.match(/\$\$[^$]+\$\$|\$(?=\S)[^$\n]*?[A-Za-z\\^_{}][^$\n]*?(?<=\S)\$(?!\d)|\\(?:frac|cdot|le|ge|log|times|text|implies)\b/);
+  if (tex) fail(`TeX math "${tex[0]}" would print as written: write it in Unicode (n², log₂ n, ≤) instead`);
 
   const pairs = (s: string) => [(s.match(/class="c-py"/g) ?? []).length, (s.match(/class="c-ts"/g) ?? []).length];
   const [py, ts] = pairs(html + Object.values(ctx.reveals).map((r) => r.html).join(""));

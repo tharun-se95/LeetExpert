@@ -1,0 +1,19 @@
+/* ================= Complexity Drills: extra.css ================= */
+
+/* Hero: Six scenario cards */
+.ha-card { fill: var(--card); stroke: var(--hair2); stroke-width: 1.5; rx: 6px; }
+.ha-card.active { stroke: var(--fam); stroke-width: 2; fill: var(--well); }
+.ha-text { font: 600 12px 'JetBrains Mono', monospace; fill: var(--fg); text-anchor: middle; dominant-baseline: central; }
+.ha-muted { font: 500 11px 'JetBrains Mono', monospace; fill: var(--mut); }
+#heroCap { min-height: 3.6em; }
+@media (max-width: 600px) {
+  #heroCap { min-height: 3.6em; text-align: left; }
+}
+
+/* Operation table in reveal */
+.drill-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; text-align: left; }
+.drill-table th { padding: 6px 10px; border-bottom: 1px solid var(--hair2); font: 700 11px 'Space Mono', monospace; color: var(--mut); }
+.drill-table td { padding: 6px 10px; border-bottom: 1px solid var(--hair); font-family: 'JetBrains Mono', monospace; color: var(--fg); }
+
+.drill-verdict { margin-top: 10px; padding: 8px 12px; border-radius: 6px; background: var(--well); border: 1px solid var(--hair2); font-size: 13px; color: var(--mut); }
+.drill-verdict b { color: var(--fg); }

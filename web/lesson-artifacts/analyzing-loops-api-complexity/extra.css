@@ -1,0 +1,118 @@
+/* hero: loop shapes */
+.hd-lab { font: 500 11px 'JetBrains Mono', monospace; fill: var(--mut); }
+.hs-prob { fill: var(--card); stroke: var(--hair2); stroke-width: 1.4; }
+.hs-pt { font: 600 13px 'JetBrains Mono', monospace; fill: var(--fg); }
+
+/* Loop shapes live model */
+.loop-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 12px 0;
+}
+.slider-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--hair2);
+  border-radius: 8px;
+}
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  font: 500 13px 'JetBrains Mono', monospace;
+  color: var(--fg);
+}
+.slider-input {
+  width: 100%;
+  accent-color: var(--fam);
+}
+.loop-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 10px;
+}
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stat-label {
+  font: 700 11px 'Space Mono', monospace;
+  color: var(--mut);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.stat-val {
+  font: 600 14px 'JetBrains Mono', monospace;
+  color: var(--fg);
+}
+.stat-val.good { color: var(--g-ink); }
+.stat-val.accent { color: var(--mk); }
+
+/* Code trace display */
+.loop-trace {
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  font: 500 12.5px 'JetBrains Mono', monospace;
+  color: var(--fg);
+}
+
+/* API Pricing widget */
+.api-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 12px 0;
+}
+.api-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.api-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 10px;
+}
+.api-card.set-approach {
+  border-left: 4px solid var(--g-ink);
+}
+.api-card.list-approach {
+  border-left: 4px solid var(--r-ink);
+}
+.api-head {
+  font: 700 13px 'Space Mono', monospace;
+  color: var(--fg);
+}
+.api-cost {
+  font: 700 18px 'JetBrains Mono', monospace;
+}
+.api-cost.good { color: var(--g-ink); }
+.api-cost.bad { color: var(--r-ink); }
+.api-desc {
+  font-size: 13px;
+  color: var(--mut);
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .loop-stats {
+    grid-template-columns: 1fr;
+  }
+  .api-compare {
+    grid-template-columns: 1fr;
+  }
+}

@@ -8,7 +8,7 @@ A concept lesson has no sandbox cases, so its code is held to the course standar
   * the page's numbers (lesson.js between PURE:begin and PURE:end, run here in node) must equal an independent
     Python derivation: the predict answers and iteration counts, the cost chart's points, the progress model;
   * the course tables the page quotes (lesson counts by type, hints per problem lesson, problem lessons with a
-    Solution tab, the two arcs' step counts) must equal the manifest, the lesson files and the course lesson;
+    Solution section, the two arcs' step counts) must equal the manifest, the lesson files and the course lesson;
   * each product claim the page makes is asserted against the app's source (files named below);
   * the built page must embed exactly that PURE block, so what was run here is what ships.
 
@@ -200,7 +200,7 @@ process.stdout.write(JSON.stringify({
         text = open(os.path.join(REPO, "courses", "dsa", r["module"], r["id"].split("/")[1] + ".md")).read()
         n = len(re.findall(r"^`{3,}reveal Hint", text, re.M))
         hints[n] = hints.get(n, 0) + 1
-        # the app's own rule (splitProblemTabs.ts): a top-level "## Solution" heading starts the Solution tab
+        # the app's own rule (splitProblemTabs.ts): a top-level "## Solution" heading starts the Solution section
         with_solution += 1 if re.search(r"^## Solution\b[^\n]*", text, re.M) else 0
         reveal_first += 1 if re.search(r"^## Solution\b[^\n]*\n+`{3,}reveal ", text, re.M) else 0
         heads = re.findall(r"^## (.*)$", text, re.M)
@@ -208,13 +208,13 @@ process.stdout.write(JSON.stringify({
     if {str(k): v for k, v in C["hints"].items()} != {str(k): v for k, v in sorted(hints.items())}:
         problems.append(f"hints per problem lesson: page {C['hints']}, lesson files {hints}")
     if with_solution != types["problem"]:
-        problems.append(f"the page says every problem lesson has a Solution tab; only {with_solution} of {types['problem']} do")
+        problems.append(f"the page says every problem lesson has a Solution section; only {with_solution} of {types['problem']} do")
     if reveal_first < 0.95 * types["problem"]:
         problems.append(f"the page says almost every solution sits in a reveal; only {reveal_first} of {types['problem']} do")
     if opening_ok != types["problem"]:
         problems.append(f"only {opening_ok} of {types['problem']} problem lessons open Problem, Attempt it first")
     print(f"corpus: {types['concept']} concept + {types['practice']} practice = {C['navTotal']} counted by the header; "
-          f"{types['problem']} problem lessons, hints {dict(sorted(hints.items()))}, {with_solution} with a Solution tab, {reveal_first} with the solution in a reveal")
+          f"{types['problem']} problem lessons, hints {dict(sorted(hints.items()))}, {with_solution} with a Solution section, {reveal_first} with the solution in a reveal")
     course = open(os.path.join(REPO, "courses", "dsa", "getting-started", "how-lessons-work.md")).read()
     concept_items = len(re.findall(r"^\d+\. \*", course, re.M))
     flat = re.sub(r"\s+", " ", course)
@@ -223,23 +223,25 @@ process.stdout.write(JSON.stringify({
     if (page["arcs"]["concept"], page["arcs"]["problem"]) != (concept_items, problem_items) or (F["conceptSteps"], F["problemSteps"]) != (concept_items, problem_items):
         problems.append(f"arcs: page {page['arcs']}, course lesson {concept_items}/{problem_items}")
     print(f"arcs: {concept_items} concept steps and {problem_items} problem steps match the course lesson")
-    if page["tabs"] != ["Description", "Code (beside the description on a wide screen)", "Explanation", "Explanation", "Explanation", "Solution", "Solution"]:
-        problems.append("problem arc tab placement changed; re-verify against ProblemWorkspace.tsx and splitProblemTabs.ts")
+    if page["tabs"] != ["Problem tab, Description section", "Code (beside the Problem tab on a wide screen)"] + ["Problem tab, Explanation section"] * 3 + ["Problem tab, Solution section"] * 2:
+        problems.append("problem arc tab placement changed; re-verify against ProblemWorkspace.tsx, ProblemAccordion.tsx and splitProblemTabs.ts")
 
     # 5. product claims, each asserted against the source it came from
     claims = [
         ("quiz answers are stored in localStorage under dsa-course-quiz", "components/course/Quiz.tsx",
          [r'STORAGE_KEY = "dsa-course-quiz"', r"localStorage\.setItem\(STORAGE_KEY"]),
         ("a problem is solved when every case passes", "components/sandbox/Sandbox.tsx",
-         [r"allPassed = results !== null && passed === total", r"if \(allPassed\) onSolved"]),
+         [r'allPassed = state\.status === "done" && results !== null && passed === total', r"if \(allPassed\) onSolved"]),
         ("opening a lesson marks it visited", "components/providers/VisitTracker.tsx", [r"markVisited\(id\)"]),
         ("the header chip counts concept and practice lessons only", "lib/course/manifest.ts",
          [r'lesson\.type === "concept" \|\| lesson\.type === "practice"', r"allLessonsNavIds\(\)[^{]*\{\s*return MODULES\.flatMap"]),
         ("the shell's progress denominator is allLessonsNavIds", "components/layout/AppShell.tsx", [r"allLessonsNavIds\(\)"]),
         ("the header shows visited/total", "components/layout/Header.tsx", [r"\{visitedCount\}/\{totalCount\}"]),
-        ("problem tabs are Description, Explanation, Solution, Quiz", "components/problems/ProblemWorkspace.tsx",
-         [r'label: "Description"', r'label: "Explanation"', r'label: "Solution"', r'label: "Quiz"']),
-        ("a top-level ## Solution heading starts the Solution tab; the quiz fence gets its own tab", "lib/content/splitProblemTabs.ts",
+        ("problem tabs are Problem and Quiz, with Code and Coach as tabs on a narrow screen", "components/problems/ProblemWorkspace.tsx",
+         [r'label: "Problem"', r'label: "Quiz"', r'label: "Code"', r'label: "Coach"']),
+        ("the Problem tab holds Description, Explanation and Solution sections", "components/problems/ProblemAccordion.tsx",
+         [r'title: "Description"', r'title: "Explanation"', r'title: "Solution"']),
+        ("a top-level ## Solution heading starts the Solution section; the quiz fence gets its own tab", "lib/content/splitProblemTabs.ts",
          [r"\^## Solution", r"QUIZ_FENCE"]),
         ("a closed reveal renders nothing; each reveal has its own state", "components/course/Reveal.tsx",
          [r"useState\(false\)", r"\{open \? \("]),

@@ -844,6 +844,49 @@ function plHardwareSteps(){
   return plotWalk(T,{intro:'How far a faster machine gets you depends on the shape of the cost, not on the machine.'});
 }
 
+/* ---------- residue rings (kit/rings.js) ---------- */
+/* residue rings: where each value lands is counted by walking it one cell at a time from 0, wrapping at the ends and
+   counting every pass over 0, which shares no arithmetic with the kit's floor division. Each walkthrough holds every
+   snapshot to it, and every number in a caption comes from it. JavaScript's answers are % run on this page; the kit
+   test runs Python on every Python answer shown. */
+function rgSim(a,m){
+  var cell=0,turns=0,d=a<0?-1:1;
+  for(var i=0;i<Math.abs(a);i++){cell+=d;if(cell===m){cell=0;turns++;}else if(cell<0){cell=m-1;turns--;}}
+  return {cell:cell,turns:turns};
+}
+function rgWalked(s){var r=s.ring;return r.rows.every(function(x){if(!x.on)return true;var w=rgSim(r.at[x.id],r.T.m);return x.cell===w.cell&&x.turns===w.turns;});}
+var RG_COUNTED=[['counted','each cell matches walking one cell at a time from 0',rgWalked]];
+function rgClockSteps(){
+  var m=5,a=rgSim(8,m),b=rgSim(-7,m),fix=((-7%m)+m)%m;
+  if(a.cell!==b.cell||fix!==b.cell)throw new Error('8 and −7 on a 5-ring: '+a.cell+', '+b.cell+', fix '+fix);
+  var T=new RingTrace({m:m,name:'slot',langs:true,tokens:[{id:'p',name:'walks 8',tone:'cur'},{id:'n',name:'walks −7',tone:'info'}]});
+  T.step('A carousel of '+m+' slots. Both values start at slot 0, where every walk is counted from.',[T.put('p',0),T.put('n',0)]);
+  T.step('Walk 8 forward: '+a.turns+' whole turn back to 0, then '+a.cell+' more. 8 = '+a.turns+' × '+m+' + '+a.cell+', so it lands on slot <b>'+a.cell+'</b>.',[T.walk('p',8)],['p']);
+  T.step('Walk 7 backward: past 0 '+(-b.turns)+' times, so '+b.turns+' turns, and on to slot <b>'+b.cell+'</b>. −7 = '+b.turns+' × '+m+' + '+b.cell+': a different number, the same slot.',[T.walk('n',-7)],['n']);
+  return ringWalk(T,{intro:'Where 8 and −7 land on a 5-slot carousel.',
+    outro:'Python\'s <code>-7 % 5</code> is the slot, '+b.cell+'. JavaScript\'s is <b>'+rgNum(-7%m)+'</b>, which is not a slot; <code>((-7 % 5) + 5) % 5</code> shifts it back to '+fix+'.',inv:RG_COUNTED});
+}
+function rgWrapSteps(){
+  var m=5,last=rgSim(5,m),back=rgSim(-1,m);
+  var T=new RingTrace({m:m,name:'index',langs:true,tokens:[{id:'i',name:'next index',tone:'info'},{id:'j',name:'previous index',tone:'bad'}]});
+  T.step('A ring buffer of '+m+' cells. The write index stands at 3.',[T.put('i',3)],['i']);
+  T.step('<code>(i + 1) % 5</code>: one step forward, to index '+rgSim(4,m).cell+', the last cell.',[T.walk('i',1)],['i']);
+  T.step('One more step forward is 5, and <code>5 % 5</code> is <b>'+last.cell+'</b>: the index falls off the end and comes back at the start.',[T.walk('i',1)],['i']);
+  T.step('Now step back from index 0: <code>(i - 1) % 5</code>. Walking one cell back from 0 lands on <b>'+back.cell+'</b>, the last cell. Python says '+back.cell+'; JavaScript says <b>'+rgNum(-1%m)+'</b>, an index that does not exist.',[T.put('j',0),T.walk('j',-1)],['j']);
+  return ringWalk(T,{intro:'Wrap-around indexing: stepping off either end of a ring buffer.',inv:RG_COUNTED});
+}
+function rgHashSteps(){
+  var m=7,keys=[15,22,40,-8],ids=['a','b','c','d'],land=keys.map(function(k){return rgSim(k,m).cell;});
+  if(land[0]!==land[1])throw new Error('15 and 22 should share a bucket of 7');
+  var T=new RingTrace({m:m,name:'bucket',langs:true,tokens:keys.map(function(k,i){return {id:ids[i],name:'key '+rgNum(k)};})});
+  T.step('A table of '+m+' buckets. Each key goes to bucket <code>key % 7</code>: walk it from 0.',ids.map(function(id){return T.put(id,0);}));
+  T.step('Key 15 is '+rgSim(15,m).turns+' turns and '+land[0]+' more: bucket <b>'+land[0]+'</b>.',[T.walk('a',15)],['a']);
+  T.step('Key 22 is '+rgSim(22,m).turns+' turns and '+land[1]+' more: bucket <b>'+land[1]+'</b> as well. Two keys share a bucket, a collision.',[T.walk('b',22),T.count('collisions',1)],['b']);
+  T.step('Key 40 goes round '+rgSim(40,m).turns+' times and lands in bucket <b>'+land[2]+'</b>. The ring glides through '+RG_LAPS+' turns; the readout keeps the true count.',[T.walk('c',40)],['c']);
+  T.step('Key −8 walks backward to bucket <b>'+land[3]+'</b>. In JavaScript, <code>-8 % 7</code> is <b>'+rgNum(-8%m)+'</b>, which is no bucket at all: hash a negative key with the shifted remainder.',[T.walk('d',-8)],['d']);
+  return ringWalk(T,{intro:'Reducing keys to buckets with % 7.',inv:RG_COUNTED});
+}
+
 /* ---------- pointer lists (kit/lists.js ptrSnap): nodes at authored places, pointers that move ---------- */
 function plReverseSteps(){
   var ns=ptrRow([1,2,3,4]),prev=null,curr=ns[0],nxt,steps=[];
@@ -907,3 +950,4 @@ mountIvTabs($('#ivtabs'),[{name:'Merge intervals',steps:ivMergeSteps},{name:'Mee
 mountTrieTabs($('#trtabs'),[{name:'Insert and search',steps:trieInsertSteps},{name:'Wildcard search',steps:trieWildSteps},{name:'Word Search II',steps:trieBoardSteps}],{id:'tr'});
 mountPlayerTabs($('#ptrtabs'),[{name:'Reverse in place',steps:plReverseSteps},{name:'A cycle, by Floyd',steps:plFloydSteps}],function(h,o){return new ListPlayer(h,Object.assign(o,PL_OPTS));},{id:'ptr'});
 mountPlotTabs($('#pltabs'),[{name:'Loops',steps:plLoopsSteps},{name:'Amortized appends',steps:plAppendSteps},{name:'Growth beats hardware',steps:plHardwareSteps}],{id:'pl'});
+mountRingTabs($('#rgtabs'),[{name:'8 and −7',steps:rgClockSteps},{name:'Wrap-around',steps:rgWrapSteps},{name:'Hash buckets',steps:rgHashSteps}],{id:'rg'});
