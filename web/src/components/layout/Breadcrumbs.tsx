@@ -2,13 +2,20 @@ import Link from "next/link";
 import { CaretRight as ChevronRight } from "@phosphor-icons/react/dist/ssr";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo/jsonLd";
+import { cn } from "@/lib/utils";
 
 export interface Crumb {
   label: string;
   href?: string;
 }
 
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
+export function Breadcrumbs({
+  items,
+  className,
+}: {
+  items: Crumb[];
+  className?: string;
+}) {
   return (
     <>
       {/* Emitted here, from the same `items`, so the BreadcrumbList markup
@@ -18,7 +25,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
           items.map((item) => ({ name: item.label, path: item.href })),
         )}
       />
-      <nav aria-label="Breadcrumb" className="print:hidden mb-6 inline-flex">
+      <nav aria-label="Breadcrumb" className={cn("print:hidden inline-flex", className ?? "mb-6")}>
         <ol className="inline-flex flex-wrap items-center gap-1.5 rounded-full border border-border/70 bg-surface/40 px-3.5 py-1.5 text-xs text-muted shadow-elevation backdrop-blur-xs">
           <li>
             <Link

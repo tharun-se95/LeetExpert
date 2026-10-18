@@ -1696,7 +1696,7 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
     whatever it sits on instead of carrying a second, competing measure.
   */
   font-size: var(--prose-size);
-  line-height: 1.62;
+  line-height: 1.72;
   color: color-mix(in oklab, var(--foreground) 94%, transparent);
 }
 
@@ -1716,9 +1716,9 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   second hairline and prose h2 margins.
 */
 .handbook-prose h2:not(.chapter-heading) {
-  margin-top: 2.5rem;
-  margin-bottom: 0.85rem;
-  padding-top: 0.85rem;
+  margin-top: 2.75rem;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--rule-strong);
 }
 
@@ -1734,20 +1734,20 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   font-size: 1.3em;
   font-weight: 700;
   letter-spacing: -0.03em;
-  line-height: 1.22;
+  line-height: 1.25;
   color: var(--foreground);
 }
 
 /* The hairline for component sections whose heading sits in a flex row: the
    rule belongs on the row, not on the heading's own shrink-wrapped width. */
 .chapter-rule {
-  padding-top: 0.85rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--rule-strong);
 }
 
 .handbook-prose h3 {
-  margin-top: 1.75rem;
-  margin-bottom: 0.5rem;
+  margin-top: 2rem;
+  margin-bottom: 0.65rem;
   font-family: var(--font-display), var(--font-sans-face), sans-serif;
   /* 1.14em is load-bearing: Roadmap.tsx derives its rail-disc offset from it. */
   font-size: 1.14em;
@@ -1757,15 +1757,15 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
 }
 
 .handbook-prose h4 {
-  margin-top: 1.35rem;
-  margin-bottom: 0.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
   font-size: 1rem;
   font-weight: 600;
   color: var(--foreground);
 }
 
 .handbook-prose p {
-  margin: 0.85rem 0;
+  margin: 1.15rem 0;
 }
 
 /*

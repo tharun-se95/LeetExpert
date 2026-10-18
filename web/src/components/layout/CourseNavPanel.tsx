@@ -33,7 +33,32 @@ export interface CourseNavPanelProps {
 }
 
 const rowPad = (compact: boolean) =>
-  compact ? "min-h-8 py-1.5" : "min-h-11 py-2.5";
+  compact ? "min-h-7 py-1" : "min-h-11 py-2.5";
+
+const HIGH_YIELD_KEYWORDS = [
+  "asymptotic",
+  "invariants",
+  "complexity",
+  "amortized",
+  "two-pointers",
+  "sliding-window",
+  "binary-search",
+  "traversal",
+  "memoization",
+  "shortest-path",
+  "topological",
+  "hash-table",
+  "dp-patterns",
+];
+
+function isHighYieldLesson(lesson: CourseNavLesson): boolean {
+  const slug = lesson.id.toLowerCase();
+  return (
+    HIGH_YIELD_KEYWORDS.some((kw) => slug.includes(kw)) ||
+    lesson.title.toLowerCase().includes("invariants") ||
+    lesson.title.toLowerCase().includes("pattern")
+  );
+}
 
 /**
  * Every row in the tree: a segment of the guide line, an optional glyph, a
@@ -105,6 +130,8 @@ function LessonRow({
 }) {
   const isDone = visited.has(lesson.id);
   const active = pathname === lesson.href;
+  const isHighYield = isHighYieldLesson(lesson);
+
   return (
     <NavRow
       href={lesson.href}
@@ -133,14 +160,25 @@ function LessonRow({
         </span>
       }
       trailing={
-        isDone ? (
-          <span
-            className="shrink-0 flex items-center justify-center w-4 h-4 rounded-full bg-good-surface text-good border border-good-line/30 text-[10px] font-bold"
-            aria-label="Completed"
-          >
-            ✓
-          </span>
-        ) : null
+        <div className="flex items-center gap-1.5 shrink-0">
+          {isHighYield && !isDone && (
+            <span
+              aria-label="High-yield core interview concept"
+              title="Core interview concept"
+              className="text-warn text-[10px] font-bold"
+            >
+              ★
+            </span>
+          )}
+          {isDone ? (
+            <span
+              className="flex items-center justify-center w-4 h-4 rounded-full bg-good-surface text-good border border-good-line/30 text-[10px] font-bold"
+              aria-label="Completed"
+            >
+              ✓
+            </span>
+          ) : null}
+        </div>
       }
     >
       {lesson.title}
@@ -440,6 +478,22 @@ export function CourseNavPanel({
           </div>
         </div>
       ))}
+      <div className="mt-8 border-t border-border/80 pt-4 px-2">
+        <div className="rounded-[length:var(--radius-md)] border border-border/70 bg-surface/50 p-3 shadow-elevation">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-accent">
+              Active Curriculum
+            </span>
+            <span className="flex h-1.5 w-1.5 rounded-full bg-good animate-pulse" />
+          </div>
+          <p className="mt-1 text-xs font-medium text-foreground">
+            Stage 0 to Stage 4 Mastery
+          </p>
+          <p className="mt-0.5 text-[11px] text-muted">
+            157 in-browser execution sandboxes
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
