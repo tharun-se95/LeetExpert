@@ -12,6 +12,8 @@ import { SearchDialog } from "@/components/layout/SearchDialog";
 import { PageEnter } from "@/components/layout/PageEnter";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { SidebarProvider } from "@/components/layout/SidebarContext";
+import { FloatingLessonsButton } from "@/components/layout/FloatingLessonsButton";
+import { FloatingLivePresence } from "@/components/layout/FloatingLivePresence";
 import { ProgressProvider } from "@/components/providers/ProgressProvider";
 import { SyncBridgeProvider } from "@/components/providers/SyncBridge";
 import { ScrollbarAutoHide } from "@/components/providers/ScrollbarAutoHide";
@@ -369,6 +371,8 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
                 </div>
               </main>
             </div>
+            {showCourseNav ? <FloatingLessonsButton /> : null}
+            <FloatingLivePresence />
           </div>
         </SidebarProvider>
       </>

@@ -24,12 +24,14 @@ export function Dialog({
   label,
   children,
   className,
+  backdropClassName,
 }: {
   open: boolean;
   onClose: () => void;
   label: string;
   children: ReactNode;
   className?: string;
+  backdropClassName?: string;
 }) {
   const panel = useRef<HTMLDivElement>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -92,7 +94,10 @@ export function Dialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-foreground/25 px-4 pt-[12vh] backdrop-blur-[2px]"
+      className={cn(
+        "fixed inset-0 z-50 flex items-start justify-center px-4 pt-[12vh]",
+        backdropClassName ?? "bg-foreground/25 backdrop-blur-[2px]",
+      )}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

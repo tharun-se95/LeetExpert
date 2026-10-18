@@ -31,9 +31,9 @@ export function CatalogProblemRow({
     <li className="group relative">
       <div
         className={cn(
-          "flex min-h-11 items-center gap-3 px-4 py-3 text-sm transition-[background-color] duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none sm:px-5 touch-manipulation",
+          "flex min-h-11 items-center gap-3 border-l-2 border-l-transparent px-4 py-3 text-sm transition-all duration-[var(--dur-fast)] ease-[var(--ease)] motion-reduce:transition-none sm:px-5 touch-manipulation group-hover:border-l-accent",
           isSolved
-            ? "bg-good/[0.04] hover:bg-good/[0.08]"
+            ? "bg-good/[0.03] hover:bg-good/[0.07]"
             : "hover:bg-accent/[0.06]",
         )}
       >
@@ -47,10 +47,10 @@ export function CatalogProblemRow({
               : `Mark #${problem.id} ${problem.title} as solved`
           }
           className={cn(
-            "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all hover:scale-105 touch-manipulation",
+            "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-[var(--dur-fast)] hover:scale-105 touch-manipulation",
             isSolved
-              ? "border-good bg-good text-on-pop"
-              : "border-border bg-transparent hover:border-mark",
+              ? "checkbox-glow-good border-good bg-good text-on-pop"
+              : "checkbox-glow-accent border-border bg-transparent hover:border-accent hover:bg-accent/10",
           )}
         >
           {isSolved ? <Check size={11} weight="bold" /> : null}
@@ -102,10 +102,11 @@ export function CatalogProblemRow({
         {/* Difficulty badge */}
         <span
           className={cn(
-            "shrink-0 rounded-[length:var(--radius-xs)] border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
+            "inline-flex items-center gap-1.5 shrink-0 rounded-[length:var(--radius-xs)] border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide",
             difficultyBadgeClass(problem.difficulty),
           )}
         >
+          <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" aria-hidden />
           {problem.difficulty}
         </span>
       </div>

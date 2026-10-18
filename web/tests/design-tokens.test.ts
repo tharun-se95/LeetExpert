@@ -191,7 +191,7 @@ describe("design tokens", () => {
       expect(root, `--${name} missing in :root`).toMatch(new RegExp(`--${name}:`));
       expect(dark, `--${name} missing in .dark`).toMatch(new RegExp(`--${name}:`));
     }
-    expect(root).toMatch(/--shadow-tint:\s*22 32 46/); // --press-ink, light
+    expect(root).toMatch(/--shadow-tint:\s*15 23 42/); // --press-ink, light
     expect(dark).toMatch(/--shadow-tint:\s*0 0 0/); // near-black, dark
     expect(css).toMatch(/\.shadow-elevation\s*\{\s*box-shadow:\s*var\(--shadow-elevation\)/);
     expect(css).toMatch(/\.shadow-edge-bottom\s*\{\s*box-shadow:\s*var\(--shadow-edge-bottom\)/);
@@ -215,28 +215,27 @@ describe("design tokens", () => {
     expect(hits).toEqual([]);
   });
 
-  it("globals use Blueprint sheet colours", () => {
+  it("globals use Blueprint sheet colours (blueprint, monochrome base in light)", () => {
     const css = readFileSync(GLOBALS, "utf8");
     expect(css).not.toMatch(/--shadow-card\s*:/);
     expect(css).not.toMatch(/\.elevated-card\s*\{[^}]*box-shadow/);
 
     const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
-    expect(firstHexVar(root, "press-paper")).toBe("#f1f4f9");
-    expect(firstHexVar(root, "press-ink")).toBe("#16202e");
-    expect(firstHexVar(root, "press-ink-soft")).toBe("#56606e");
-    expect(firstHexVar(root, "press-paper-sunk")).toBe("#d8dde8");
+    expect(firstHexVar(root, "press-paper")).toBe("#ffffff");
+    expect(firstHexVar(root, "press-ink")).toBe("#0f172a");
+    expect(firstHexVar(root, "press-ink-soft")).toBe("#475569");
+    expect(firstHexVar(root, "press-paper-sunk")).toBe("#f1f5f9");
     expect(firstHexVar(root, "elevated")).toBe("#ffffff");
-    expect(firstHexVar(root, "code")).toBe("#e4e9f2");
+    expect(firstHexVar(root, "code")).toBe("#f8fafc");
     expect(root).toMatch(
-      /--press-rule:\s*rgba\(\s*22\s*,\s*32\s*,\s*46\s*,\s*0\.09\s*\)/,
+      /--press-rule:\s*rgba\(\s*15\s*,\s*23\s*,\s*42\s*,\s*0\.08\s*\)/,
     );
-    // Monochrome base: accent/pop/mark are all the same steel; the family
-    // accent is applied per-topic by familyCssVars() (see the family test).
-    expect(firstHexVar(root, "press-olive")).toBe("#1e293b");
-    expect(firstHexVar(root, "press-lime")).toBe("#1e293b");
-    expect(firstHexVar(root, "press-blue")).toBe("#1e293b");
+    // Vibrant technical inks: pop, accent and mark
+    expect(firstHexVar(root, "press-olive")).toBe("#1d4ed8");
+    expect(firstHexVar(root, "press-lime")).toBe("#2563eb");
+    expect(firstHexVar(root, "press-blue")).toBe("#1d4ed8");
     expect(firstHexVar(root, "on-pop")).toBe("#ffffff");
-    expect(firstHexVar(root, "accent-hover")).toBe("#334155");
+    expect(firstHexVar(root, "accent-hover")).toBe("#1e40af");
   });
 
   it("body text meets AA; Primary is sheet large/UI accent", () => {
@@ -254,8 +253,8 @@ describe("design tokens", () => {
     expect(contrastRatio(muted!, paper!)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(muted!, sunk!)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(muted!, code!)).toBeGreaterThanOrEqual(4.5);
-    // Monochrome steel accent #1E293B ≈ 13.8:1 on paper / white-on-accent
-    // ≈ 15.2:1 — comfortably past AA. Inside a family scope accent becomes the
+    // Vibrant technical blue accent #1D4ED8 ≈ 6.7:1 on paper / white-on-pop
+    // ≈ 5.2:1 — comfortably past AA. Inside a family scope accent becomes the
     // (saturated) family colour, so the 3:1 large/UI floor is the binding
     // contract for family accents — enforced in the family-floor test below.
     expect(contrastRatio(primary!, paper!)).toBeGreaterThanOrEqual(3);
@@ -281,9 +280,9 @@ describe("design tokens", () => {
   it("surface ladders are perceptible in both themes", () => {
     // Both themes carry a real, flat (no-shadow) layer ladder with the same
     // relative order — elevated brightest, surface deepest, never an
-    // inversion. Light: white cards pop off a cool-gray page, editor and
-    // test wells step down. Measured light 1.10 / 1.11 / 1.12 / 1.36; dark
-    // (the Grid's navy) 1.25 / 1.15 / 1.09 / 1.07 (see globals.css comments).
+    // inversion. Light: pure white cards and canvas (#ffffff), with recessed
+    // editor (#f8fafc) and test wells (#f1f5f9) stepping down.
+    // Dark: the Grid's navy 1.25 / 1.15 / 1.09 / 1.07.
     const css = readFileSync(GLOBALS, "utf8");
     const root = css.slice(css.indexOf(":root"), css.indexOf(".dark"));
     const dark = css.slice(css.indexOf(".dark"));
@@ -294,13 +293,12 @@ describe("design tokens", () => {
     const lelevated = firstHexVar(root, "elevated")!;
     const lcode = firstHexVar(root, "code")!;
     const lsurface = firstHexVar(root, "press-paper-sunk")!;
-    expect(lum(lelevated)).toBeGreaterThan(lum(lbg));
+    expect(lum(lelevated)).toBeGreaterThanOrEqual(lum(lbg));
     expect(lum(lbg)).toBeGreaterThan(lum(lcode));
     expect(lum(lcode)).toBeGreaterThan(lum(lsurface));
-    expect(r(lelevated, lbg)).toBeGreaterThanOrEqual(1.1);
-    expect(r(lbg, lcode)).toBeGreaterThanOrEqual(1.05);
-    expect(r(lcode, lsurface)).toBeGreaterThanOrEqual(1.05);
-    expect(r(lelevated, lsurface)).toBeGreaterThanOrEqual(1.2);
+    expect(r(lbg, lcode)).toBeGreaterThanOrEqual(1.04);
+    expect(r(lcode, lsurface)).toBeGreaterThanOrEqual(1.04);
+    expect(r(lelevated, lsurface)).toBeGreaterThanOrEqual(1.08);
 
     const dbg = firstHexVar(dark, "press-paper")!;
     const delevated = firstHexVar(dark, "elevated")!;
@@ -938,7 +936,7 @@ describe("type system", () => {
     expect(cssBlock(css, ".chapter-rule")).toMatch(
       /border-top:\s*1px solid var\(--rule-strong\)/,
     );
-    expect(css).toMatch(/--press-rule-strong:\s*rgba\(22, 32, 46, 0\.18\)/);
+    expect(css).toMatch(/--press-rule-strong:\s*rgba\(15, 23, 42, 0\.16\)/);
     expect(css).toMatch(/--press-rule-strong:\s*rgba\(163, 174, 188, 0\.38\)/);
     expect(css).toMatch(/--rule-strong:\s*var\(--press-rule-strong\)/);
   });

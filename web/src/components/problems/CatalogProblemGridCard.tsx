@@ -30,12 +30,23 @@ export function CatalogProblemGridCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col justify-between rounded-[length:var(--radius-lg)] border p-4.5 transition-[background-color,border-color,transform,box-shadow] duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation motion-reduce:transition-none touch-manipulation",
+        "group relative flex flex-col justify-between overflow-hidden rounded-[length:var(--radius-lg)] border p-4.5 transition-all duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation motion-reduce:transition-none touch-manipulation",
         isSolved
           ? "border-good/30 bg-good/[0.03] hover:border-good/50"
           : "border-border/70 bg-elevated hover:-translate-y-0.5 hover:border-accent/40",
       )}
     >
+      {/* Specular top hairline */}
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-x-0 top-0 h-px transition-opacity duration-300",
+          isSolved
+            ? "bg-gradient-to-r from-transparent via-good-line/60 to-transparent opacity-80"
+            : "bg-gradient-to-r from-transparent via-accent/35 to-transparent opacity-60 group-hover:opacity-100",
+        )}
+        aria-hidden
+      />
+
       <div>
         {/* Top Header: ID, Difficulty & Solved state */}
         <div className="flex items-center justify-between gap-2 mb-3">
@@ -45,10 +56,11 @@ export function CatalogProblemGridCard({
             </span>
             <span
               className={cn(
-                "rounded-[length:var(--radius-xs)] border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide",
+                "inline-flex items-center gap-1.5 rounded-[length:var(--radius-xs)] border px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide",
                 difficultyBadgeClass(problem.difficulty),
               )}
             >
+              <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" aria-hidden />
               {problem.difficulty}
             </span>
           </div>
@@ -64,8 +76,8 @@ export function CatalogProblemGridCard({
             className={cn(
               "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:scale-105 active:scale-95 touch-manipulation focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent",
               isSolved
-                ? "border-good bg-good text-on-pop"
-                : "border-border bg-transparent hover:border-mark",
+                ? "checkbox-glow-good border-good bg-good text-on-pop"
+                : "checkbox-glow-accent border-border bg-transparent hover:border-accent hover:bg-accent/10",
             )}
           >
             {isSolved ? <Check size={11} weight="bold" /> : null}
@@ -102,10 +114,10 @@ export function CatalogProblemGridCard({
         <Link
           href={href}
           className={cn(
-            "flex w-full min-h-9 items-center justify-center gap-1.5 rounded-[length:var(--radius-md)] text-xs font-semibold transition-all duration-[var(--dur-fast)] ease-[var(--ease)] touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+            "flex w-full min-h-9 items-center justify-center gap-1.5 rounded-[length:var(--radius-md)] border text-xs font-semibold transition-all duration-[var(--dur-fast)] ease-[var(--ease)] shadow-elevation touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
             isCourseProblem
-              ? "bg-accent/10 text-accent hover:bg-accent/20"
-              : "bg-surface/80 text-foreground hover:bg-code hover:text-mark",
+              ? "border-accent/35 bg-accent/10 text-accent hover:border-accent/60 hover:bg-accent/20"
+              : "border-border/80 bg-surface/80 text-foreground hover:border-accent/40 hover:bg-elevated hover:text-mark",
           )}
         >
           <span>{isCourseProblem ? "Launch Curriculum Sandbox" : "Launch Sandbox Workspace"}</span>

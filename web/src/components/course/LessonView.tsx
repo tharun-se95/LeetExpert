@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, ArrowRight, Clock } from "@phosphor-icons/react/dist/ssr";
 import { Markdown } from "@/components/md/Markdown";
+import { TableOfContents } from "@/components/md/TableOfContents";
 import { Breadcrumbs, type Crumb } from "@/components/layout/Breadcrumbs";
 import type { LoadedLesson } from "@/lib/course/load";
 
@@ -63,33 +64,73 @@ export function LessonView({
     <div className="mx-auto flex w-full justify-center gap-10 px-4 py-8 lg:px-8 lg:py-10">
       <article className="reading-column min-w-0 flex-1">
         {jsonLd}
-        <Breadcrumbs items={breadcrumbs} />
-        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-mark">
-          {eyebrow}
-        </p>
-        <h1 className="press-overprint font-display text-3xl font-bold tracking-tight text-balance sm:text-[2.1rem]">
-          {lesson.title}
-        </h1>
-        <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted">
-          <span className="rounded-full border border-border px-2 py-0.5 text-xs">
-            {typeLabel}
-          </span>
-          ~{lesson.readingMinutes} min
-          {headerAudio ? (
-            <span className="print:hidden">{headerAudio}</span>
-          ) : null}
-          {headerAudio && headerVideo ? (
-            <span aria-hidden className="text-border print:hidden">
-              |
+
+        {/* Elevated Chapter Header Card (Matching Fanout.sh's integrated chapter header) */}
+        <header className="rounded-[length:var(--radius-lg)] border border-border/80 bg-surface/60 p-6 sm:p-8 shadow-elevation backdrop-blur-xs mb-8">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
+            <Breadcrumbs items={breadcrumbs} className="mb-0" />
+            <div className="flex items-center gap-2">
+              <span className="rounded-full border border-border/80 bg-elevated px-2.5 py-0.5 font-mono text-[11px] font-bold text-accent shadow-elevation">
+                {eyebrow}
+              </span>
+              <span className="rounded-full border border-border/80 bg-elevated px-2.5 py-0.5 font-mono text-[11px] text-muted shadow-elevation">
+                {typeLabel}
+              </span>
+            </div>
+          </div>
+          <h1 className="press-overprint font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-[2.6rem] text-foreground">
+            {lesson.title}
+          </h1>
+          <div className="mt-5 flex flex-wrap items-center gap-4 text-xs font-mono text-muted border-t border-border/60 pt-4">
+            <span className="flex items-center gap-1.5 font-medium">
+              <Clock weight="bold" className="h-3.5 w-3.5 text-accent" />
+              ~{lesson.readingMinutes} min read
             </span>
-          ) : null}
-          {headerVideo ? (
-            <span className="print:hidden">{headerVideo}</span>
-          ) : null}
-        </p>
-        {stage ? <div className="mt-6 print:hidden">{stage}</div> : null}
+            {headerAudio ? (
+              <span className="flex items-center gap-1.5 print:hidden">
+                <span aria-hidden className="text-border">·</span>
+                {headerAudio}
+              </span>
+            ) : null}
+            {headerAudio && headerVideo ? (
+              <span aria-hidden className="text-border print:hidden">
+                |
+              </span>
+            ) : null}
+            {headerVideo ? (
+              <span className="flex items-center gap-1.5 print:hidden">
+                <span aria-hidden className="text-border">·</span>
+                {headerVideo}
+              </span>
+            ) : null}
+          </div>
+        </header>
+
+        {stage ? (
+          <div className="overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-code shadow-elevation mb-8 print:hidden">
+            <div className="flex items-center justify-between border-b border-border/80 bg-surface/80 px-4 py-2.5 text-xs font-mono text-muted">
+              <span className="flex items-center gap-2 font-medium text-foreground">
+                <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+                Interactive Stage
+              </span>
+              <span className="text-[11px] text-muted font-mono">Live In-Browser Explorer</span>
+            </div>
+            <div className="p-4 sm:p-6">{stage}</div>
+          </div>
+        ) : null}
+
+        {/* Fanout-style Notes Divider */}
+        <div className="relative my-8 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border/80" />
+          </div>
+          <div className="relative rounded-full border border-border/80 bg-surface px-4 py-1 text-[11px] font-mono uppercase tracking-widest text-muted shadow-elevation">
+            Lesson Notes
+          </div>
+        </div>
+
         {/* Header, stage and neighbours stay on the desk; only the reading is set on paper. */}
-        <div className="reading-page shadow-elevation mt-8">
+        <div className="reading-page shadow-elevation mt-4">
           <Markdown
             source={lesson.markdown}
             highlightedBlocks={lesson.highlightedBlocks}
@@ -112,16 +153,16 @@ export function LessonView({
           {prev ? (
             <Link
               href={prev.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-sm transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
+              className="group flex max-w-[48%] sm:max-w-[45%] items-center gap-3.5 rounded-[length:var(--radius-md)] bg-elevated border border-border/80 shadow-elevation px-4 py-3.5 text-sm transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/40 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:bg-on-pop/25 motion-reduce:transition-none">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 bg-surface/60 text-muted transition-all duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:border-accent/50 group-hover:bg-accent/10 group-hover:text-accent arrow-badge-glow motion-reduce:transition-none">
                 <ArrowLeft weight="bold" className="h-4 w-4" />
               </span>
               <span className="min-w-0">
-                <span className="block text-xs text-on-pop/70">
+                <span className="block font-mono text-[10px] uppercase tracking-wider text-muted group-hover:text-accent transition-colors">
                   Previous{prev.module ? ` · ${prev.module}` : ""}
                 </span>
-                <span className="block truncate font-medium">{prev.title}</span>
+                <span className="block truncate font-medium text-foreground">{prev.title}</span>
               </span>
             </Link>
           ) : (
@@ -130,15 +171,15 @@ export function LessonView({
           {next ? (
             <Link
               href={next.href}
-              className="group flex max-w-[45%] items-center gap-3 rounded-[length:var(--radius-md)] bg-pop text-on-pop shadow-elevation px-4 py-3 text-right text-sm transition-[opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
+              className="group flex max-w-[48%] sm:max-w-[45%] items-center gap-3.5 rounded-[length:var(--radius-md)] bg-elevated border border-border/80 shadow-elevation px-4 py-3.5 text-right text-sm transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent/40 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none"
             >
               <span className="min-w-0">
-                <span className="block text-xs text-on-pop/70">
+                <span className="block font-mono text-[10px] uppercase tracking-wider text-muted group-hover:text-accent transition-colors">
                   Next{next.module ? ` · ${next.module}` : ""}
                 </span>
-                <span className="block truncate font-medium">{next.title}</span>
+                <span className="block truncate font-medium text-foreground">{next.title}</span>
               </span>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-pop/15 text-on-pop transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:bg-on-pop/25 motion-reduce:transition-none">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 bg-surface/60 text-muted transition-all duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:border-accent/50 group-hover:bg-accent/10 group-hover:text-accent arrow-badge-glow motion-reduce:transition-none">
                 <ArrowRight weight="bold" className="h-4 w-4" />
               </span>
             </Link>
@@ -147,6 +188,14 @@ export function LessonView({
           )}
         </nav>
       </article>
+
+      {lesson.toc && lesson.toc.length >= 2 ? (
+        <aside className="hidden 2xl:block w-64 shrink-0 print:hidden">
+          <div className="sticky top-20">
+            <TableOfContents items={lesson.toc} />
+          </div>
+        </aside>
+      ) : null}
     </div>
   );
 }

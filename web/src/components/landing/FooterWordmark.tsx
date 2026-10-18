@@ -51,12 +51,12 @@ export function FooterWordmark({ className }: { className?: string }) {
       </noscript>
       {/* pb: the box clips the letters' rise, and at leading-[0.85] it cut
           the descender of the "p" off; the padding keeps it inside the clip. */}
-      <p className="pb-[0.2em] font-display text-[16.3cqw] leading-[0.85] font-bold whitespace-nowrap text-foreground">
+      <p className="pb-[0.2em] font-display text-[16.3cqw] leading-[0.85] font-bold whitespace-nowrap bg-gradient-to-b from-foreground via-foreground/90 to-muted/40 bg-clip-text text-transparent">
         {WORD.split("").map((letter, i) => (
           <motion.span
             key={i}
             data-wordmark-letter
-            className="inline-block"
+            className="inline-block bg-gradient-to-b from-foreground via-foreground/90 to-muted/40 bg-clip-text text-transparent"
             initial={false}
             animate={settled ? { y: "0%", opacity: 1 } : { y: "100%", opacity: 0 }}
             transition={reduce ? { duration: 0 } : { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: i * 0.05 }}

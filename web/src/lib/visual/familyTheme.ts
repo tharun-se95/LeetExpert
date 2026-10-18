@@ -71,7 +71,7 @@ export interface FamilyTheme extends FamilyInk {
 // background, elevated, code, surface. design-tokens.test.ts checks these
 // against globals.css, so a surface change cannot leave them stale.
 export const FAMILY_SURFACES: Record<ThemeName, readonly string[]> = {
-  light: ["#f1f4f9", "#ffffff", "#e4e9f2", "#d8dde8"],
+  light: ["#ffffff", "#ffffff", "#f8fafc", "#f1f5f9"],
   dark: ["#15202e", "#223145", "#1b2735", "#101a26"],
 };
 // The Grid's ink on its bright fills (5.84:1 on its blue, the tightest).

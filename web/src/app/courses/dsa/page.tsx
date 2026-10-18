@@ -44,6 +44,47 @@ const STAGE_DIFFICULTIES: Record<number, { level: string; label: string }> = {
   4: { level: "Global Reasoning", label: "Graphs & Dynamic Programming" },
 };
 
+const STAGE_THEMES: Record<
+  number,
+  {
+    kicker: string;
+    badge: string;
+    jumpDot: string;
+    jumpHover: string;
+  }
+> = {
+  0: {
+    kicker: "text-good",
+    badge: "border-good/40 bg-good-surface/40 text-good",
+    jumpDot: "bg-good",
+    jumpHover: "hover:border-good/60 hover:text-good",
+  },
+  1: {
+    kicker: "text-warn",
+    badge: "border-warn/40 bg-warn-surface/40 text-warn",
+    jumpDot: "bg-warn",
+    jumpHover: "hover:border-warn/60 hover:text-warn",
+  },
+  2: {
+    kicker: "text-info",
+    badge: "border-info/40 bg-info-surface/40 text-info",
+    jumpDot: "bg-info",
+    jumpHover: "hover:border-info/60 hover:text-info",
+  },
+  3: {
+    kicker: "text-accent",
+    badge: "border-accent/40 bg-pop/10 text-mark",
+    jumpDot: "bg-accent",
+    jumpHover: "hover:border-accent/60 hover:text-mark",
+  },
+  4: {
+    kicker: "text-good",
+    badge: "border-good/40 bg-good-surface/40 text-good",
+    jumpDot: "bg-good",
+    jumpHover: "hover:border-good/60 hover:text-good",
+  },
+};
+
 /**
  * Full curriculum map — stages and modules. The marketing sell page lives
  * at `/`; this is where learners browse structure before (or after) starting.
@@ -59,9 +100,9 @@ export default function CourseOverviewPage() {
       <JsonLd data={educationalCredentialLd()} />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[36rem] bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--accent)_14%,transparent),_transparent_65%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] bg-[radial-gradient(ellipse_80%_55%_at_50%_-10%,_color-mix(in_srgb,var(--good)_16%,transparent),_color-mix(in_srgb,var(--info)_14%,transparent)_50%,_color-mix(in_srgb,var(--accent)_10%,transparent)_75%,_transparent_90%)]"
       />
-      <div className="relative mx-auto max-w-6xl px-4 py-8 sm:py-12 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Navigation Breadcrumbs */}
         <Breadcrumbs
           items={[
@@ -71,13 +112,13 @@ export default function CourseOverviewPage() {
         />
 
         {/* Flagship Hero Card with 3D Banner */}
-        <div className="relative overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated/80 backdrop-blur-md p-6 shadow-elevation sm:p-8 lg:p-10">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
+        <div className="relative overflow-hidden rounded-[length:var(--radius-xl)] border border-border bg-elevated/85 backdrop-blur-md p-8 sm:p-10 lg:p-12 shadow-elevation">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-good/35 to-transparent" aria-hidden />
 
           <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-surface/80 px-3 py-1 font-mono text-xs uppercase tracking-wider text-accent">
-                <Sparkle weight="bold" className="h-3.5 w-3.5" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-good/40 bg-good-surface/40 px-3 py-1 font-mono text-xs uppercase tracking-wider text-good font-medium">
+                <span className="h-1.5 w-1.5 rounded-full bg-good animate-pulse" aria-hidden />
                 <span>Curriculum Architecture · Zero-Install Masterclass</span>
               </div>
               <h1 className="mt-3 font-display text-3xl font-bold uppercase tracking-tight text-foreground sm:text-4xl lg:text-5xl">
@@ -93,21 +134,21 @@ export default function CourseOverviewPage() {
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
                   href="/courses/dsa/getting-started/course-introduction"
-                  className="inline-flex h-10 items-center gap-2 rounded-[length:var(--radius-md)] bg-pop px-5 text-sm font-bold text-on-pop transition hover:opacity-90"
+                  className="inline-flex h-10 items-center gap-2 rounded-[length:var(--radius-md)] bg-good px-5 text-sm font-bold text-on-pop shadow-elevation transition hover:brightness-110 active:scale-[0.98]"
                 >
                   Start Stage 0: Foundations
                   <ArrowRight weight="bold" className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/courses/dsa/roadmap"
-                  className="inline-flex h-10 items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-surface/80 px-4 text-sm font-medium transition hover:border-accent/40 hover:bg-surface"
+                  className="inline-flex h-10 items-center gap-1.5 rounded-[length:var(--radius-md)] border border-info/40 bg-info-surface/20 px-4 text-sm font-medium text-info transition hover:bg-info-surface/35 hover:border-info/60"
                 >
-                  <MapTrifold weight="bold" className="h-4 w-4 text-accent" />
+                  <MapTrifold weight="bold" className="h-4 w-4 text-info" />
                   Curriculum Roadmap
                 </Link>
                 <Link
                   href="/courses/dsa/cheatsheets"
-                  className="inline-flex h-10 items-center gap-1.5 rounded-[length:var(--radius-md)] border border-border bg-surface/80 px-4 text-sm font-medium transition hover:border-accent/40 hover:bg-surface"
+                  className="inline-flex h-10 items-center gap-1.5 rounded-[length:var(--radius-md)] border border-accent/40 bg-surface/80 px-4 text-sm font-medium text-foreground transition hover:border-accent hover:bg-surface"
                 >
                   <FileText weight="bold" className="h-4 w-4 text-accent" />
                   Cheatsheets Hub
@@ -138,16 +179,22 @@ export default function CourseOverviewPage() {
                 Jump to Stage:
               </span>
               <div className="flex flex-wrap gap-2">
-                {STAGES.map((s) => (
-                  <a
-                    key={s.number}
-                    href={`#stage-${s.number}`}
-                    className="inline-flex items-center gap-1.5 rounded-[length:var(--radius-sm)] border border-border bg-surface/60 px-3 py-1 font-mono text-xs text-foreground transition hover:border-accent/40 hover:bg-surface hover:text-accent"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />
-                    <span>Stage 0{s.number}: {s.title}</span>
-                  </a>
-                ))}
+                {STAGES.map((s) => {
+                  const theme = STAGE_THEMES[s.number] ?? STAGE_THEMES[0];
+                  return (
+                    <a
+                      key={s.number}
+                      href={`#stage-${s.number}`}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 rounded-[length:var(--radius-sm)] border border-border bg-surface/70 px-3 py-1 font-mono text-xs text-foreground transition hover:bg-surface",
+                        theme.jumpHover,
+                      )}
+                    >
+                      <span className={cn("h-1.5 w-1.5 rounded-full", theme.jumpDot)} aria-hidden />
+                      <span>Stage 0{s.number}: {s.title}</span>
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -155,8 +202,8 @@ export default function CourseOverviewPage() {
 
         {/* Engineering Highlights Strip */}
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated/70 backdrop-blur-sm p-3.5 shadow-elevation">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.12] text-accent">
+          <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-good/30 bg-good-surface/25 backdrop-blur-sm p-3.5 shadow-elevation">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-good/15 text-good">
               <Code weight="bold" className="h-4.5 w-4.5" />
             </span>
             <div className="min-w-0">
@@ -164,8 +211,8 @@ export default function CourseOverviewPage() {
               <p className="truncate text-[11px] text-muted">In-browser Pyodide &amp; V8</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated/70 backdrop-blur-sm p-3.5 shadow-elevation">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.12] text-accent">
+          <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-info/30 bg-info-surface/25 backdrop-blur-sm p-3.5 shadow-elevation">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-info/15 text-info">
               <TreeStructure weight="bold" className="h-4.5 w-4.5" />
             </span>
             <div className="min-w-0">
@@ -173,8 +220,8 @@ export default function CourseOverviewPage() {
               <p className="truncate text-[11px] text-muted">Pointer &amp; stack visualizers</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated/70 backdrop-blur-sm p-3.5 shadow-elevation">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.12] text-accent">
+          <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-accent/30 bg-surface/80 backdrop-blur-sm p-3.5 shadow-elevation">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/15 text-accent">
               <Sparkle weight="bold" className="h-4.5 w-4.5" />
             </span>
             <div className="min-w-0">
@@ -182,8 +229,8 @@ export default function CourseOverviewPage() {
               <p className="truncate text-[11px] text-muted">Zero-leak edge-case hints</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-border bg-elevated/70 backdrop-blur-sm p-3.5 shadow-elevation">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-accent/[0.12] text-accent">
+          <div className="flex items-center gap-3 rounded-[length:var(--radius-md)] border border-warn/30 bg-warn-surface/25 backdrop-blur-sm p-3.5 shadow-elevation">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[length:var(--radius-xs)] bg-warn/15 text-warn">
               <Cpu weight="bold" className="h-4.5 w-4.5" />
             </span>
             <div className="min-w-0">
@@ -196,9 +243,9 @@ export default function CourseOverviewPage() {
         {/* Curriculum Telemetry Bar */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-pop animate-pulse" aria-hidden />
+            <span className="h-2 w-2 rounded-full bg-good animate-pulse" aria-hidden />
             <span>
-              <strong className="text-foreground font-bold">{availableCount}</strong> of <strong className="text-foreground font-bold">{MODULES.length}</strong> modules live &amp; interactive
+              <strong className="text-good font-bold">{availableCount}</strong> of <strong className="text-foreground font-bold">{MODULES.length}</strong> modules live &amp; interactive
             </span>
           </div>
           <SyncHint />
@@ -215,6 +262,7 @@ export default function CourseOverviewPage() {
             level: "Core",
             label: "Algorithmic Pattern",
           };
+          const stageTheme = STAGE_THEMES[stage.number] ?? STAGE_THEMES[0];
           const stageOverviews = overviewsByStage(stage.number);
 
           return (
@@ -230,10 +278,10 @@ export default function CourseOverviewPage() {
               <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs uppercase tracking-widest text-accent font-bold">
+                    <span className={cn("font-mono text-xs uppercase tracking-widest font-bold", stageTheme.kicker)}>
                       Stage // 0{stage.number}
                     </span>
-                    <span className="rounded-[length:var(--radius-xs)] border border-border bg-surface px-2 py-0.5 font-mono text-[10px] text-muted">
+                    <span className={cn("rounded-[length:var(--radius-xs)] border px-2 py-0.5 font-mono text-[10px] font-medium", stageTheme.badge)}>
                       {stageMeta.level}
                     </span>
                   </div>
@@ -258,7 +306,7 @@ export default function CourseOverviewPage() {
                   href={overviewHref(overview.slug)}
                   data-overview-card={overview.slug}
                   style={familyCssVars(overview.family)}
-                  className="group mb-5 block rounded-[length:var(--radius-lg)] border border-border bg-elevated/90 backdrop-blur-sm p-5 shadow-elevation transition hover:border-accent/45"
+                  className="group mb-5 block rounded-[length:var(--radius-lg)] border border-border border-l-4 border-l-accent bg-elevated/90 backdrop-blur-sm p-5 shadow-elevation transition hover:border-accent/45"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex-1">
@@ -290,7 +338,7 @@ export default function CourseOverviewPage() {
               ))}
 
               {/* Modules Grid */}
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-5 sm:grid-cols-2 lg:gap-6">
                 {stageModules.map((module) => {
                   const available = module.status === "available";
                   const family = moduleFamily(module);
@@ -305,17 +353,36 @@ export default function CourseOverviewPage() {
                       href={moduleHref(module.slug)}
                       style={family ? familyCssVars(family) : undefined}
                       className={cn(
-                        "module-card group block overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition hover:border-accent/45",
+                        "module-card group block min-h-[240px] overflow-hidden rounded-[length:var(--radius-lg)] border border-border bg-elevated shadow-elevation transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5 hover:border-accent/60 hover:shadow-elevation focus-visible:-translate-y-1.5 motion-reduce:hover:transform-none motion-reduce:transition-none",
                         !available && "opacity-70",
                       )}
                     >
-                      <div className="module-card-inner h-full">
+                      <div className="module-card-inner h-full min-h-[240px]">
                         {/* Front Face */}
-                        <div className="module-card-face module-card-front">
+                        <div className="module-card-face module-card-front relative min-h-[240px] bg-elevated bg-gradient-to-r from-[color:var(--family-accent)]/10 via-[color:var(--family-accent)]/[0.02] to-transparent">
+                          {/* Physical prominent binder spine & tab */}
+                          <div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-y-0 left-0 z-20 flex w-5 sm:w-6 flex-col items-center justify-between border-r border-border/70 bg-gradient-to-r from-[color:var(--family-accent)]/20 via-surface/40 to-transparent py-4"
+                          >
+                            {/* Binder spine indicator tab */}
+                            <div className="absolute top-4 -left-0.5 h-12 w-1.5 rounded-r-[length:var(--radius-sm)] bg-[color:var(--family-accent)]" />
+                            <div className="absolute inset-y-0 right-1 w-px border-r border-dashed border-border/80" />
+                            <span className="relative flex h-2.5 w-2.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
+                              <span className="h-1 w-1 rounded-full bg-foreground/50" />
+                            </span>
+                            <span className="relative flex h-2.5 w-2.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
+                              <span className="h-1 w-1 rounded-full bg-foreground/50" />
+                            </span>
+                            <span className="relative flex h-2.5 w-2.5 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
+                              <span className="h-1 w-1 rounded-full bg-foreground/50" />
+                            </span>
+                          </div>
+
                           <div
                             className={cn(
                               "relative border-b border-border bg-accent/[0.08]",
-                              !art && "px-3 pt-3 pb-2",
+                              !art && "px-4 pt-4 pb-3 sm:px-5 sm:pt-5 sm:pb-4",
                             )}
                           >
                             {art ? (
@@ -324,77 +391,87 @@ export default function CourseOverviewPage() {
                                   src={art.light}
                                   alt=""
                                   fill
-                                  sizes="(min-width: 1024px) 560px, (min-width: 640px) 46vw, 92vw"
+                                  sizes="(min-width: 1280px) 600px, (min-width: 640px) 50vw, 100vw"
                                   className="module-art-light object-cover"
                                 />
                                 <Image
                                   src={art.dark}
                                   alt=""
                                   fill
-                                  sizes="(min-width: 1024px) 560px, (min-width: 640px) 46vw, 92vw"
+                                  sizes="(min-width: 1280px) 600px, (min-width: 640px) 50vw, 100vw"
                                   className="module-art-dark object-cover"
                                 />
                               </div>
                             ) : (
-                              <div className="h-16 w-full sm:h-[4.5rem]">
+                              <div className="h-20 w-full sm:h-24">
                                 <ModuleGlyph slug={module.slug} />
                               </div>
                             )}
                             {available && familyLabel ? (
-                              <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-elevated/95 px-2 py-0.5">
+                              <span className="absolute top-3 right-3 z-20 inline-flex items-center gap-1.5 rounded-[length:var(--radius-xs)] border border-accent/40 bg-elevated/95 px-2.5 py-0.5 shadow-elevation backdrop-blur-sm">
                                 <span
-                                  className="h-1.5 w-1.5 rounded-full bg-accent"
+                                  className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"
                                   aria-hidden
                                 />
-                                <span className="font-mono text-[10px] tracking-wide text-muted">
+                                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-foreground">
                                   {familyLabel}
                                 </span>
                               </span>
                             ) : null}
                             {!available ? (
-                              <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted">
+                              <span className="absolute top-3 right-3 z-20 inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border bg-elevated/95 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted shadow-elevation backdrop-blur-sm">
                                 <Lock weight="bold" className="h-3 w-3" />
                                 Soon
                               </span>
                             ) : null}
                           </div>
-                          <div className="flex flex-1 flex-col p-4">
+                          <div className="flex flex-1 flex-col p-6 sm:p-7 pl-8 sm:pl-9">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs tabular-nums text-muted font-mono">
-                                {String(module.number).padStart(2, "0")}
+                              <span className="inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border/80 bg-surface/80 px-2 py-0.5 text-xs tabular-nums text-mark font-mono font-bold shadow-elevation">
+                                #{String(module.number).padStart(2, "0")}
                               </span>
                               {available ? (
-                                <span className="ml-auto font-mono text-[10px] tracking-wide text-muted">
+                                <span className="ml-auto inline-flex items-center rounded-[length:var(--radius-xs)] border border-border/80 bg-surface/70 px-2 py-0.5 font-mono text-[10px] font-medium tracking-wide text-foreground">
                                   {module.lessons.length} lessons
                                 </span>
                               ) : null}
                             </div>
-                            <h3 className="mt-1 font-display text-sm font-bold tracking-tight text-foreground group-hover:text-mark transition-colors">
+                            <h3 className="mt-2.5 font-display text-base sm:text-lg font-bold tracking-tight text-foreground group-hover:text-mark transition-colors">
                               {module.title}
                             </h3>
                           </div>
                         </div>
 
                         {/* Back Face */}
-                        <div className="module-card-face module-card-back bg-elevated">
-                          <div className="flex flex-1 flex-col p-4">
+                        <div className="module-card-face module-card-back relative min-h-[240px] bg-elevated bg-gradient-to-r from-[color:var(--family-accent)]/10 via-[color:var(--family-accent)]/[0.02] to-transparent">
+                          {/* Physical prominent binder spine & tab */}
+                          <div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-y-0 left-0 z-20 flex w-5 sm:w-6 flex-col items-center justify-between border-r border-border/70 bg-gradient-to-r from-[color:var(--family-accent)]/20 via-foreground/[0.02] to-transparent py-4"
+                          >
+                            <span className="h-1.5 w-1.5 rounded-full bg-border/80" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-border/80" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-border/80" />
+                          </div>
+
+                          <div className="flex flex-1 flex-col p-6 sm:p-7 pl-8 sm:pl-9">
                             <div className="module-card-back-head" aria-hidden>
-                              <span className="text-xs tabular-nums text-muted font-mono">
-                                {String(module.number).padStart(2, "0")}
+                              <span className="inline-flex items-center gap-1 rounded-[length:var(--radius-xs)] border border-border/80 bg-surface/80 px-2 py-0.5 text-xs tabular-nums text-muted font-mono font-bold">
+                                #{String(module.number).padStart(2, "0")}
                               </span>
-                              <p className="mt-1.5 text-sm font-bold text-mark">
+                              <p className="mt-2 font-display text-base sm:text-lg font-bold text-mark">
                                 {module.title}
                               </p>
                             </div>
-                            <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">
+                            <p className="mt-2.5 flex-1 text-sm leading-relaxed text-muted">
                               {module.description}
                             </p>
                             <span
                               aria-hidden
-                              className="mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wide text-mark"
+                              className="mt-4 inline-flex items-center gap-1.5 font-mono text-xs font-bold tracking-wide text-mark"
                             >
                               Open module
-                              <ArrowRight weight="bold" className="h-3 w-3" />
+                              <ArrowRight weight="bold" className="h-3.5 w-3.5" />
                             </span>
                           </div>
                         </div>

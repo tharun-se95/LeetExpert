@@ -135,12 +135,20 @@ export function ProblemAccordion({
   };
 
   return (
-    <div className={cn("divide-y divide-border/60", className)}>
+    <div className={cn("space-y-3", className)}>
       {SECTIONS.map((item) => {
         const isOpen = currentSection === item.id;
 
         return (
-          <div key={item.id} className="transition-colors duration-[var(--dur-fast)] ease-[var(--ease)]">
+          <div
+            key={item.id}
+            className={cn(
+              "rounded-[length:var(--radius-md)] transition-all duration-[var(--dur-fast)] ease-[var(--ease)]",
+              isOpen
+                ? "bg-elevated/70 shadow-elevation border border-border/80 ring-1 ring-accent/20 px-4 py-1"
+                : "border border-border/50 bg-surface/30 px-4 hover:border-border/80 hover:bg-surface/50",
+            )}
+          >
             <button
               type="button"
               id={`accordion-trigger-${item.id}`}
@@ -148,18 +156,18 @@ export function ProblemAccordion({
               aria-controls={`accordion-panel-${item.id}`}
               onClick={() => handleToggle(item.id)}
               className={cn(
-                "group flex w-full min-h-12 items-center justify-between py-3.5 text-left transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] touch-manipulation focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent",
+                "group flex w-full min-h-12 items-center justify-between py-3 text-left transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] touch-manipulation focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent",
                 isOpen
                   ? "text-foreground"
                   : "text-foreground/75 hover:text-foreground",
               )}
             >
-              <div className="flex min-w-0 items-baseline gap-3">
+              <div className="flex min-w-0 items-center gap-3">
                 <span
                   className={cn(
-                    "font-mono text-xs transition-colors duration-[var(--dur-fast)] ease-[var(--ease)]",
+                    "font-mono text-xs transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] rounded-[length:var(--radius-xs)] px-1.5 py-0.5",
                     isOpen
-                      ? "text-mark font-bold"
+                      ? "bg-accent/15 text-accent font-bold"
                       : "text-muted font-medium group-hover:text-foreground",
                   )}
                 >
@@ -200,16 +208,16 @@ export function ProblemAccordion({
                   {item.id === "description" ? (
                     <>
                       {difficulty || complexity || moduleTitle ? (
-                        <div className="mb-6 flex flex-wrap items-center gap-x-3.5 gap-y-2 border-b border-border/40 pb-3.5 text-xs">
+                        <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-border/40 pb-3.5 text-xs">
                           {difficulty ? (
                             <span
                               className={cn(
-                                "inline-flex items-center gap-1.5 font-mono font-bold text-xs",
+                                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono font-bold text-xs",
                                 difficulty === "Easy"
-                                  ? "text-good"
+                                  ? "border-good-line/60 bg-good-surface/40 text-good badge-glow-good"
                                   : difficulty === "Medium"
-                                    ? "text-warn"
-                                    : "text-bad",
+                                    ? "border-warn-line/60 bg-warn-surface/40 text-warn badge-glow-warn"
+                                    : "border-bad-line/60 bg-bad-surface/40 text-bad badge-glow-bad",
                               )}
                             >
                               <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />
@@ -218,38 +226,29 @@ export function ProblemAccordion({
                           ) : null}
 
                           {moduleTitle ? (
-                            <>
-                              <span className="text-border select-none" aria-hidden>/</span>
-                              <span className="font-mono text-muted text-xs">
-                                {moduleTitle}
-                              </span>
-                            </>
+                            <span className="inline-flex items-center rounded-full border border-border/70 bg-surface/60 px-2.5 py-1 font-mono text-xs text-muted">
+                              {moduleTitle}
+                            </span>
                           ) : null}
 
                           {complexity?.time ? (
-                            <>
-                              <span className="text-border select-none" aria-hidden>•</span>
-                              <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/85">
-                                <Clock size={13} className="text-accent" aria-hidden />
-                                <span className="text-muted">Target:</span>
-                                <span className="font-bold">{complexity.time}</span>
-                              </span>
-                            </>
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/80 shadow-elevation px-2.5 py-1 font-mono text-xs text-foreground/90">
+                              <Clock size={13} className="text-info" aria-hidden />
+                              <span className="text-muted">Target:</span>
+                              <span className="font-bold">{complexity.time}</span>
+                            </span>
                           ) : null}
 
                           {complexity?.space ? (
-                            <>
-                              <span className="text-border select-none" aria-hidden>•</span>
-                              <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/85">
-                                <Cpu size={13} className="text-mark" aria-hidden />
-                                <span className="text-muted">Aux Space:</span>
-                                <span className="font-bold">{complexity.space}</span>
-                              </span>
-                            </>
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/80 shadow-elevation px-2.5 py-1 font-mono text-xs text-foreground/90">
+                              <Cpu size={13} className="text-info" aria-hidden />
+                              <span className="text-muted">Aux Space:</span>
+                              <span className="font-bold">{complexity.space}</span>
+                            </span>
                           ) : null}
 
                           {isSolved ? (
-                            <span className="ml-auto inline-flex items-center gap-1.5 font-medium text-good text-xs">
+                            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-good-line/60 bg-good-surface/40 px-2.5 py-1 font-bold text-good text-xs badge-glow-good">
                               <Check size={12} weight="bold" aria-hidden />
                               Solved
                             </span>
@@ -301,21 +300,21 @@ export function ProblemAccordion({
                   )}
                 </div>
 
-                {/* Refined inline text navigation */}
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border/40 pt-4 text-xs font-mono">
+                {/* Refined section navigation CTAs */}
+                <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4 text-xs font-mono">
                   {item.id === "description" ? (
                     <div className="flex w-full items-center justify-between">
                       <span className="text-muted/70">Need intuition or approach?</span>
                       <button
                         type="button"
                         onClick={() => handleToggle("explanation")}
-                        className="group inline-flex items-center gap-1.5 text-accent font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-mark touch-manipulation"
+                        className="group inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3.5 py-1.5 text-accent font-medium transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent hover:bg-accent/20 hover:text-accent cursor-pointer touch-manipulation"
                       >
                         <span>Continue to Explanation</span>
                         <ArrowRight
                           size={12}
                           weight="bold"
-                          className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-0.5"
+                          className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-1"
                           aria-hidden
                         />
                       </button>
@@ -325,21 +324,21 @@ export function ProblemAccordion({
                       <button
                         type="button"
                         onClick={() => handleToggle("description")}
-                        className="inline-flex items-center gap-1 text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground touch-manipulation"
+                        className="group inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/60 px-3 py-1.5 text-muted transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-border hover:text-foreground cursor-pointer touch-manipulation"
                       >
-                        <ArrowLeft size={12} weight="bold" aria-hidden />
+                        <ArrowLeft size={12} weight="bold" className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:-translate-x-0.5" aria-hidden />
                         <span>Description</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleToggle("solution")}
-                        className="group inline-flex items-center gap-1.5 text-accent font-medium transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-mark touch-manipulation"
+                        className="group inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3.5 py-1.5 text-accent font-medium transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-accent hover:bg-accent/20 hover:text-accent cursor-pointer touch-manipulation"
                       >
                         <span>Continue to Solution</span>
                         <ArrowRight
                           size={12}
                           weight="bold"
-                          className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-0.5"
+                          className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-1"
                           aria-hidden
                         />
                       </button>
@@ -349,18 +348,18 @@ export function ProblemAccordion({
                       <button
                         type="button"
                         onClick={() => handleToggle("explanation")}
-                        className="inline-flex items-center gap-1 text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground touch-manipulation"
+                        className="group inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/60 px-3 py-1.5 text-muted transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-border hover:text-foreground cursor-pointer touch-manipulation"
                       >
-                        <ArrowLeft size={12} weight="bold" aria-hidden />
+                        <ArrowLeft size={12} weight="bold" className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:-translate-x-0.5" aria-hidden />
                         <span>Explanation</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleToggle("description")}
-                        className="inline-flex items-center gap-1 text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease)] hover:text-foreground touch-manipulation"
+                        className="group inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/60 px-3 py-1.5 text-muted transition-all duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-border hover:text-foreground cursor-pointer touch-manipulation"
                       >
                         <span>Back to Description</span>
-                        <ArrowRight size={12} weight="bold" aria-hidden />
+                        <ArrowRight size={12} weight="bold" className="transition-transform duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-0.5" aria-hidden />
                       </button>
                     </>
                   )}

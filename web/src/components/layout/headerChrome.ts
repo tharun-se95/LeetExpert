@@ -13,12 +13,13 @@ export const LOGO_LAMP_SIZE = 26;
 
 export const WORDMARK = "truncate text-base font-semibold tracking-tight";
 
-/** Full ink, no pill; a 1px underline on hover. min-h-11 is the touch target below md. */
+/** Floating capsule nav link. min-h-11 is the touch target below md. */
 export const NAV_LINK =
-  "inline-flex min-h-11 items-center rounded-[length:var(--radius-xs)] text-base font-normal text-foreground decoration-border underline-offset-4 transition-colors hover:underline hover:decoration-foreground md:min-h-10";
+  "relative inline-flex min-h-11 items-center px-3 py-1.5 rounded-full text-sm font-medium text-muted transition-all duration-[var(--dur)] hover:text-foreground md:min-h-8 border border-transparent";
 
-/** The current mode: a steady 2px ink underline, so a hover never reads as selection. */
-export const NAV_LINK_ACTIVE = "underline decoration-foreground decoration-2";
+/** The current mode: floating capsule with subtle lift and ambient accent bottom halo. */
+export const NAV_LINK_ACTIVE =
+  "bg-surface/80 border-border/80 shadow-elevation text-foreground nav-link-active-halo";
 
 /** Round hairline controls: search, the lessons menu button (the theme toggle takes its own size). */
 export const ROUND_CONTROL =
