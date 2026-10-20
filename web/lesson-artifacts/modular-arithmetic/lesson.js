@@ -157,10 +157,7 @@ function mountHeroClock() {
   if (!svg) return;
   var W = 560, H = 160, cx = 280, cy = 80, R = 52, m = 5;
   var target = FACTS.slot8_5;
-  var box = document.createElement('div');
-  box.className = 'hero-box';
-  svg.parentNode.insertBefore(box, svg);
-  box.appendChild(svg);
+  var box = document.getElementById('heroBox');
   var h = '';
 
   h += '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="var(--hair2)" stroke-width="2"/>';

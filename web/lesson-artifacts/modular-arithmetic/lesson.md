@@ -8,8 +8,8 @@ chips:
   - "Python floors, **JavaScript truncates**"
   - "never bare % on **negative indices**"
 hero: |
-  <div class="hero-stage"><div class="hero-art navy"><svg id="heroClock" viewBox="0 0 560 160" role="img" aria-label="A 5-slot rotating carousel where 8 and negative 7 land on the same slot."></svg>
-  <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum"></b> <span id="heroUnit"></span></div><div id="heroCap"></div></div></div></div>
+  <div class="hero-stage"><div class="hero-art navy"><div class="hero-box" id="heroBox"><svg id="heroClock" viewBox="0 0 560 160" role="img" aria-label="A 5-slot rotating carousel where 8 and negative 7 land on the same slot."></svg></div>
+  <div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">&nbsp;</b> <span id="heroUnit">shared carousel slot</span></div><div id="heroCap"></div></div></div></div>
 ---
 
 ## The rotating book carousel {#problem toc="The rotating carousel"}

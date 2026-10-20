@@ -513,27 +513,27 @@
   "math-for-dsa/modular-arithmetic": {
    "evidence": {
     "build": {
-     "source": "f69dd6091338db69",
-     "on": "2026-10-18",
-     "commit": "3fdcfda",
-     "result": "math-for-dsa/modular-arithmetic: 154,878 bytes -> lesson-artifacts/dist/math-for-dsa/modular-arithmetic.html"
+     "source": "6af3fdedd0106d76",
+     "on": "2026-10-20",
+     "commit": "7e783f6",
+     "result": "math-for-dsa/modular-arithmetic: 154,916 bytes -> lesson-artifacts/dist/math-for-dsa/modular-arithmetic.html"
     },
     "code": {
-     "source": "f69dd6091338db69",
-     "on": "2026-10-18",
-     "commit": "3fdcfda",
+     "source": "6af3fdedd0106d76",
+     "on": "2026-10-20",
+     "commit": "7e783f6",
      "result": "All checks passed."
     },
     "light": {
-     "source": "f69dd6091338db69",
-     "on": "2026-10-18",
-     "commit": "3fdcfda",
+     "source": "6af3fdedd0106d76",
+     "on": "2026-10-20",
+     "commit": "7e783f6",
      "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     },
     "dark": {
-     "source": "f69dd6091338db69",
-     "on": "2026-10-18",
-     "commit": "3fdcfda",
+     "source": "6af3fdedd0106d76",
+     "on": "2026-10-20",
+     "commit": "7e783f6",
      "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
     }
    },

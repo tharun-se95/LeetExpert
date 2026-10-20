@@ -1,5 +1,6 @@
 /* Hero labels are HTML over the SVG so they keep a readable size on a phone */
 .hero-box { position: relative; }
+.hero-box svg { display: block; width: 100%; height: auto; }
 .hero-lab { position: absolute; transform: translate(-50%, -50%); font: 700 12px 'JetBrains Mono', monospace; white-space: nowrap; pointer-events: none; }
 .hero-lab-off { color: var(--mut); }
 .hero-lab-on { color: var(--on-pop); font-size: 13px; }
