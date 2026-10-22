@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { Cheatsheet } from "@/components/cheatsheet/Cheatsheet";
 import { AudioMini } from "@/components/course/AudioMini";
 import { ChapterInfographic } from "@/components/course/ChapterInfographic";
+import { ConceptArtifactView } from "@/components/course/ConceptArtifactView";
 import { LessonView } from "@/components/course/LessonView";
 import { WatchLessonLink } from "@/components/course/WatchLessonLink";
 import { LESSON_EMBEDS } from "@/components/course/embeds";
@@ -19,6 +20,7 @@ import { getCheatsheet } from "@/lib/course/cheatsheets/registry";
 import { getChapterMedia } from "@/lib/course/media";
 import { getLesson, getModule } from "@/lib/course/manifest";
 import { extractQuizFence } from "@/lib/content/extractQuizFence";
+import { getLessonArtifact } from "@/lib/course/lessonArtifacts";
 import {
   extractPracticeProblemsFence,
   mergePracticeProblems,
@@ -147,8 +149,9 @@ export default async function LessonPage({ params }: PageProps) {
 
   const chapterMedia = getChapterMedia(moduleSlug, lessonSlug);
   const { body, quizSource } = extractQuizFence(lesson.markdown);
+  const artifact = getLessonArtifact(moduleSlug, lessonSlug);
 
-  return (
+  const classicView = (
     <LessonView
       lesson={{ ...lesson, markdown: body }}
       eyebrow={`Module ${mod.number} · ${mod.title}`}
@@ -185,4 +188,21 @@ export default async function LessonPage({ params }: PageProps) {
       afterPage={quizSource ? <Quiz source={quizSource} /> : undefined}
     />
   );
+
+  if (artifact) {
+    return (
+      <ConceptArtifactView
+        artifact={artifact}
+        title={meta.lesson.title}
+        eyebrow={`Module ${mod.number} · ${mod.title}`}
+        breadcrumbs={breadcrumbs}
+        prev={prevLink}
+        next={nextLink}
+        jsonLd={lessonJsonLd}
+        notesView={classicView}
+      />
+    );
+  }
+
+  return classicView;
 }

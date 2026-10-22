@@ -28,6 +28,7 @@ import { allLessonIds as allNextjsLessonIds } from "@/app/courses/nextjs/manifes
 import { NEXTJS_COURSE } from "@/app/courses/nextjs/registry";
 import type { FamilyId } from "@/lib/content/manifest";
 import { activeCourseSlugFor } from "@/lib/courses/activeCourse";
+import { isConceptLessonArtifactPath } from "@/lib/course/lessonArtifacts";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_KEY = "dsa-sidebar-open";
@@ -61,6 +62,8 @@ export function isConceptMapPath(pathname: string): boolean {
 export function isOverviewPath(pathname: string): boolean {
   return /^\/courses\/dsa\/overviews\/[^/]+\/?$/.test(pathname);
 }
+
+export { isConceptLessonArtifactPath };
 
 
 /** The home page is a full-width landing — no course nav chrome.
@@ -140,7 +143,8 @@ export function AppShell({ children, authEnabled = false }: { children: React.Re
   const fillMain =
     ideViewport ||
     isConceptMapPath(pathname) ||
-    isOverviewPath(pathname);
+    isOverviewPath(pathname) ||
+    isConceptLessonArtifactPath(pathname);
   // Every /courses/nextjs/* route 404s while the course is disabled (see
   // NEXTJS_COURSE.status), but the root layout still renders AppShell
   // around that 404 body — without this, a disabled course's full sidebar

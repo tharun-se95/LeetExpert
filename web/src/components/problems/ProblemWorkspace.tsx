@@ -17,6 +17,7 @@ import {
   Check,
   CaretLeft,
   FileText,
+  Lightbulb,
   PencilSimple,
   Question,
   ShareNetwork,
@@ -40,13 +41,15 @@ import { IdeWithCoach } from "@/components/coach/IdeWithCoach";
 import { ProblemAccordion } from "@/components/problems/ProblemAccordion";
 import { PROBLEM_DIFFICULTY, type Difficulty } from "@/lib/course/problemDifficulty";
 import { ShareProblemModal } from "@/components/problems/ShareProblemModal";
+import { LessonArtifactPanel } from "@/components/problems/LessonArtifactFrame";
+import { getLessonArtifact, type LessonArtifact } from "@/lib/course/lessonArtifacts";
 
 interface NeighborLink {
   href: string;
   title: string;
 }
 
-type ContentTab = "problem" | "quiz";
+type ContentTab = "interactive" | "problem" | "quiz";
 type WorkspaceTab = ContentTab | "code" | "coach";
 
 /**
@@ -54,10 +57,17 @@ type WorkspaceTab = ContentTab | "code" | "coach";
  * bar rather than globally unique across the app.
  */
 const TAB_ICON: Record<WorkspaceTab, Icon> = {
+  interactive: Lightbulb,
   problem: FileText,
   quiz: Question,
   code: PencilSimple,
   coach: Sparkle,
+};
+
+/** Leading tab for problem lessons equipped with an interactive artifact. */
+const INTERACTIVE_TAB: { id: ContentTab; label: string } = {
+  id: "interactive",
+  label: "Lesson",
 };
 
 const CONTENT_TABS: { id: ContentTab; label: string }[] = [
@@ -107,7 +117,10 @@ export function ProblemWorkspace({
   const { solved, markSolved } = useProgress();
   const id = lessonId(lesson.moduleSlug, lesson.lessonSlug);
   const isSolved = solved.has(id);
-  const [tab, setTab] = useState<WorkspaceTab>("problem");
+  const artifact = getLessonArtifact(lesson.moduleSlug, lesson.lessonSlug);
+  const [tab, setTab] = useState<WorkspaceTab>(
+    artifact ? "interactive" : "problem",
+  );
   const [wide, setWide] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const tabsId = useId();
@@ -119,13 +132,19 @@ export function ProblemWorkspace({
       setWide(nextWide);
       // Desktop has no Code tab — fall back so the left pane stays valid.
       if (nextWide) {
-        setTab((t) => (t === "code" || t === "coach" ? "problem" : t));
+        setTab((t) =>
+          t === "code" || t === "coach"
+            ? artifact
+              ? "interactive"
+              : "problem"
+            : t,
+        );
       }
     };
     sync();
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
-  }, []);
+  }, [artifact]);
 
   const { explanation, solution, quiz } = useMemo(
     () => splitProblemTabs(lesson.sandbox.afterSandbox),
@@ -149,19 +168,25 @@ export function ProblemWorkspace({
   const difficulty = PROBLEM_DIFFICULTY[lesson.lessonSlug];
 
   const contentTab: ContentTab =
-    tab === "code" || tab === "coach" ? "problem" : tab;
+    tab === "code" || tab === "coach"
+      ? artifact
+        ? "interactive"
+        : "problem"
+      : tab;
 
   const activeContentTabs = useMemo(() => {
-    return quiz.trim()
+    const base = quiz.trim()
       ? CONTENT_TABS
       : CONTENT_TABS.filter((t) => t.id !== "quiz");
-  }, [quiz]);
+    return artifact ? [INTERACTIVE_TAB, ...base] : base;
+  }, [quiz, artifact]);
 
   const activeMobileTabs = useMemo(() => {
-    return quiz.trim()
+    const base = quiz.trim()
       ? MOBILE_TABS
       : MOBILE_TABS.filter((t) => t.id !== "quiz");
-  }, [quiz]);
+    return artifact ? [INTERACTIVE_TAB, ...base] : base;
+  }, [quiz, artifact]);
 
   const sandbox = (
     <Sandbox
@@ -294,6 +319,7 @@ export function ProblemWorkspace({
                   tab={contentTab}
                   onTabChange={setTab}
                   tabs={activeContentTabs}
+                  artifact={artifact}
                   descriptionSource={lesson.sandbox.beforeSandbox}
                   explanationSource={explanation}
                   solutionSource={solution}
@@ -315,6 +341,7 @@ export function ProblemWorkspace({
             tab={tab}
             onTabChange={setTab}
             tabs={activeMobileTabs}
+            artifact={artifact}
             descriptionSource={lesson.sandbox.beforeSandbox}
             explanationSource={explanation}
             solutionSource={solution}
@@ -348,6 +375,7 @@ function MobileWorkspace({
   tab,
   onTabChange,
   tabs,
+  artifact,
   descriptionSource,
   explanationSource,
   solutionSource,
@@ -364,6 +392,7 @@ function MobileWorkspace({
   tab: WorkspaceTab;
   onTabChange: (tab: WorkspaceTab) => void;
   tabs: readonly { id: WorkspaceTab; label: string }[];
+  artifact: LessonArtifact | null;
   descriptionSource: string;
   explanationSource: string;
   solutionSource: string;
@@ -399,7 +428,13 @@ function MobileWorkspace({
         className="h-11"
         badgeId={unread ? "coach" : null}
       />
-      {showArticle ? (
+      {showArticle && tab === "interactive" && artifact ? (
+        <LessonArtifactPanel
+          artifact={artifact}
+          id={panelId}
+          labelledBy={`${tabsId}-tab-${tab}`}
+        />
+      ) : showArticle ? (
         <div
           role="tabpanel"
           id={panelId}
@@ -457,6 +492,7 @@ function LeftPane({
   tab,
   onTabChange,
   tabs,
+  artifact,
   descriptionSource,
   explanationSource,
   solutionSource,
@@ -472,6 +508,7 @@ function LeftPane({
   tab: ContentTab;
   onTabChange: (tab: WorkspaceTab) => void;
   tabs: readonly { id: ContentTab; label: string }[];
+  artifact: LessonArtifact | null;
   descriptionSource: string;
   explanationSource: string;
   solutionSource: string;
@@ -499,33 +536,41 @@ function LeftPane({
           className="h-9"
         />
       ) : null}
-      <div
-        role="tabpanel"
-        id={panelId}
-        aria-labelledby={tabs.length > 1 ? `${tabsId}-tab-${tab}` : undefined}
-        className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 lg:pb-21"
-      >
-        {tab === "problem" ? (
-          <ProblemAccordion
-            descriptionSource={descriptionSource}
-            explanationSource={explanationSource}
-            solutionSource={solutionSource}
-            highlightedBlocks={highlightedBlocks}
-            highlightedTabs={highlightedTabs}
-            difficulty={difficulty}
-            moduleTitle={moduleTitle}
-            complexity={complexity}
-            isSolved={isSolved}
-          />
-        ) : (
-          <ContentBody
-            tab="quiz"
-            source={quizSource}
-            highlightedBlocks={highlightedBlocks}
-            highlightedTabs={highlightedTabs}
-          />
-        )}
-      </div>
+      {tab === "interactive" && artifact ? (
+        <LessonArtifactPanel
+          artifact={artifact}
+          id={panelId}
+          labelledBy={tabs.length > 1 ? `${tabsId}-tab-${tab}` : ""}
+        />
+      ) : (
+        <div
+          role="tabpanel"
+          id={panelId}
+          aria-labelledby={tabs.length > 1 ? `${tabsId}-tab-${tab}` : undefined}
+          className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 lg:pb-21"
+        >
+          {tab === "problem" ? (
+            <ProblemAccordion
+              descriptionSource={descriptionSource}
+              explanationSource={explanationSource}
+              solutionSource={solutionSource}
+              highlightedBlocks={highlightedBlocks}
+              highlightedTabs={highlightedTabs}
+              difficulty={difficulty}
+              moduleTitle={moduleTitle}
+              complexity={complexity}
+              isSolved={isSolved}
+            />
+          ) : (
+            <ContentBody
+              tab="quiz"
+              source={quizSource}
+              highlightedBlocks={highlightedBlocks}
+              highlightedTabs={highlightedTabs}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }

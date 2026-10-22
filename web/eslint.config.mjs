@@ -34,6 +34,7 @@ const eslintConfig = defineConfig([
     // Built by scripts/build-overviews.mjs (gitignored): generated pages and
     // the vendored motion.js, not our source.
     "public/artifacts/**",
+    "public/lessons/**",
   ]),
   {
     rules: {
