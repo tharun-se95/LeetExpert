@@ -1,0 +1,38 @@
+/* Dynamic Arrays: hero labels are HTML over the SVG so they keep a readable size on a phone */
+.hero-box { position: relative; }
+.hero-box svg { display: block; width: 100%; height: auto; }
+.hero-lab { position: absolute; transform: translate(-50%, -50%); font: 700 11px 'JetBrains Mono', monospace; white-space: nowrap; pointer-events: none; }
+.hero-lab-off { color: var(--mut); font-size: 10px; }
+.hero-lab-b { color: var(--b-ink); }
+.hero-lab-o { color: var(--o-ink); font-weight: 600; font-size: 12px; }
+#heroCap { min-height: 2.8em; line-height: 1.4; }
+.hero-num { line-height: 1.2; min-height: 1.2em; }
+#heroNum { display: inline-block; min-width: 2ch; }
+.hero-read { flex-direction: column; align-items: flex-start; gap: 4px; }
+
+/* shared widget parts */
+.cm-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; min-height: 100px; }
+.cm-card { padding: 10px 12px; border: 1px solid var(--hair2); border-radius: 8px; background: var(--card); display: flex; flex-direction: column; gap: 2px; min-height: 84px; }
+.cm-k { font: 700 11px 'Space Mono', monospace; color: var(--mut); text-transform: uppercase; letter-spacing: 0.04em; }
+.cm-v { font: 600 18px 'JetBrains Mono', monospace; color: var(--fg); }
+.cm-sub { font-size: 12px; color: var(--mut); line-height: 1.4; }
+.model-ctrls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.lp-sl { display: flex; align-items: center; gap: 8px; font: 500 13px 'Space Grotesk', sans-serif; }
+.lp-sl input { width: 180px; cursor: pointer; accent-color: var(--fam); }
+.lp-sl b { font-family: 'JetBrains Mono', monospace; min-width: 4ch; }
+.widget .extabs { min-height: 35px; box-sizing: border-box; }
+.da-note { font: 500 13px 'JetBrains Mono', monospace; color: var(--mut); }
+
+/* growth-policy plot: no text inside the scaled drawing */
+.po-plot { background: var(--deep); border: 1px solid var(--hair); border-radius: 10px; padding: 8px; }
+.po-plot svg { display: block; width: 100%; height: auto; aspect-ratio: 560 / 140; }
+.po-other { fill: none; stroke: var(--hair2); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.po-cur { fill: none; stroke: var(--fam); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.po-n { stroke: var(--mut); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+#poNote { min-height: 3em; }
+
+/* shrink thrash bars */
+.th-bars { display: flex; align-items: flex-end; gap: 3px; height: 64px; padding: 4px 6px; background: var(--deep); border: 1px solid var(--hair); border-radius: 10px; overflow-x: auto; }
+.th-bars i { flex: 1 0 8px; max-width: 22px; border-radius: 2px; background: var(--hair2); }
+.th-bars i.cp.op-a { background: var(--k-cur); }
+.th-bars i.cp.op-p { background: var(--k-bad); }

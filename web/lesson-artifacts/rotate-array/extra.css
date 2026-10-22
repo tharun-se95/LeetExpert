@@ -1,0 +1,124 @@
+/* rotate-array extra.css: scoped styles adhering to kit.css token ladder */
+.ra-stage {
+  position: relative;
+  width: 100%;
+  margin: 14px 0;
+}
+
+.ra-lane {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--hair2);
+  border-radius: 8px;
+}
+
+.ra-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 52px;
+  border-radius: 6px;
+  background: var(--well);
+  border: 1.5px solid var(--hair2);
+  color: var(--fg);
+  font: 600 15px 'JetBrains Mono', monospace;
+  transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.ra-cell .idx {
+  position: absolute;
+  top: -18px;
+  font-size: 10.5px;
+  color: var(--fg);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.ra-cell.blk-a {
+  border-color: var(--fam);
+  background: color-mix(in srgb, var(--fam) 14%, var(--card));
+}
+
+.ra-cell.blk-b {
+  border-color: var(--o-ink);
+  background: color-mix(in srgb, var(--o-ink) 14%, var(--card));
+}
+
+.ra-cell.lit {
+  border-color: var(--g-ink);
+  box-shadow: 0 0 0 2px var(--g-ink);
+}
+
+.ra-split {
+  width: 2px;
+  height: 48px;
+  background: var(--hair2);
+  margin: 0 4px;
+}
+
+.ra-readout {
+  margin-top: 10px;
+  text-align: center;
+  font: 500 13px 'JetBrains Mono', monospace;
+  color: var(--mut);
+}
+
+.ra-readout b {
+  color: var(--fg);
+}
+
+/* byhand and predict actions */
+.ra-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.ra-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: var(--well);
+  border: 1.5px solid var(--hair2);
+  color: var(--fg);
+  font: 500 13px 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.ra-btn:hover {
+  border-color: var(--fam);
+  background: color-mix(in srgb, var(--fam) 10%, var(--well));
+}
+
+.ra-btn.active {
+  border-color: var(--fam);
+  background: var(--fam);
+  color: var(--fam-on);
+}
+
+.ra-btn.reset {
+  border-color: var(--hair2);
+  color: var(--mut);
+}
+
+.ra-hint {
+  font: 400 12.5px 'Space Grotesk', sans-serif;
+  color: var(--mut);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ra-cell, .ra-btn {
+    transition: none !important;
+  }
+}

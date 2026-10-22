@@ -1,0 +1,30 @@
+/* hero: array cells transforming from mixed to partitioned */
+#heroCap { flex: 1 1 15rem; min-height: 4.8em; text-align: left; }
+@media (min-width: 600px) { #heroCap { min-height: 3.5em; text-align: right; } }
+.ht-cell, .ht-val, .ht-tag, .ht-track {
+  transition: fill .5s ease, stroke .5s ease, opacity .5s ease, transform .5s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ht-cell, .ht-val, .ht-tag, .ht-track { transition: none; }
+}
+.ht-lab { font: 500 11px 'JetBrains Mono', monospace; fill: var(--mut); }
+.ht-cell { fill: var(--card); stroke: var(--hair2); stroke-width: 1.5; }
+.ht-cell.lit { stroke: var(--fam); stroke-width: 2.4; }
+.ht-cell.zero { stroke-dasharray: 4 2; }
+.ht-cell.done { stroke: var(--fam); }
+.ht-val { font: 600 15px 'JetBrains Mono', monospace; fill: var(--fg); text-anchor: middle; dominant-baseline: central; }
+.ht-val.zero { fill: var(--mut); }
+.ht-tag { font: 500 11px 'JetBrains Mono', monospace; fill: var(--fam); text-anchor: middle; }
+
+/* byhand interactive buttons */
+#byhand .stmts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+#byhand .stmts .btn2 { min-width: 10rem; justify-content: center; }
+#byhand .stmts code { font-size: 12.5px; background: none; padding: 0; }
+.lv-hint { font-size: 12.5px; color: var(--mut); align-self: center; white-space: nowrap; }
+
+/* predict mini summary */
+.pl-mini { display: flex; flex-wrap: wrap; gap: 6px 18px; font: 500 13px 'JetBrains Mono', monospace; color: var(--fg); padding: 10px 2px; }
+
+/* cost note and comparisons */
+.cost-note { font-size: 13.5px; color: var(--mut); margin-top: 10px; line-height: 1.5; }
+.cost-note b { color: var(--fg); }

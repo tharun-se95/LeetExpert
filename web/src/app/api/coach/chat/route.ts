@@ -10,7 +10,6 @@ import {
   type CoachQuota,
 } from "@/lib/coach/quota";
 import {
-  VISITOR_COOKIE,
   newVisitorId,
   readVisitorId,
   visitorCookieHeader,
@@ -125,5 +124,3 @@ export async function GET(req: Request): Promise<Response> {
     visitor.fresh,
   );
 }
-
-export { VISITOR_COOKIE };
