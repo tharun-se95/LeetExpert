@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
@@ -8,7 +9,16 @@ import {
 } from "../src/lib/course/lessonArtifacts";
 import { getLesson } from "../src/lib/course/manifest";
 
-const PUBLIC = join(__dirname, "..", "public");
+const WEB = join(__dirname, "..");
+const PUBLIC = join(WEB, "public");
+
+beforeAll(() => {
+  const run = spawnSync("node", [join(WEB, "scripts", "build-lesson-artifacts.mjs")], {
+    cwd: WEB,
+    encoding: "utf8",
+  });
+  expect(run.status, run.stdout + run.stderr).toBe(0);
+}, 120_000);
 
 describe("lesson artifacts registry", () => {
   it("every key names a real lesson in the course manifest", () => {
