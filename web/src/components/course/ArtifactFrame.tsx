@@ -22,12 +22,15 @@ interface ArtifactFrameProps {
   /**
    * "concept": Full lesson presentation inside the main course desk. Preserves
    * the 2-column desktop hero, 3D visual art, and permanently displays the
-   * "On this page" TOC rail without duplicate top bars.
+   * native collapsed "On this page" TOC rail on the left margin (expanding on hover)
+   * without duplicate inside-iframe top bars.
    *
    * "problem": Compact single-column presentation inside ProblemWorkspace's
    * narrow side tab beside the code editor.
+   *
+   * "embed": Static iframe embedding with ?embed=1 query flag (e.g. overview pages).
    */
-  mode?: "concept" | "problem";
+  mode?: "concept" | "problem" | "embed";
 }
 
 export function ArtifactFrame({ src, title, mode = "concept" }: ArtifactFrameProps) {
@@ -48,32 +51,22 @@ export function ArtifactFrame({ src, title, mode = "concept" }: ArtifactFramePro
         /* Hide redundant inside-iframe header since app chrome sits above */
         .top { display: none !important; }
 
-        /* Permanently display and style the 'On this page' contents rail */
-        .split .toc {
-          opacity: 1 !important;
-          visibility: visible !important;
-          transform: translateY(-50%) !important;
-          display: flex !important;
-          gap: 6px !important;
-          padding: 12px 14px !important;
-          min-width: 170px !important;
-        }
-        .split .toc .kick {
-          display: block !important;
-          font-family: 'JetBrains Mono', monospace !important;
-          font-size: 11px !important;
-          letter-spacing: 0.1em !important;
-          text-transform: uppercase !important;
-          color: var(--mut) !important;
-          margin-bottom: 6px !important;
-        }
-        .split .toc a {
-          font-size: 13px !important;
-          gap: 8px !important;
-          padding: 4px 8px !important;
-          display: flex !important;
-          align-items: center !important;
-          white-space: nowrap !important;
+        /* The 'On this page' contents rail:
+           Reuses the native collapsed icon-rail on the left margin that opens on hover/focus. */
+        @media (min-width: 1024px) {
+          .split .toc,
+          .split .toc.auto:not(.on) {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(-50%) !important;
+            left: max(12px, calc((100vw - 1180px) / 2 - 72px)) !important;
+            z-index: 25 !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          }
+          .split .toc a {
+            white-space: nowrap !important;
+          }
         }
 
         /* Guarantee 2-column hero with visual component side-by-side with text */
@@ -112,7 +105,7 @@ export function ArtifactFrame({ src, title, mode = "concept" }: ArtifactFramePro
     if (post()) setReady(true);
   }, [post]);
 
-  const frameSrc = mode === "problem" ? `${src}?embed=1` : src;
+  const frameSrc = mode === "concept" ? src : `${src}?embed=1`;
 
   return (
     <iframe

@@ -75,6 +75,7 @@ export default async function OverviewPage({ params }: PageProps) {
         <ArtifactFrame
           src={overviewSrc(overview.slug)}
           title={`${overview.title}, interactive overview`}
+          mode="embed"
         />
       </div>
       <div className="mt-3 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-t border-border pt-3">
