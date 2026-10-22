@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { isConceptLessonArtifactPath } from "@/lib/course/lessonArtifacts";
 import { cn } from "@/lib/utils";
 
 /**
@@ -9,8 +10,13 @@ import { cn } from "@/lib/utils";
  */
 export function FloatingLivePresence() {
   const pathname = usePathname();
-  // Don't clutter the IDE cockpit or landing page hero (which already has its own ticker).
-  if (pathname === "/" || pathname.includes("/problems/")) {
+  // Don't clutter the IDE cockpit, landing page hero, or concept artifact lessons
+  // where the bottom navigation bar needs unobstructed click targets.
+  if (
+    pathname === "/" ||
+    pathname.includes("/problems/") ||
+    isConceptLessonArtifactPath(pathname)
+  ) {
     return null;
   }
 

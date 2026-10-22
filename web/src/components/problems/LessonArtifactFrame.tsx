@@ -7,7 +7,7 @@ import type { LessonArtifact } from "@/lib/course/lessonArtifacts";
  * Shows a lesson's interactive artifact inside the problem workspace tab.
  */
 export function LessonArtifactFrame({ artifact }: { artifact: LessonArtifact }) {
-  return <ArtifactFrame src={artifact.src} title={artifact.title} />;
+  return <ArtifactFrame src={artifact.src} title={artifact.title} mode="problem" />;
 }
 
 /**
