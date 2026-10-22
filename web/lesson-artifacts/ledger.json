@@ -647,7 +647,32 @@
    "family": null
   },
   "arrays/contiguous-memory": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "9f52c00a4868403d",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "arrays/contiguous-memory: 156,689 bytes -> web/lesson-artifacts/dist/arrays/contiguous-memory.html"
+    },
+    "code": {
+     "source": "9f52c00a4868403d",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "all claims hold"
+    },
+    "light": {
+     "source": "9f52c00a4868403d",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "9f52c00a4868403d",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "arrays",
    "moduleNumber": 4,
@@ -656,7 +681,32 @@
    "family": "linear-traversal"
   },
   "arrays/dynamic-arrays": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "fdbe1b8eef5ccbf9",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "arrays/dynamic-arrays: 207,479 bytes -> web/lesson-artifacts/dist/arrays/dynamic-arrays.html"
+    },
+    "code": {
+     "source": "fdbe1b8eef5ccbf9",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "fdbe1b8eef5ccbf9",
+     "on": "2026-10-20",
+     "commit": "b30a513",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "fdbe1b8eef5ccbf9",
+     "on": "2026-10-20",
+     "commit": "b30a513",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "arrays",
    "moduleNumber": 4,
@@ -665,7 +715,32 @@
    "family": "linear-traversal"
   },
   "arrays/in-place-foundations": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "0f737894b94916ab",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "arrays/in-place-foundations: 215,547 bytes -> web/lesson-artifacts/dist/arrays/in-place-foundations.html"
+    },
+    "code": {
+     "source": "0f737894b94916ab",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "0f737894b94916ab",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "0f737894b94916ab",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "arrays",
    "moduleNumber": 4,
@@ -674,7 +749,32 @@
    "family": "linear-traversal"
   },
   "arrays/stable-compaction-cyclic-placement": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "ee0d44116771b52e",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "arrays/stable-compaction-cyclic-placement: 269,964 bytes -> web/lesson-artifacts/dist/arrays/stable-compaction-cyclic-placement.html"
+    },
+    "code": {
+     "source": "ee0d44116771b52e",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "All checks passed."
+    },
+    "light": {
+     "source": "ee0d44116771b52e",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "ee0d44116771b52e",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "arrays",
    "moduleNumber": 4,
@@ -683,7 +783,32 @@
    "family": "linear-traversal"
   },
   "arrays/remove-duplicates-sorted": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "f7b38a3bb1304011",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "arrays/remove-duplicates-sorted: 228,934 bytes -> web/lesson-artifacts/dist/arrays/remove-duplicates-sorted.html"
+    },
+    "code": {
+     "source": "f7b38a3bb1304011",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "code: 4 file(s) × 2 runtimes (8 runs) held to their names against 5 sandbox cases"
+    },
+    "light": {
+     "source": "f7b38a3bb1304011",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "f7b38a3bb1304011",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "arrays",
    "moduleNumber": 4,
@@ -692,7 +817,32 @@
    "family": "linear-traversal"
   },
   "arrays/move-zeroes": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "46fe2151189e98c5",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "arrays/move-zeroes: 216,010 bytes -> web/lesson-artifacts/dist/arrays/move-zeroes.html"
+    },
+    "code": {
+     "source": "46fe2151189e98c5",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "code: 2 file(s) × 2 runtimes (4 runs) held to their names against 5 sandbox cases"
+    },
+    "light": {
+     "source": "46fe2151189e98c5",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "46fe2151189e98c5",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "arrays",
    "moduleNumber": 4,
@@ -701,7 +851,32 @@
    "family": "linear-traversal"
   },
   "arrays/best-time-to-buy-sell-stock": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "89c3981cf1265c51",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "arrays/best-time-to-buy-sell-stock: 233,832 bytes -> web/lesson-artifacts/dist/arrays/best-time-to-buy-sell-stock.html"
+    },
+    "code": {
+     "source": "89c3981cf1265c51",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "code: 5 file(s) × 2 runtimes (10 runs) held to their names against 5 sandbox cases"
+    },
+    "light": {
+     "source": "89c3981cf1265c51",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "89c3981cf1265c51",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "arrays",
    "moduleNumber": 4,
@@ -710,7 +885,32 @@
    "family": "linear-traversal"
   },
   "arrays/rotate-array": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "4b80f7316993662a",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "arrays/rotate-array: 198,525 bytes -> web/lesson-artifacts/dist/arrays/rotate-array.html"
+    },
+    "code": {
+     "source": "4b80f7316993662a",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "code: 5 file(s) × 2 runtimes (10 runs) held to their names against 6 sandbox cases"
+    },
+    "light": {
+     "source": "4b80f7316993662a",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0001 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "4b80f7316993662a",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0001 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "arrays",
    "moduleNumber": 4,
@@ -719,7 +919,32 @@
    "family": "linear-traversal"
   },
   "arrays/product-except-self": {
-   "evidence": {},
+   "evidence": {
+    "build": {
+     "source": "ae6535b65eee1c57",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "arrays/product-except-self: 258,164 bytes -> web/lesson-artifacts/dist/arrays/product-except-self.html"
+    },
+    "code": {
+     "source": "ae6535b65eee1c57",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "code: 5 file(s) × 2 runtimes (10 runs) held to their names against 4 sandbox cases"
+    },
+    "light": {
+     "source": "ae6535b65eee1c57",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "light: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    },
+    "dark": {
+     "source": "ae6535b65eee1c57",
+     "on": "2026-10-22",
+     "commit": "b30a513",
+     "result": "dark: ok at 1366px and 375px · layout shift 0.0000 · contrast AA · names · reveals hidden · reduced motion still · widgets driven"
+    }
+   },
    "notes": "",
    "module": "arrays",
    "moduleNumber": 4,

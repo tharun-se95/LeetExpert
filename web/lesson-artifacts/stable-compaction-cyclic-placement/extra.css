@@ -1,0 +1,17 @@
+/* hero: five cars; numbers and markers change in place, so nothing reflows */
+.hero-box{position:relative}
+.cp-row,.cp-ptrs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.cp-car{display:flex;align-items:center;justify-content:center;height:56px;border-radius:10px;background:var(--card);border:1.5px solid var(--hair2);font:700 20px 'JetBrains Mono',monospace;color:var(--fg);transition:background .5s ease,border-color .5s ease}
+.cp-car.cp-kept{border-color:var(--g-ink)}
+.cp-car.cp-cur{background:color-mix(in srgb,var(--fam) 28%,var(--card));border-color:var(--fam)}
+.cp-ptrs{margin-top:6px}
+.cp-ptrs span{height:20px;text-align:center;font:700 13px 'JetBrains Mono',monospace;color:var(--mark);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.cp-car{transition:none}}
+.hero-read{flex-direction:column;align-items:flex-start;gap:4px}
+#heroCap{min-height:3.2em;line-height:1.4;text-align:left;width:100%}
+.hero-num{line-height:1.2;min-height:1.2em}
+@media (max-width:480px){.cp-row,.cp-ptrs{gap:5px}.cp-car{height:46px;font-size:17px}}
+/* predict: a row of seats; the seats of one chain share an outline when the answer opens */
+.cp-mini{display:flex;flex-wrap:wrap;gap:6px;padding:10px 2px}
+.cp-mseat{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;border-radius:50%;background:var(--card);border:1.5px solid var(--hair2);font:600 14px 'JetBrains Mono',monospace;color:var(--fg)}
+.cp-m0{border-color:var(--b-ink)}.cp-m1{border-color:var(--o-ink)}.cp-m2{border-color:var(--g-ink)}.cp-m3{border-color:var(--p-ink)}.cp-m4{border-color:var(--y-ink)}.cp-m5{border-color:var(--r-ink)}

@@ -1,0 +1,74 @@
+/* ================= Arrays in Memory: extra.css ================= */
+
+/* Hero: Memory Train */
+.ht-track { stroke: var(--hair2); stroke-width: 3; stroke-dasharray: 8 4; }
+.ht-car { fill: var(--card); stroke: var(--hair2); stroke-width: 1.5; rx: 6px; transition: fill 0.25s, stroke 0.25s; }
+.ht-car.target { fill: var(--well); stroke: var(--fam); stroke-width: 2.2; }
+.ht-wheel { fill: var(--deep); stroke: var(--hair2); stroke-width: 1.5; }
+.ht-coupler { fill: var(--mut); opacity: 0.7; }
+.ht-val { font: 600 13px 'JetBrains Mono', monospace; fill: var(--fg); text-anchor: middle; dominant-baseline: central; }
+.ht-idx { font: 500 10px 'Space Mono', monospace; fill: var(--mut); text-anchor: middle; }
+.ht-addr { font: 500 10px 'JetBrains Mono', monospace; fill: var(--mut); text-anchor: middle; }
+.ht-ptr { fill: var(--fam); }
+.ht-ptr-txt { font: 700 11px 'Space Mono', monospace; fill: var(--fam); text-anchor: middle; }
+@media (prefers-reduced-motion: reduce) {
+  .ht-car { transition: none; }
+}
+
+/* Controls */
+.cm-ctrls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cm-seg { display: inline-flex; border: 1px solid var(--hair2); border-radius: 8px; overflow: hidden; }
+.cm-seg button { background: var(--card); color: var(--fg); border: none; padding: 6px 14px; font: 600 13px 'Space Grotesk', sans-serif; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.cm-seg button[aria-pressed="true"] { background: var(--fam); color: var(--fam-on); }
+.cm-slider-wrap { display: flex; align-items: center; gap: 8px; font: 500 13px 'Space Grotesk', sans-serif; color: var(--fg); }
+.cm-slider-wrap input { cursor: pointer; accent-color: var(--fam); }
+.cm-slider-wrap input[type="number"] { background: var(--card); color: var(--fg); border: 1px solid var(--hair2); border-radius: 4px; padding: 4px 8px; font-family: 'JetBrains Mono', monospace; }
+.cm-slider-wrap b { color: var(--fg); font-family: 'JetBrains Mono', monospace; }
+
+.btn2 { background: var(--card); color: var(--fg); border: 1px solid var(--hair2); border-radius: 6px; padding: 6px 14px; font: 600 13px 'Space Grotesk', sans-serif; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.btn2:hover { border-color: var(--fam); }
+
+/* RAM board */
+.ram-board { display: flex; flex-direction: column; gap: 10px; padding: 14px; background: var(--deep); border: 1px solid var(--hair2); border-radius: 10px; margin-bottom: 14px; overflow-x: auto; }
+.ram-formula { padding: 10px 14px; background: var(--card); border: 1px solid var(--hair2); border-left: 3px solid var(--fam); border-radius: 6px; font: 500 13px 'JetBrains Mono', monospace; color: var(--fg); }
+.ram-formula .math-step { color: var(--fam); font-weight: 700; }
+.ram-strip { display: flex; gap: 6px; padding: 4px 0; min-width: 480px; }
+.ram-cell { flex: 1; min-width: 52px; height: 64px; border: 1px solid var(--hair2); border-radius: 6px; background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease; box-sizing: border-box; }
+.ram-cell:hover { border-color: var(--fam); }
+.ram-cell.target { background: var(--well); border: 2px solid var(--fam); }
+.ram-cell.target .ram-val { color: var(--fam); font-weight: 700; }
+.ram-idx { font: 500 10px 'Space Mono', monospace; color: var(--mut); }
+.ram-val { font: 600 14px 'JetBrains Mono', monospace; color: var(--fg); margin: 2px 0; }
+.ram-addr { font: 500 9px 'JetBrains Mono', monospace; color: var(--mut); }
+
+/* Shift Simulator */
+.shift-board { display: flex; flex-direction: column; gap: 10px; padding: 14px; background: var(--deep); border: 1px solid var(--hair2); border-radius: 10px; margin-bottom: 14px; }
+.shift-track { display: flex; gap: 6px; overflow-x: auto; min-width: 480px; padding: 4px 0; }
+.shift-slot { flex: 1; min-width: 48px; height: 56px; border: 1px dashed var(--hair2); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; }
+.shift-slot.occupied { border-style: solid; background: var(--card); }
+.shift-slot.inserted { background: var(--well); border: 2px solid var(--g-ink); color: var(--g-ink); font-weight: 700; }
+.shift-slot.shifted { border: 2px solid var(--o-ink); background: var(--well); }
+
+/* Cache Visualizer */
+.cache-board { display: flex; flex-direction: column; gap: 10px; padding: 14px; background: var(--deep); border: 1px solid var(--hair2); border-radius: 10px; margin-bottom: 14px; }
+.cache-bracket { border: 2px solid var(--fam); border-radius: 8px; padding: 12px; background: var(--card); }
+.cache-bracket-header { display: flex; align-items: center; justify-content: space-between; font: 700 11px 'Space Mono', monospace; color: var(--fam); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+.cache-cells-grid { display: grid; grid-template-columns: repeat(16, 1fr); gap: 4px; }
+@media (max-width: 640px) {
+  .cache-cells-grid { grid-template-columns: repeat(8, 1fr); }
+}
+.cache-cell { height: 40px; border: 1px solid var(--hair2); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; font: 500 10px 'JetBrains Mono', monospace; color: var(--fg); background: var(--deep); transition: all 0.15s ease; }
+.cache-cell.hit { background: var(--well); border-color: var(--g-ink); color: var(--g-ink); font-weight: 700; }
+.cache-cell.miss { background: var(--well); border-color: var(--r-ink); color: var(--r-ink); font-weight: 700; }
+.cache-cell.pending { opacity: 0.5; }
+
+/* Metrics */
+.m-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.m-card { padding: 10px 12px; border: 1px solid var(--hair2); border-radius: 8px; background: var(--card); display: flex; flex-direction: column; gap: 2px; }
+.m-k { font: 700 11px 'Space Mono', monospace; color: var(--mut); text-transform: uppercase; letter-spacing: 0.04em; }
+.m-v { font: 600 18px 'JetBrains Mono', monospace; color: var(--fg); }
+.m-v.good { color: var(--g-ink); }
+.m-v.warn { color: var(--o-ink); }
+.m-v.bad { color: var(--r-ink); }
+.m-v.pop { color: var(--fam); }
+.m-sub { font-size: 11px; color: var(--mut); }

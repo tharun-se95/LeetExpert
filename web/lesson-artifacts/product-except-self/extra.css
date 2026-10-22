@@ -1,0 +1,26 @@
+/* by hand: stage buttons. A stage is bypassed, upstream or downstream, and says so in words as well as colour. */
+.pp-stages{display:flex;gap:8px;width:min(560px,100%)}
+.pp-st{flex:1 1 0;min-width:44px;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;cursor:pointer;color:var(--fg);font:500 12.5px 'JetBrains Mono',monospace}
+.pp-st .dn{font-size:11px;color:var(--mut)}
+.pp-st .cell{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:100%;height:56px;border-radius:12px;border:1.5px solid var(--hair2);background:var(--card);font-size:18px;font-weight:600;transition:background-color .2s,border-color .2s}
+.pp-st:hover .cell{border-color:var(--mut)}
+.pp-st .tag{min-height:16px;font-size:11px;font-weight:600;color:var(--mut)}
+.pp-st .ans{min-height:20px;font-size:14px;font-weight:600;color:var(--g-ink)}
+.pp-st.up .cell{border-color:var(--fam);background:color-mix(in srgb,var(--fam) 22%,var(--card))} .pp-st.up .tag{color:var(--fam-ink)}
+.pp-st.down .cell{border-color:var(--o-ink);background:color-mix(in srgb,var(--o-ink) 22%,var(--card))} .pp-st.down .tag{color:var(--o-ink)}
+.pp-st.byp .cell{background:var(--fg);color:var(--bg);border-color:var(--fg);text-decoration:line-through}
+@media (prefers-reduced-motion:reduce){.pp-st .cell{transition:none}}
+/* predict */
+.pp-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.chip{font:500 13px 'JetBrains Mono',monospace;padding:5px 11px;border-radius:9px;border:1px solid var(--hair2);background:var(--card)}
+.chip.ans{background:var(--g-ink);color:var(--bg);border-color:var(--g-ink)}
+/* hero: two rows of cells. Fixed size, so only their text changes after load. */
+.pp-hero{display:flex;flex-direction:column;gap:8px;height:196px}
+.ph-lab{font:500 11px 'JetBrains Mono',monospace;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;height:16px;line-height:16px}
+.ph-row{display:flex;gap:8px;height:56px;margin-bottom:6px}
+.ph-cell{flex:1 1 0;display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:0;border-radius:12px;border:1.5px solid var(--hair2);background:var(--card);font:600 20px 'JetBrains Mono',monospace;color:var(--fg);transition:background-color .4s,border-color .4s,box-shadow .4s}
+.ph-cell.out{color:var(--mut)}
+.ph-cell.out.fin{color:var(--fg);border-color:var(--g-ink);background:color-mix(in srgb,var(--g-ink) 30%,var(--card))}
+.ph-cell.out.cur{box-shadow:0 0 0 2px var(--fam)}
+.ph-cell.cur:not(.out){border-color:var(--o-ink);box-shadow:0 0 0 2px var(--o-ink)}
+@media (prefers-reduced-motion:reduce){.ph-cell{transition:none}}

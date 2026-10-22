@@ -1,0 +1,31 @@
+/* price bars: the by-hand widget's buttons and the predict cards' read-only copies */
+.bt-days{display:flex;gap:6px;align-items:flex-end;width:min(560px,100%)}
+.bt-day{flex:1 1 0;min-width:30px;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;padding:0;color:var(--fg);font:500 12.5px 'JetBrains Mono',monospace}
+button.bt-day{cursor:pointer}
+button.bt-day:hover .bar{border-color:var(--mut)}
+.bt-day .col{display:flex;align-items:flex-end;height:132px;width:100%}
+.bt-day .bar{display:block;width:100%;border-radius:7px 7px 3px 3px;background:var(--card);border:1.5px solid var(--hair2);transition:background-color .2s,border-color .2s}
+.bt-day .v{font-weight:600}
+.bt-day .dn{font-size:11px;color:var(--mut)}
+.bt-day .tag{min-height:16px;font-size:11.5px;font-weight:600}
+.bt-day.buy .bar{background:var(--g-ink);border-color:var(--g-ink)} .bt-day.buy .tag{color:var(--g-ink)}
+.bt-day.sell .bar{background:var(--o-ink);border-color:var(--o-ink)} .bt-day.sell .tag{color:var(--o-ink)}
+.bt-days.still{width:min(420px,100%)}
+@media (prefers-reduced-motion:reduce){.bt-day .bar{transition:none}}
+/* hero: bars with a low-water line across them. Fixed height, and every change after load is a transform,
+   a clip or an opacity, so nothing the script does moves the layout. */
+.bt-hero{position:relative;display:flex;gap:8px;height:var(--H);--H:210px;--lab:22px}
+.hb-col{flex:1 1 0;display:flex;flex-direction:column;min-width:0}
+.hb-plot{position:relative;flex:1 1 auto}
+.hb-bar{position:absolute;box-sizing:border-box;left:0;right:0;bottom:0;height:calc(var(--h)*100%);border-radius:8px 8px 3px 3px;background:var(--card);border:1.5px solid var(--hair2);transition:background-color .5s,border-color .5s,box-shadow .5s}
+.hb-v{position:absolute;z-index:2;left:0;right:0;top:4px;text-align:center;font:600 13px 'JetBrains Mono',monospace;color:var(--fg)}
+.hb-d{height:var(--lab);line-height:var(--lab);text-align:center;font:500 11px 'JetBrains Mono',monospace;color:var(--mut)}
+.hb-gain{position:absolute;left:3px;right:3px;bottom:0;height:100%;border-radius:4px;background:color-mix(in srgb,var(--o-ink) 38%,transparent);box-shadow:inset 0 0 0 2px var(--o-ink);opacity:0;transition:opacity .4s;
+  clip-path:inset(calc((1 - var(--b,0) - var(--g,0))*100%) 0 calc(var(--b,0)*100%) 0)}
+.hb-gain.on{opacity:1}
+.hb-col.lowd .hb-bar{border-color:var(--g-ink);background:color-mix(in srgb,var(--g-ink) 35%,var(--card))}
+.hb-col.cur .hb-bar{box-shadow:0 0 0 2px var(--fam)}
+.hb-low{position:absolute;left:0;right:0;bottom:var(--lab);height:0;pointer-events:none;border-top:2px dashed var(--g-ink);
+  transform:translateY(calc((var(--lab) - var(--H))*var(--h,0)));transition:transform .5s ease}
+.hb-lowlab{position:absolute;right:0;bottom:3px;padding:1px 5px;background:var(--deep);font:500 10.5px 'JetBrains Mono',monospace;color:var(--g-ink);border-radius:4px}
+@media (prefers-reduced-motion:reduce){.hb-bar,.hb-gain,.hb-low{transition:none}}

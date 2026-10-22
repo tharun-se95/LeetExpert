@@ -1,0 +1,17 @@
+/* hero: six cars on one track; the numbers and markers change in place, so nothing reflows */
+.hero-box{position:relative}
+.ip-row,.ip-ptrs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.ip-car{display:flex;align-items:center;justify-content:center;height:56px;border-radius:10px;background:var(--card);border:1.5px solid var(--hair2);font:700 22px 'JetBrains Mono',monospace;color:var(--fg);transition:background .5s ease,border-color .5s ease}
+.ip-car.ip-fin{border-color:var(--g-ink)}
+.ip-car.ip-pair{background:color-mix(in srgb,var(--fam) 28%,var(--card));border-color:var(--fam)}
+.ip-ptrs{margin-top:6px}
+.ip-ptrs span{height:20px;text-align:center;font:700 13px 'JetBrains Mono',monospace;color:var(--mark)}
+@media (prefers-reduced-motion:reduce){.ip-car{transition:none}}
+.hero-read{flex-direction:column;align-items:flex-start;gap:4px}
+#heroCap{min-height:3.2em;line-height:1.4;text-align:left;width:100%}
+.hero-num{line-height:1.2;min-height:1.2em}
+@media (max-width:480px){.ip-row,.ip-ptrs{gap:5px}.ip-car{height:46px;font-size:18px}}
+/* predict: a row of cars; the finished ones turn green when the answer opens */
+.ip-mini{display:flex;flex-wrap:wrap;gap:6px;padding:10px 2px}
+.ip-mcar{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;border-radius:8px;background:var(--card);border:1.5px solid var(--hair2);font:600 14px 'JetBrains Mono',monospace;color:var(--fg)}
+.ip-mcar.ip-fin{border-color:var(--g-ink)}

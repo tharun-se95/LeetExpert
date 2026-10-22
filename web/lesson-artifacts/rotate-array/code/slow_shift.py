@@ -1,0 +1,3 @@
+def rotate(nums, k):
+    for _ in range(k):                  # k single steps...
+        nums.insert(0, nums.pop())      # ...each moves all n elements

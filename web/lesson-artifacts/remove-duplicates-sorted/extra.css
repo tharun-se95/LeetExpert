@@ -1,0 +1,19 @@
+/* by hand: the two decisions keep one width, so the row never reflows as buttons disable */
+#byhand .actions .btn2{min-width:8.5rem;justify-content:center}
+.lv-hint{font-size:12.5px;color:var(--mut);align-self:center;white-space:nowrap}
+/* predict: the array before, then after */
+.pl-mini{display:flex;flex-wrap:wrap;gap:6px 18px;font:500 13px 'JetBrains Mono',monospace;color:var(--fg);padding:10px 2px}
+.btn2:disabled{opacity:.4;cursor:not-allowed}
+/* hero: a register of values, a finger reading and a pen writing. The caption's room is held for its
+   longest line so the readout under the drawing never changes height after first paint. */
+.hd-node,.hd-val,.hf-tag{transition:fill .5s ease,stroke .5s ease,opacity .5s ease}
+@media (prefers-reduced-motion:reduce){.hd-node,.hd-val,.hf-tag{transition:none}}
+.hd-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hd-ix{font:500 10.5px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hd-node{fill:var(--card);stroke:var(--hair2);stroke-width:1.5}
+.hd-node.lit{stroke:var(--fam);stroke-width:2.6}
+.hd-node.cur{stroke:var(--o-ink);stroke-width:2.6}
+.hd-node.off{stroke-dasharray:4 4;fill:transparent}
+.hd-val{font:600 17px 'JetBrains Mono',monospace;fill:var(--fg)}
+.hf-tag{font:600 12px 'JetBrains Mono',monospace;fill:var(--fg)}
+#heroCap{flex:1 1 15rem;min-height:3.5em}
