@@ -1,0 +1,1348 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Amortized Analysis & Dynamic Arrays</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="preload" href="../fonts/JetBrainsMono-latin-tDbv2o-flE.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../fonts/SpaceGrotesk-latin-V8mDoQDjQS.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../fonts/SpaceMono-latin-i7dMIFZifj.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../fonts/SpaceMono-latin-i7dPIFZifj.woff2" as="font" type="font/woff2" crossorigin>
+<script>/* the page stays invisible until every weight it requests is in AND the page script has built its
+   scenes (capped at 2.5 s), because hidden content cannot shift. Waiting on one weight per face let the
+   others arrive late and re-wrap text; waiting on fonts alone revealed the page ~300 ms before motion.js
+   arrived and the script drew the hero, which then pushed the text down. Without JS nothing is hidden. */
+(function(){var d=document.documentElement,need=2,reveal=function(){d.classList.remove('fl');},done=function(){if(--need===0)reveal();};
+d.classList.add('fl');setTimeout(reveal,2500);window.__built=done;
+if(document.fonts&&document.fonts.load)Promise.all(['400 16px "Space Grotesk"','500 16px "Space Grotesk"','700 16px "Space Grotesk"','400 16px "Space Mono"','700 16px "Space Mono"','400 13px "JetBrains Mono"','500 13px "JetBrains Mono"'].map(function(f){return document.fonts.load(f);})).then(done,done);else done();})();</script>
+<style>html.fl body{visibility:hidden}</style>
+<style>
+:root{--bg:#ffffff;--card:#ffffff;--well:#f8fafc;--deep:#f1f5f9;--fg:#0f172a;--mut:#475569;--hair:rgba(15, 23, 42, 0.08);--hair2:rgba(15, 23, 42, 0.16);--mk:#1d4ed8;--o-ink:#8e4805;--g-ink:#067123;--r-ink:#b0081d;--y-ink:#6e5c05;--p-ink:#770ad0;--b-ink:#055bb1;--g-1:#9be9a8;--r-1:#ffc2bc;--b-1:#b6d6ff;--y-1:#ebd374;--fam:#757c00;--fam-on:#ffffff;--fam-raw:#757c00;--lamp:#2b7a3b;--lamp-glow:rgba(43,122,59,.45);--nv-bg:#14202e;--nv-card:#2b405a;--nv-deep:#1f3145;--nv-hair2:rgba(230, 237, 244, 0.22);--nv-mut:#acb9c8;--shadow-tint:15 23 42;--shadow-elevation:inset 0 1px 0 0 rgba(255, 255, 255, 0.75), 0 1px 2px rgb(var(--shadow-tint) / 0.04), 0 8px 20px -4px rgb(var(--shadow-tint) / 0.1);--cw-bg:#14202e;--cw-border:rgba(244, 244, 245, 0.09);--cw-ink:#e5ebf2;--cw-mut:#a3aebc;--k-acc-fill:#959e03;--k-acc-on:#0e1726;--pdot:transparent;--fam-ink:#6d7403;--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-ink:var(--bg);--k-acc:var(--k-acc-fill);--k-acc-ink:var(--k-acc-on);--k-done:var(--g-ink);--k-done-ink:var(--bg);--k-bad:var(--r-ink);--k-bad-ink:var(--bg);--k-warn:var(--y-ink);--k-warn-ink:var(--bg);--k-viol:var(--p-ink);--k-viol-ink:var(--bg);--k-dim:var(--well);--k-dim-ink:var(--mut);--k-win:var(--b-1);--k-win-ink:var(--fg);--k-win-ring:var(--b-ink);--e-idle:var(--mut);--e-path:var(--fam);--e-cur:var(--o-ink);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15202e;--card:#1b2735;--well:#101a26;--deep:#101a26;--mut:#a3aebc;--hair2:#2e3b4a;--pdot:#202c3a;--fg:#e5ebf2;--mk:#8db0ff;--hair:#2e3b4a;--o-ink:#F08A4B;--g-ink:#3CC3AE;--r-ink:#FF6B8B;--y-ink:#E3BD3F;--p-ink:#9B86FF;--b-ink:#8db0ff;--g-1:#1d4148;--r-1:#442f41;--b-1:#1d3a5e;--y-1:#3e3f31;--fam:#8db0ff;--fam-on:#0e1726;--fam-raw:#5c8fff;--lamp:#5be07a;--fam-ink:#8db0ff;--lamp-glow:rgba(91,224,122,.55);--nv-bg:#1b2735;--nv-card:#223145;--nv-deep:#101a26;--nv-hair2:#2e3b4a;--nv-mut:#a3aebc;--cw-bg:#101a26;--cw-border:#2e3b4a;--cw-ink:#e5ebf2;--cw-mut:#a3aebc;--k-acc-fill:#5c8fff;--k-acc-on:#0e1726;--shadow-tint:0 0 0;--shadow-elevation:inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 1px 2px rgb(var(--shadow-tint) / 0.3), 0 8px 24px -4px rgb(var(--shadow-tint) / 0.45);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15202e;--card:#1b2735;--well:#101a26;--deep:#101a26;--mut:#a3aebc;--hair2:#2e3b4a;--pdot:#202c3a;--fg:#e5ebf2;--mk:#8db0ff;--hair:#2e3b4a;--o-ink:#F08A4B;--g-ink:#3CC3AE;--r-ink:#FF6B8B;--y-ink:#E3BD3F;--p-ink:#9B86FF;--b-ink:#8db0ff;--g-1:#1d4148;--r-1:#442f41;--b-1:#1d3a5e;--y-1:#3e3f31;--fam:#8db0ff;--fam-on:#0e1726;--fam-raw:#5c8fff;--lamp:#5be07a;--fam-ink:#8db0ff;--lamp-glow:rgba(91,224,122,.55);--nv-bg:#1b2735;--nv-card:#223145;--nv-deep:#101a26;--nv-hair2:#2e3b4a;--nv-mut:#a3aebc;--cw-bg:#101a26;--cw-border:#2e3b4a;--cw-ink:#e5ebf2;--cw-mut:#a3aebc;--k-acc-fill:#5c8fff;--k-acc-on:#0e1726;--shadow-tint:0 0 0;--shadow-elevation:inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 1px 2px rgb(var(--shadow-tint) / 0.3), 0 8px 24px -4px rgb(var(--shadow-tint) / 0.45);color-scheme:dark}
+.navy{color-scheme:dark;--bg:#15202e;--card:#223145;--well:#1b2735;--deep:#101a26;--fg:#e5ebf2;--mut:#a3aebc;--hair:rgba(163, 174, 188, 0.19);--hair2:rgba(163, 174, 188, 0.38);--mk:#8db0ff;--o-ink:#ff923a;--g-ink:#39d353;--r-ink:#ff8b83;--y-ink:#d1af00;--p-ink:#c09bff;--b-ink:#7ab5ff;--g-1:#0e4429;--r-1:#592825;--b-1:#1d3a5e;--y-1:#453800;--fam:#959e03;--fam-on:#0e1726;--fam-raw:#959e03;--lamp:#5be07a;--lamp-glow:rgba(91,224,122,.55);--fam-ink:#a8b03c;--bg:var(--nv-bg);--card:var(--nv-card);--deep:var(--nv-deep);--well:var(--nv-deep);--hair2:var(--nv-hair2);--mut:var(--nv-mut);--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-ink:var(--bg);--k-acc:var(--k-acc-fill);--k-acc-ink:var(--k-acc-on);--k-done:var(--g-ink);--k-done-ink:var(--bg);--k-bad:var(--r-ink);--k-bad-ink:var(--bg);--k-warn:var(--y-ink);--k-warn-ink:var(--bg);--k-viol:var(--p-ink);--k-viol-ink:var(--bg);--k-dim:var(--well);--k-dim-ink:var(--mut);--k-win:var(--b-1);--k-win-ink:var(--fg);--k-win-ring:var(--b-ink);--e-idle:var(--mut);--e-path:var(--fam);--e-cur:var(--o-ink);color:var(--fg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .navy{--fg:#e5ebf2;--mk:#8db0ff;--hair:#2e3b4a;--o-ink:#F08A4B;--g-ink:#3CC3AE;--r-ink:#FF6B8B;--y-ink:#E3BD3F;--p-ink:#9B86FF;--b-ink:#8db0ff;--g-1:#1d4148;--r-1:#442f41;--b-1:#1d3a5e;--y-1:#3e3f31;--fam:#8db0ff;--fam-on:#0e1726;--fam-raw:#5c8fff;--lamp:#5be07a;--fam-ink:#8db0ff;--lamp-glow:rgba(91,224,122,.55)}}
+:root[data-theme="dark"] .navy{--fg:#e5ebf2;--mk:#8db0ff;--hair:#2e3b4a;--o-ink:#F08A4B;--g-ink:#3CC3AE;--r-ink:#FF6B8B;--y-ink:#E3BD3F;--p-ink:#9B86FF;--b-ink:#8db0ff;--g-1:#1d4148;--r-1:#442f41;--b-1:#1d3a5e;--y-1:#3e3f31;--fam:#8db0ff;--fam-on:#0e1726;--fam-raw:#5c8fff;--lamp:#5be07a;--fam-ink:#8db0ff;--lamp-glow:rgba(91,224,122,.55)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);background-image:radial-gradient(var(--pdot) 1.4px,transparent 1.4px);background-size:26px 26px;background-position:13px 13px;color:var(--fg);font-family:'Space Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.6;padding-inline:16px;font-variant-ligatures:none}
+h1,h2,h3{font-family:'Space Mono',ui-monospace,monospace;font-weight:700;margin:0;text-wrap:balance;line-height:1.12}
+p{margin:0} a{color:inherit} button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--mk);outline-offset:2px}
+.wrap{max-width:1180px;margin-inline:auto}
+.kick{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin-inline:-16px;padding:10px 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair2)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mark{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-weight:700;font-size:18px;text-decoration:none}
+.lamp{width:11px;height:11px;border-radius:50%;background:var(--lamp);box-shadow:0 0 10px 3px var(--lamp-glow)}
+.seg{display:inline-flex;border:1px solid var(--hair2);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:none;padding:6px 12px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut)}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.prog{position:absolute;left:0;right:0;bottom:-1px;height:2px;pointer-events:none}
+.prog i{display:block;height:100%;background:var(--fam);transform-origin:0 50%;transform:scaleX(0)}
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:48px;align-items:center;padding-block:64px 40px}
+.hero h1{font-size:clamp(2.1rem,5.2vw,3.7rem);letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--fam)}
+.hero .lede{font-size:18px;color:var(--mut);max-width:52ch;margin-top:20px}
+.hero .kick{margin-bottom:18px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:26px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mut)}
+.hero-meta b{color:var(--fg);font-weight:500}
+.idxbox{background:var(--card);border:1px solid var(--hair2);border-radius:14px;padding:18px;box-shadow:var(--shadow-elevation)}
+.idx{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(3,auto);row-gap:34px;column-gap:8px}
+.idx-edges{position:absolute;inset:0;pointer-events:none}
+.idx-edges line{stroke:var(--mut);stroke-width:1.6;opacity:.6}
+.tile{position:relative;display:flex;flex-direction:column;gap:8px;justify-content:space-between;min-height:104px;padding:10px;border-radius:10px;border:1px solid var(--hair2);background:var(--bg);text-decoration:none;transition:background-color .2s,color .2s}
+.tile .i{font-size:24px;color:var(--fam)}
+.tile b,.tile span{display:block}
+.tile b{font-family:'Space Mono',monospace;font-size:12.5px;line-height:1.2}
+.tile span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);line-height:1.3}
+.tile[data-on="1"]{background:var(--o-ink);border-color:var(--o-ink);color:var(--bg)}
+.tile[data-on="1"] .i,.tile[data-on="1"] span{color:var(--bg)}
+.idx-read{margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut)}
+.idx-read b{color:var(--fg);font-weight:500}
+.sys{padding-block:56px;border-top:1px solid var(--hair2);scroll-margin-top:60px}
+.sys-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:28px}
+.sys-title{display:flex;flex-direction:column;gap:12px;max-width:640px}
+.sys-title h2{font-size:clamp(1.6rem,3.4vw,2.4rem);letter-spacing:-.015em}
+.sys-title .kick{display:flex;align-items:center;gap:10px}
+.sys-title .kick .i{font-size:20px;color:var(--fam)}
+.vig{width:260px;max-width:100%;height:auto;color:var(--fg)}
+.vig .st{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.vig .fa{fill:var(--fam);opacity:.3} .vig .fk{fill:var(--fam)} .vig .fc{fill:var(--o-ink)} .vig .fr{fill:var(--r-ink)}
+.vig .fg{fill:var(--g-ink)} .vig .fp{fill:var(--card)}
+.vig .sc{stroke:var(--o-ink);fill:none;stroke-width:2.6;stroke-linecap:round}
+.vig .tx{font:700 11px 'Space Mono',monospace;text-anchor:middle;fill:var(--bg)}
+.sys-body{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:start}
+.story{display:flex;flex-direction:column;gap:22px}
+.story .lede{font-size:17px;max-width:60ch}
+.when{font-size:15px;color:var(--mut);max-width:60ch} .when b{color:var(--fg);font-weight:500}
+.seen{display:flex;flex-wrap:wrap;gap:6px}
+.seen span{font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:4px 9px;border:1px solid var(--hair2);border-radius:99px;background:var(--card);color:var(--mut)}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding-block:6px;border-block:1px solid var(--hair2)}
+.fact{padding-block:12px;display:flex;flex-direction:column;gap:4px}
+.fact b{font-family:'Space Mono',monospace;font-size:clamp(1.15rem,2vw,1.55rem);color:var(--mk);font-variant-numeric:tabular-nums;letter-spacing:-.02em;overflow-wrap:anywhere}
+.fact span{font-size:12.5px;color:var(--mut);line-height:1.4}
+.code{border:1px solid var(--hair2);border-radius:10px;background:var(--well);overflow:hidden}
+.code header{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--hair2);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.code pre{margin:0;padding:12px 14px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;tab-size:2}
+main[data-code="py"] .c-ts,main[data-code="ts"] .c-py{display:none}
+.watch{display:flex;gap:12px;font-size:14px;border:1px solid var(--hair2);border-radius:10px;padding:12px 14px;background:var(--card)}
+.watch .i{font-size:20px;color:var(--r-ink);margin-top:1px}
+.watch b{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;color:var(--mut);font-weight:500}
+.player{border:1px solid var(--hair2);border-radius:16px;background:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden;min-width:0}
+.stage{display:flex;flex-wrap:wrap;gap:20px 24px;justify-content:center;align-items:flex-start;padding:22px 18px;background:var(--deep);;min-height:300px}
+.grp{flex:1 1 0;min-width:210px;display:flex;flex-direction:column;gap:14px;align-items:center}
+.grp.wide{flex-basis:100%}
+.bw{display:flex;flex-direction:column;gap:8px;align-items:center;max-width:100%}
+.bl{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);text-align:center;line-height:1.35}
+.brd{display:grid;gap:3px;position:relative;margin:4px}
+.brd.tree{display:block}
+.brd.strip{gap:2px} .brd.strip .cell{border-radius:2px;height:22px} .brd.strip .cell:nth-child(4n+1):not(:first-child){margin-left:5px}
+/* behind the cells, so its tint shows only in the gaps and never under a cell's text */
+.brd.has-ov{isolation:isolate} .ov{position:absolute;left:0;top:0;z-index:-1;pointer-events:none;border-radius:8px;border:2px solid var(--k-cur);background:color-mix(in srgb,var(--k-cur) 14%,transparent);opacity:0}
+.ov.bounds{border:2px dashed var(--mk);background:transparent;border-radius:6px}
+.edges{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.edges line{stroke:var(--e-idle);stroke-width:2;stroke-linecap:round}
+.cell{width:var(--cs);height:var(--cs);border-radius:calc(var(--cs)*.16);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:var(--fs);line-height:1;will-change:transform;user-select:none;box-shadow:inset 0 0 0 1px var(--hair2)}
+.cell.win{box-shadow:inset 0 0 0 2px var(--k-win-ring)}
+.cell.node{position:absolute;border-radius:50%;--cs:auto;overflow:hidden;white-space:nowrap}
+.note{padding:12px 18px;min-height:76px;font-size:14px;line-height:1.5;border-top:1px solid var(--hair2)}
+.stats{display:flex;flex-wrap:wrap;gap:6px 8px;padding:0 18px 12px}
+.stats span{font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid var(--hair2);color:var(--mut);background:var(--bg);font-variant-numeric:tabular-nums}
+.stats b{color:var(--fg);font-weight:500}
+.ctl{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--hair2)}
+.btn{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--hair2);border-radius:9px;background:var(--bg);cursor:pointer;font-size:17px;flex:none}
+.btn:hover{border-color:var(--mk)}
+.btn.main{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.spd{width:auto;padding-inline:9px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.track{position:relative;flex:1;min-width:0;height:36px}
+.ticks{position:absolute;inset:11px 0;display:flex;gap:1px;align-items:stretch}
+.ticks i{flex:1;min-width:1px;background:var(--hair2);border-radius:1px}
+.ticks i.on{background:var(--fam)} .ticks i.key{background:var(--g-ink)} .ticks i.bad{background:var(--r-ink)}
+.head{position:absolute;top:5px;bottom:5px;width:3px;margin-left:-1.5px;background:var(--o-ink);border-radius:2px;pointer-events:none;left:0;box-shadow:0 0 0 2px var(--card)}
+.track input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize}
+.track:focus-within{outline:2px solid var(--mk);outline-offset:2px;border-radius:6px}
+.cnt{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut);min-width:56px;text-align:right;font-variant-numeric:tabular-nums}
+.outro{padding-block:64px 32px;border-top:1px solid var(--hair2)}
+.outro h2{font-size:clamp(1.6rem,3.4vw,2.4rem);max-width:22ch}
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:32px}
+.rule{background:var(--card);border:1px solid var(--hair2);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.rule .i{font-size:30px;color:var(--fam)} .rule h3{font-size:16px} .rule p{font-size:14.5px;color:var(--mut)}
+.practice{margin-top:32px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--mut)}
+.practice .pill{padding:5px 11px;border:1px solid var(--hair2);border-radius:99px;background:var(--card);color:var(--fg)}
+.foot{padding-block:24px 56px;font-size:13px;color:var(--mut);max-width:78ch} .foot b{color:var(--fg);font-weight:500}
+@media (max-width:980px){.hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 24px}.sys-body{grid-template-columns:minmax(0,1fr);gap:28px}.rules{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){.facts{grid-template-columns:minmax(0,1fr)}.fact{padding-block:8px}.stage{padding-inline:10px}.vig{display:none}.tile{min-height:88px;padding:8px}.tile span{display:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* kit/kit.css: page layout, widgets and the scaled-down type scale shared by every lesson page. */
+
+.hero2{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:44px;align-items:center;padding-block:56px 20px}
+.hero2 h1{font-size:clamp(2rem,4.8vw,3.4rem);letter-spacing:-.02em;margin-top:14px} .kw{display:inline-block}
+.hero2 .lede{font-size:18px;color:var(--mut);max-width:54ch;margin-top:18px}
+/* the headline's key word, in the accent (The Grid Underneath's "matrix"); large text, so 3:1 */
+.hero2 h1 em{font-style:normal;color:var(--fam)}
+.hero2 .chips{margin-top:22px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 10px;border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2));border-radius:99px;background:var(--card);color:var(--mut)} .chips span b{color:var(--mk);font-weight:500}
+/* Surfaces. Instruments (the hero, every widget, code) are the app's navy card:
+   its corner glow and top light come from .lab-stage, its ladder and inks from
+   .navy-card (tokens in shared.py). Every surface a diagram is drawn on carries
+   the blueprint dot grid. */
+.navy{border:1px solid var(--hair2);box-shadow:var(--shadow-elevation);background:linear-gradient(to bottom,rgb(255 255 255/.06),transparent 1px),radial-gradient(ellipse 80% 60% at 100% 0%,color-mix(in oklab,var(--fam-raw) 14%,transparent),transparent 55%),var(--bg)}
+.navy .navy,.navy .player{box-shadow:none}
+.code.navy{background:var(--cw-bg);border-color:var(--cw-border);box-shadow:none;color:var(--cw-ink)}
+.code.navy header{background:color-mix(in srgb,var(--cw-ink) 6%,var(--cw-bg));border-color:var(--cw-border);color:var(--cw-mut)}
+.navy .player{background:var(--bg)}
+.navy .stats span{background:var(--deep)}
+.navy .btn{background:var(--card)}
+.navy .btn.main{background:var(--fg)}
+.tv-wrap,.stage{--dot:color-mix(in srgb,var(--fg) 11%,transparent);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0);background-size:18px 18px;background-position:-1px -1px}
+.hero-art{border-radius:16px;padding:14px}
+.hero-art svg{width:100%;height:auto;display:block}
+.hn-edge{stroke:var(--mut);stroke-width:2;opacity:.6}
+.hn-node{fill:var(--card);stroke:var(--mut);stroke-width:2} .hn-node.core{stroke:var(--fam);stroke-width:3} .hn-node.on{fill:var(--fam);stroke:var(--fam)}
+.hn-trail{fill:none;stroke:var(--fam);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.hn-pk{fill:var(--o-ink)} .hn-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hero-read{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
+.hero-num{font-family:'Space Mono',monospace;font-size:34px;font-weight:700} .hero-num b{color:var(--fam)}
+/* the caption changes as the hero plays: two lines reserved, so the card never changes height */
+#heroCap{font-size:14px;color:var(--mut);width:min(32ch,100%);min-height:3.2em;text-align:right} #heroCap b{color:var(--fg);font-weight:500}
+.rosetta{border:1px solid var(--hair2);border-radius:14px;background:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden;margin:20px 0;max-width:66ch}
+.ro-h,.ro{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);gap:16px;padding:10px 16px;align-items:baseline}
+.ro-h{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);background:var(--well)}
+.ro{border-top:1px solid var(--hair);font-size:14.5px}
+/* .sec code paints every inline code grey; a grid item would also stretch it into a bar */
+.sec .ro code{justify-self:start;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mk);background:color-mix(in srgb,var(--fam) 8%,var(--card));padding:1px 7px}
+@media (max-width:1000px){.hero2{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:36px 12px}}
+
+.page{display:grid;grid-template-columns:200px minmax(0,760px);gap:56px;justify-content:center;padding-block:44px 96px}
+.toc{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.toc .kick{margin-bottom:8px}
+.toc a{text-decoration:none;color:var(--mut);padding:5px 0 5px 12px;border-left:2px solid var(--hair2)}
+.toc a:hover{color:var(--fg)}
+.toc a[aria-current="true"]{color:var(--fg);border-left-color:var(--fam);font-weight:500}
+.lhead{display:flex;flex-direction:column;gap:14px;padding-bottom:36px}
+.lhead h1{font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em}
+.lhead .lede{font-size:18px;color:var(--mut);max-width:60ch}
+.sec{padding-block:44px;border-top:1px solid var(--hair2);scroll-margin-top:64px}
+.sec>h2,.sec-title>h2{font-size:clamp(1.4rem,2.6vw,1.9rem);margin-bottom:18px}
+.sec p{max-width:66ch;margin-bottom:14px}
+.sec p:last-child{margin-bottom:0}
+.sec code,.notes code,.fb code,.pq code{font-family:'JetBrains Mono',monospace;font-size:.88em;background:var(--well);padding:1px 6px;border-radius:5px}
+.ex{border:1px solid var(--hair2);border-radius:12px;background:var(--card);box-shadow:var(--shadow-elevation);padding:6px 16px;margin:18px 0}
+.navy .ex{box-shadow:none}
+.ex div{padding:10px 0;border-bottom:1px solid var(--hair);font-family:'JetBrains Mono',monospace;font-size:13px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.ex div:last-child{border-bottom:0} .ex em{font-style:normal;color:var(--mut)}
+.callout{display:flex;flex-direction:column;gap:6px;border:1px solid var(--hair2);border-left-width:4px;border-radius:10px;padding:14px 16px;margin:20px 0;max-width:66ch;background:var(--card)}
+.formula{margin:18px 0;padding:10px 16px;border-left:2px solid var(--hair2);font-size:1.05em;font-weight:500;letter-spacing:.01em;max-width:66ch}
+.callout .cl{display:flex;align-items:center;gap:8px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+.callout p{margin:0!important} .callout code{background:var(--well)}
+.callout.constraint{border-left-color:var(--g-ink);background:color-mix(in srgb,var(--g-1) 45%,var(--card))} .callout.constraint .cl{color:var(--g-ink)}
+.callout.key{border-left-color:var(--y-ink);background:color-mix(in srgb,var(--y-1) 45%,var(--card))} .callout.key .cl{color:var(--y-ink)}
+.callout.warn{border-left-color:var(--r-ink);background:color-mix(in srgb,var(--r-1) 45%,var(--card))} .callout.warn .cl{color:var(--r-ink)}
+.callout.key p{font-size:17px;font-family:'Space Mono',monospace;font-weight:700;line-height:1.4}
+.widget{--pad:16px;border-radius:16px;padding:var(--pad);margin:20px 0;display:flex;flex-direction:column;gap:12px}
+.widget .wl{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.tv-wrap{display:flex;justify-content:center;background-color:var(--deep);border:1px solid var(--hair);border-radius:12px;padding:14px 8px;overflow-x:auto}
+.readout{min-height:24px;font-size:14.5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn2,.reveal-btn,.choice,.qopt,.tab{transition:border-color .15s,background-color .15s,color .15s,transform .15s}
+.btn2{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border:1px solid var(--hair2);border-radius:9px;background:var(--card);color:var(--fg);cursor:pointer;font-size:12.5px;font-weight:500}
+.btn2:hover:not(:disabled){border-color:var(--mut);background:color-mix(in srgb,var(--fg) 7%,var(--card))}
+.btn2.best{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.btn2.best:hover:not(:disabled){background:color-mix(in srgb,var(--fg) 86%,var(--bg));border-color:transparent}
+.btn2:active:not(:disabled),.reveal-btn:active,.choice:active:not(:disabled){transform:translateY(1px)}
+button.cell.node{cursor:pointer;border:0}
+.pcard{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:14px;display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.pcard:last-child{margin-bottom:0}
+.pq{font-size:15px}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{min-width:48px;height:36px;padding:0 12px;border:1px solid var(--hair2);border-radius:9px;background:color-mix(in srgb,var(--fg) 7%,var(--card));cursor:pointer;font:500 13.5px 'JetBrains Mono',monospace}
+.choice:hover:not(:disabled){border-color:var(--fam);transform:translateY(-1px)}
+.choice.good{background:var(--g-ink);color:var(--bg);border-color:var(--g-ink)}
+.choice.bad{background:var(--r-ink);color:var(--bg);border-color:var(--r-ink)}
+.choice:disabled{cursor:default}
+.fb{display:none;font-size:14.5px;line-height:1.55;padding:10px 12px;border-radius:10px;background:var(--well);border:1px solid var(--hair)} .fb.on{display:block}
+.reveal-btn{display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 15px;border:1px solid var(--hair2);background:var(--card);box-shadow:var(--shadow-elevation);border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:500;margin-top:8px}
+.reveal-btn:hover{border-color:var(--mut)}
+.reveal-btn .i{font-size:16px;color:var(--fam)} .reveal-btn[aria-expanded="true"]{box-shadow:none;background:transparent}
+.reveal-body{margin-top:14px;display:flex;flex-direction:column;gap:14px}
+.reveal-body p{max-width:66ch;margin:0}
+/* a widget's state key (kit.js stateKey): a cell-shaped swatch, framed by the hairline so a pale state
+   (win) still reads against the card */
+.skey{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 10px;padding:0;list-style:none;font:12px 'JetBrains Mono',monospace;color:var(--mut)}
+.skey li{display:flex;align-items:center;gap:7px} .skey i{flex:none;width:13px;height:13px;border-radius:3px;box-shadow:inset 0 0 0 1px var(--hair2)} .skey li[data-k="win"] i{box-shadow:inset 0 0 0 2px var(--k-win-ring)}
+.cost-note{font-size:14.5px}
+.extabs{display:inline-flex;flex-wrap:wrap;align-self:flex-start;gap:2px;padding:3px;border:1px solid var(--hair);border-radius:11px;background:var(--deep)}
+.tab{border:0;background:none;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12.5px;color:var(--mut)}
+.tab:hover{color:var(--fg)}
+.tab[aria-pressed="true"]{background:var(--card);color:var(--fg);font-weight:500}
+.complexity{border:1px solid var(--hair2);border-radius:12px;padding:14px 16px;background:var(--card);box-shadow:var(--shadow-elevation);display:flex;flex-direction:column;gap:10px}
+.cx-h{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.complexity p{margin:0}
+.vgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.vcard{border:1px solid var(--hair2);border-radius:14px;padding:16px;background:var(--card);box-shadow:var(--shadow-elevation);display:flex;flex-direction:column;gap:6px}
+.vcard .vt{font-family:'Space Mono',monospace;font-weight:700;font-size:15px} .vcard .vs{font:12px 'JetBrains Mono',monospace;color:var(--mk)} .vcard p{font-size:14px;color:var(--mut);margin:0!important}
+.qcard{border:1px solid var(--hair2);border-radius:14px;background:var(--card);box-shadow:var(--shadow-elevation);padding:16px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px}
+.qq{font-weight:500;font-size:16px}
+.qopts{display:flex;flex-direction:column;gap:8px}
+.qopt{display:flex;gap:12px;text-align:left;border:1px solid var(--hair2);border-radius:10px;background:var(--card);padding:12px 14px;cursor:pointer;font-size:14.5px;line-height:1.5}
+.qopt:hover:not(:disabled){border-color:var(--fam);background:color-mix(in srgb,var(--fam) 5%,var(--card))}
+.qopt .ql{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;border:1px solid var(--hair2);background:var(--bg);font:500 12px 'JetBrains Mono',monospace}
+/* the letter is 12px text, so it takes --mk (AA in both themes), never a family accent (3:1 only) */
+.qopt:hover:not(:disabled) .ql{border-color:var(--fam);color:var(--mk)}
+.qopt.good{border-color:var(--g-ink);background:color-mix(in srgb,var(--g-1) 40%,var(--card))} .qopt.bad{border-color:var(--r-ink);background:color-mix(in srgb,var(--r-1) 40%,var(--card))}
+.qopt:disabled{cursor:default}
+@media (max-width:1000px){.page{grid-template-columns:minmax(0,1fr)}.toc{display:none}.vgrid{grid-template-columns:minmax(0,1fr)}}
+
+.embed .top,.embed .toc{display:none}
+.embed body{padding-inline:12px}
+.embed .page{grid-template-columns:minmax(0,1fr);padding-block:4px 40px}
+.embed .hero2{grid-template-columns:minmax(0,1fr);padding-block:16px 4px;gap:20px}
+
+/* scaled down: smaller type and tighter spacing throughout */
+body{font-size:13.5px;line-height:1.55}
+.top{padding:8px 16px} .mark{font-size:15px} .lamp{width:9px;height:9px} .seg button{padding:5px 10px;font-size:11px}
+.page{grid-template-columns:180px minmax(0,940px);gap:48px;padding-block:28px 72px}
+.sec>.ex,.sec>.rosetta,.sec>.code{max-width:780px}
+.toc{font-size:12.5px;top:60px} .toc a{padding:4px 0 4px 10px}
+.hero2{gap:56px;padding-block:52px 40px}
+.hero2 h1{font-size:clamp(1.8rem,4vw,2.9rem);margin-top:12px}
+.hero2 .lede{font-size:15px;margin-top:14px} .hero2 .chips{margin-top:16px}
+.kick{font-size:10.5px}
+.chips span{font-size:10.5px;padding:3px 8px}
+.hero-art{padding:10px} .hero-num{font-size:26px} #heroCap{font-size:12.5px}
+.sec{padding-block:30px} .sec>h2,.sec-title>h2{font-size:clamp(1.15rem,2vw,1.45rem);margin-bottom:12px}
+.sec p{margin-bottom:10px;font-size:14px}
+.sec code,.notes code,.fb code,.pq code{font-size:.86em;padding:0 5px}
+.ex{padding:2px 12px;margin:12px 0} .ex div{padding:7px 0;font-size:11.5px}
+.callout{padding:10px 12px;margin:14px 0} .callout .cl{font-size:10px} .callout.key p{font-size:14px}
+.widget{--pad:14px;margin:18px 0;gap:10px} .widget .wl{font-size:10px}
+.tv-wrap{padding:10px 6px} .readout{font-size:13px;min-height:20px}
+.pcard{padding:11px;gap:9px;margin-bottom:10px} .pq{font-size:13px}
+.fb{font-size:13px;padding:8px 10px}
+.cost-note{font-size:13px}
+.code header{font-size:10px;padding:6px 10px} .code pre{font-size:11.5px;padding:10px 12px}
+.complexity{padding:11px 13px} .cx-h{font-size:10px}
+.vcard{padding:12px} .vcard .vt{font-size:13px} .vcard .vs{font-size:10.5px} .vcard p{font-size:12.5px}
+.qcard{padding:12px;gap:9px;margin-bottom:10px} .qq{font-size:14px} .qopt{font-size:13px;padding:9px 11px} .qopt .ql{width:20px;height:20px;font-size:11px}
+.rosetta{margin:14px 0} .ro-h,.ro{padding:8px 12px;font-size:13px} .ro-h{font-size:10px} .ro code{font-size:12px}
+.stage{padding:16px 12px;min-height:240px} .note{font-size:12.5px;padding:10px 14px;min-height:64px} .stats span{font-size:11px} .btn{width:32px;height:32px;font-size:15px} .spd{font-size:11px} .cnt{font-size:11px} .bl{font-size:10.5px}
+.player{border-radius:12px}
+@media (prefers-reduced-motion:reduce){.btn2,.reveal-btn,.choice,.qopt,.tab{transition:none}.choice:hover:not(:disabled),.btn2:active,.reveal-btn:active,.choice:active{transform:none}}
+@media (max-width:1000px){.page{grid-template-columns:minmax(0,1fr)}}
+
+/* ---- Richer layer: the hero stage, section marks, instrument title bars ---- */
+/* The hero glow reaches past the column. clip, not hidden, so the sticky header keeps
+   working; on body too, because the root's own overflow is handed to the viewport. */
+html,body{overflow-x:clip}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* The hero card rests tilted and floats, as the landing's feature cards do; the
+   floor shadow and the family glow stay put beneath it. */
+.hero2{position:relative;isolation:isolate}
+.hero2::before{content:"";position:absolute;z-index:-1;inset:-12% -8% -6% 38%;pointer-events:none;background:radial-gradient(closest-side,color-mix(in oklab,var(--fam-raw) 16%,transparent),transparent)}
+.hero-stage{position:relative;perspective:1600px}
+.hero-stage::after{content:"";position:absolute;z-index:-1;left:10%;right:10%;bottom:-30px;height:24px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in oklab,var(--fg) 24%,transparent),transparent);filter:blur(6px)}
+.hero-art{transform:rotateX(5deg) rotateY(-9deg);transform-origin:40% 50%;animation:hero-float 7s ease-in-out infinite alternate}
+@keyframes hero-float{from{translate:0 -6px}to{translate:0 8px}}
+.hero2 .lede{font-size:16px;line-height:1.6}
+
+/* The three hero facts as a spec strip: label over value, hairline between. */
+.hero2 .chips{gap:0;margin-top:26px;max-width:560px;border-block:1px solid var(--hair2)}
+.hero2 .chips span{flex:1 1 0;display:flex;flex-direction:column;gap:4px;padding:11px 14px 11px 0;border:0;border-radius:0;background:none;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.hero2 .chips span+span{padding-left:14px;border-left:1px solid var(--hair2)}
+.hero2 .chips span b{font:700 14px/1.25 'Space Mono',monospace;letter-spacing:0;text-transform:none;color:var(--fg)}
+
+/* Section marks: one icon per section, the same in the heading and the contents. */
+.sec{border-top:0;background:linear-gradient(90deg,transparent,var(--hair2) 10%,var(--hair2) 90%,transparent) top/100% 1px no-repeat}
+.sec>h2,.sec-title>h2{display:flex;align-items:center;gap:12px}
+.sec-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;font-size:18px;color:var(--fam);background:color-mix(in srgb,var(--fam) 11%,var(--card));border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2))}
+.toc a{display:flex;align-items:center;gap:9px}
+.toc a .i{font-size:14px;color:var(--mut);transition:color .2s}
+.toc a[aria-current="true"] .i{color:var(--fam)}
+
+/* An instrument's label is its title bar. */
+.widget .wl{display:flex;align-items:center;gap:9px;margin:calc(-1*var(--pad)) calc(-1*var(--pad)) 2px;padding:12px var(--pad);border-bottom:1px solid var(--hair)}
+.widget .wl::before{content:"";flex:none;width:7px;height:7px;border-radius:2px;background:var(--fam)}
+
+.callout.key{padding:16px 18px;gap:8px} .callout.key p{font-size:15.5px}
+
+/* Variant cards carry the family edge the course's module cards do. */
+.vcard{position:relative;overflow:hidden;padding-top:19px}
+.vcard::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,var(--fam),color-mix(in oklab,var(--fam) 15%,transparent))}
+
+.qq{display:flex;gap:12px;align-items:flex-start;line-height:1.45}
+.qn.navy{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;box-shadow:none;font:700 13px 'Space Mono',monospace;margin-top:-3px}
+
+@media (max-width:1000px){.hero2{gap:36px;padding-block:32px 28px}.hero-art{transform:rotateX(4deg) rotateY(-4deg)}.hero2::before{inset:30% -20% -10% -20%}}
+@media (max-width:520px){.hero2 .chips span{padding-right:8px}.hero2 .chips span+span{padding-left:8px}.hero2 .chips span b{font-size:12px}.sec-ic{width:30px;height:30px;font-size:16px}}
+@media (prefers-reduced-motion:reduce){.hero-art{animation:none}}
+.embed .hero-art{transform:none;animation:none}
+
+/* Syntax colour follows the well: navy in both themes, so the app's Shiki has one theme and
+   writes each token's colour inline (#19); nothing here picks a variant. */
+/* the inline-code chip (.sec code) must not reach a block's <code>: it boxed every line */
+.code pre.shiki code{font:inherit;background:none;padding:0;border-radius:0}
+
+/* ---- Explain beside the scene (from the Matrix overview): the prose scrolls on the left while its
+   live scene stays pinned on the right, so no one reads about a scene they cannot see. ---- */
+.duo{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:36px;align-items:start;margin:22px 0}
+.duo-text{display:flex;flex-direction:column;gap:12px}
+.duo-text p{max-width:none;margin:0}
+.duo-scene{position:sticky;top:72px}
+.duo-scene .widget{margin:0}
+/* beside its prose a scene is only as tall as its boards: the 240px floor left one-row scenes mostly empty */
+.duo-scene .stage{min-height:0}
+@media (max-width:1100px){.duo{grid-template-columns:minmax(0,1fr);gap:18px}.duo-scene{position:static}}
+
+/* ---- Fact strip: big computed numbers, each with a one-line meaning. ---- */
+.factstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 22px;margin:22px 0;padding:16px 0;border-block:1px solid var(--hair2)}
+.factstrip .fact{display:flex;flex-direction:column;gap:6px;padding:0}
+.factstrip .fact::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--fam)}
+.factstrip .fact b{font:700 clamp(1.35rem,2.4vw,1.85rem)/1.1 'Space Mono',monospace;color:var(--mk);letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.factstrip .fact span{font-size:13px;color:var(--mut);line-height:1.45}
+
+/* ---------- the split layout (#63, on trial on one lesson) ----------
+   Each visual sits beside the prose that introduces it (build.py split_section: .duo.beat, the
+   authored duo's 5fr/7fr and sticky scene), so the page spends its width on pictures instead of an
+   empty strip beside every paragraph. The contents leave the grid and float as a rail in the left
+   margin, shown once the hero has scrolled away. */
+.page.split{grid-template-columns:minmax(0,1fr);gap:0}
+.split .beat{margin:4px 0 26px}
+.split .beat:last-child{margin-bottom:0}
+.split .beat .duo-scene{display:flex;flex-direction:column;gap:18px}
+.split .beat .duo-scene>*,.split .beat .lead>*{margin:0}
+/* the flow (#63, owner 2026-09-28: no gap under a short paragraph beside a tall scene). kit.js sets
+   .flowing on a wide page: a .flow's prose is one unbroken column and each scene hangs at its own
+   paragraph's top, pushed down past the scene above, pulled up only as far as keeps it from outrunning
+   the prose. Without the script the beats keep the paired rows above. */
+.split.flowing .flow{position:relative}
+.split.flowing .flow>:not(.beat),.split.flowing .flow .duo-text{width:calc((100% - 36px) * 5 / 12)}
+.split.flowing .flow .beat{display:block;margin:0 0 12px}
+.split.flowing .flow .duo-scene{position:absolute;right:0;top:0;width:calc((100% - 36px) * 7 / 12)}
+.split .toc{position:fixed;z-index:15;top:50%;left:max(12px,calc((100vw - 1180px) / 2 - 72px));transform:translateY(-50%);
+  padding:8px;gap:2px;background:var(--card);border:1px solid var(--hair2);border-radius:14px;box-shadow:var(--shadow-elevation);
+  transition:opacity .25s,transform .25s,visibility .25s}
+.split .toc .kick{display:none;margin:2px 8px 6px}
+/* labels collapse to their icons; font-size 0 keeps each link's text as its accessible name */
+.split .toc a{border-left:0;padding:7px;border-radius:9px;font-size:0;gap:0}
+.split .toc a .i{font-size:16px}
+.split .toc a[aria-current="true"]{background:color-mix(in srgb,var(--fam) 12%,var(--card))}
+.split .toc:hover a,.split .toc:focus-within a{font-size:13px;gap:10px;padding-right:14px}
+.split .toc:hover .kick,.split .toc:focus-within .kick{display:block}
+.split .toc.auto:not(.on){opacity:0;visibility:hidden;transform:translate(-10px,-50%)}
+@media (max-width:1299px){.split .toc{display:none}}
+@media (max-width:1100px){
+  .split .beat{display:flex;flex-direction:column;gap:18px}
+  .split .beat .duo-scene{display:contents}
+  .split .beat .lead{order:-1}
+  /* stacked, a scene takes the column's width as it did before the split: the duo's align-items:start
+     sized it to its content, and a player's step bar pushed it past a phone's edge (kit-players, #63) */
+  .split .beat{align-items:stretch}
+}
+@media (prefers-reduced-motion:reduce){.split .toc{transition:none}}
+
+/* a section's vignette (lessonMd.ts vignette): a spot drawing on the heading's row, as The Grid
+   Underneath sets one beside each system's title. Decoration beside the heading, so it gives way
+   first: gone on a phone, where it would push the heading's first line down. */
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:22px}
+.sec-title{min-width:0}
+.sec-title>h2{margin-bottom:0}
+/* a section's caption (lessonMd.ts headFences): the one sentence it concludes, set as real text under
+   the heading. It replaced the animated banners, whose words were drawn in a scaled SVG (#63). */
+.sec-sub{font-size:17px;line-height:1.45;color:var(--mut);max-width:62ch;margin:8px 0 0}
+.sec>.sec-sub{margin:-10px 0 22px}
+.sec-head .vig{width:220px;flex:none;color:var(--mut)}
+@media (max-width:760px){.sec-head .vig{display:none}.sec-head{display:block}}
+/* a key term (lessonMd.ts term): the family's colour as a text ink (shared.py text_ink), AA on
+   every surface prose sits on; weight, not a slant, since Space Grotesk has no italic */
+.term{color:var(--fam-ink);font-weight:500}
+/* ================= Amortized Analysis & Dynamic Arrays: extra.css ================= */
+
+/* Hero: Expanding shelf row */
+.ha-muted { font: 500 11px 'JetBrains Mono', monospace; fill: var(--mut); }
+.ha-text { font: 600 12px 'JetBrains Mono', monospace; fill: var(--fg); text-anchor: middle; dominant-baseline: central; }
+.ha-pkg { fill: var(--card); stroke: var(--hair2); stroke-width: 1.2; rx: 4px; }
+.ha-pkg.moved { fill: var(--well); stroke: var(--fam); stroke-width: 1.5; }
+.ha-shelf { fill: var(--deep); stroke: var(--hair2); stroke-width: 1; stroke-dasharray: 3 3; rx: 4px; }
+.ha-coin { fill: var(--fam); stroke: var(--fam-on); stroke-width: 1; }
+
+/* Model controls */
+.model-ctrls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 14px; }
+.model-seg { display: inline-flex; border: 1px solid var(--hair2); border-radius: 8px; overflow: hidden; }
+.model-seg button { background: var(--card); color: var(--fg); border: none; padding: 6px 14px; font: 600 13px 'Space Grotesk', sans-serif; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.model-seg button[aria-pressed="true"] { background: var(--fam); color: var(--fam-on); }
+.model-actions { display: flex; gap: 8px; }
+.btn2 { background: var(--card); color: var(--fg); border: 1px solid var(--hair2); border-radius: 6px; padding: 6px 14px; font: 600 13px 'Space Grotesk', sans-serif; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.btn2:hover { border-color: var(--fam); }
+.model-slider-wrap { display: flex; align-items: center; gap: 8px; font: 500 13px 'Space Grotesk', sans-serif; color: var(--fg); margin-left: auto; }
+.model-slider-wrap input { width: 110px; cursor: pointer; accent-color: var(--fam); }
+.model-slider-wrap b { color: var(--fg); font-family: 'JetBrains Mono', monospace; }
+
+/* Shelf board */
+.shelf-board { display: flex; flex-direction: column; gap: 10px; padding: 14px; background: var(--deep); border: 1px solid var(--hair2); border-radius: 10px; margin-bottom: 14px; }
+.shelf-h { display: flex; justify-content: space-between; font: 500 12px 'JetBrains Mono', monospace; color: var(--mut); }
+.shelf-h b { color: var(--fg); }
+.shelf-cells { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 48px; }
+.shelf-slot { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 38px; height: 44px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; box-sizing: border-box; transition: all 0.15s ease; }
+.shelf-slot.filled { background: var(--card); border: 1px solid var(--fam); color: var(--fg); font-weight: 700; }
+.shelf-slot.copied { background: var(--well); border: 2px solid var(--g-ink); color: var(--fg); font-weight: 700; }
+.shelf-slot.empty { border: 1px dashed var(--hair2); color: var(--mut); background: transparent; }
+.shelf-slot .slot-idx { font-size: 9px; color: var(--mut); font-weight: 400; }
+
+/* Metrics */
+.m-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.m-card { padding: 10px 12px; border: 1px solid var(--hair2); border-radius: 8px; background: var(--card); display: flex; flex-direction: column; gap: 2px; }
+.m-k { font: 700 11px 'Space Mono', monospace; color: var(--mut); text-transform: uppercase; letter-spacing: 0.04em; }
+.m-v { font: 600 18px 'JetBrains Mono', monospace; color: var(--fg); }
+.m-v.good { color: var(--g-ink); }
+.m-v.bad { color: var(--r-ink); }
+.m-v.pop { color: var(--b-ink); }
+.m-sub { font-size: 11px; color: var(--mut); }
+
+/* Table */
+.m-table-wrap { max-height: 200px; overflow-y: auto; border: 1px solid var(--hair2); border-radius: 8px; margin-bottom: 14px; }
+.m-table { width: 100%; border-collapse: collapse; font: 500 12px 'JetBrains Mono', monospace; text-align: left; }
+.m-table th { padding: 8px 12px; background: var(--deep); color: var(--mut); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; position: sticky; top: 0; border-bottom: 1px solid var(--hair2); }
+.m-table td { padding: 6px 12px; border-bottom: 1px solid var(--hair); color: var(--fg); }
+.m-table tr.spike { background: color-mix(in srgb, var(--fam) 12%, transparent); }
+.m-table tr.spike td { font-weight: 700; color: var(--fam); }
+
+/* Note */
+.m-note { font-size: 13.5px; color: var(--mut); line-height: 1.5; }
+.m-note b { color: var(--fg); }
+
+@media (max-width: 600px) {
+  .model-slider-wrap { width: 100%; margin-left: 0; justify-content: space-between; }
+}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="i-ast" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2"/><circle cx="6" cy="14" r="2.2"/><circle cx="18" cy="14" r="2.2"/><path d="M10.6 6.8L7.4 12.2M13.4 6.8l3.2 5.4M6 16.2v3.3M18 16.2v3.3"/></symbol>
+<symbol id="i-stack" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="4" rx="1.2"/><rect x="5" y="10" width="14" height="4" rx="1.2"/><rect x="5" y="16" width="14" height="4" rx="1.2"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.6-7.95A5.5 5.5 0 0 1 17 8.6 4.7 4.7 0 0 1 17 18z"/><path d="M12 12v6M9.5 15.5L12 18l2.5-2.5"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M9 4v16M9 10h11.5"/></symbol>
+<symbol id="i-route" viewBox="0 0 24 24"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="12" cy="6" r="2"/><path d="M6.4 16.4L10.8 7.8M17.6 16.4L13.2 7.8M7 18h10"/></symbol>
+<symbol id="i-rack" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="5" rx="1.2"/><rect x="4" y="9.5" width="16" height="5" rx="1.2"/><rect x="4" y="16" width="16" height="5" rx="1.2"/><path d="M7 5.5h.01M7 12h.01M7 18.5h.01M11 5.5h5M11 12h5M11 18.5h5"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 15h6M9 18h4"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.4h.01"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5.5v13M16 5.5v13" stroke-width="3"/></symbol>
+<symbol id="i-prev" viewBox="0 0 24 24"><path d="M7 5.5v13M18 5.5l-9 6.5 9 6.5z"/></symbol>
+<symbol id="i-next" viewBox="0 0 24 24"><path d="M17 5.5v13M6 5.5l9 6.5-9 6.5z"/></symbol>
+<symbol id="i-replay" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 3.5v5h5"/></symbol>
+<symbol id="i-recurse" viewBox="0 0 24 24"><path d="M12 4v6M12 10L6 15M12 10l6 5M6 15v5M18 15v5"/></symbol>
+<symbol id="i-meet" viewBox="0 0 24 24"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="12" cy="5" r="2"/><path d="M6 17.2L11 6.8M18 17.2L13 6.8"/></symbol>
+<symbol id="i-flat" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/><path d="M7 5v6M11 5v6M15 5v6M19 5v6M5 13v6M9 13v6M13 13v6M17 13v6" stroke-width="1.2"/></symbol>
+<symbol id="i-g-cell" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/><rect x="9.2" y="9.2" width="5.6" height="5.6" fill="currentColor" stroke="none" opacity=".45"/></symbol>
+<symbol id="i-g-kernel" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16"/><rect x="9.6" y="9.6" width="4.8" height="4.8" fill="currentColor" stroke="none" opacity=".35"/></symbol>
+<symbol id="i-g-rotate" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><path d="M20.5 3.5v5h-5"/><rect x="9" y="8" width="6" height="8" rx="1.4"/></symbol>
+<symbol id="i-g-spiral" viewBox="0 0 24 24"><path d="M12 12h2.2v-2.2H9.8v4.4h6.6V7.6H7.6v8.8H18.6V5.4H5.4v13.2h15.2"/></symbol>
+<symbol id="i-s-problem" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></symbol>
+<symbol id="i-s-attempt" viewBox="0 0 24 24"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M13.5 7l3 3"/></symbol>
+<symbol id="i-s-insight" viewBox="0 0 24 24"><path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1.1 1.3 1.1 2.2h5c0-.9.5-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+<symbol id="i-s-solution" viewBox="0 0 24 24"><circle cx="8" cy="15.5" r="4"/><path d="M11 12.5l8-8M16.5 7l2.5 2.5M14 9.5l2 2"/></symbol>
+<symbol id="i-s-variants" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7v10M18 9c0 4.5-6.5 3.5-11 8.3"/></symbol>
+<symbol id="i-s-quiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.3l2.6 2.6 5-5.2"/></symbol>
+<symbol id="i-s-cost" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M7 16c4 0 7-2.5 11-10"/><path d="M7 17.5h11" stroke-dasharray="1.5 2.5"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></symbol></defs></svg>
+<header class="top"><div class="wrap"><a class="mark" href="#top" aria-label="leetExpert"><span>leetExpert</span><span class="lamp" aria-hidden="true"></span></a>
+<div class="seg" role="group" aria-label="Code language"><button type="button" id="lang-py" aria-pressed="true">Python</button><button type="button" id="lang-ts" aria-pressed="false">TypeScript</button></div></div></header>
+<main id="top" data-code="py">
+<div class="wrap"><section class="hero2"><div class="hero-copy"><div class="kick">Big O &amp; Complexity Analysis · concept lesson</div>
+<h1 id="h1"><span class="kw">Rare</span> <span class="kw">expensive</span> <span class="kw">spikes,</span> <span class="kw">paid</span> <span class="kw">for</span> <span class="kw">by</span> <span class="kw">quiet</span> <span class="kw">neighbors.</span></h1>
+<p class="lede">Placing a package on a shelf is instant until the shelf is full. When it fills up, you must build a new shelf twice as large and move every existing package over. That move is exhausting, but it buys a long run of cheap placements before the next one. Amortized analysis proves that over any sequence of operations, the average cost per operation is constant — because the spikes get rarer exactly as fast as they get bigger.</p>
+<div class="chips"><span>doubling spaces spikes <b>exponentially</b></span><span>banker's charge: <b>3 tokens per append</b></span><span>fixed growth collapses to <b>O(n) amortized</b></span></div></div>
+<div class="hero-stage"><div class="hero-art navy"><svg id="heroShelf" viewBox="0 0 560 220" role="img" aria-label="Animation: an expanding shelf row. Items are placed into empty slots instantly until the shelf fills up, triggering a doubling move where existing items are copied over into a larger row."></svg>
+<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">1</b> <span id="heroUnit">packages placed</span></div><div id="heroCap"></div></div></div></div></section></div>
+<div class="wrap page split">
+<nav class="toc" aria-label="Lesson sections"><div class="kick">On this page</div>
+<a href="#problem"><svg class="i" aria-hidden="true"><use href="#i-s-problem"/></svg>Expanding shelf</a><a href="#build"><svg class="i" aria-hidden="true"><use href="#i-stack"/></svg>Live model</a><a href="#insight"><svg class="i" aria-hidden="true"><use href="#i-s-insight"/></svg>Banker's method</a><a href="#solution"><svg class="i" aria-hidden="true"><use href="#i-s-solution"/></svg>Implementation</a><a href="#cost"><svg class="i" aria-hidden="true"><use href="#i-s-cost"/></svg>Three lenses</a><a href="#next"><svg class="i" aria-hidden="true"><use href="#i-s-variants"/></svg>Where next</a><a href="#quiz"><svg class="i" aria-hidden="true"><use href="#i-s-quiz"/></svg>Quiz</a></nav>
+<article>
+<section class="sec" id="problem"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-problem"/></svg></span><span>The expanding shelf row</span></h2><p class="sec-sub">A sequence of cheap operations punctuated by rare moves to a larger shelf.</p></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: A row of shelf slots holding packages with a new larger shelf below"><rect class="fa" x="14" y="30" width="30" height="28" rx="4"/><rect class="fa" x="48" y="30" width="30" height="28" rx="4"/><rect class="fk" x="82" y="30" width="30" height="28" rx="4"/><rect class="st" x="116" y="30" width="30" height="28" rx="4" stroke-dasharray="3 3"/><path class="st" d="M120 74V90M116 86L120 90L124 86"/><rect class="fa" x="14" y="96" width="30" height="28" rx="4"/><rect class="fa" x="48" y="96" width="30" height="28" rx="4"/><rect class="fa" x="82" y="96" width="30" height="28" rx="4"/><rect class="fk" x="116" y="96" width="30" height="28" rx="4"/><rect class="st" x="150" y="96" width="30" height="28" rx="4" stroke-dasharray="3 3"/><rect class="st" x="184" y="96" width="30" height="28" rx="4" stroke-dasharray="3 3"/></svg></div><div class="flow"><p>Back at your sorting desk, you manage a row of storage shelves for incoming packages. When a new package arrives, placing it in the next empty shelf slot is quick: just slide it into position. But what happens when the shelf is completely full? You have to move your entire setup to a new location. This move is exhausting: you must pick up every single package already on the shelf and carry it, one by one, over to the new rack.</p><p>To prevent spending all your time moving, you establish a rule: whenever the current shelf fills up, you build a new one that is exactly <span class="term">twice</span> the size of the old one. The moves grow larger, but they also become much rarer, separated by longer stretches of effortless placements.</p><p>This is a fundamentally different question from best, worst, and average-case analysis. Those lenses evaluate a <em>single call</em> across varying inputs. <span class="term">Amortized analysis</span> asks something else: <b>in any sequence of m operations on the same structure — including an adversarial sequence — what is the total cost divided by m?</b> There is no probability distribution or lucky input assumed; it is a worst-case guarantee over an entire sequence of operations.</p></div></section>
+
+<section class="sec" id="build"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-stack"/></svg></span><span>Live model: doubling against fixed growth</span></h2><p class="sec-sub">Doubling keeps total copies under 2n; fixed growth repeats copies until the work turns quadratic.</p></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Doubling capacity steps on the left compared to dense repeated copy steps on the right"><rect class="fa" x="16" y="24" width="40" height="18" rx="3"/><rect class="fa" x="16" y="50" width="80" height="18" rx="3"/><rect class="fk" x="16" y="76" width="160" height="18" rx="3"/><path class="st" d="M190 20V94"/><line class="sc" x1="200" y1="24" x2="226" y2="24"/><line class="sc" x1="200" y1="38" x2="226" y2="38"/><line class="sc" x1="200" y1="52" x2="226" y2="52"/><line class="sc" x1="200" y1="66" x2="226" y2="66"/><line class="sc" x1="200" y1="80" x2="226" y2="80"/><line class="sc" x1="200" y1="94" x2="226" y2="94"/></svg></div><div class="flow"><div class="duo beat"><div class="duo-text"><p>The canonical example of amortized efficiency is appending to a <span class="term">dynamic array</span> (Python <code>list</code>, JavaScript array). An append writes directly to the next free slot: O(1). When the backing array is full, it allocates a new buffer twice as large, copies every existing item into it, and only then writes the new element.</p><p>The live model below instruments both strategies on the same sequence of appends. Switch between doubling and fixed increments, step through placements, and observe how the running total of copies evolves.</p></div><div class="duo-scene"><div class="widget navy" id="model"><div class="wl">Interactive dynamic array: doubling vs fixed growth</div><div class="model-ctrls">
+  <div class="model-seg" role="group" aria-label="Resize strategy">
+    <button type="button" id="strat-double" aria-pressed="true">Doubling (×2)</button>
+    <button type="button" id="strat-fixed" aria-pressed="false">Fixed growth (+1)</button>
+  </div>
+  <div class="model-actions">
+    <button type="button" id="btnAppend" class="btn2">Append item</button>
+    <button type="button" id="btnReset" class="btn2">Reset</button>
+  </div>
+  <div class="model-slider-wrap">
+    <span>Items n:</span>
+    <input type="range" id="sliderN" min="1" max="32" value="9" aria-label="Number of items appended">
+    <b id="lblN"></b>
+  </div>
+</div>
+<div class="shelf-board">
+  <div class="shelf-h">
+    <span>Backing buffer: <b id="shelfSize"></b> / <b id="shelfCap"></b> slots used</span>
+    <span>Marked cells were copied by the last resize</span>
+  </div>
+  <div class="shelf-cells" id="shelfCells"></div>
+</div>
+<div class="m-metrics">
+  <div class="m-card"><span class="m-k">Size</span><span class="m-v" id="mSize"></span><span class="m-sub">elements stored</span></div>
+  <div class="m-card"><span class="m-k">Capacity</span><span class="m-v" id="mCap"></span><span class="m-sub">allocated slots</span></div>
+  <div class="m-card"><span class="m-k">Last Copies</span><span class="m-v" id="mCopies"></span><span class="m-sub">on this append</span></div>
+  <div class="m-card"><span class="m-k">Total Copies</span><span class="m-v good" id="mTotalCopies"></span><span class="m-sub">cumulative moves</span></div>
+  <div class="m-card"><span class="m-k">Bank Balance</span><span class="m-v pop" id="mBank"></span><span class="m-sub">saved credits</span></div>
+  <div class="m-card"><span class="m-k">Avg Copies</span><span class="m-v good" id="mAvg"></span><span class="m-sub">copies / append</span></div>
+</div>
+<div class="m-table-wrap">
+  <table class="m-table" aria-label="Append operation history">
+    <thead>
+      <tr><th>Append</th><th>Cap Before</th><th>Cap After</th><th>Copies</th><th>Total Copies</th></tr>
+    </thead>
+    <tbody id="traceBody"></tbody>
+  </table>
+</div>
+<p class="m-note" id="modelNote"></p></div></div></div><p>Notice the contrast. With doubling, the spikes get taller (1, 2, 4, 8, 16 copies), but the distance between spikes doubles every time. The quiet O(1) operations vastly outnumber the spikes, keeping the cumulative copies below twice the number of elements inserted. Switch to fixed growth and watch the bank: the same 3-token charge goes overdrawn within a few appends.</p></div></section>
+
+<section class="sec" id="insight"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-insight"/></svg></span><span>The accounting method</span></h2><p class="sec-sub">Charge 3 tokens per append: 1 pays for today, 2 wait in the bank to pay for moving.</p></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Three token coins stacked on top of an item slot"><rect class="fa" x="20" y="54" width="36" height="36" rx="4"/><circle class="fg" cx="38" cy="22" r="7"/><circle class="fg" cx="38" cy="34" r="7"/><circle class="fg" cx="38" cy="46" r="7"/><rect class="fa" x="66" y="54" width="36" height="36" rx="4"/><circle class="fg" cx="84" cy="22" r="7"/><circle class="fg" cx="84" cy="34" r="7"/><circle class="fg" cx="84" cy="46" r="7"/><path class="st" d="M120 72H160M155 67L160 72L155 77"/><rect class="st" x="176" y="44" width="50" height="46" rx="8" stroke-dasharray="4 4"/><circle class="fc" cx="201" cy="67" r="14"/></svg></div><div class="flow"><p>Summing the series 1 + 2 + 4 + … + n/2 ≈ n works when the whole sequence is known in advance. But there is an even more powerful proof technique: the <span class="term">accounting method</span> (or Banker's view).</p><p>Imagine that on every append, you charge an amortized fee of <b>3 tokens</b>:</p><ol><li><b>1 token</b> pays for writing the new package into its shelf slot right now.</li><li><b>2 tokens</b> are deposited into a bank account linked to that package.</li></ol><p>Now consider the moment the shelf fills up at capacity n, triggering a resize. The shelf must move all n packages. When was the last resize? At capacity n/2, which doubled the shelf to n. That means exactly the newest n/2 packages were inserted since the last move!</p><p>Each of those n/2 packages is still holding its 2 banked tokens:</p><p class="formula">(n/2) × 2 = n tokens in the bank</p><p>That is exactly enough to pay for copying all n packages at 1 token each. The older half of the packages already spent their savings on the previous move; the newer half's savings cover this move in full. The bank balance never drops below zero, which proves that a flat charge of 3 operations per append covers every spike unconditionally.</p><div class="callout key"><div class="cl"><svg class="i"><use href="#i-meet"/></svg>Key idea</div><p>Amortized analysis guarantees the average cost over any sequence by charging quiet operations a small fee to pay for rare expensive peaks.</p></div></div></section>
+
+<section class="sec" id="solution"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-solution"/></svg></span><span>Implementing a dynamic array</span></h2><p class="sec-sub">Double the backing buffer when size reaches capacity, copy existing items, and write the new value.</p></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Memory buffer copying elements across into a doubled block"><rect class="fa" x="14" y="32" width="28" height="24" rx="3"/><rect class="fa" x="46" y="32" width="28" height="24" rx="3"/><path class="st" d="M28 58V78M28 78H28M60 58V78"/><rect class="fa" x="14" y="80" width="28" height="24" rx="3"/><rect class="fa" x="46" y="80" width="28" height="24" rx="3"/><rect class="fk" x="78" y="80" width="28" height="24" rx="3"/><rect class="st" x="110" y="80" width="28" height="24" rx="3" stroke-dasharray="3 3"/></svg></div><div class="flow"><div class="duo beat"><div class="duo-text"><p>Here is <code>DynArray</code> implemented from scratch in Python and TypeScript, instrumented with a copy counter to verify the amortized bound.</p></div><div class="duo-scene"><div data-code-file="solution" data-title="DynArray: append with capacity doubling"></div></div></div><div class="callout warn"><div class="cl"><svg class="i"><use href="#i-warn"/></svg>Watch out</div><p>Growing by a fixed constant (+1 or +10) instead of doubling. A copy of the entire array comes due every few appends regardless of how large the array already is. Total copy work accumulates to n(n - 1) ÷ 2, degrading the amortized cost from O(1) to O(n).</p>
+<div data-code-file="mistake" data-title="DynArrayFixed: fixed increment (+1)"></div></div></div></section>
+
+<section class="sec" id="cost"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-cost"/></svg></span><span>The three lenses on performance</span></h2><p class="sec-sub">Worst-case, average-case, and amortized complexity answer three different questions.</p></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Three magnifying lenses inspecting cost curves"><circle class="st" cx="44" cy="50" r="22"/><line class="st" x1="60" y1="66" x2="74" y2="80"/><circle class="st" cx="120" cy="50" r="22"/><line class="st" x1="136" y1="66" x2="150" y2="80"/><circle class="st" cx="196" cy="50" r="22"/><line class="st" x1="212" y1="66" x2="226" y2="80"/><path class="sc" d="M30 56Q44 40 58 48"/><path class="sc" d="M106 58L134 42"/><path class="sc" d="M182 58Q196 56 210 38"/></svg></div><div class="flow"><div class="duo beat"><div class="duo-text"><p>Whenever you see a performance claim, ask: <em>over what does this guarantee hold?</em> Conflating these three lenses is the primary source of surprise in algorithm performance.</p></div><div class="duo-scene"><div class="rosetta" aria-label="Three performance promises"><div class="ro-h"><span>Guarantee</span><span>What it actually promises | Example</span></div><div class="ro"><b class="ro-k">Worst case</b><span>Holds for every single individual call on any input | Linear search in an unsorted list is O(n)</span></div><div class="ro"><b class="ro-k">Average case</b><span>Expected cost over an assumed probability distribution of inputs | Hash table lookup is O(1) assuming uniform hashing</span></div><div class="ro"><b class="ro-k">Amortized</b><span>Holds for the total cost of any sequence of operations, averaged per operation | Dynamic array append is O(1) amortized</span></div></div></div></div><div class="complexity"><div class="cx-h">Complexity, derived</div><p><b>Doubling: O(1) amortized.</b> For n appends starting at capacity 1, resizes copy 1 + 2 + 4 + … + 2^k elements, where 2^k &lt; n. The geometric sum of powers of 2 is at most 2n - 1 copies. Adding n item placements gives fewer than 3n total operations, so under 3 operations per append on average.</p>
+<p><b>Fixed growth (+1): O(n) amortized.</b> Resizing every append copies 0 + 1 + 2 + … + (n - 1) = n(n - 1) ÷ 2 elements. Total work is quadratic O(n²), making each append cost O(n) on average.</p></div></div></section>
+
+<section class="sec" id="next"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-variants"/></svg></span><span>Where next</span></h2></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Signpost pointing down multiple paths"><path class="st" d="M120 100V24"/><rect class="fa" x="68" y="22" width="104" height="14" rx="4"/><rect class="fa" x="76" y="42" width="96" height="14" rx="4"/><rect class="fk" x="68" y="62" width="104" height="14" rx="4"/></svg></div><div class="vgrid" id="vlist"></div></section>
+
+<section class="sec" id="quiz"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-quiz"/></svg></span><span>Check yourself</span></h2></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Three question rows with one checked off"><circle class="fg" cx="36" cy="24" r="10"/><path class="st" d="M31 24L35 28L42 20"/><circle class="st" cx="36" cy="56" r="10"/><circle class="st" cx="36" cy="88" r="10"/><rect class="fa" x="58" y="19" width="150" height="10" rx="5"/><rect class="fa" x="58" y="51" width="118" height="10" rx="5"/><rect class="fa" x="58" y="83" width="138" height="10" rx="5"/></svg></div><div id="qlist"></div></section>
+</article></div></main>
+<script src="../vendor/motion.js"></script>
+<script>
+(function(){
+'use strict';
+/* kit/engine.js: colour palette, animation clock and the scene player (grid boards and node-link boards).
+   Shared by every lesson page; concatenated inside one closure by kit/build.py. */
+var M = window.Motion || null;
+var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+var clamp=function(x,a,b){a=a==null?0:a;b=b==null?1:b;return Math.min(b,Math.max(a,x));};
+var ease=function(p){return p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;};
+function h2r(h){h=h.trim();if(h[0]==='#'){if(h.length===4)h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];return [1,3,5].map(function(i){return parseInt(h.slice(i,i+2),16);});}var m=h.match(/[\d.]+/g)||[0,0,0];return m.slice(0,3).map(Number);}
+/* relative luminance, for picking the readable ink over a fill that is mid-transition */
+var lumc=function(c){var f=function(v){v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);};return .2126*f(c[0])+.7152*f(c[1])+.0722*f(c[2]);};
+var crat=function(a,b){var x=lumc(a),y=lumc(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
+var mixc=function(a,b,p){return [Math.round(a[0]+(b[0]-a[0])*p),Math.round(a[1]+(b[1]-a[1])*p),Math.round(a[2]+(b[2]-a[2])*p)];};
+/* the ink for a fill that is mid-transition: the endpoint ink that reads better, or, when neither
+   clears AA, one pushed toward whichever of black and white contrasts more with this fill, only as far
+   as AA needs. Each state clears 4.5:1 with its own ink, but tints tuned close to that floor
+   (accent_cell) left both inks at 4.1-4.4:1 over a blend of two of them: a white ink cannot be pushed
+   whiter, so the direction comes from the fill, never the ink. One extreme always reaches 4.58:1
+   (sqrt 21, where black and white tie), so the push always lands. */
+var WHITE=[255,255,255],BLACK=[0,0,0];
+function legible(f,ia,ib){
+  var ink=crat(f,ia)>=crat(f,ib)?ia:ib;if(crat(f,ink)>=4.5)return ink;
+  var to=crat(f,WHITE)>=crat(f,BLACK)?WHITE:BLACK,from=(lumc(ia)>lumc(f))===(to===WHITE)?ia:ib;
+  for(var p=.1;p<1;p+=.1){var t=mixc(from,to,p);if(crat(f,t)>=4.5)return t;}
+  return to;
+}
+var rgb=function(a){return 'rgb('+a[0]+','+a[1]+','+a[2]+')';};
+var fmt=function(n){return n.toLocaleString('en-US');};
+/* a count with its unit: counters animate through 1, where "1 hops" would show */
+var count=function(n,one,many){return fmt(n)+' '+(n===1?one:many);};
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function icon(id){return '<svg class="i" aria-hidden="true"><use href="#'+id+'"/></svg>';}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+function run(from,to,dur,onUpdate,onDone){
+  if(M&&M.animate){
+    var c=M.animate(from,to,{duration:dur,ease:'linear',onUpdate:onUpdate,onComplete:onDone});
+    return {stop:function(){try{c.stop();}catch(e){try{c.cancel();}catch(e2){/* already finished: neither call is needed */}}}};
+  }
+  var t0=performance.now(),id=0,dead=false;
+  (function tick(now){if(dead)return;var p=clamp((now-t0)/(dur*1000));onUpdate(from+(to-from)*p);if(p<1)id=requestAnimationFrame(tick);else if(onDone)onDone();})(t0);
+  return {stop:function(){dead=true;cancelAnimationFrame(id);}};
+}
+
+/* palette from the page's CSS tokens: light and dark both come from the app.
+   Read inside a .navy probe, not from :root: every painted board sits on a navy
+   instrument card, whose inks differ from the paper's in the light theme. */
+var KINDS=['idle','cur','acc','done','bad','warn','dim','viol','win'];
+var PAL={},EDGE={};
+function readPal(){
+  var probe=document.createElement('div');probe.className='navy';probe.hidden=true;document.body.appendChild(probe);
+  var cs=getComputedStyle(probe);
+  KINDS.forEach(function(k){PAL[k]={f:h2r(cs.getPropertyValue('--k-'+k)),i:h2r(cs.getPropertyValue('--k-'+k+'-ink'))};});
+  EDGE.idle=h2r(cs.getPropertyValue('--e-idle'));EDGE.path=h2r(cs.getPropertyValue('--e-path'));EDGE.cur=h2r(cs.getPropertyValue('--e-cur'));
+  probe.remove();
+}
+/* s (0 to 1) shades a cell by value, from the idle fill toward the accent: a pixel's brightness,
+   a tile's place in an image. Its ink is whichever of the two reads better on that exact fill. */
+function styleOf(c){
+  if(c.s!=null){var f=mixc(PAL.idle.f,PAL.acc.f,clamp(c.s));return {f:f,i:legible(f,PAL.idle.i,PAL.acc.i)};}
+  var P=PAL[c.k]||PAL.idle;return {f:P.f,i:P.i};
+}
+/* win's fill sits about 1.1:1 off idle on the navy card, so the state is carried by a ring (.cell.win),
+   not the fill (#72). Every path that paints a cell's fill marks its state here too. */
+function markState(e,k){e.classList.toggle('win',k==='win');}
+/* A frame blends each fill from the last state to the next, so a cell leaving win still shows win's fill
+   at the start of the step. Its ring stays until the fill has finished moving, or for that moment it is a
+   win fill with nothing to tell it from idle (CI's gate caught it mid-play on sliding-window). */
+function ringKind(from,to,p){return to==='win'||(p<1&&from==='win')?'win':to;}
+
+var mk=function(n,f){var a=[];for(var i=0;i<n;i++)a.push(f(i));return a;};
+var cp=function(a){return a.map(function(x){return {k:x.k,t:x.t,s:x.s};});};
+function zeros(n){return mk(n,function(){return 0;});}
+
+/* ---------- Scene player ---------- */
+var SCENES=[];
+function Scene(def,root){
+  var self=this,frames=def.frames,n=frames.length,step=def.step,total=n*step,t=def.poster*step+step*.5,speed=1,playing=false,ctl=null,cells={},edgeEls={},ovs={},last={};
+  var stage=root.querySelector('.stage'),note=root.querySelector('.note'),stats=root.querySelector('.stats'),cnt=root.querySelector('.cnt'),head=root.querySelector('.head'),range=root.querySelector('input[type=range]'),ticks=root.querySelector('.ticks'),playB=root.querySelector('.pp'),spdB=root.querySelector('.spd');
+  var groups=[];
+  def.boards.forEach(function(b){
+    if(!groups[b.g]){groups[b.g]=el('div','grp'+(b.wide?' wide':''));stage.appendChild(groups[b.g]);}
+    var w=el('div','bw'),lab=el('div','bl',b.label),brd=el('div','brd'+(b.tree?' tree':'')+(b.strip?' strip':''));
+    cells[b.id]=[];
+    if(b.tree){
+      var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','edges');brd.appendChild(svg);b.svg=svg;
+      if(b.tree.directed){var mid='ah'+b.id+Math.floor(Math.random()*1e6);
+        svg.insertAdjacentHTML('afterbegin','<defs><marker id="'+mid+'" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="context-stroke"/></marker></defs>');
+        b.marker='url(#'+mid+')';}
+      edgeEls[b.id]=b.tree.edges.map(function(){var l=document.createElementNS('http://www.w3.org/2000/svg','line');if(b.marker)l.setAttribute('marker-end',b.marker);svg.appendChild(l);return l;});
+      b.tree.nodes.forEach(function(){var c=el('div','cell node');brd.appendChild(c);cells[b.id].push(c);});
+    }else{
+      brd.style.gridTemplateColumns='repeat('+b.cols+',var(--cs))';
+      for(var i=0;i<b.rows*b.cols;i++){var c2=el('div','cell');brd.appendChild(c2);cells[b.id].push(c2);}
+      /* a rectangle over cells (a filter's window, a spiral's untouched bounds), made only for a board
+         a frame draws one on, so no other board's markup changes; it follows the cells' tween */
+      if(frames.some(function(f){return f.ov&&f.ov[b.id];})){var ov=el('div','ov');ov.setAttribute('aria-hidden','true');brd.appendChild(ov);ovs[b.id]=ov;brd.classList.add('has-ov');}
+    }
+    w.appendChild(lab);w.appendChild(brd);groups[b.g].appendChild(w);b.el=brd;
+  });
+  frames.forEach(function(f,i){var tk=el('i',f.ev||'');tk.title='Frame '+(i+1);tk.addEventListener('click',function(){pause();t=i*step+step*.5;render();});ticks.appendChild(tk);});
+  var tickEls=ticks.children;
+
+  function statsHtml(f){return (f.stats||[]).map(function(s){return '<span>'+s[0]+' <b>'+s[1]+'</b></span>';}).join('');}
+  /* Hold the caption and the stats row at the tallest any frame needs, measured at this width:
+     they change length every frame, and a row that wraps moved everything below the player. */
+  function reserveText(){
+    [[note,function(f){var d=document.createElement('div');d.textContent=f.note||'';return d.innerHTML;}],[stats,statsHtml]].forEach(function(p){
+      var box=p[0],probe=box.cloneNode(false),h=0;probe.removeAttribute('aria-live');probe.setAttribute('aria-hidden','true');
+      probe.style.cssText='position:absolute;visibility:hidden;left:0;top:0;min-height:0;width:'+box.clientWidth+'px';box.parentNode.appendChild(probe);
+      frames.forEach(function(f){probe.innerHTML=p[1](f);h=Math.max(h,probe.offsetHeight);});probe.remove();
+      if(h)box.style.minHeight=h+'px';});
+  }
+  function fit(){
+    def.boards.forEach(function(b){
+      var g=b.el.closest('.grp'),gw=g.clientWidth||260;
+      if(b.tree){
+        var W=Math.max(220,gw-8),nx=Math.max(1,b.tree.width),dx=Math.min(62,(W-40)/Math.max(1,nx-1||1)),d=Math.min(36,Math.max(24,dx*.7,0)),dy=Math.min(70,110/Math.max(1,1)+0);
+        var rowsN=b.tree.depth+1;dy=rowsN>4?46:(rowsN>3?52:58);
+        var width=(nx-1)*dx+d+8,height=(rowsN-1)*dy+d+8;
+        b.geo={dx:dx,dy:dy,d:d,ox:d/2+4,oy:d/2+4};
+        b.el.style.width=width+'px';b.el.style.height=height+'px';b.svg.setAttribute('width',width);b.svg.setAttribute('height',height);
+        var fs=Math.max(10,Math.round(d*.34));
+        b.tree.nodes.forEach(function(nd,i){var c=cells[b.id][i];c.style.width=d+'px';c.style.height=d+'px';c.style.left=(b.geo.ox+nd.x*dx-d/2)+'px';c.style.top=(b.geo.oy+nd.d*dy-d/2)+'px';c.style.fontSize=fs+'px';});
+        b.tree.edges.forEach(function(e,i){var a=b.tree.nodes[e[0]],c=b.tree.nodes[e[1]],ln=edgeEls[b.id][i];
+          var x1=b.geo.ox+a.x*dx,y1=b.geo.oy+a.d*dy,x2=b.geo.ox+c.x*dx,y2=b.geo.oy+c.d*dy;
+          if(b.tree.directed){var len=Math.hypot(x2-x1,y2-y1)||1,back=d/2+3;x2-=(x2-x1)/len*back;y2-=(y2-y1)/len*back;}
+          ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);});
+      }else{
+        /* a strip is memory: narrow cells in one row, a wider gap every 4 (one cache line), no text */
+        var cap=b.cap||(b.strip?18:56),gap=b.strip?2:3,extra=b.strip?Math.floor(b.cols/4)*3:0;
+        var cs=Math.floor(Math.min(cap,(gw-8-(b.cols-1)*gap-extra)/b.cols));cs=Math.max(cs,b.strip?5:20);
+        b.el.style.setProperty('--cs',cs+'px');b.el.style.setProperty('--fs',Math.max(9,Math.round(cs*.4))+'px');
+      }
+    });
+    last={};reserveText();render();
+  }
+  /* o: {r0,c0,r1,c1} in cells, both corners included; measured from the laid-out cells, so it
+     follows whatever size fit() gave them */
+  function ovRect(b,o){
+    var cs=cells[b.id],c0=cs[0],stepX=cs.length>1&&b.cols>1?cs[1].offsetLeft-c0.offsetLeft:c0.offsetWidth,
+        stepY=b.rows>1?cs[b.cols].offsetTop-c0.offsetTop:c0.offsetHeight,gapX=stepX-c0.offsetWidth,gapY=stepY-c0.offsetHeight;
+    return {x:c0.offsetLeft+o.c0*stepX-3,y:c0.offsetTop+o.r0*stepY-3,w:(o.c1-o.c0+1)*stepX-gapX+6,h:(o.r1-o.r0+1)*stepY-gapY+6};
+  }
+  function render(){
+    var fi=Math.min(n-1,Math.floor(t/step+1e-9)),loc=(t-fi*step)/step,p=fi===0?1:ease(clamp(loc/.45));
+    var cur=frames[fi],prev=frames[Math.max(0,fi-1)];
+    def.boards.forEach(function(b){
+      var a=prev.b[b.id],c=cur.b[b.id],els=cells[b.id];
+      for(var i=0;i<els.length;i++){
+        var sa=styleOf(a[i]),sb=styleOf(c[i]),fm=mixc(sa.f,sb.f,p),f=rgb(fm),ink=rgb(legible(fm,sa.i,sb.i));
+        // the ink never blends: half-way between two states both fill and ink sat mid-tone and the
+        // letter nearly vanished (the browser gate measured 1.47:1), so it takes whichever reads better
+        var changed=a[i].k!==c[i].k||a[i].t!==c[i].t||a[i].s!==c[i].s;
+        var sc=changed&&p<1?1+.12*Math.sin(Math.PI*p):1,tx=(p<.3?a[i].t:c[i].t)||'';
+        var rk=ringKind(a[i].k,c[i].k,p),key=f+ink+sc.toFixed(3)+tx+rk,e=els[i],id=b.id+i;
+        if(last[id]===key)continue;last[id]=key;
+        markState(e,rk);e.style.background=f;e.style.color=ink;e.style.transform=sc===1?'':'scale('+sc.toFixed(3)+')';
+        if(e.textContent!==tx)e.textContent=tx;
+      }
+      var o=ovs[b.id];
+      if(o){var oc=cur.ov&&cur.ov[b.id],op=prev.ov&&prev.ov[b.id];
+        if(oc){var r1=ovRect(b,oc),r0=op?ovRect(b,op):r1,q=op?p:1;
+          o.className='ov'+(oc.cls==='bounds'?' bounds':'');
+          // moved by transform from a fixed box: a changing left/top is a layout shift at every frame
+          o.style.transform='translate('+(r0.x+(r1.x-r0.x)*q).toFixed(1)+'px,'+(r0.y+(r1.y-r0.y)*q).toFixed(1)+'px)';
+          o.style.width=(r0.w+(r1.w-r0.w)*q)+'px';o.style.height=(r0.h+(r1.h-r0.h)*q)+'px';o.style.opacity=op?1:p;}
+        else o.style.opacity=0;}
+      if(b.tree){
+        var ea=prev.e&&prev.e[b.id],ec=cur.e&&cur.e[b.id];
+        edgeEls[b.id].forEach(function(ln,i){
+          var va=ea?ea[i]:0,vc=ec?ec[i]:0,ca=EDGE[va===2?'cur':(va===1?'path':'idle')],cc=EDGE[vc===2?'cur':(vc===1?'path':'idle')];
+          var w0=va?4:2,w1=vc?4:2,key='e'+b.id+i+va+vc+p.toFixed(2);if(last[key])return;last[key]=1;
+          ln.style.stroke=rgb(mixc(ca,cc,p));ln.style.strokeWidth=(w0+(w1-w0)*p).toFixed(2);
+        });
+      }
+    });
+    if(note.dataset.f!==String(fi)){note.dataset.f=fi;note.textContent=cur.note||'';
+      stats.innerHTML=statsHtml(cur);
+      for(var k=0;k<tickEls.length;k++)tickEls[k].classList.toggle('on',k<=fi&&!tickEls[k].classList.contains('key')&&!tickEls[k].classList.contains('bad'));}
+    cnt.textContent=(fi+1)+' / '+n;
+    var pct=total?clamp(t/total)*100:0;head.style.left=pct+'%';
+    if(document.activeElement!==range||playing)range.value=Math.round(pct*10);
+    range.setAttribute('aria-valuetext','Frame '+(fi+1)+' of '+n);
+  }
+  function ui(){var again=t>=total-step*.6;playB.innerHTML=icon(playing?'i-pause':(again?'i-replay':'i-play'));playB.setAttribute('aria-label',playing?'Pause':(again?'Replay':'Play'));}
+  /* def.loop: hold the last frame, then play again, until the learner takes the controls */
+  var touched=false,loopT=0;
+  function pause(){clearTimeout(loopT);if(ctl){ctl.stop();ctl=null;}playing=false;ui();}
+  function play(){
+    if(playing)return;
+    if(t>=total-step*.6)t=0;
+    playing=true;ui();
+    var from=t,dur=(total-step*.5-from)/speed;
+    ctl=run(from,total-step*.5,Math.max(.05,dur),function(v){t=v;render();},function(){playing=false;ctl=null;t=total-step*.5;render();ui();
+      if(def.loop&&!touched&&!reduce)loopT=setTimeout(function(){if(!touched){t=0;play();}},2400);});
+  }
+  ['.pp','.pv','.nx'].forEach(function(sel){root.querySelector(sel).addEventListener('pointerdown',function(){touched=true;});});
+  range.addEventListener('pointerdown',function(){touched=true;});
+  playB.addEventListener('click',function(){playing?pause():play();});
+  root.querySelector('.pv').addEventListener('click',function(){pause();var fi=Math.min(n-1,Math.floor(t/step));t=Math.max(0,fi-1)*step+step*.5;render();ui();});
+  root.querySelector('.nx').addEventListener('click',function(){pause();var fi=Math.min(n-1,Math.floor(t/step));t=Math.min(n-1,fi+1)*step+step*.5;render();ui();});
+  spdB.addEventListener('click',function(){speed=speed===1?2:(speed===2?.5:1);spdB.textContent=speed+'×';if(playing){pause();play();}});
+  range.addEventListener('input',function(){pause();t=clamp(range.value/1000)*total;render();});
+  if('ResizeObserver' in window){new ResizeObserver(function(){fit();}).observe(stage);}else{window.addEventListener('resize',fit);}
+  self.refresh=function(){last={};render();};self.stop=pause;
+  self.start=function(){if(reduce)return;pause();t=0;render();play();};
+  fit();ui();
+}
+
+
+/* kit/trees.js: binary-tree layout helpers for lessons that draw trees. */
+/* ---------- binary trees ---------- */
+/* B(label,left,right) builds a tree; layout() numbers nodes in creation order (pre-order), x by in-order rank, y by depth */
+function B(v,l,r){return {v:v,l:l||null,r:r||null};}
+function layout(root){
+  var nodes=[],rank=0,maxd=0;
+  (function num(n,p,d){var id=nodes.length;nodes.push({id:id,v:n.v,p:p,d:d,l:-1,r:-1});n._id=id;maxd=Math.max(maxd,d);
+    if(n.l){nodes[id].l=num(n.l,id,d+1);} if(n.r){nodes[id].r=num(n.r,id,d+1);} return id;})(root,-1,0);
+  (function ino(id){var n=nodes[id];if(n.l>=0)ino(n.l);n.x=rank++;if(n.r>=0)ino(n.r);})(0);
+  var edges=[];nodes.forEach(function(n){if(n.l>=0)edges.push([n.id,n.l]);if(n.r>=0)edges.push([n.id,n.r]);});
+  return {nodes:nodes,edges:edges,depth:maxd,width:rank};
+}
+function edgeIndex(T,a,b){for(var i=0;i<T.edges.length;i++)if(T.edges[i][0]===a&&T.edges[i][1]===b)return i;return -1;}
+function treeBoard(id,T,label,g,extra){var b={id:id,tree:{nodes:T.nodes.map(function(n){return {x:n.x,d:n.d,l:n.v};}),edges:T.edges,width:T.width,depth:T.depth},label:label,g:g};for(var k in (extra||{}))b[k]=extra[k];return b;}
+function treeCells(T,f){return T.nodes.map(function(n){return f(n);});}
+
+/* kit/kit.js: everything a lesson page needs that is not about its own topic.
+   Reveals, code blocks, players, quiz, variant cards, kinetic
+   headline, scroll reveals, contents rail, code-language switch, theme repaint and
+   the embedding contract with the app. Concatenated after engine.js in one closure. */
+
+var svgNS='http://www.w3.org/2000/svg';
+function S(tag,attrs,parent){var e=document.createElementNS(svgNS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function $(s,r){return (r||document).querySelector(s);}
+function inView(node,fn){if(M&&M.inView)M.inView(node,fn,{amount:.35});else fn();}
+
+/* SVG note: the page CSS sets stroke on .edges line, and CSS beats presentation attributes, so edge colours go through style. */
+/* things that must redraw when the theme changes (the palette is read into JS, not CSS) */
+var REPAINT=[];
+function onRepaint(fn){REPAINT.push(fn);}
+
+function playerHtml(id,label){
+  return '<div class="player" role="group" aria-label="Walkthrough: '+label+'"><div class="stage"></div><div class="note" aria-live="off"></div><div class="stats"></div>'+
+    '<div class="ctl"><button type="button" class="btn main pp" id="'+id+'-pp"></button><button type="button" class="btn pv" id="'+id+'-pv" aria-label="Previous frame">'+icon('i-prev')+'</button><button type="button" class="btn nx" id="'+id+'-nx" aria-label="Next frame">'+icon('i-next')+'</button>'+
+    '<div class="track"><div class="ticks"></div><div class="head"></div><input type="range" id="'+id+'-rg" min="0" max="1000" value="0" aria-label="Scrub the walkthrough"></div><span class="cnt"></span><button type="button" class="btn spd" id="'+id+'-sp" aria-label="Playback speed">1×</button></div></div>';
+}
+
+/* A key to the cell states a widget paints, as [state, what it means] pairs. Its swatches paint from
+   PAL, the cells' own source, so the key cannot disagree with the drawing in either theme: a state's
+   hue differs by theme (bad is red in light and pink in dark), so prose and captions name the state,
+   never its colour (#64). set() refills it, so a widget whose tabs rebuild keeps one key. */
+function stateKey(host,pairs,before){
+  var k=el('ul','skey');k.setAttribute('aria-label','Key');
+  function paint(){[].forEach.call(k.children,function(li){li.firstChild.style.background=rgb(PAL[li.dataset.k].f);});}
+  function set(ps){k.innerHTML='';k.hidden=!ps||!ps.length;(ps||[]).forEach(function(p){
+    if(KINDS.indexOf(p[0])<0)throw new Error('stateKey: unknown state "'+p[0]+'"');
+    var li=el('li',null,'<i aria-hidden="true"></i>'+p[1]);li.dataset.k=p[0];k.appendChild(li);});paint();}
+  host.insertBefore(k,before||null);set(pairs);onRepaint(paint);
+  return {el:k,set:set};
+}
+
+/* A stepper widget: tabs choose an example, each builds a fresh Scene. `make(i)` returns a scene
+   definition; its `legend` pairs fill the widget's one state key. */
+function mountStepper(host,examples,make,id){
+  var tabs=host.querySelector('.extabs'),pl=host.querySelector('.plhost'),scene=null,key=stateKey(pl.parentNode,null,pl);
+  function load(i){
+    tabs.querySelectorAll('button').forEach(function(b,k){b.setAttribute('aria-pressed',k===i);});
+    if(scene&&scene.stop)scene.stop();
+    var d=make(i);key.set(d.legend);pl.innerHTML=playerHtml(id||'walk',d.label);
+    scene=new Scene(d,pl.querySelector('.player'));scene.start();
+  }
+  examples.forEach(function(e,i){var b=el('button','tab',e.name);b.type='button';b.addEventListener('click',function(){load(i);});tabs.appendChild(b);});
+  onRepaint(function(){if(scene)scene.refresh();});
+  load(0);
+}
+
+/* reveals: the content is created on click, so Ctrl+F cannot find it first */
+function reveal(host,label,build){
+  var b=el('button','reveal-btn',icon('i-eye')+'<span>'+label+'</span>');b.type='button';b.setAttribute('aria-expanded','false');
+  var body=el('div','reveal-body');body.hidden=true;host.appendChild(b);host.appendChild(body);
+  b.addEventListener('click',function(){var open=b.getAttribute('aria-expanded')==='true';
+    if(open){b.setAttribute('aria-expanded','false');body.hidden=true;body.innerHTML='';return;}
+    body.innerHTML='';build(body);body.hidden=false;b.setAttribute('aria-expanded','true');});
+}
+
+/* code blocks: Python and TypeScript follow the page's language switch */
+function codeBlock(py,ts,title){
+  var d=el('div','code navy');d.innerHTML='<header><span>'+title+'</span><span class="c-py">Python</span><span class="c-ts">TypeScript</span></header><pre class="c-py"></pre><pre class="c-ts"></pre>';
+  /* HL holds build-time Shiki colouring keyed by the exact source; without it, plain text */
+  [['pre.c-py',py],['pre.c-ts',ts]].forEach(function(p){var pre=d.querySelector(p[0]),h=typeof HL!=='undefined'&&HL[p[1]];
+    if(h){pre.classList.add('shiki');pre.innerHTML='<code>'+h+'</code>';}else pre.textContent=p[1];});
+  return d;
+}
+
+function callout(kind,label,iconId,html){
+  return el('div','callout '+kind,'<div class="cl"><svg class="i"><use href="#'+iconId+'"/></svg>'+label+'</div><p>'+html+'</p>');
+}
+
+/* Hold an element at the tallest of the contents it will ever show, measured at its width now:
+   a caption that grows to a third line mid-animation moves everything below it. */
+function reserveHeight(el,htmls){
+  var probe=el.cloneNode(false),h=0;probe.removeAttribute('id');probe.setAttribute('aria-hidden','true');
+  probe.style.cssText='position:absolute;visibility:hidden;left:0;top:0;min-height:0;width:'+el.clientWidth+'px';el.parentNode.appendChild(probe);
+  htmls.forEach(function(x){probe.innerHTML=x;h=Math.max(h,probe.offsetHeight);});probe.remove();
+  if(h)el.style.minHeight=h+'px';
+  return h;
+}
+
+/* fact strip: [{v: a number the lesson computed, l: what it means}] */
+function mountFacts(host,items){var d=el('div','factstrip');items.forEach(function(f){
+  d.appendChild(el('div','fact','<b>'+(typeof f.v==='number'?fmt(f.v):f.v)+'</b><span>'+f.l+'</span>'));});host.appendChild(d);}
+
+function mountVariants(host,list){
+  list.forEach(function(v){host.appendChild(el('div','vcard','<div class="vt">'+v[0]+'</div><div class="vs">'+v[1]+'</div><p>'+v[2]+'</p>'));});
+}
+
+/* lesson.md's data (build.py sets LESSON): code placeholders, reveals, variants and the quiz.
+   A reveal's text is inserted only on click; `hooks[id](body)` adds what the lesson computes.
+   FACTS is optional: lesson.js defines it only when its lesson.md uses {{name}} placeholders. */
+/* global FACTS */
+function fillFacts(html){
+  return html.replace(/\{\{(\w+)\}\}/g,function(_,k){
+    if(typeof FACTS==='undefined'||!(k in FACTS))throw new Error('lesson.md uses {{'+k+'}} but lesson.js sets no FACTS.'+k);
+    return String(FACTS[k]);});
+}
+function mountCode(root){
+  root.querySelectorAll('[data-code-file]').forEach(function(p){var c=CODE[p.dataset.codeFile];
+    if(!c)throw new Error('lesson.md shows code "'+p.dataset.codeFile+'" but code/ has no such file');
+    p.replaceWith(codeBlock(c.py,c.ts,p.dataset.title));});
+}
+function mountLesson(hooks){
+  hooks=hooks||{};
+  mountCode(document);
+  Object.keys(LESSON.reveals).forEach(function(id){var r=LESSON.reveals[id];
+    reveal($('#'+id),r.label,function(b){b.innerHTML=fillFacts(r.html);mountCode(b);if(hooks[id])hooks[id](b);});});
+  if(LESSON.variants.length)mountVariants($('#vlist'),LESSON.variants.map(function(v){return [fillFacts(v.title),fillFacts(v.source),fillFacts(v.text)];}));
+  if(LESSON.quiz.length)mountQuiz($('#qlist'),LESSON.quiz.map(function(x){return {q:fillFacts(x.q),opts:x.opts.map(fillFacts),a:x.a,why:fillFacts(x.why)};}));
+  Object.keys(hooks).forEach(function(id){if(!LESSON.reveals[id])throw new Error('lesson.js hooks reveal #'+id+' but lesson.md has none');});
+}
+
+/* quiz: each answer's slot comes from a hash of its question, so it moves between
+   questions with no pattern to learn. The fixed-seed shuffle this replaced put every
+   answer third. The checks throw at load, as the frame checks do: an
+   answer longer than every distractor, or every answer in one slot, gives it away. */
+function slotOf(text,n){var h=2166136261;for(var i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h%n;}
+function plainLen(html){var d=document.createElement('div');d.innerHTML=html;return d.textContent.length;}
+function mountQuiz(host,QUIZ){
+  var slots=QUIZ.map(function(item,qi){
+    var len=item.opts.map(plainLen),rest=len.filter(function(_,i){return i!==item.a;});
+    if(len[item.a]>Math.max.apply(null,rest))throw new Error('quiz '+(qi+1)+': the answer is longer than every other option ('+len.join(', ')+')');
+    return slotOf(item.q,item.opts.length);
+  });
+  if(QUIZ.length>1&&slots.every(function(x){return x===slots[0];}))throw new Error('quiz: every answer sits in slot '+slots[0]);
+  QUIZ.forEach(function(item,qi){
+    var idx=item.opts.map(function(_,i){return i;}).filter(function(i){return i!==item.a;});idx.splice(slots[qi],0,item.a);
+    var card=el('div','qcard');card.appendChild(el('div','qq','<span class="qn navy" aria-hidden="true">'+(qi+1)+'</span><span><span class="sr">Question '+(qi+1)+'. </span>'+item.q+'</span>'));
+    var opts=el('div','qopts'),fb=el('div','fb');card.appendChild(opts);card.appendChild(fb);
+    idx.forEach(function(oi,pos){
+      var b=el('button','qopt','<span class="ql">'+String.fromCharCode(65+pos)+'</span><span>'+item.opts[oi]+'</span>');b.type='button';opts.appendChild(b);
+      b.addEventListener('click',function(){
+        var right=oi===item.a;opts.querySelectorAll('.qopt').forEach(function(x,k){x.disabled=true;if(idx[k]===item.a)x.classList.add('good');});
+        if(!right)b.classList.add('bad');fb.innerHTML=(right?'<b>Correct.</b> ':'<b>Not quite.</b> ')+item.why;fb.classList.add('on');
+      });
+    });
+    host.appendChild(card);
+  });
+}
+
+/* Predict widget: a question per case with numeric choices; `draw(host, case)` paints the case, `after` shows the why. */
+function mountPredict(host,cases,opts){
+  cases.forEach(function(c,ci){
+    var card=el('div','pcard'),view=el('div','tv-wrap'),q=el('div','pq',opts.question(c)),ch=el('div','choices'),fb=el('div','fb');
+    card.appendChild(q);card.appendChild(view);card.appendChild(ch);card.appendChild(fb);host.appendChild(card);
+    var paint=opts.draw(view,c);
+    opts.choices(c).forEach(function(v){
+      var b=el('button','choice',String(v));b.type='button';ch.appendChild(b);
+      b.addEventListener('click',function(){
+        var right=v===c.expect;ch.querySelectorAll('.choice').forEach(function(x){x.disabled=true;if(x.textContent===String(c.expect))x.classList.add('good');});
+        if(!right)b.classList.add('bad');
+        fb.innerHTML=(right?'<b>Yes.</b> ':'<b>Not quite.</b> ')+opts.why(c);fb.classList.add('on');if(paint&&paint.reveal)paint.reveal();
+      });
+    });
+  });
+}
+
+function kinetic(){
+  var h=$('#h1');if(!h||!M||!M.animate||reduce)return;
+  if(!h.querySelector('.kw')){var words=h.textContent.split(' ');h.innerHTML=words.map(function(w){return '<span class="kw">'+w+'</span>';}).join(' ');}
+  M.animate('.kw',{opacity:[0.15,1],y:[26,0]},{duration:.7,delay:M.stagger(.09),ease:'easeOut'});
+  M.animate('.hero-art',{opacity:[.3,1],x:[24,0]},{duration:.8,ease:'easeOut'});
+}
+function riseIn(){
+  if(!M||!M.inView||reduce)return;
+  document.querySelectorAll('.widget,.callout,.vcard,.qcard,.rosetta').forEach(function(node){
+    M.inView(node,function(){M.animate(node,{opacity:[.25,1],y:[18,0]},{duration:.55,ease:'easeOut'});},{amount:.2});
+  });
+}
+
+/* contents rail, language switch, theme repaint, and the embedding contract */
+function wirePage(){
+  var links=[].slice.call(document.querySelectorAll('.toc a')),secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var i=secs.indexOf(e.target);links.forEach(function(a){a.removeAttribute('aria-current');});if(i>=0)links[i].setAttribute('aria-current','true');}});},{rootMargin:'-30% 0px -60% 0px'}):null;
+  if(io)secs.forEach(function(s){if(s)io.observe(s);});
+  /* the split layout (#63): the contents rail appears once the hero is out of view, and each flow
+     hangs its scenes beside the prose (kit.css "the flow") */
+  var split=$('.page.split');
+  if(split){
+    var toc=$('.split .toc'),hero=$('.hero2');
+    if(toc&&hero&&io){toc.classList.add('auto');new IntersectionObserver(function(es){toc.classList.toggle('on',!es[0].isIntersecting);}).observe(hero);}
+    var flows=[].slice.call(split.querySelectorAll('.flow')),wide=matchMedia('(min-width:1101px)'),GAP=18,REACH=72,queued=0;
+    /* each scene wants its own paragraph's top; it may not start before the scene above ends, and it
+       gives up as much of that as keeps the last scene from ending below the prose, but always
+       reaches REACH px past its paragraph's top, so it never parts from the words that introduce it (a backward pass
+       for the latest top each can take, then a forward one). A flow grows only when its scenes
+       together are taller than its prose. */
+    var lay=function(){
+      queued=0;split.classList.toggle('flowing',wide.matches);
+      flows.forEach(function(f){
+        var scs=[].slice.call(f.querySelectorAll(':scope>.beat>.duo-scene'));f.style.minHeight='';
+        if(!wide.matches){scs.forEach(function(sc){sc.style.top='';});return;}
+        var top=f.getBoundingClientRect().top,it=scs.map(function(sc){return {sc:sc,a:sc.previousElementSibling.getBoundingClientRect().top-top,h:sc.offsetHeight};});
+        var end=Math.max(f.offsetHeight,it.reduce(function(s,x){return s+x.h+GAP;},-GAP)),late=end,prev=0;
+        for(var i=it.length-1;i>=0;i--){it[i].late=Math.max(late-it[i].h,it[i].a+REACH-it[i].h);late=it[i].late-GAP;}
+        it.forEach(function(x){var t=Math.max(prev,Math.min(x.a,x.late));x.sc.style.top=t+'px';prev=t+x.h+GAP;});
+        if(it.length)f.style.minHeight=(prev-GAP)+'px';
+      });
+    };
+    var again=function(){if(!queued)queued=requestAnimationFrame(lay);};
+    lay();wide.addEventListener('change',again);addEventListener('resize',again);
+    /* prose re-wraps when a face arrives or a reveal opens; a scene changes height when a widget does.
+       Watch those, never the flow itself, whose min-height lay() sets. */
+    if('ResizeObserver' in window){var ro=new ResizeObserver(again);flows.forEach(function(f){[].forEach.call(f.querySelectorAll(':scope>:not(.beat),:scope>.beat>*'),function(el){ro.observe(el);});});}
+  }
+  var mainEl=$('main'),bpy=$('#lang-py'),bts=$('#lang-ts');
+  function setLang(l){mainEl.dataset.code=l;bpy.setAttribute('aria-pressed',l==='py');bts.setAttribute('aria-pressed',l==='ts');store('lesson-lang',l);}
+  window.__setLessonLang=setLang;
+  bpy.addEventListener('click',function(){setLang('py');});bts.addEventListener('click',function(){setLang('ts');});
+  var sv=store('lesson-lang');if(sv==='py'||sv==='ts')setLang(sv);
+  function repaint(){readPal();REPAINT.forEach(function(fn){fn();});}
+  if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener('change',repaint);
+  new MutationObserver(repaint).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+  /* embedded in the app: theme and code language come from the parent page */
+  var q=new URLSearchParams(location.search);
+  function applyTheme(t){if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}
+  if(q.get('embed')==='1'){document.documentElement.classList.add('embed');applyTheme(q.get('theme'));}
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin||!e.data||e.data.source!=='leetexpert')return;
+    applyTheme(e.data.theme);
+    if((e.data.code==='python'||e.data.code==='typescript')&&window.__setLessonLang)window.__setLessonLang(e.data.code==='python'?'py':'ts');
+  });
+}
+
+/* A row of letter cells drawn with the scene player's palette; `paint(kinds)` recolours it and survives theme changes. */
+function strip(host,chars,onPick){
+  host.innerHTML='';host.className=(host.className.replace(/\bbrd\b/g,'')+' brd').trim();
+  var cs=Math.max(24,Math.min(44,Math.floor(((host.parentNode.clientWidth||360)-16)/chars.length)-3));
+  host.style.gridTemplateColumns='repeat('+chars.length+','+cs+'px)';host.style.setProperty('--cs',cs+'px');host.style.setProperty('--fs',Math.round(cs*.42)+'px');
+  var els=chars.map(function(c,i){var e=el(onPick?'button':'div','cell');if(onPick){e.type='button';e.setAttribute('aria-label','Position '+i+', '+c);e.addEventListener('click',function(){onPick(i);});}e.textContent=c;host.appendChild(e);return e;});
+  var last=null;
+  function paint(kinds){last=kinds;els.forEach(function(e,i){var k=kinds[i]||'idle',st=styleOf({k:k});e.style.background=rgb(st.f);e.style.color=rgb(st.i);markState(e,k);});}
+  onRepaint(function(){if(last)paint(last);});
+  paint(chars.map(function(){return 'idle';}));
+  return {els:els,paint:paint};
+}
+
+/* A node-link view of a small graph, drawn with the scene player's palette and geometry.
+   G = {nodes:[{x,d,l}], edges:[[from,to]], width, depth, directed}. `update(cells, edgeStates)` recolours it;
+   edgeStates entries are 0 idle, 1 lit, 2 current. Nodes become buttons when `onPick` is given. */
+function graphView(host,G,o){
+  o=o||{};host.innerHTML='';host.className=(host.className.replace(/\btree\b/g,'')+' brd tree').trim();
+  var W=Math.max(220,(host.parentNode.clientWidth||360)-8),nx=Math.max(1,G.width),dx=Math.min(62,(W-40)/Math.max(1,nx-1)),d=Math.min(36,Math.max(24,dx*.7));
+  var rowsN=G.depth+1,dy=rowsN>4?46:(rowsN>3?52:58),width=(nx-1)*dx+d+8,height=(rowsN-1)*dy+d+8,ox=d/2+4,oy=d/2+4;
+  host.style.width=width+'px';host.style.height=height+'px';
+  var svg=document.createElementNS(svgNS,'svg');svg.setAttribute('class','edges');svg.setAttribute('width',width);svg.setAttribute('height',height);host.appendChild(svg);
+  var marker='';
+  if(G.directed){var mid='gv'+Math.floor(Math.random()*1e9);svg.insertAdjacentHTML('afterbegin','<defs><marker id="'+mid+'" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="context-stroke"/></marker></defs>');marker='url(#'+mid+')';}
+  var lines=G.edges.map(function(e){
+    var a=G.nodes[e[0]],c=G.nodes[e[1]],ln=document.createElementNS(svgNS,'line'),x1=ox+a.x*dx,y1=oy+a.d*dy,x2=ox+c.x*dx,y2=oy+c.d*dy;
+    if(G.directed){var len=Math.hypot(x2-x1,y2-y1)||1,back=d/2+3;x2-=(x2-x1)/len*back;y2-=(y2-y1)/len*back;ln.setAttribute('marker-end',marker);}
+    ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);svg.appendChild(ln);return ln;});
+  var els=G.nodes.map(function(nd,i){
+    var c=el(o.onPick?'button':'div','cell node');c.style.width=d+'px';c.style.height=d+'px';c.style.left=(ox+nd.x*dx-d/2)+'px';c.style.top=(oy+nd.d*dy-d/2)+'px';c.style.fontSize=Math.max(11,Math.round(d*.36))+'px';
+    if(o.onPick){c.type='button';c.setAttribute('aria-label','Course '+nd.l);c.addEventListener('click',function(){o.onPick(i);});}
+    host.appendChild(c);return c;});
+  var lastC=null,lastE=null;
+  function update(cells,edges){
+    lastC=cells;lastE=edges;
+    els.forEach(function(c,i){var s=styleOf(cells[i]);c.style.background=rgb(s.f);c.style.color=rgb(s.i);markState(c,cells[i].k);c.textContent=cells[i].t;});
+    lines.forEach(function(ln,i){var v=edges?edges[i]:0;ln.style.stroke=rgb(EDGE[v===2?'cur':(v===1?'path':'idle')]);ln.style.strokeWidth=v?4:2;});
+  }
+  var api={update:update,els:els};
+  onRepaint(function(){if(lastC)update(lastC,lastE);});
+  return api;
+}
+
+var CODE={"mistake": {"py": "class DynArrayFixed:\n    \"\"\"Mistake: grows by a fixed constant (+1) instead of doubling.\n    Every resize copies the entire array, leading to O(n) amortized append (O(n\u00b2) total).\"\"\"\n\n    def __init__(self, initial_capacity=1):\n        self.capacity = max(1, initial_capacity)\n        self.size = 0\n        self.data = [None] * self.capacity\n        self.copies = 0\n        self.total_copies = 0\n\n    def append(self, val):\n        copies = 0\n        if self.size == self.capacity:\n            # Mistake: grows by fixed constant (+1) instead of doubling\n            new_capacity = self.capacity + 1\n            new_data = [None] * new_capacity\n            for i in range(self.size):\n                new_data[i] = self.data[i]\n            copies = self.size\n            self.total_copies += copies\n            self.data = new_data\n            self.capacity = new_capacity\n        self.copies = copies\n        self.data[self.size] = val\n        self.size += 1\n        return copies\n\n    def get(self, index):\n        if not (0 <= index < self.size):\n            raise IndexError(\"Index out of bounds\")\n        return self.data[index]", "ts": "export class DynArrayFixed<T> {\n  capacity: number;\n  size: number;\n  data: (T | null)[];\n  copies: number;\n  totalCopies: number;\n\n  constructor(initialCapacity = 1) {\n    this.capacity = Math.max(1, initialCapacity);\n    this.size = 0;\n    this.data = new Array(this.capacity).fill(null);\n    this.copies = 0;\n    this.totalCopies = 0;\n  }\n\n  append(val: T): number {\n    let copies = 0;\n    if (this.size === this.capacity) {\n      // Mistake: grows by fixed constant (+1) instead of doubling\n      const newCapacity = this.capacity + 1;\n      const newData: (T | null)[] = new Array(newCapacity).fill(null);\n      for (let i = 0; i < this.size; i++) {\n        newData[i] = this.data[i];\n      }\n      copies = this.size;\n      this.totalCopies += copies;\n      this.data = newData;\n      this.capacity = newCapacity;\n    }\n    this.copies = copies;\n    this.data[this.size] = val;\n    this.size++;\n    return copies;\n  }\n\n  get(index: number): T {\n    if (index < 0 || index >= this.size) {\n      throw new Error(\"Index out of bounds\");\n    }\n    return this.data[index] as T;\n  }\n}"}, "solution": {"py": "class DynArray:\n    \"\"\"Dynamic array that doubles its capacity when full, achieving O(1) amortized append.\"\"\"\n\n    def __init__(self, initial_capacity=1):\n        self.capacity = max(1, initial_capacity)\n        self.size = 0\n        self.data = [None] * self.capacity\n        self.copies = 0\n        self.total_copies = 0\n\n    def append(self, val):\n        copies = 0\n        if self.size == self.capacity:\n            new_capacity = self.capacity * 2\n            new_data = [None] * new_capacity\n            for i in range(self.size):\n                new_data[i] = self.data[i]\n            copies = self.size\n            self.total_copies += copies\n            self.data = new_data\n            self.capacity = new_capacity\n        self.copies = copies\n        self.data[self.size] = val\n        self.size += 1\n        return copies\n\n    def get(self, index):\n        if not (0 <= index < self.size):\n            raise IndexError(\"Index out of bounds\")\n        return self.data[index]", "ts": "export class DynArray<T> {\n  capacity: number;\n  size: number;\n  data: (T | null)[];\n  copies: number;\n  totalCopies: number;\n\n  constructor(initialCapacity = 1) {\n    this.capacity = Math.max(1, initialCapacity);\n    this.size = 0;\n    this.data = new Array(this.capacity).fill(null);\n    this.copies = 0;\n    this.totalCopies = 0;\n  }\n\n  append(val: T): number {\n    let copies = 0;\n    if (this.size === this.capacity) {\n      const newCapacity = this.capacity * 2;\n      const newData: (T | null)[] = new Array(newCapacity).fill(null);\n      for (let i = 0; i < this.size; i++) {\n        newData[i] = this.data[i];\n      }\n      copies = this.size;\n      this.totalCopies += copies;\n      this.data = newData;\n      this.capacity = newCapacity;\n    }\n    this.copies = copies;\n    this.data[this.size] = val;\n    this.size++;\n    return copies;\n  }\n\n  get(index: number): T {\n    if (index < 0 || index >= this.size) {\n      throw new Error(\"Index out of bounds\");\n    }\n    return this.data[index] as T;\n  }\n}"}};
+var LESSON={"title": "Amortized Analysis & Dynamic Arrays", "quiz": [{"q": "Dynamic-array append is \"O(1) amortized.\" What does that claim actually say?", "opts": ["Any sequence of n appends totals O(n) work, even though single appends can cost \u0398(n)", "Appends are O(1) if you get lucky with resizes \u2014 the amortized guarantee only holds for sequences that happen to avoid triggering too many resizes", "Each individual append takes O(1) time \u2014 every single call into append, including the ones that trigger a resize, completes in constant time"], "a": 0, "why": "Amortized bounds are exact statements about worst-case totals over sequences: no luck or input distribution involved. Individual spikes are real but paid for by the cheap operations around them."}, {"q": "Why does growing a dynamic array by a fixed 10 slots (instead of doubling) ruin the amortized bound?", "opts": ["Allocation of small blocks is slow \u2014 requesting memory from the operating system in tiny increments incurs high per-call overhead compared to large blocks", "It wastes memory \u2014 growing by a fixed amount leaves more unused slack in the backing array on average than doubling does across long sequences", "A copy of the whole array then happens every 10 appends, totaling ~n\u00b2/20 work for n appends \u2014 O(n) amortized"], "a": 2, "why": "With additive growth, each spike costs ~n and spikes arrive at a constant rate, so total work is quadratic. Multiplicative growth spaces the spikes out exponentially \u2014 that is the whole trick."}, {"q": "Amortized analysis differs from average-case analysis because\u2026", "opts": ["They are two names for the same idea \u2014 both average costs over multiple cases, so the underlying mathematics is identical even if terminology differs", "Amortized is only an empirical estimate \u2014 you must measure real operation sequences in practice, unlike a worst-case bound which is proven mathematically", "Amortized is a worst-case guarantee over operation sequences; average-case is an expectation over an assumed input distribution"], "a": 2, "why": "Amortized bounds hold for every sequence, even adversarial ones, with no probability anywhere. Average-case analysis requires an assumed probability distribution of inputs."}], "variants": [{"title": "Space Complexity", "source": "next lesson in this module", "text": "The memory cost of your algorithms: auxiliary space versus input space, in-place operations, and why recursion depth eats memory even when a function allocates no variables."}, {"title": "Complexity Drills", "source": "practice lesson in this module", "text": "Six rapid-fire scenarios to sharpen your ability to price loop iterations, hidden library calls, and branching recursion trees before moving to data structures."}, {"title": "Arrays &amp; Strings", "source": "Linear Structures stage", "text": "Using dynamic arrays in real algorithms: two-pointer techniques, sliding windows, and in-place transformations that build on the amortized guarantees established here."}], "reveals": {}};
+var HL={"class DynArrayFixed:\n    \"\"\"Mistake: grows by a fixed constant (+1) instead of doubling.\n    Every resize copies the entire array, leading to O(n) amortized append (O(n\u00b2) total).\"\"\"\n\n    def __init__(self, initial_capacity=1):\n        self.capacity = max(1, initial_capacity)\n        self.size = 0\n        self.data = [None] * self.capacity\n        self.copies = 0\n        self.total_copies = 0\n\n    def append(self, val):\n        copies = 0\n        if self.size == self.capacity:\n            # Mistake: grows by fixed constant (+1) instead of doubling\n            new_capacity = self.capacity + 1\n            new_data = [None] * new_capacity\n            for i in range(self.size):\n                new_data[i] = self.data[i]\n            copies = self.size\n            self.total_copies += copies\n            self.data = new_data\n            self.capacity = new_capacity\n        self.copies = copies\n        self.data[self.size] = val\n        self.size += 1\n        return copies\n\n    def get(self, index):\n        if not (0 <= index < self.size):\n            raise IndexError(\"Index out of bounds\")\n        return self.data[index]": "<span class=\"line\"><span style=\"color:#7DD3FC\">class</span><span style=\"color:#FBBF24\"> DynArrayFixed</span><span style=\"color:#E6EDF4\">:</span></span>\n<span class=\"line\"><span style=\"color:#86EFAC\">    \"\"\"Mistake: grows by a fixed constant (+1) instead of doubling.</span></span>\n<span class=\"line\"><span style=\"color:#86EFAC\">    Every resize copies the entire array, leading to O(n) amortized append (O(n\u00b2) total).\"\"\"</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    def</span><span style=\"color:#C7D2FE\"> __init__</span><span style=\"color:#E6EDF4\">(self, initial_capacity</span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">):</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#C7D2FE\"> max</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">, initial_capacity)</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">None</span><span style=\"color:#E6EDF4\">] </span><span style=\"color:#7DD3FC\">*</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.capacity</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.total_copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    def</span><span style=\"color:#C7D2FE\"> append</span><span style=\"color:#E6EDF4\">(self, val):</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">        copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        if</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">==</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.capacity:</span></span>\n<span class=\"line\"><span style=\"color:#94A3B8;font-style:italic\">            # Mistake: grows by fixed constant (+1) instead of doubling</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">            new_capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">            new_data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">None</span><span style=\"color:#E6EDF4\">] </span><span style=\"color:#7DD3FC\">*</span><span style=\"color:#E6EDF4\"> new_capacity</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">            for</span><span style=\"color:#E6EDF4\"> i </span><span style=\"color:#7DD3FC\">in</span><span style=\"color:#C7D2FE\"> range</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">self</span><span style=\"color:#E6EDF4\">.size):</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">                new_data[i] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.data[i]</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">            copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.size</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">            self</span><span style=\"color:#E6EDF4\">.total_copies </span><span style=\"color:#7DD3FC\">+=</span><span style=\"color:#E6EDF4\"> copies</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">            self</span><span style=\"color:#E6EDF4\">.data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> new_data</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">            self</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> new_capacity</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> copies</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.data[</span><span style=\"color:#4ADE80\">self</span><span style=\"color:#E6EDF4\">.size] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> val</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">+=</span><span style=\"color:#4ADE80\"> 1</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        return</span><span style=\"color:#E6EDF4\"> copies</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    def</span><span style=\"color:#C7D2FE\"> get</span><span style=\"color:#E6EDF4\">(self, index):</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        if</span><span style=\"color:#7DD3FC\"> not</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#4ADE80\">0</span><span style=\"color:#7DD3FC\"> &#x3C;=</span><span style=\"color:#E6EDF4\"> index </span><span style=\"color:#7DD3FC\">&#x3C;</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.size):</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">            raise</span><span style=\"color:#FBBF24\"> IndexError</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#86EFAC\">\"Index out of bounds\"</span><span style=\"color:#E6EDF4\">)</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        return</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.data[index]</span></span>", "export class DynArrayFixed<T> {\n  capacity: number;\n  size: number;\n  data: (T | null)[];\n  copies: number;\n  totalCopies: number;\n\n  constructor(initialCapacity = 1) {\n    this.capacity = Math.max(1, initialCapacity);\n    this.size = 0;\n    this.data = new Array(this.capacity).fill(null);\n    this.copies = 0;\n    this.totalCopies = 0;\n  }\n\n  append(val: T): number {\n    let copies = 0;\n    if (this.size === this.capacity) {\n      // Mistake: grows by fixed constant (+1) instead of doubling\n      const newCapacity = this.capacity + 1;\n      const newData: (T | null)[] = new Array(newCapacity).fill(null);\n      for (let i = 0; i < this.size; i++) {\n        newData[i] = this.data[i];\n      }\n      copies = this.size;\n      this.totalCopies += copies;\n      this.data = newData;\n      this.capacity = newCapacity;\n    }\n    this.copies = copies;\n    this.data[this.size] = val;\n    this.size++;\n    return copies;\n  }\n\n  get(index: number): T {\n    if (index < 0 || index >= this.size) {\n      throw new Error(\"Index out of bounds\");\n    }\n    return this.data[index] as T;\n  }\n}": "<span class=\"line\"><span style=\"color:#7DD3FC\">export</span><span style=\"color:#7DD3FC\"> class</span><span style=\"color:#FBBF24\"> DynArrayFixed</span><span style=\"color:#E6EDF4\">&#x3C;</span><span style=\"color:#FBBF24\">T</span><span style=\"color:#E6EDF4\">> {</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  capacity</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  size</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  data</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#FBBF24\">T</span><span style=\"color:#7DD3FC\"> |</span><span style=\"color:#FBBF24\"> null</span><span style=\"color:#E6EDF4\">)[];</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  copies</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  totalCopies</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  constructor</span><span style=\"color:#E6EDF4\">(initialCapacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">) {</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> Math.</span><span style=\"color:#C7D2FE\">max</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">, initialCapacity);</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#7DD3FC\"> new</span><span style=\"color:#C7D2FE\"> Array</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">this</span><span style=\"color:#E6EDF4\">.capacity).</span><span style=\"color:#C7D2FE\">fill</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">null</span><span style=\"color:#E6EDF4\">);</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.totalCopies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#C7D2FE\">  append</span><span style=\"color:#E6EDF4\">(val</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> T</span><span style=\"color:#E6EDF4\">)</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\"> {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    let</span><span style=\"color:#E6EDF4\"> copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    if</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#4ADE80\">this</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">===</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.capacity) {</span></span>\n<span class=\"line\"><span style=\"color:#94A3B8;font-style:italic\">      // Mistake: grows by fixed constant (+1) instead of doubling</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      const</span><span style=\"color:#E6EDF4\"> newCapacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      const</span><span style=\"color:#E6EDF4\"> newData</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#FBBF24\">T</span><span style=\"color:#7DD3FC\"> |</span><span style=\"color:#FBBF24\"> null</span><span style=\"color:#E6EDF4\">)[] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#7DD3FC\"> new</span><span style=\"color:#C7D2FE\"> Array</span><span style=\"color:#E6EDF4\">(newCapacity).</span><span style=\"color:#C7D2FE\">fill</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">null</span><span style=\"color:#E6EDF4\">);</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      for</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#7DD3FC\">let</span><span style=\"color:#E6EDF4\"> i </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">; i </span><span style=\"color:#7DD3FC\">&#x3C;</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.size; i</span><span style=\"color:#7DD3FC\">++</span><span style=\"color:#E6EDF4\">) {</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">        newData[i] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.data[i];</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">      }</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">      copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.size;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">      this</span><span style=\"color:#E6EDF4\">.totalCopies </span><span style=\"color:#7DD3FC\">+=</span><span style=\"color:#E6EDF4\"> copies;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">      this</span><span style=\"color:#E6EDF4\">.data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> newData;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">      this</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> newCapacity;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    }</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> copies;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.data[</span><span style=\"color:#4ADE80\">this</span><span style=\"color:#E6EDF4\">.size] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> val;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.size</span><span style=\"color:#7DD3FC\">++</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    return</span><span style=\"color:#E6EDF4\"> copies;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#C7D2FE\">  get</span><span style=\"color:#E6EDF4\">(index</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">)</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> T</span><span style=\"color:#E6EDF4\"> {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    if</span><span style=\"color:#E6EDF4\"> (index </span><span style=\"color:#7DD3FC\">&#x3C;</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#7DD3FC\"> ||</span><span style=\"color:#E6EDF4\"> index </span><span style=\"color:#7DD3FC\">>=</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.size) {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      throw</span><span style=\"color:#7DD3FC\"> new</span><span style=\"color:#C7D2FE\"> Error</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#86EFAC\">\"Index out of bounds\"</span><span style=\"color:#E6EDF4\">);</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    }</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    return</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.data[index] </span><span style=\"color:#7DD3FC\">as</span><span style=\"color:#FBBF24\"> T</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">}</span></span>", "class DynArray:\n    \"\"\"Dynamic array that doubles its capacity when full, achieving O(1) amortized append.\"\"\"\n\n    def __init__(self, initial_capacity=1):\n        self.capacity = max(1, initial_capacity)\n        self.size = 0\n        self.data = [None] * self.capacity\n        self.copies = 0\n        self.total_copies = 0\n\n    def append(self, val):\n        copies = 0\n        if self.size == self.capacity:\n            new_capacity = self.capacity * 2\n            new_data = [None] * new_capacity\n            for i in range(self.size):\n                new_data[i] = self.data[i]\n            copies = self.size\n            self.total_copies += copies\n            self.data = new_data\n            self.capacity = new_capacity\n        self.copies = copies\n        self.data[self.size] = val\n        self.size += 1\n        return copies\n\n    def get(self, index):\n        if not (0 <= index < self.size):\n            raise IndexError(\"Index out of bounds\")\n        return self.data[index]": "<span class=\"line\"><span style=\"color:#7DD3FC\">class</span><span style=\"color:#FBBF24\"> DynArray</span><span style=\"color:#E6EDF4\">:</span></span>\n<span class=\"line\"><span style=\"color:#86EFAC\">    \"\"\"Dynamic array that doubles its capacity when full, achieving O(1) amortized append.\"\"\"</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    def</span><span style=\"color:#C7D2FE\"> __init__</span><span style=\"color:#E6EDF4\">(self, initial_capacity</span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">):</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#C7D2FE\"> max</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">, initial_capacity)</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">None</span><span style=\"color:#E6EDF4\">] </span><span style=\"color:#7DD3FC\">*</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.capacity</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.total_copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    def</span><span style=\"color:#C7D2FE\"> append</span><span style=\"color:#E6EDF4\">(self, val):</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">        copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        if</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">==</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.capacity:</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">            new_capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">*</span><span style=\"color:#4ADE80\"> 2</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">            new_data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">None</span><span style=\"color:#E6EDF4\">] </span><span style=\"color:#7DD3FC\">*</span><span style=\"color:#E6EDF4\"> new_capacity</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">            for</span><span style=\"color:#E6EDF4\"> i </span><span style=\"color:#7DD3FC\">in</span><span style=\"color:#C7D2FE\"> range</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">self</span><span style=\"color:#E6EDF4\">.size):</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">                new_data[i] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.data[i]</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">            copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.size</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">            self</span><span style=\"color:#E6EDF4\">.total_copies </span><span style=\"color:#7DD3FC\">+=</span><span style=\"color:#E6EDF4\"> copies</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">            self</span><span style=\"color:#E6EDF4\">.data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> new_data</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">            self</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> new_capacity</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> copies</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.data[</span><span style=\"color:#4ADE80\">self</span><span style=\"color:#E6EDF4\">.size] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> val</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">        self</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">+=</span><span style=\"color:#4ADE80\"> 1</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        return</span><span style=\"color:#E6EDF4\"> copies</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    def</span><span style=\"color:#C7D2FE\"> get</span><span style=\"color:#E6EDF4\">(self, index):</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        if</span><span style=\"color:#7DD3FC\"> not</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#4ADE80\">0</span><span style=\"color:#7DD3FC\"> &#x3C;=</span><span style=\"color:#E6EDF4\"> index </span><span style=\"color:#7DD3FC\">&#x3C;</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.size):</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">            raise</span><span style=\"color:#FBBF24\"> IndexError</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#86EFAC\">\"Index out of bounds\"</span><span style=\"color:#E6EDF4\">)</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        return</span><span style=\"color:#4ADE80\"> self</span><span style=\"color:#E6EDF4\">.data[index]</span></span>", "export class DynArray<T> {\n  capacity: number;\n  size: number;\n  data: (T | null)[];\n  copies: number;\n  totalCopies: number;\n\n  constructor(initialCapacity = 1) {\n    this.capacity = Math.max(1, initialCapacity);\n    this.size = 0;\n    this.data = new Array(this.capacity).fill(null);\n    this.copies = 0;\n    this.totalCopies = 0;\n  }\n\n  append(val: T): number {\n    let copies = 0;\n    if (this.size === this.capacity) {\n      const newCapacity = this.capacity * 2;\n      const newData: (T | null)[] = new Array(newCapacity).fill(null);\n      for (let i = 0; i < this.size; i++) {\n        newData[i] = this.data[i];\n      }\n      copies = this.size;\n      this.totalCopies += copies;\n      this.data = newData;\n      this.capacity = newCapacity;\n    }\n    this.copies = copies;\n    this.data[this.size] = val;\n    this.size++;\n    return copies;\n  }\n\n  get(index: number): T {\n    if (index < 0 || index >= this.size) {\n      throw new Error(\"Index out of bounds\");\n    }\n    return this.data[index] as T;\n  }\n}": "<span class=\"line\"><span style=\"color:#7DD3FC\">export</span><span style=\"color:#7DD3FC\"> class</span><span style=\"color:#FBBF24\"> DynArray</span><span style=\"color:#E6EDF4\">&#x3C;</span><span style=\"color:#FBBF24\">T</span><span style=\"color:#E6EDF4\">> {</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  capacity</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  size</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  data</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#FBBF24\">T</span><span style=\"color:#7DD3FC\"> |</span><span style=\"color:#FBBF24\"> null</span><span style=\"color:#E6EDF4\">)[];</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  copies</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  totalCopies</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  constructor</span><span style=\"color:#E6EDF4\">(initialCapacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">) {</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> Math.</span><span style=\"color:#C7D2FE\">max</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">, initialCapacity);</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#7DD3FC\"> new</span><span style=\"color:#C7D2FE\"> Array</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">this</span><span style=\"color:#E6EDF4\">.capacity).</span><span style=\"color:#C7D2FE\">fill</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">null</span><span style=\"color:#E6EDF4\">);</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.totalCopies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#C7D2FE\">  append</span><span style=\"color:#E6EDF4\">(val</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> T</span><span style=\"color:#E6EDF4\">)</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\"> {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    let</span><span style=\"color:#E6EDF4\"> copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    if</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#4ADE80\">this</span><span style=\"color:#E6EDF4\">.size </span><span style=\"color:#7DD3FC\">===</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.capacity) {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      const</span><span style=\"color:#E6EDF4\"> newCapacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">*</span><span style=\"color:#4ADE80\"> 2</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      const</span><span style=\"color:#E6EDF4\"> newData</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#FBBF24\">T</span><span style=\"color:#7DD3FC\"> |</span><span style=\"color:#FBBF24\"> null</span><span style=\"color:#E6EDF4\">)[] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#7DD3FC\"> new</span><span style=\"color:#C7D2FE\"> Array</span><span style=\"color:#E6EDF4\">(newCapacity).</span><span style=\"color:#C7D2FE\">fill</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">null</span><span style=\"color:#E6EDF4\">);</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      for</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#7DD3FC\">let</span><span style=\"color:#E6EDF4\"> i </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">; i </span><span style=\"color:#7DD3FC\">&#x3C;</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.size; i</span><span style=\"color:#7DD3FC\">++</span><span style=\"color:#E6EDF4\">) {</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">        newData[i] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.data[i];</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">      }</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">      copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.size;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">      this</span><span style=\"color:#E6EDF4\">.totalCopies </span><span style=\"color:#7DD3FC\">+=</span><span style=\"color:#E6EDF4\"> copies;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">      this</span><span style=\"color:#E6EDF4\">.data </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> newData;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">      this</span><span style=\"color:#E6EDF4\">.capacity </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> newCapacity;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    }</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.copies </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> copies;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.data[</span><span style=\"color:#4ADE80\">this</span><span style=\"color:#E6EDF4\">.size] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> val;</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    this</span><span style=\"color:#E6EDF4\">.size</span><span style=\"color:#7DD3FC\">++</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    return</span><span style=\"color:#E6EDF4\"> copies;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#C7D2FE\">  get</span><span style=\"color:#E6EDF4\">(index</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">)</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> T</span><span style=\"color:#E6EDF4\"> {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    if</span><span style=\"color:#E6EDF4\"> (index </span><span style=\"color:#7DD3FC\">&#x3C;</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#7DD3FC\"> ||</span><span style=\"color:#E6EDF4\"> index </span><span style=\"color:#7DD3FC\">>=</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.size) {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      throw</span><span style=\"color:#7DD3FC\"> new</span><span style=\"color:#C7D2FE\"> Error</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#86EFAC\">\"Index out of bounds\"</span><span style=\"color:#E6EDF4\">);</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    }</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    return</span><span style=\"color:#4ADE80\"> this</span><span style=\"color:#E6EDF4\">.data[index] </span><span style=\"color:#7DD3FC\">as</span><span style=\"color:#FBBF24\"> T</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">}</span></span>"};
+/* ================= Amortized Analysis & Dynamic Arrays =================
+   Live model: dynamic array capacity doubling vs fixed growth.
+   All operation counts and theoretical bounds are verified in the PURE block
+   and checked by check.py in both Python and TypeScript.
+*/
+
+/* PURE:begin (no DOM below this line until PURE:end) */
+function simulateDoubling(n, initCap) {
+  initCap = initCap || 1;
+  var cap = initCap, size = 0, totalCopies = 0, history = [];
+  for (var i = 1; i <= n; i++) {
+    var curCopies = 0;
+    var capBefore = cap;
+    if (size === cap) {
+      curCopies = size;
+      totalCopies += curCopies;
+      cap *= 2;
+    }
+    size++;
+    history.push({ append: i, capBefore: capBefore, capAfter: cap, copies: curCopies, totalCopies: totalCopies });
+  }
+  return { size: size, cap: cap, totalCopies: totalCopies, history: history };
+}
+
+function simulateFixed(n, inc, initCap) {
+  inc = inc || 1;
+  initCap = initCap || 1;
+  var cap = initCap, size = 0, totalCopies = 0, history = [];
+  for (var i = 1; i <= n; i++) {
+    var curCopies = 0;
+    var capBefore = cap;
+    if (size === cap) {
+      curCopies = size;
+      totalCopies += curCopies;
+      cap += inc;
+    }
+    size++;
+    history.push({ append: i, capBefore: capBefore, capAfter: cap, copies: curCopies, totalCopies: totalCopies });
+  }
+  return { size: size, cap: cap, totalCopies: totalCopies, history: history };
+}
+
+var SIM9_DOUBLE = simulateDoubling(9, 1);
+var SIM32_DOUBLE = simulateDoubling(32, 1);
+var SIM9_FIXED = simulateFixed(9, 1, 1);
+var SIM32_FIXED = simulateFixed(32, 1, 1);
+
+var FACTS = {
+  double_copies_9: SIM9_DOUBLE.totalCopies,
+  double_total_work_9: 9 + SIM9_DOUBLE.totalCopies,
+  double_copies_32: SIM32_DOUBLE.totalCopies,
+  double_total_work_32: 32 + SIM32_DOUBLE.totalCopies,
+  fixed_copies_9: SIM9_FIXED.totalCopies,
+  fixed_copies_32: SIM32_FIXED.totalCopies,
+  fixed_total_work_32: 32 + SIM32_FIXED.totalCopies,
+  bank_charge: 3,
+  bank_credit: 2
+};
+/* PURE:end */
+
+function mountModel() {
+  var strat = 'double';
+  var n = 9;
+
+  var btnDouble = $('#strat-double');
+  var btnFixed = $('#strat-fixed');
+  var btnAppend = $('#btnAppend');
+  var btnReset = $('#btnReset');
+  var slider = $('#sliderN');
+  var lblN = $('#lblN');
+  var shelfCells = $('#shelfCells');
+  var shelfCap = $('#shelfCap');
+  var shelfSize = $('#shelfSize');
+
+  var valSize = $('#mSize');
+  var valCap = $('#mCap');
+  var valCopies = $('#mCopies');
+  var valTotalCopies = $('#mTotalCopies');
+  var valBank = $('#mBank');
+  var valAvg = $('#mAvg');
+  var tableBody = $('#traceBody');
+  var note = $('#modelNote');
+
+  function render() {
+    if (!shelfCells) return;
+    var sim = strat === 'double' ? simulateDoubling(n, 1) : simulateFixed(n, 1, 1);
+    var lastStep = sim.history[sim.history.length - 1];
+
+    if (btnDouble) btnDouble.setAttribute('aria-pressed', strat === 'double');
+    if (btnFixed) btnFixed.setAttribute('aria-pressed', strat === 'fixed');
+    if (slider) slider.value = n;
+    if (lblN) lblN.textContent = n;
+
+    if (shelfCap) shelfCap.textContent = sim.cap;
+    if (shelfSize) shelfSize.textContent = sim.size;
+
+    if (valSize) valSize.textContent = sim.size;
+    if (valCap) valCap.textContent = sim.cap;
+    if (valCopies) valCopies.textContent = lastStep ? lastStep.copies : 0;
+    if (valTotalCopies) valTotalCopies.textContent = sim.totalCopies;
+
+    if (strat === 'double') {
+      var bank = 2 * sim.size - sim.totalCopies;
+      if (valBank) valBank.textContent = bank + ' tokens';
+      if (valAvg) {
+        valAvg.textContent = (sim.totalCopies / sim.size).toFixed(2);
+        valAvg.className = 'm-v good';
+      }
+      if (valTotalCopies) valTotalCopies.className = 'm-v good';
+      if (note) note.innerHTML = 'Doubling strategy: across <b>' + n + '</b> appends, only <b>' + sim.totalCopies + '</b> total copies occurred (under <b>2n</b> bound). Average copy cost: <b>' + (sim.totalCopies / sim.size).toFixed(2) + '</b> copies/append.';
+    } else {
+      // Same 3-token charge as doubling: 2 banked per append, 1 token per copy. Showing the real
+      // (negative) balance is the point: the flat charge cannot pay for +1 growth.
+      var debt = 2 * sim.size - sim.totalCopies;
+      if (valBank) valBank.textContent = debt < 0 ? '\u2212' + (-debt) + ' tokens (overdrawn)' : debt + ' tokens';
+      if (valAvg) {
+        valAvg.textContent = (sim.totalCopies / sim.size).toFixed(2);
+        valAvg.className = 'm-v bad';
+      }
+      if (valTotalCopies) valTotalCopies.className = 'm-v bad';
+      if (note) note.innerHTML = 'Fixed growth (+1): resize occurs on almost every append, accumulating <b>' + sim.totalCopies + '</b> total copies (formula: n(n-1)/2). Average copy cost: <b>' + (sim.totalCopies / sim.size).toFixed(2) + '</b> copies/append — quadratic O(n²) total work!';
+    }
+
+    shelfCells.innerHTML = '';
+    var lastCopies = lastStep ? lastStep.copies : 0;
+    for (var i = 0; i < sim.cap; i++) {
+      var slot = el('div', 'shelf-slot');
+      if (i < sim.size) {
+        var isCopied = (i < lastCopies);
+        slot.className = 'shelf-slot ' + (isCopied ? 'copied' : 'filled');
+        slot.innerHTML = '<span>' + (i + 1) + '</span><span class="slot-idx">[' + i + ']</span>';
+      } else {
+        slot.className = 'shelf-slot empty';
+        slot.innerHTML = '<span>·</span><span class="slot-idx">[' + i + ']</span>';
+      }
+      shelfCells.appendChild(slot);
+    }
+
+    if (tableBody) {
+      tableBody.innerHTML = '';
+      var startIdx = Math.max(0, sim.history.length - 16);
+      for (var h = sim.history.length - 1; h >= startIdx; h--) {
+        var step = sim.history[h];
+        var tr = el('tr', step.copies > 0 ? 'spike' : '');
+        tr.innerHTML = '<td>#' + step.append + '</td>' +
+          '<td>' + step.capBefore + '</td>' +
+          '<td>' + step.capAfter + '</td>' +
+          '<td>' + (step.copies > 0 ? step.copies + ' (resize)' : '0') + '</td>' +
+          '<td>' + step.totalCopies + '</td>';
+        tableBody.appendChild(tr);
+      }
+    }
+  }
+
+  if (btnDouble) {
+    btnDouble.addEventListener('click', function() {
+      strat = 'double';
+      render();
+    });
+  }
+  if (btnFixed) {
+    btnFixed.addEventListener('click', function() {
+      strat = 'fixed';
+      render();
+    });
+  }
+  if (btnAppend) {
+    btnAppend.addEventListener('click', function() {
+      if (n < 32) {
+        n++;
+        render();
+      }
+    });
+  }
+  if (btnReset) {
+    btnReset.addEventListener('click', function() {
+      n = 1;
+      render();
+    });
+  }
+  if (slider) {
+    slider.addEventListener('input', function() {
+      n = parseInt(slider.value, 10);
+      render();
+    });
+  }
+
+  render();
+}
+
+function mountHero() {
+  var svg = $('#heroShelf');
+  if (!svg) return;
+  var num = $('#heroNum');
+  var cap = $('#heroCap');
+
+  var sequence = [
+    { n: 1, cap: 1, copies: 0, desc: 'Package 1 placed on shelf (capacity 1). Cost: 1.' },
+    { n: 2, cap: 2, copies: 1, desc: 'Capacity 1 full! Shelf doubles to 2. Copy 1 package, place package 2. Cost: 2.' },
+    { n: 3, cap: 4, copies: 2, desc: 'Capacity 2 full! Shelf doubles to 4. Copy 2 packages, place package 3. Cost: 3.' },
+    { n: 4, cap: 4, copies: 0, desc: 'Slot 4 free. Place package 4. Cost: 1.' },
+    { n: 5, cap: 8, copies: 4, desc: 'Capacity 4 full! Shelf doubles to 8. Copy 4 packages, place package 5. Cost: 5.' },
+    { n: 6, cap: 8, copies: 0, desc: 'Slot 6 free. Place package 6. Cost: 1.' },
+    { n: 7, cap: 8, copies: 0, desc: 'Slot 7 free. Place package 7. Cost: 1.' },
+    { n: 8, cap: 8, copies: 0, desc: 'Slot 8 free. Place package 8. Cost: 1.' },
+    { n: 9, cap: 16, copies: 8, desc: 'Capacity 8 full! Shelf doubles to 16. Copy 8 packages, place package 9. Cost: 9.' }
+  ];
+
+  function drawHero(stepIdx) {
+    svg.innerHTML = '';
+    var st = sequence[stepIdx];
+    if (num) num.textContent = st.n;
+    if (cap) cap.textContent = st.desc;
+
+    S('text', { x: 280, y: 24, class: 'ha-muted', 'text-anchor': 'middle' }, svg).textContent =
+      'Dynamic array doubling: capacity ' + st.cap + ', ' + st.n + ' packages placed';
+
+    var slotW = Math.min(32, Math.floor(480 / st.cap));
+    var startX = 280 - (st.cap * (slotW + 4)) / 2;
+    var startY = 120;
+
+    for (var i = 0; i < st.cap; i++) {
+      var x = startX + i * (slotW + 4);
+      var isFilled = i < st.n;
+      var isMoved = i < st.copies;
+      S('rect', {
+        x: x, y: startY, width: slotW, height: 42,
+        class: isMoved ? 'ha-pkg moved' : isFilled ? 'ha-pkg' : 'ha-shelf',
+        rx: 4
+      }, svg);
+
+      if (isFilled) {
+        var t = S('text', { x: x + slotW / 2, y: startY + 21, class: 'ha-text' }, svg);
+        t.textContent = i + 1;
+      }
+    }
+
+    var coinsY = 75;
+    S('text', { x: startX, y: coinsY - 14, class: 'ha-muted' }, svg).textContent = 'Banker token credits (2 per append):';
+    for (var c = 0; c < Math.min(st.n * 2, 24); c++) {
+      var cx = startX + c * 14 + 6;
+      S('circle', { cx: cx, cy: coinsY, r: 5, class: 'ha-coin' }, svg);
+    }
+  }
+
+  if (reduce || !M || !M.animate) {
+    drawHero(sequence.length - 1);
+    return;
+  }
+
+  var curStep = -1;
+  M.animate(0, sequence.length, {
+    duration: sequence.length * 1.4,
+    ease: 'linear',
+    repeat: Infinity,
+    onUpdate: function(v) {
+      var s = Math.min(sequence.length - 1, Math.floor(v));
+      if (s !== curStep) {
+        curStep = s;
+        drawHero(curStep);
+      }
+    }
+  });
+}
+
+(function() {
+  readPal();
+  mountLesson();
+  mountModel();
+  mountHero();
+  kinetic();
+  riseIn();
+})();
+
+wirePage();
+window.__built&&window.__built();
+})();
+</script></body></html>

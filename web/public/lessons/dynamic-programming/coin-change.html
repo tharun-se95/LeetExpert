@@ -1,0 +1,1696 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coin Change</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="preload" href="../fonts/JetBrainsMono-latin-tDbv2o-flE.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../fonts/SpaceGrotesk-latin-V8mDoQDjQS.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../fonts/SpaceMono-latin-i7dMIFZifj.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../fonts/SpaceMono-latin-i7dPIFZifj.woff2" as="font" type="font/woff2" crossorigin>
+<script>/* the page stays invisible until every weight it requests is in AND the page script has built its
+   scenes (capped at 2.5 s), because hidden content cannot shift. Waiting on one weight per face let the
+   others arrive late and re-wrap text; waiting on fonts alone revealed the page ~300 ms before motion.js
+   arrived and the script drew the hero, which then pushed the text down. Without JS nothing is hidden. */
+(function(){var d=document.documentElement,need=2,reveal=function(){d.classList.remove('fl');},done=function(){if(--need===0)reveal();};
+d.classList.add('fl');setTimeout(reveal,2500);window.__built=done;
+if(document.fonts&&document.fonts.load)Promise.all(['400 16px "Space Grotesk"','500 16px "Space Grotesk"','700 16px "Space Grotesk"','400 16px "Space Mono"','700 16px "Space Mono"','400 13px "JetBrains Mono"','500 13px "JetBrains Mono"'].map(function(f){return document.fonts.load(f);})).then(done,done);else done();})();</script>
+<style>html.fl body{visibility:hidden}</style>
+<style>
+:root{--bg:#ffffff;--card:#ffffff;--well:#f8fafc;--deep:#f1f5f9;--fg:#0f172a;--mut:#475569;--hair:rgba(15, 23, 42, 0.08);--hair2:rgba(15, 23, 42, 0.16);--mk:#1d4ed8;--o-ink:#8e4805;--g-ink:#067123;--r-ink:#b0081d;--y-ink:#6e5c05;--p-ink:#770ad0;--b-ink:#055bb1;--g-1:#9be9a8;--r-1:#ffc2bc;--b-1:#b6d6ff;--y-1:#ebd374;--fam:#907300;--fam-on:#ffffff;--fam-raw:#907300;--lamp:#2b7a3b;--lamp-glow:rgba(43,122,59,.45);--nv-bg:#14202e;--nv-card:#2b405a;--nv-deep:#1f3145;--nv-hair2:rgba(230, 237, 244, 0.22);--nv-mut:#acb9c8;--shadow-tint:15 23 42;--shadow-elevation:inset 0 1px 0 0 rgba(255, 255, 255, 0.75), 0 1px 2px rgb(var(--shadow-tint) / 0.04), 0 8px 20px -4px rgb(var(--shadow-tint) / 0.1);--cw-bg:#14202e;--cw-border:rgba(244, 244, 245, 0.09);--cw-ink:#e5ebf2;--cw-mut:#a3aebc;--k-acc-fill:#e3bd3f;--k-acc-on:#0e1726;--pdot:transparent;--fam-ink:#886d03;--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-ink:var(--bg);--k-acc:var(--k-acc-fill);--k-acc-ink:var(--k-acc-on);--k-done:var(--g-ink);--k-done-ink:var(--bg);--k-bad:var(--r-ink);--k-bad-ink:var(--bg);--k-warn:var(--y-ink);--k-warn-ink:var(--bg);--k-viol:var(--p-ink);--k-viol-ink:var(--bg);--k-dim:var(--well);--k-dim-ink:var(--mut);--k-win:var(--b-1);--k-win-ink:var(--fg);--k-win-ring:var(--b-ink);--e-idle:var(--mut);--e-path:var(--fam);--e-cur:var(--o-ink);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15202e;--card:#1b2735;--well:#101a26;--deep:#101a26;--mut:#a3aebc;--hair2:#2e3b4a;--pdot:#202c3a;--fg:#e5ebf2;--mk:#8db0ff;--hair:#2e3b4a;--o-ink:#F08A4B;--g-ink:#3CC3AE;--r-ink:#FF6B8B;--y-ink:#E3BD3F;--p-ink:#9B86FF;--b-ink:#8db0ff;--g-1:#1d4148;--r-1:#442f41;--b-1:#1d3a5e;--y-1:#3e3f31;--fam:#8db0ff;--fam-on:#0e1726;--fam-raw:#5c8fff;--lamp:#5be07a;--fam-ink:#8db0ff;--lamp-glow:rgba(91,224,122,.55);--nv-bg:#1b2735;--nv-card:#223145;--nv-deep:#101a26;--nv-hair2:#2e3b4a;--nv-mut:#a3aebc;--cw-bg:#101a26;--cw-border:#2e3b4a;--cw-ink:#e5ebf2;--cw-mut:#a3aebc;--k-acc-fill:#5c8fff;--k-acc-on:#0e1726;--shadow-tint:0 0 0;--shadow-elevation:inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 1px 2px rgb(var(--shadow-tint) / 0.3), 0 8px 24px -4px rgb(var(--shadow-tint) / 0.45);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15202e;--card:#1b2735;--well:#101a26;--deep:#101a26;--mut:#a3aebc;--hair2:#2e3b4a;--pdot:#202c3a;--fg:#e5ebf2;--mk:#8db0ff;--hair:#2e3b4a;--o-ink:#F08A4B;--g-ink:#3CC3AE;--r-ink:#FF6B8B;--y-ink:#E3BD3F;--p-ink:#9B86FF;--b-ink:#8db0ff;--g-1:#1d4148;--r-1:#442f41;--b-1:#1d3a5e;--y-1:#3e3f31;--fam:#8db0ff;--fam-on:#0e1726;--fam-raw:#5c8fff;--lamp:#5be07a;--fam-ink:#8db0ff;--lamp-glow:rgba(91,224,122,.55);--nv-bg:#1b2735;--nv-card:#223145;--nv-deep:#101a26;--nv-hair2:#2e3b4a;--nv-mut:#a3aebc;--cw-bg:#101a26;--cw-border:#2e3b4a;--cw-ink:#e5ebf2;--cw-mut:#a3aebc;--k-acc-fill:#5c8fff;--k-acc-on:#0e1726;--shadow-tint:0 0 0;--shadow-elevation:inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 1px 2px rgb(var(--shadow-tint) / 0.3), 0 8px 24px -4px rgb(var(--shadow-tint) / 0.45);color-scheme:dark}
+.navy{color-scheme:dark;--bg:#15202e;--card:#223145;--well:#1b2735;--deep:#101a26;--fg:#e5ebf2;--mut:#a3aebc;--hair:rgba(163, 174, 188, 0.19);--hair2:rgba(163, 174, 188, 0.38);--mk:#8db0ff;--o-ink:#ff923a;--g-ink:#39d353;--r-ink:#ff8b83;--y-ink:#d1af00;--p-ink:#c09bff;--b-ink:#7ab5ff;--g-1:#0e4429;--r-1:#592825;--b-1:#1d3a5e;--y-1:#453800;--fam:#e3bd3f;--fam-on:#0e1726;--fam-raw:#e3bd3f;--lamp:#5be07a;--lamp-glow:rgba(91,224,122,.55);--fam-ink:#e3bd3f;--bg:var(--nv-bg);--card:var(--nv-card);--deep:var(--nv-deep);--well:var(--nv-deep);--hair2:var(--nv-hair2);--mut:var(--nv-mut);--k-idle:var(--card);--k-idle-ink:var(--fg);--k-cur:var(--o-ink);--k-cur-ink:var(--bg);--k-acc:var(--k-acc-fill);--k-acc-ink:var(--k-acc-on);--k-done:var(--g-ink);--k-done-ink:var(--bg);--k-bad:var(--r-ink);--k-bad-ink:var(--bg);--k-warn:var(--y-ink);--k-warn-ink:var(--bg);--k-viol:var(--p-ink);--k-viol-ink:var(--bg);--k-dim:var(--well);--k-dim-ink:var(--mut);--k-win:var(--b-1);--k-win-ink:var(--fg);--k-win-ring:var(--b-ink);--e-idle:var(--mut);--e-path:var(--fam);--e-cur:var(--o-ink);color:var(--fg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .navy{--fg:#e5ebf2;--mk:#8db0ff;--hair:#2e3b4a;--o-ink:#F08A4B;--g-ink:#3CC3AE;--r-ink:#FF6B8B;--y-ink:#E3BD3F;--p-ink:#9B86FF;--b-ink:#8db0ff;--g-1:#1d4148;--r-1:#442f41;--b-1:#1d3a5e;--y-1:#3e3f31;--fam:#8db0ff;--fam-on:#0e1726;--fam-raw:#5c8fff;--lamp:#5be07a;--fam-ink:#8db0ff;--lamp-glow:rgba(91,224,122,.55)}}
+:root[data-theme="dark"] .navy{--fg:#e5ebf2;--mk:#8db0ff;--hair:#2e3b4a;--o-ink:#F08A4B;--g-ink:#3CC3AE;--r-ink:#FF6B8B;--y-ink:#E3BD3F;--p-ink:#9B86FF;--b-ink:#8db0ff;--g-1:#1d4148;--r-1:#442f41;--b-1:#1d3a5e;--y-1:#3e3f31;--fam:#8db0ff;--fam-on:#0e1726;--fam-raw:#5c8fff;--lamp:#5be07a;--fam-ink:#8db0ff;--lamp-glow:rgba(91,224,122,.55)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);background-image:radial-gradient(var(--pdot) 1.4px,transparent 1.4px);background-size:26px 26px;background-position:13px 13px;color:var(--fg);font-family:'Space Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.6;padding-inline:16px;font-variant-ligatures:none}
+h1,h2,h3{font-family:'Space Mono',ui-monospace,monospace;font-weight:700;margin:0;text-wrap:balance;line-height:1.12}
+p{margin:0} a{color:inherit} button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--mk);outline-offset:2px}
+.wrap{max-width:1180px;margin-inline:auto}
+.kick{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin-inline:-16px;padding:10px 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair2)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mark{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-weight:700;font-size:18px;text-decoration:none}
+.lamp{width:11px;height:11px;border-radius:50%;background:var(--lamp);box-shadow:0 0 10px 3px var(--lamp-glow)}
+.seg{display:inline-flex;border:1px solid var(--hair2);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:none;padding:6px 12px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut)}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.prog{position:absolute;left:0;right:0;bottom:-1px;height:2px;pointer-events:none}
+.prog i{display:block;height:100%;background:var(--fam);transform-origin:0 50%;transform:scaleX(0)}
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:48px;align-items:center;padding-block:64px 40px}
+.hero h1{font-size:clamp(2.1rem,5.2vw,3.7rem);letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--fam)}
+.hero .lede{font-size:18px;color:var(--mut);max-width:52ch;margin-top:20px}
+.hero .kick{margin-bottom:18px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:26px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mut)}
+.hero-meta b{color:var(--fg);font-weight:500}
+.idxbox{background:var(--card);border:1px solid var(--hair2);border-radius:14px;padding:18px;box-shadow:var(--shadow-elevation)}
+.idx{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(3,auto);row-gap:34px;column-gap:8px}
+.idx-edges{position:absolute;inset:0;pointer-events:none}
+.idx-edges line{stroke:var(--mut);stroke-width:1.6;opacity:.6}
+.tile{position:relative;display:flex;flex-direction:column;gap:8px;justify-content:space-between;min-height:104px;padding:10px;border-radius:10px;border:1px solid var(--hair2);background:var(--bg);text-decoration:none;transition:background-color .2s,color .2s}
+.tile .i{font-size:24px;color:var(--fam)}
+.tile b,.tile span{display:block}
+.tile b{font-family:'Space Mono',monospace;font-size:12.5px;line-height:1.2}
+.tile span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);line-height:1.3}
+.tile[data-on="1"]{background:var(--o-ink);border-color:var(--o-ink);color:var(--bg)}
+.tile[data-on="1"] .i,.tile[data-on="1"] span{color:var(--bg)}
+.idx-read{margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut)}
+.idx-read b{color:var(--fg);font-weight:500}
+.sys{padding-block:56px;border-top:1px solid var(--hair2);scroll-margin-top:60px}
+.sys-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:28px}
+.sys-title{display:flex;flex-direction:column;gap:12px;max-width:640px}
+.sys-title h2{font-size:clamp(1.6rem,3.4vw,2.4rem);letter-spacing:-.015em}
+.sys-title .kick{display:flex;align-items:center;gap:10px}
+.sys-title .kick .i{font-size:20px;color:var(--fam)}
+.vig{width:260px;max-width:100%;height:auto;color:var(--fg)}
+.vig .st{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.vig .fa{fill:var(--fam);opacity:.3} .vig .fk{fill:var(--fam)} .vig .fc{fill:var(--o-ink)} .vig .fr{fill:var(--r-ink)}
+.vig .fg{fill:var(--g-ink)} .vig .fp{fill:var(--card)}
+.vig .sc{stroke:var(--o-ink);fill:none;stroke-width:2.6;stroke-linecap:round}
+.vig .tx{font:700 11px 'Space Mono',monospace;text-anchor:middle;fill:var(--bg)}
+.sys-body{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:start}
+.story{display:flex;flex-direction:column;gap:22px}
+.story .lede{font-size:17px;max-width:60ch}
+.when{font-size:15px;color:var(--mut);max-width:60ch} .when b{color:var(--fg);font-weight:500}
+.seen{display:flex;flex-wrap:wrap;gap:6px}
+.seen span{font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:4px 9px;border:1px solid var(--hair2);border-radius:99px;background:var(--card);color:var(--mut)}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding-block:6px;border-block:1px solid var(--hair2)}
+.fact{padding-block:12px;display:flex;flex-direction:column;gap:4px}
+.fact b{font-family:'Space Mono',monospace;font-size:clamp(1.15rem,2vw,1.55rem);color:var(--mk);font-variant-numeric:tabular-nums;letter-spacing:-.02em;overflow-wrap:anywhere}
+.fact span{font-size:12.5px;color:var(--mut);line-height:1.4}
+.code{border:1px solid var(--hair2);border-radius:10px;background:var(--well);overflow:hidden}
+.code header{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--hair2);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.code pre{margin:0;padding:12px 14px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;tab-size:2}
+main[data-code="py"] .c-ts,main[data-code="ts"] .c-py{display:none}
+.watch{display:flex;gap:12px;font-size:14px;border:1px solid var(--hair2);border-radius:10px;padding:12px 14px;background:var(--card)}
+.watch .i{font-size:20px;color:var(--r-ink);margin-top:1px}
+.watch b{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;color:var(--mut);font-weight:500}
+.player{border:1px solid var(--hair2);border-radius:16px;background:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden;min-width:0}
+.stage{display:flex;flex-wrap:wrap;gap:20px 24px;justify-content:center;align-items:flex-start;padding:22px 18px;background:var(--deep);;min-height:300px}
+.grp{flex:1 1 0;min-width:210px;display:flex;flex-direction:column;gap:14px;align-items:center}
+.grp.wide{flex-basis:100%}
+.bw{display:flex;flex-direction:column;gap:8px;align-items:center;max-width:100%}
+.bl{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);text-align:center;line-height:1.35}
+.brd{display:grid;gap:3px;position:relative;margin:4px}
+.brd.tree{display:block}
+.brd.strip{gap:2px} .brd.strip .cell{border-radius:2px;height:22px} .brd.strip .cell:nth-child(4n+1):not(:first-child){margin-left:5px}
+/* behind the cells, so its tint shows only in the gaps and never under a cell's text */
+.brd.has-ov{isolation:isolate} .ov{position:absolute;left:0;top:0;z-index:-1;pointer-events:none;border-radius:8px;border:2px solid var(--k-cur);background:color-mix(in srgb,var(--k-cur) 14%,transparent);opacity:0}
+.ov.bounds{border:2px dashed var(--mk);background:transparent;border-radius:6px}
+.edges{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.edges line{stroke:var(--e-idle);stroke-width:2;stroke-linecap:round}
+.cell{width:var(--cs);height:var(--cs);border-radius:calc(var(--cs)*.16);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:var(--fs);line-height:1;will-change:transform;user-select:none;box-shadow:inset 0 0 0 1px var(--hair2)}
+.cell.win{box-shadow:inset 0 0 0 2px var(--k-win-ring)}
+.cell.node{position:absolute;border-radius:50%;--cs:auto;overflow:hidden;white-space:nowrap}
+.note{padding:12px 18px;min-height:76px;font-size:14px;line-height:1.5;border-top:1px solid var(--hair2)}
+.stats{display:flex;flex-wrap:wrap;gap:6px 8px;padding:0 18px 12px}
+.stats span{font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid var(--hair2);color:var(--mut);background:var(--bg);font-variant-numeric:tabular-nums}
+.stats b{color:var(--fg);font-weight:500}
+.ctl{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--hair2)}
+.btn{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--hair2);border-radius:9px;background:var(--bg);cursor:pointer;font-size:17px;flex:none}
+.btn:hover{border-color:var(--mk)}
+.btn.main{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.spd{width:auto;padding-inline:9px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.track{position:relative;flex:1;min-width:0;height:36px}
+.ticks{position:absolute;inset:11px 0;display:flex;gap:1px;align-items:stretch}
+.ticks i{flex:1;min-width:1px;background:var(--hair2);border-radius:1px}
+.ticks i.on{background:var(--fam)} .ticks i.key{background:var(--g-ink)} .ticks i.bad{background:var(--r-ink)}
+.head{position:absolute;top:5px;bottom:5px;width:3px;margin-left:-1.5px;background:var(--o-ink);border-radius:2px;pointer-events:none;left:0;box-shadow:0 0 0 2px var(--card)}
+.track input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize}
+.track:focus-within{outline:2px solid var(--mk);outline-offset:2px;border-radius:6px}
+.cnt{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut);min-width:56px;text-align:right;font-variant-numeric:tabular-nums}
+.outro{padding-block:64px 32px;border-top:1px solid var(--hair2)}
+.outro h2{font-size:clamp(1.6rem,3.4vw,2.4rem);max-width:22ch}
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:32px}
+.rule{background:var(--card);border:1px solid var(--hair2);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.rule .i{font-size:30px;color:var(--fam)} .rule h3{font-size:16px} .rule p{font-size:14.5px;color:var(--mut)}
+.practice{margin-top:32px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--mut)}
+.practice .pill{padding:5px 11px;border:1px solid var(--hair2);border-radius:99px;background:var(--card);color:var(--fg)}
+.foot{padding-block:24px 56px;font-size:13px;color:var(--mut);max-width:78ch} .foot b{color:var(--fg);font-weight:500}
+@media (max-width:980px){.hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 24px}.sys-body{grid-template-columns:minmax(0,1fr);gap:28px}.rules{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){.facts{grid-template-columns:minmax(0,1fr)}.fact{padding-block:8px}.stage{padding-inline:10px}.vig{display:none}.tile{min-height:88px;padding:8px}.tile span{display:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* kit/kit.css: page layout, widgets and the scaled-down type scale shared by every lesson page. */
+
+.hero2{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:44px;align-items:center;padding-block:56px 20px}
+.hero2 h1{font-size:clamp(2rem,4.8vw,3.4rem);letter-spacing:-.02em;margin-top:14px} .kw{display:inline-block}
+.hero2 .lede{font-size:18px;color:var(--mut);max-width:54ch;margin-top:18px}
+/* the headline's key word, in the accent (The Grid Underneath's "matrix"); large text, so 3:1 */
+.hero2 h1 em{font-style:normal;color:var(--fam)}
+.hero2 .chips{margin-top:22px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 10px;border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2));border-radius:99px;background:var(--card);color:var(--mut)} .chips span b{color:var(--mk);font-weight:500}
+/* Surfaces. Instruments (the hero, every widget, code) are the app's navy card:
+   its corner glow and top light come from .lab-stage, its ladder and inks from
+   .navy-card (tokens in shared.py). Every surface a diagram is drawn on carries
+   the blueprint dot grid. */
+.navy{border:1px solid var(--hair2);box-shadow:var(--shadow-elevation);background:linear-gradient(to bottom,rgb(255 255 255/.06),transparent 1px),radial-gradient(ellipse 80% 60% at 100% 0%,color-mix(in oklab,var(--fam-raw) 14%,transparent),transparent 55%),var(--bg)}
+.navy .navy,.navy .player{box-shadow:none}
+.code.navy{background:var(--cw-bg);border-color:var(--cw-border);box-shadow:none;color:var(--cw-ink)}
+.code.navy header{background:color-mix(in srgb,var(--cw-ink) 6%,var(--cw-bg));border-color:var(--cw-border);color:var(--cw-mut)}
+.navy .player{background:var(--bg)}
+.navy .stats span{background:var(--deep)}
+.navy .btn{background:var(--card)}
+.navy .btn.main{background:var(--fg)}
+.tv-wrap,.stage{--dot:color-mix(in srgb,var(--fg) 11%,transparent);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0);background-size:18px 18px;background-position:-1px -1px}
+.hero-art{border-radius:16px;padding:14px}
+.hero-art svg{width:100%;height:auto;display:block}
+.hn-edge{stroke:var(--mut);stroke-width:2;opacity:.6}
+.hn-node{fill:var(--card);stroke:var(--mut);stroke-width:2} .hn-node.core{stroke:var(--fam);stroke-width:3} .hn-node.on{fill:var(--fam);stroke:var(--fam)}
+.hn-trail{fill:none;stroke:var(--fam);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.hn-pk{fill:var(--o-ink)} .hn-lab{font:500 11px 'JetBrains Mono',monospace;fill:var(--mut)}
+.hero-read{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
+.hero-num{font-family:'Space Mono',monospace;font-size:34px;font-weight:700} .hero-num b{color:var(--fam)}
+/* the caption changes as the hero plays: two lines reserved, so the card never changes height */
+#heroCap{font-size:14px;color:var(--mut);width:min(32ch,100%);min-height:3.2em;text-align:right} #heroCap b{color:var(--fg);font-weight:500}
+.rosetta{border:1px solid var(--hair2);border-radius:14px;background:var(--card);box-shadow:var(--shadow-elevation);overflow:hidden;margin:20px 0;max-width:66ch}
+.ro-h,.ro{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);gap:16px;padding:10px 16px;align-items:baseline}
+.ro-h{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);background:var(--well)}
+.ro{border-top:1px solid var(--hair);font-size:14.5px}
+/* .sec code paints every inline code grey; a grid item would also stretch it into a bar */
+.sec .ro code{justify-self:start;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mk);background:color-mix(in srgb,var(--fam) 8%,var(--card));padding:1px 7px}
+@media (max-width:1000px){.hero2{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:36px 12px}}
+
+.page{display:grid;grid-template-columns:200px minmax(0,760px);gap:56px;justify-content:center;padding-block:44px 96px}
+.toc{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.toc .kick{margin-bottom:8px}
+.toc a{text-decoration:none;color:var(--mut);padding:5px 0 5px 12px;border-left:2px solid var(--hair2)}
+.toc a:hover{color:var(--fg)}
+.toc a[aria-current="true"]{color:var(--fg);border-left-color:var(--fam);font-weight:500}
+.lhead{display:flex;flex-direction:column;gap:14px;padding-bottom:36px}
+.lhead h1{font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em}
+.lhead .lede{font-size:18px;color:var(--mut);max-width:60ch}
+.sec{padding-block:44px;border-top:1px solid var(--hair2);scroll-margin-top:64px}
+.sec>h2,.sec-title>h2{font-size:clamp(1.4rem,2.6vw,1.9rem);margin-bottom:18px}
+.sec p{max-width:66ch;margin-bottom:14px}
+.sec p:last-child{margin-bottom:0}
+.sec code,.notes code,.fb code,.pq code{font-family:'JetBrains Mono',monospace;font-size:.88em;background:var(--well);padding:1px 6px;border-radius:5px}
+.ex{border:1px solid var(--hair2);border-radius:12px;background:var(--card);box-shadow:var(--shadow-elevation);padding:6px 16px;margin:18px 0}
+.navy .ex{box-shadow:none}
+.ex div{padding:10px 0;border-bottom:1px solid var(--hair);font-family:'JetBrains Mono',monospace;font-size:13px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.ex div:last-child{border-bottom:0} .ex em{font-style:normal;color:var(--mut)}
+.callout{display:flex;flex-direction:column;gap:6px;border:1px solid var(--hair2);border-left-width:4px;border-radius:10px;padding:14px 16px;margin:20px 0;max-width:66ch;background:var(--card)}
+.formula{margin:18px 0;padding:10px 16px;border-left:2px solid var(--hair2);font-size:1.05em;font-weight:500;letter-spacing:.01em;max-width:66ch}
+.callout .cl{display:flex;align-items:center;gap:8px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+.callout p{margin:0!important} .callout code{background:var(--well)}
+.callout.constraint{border-left-color:var(--g-ink);background:color-mix(in srgb,var(--g-1) 45%,var(--card))} .callout.constraint .cl{color:var(--g-ink)}
+.callout.key{border-left-color:var(--y-ink);background:color-mix(in srgb,var(--y-1) 45%,var(--card))} .callout.key .cl{color:var(--y-ink)}
+.callout.warn{border-left-color:var(--r-ink);background:color-mix(in srgb,var(--r-1) 45%,var(--card))} .callout.warn .cl{color:var(--r-ink)}
+.callout.key p{font-size:17px;font-family:'Space Mono',monospace;font-weight:700;line-height:1.4}
+.widget{--pad:16px;border-radius:16px;padding:var(--pad);margin:20px 0;display:flex;flex-direction:column;gap:12px}
+.widget .wl{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.tv-wrap{display:flex;justify-content:center;background-color:var(--deep);border:1px solid var(--hair);border-radius:12px;padding:14px 8px;overflow-x:auto}
+.readout{min-height:24px;font-size:14.5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn2,.reveal-btn,.choice,.qopt,.tab{transition:border-color .15s,background-color .15s,color .15s,transform .15s}
+.btn2{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border:1px solid var(--hair2);border-radius:9px;background:var(--card);color:var(--fg);cursor:pointer;font-size:12.5px;font-weight:500}
+.btn2:hover:not(:disabled){border-color:var(--mut);background:color-mix(in srgb,var(--fg) 7%,var(--card))}
+.btn2.best{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.btn2.best:hover:not(:disabled){background:color-mix(in srgb,var(--fg) 86%,var(--bg));border-color:transparent}
+.btn2:active:not(:disabled),.reveal-btn:active,.choice:active:not(:disabled){transform:translateY(1px)}
+button.cell.node{cursor:pointer;border:0}
+.pcard{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:14px;display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.pcard:last-child{margin-bottom:0}
+.pq{font-size:15px}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{min-width:48px;height:36px;padding:0 12px;border:1px solid var(--hair2);border-radius:9px;background:color-mix(in srgb,var(--fg) 7%,var(--card));cursor:pointer;font:500 13.5px 'JetBrains Mono',monospace}
+.choice:hover:not(:disabled){border-color:var(--fam);transform:translateY(-1px)}
+.choice.good{background:var(--g-ink);color:var(--bg);border-color:var(--g-ink)}
+.choice.bad{background:var(--r-ink);color:var(--bg);border-color:var(--r-ink)}
+.choice:disabled{cursor:default}
+.fb{display:none;font-size:14.5px;line-height:1.55;padding:10px 12px;border-radius:10px;background:var(--well);border:1px solid var(--hair)} .fb.on{display:block}
+.reveal-btn{display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 15px;border:1px solid var(--hair2);background:var(--card);box-shadow:var(--shadow-elevation);border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:500;margin-top:8px}
+.reveal-btn:hover{border-color:var(--mut)}
+.reveal-btn .i{font-size:16px;color:var(--fam)} .reveal-btn[aria-expanded="true"]{box-shadow:none;background:transparent}
+.reveal-body{margin-top:14px;display:flex;flex-direction:column;gap:14px}
+.reveal-body p{max-width:66ch;margin:0}
+/* a widget's state key (kit.js stateKey): a cell-shaped swatch, framed by the hairline so a pale state
+   (win) still reads against the card */
+.skey{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 10px;padding:0;list-style:none;font:12px 'JetBrains Mono',monospace;color:var(--mut)}
+.skey li{display:flex;align-items:center;gap:7px} .skey i{flex:none;width:13px;height:13px;border-radius:3px;box-shadow:inset 0 0 0 1px var(--hair2)} .skey li[data-k="win"] i{box-shadow:inset 0 0 0 2px var(--k-win-ring)}
+.cost-note{font-size:14.5px}
+.extabs{display:inline-flex;flex-wrap:wrap;align-self:flex-start;gap:2px;padding:3px;border:1px solid var(--hair);border-radius:11px;background:var(--deep)}
+.tab{border:0;background:none;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12.5px;color:var(--mut)}
+.tab:hover{color:var(--fg)}
+.tab[aria-pressed="true"]{background:var(--card);color:var(--fg);font-weight:500}
+.complexity{border:1px solid var(--hair2);border-radius:12px;padding:14px 16px;background:var(--card);box-shadow:var(--shadow-elevation);display:flex;flex-direction:column;gap:10px}
+.cx-h{font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.complexity p{margin:0}
+.vgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.vcard{border:1px solid var(--hair2);border-radius:14px;padding:16px;background:var(--card);box-shadow:var(--shadow-elevation);display:flex;flex-direction:column;gap:6px}
+.vcard .vt{font-family:'Space Mono',monospace;font-weight:700;font-size:15px} .vcard .vs{font:12px 'JetBrains Mono',monospace;color:var(--mk)} .vcard p{font-size:14px;color:var(--mut);margin:0!important}
+.qcard{border:1px solid var(--hair2);border-radius:14px;background:var(--card);box-shadow:var(--shadow-elevation);padding:16px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px}
+.qq{font-weight:500;font-size:16px}
+.qopts{display:flex;flex-direction:column;gap:8px}
+.qopt{display:flex;gap:12px;text-align:left;border:1px solid var(--hair2);border-radius:10px;background:var(--card);padding:12px 14px;cursor:pointer;font-size:14.5px;line-height:1.5}
+.qopt:hover:not(:disabled){border-color:var(--fam);background:color-mix(in srgb,var(--fam) 5%,var(--card))}
+.qopt .ql{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;border:1px solid var(--hair2);background:var(--bg);font:500 12px 'JetBrains Mono',monospace}
+/* the letter is 12px text, so it takes --mk (AA in both themes), never a family accent (3:1 only) */
+.qopt:hover:not(:disabled) .ql{border-color:var(--fam);color:var(--mk)}
+.qopt.good{border-color:var(--g-ink);background:color-mix(in srgb,var(--g-1) 40%,var(--card))} .qopt.bad{border-color:var(--r-ink);background:color-mix(in srgb,var(--r-1) 40%,var(--card))}
+.qopt:disabled{cursor:default}
+@media (max-width:1000px){.page{grid-template-columns:minmax(0,1fr)}.toc{display:none}.vgrid{grid-template-columns:minmax(0,1fr)}}
+
+.embed .top,.embed .toc{display:none}
+.embed body{padding-inline:12px}
+.embed .page{grid-template-columns:minmax(0,1fr);padding-block:4px 40px}
+.embed .hero2{grid-template-columns:minmax(0,1fr);padding-block:16px 4px;gap:20px}
+
+/* scaled down: smaller type and tighter spacing throughout */
+body{font-size:13.5px;line-height:1.55}
+.top{padding:8px 16px} .mark{font-size:15px} .lamp{width:9px;height:9px} .seg button{padding:5px 10px;font-size:11px}
+.page{grid-template-columns:180px minmax(0,940px);gap:48px;padding-block:28px 72px}
+.sec>.ex,.sec>.rosetta,.sec>.code{max-width:780px}
+.toc{font-size:12.5px;top:60px} .toc a{padding:4px 0 4px 10px}
+.hero2{gap:56px;padding-block:52px 40px}
+.hero2 h1{font-size:clamp(1.8rem,4vw,2.9rem);margin-top:12px}
+.hero2 .lede{font-size:15px;margin-top:14px} .hero2 .chips{margin-top:16px}
+.kick{font-size:10.5px}
+.chips span{font-size:10.5px;padding:3px 8px}
+.hero-art{padding:10px} .hero-num{font-size:26px} #heroCap{font-size:12.5px}
+.sec{padding-block:30px} .sec>h2,.sec-title>h2{font-size:clamp(1.15rem,2vw,1.45rem);margin-bottom:12px}
+.sec p{margin-bottom:10px;font-size:14px}
+.sec code,.notes code,.fb code,.pq code{font-size:.86em;padding:0 5px}
+.ex{padding:2px 12px;margin:12px 0} .ex div{padding:7px 0;font-size:11.5px}
+.callout{padding:10px 12px;margin:14px 0} .callout .cl{font-size:10px} .callout.key p{font-size:14px}
+.widget{--pad:14px;margin:18px 0;gap:10px} .widget .wl{font-size:10px}
+.tv-wrap{padding:10px 6px} .readout{font-size:13px;min-height:20px}
+.pcard{padding:11px;gap:9px;margin-bottom:10px} .pq{font-size:13px}
+.fb{font-size:13px;padding:8px 10px}
+.cost-note{font-size:13px}
+.code header{font-size:10px;padding:6px 10px} .code pre{font-size:11.5px;padding:10px 12px}
+.complexity{padding:11px 13px} .cx-h{font-size:10px}
+.vcard{padding:12px} .vcard .vt{font-size:13px} .vcard .vs{font-size:10.5px} .vcard p{font-size:12.5px}
+.qcard{padding:12px;gap:9px;margin-bottom:10px} .qq{font-size:14px} .qopt{font-size:13px;padding:9px 11px} .qopt .ql{width:20px;height:20px;font-size:11px}
+.rosetta{margin:14px 0} .ro-h,.ro{padding:8px 12px;font-size:13px} .ro-h{font-size:10px} .ro code{font-size:12px}
+.stage{padding:16px 12px;min-height:240px} .note{font-size:12.5px;padding:10px 14px;min-height:64px} .stats span{font-size:11px} .btn{width:32px;height:32px;font-size:15px} .spd{font-size:11px} .cnt{font-size:11px} .bl{font-size:10.5px}
+.player{border-radius:12px}
+@media (prefers-reduced-motion:reduce){.btn2,.reveal-btn,.choice,.qopt,.tab{transition:none}.choice:hover:not(:disabled),.btn2:active,.reveal-btn:active,.choice:active{transform:none}}
+@media (max-width:1000px){.page{grid-template-columns:minmax(0,1fr)}}
+
+/* ---- Richer layer: the hero stage, section marks, instrument title bars ---- */
+/* The hero glow reaches past the column. clip, not hidden, so the sticky header keeps
+   working; on body too, because the root's own overflow is handed to the viewport. */
+html,body{overflow-x:clip}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* The hero card rests tilted and floats, as the landing's feature cards do; the
+   floor shadow and the family glow stay put beneath it. */
+.hero2{position:relative;isolation:isolate}
+.hero2::before{content:"";position:absolute;z-index:-1;inset:-12% -8% -6% 38%;pointer-events:none;background:radial-gradient(closest-side,color-mix(in oklab,var(--fam-raw) 16%,transparent),transparent)}
+.hero-stage{position:relative;perspective:1600px}
+.hero-stage::after{content:"";position:absolute;z-index:-1;left:10%;right:10%;bottom:-30px;height:24px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in oklab,var(--fg) 24%,transparent),transparent);filter:blur(6px)}
+.hero-art{transform:rotateX(5deg) rotateY(-9deg);transform-origin:40% 50%;animation:hero-float 7s ease-in-out infinite alternate}
+@keyframes hero-float{from{translate:0 -6px}to{translate:0 8px}}
+.hero2 .lede{font-size:16px;line-height:1.6}
+
+/* The three hero facts as a spec strip: label over value, hairline between. */
+.hero2 .chips{gap:0;margin-top:26px;max-width:560px;border-block:1px solid var(--hair2)}
+.hero2 .chips span{flex:1 1 0;display:flex;flex-direction:column;gap:4px;padding:11px 14px 11px 0;border:0;border-radius:0;background:none;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.hero2 .chips span+span{padding-left:14px;border-left:1px solid var(--hair2)}
+.hero2 .chips span b{font:700 14px/1.25 'Space Mono',monospace;letter-spacing:0;text-transform:none;color:var(--fg)}
+
+/* Section marks: one icon per section, the same in the heading and the contents. */
+.sec{border-top:0;background:linear-gradient(90deg,transparent,var(--hair2) 10%,var(--hair2) 90%,transparent) top/100% 1px no-repeat}
+.sec>h2,.sec-title>h2{display:flex;align-items:center;gap:12px}
+.sec-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;font-size:18px;color:var(--fam);background:color-mix(in srgb,var(--fam) 11%,var(--card));border:1px solid color-mix(in srgb,var(--fam) 30%,var(--hair2))}
+.toc a{display:flex;align-items:center;gap:9px}
+.toc a .i{font-size:14px;color:var(--mut);transition:color .2s}
+.toc a[aria-current="true"] .i{color:var(--fam)}
+
+/* An instrument's label is its title bar. */
+.widget .wl{display:flex;align-items:center;gap:9px;margin:calc(-1*var(--pad)) calc(-1*var(--pad)) 2px;padding:12px var(--pad);border-bottom:1px solid var(--hair)}
+.widget .wl::before{content:"";flex:none;width:7px;height:7px;border-radius:2px;background:var(--fam)}
+
+.callout.key{padding:16px 18px;gap:8px} .callout.key p{font-size:15.5px}
+
+/* Variant cards carry the family edge the course's module cards do. */
+.vcard{position:relative;overflow:hidden;padding-top:19px}
+.vcard::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,var(--fam),color-mix(in oklab,var(--fam) 15%,transparent))}
+
+.qq{display:flex;gap:12px;align-items:flex-start;line-height:1.45}
+.qn.navy{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;box-shadow:none;font:700 13px 'Space Mono',monospace;margin-top:-3px}
+
+@media (max-width:1000px){.hero2{gap:36px;padding-block:32px 28px}.hero-art{transform:rotateX(4deg) rotateY(-4deg)}.hero2::before{inset:30% -20% -10% -20%}}
+@media (max-width:520px){.hero2 .chips span{padding-right:8px}.hero2 .chips span+span{padding-left:8px}.hero2 .chips span b{font-size:12px}.sec-ic{width:30px;height:30px;font-size:16px}}
+@media (prefers-reduced-motion:reduce){.hero-art{animation:none}}
+.embed .hero-art{transform:none;animation:none}
+
+/* Syntax colour follows the well: navy in both themes, so the app's Shiki has one theme and
+   writes each token's colour inline (#19); nothing here picks a variant. */
+/* the inline-code chip (.sec code) must not reach a block's <code>: it boxed every line */
+.code pre.shiki code{font:inherit;background:none;padding:0;border-radius:0}
+
+/* ---- Explain beside the scene (from the Matrix overview): the prose scrolls on the left while its
+   live scene stays pinned on the right, so no one reads about a scene they cannot see. ---- */
+.duo{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:36px;align-items:start;margin:22px 0}
+.duo-text{display:flex;flex-direction:column;gap:12px}
+.duo-text p{max-width:none;margin:0}
+.duo-scene{position:sticky;top:72px}
+.duo-scene .widget{margin:0}
+/* beside its prose a scene is only as tall as its boards: the 240px floor left one-row scenes mostly empty */
+.duo-scene .stage{min-height:0}
+@media (max-width:1100px){.duo{grid-template-columns:minmax(0,1fr);gap:18px}.duo-scene{position:static}}
+
+/* ---- Fact strip: big computed numbers, each with a one-line meaning. ---- */
+.factstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 22px;margin:22px 0;padding:16px 0;border-block:1px solid var(--hair2)}
+.factstrip .fact{display:flex;flex-direction:column;gap:6px;padding:0}
+.factstrip .fact::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--fam)}
+.factstrip .fact b{font:700 clamp(1.35rem,2.4vw,1.85rem)/1.1 'Space Mono',monospace;color:var(--mk);letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.factstrip .fact span{font-size:13px;color:var(--mut);line-height:1.45}
+
+/* ---------- the split layout (#63, on trial on one lesson) ----------
+   Each visual sits beside the prose that introduces it (build.py split_section: .duo.beat, the
+   authored duo's 5fr/7fr and sticky scene), so the page spends its width on pictures instead of an
+   empty strip beside every paragraph. The contents leave the grid and float as a rail in the left
+   margin, shown once the hero has scrolled away. */
+.page.split{grid-template-columns:minmax(0,1fr);gap:0}
+.split .beat{margin:4px 0 26px}
+.split .beat:last-child{margin-bottom:0}
+.split .beat .duo-scene{display:flex;flex-direction:column;gap:18px}
+.split .beat .duo-scene>*,.split .beat .lead>*{margin:0}
+/* the flow (#63, owner 2026-09-28: no gap under a short paragraph beside a tall scene). kit.js sets
+   .flowing on a wide page: a .flow's prose is one unbroken column and each scene hangs at its own
+   paragraph's top, pushed down past the scene above, pulled up only as far as keeps it from outrunning
+   the prose. Without the script the beats keep the paired rows above. */
+.split.flowing .flow{position:relative}
+.split.flowing .flow>:not(.beat),.split.flowing .flow .duo-text{width:calc((100% - 36px) * 5 / 12)}
+.split.flowing .flow .beat{display:block;margin:0 0 12px}
+.split.flowing .flow .duo-scene{position:absolute;right:0;top:0;width:calc((100% - 36px) * 7 / 12)}
+.split .toc{position:fixed;z-index:15;top:50%;left:max(12px,calc((100vw - 1180px) / 2 - 72px));transform:translateY(-50%);
+  padding:8px;gap:2px;background:var(--card);border:1px solid var(--hair2);border-radius:14px;box-shadow:var(--shadow-elevation);
+  transition:opacity .25s,transform .25s,visibility .25s}
+.split .toc .kick{display:none;margin:2px 8px 6px}
+/* labels collapse to their icons; font-size 0 keeps each link's text as its accessible name */
+.split .toc a{border-left:0;padding:7px;border-radius:9px;font-size:0;gap:0}
+.split .toc a .i{font-size:16px}
+.split .toc a[aria-current="true"]{background:color-mix(in srgb,var(--fam) 12%,var(--card))}
+.split .toc:hover a,.split .toc:focus-within a{font-size:13px;gap:10px;padding-right:14px}
+.split .toc:hover .kick,.split .toc:focus-within .kick{display:block}
+.split .toc.auto:not(.on){opacity:0;visibility:hidden;transform:translate(-10px,-50%)}
+@media (max-width:1299px){.split .toc{display:none}}
+@media (max-width:1100px){
+  .split .beat{display:flex;flex-direction:column;gap:18px}
+  .split .beat .duo-scene{display:contents}
+  .split .beat .lead{order:-1}
+  /* stacked, a scene takes the column's width as it did before the split: the duo's align-items:start
+     sized it to its content, and a player's step bar pushed it past a phone's edge (kit-players, #63) */
+  .split .beat{align-items:stretch}
+}
+@media (prefers-reduced-motion:reduce){.split .toc{transition:none}}
+
+/* a section's vignette (lessonMd.ts vignette): a spot drawing on the heading's row, as The Grid
+   Underneath sets one beside each system's title. Decoration beside the heading, so it gives way
+   first: gone on a phone, where it would push the heading's first line down. */
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:22px}
+.sec-title{min-width:0}
+.sec-title>h2{margin-bottom:0}
+/* a section's caption (lessonMd.ts headFences): the one sentence it concludes, set as real text under
+   the heading. It replaced the animated banners, whose words were drawn in a scaled SVG (#63). */
+.sec-sub{font-size:17px;line-height:1.45;color:var(--mut);max-width:62ch;margin:8px 0 0}
+.sec>.sec-sub{margin:-10px 0 22px}
+.sec-head .vig{width:220px;flex:none;color:var(--mut)}
+@media (max-width:760px){.sec-head .vig{display:none}.sec-head{display:block}}
+/* a key term (lessonMd.ts term): the family's colour as a text ink (shared.py text_ink), AA on
+   every surface prose sits on; weight, not a slant, since Space Grotesk has no italic */
+.term{color:var(--fam-ink);font-weight:500}
+/* kit/plots.css: cost plots (kit/plots.js). The SVG holds lines, bars, bands and markers; every word and number
+   is HTML over it, on a solid patch of the surface it sits on (--pl-bg), so a label crossing a line or a band still
+   reads at AA, and the gate measures it against that patch. Series take their colour through `color` +
+   currentColor, never a presentation attribute. */
+.pl{--pl-bg:var(--bg);display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 18px}
+.pl-box{position:relative;flex:1 1 320px;min-width:0}
+.lp-stage .pl-svg,.pl-svg{position:absolute;left:0;top:0;width:auto;height:auto;max-height:none;overflow:visible;margin:0}
+.pl-text{position:absolute;inset:0;pointer-events:none}
+.pl-grid{stroke:var(--hair2);stroke-width:1;opacity:.7}
+.pl-axis,.pl-tk{stroke:var(--mut);stroke-width:1.2}
+.pl-t,.pl-an,.pl-rn,.pl-cn{position:absolute;white-space:nowrap;background:var(--pl-bg);line-height:1.25;border-radius:4px}
+.pl-t{font:11px 'JetBrains Mono',monospace;color:var(--mut);padding:0 2px;font-variant-numeric:tabular-nums}
+.pl-ty{transform:translateY(-50%)} .pl-tx{transform:translateX(-50%)}
+.pl-an{font-size:12px;color:var(--mut);padding:0 3px} .pl-anx{transform:translateX(-50%)}
+.pl-ln{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.pl-edge{stroke-width:1.5}
+.pl-s.hi .pl-ln{stroke-width:3.4}
+.pl-mk>*,.pl-at>*{fill:currentColor} .pl-mk .pl-x,.pl-at .pl-x{fill:none;stroke:currentColor;stroke-width:2}
+.pl-at>*{stroke:var(--pl-bg);stroke-width:1.5} .pl-at .pl-x{stroke:currentColor}
+.pl-bar{fill:currentColor;fill-opacity:.82}
+.pl-band{fill:currentColor;fill-opacity:.16}
+.pl-ref{stroke:var(--fg);stroke-width:1.4;stroke-dasharray:5 4;opacity:.8}
+.pl-ref.hi{stroke:var(--mk);stroke-width:2;opacity:1}
+.pl-rn{font-size:12px;color:var(--fg);padding:1px 5px}
+.pl-rn.hi{color:var(--mk);font-weight:700}
+.pl-cur{stroke:var(--mk);stroke-width:1.6}
+.pl-cn{font:500 11.5px 'JetBrains Mono',monospace;color:var(--mk);padding:1px 6px;border:1px solid var(--mk)}
+.pl-read{flex:0 1 230px;min-width:200px;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.pl-read li{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;min-height:22px;font-size:13px;color:var(--fg)}
+.pl-read b{font:500 12.5px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-align:right}
+.pl-read li.hi b{color:var(--mk)}
+.pl-read li.off{color:var(--mut)} .pl-read li.off b{font-weight:400;color:var(--mut)} .pl-read li.off .pl-sw{opacity:.45}
+.pl-sw line{stroke:currentColor;stroke-width:2.2} .pl-sw .pl-mk>*{fill:currentColor}
+/* the static chart: a sunk well, as the old costChart had */
+.chart.pl-chart{background:var(--deep);border:1px solid var(--hair);border-radius:12px;padding:12px 12px 8px}
+.pl-chart .pl{--pl-bg:var(--deep)}
+@media (max-width:640px){.pl-read{flex-basis:100%}}
+.fleet{display:flex;gap:4px;width:min(560px,100%);min-height:44px;align-items:stretch}
+.fleet .seg{display:flex;align-items:center;justify-content:center;min-width:26px;border-radius:9px;background:var(--k-acc);color:var(--k-acc-ink);font:500 13px 'JetBrains Mono',monospace}
+.fleet .gap{display:flex;align-items:center;justify-content:center;border-radius:9px;border:1.5px dashed var(--hair2);color:var(--mut);font:12px 'JetBrains Mono',monospace}
+.picks{display:flex;gap:8px;flex-wrap:wrap;margin-right:auto}
+.btn2:disabled{opacity:.4;cursor:not-allowed}
+.sizes{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.sz{font:500 12.5px 'JetBrains Mono',monospace;padding:5px 10px;border-radius:8px;border:1px solid var(--hair2);background:var(--card)}
+.sz.need{background:var(--fg);color:var(--bg);border-color:var(--fg)} .sz.ans{background:var(--g-ink);color:var(--bg);border-color:var(--g-ink)}
+.hf-inst{fill:var(--card);stroke:var(--fam);stroke-width:2}
+.hf-cell{fill:var(--card);stroke:var(--hair2);stroke-width:1.5}
+.hf-cell.base{fill:var(--g-ink);stroke:var(--g-ink)} .hf-cell.src{fill:var(--b-1);stroke:var(--fam)} .hf-cell.cur{fill:var(--o-ink);stroke:var(--o-ink)}
+.hf-ch{font:500 14px 'JetBrains Mono',monospace;fill:var(--fg)}
+.hf-cell.base+.hf-ch,.hf-cell.cur+.hf-ch{fill:var(--bg)}
+
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="i-ast" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2"/><circle cx="6" cy="14" r="2.2"/><circle cx="18" cy="14" r="2.2"/><path d="M10.6 6.8L7.4 12.2M13.4 6.8l3.2 5.4M6 16.2v3.3M18 16.2v3.3"/></symbol>
+<symbol id="i-stack" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="4" rx="1.2"/><rect x="5" y="10" width="14" height="4" rx="1.2"/><rect x="5" y="16" width="14" height="4" rx="1.2"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.6-7.95A5.5 5.5 0 0 1 17 8.6 4.7 4.7 0 0 1 17 18z"/><path d="M12 12v6M9.5 15.5L12 18l2.5-2.5"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M9 4v16M9 10h11.5"/></symbol>
+<symbol id="i-route" viewBox="0 0 24 24"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="12" cy="6" r="2"/><path d="M6.4 16.4L10.8 7.8M17.6 16.4L13.2 7.8M7 18h10"/></symbol>
+<symbol id="i-rack" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="5" rx="1.2"/><rect x="4" y="9.5" width="16" height="5" rx="1.2"/><rect x="4" y="16" width="16" height="5" rx="1.2"/><path d="M7 5.5h.01M7 12h.01M7 18.5h.01M11 5.5h5M11 12h5M11 18.5h5"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 15h6M9 18h4"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.4h.01"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5.5v13M16 5.5v13" stroke-width="3"/></symbol>
+<symbol id="i-prev" viewBox="0 0 24 24"><path d="M7 5.5v13M18 5.5l-9 6.5 9 6.5z"/></symbol>
+<symbol id="i-next" viewBox="0 0 24 24"><path d="M17 5.5v13M6 5.5l9 6.5-9 6.5z"/></symbol>
+<symbol id="i-replay" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 3.5v5h5"/></symbol>
+<symbol id="i-recurse" viewBox="0 0 24 24"><path d="M12 4v6M12 10L6 15M12 10l6 5M6 15v5M18 15v5"/></symbol>
+<symbol id="i-meet" viewBox="0 0 24 24"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="12" cy="5" r="2"/><path d="M6 17.2L11 6.8M18 17.2L13 6.8"/></symbol>
+<symbol id="i-flat" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/><path d="M7 5v6M11 5v6M15 5v6M19 5v6M5 13v6M9 13v6M13 13v6M17 13v6" stroke-width="1.2"/></symbol>
+<symbol id="i-g-cell" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/><rect x="9.2" y="9.2" width="5.6" height="5.6" fill="currentColor" stroke="none" opacity=".45"/></symbol>
+<symbol id="i-g-kernel" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16"/><rect x="9.6" y="9.6" width="4.8" height="4.8" fill="currentColor" stroke="none" opacity=".35"/></symbol>
+<symbol id="i-g-rotate" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><path d="M20.5 3.5v5h-5"/><rect x="9" y="8" width="6" height="8" rx="1.4"/></symbol>
+<symbol id="i-g-spiral" viewBox="0 0 24 24"><path d="M12 12h2.2v-2.2H9.8v4.4h6.6V7.6H7.6v8.8H18.6V5.4H5.4v13.2h15.2"/></symbol>
+<symbol id="i-s-problem" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></symbol>
+<symbol id="i-s-attempt" viewBox="0 0 24 24"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M13.5 7l3 3"/></symbol>
+<symbol id="i-s-insight" viewBox="0 0 24 24"><path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1.1 1.3 1.1 2.2h5c0-.9.5-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+<symbol id="i-s-solution" viewBox="0 0 24 24"><circle cx="8" cy="15.5" r="4"/><path d="M11 12.5l8-8M16.5 7l2.5 2.5M14 9.5l2 2"/></symbol>
+<symbol id="i-s-variants" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7v10M18 9c0 4.5-6.5 3.5-11 8.3"/></symbol>
+<symbol id="i-s-quiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.3l2.6 2.6 5-5.2"/></symbol>
+<symbol id="i-s-cost" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M7 16c4 0 7-2.5 11-10"/><path d="M7 17.5h11" stroke-dasharray="1.5 2.5"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></symbol></defs></svg>
+<header class="top"><div class="wrap"><a class="mark" href="#top" aria-label="leetExpert"><span>leetExpert</span><span class="lamp" aria-hidden="true"></span></a>
+<div class="seg" role="group" aria-label="Code language"><button type="button" id="lang-py" aria-pressed="true">Python</button><button type="button" id="lang-ts" aria-pressed="false">TypeScript</button></div></div></header>
+<main id="top" data-code="py">
+<div class="wrap"><section class="hero2"><div class="hero-copy"><div class="kick">Coin Change · Dynamic Programming module · problem lesson</div>
+<h1 id="h1"><span class="kw">How</span> <span class="kw">few</span> <span class="kw">machines</span> <span class="kw">add</span> <span class="kw">up</span> <span class="kw">to</span> <span class="kw">exactly</span> <span class="kw">this</span> <span class="kw">much</span> <span class="kw">capacity?</span></h1>
+<p class="lede">A customer asks for exactly 11 vCPUs. The cloud sells instances in sizes of 1, 2 and 5 vCPUs, in any quantity, and every instance you launch is one more line on the bill. What is the fewest instances that add up to exactly 11? Grabbing the biggest size each time feels right and is sometimes wrong, and finding out why leads to one of the most useful ideas in the course.</p>
+<div class="chips"><span>needs <b>a table of answers</b></span><span>shape <b>try every last piece</b></span><span>time <b>O(amount × sizes)</b></span></div></div>
+<div class="hero-stage"><div class="hero-art navy"><svg id="heroFleet" viewBox="0 0 560 300" role="img" aria-label="Animation: a row of cells labelled 0 to 11 fills in from left to right. Each cell shows the fewest instances that add up to exactly that many vCPUs, built from the cells behind it."></svg>
+<div class="hero-read" id="heroRead"><div class="hero-num"><b id="heroNum">0</b> <span id="heroUnit">instances</span></div><div id="heroCap"></div></div></div></div></section></div>
+<div class="wrap page split">
+<nav class="toc" aria-label="Lesson sections"><div class="kick">On this page</div>
+<a href="#problem"><svg class="i" aria-hidden="true"><use href="#i-s-problem"/></svg>Problem</a><a href="#attempt"><svg class="i" aria-hidden="true"><use href="#i-s-attempt"/></svg>Attempt it first</a><a href="#trap"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg>Two traps</a><a href="#insight"><svg class="i" aria-hidden="true"><use href="#i-s-insight"/></svg>The insight</a><a href="#solution"><svg class="i" aria-hidden="true"><use href="#i-s-solution"/></svg>Solution</a><a href="#variants"><svg class="i" aria-hidden="true"><use href="#i-s-variants"/></svg>Variants</a><a href="#quiz"><svg class="i" aria-hidden="true"><use href="#i-s-quiz"/></svg>Check yourself</a></nav>
+<article>
+<section class="sec" id="problem"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-problem"/></svg></span><span>Problem</span></h2></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Three coin sizes on the left, and a target amount on the right made up exactly from them"><circle class="fa" cx="24" cy="56" r="8"/><circle class="fa" cx="52" cy="56" r="12"/><circle class="fk" cx="88" cy="56" r="18"/><path class="st" d="M120 56H132M127 51L132 56L127 61"/><rect class="fk" x="142" y="44" width="36" height="24" rx="12"/><rect class="fa" x="180" y="44" width="24" height="24" rx="12"/><rect class="fa" x="206" y="44" width="16" height="24" rx="8"/><path class="st" d="M142 82V88H222V82"/></svg></div><div class="flow"><div class="duo beat"><div class="duo-text"><p>You are given a list of <code>coins</code>, the sizes available, all different, and a target <code>amount</code>. Return the <b>fewest</b> coins that add up to exactly <code>amount</code>, using each size as many times as you like, or <code>-1</code> if no combination adds up to it.</p></div><div class="duo-scene"><div class="ex"><div><span>coins = [1,2,5], amount = 11</span><em>→ 3 (5 + 5 + 1)</em></div><div><span>coins = [2], amount = 3</span><em>→ -1 (only even totals are possible)</em></div></div></div></div><div class="duo beat"><div class="duo-text"><div class="callout constraint"><div class="cl"><svg class="i"><use href="#i-warn"/></svg>Constraint</div><p>1 ≤ coins.length ≤ 12, 1 ≤ coins[i] ≤ 2³¹ − 1, 0 ≤ amount ≤ 10⁴.</p></div><p>Read a coin as an instance size and the amount as the capacity a customer asked for. Launching an instance costs one unit no matter how big it is, so the job is to reach the exact capacity with as few launches as possible. It is exact, not "at least": an order that overshoots is not a solution. Sometimes no mix works at all, which is what the <code>-1</code> is for.</p></div><div class="duo-scene"><div class="widget navy" id="explore"><div class="wl">Explore: build an order by hand</div><div class="extabs" role="group" aria-label="Choose an order"></div><div class="tv-wrap"><div class="fleet"></div></div><div class="readout" aria-live="polite"></div><div class="actions"><span class="picks"></span><button type="button" class="btn2 undo">Undo</button><button type="button" class="btn2 best">Show a fewest order</button></div></div></div></div></div></section>
+
+<section class="sec" id="attempt"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-attempt"/></svg></span><span>Attempt it first</span></h2><p class="sec-sub">Greedy grabs the biggest size first, and that is not always the fewest instances.</p></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Two ways to pay the same amount: the top grabs the largest coin first and ends with many small ones, the bottom uses two middle coins"><circle class="fk" cx="30" cy="30" r="18"/><circle class="fa" cx="64" cy="30" r="8"/><circle class="fa" cx="86" cy="30" r="8"/><circle class="fa" cx="108" cy="30" r="8"/><circle class="fa" cx="130" cy="30" r="8"/><circle class="fr" cx="170" cy="30" r="9"/><path class="st" d="M165 25L175 35M175 25L165 35"/><circle class="fa" cx="30" cy="82" r="14"/><circle class="fa" cx="62" cy="82" r="14"/><circle class="fg" cx="170" cy="82" r="9"/><path class="st" d="M165 82L169 86L176 78"/></svg></div><div class="flow"><div class="duo beat"><div class="duo-text"><p>This is unbounded knapsack: each size can be reused without limit. Before writing any table, think about the greedy rule first, because it is the natural first move and it is worth knowing exactly why it fails. Take sizes <code>{1, 3, 4}</code> and a capacity of 6. Work out what "always launch the biggest size that still fits" does, and compare it with the best possible order.</p><p>Predict the fewest instances for each order, then check.</p></div><div class="duo-scene"><div class="widget navy"><div class="wl">Predict the fewest instances</div><div id="predict"></div></div></div></div><div id="hint"></div></div></section>
+
+<section class="sec" id="trap"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg></span><span>Two traps</span></h2><p class="sec-sub">The recursion asks about the same amounts again and again, and there are only <code>amount + 1</code> of them.</p></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: A recursion tree in which the same smaller amount turns up on two different branches, the pair joined by a dashed curve"><path class="st" d="M113.5 18.7L76.5 45.3"/><path class="st" d="M126.5 18.7L163.5 45.3"/><path class="st" d="M65.2 56.4L44.8 83.6"/><path class="st" d="M74.8 56.4L95.2 83.6"/><path class="st" d="M165.2 56.4L144.8 83.6"/><path class="st" d="M174.8 56.4L195.2 83.6"/><circle class="fa" cx="120" cy="14" r="8"/><circle class="fa" cx="70" cy="50" r="8"/><circle class="fa" cx="170" cy="50" r="8"/><circle class="fa" cx="40" cy="90" r="8"/><circle class="fc" cx="100" cy="90" r="8"/><circle class="fc" cx="140" cy="90" r="8"/><circle class="fa" cx="200" cy="90" r="8"/><path class="sc" stroke-dasharray="3 5" d="M100 100C110 112 130 112 140 100"/></svg></div><div class="flow"><div class="duo beat"><div class="duo-text"><p><b>The first trap is greedy.</b> Keep launching the biggest size that still fits, and stop when nothing is left:</p></div><div class="duo-scene"><div data-code-file="mistake_greedy" data-title="Greedy: the biggest size that fits"></div></div></div><div class="duo beat"><div class="duo-text"><p>It is fast and it is often right, which is what makes it dangerous. The table below runs it next to the true optimum on a few size sets.</p></div><div class="duo-scene"><div class="widget navy"><div class="wl">Greedy against the true fewest</div><div class="ex" id="greedy-table"></div><p class="cost-note" id="greedy-note"></p></div></div></div><div class="duo beat"><div class="duo-text"><p>The reason is that a big size can leave an awkward remainder. With <code>{1, 3, 4}</code> and 6, greedy takes the 4 and is left with 2, which can only be filled by two 1s. The optimum passes on the 4 and takes 3 + 3. One early choice was never revisited.</p><p><b>The second trap is trying everything.</b> Fix greedy by trying every size as the last instance and recursing on what remains:</p></div><div class="duo-scene"><div data-code-file="slow_recursion" data-title="Try every last size, recursively"></div></div></div><div class="duo beat"><div class="duo-text"><p>This is correct, and it is slow for a specific reason. To make 11 it asks about 10, 9 and 6. To make 10 it asks about 9, 8 and 5. Both of those need 9, and both then need 8, so the same question is asked over and over. The chart counts the calls the recursion really makes against the number of different questions, which is only one per amount.</p></div><div class="duo-scene"><div class="widget navy"><div class="wl">Calls made as the amount grows (sizes 1, 2 and 5)</div><div class="chart" id="cost"></div><p class="cost-note"></p></div></div></div></div></section>
+
+<section class="sec" id="insight"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-insight"/></svg></span><span>The insight</span></h2><p class="sec-sub"><code>dp[a]</code> reads the cells one size behind it.</p></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: A row of cells for every amount; the current cell reaches back to the cells one coin size behind it"><rect class="st" x="8" y="60" width="22" height="22" rx="4"/><rect class="st" x="34" y="60" width="22" height="22" rx="4"/><rect class="st" x="60" y="60" width="22" height="22" rx="4"/><rect class="fa" x="86" y="60" width="22" height="22" rx="4"/><rect class="st" x="112" y="60" width="22" height="22" rx="4"/><rect class="st" x="138" y="60" width="22" height="22" rx="4"/><rect class="fa" x="164" y="60" width="22" height="22" rx="4"/><rect class="fa" x="190" y="60" width="22" height="22" rx="4"/><rect class="fk" x="216" y="60" width="22" height="22" rx="4"/><path class="sc" d="M216 56C216 30 190 30 190 56"/><path class="sc" d="M216 56C216 18 164 18 164 56"/><path class="sc" d="M216 56C216 4 86 4 86 56"/></svg></div><div class="flow"><div class="duo beat"><div class="duo-text"><p>Look at an optimal order for some amount <code>a</code> and ask only about its <b>last</b> instance, whatever its size <code>c</code>. Remove it, and what is left adds up to exactly <code>a − c</code>. That leftover order must itself be a fewest order for <code>a − c</code>: if a shorter one existed, putting the last instance back on it would give a shorter order for <code>a</code>, and we assumed ours was the fewest. So the best answer for <code>a</code> is built from the best answer for some smaller amount.</p><p>We do not know which size came last, so try them all. Every size that fits is a candidate, and the fewest order for <code>a</code> is the best of them:</p><div class="callout key"><div class="cl"><svg class="i"><use href="#i-meet"/></svg>Key idea</div><p>dp[a] = 1 + the smallest dp[a − c] over every size c that fits. Trying every last piece replaces greedy's single guess with a comparison that cannot miss.</p></div><p>Each <code>dp[a]</code> depends only on entries with smaller amounts, so fill the table from 0 upward and every value you need is already there. Each question is answered once. That is what turns the exponential recursion into a loop.</p></div><div class="duo-scene"><div class="rosetta" aria-label="The code, read as capacity planning"><div class="ro-h"><span>In the code</span><span>In the system</span></div><div class="ro"><code>amount</code><span>the capacity the customer asked for, in vCPUs</span></div><div class="ro"><code>c in coins</code><span>an instance size the cloud sells</span></div><div class="ro"><code>dp[a]</code><span>the fewest instances that add up to exactly a vCPUs</span></div><div class="ro"><code>dp[a - c] + 1</code><span>the best order for what is left, plus the instance we launch last</span></div><div class="ro"><code>INF</code><span>"no order reaches this capacity yet"</span></div><div class="ro"><code>dp[0] = 0</code><span>zero vCPUs needs zero instances</span></div></div></div></div><div class="duo beat"><div class="duo-text"><p>Watch the table fill. At each step one cell is the amount being solved, and the entries it reads are marked beside it, one for each size that fits. The key above the table tells them apart.</p></div><div class="duo-scene"><div class="widget navy" id="stepper"><div class="wl">Fill the table</div><div class="extabs" role="group" aria-label="Choose an order"></div><div class="plhost"></div></div></div></div></div></section>
+
+<section class="sec" id="solution"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-solution"/></svg></span><span>Solution</span></h2><p class="sec-sub">Each cell is filled once, from the ones before it.</p></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Cells filled one after another from left to right, the next one about to be filled from those before it"><rect class="fk" x="8" y="44" width="22" height="22" rx="4"/><rect class="fk" x="34" y="44" width="22" height="22" rx="4"/><rect class="fk" x="60" y="44" width="22" height="22" rx="4"/><rect class="fk" x="86" y="44" width="22" height="22" rx="4"/><rect class="fk" x="112" y="44" width="22" height="22" rx="4"/><rect class="fc" x="138" y="44" width="22" height="22" rx="4"/><rect class="st fp" x="164" y="44" width="22" height="22" rx="4"/><rect class="st fp" x="190" y="44" width="22" height="22" rx="4"/><rect class="st fp" x="216" y="44" width="22" height="22" rx="4"/><path class="st" d="M8 86L150 86"/><path class="st" d="M145 89.4L150 86L145 82.6"/></svg></div><div class="flow"><div class="duo beat"><div class="duo-text"><p>Attempt it on paper first: decide what the table holds, what goes in cell 0, what unreachable cells start as, and what the answer is once it is full. Then compare. Read it as a capacity planner who fills a price sheet from the smallest order upward, so that pricing any order only needs a lookup in cells already filled.</p></div><div class="duo-scene"><div id="solbox"></div></div></div></div></section>
+
+<section class="sec" id="variants"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-variants"/></svg></span><span>Variants</span></h2></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: The same row of cells three times: counting ways, square sizes, and ticket spans covering runs of days"><rect class="fa" x="12" y="10" width="20" height="20" rx="4"/><rect class="fa" x="36" y="10" width="20" height="20" rx="4"/><rect class="fa" x="60" y="10" width="20" height="20" rx="4"/><rect class="fa" x="84" y="10" width="20" height="20" rx="4"/><rect class="fa" x="108" y="10" width="20" height="20" rx="4"/><rect class="fa" x="132" y="10" width="20" height="20" rx="4"/><rect class="fa" x="156" y="10" width="20" height="20" rx="4"/><rect class="fa" x="180" y="10" width="20" height="20" rx="4"/><rect class="fk" x="16" y="26" width="12" height="2" rx="1"/><rect class="fk" x="40" y="24" width="12" height="4" rx="1"/><rect class="fk" x="64" y="22" width="12" height="6" rx="1"/><rect class="fk" x="88" y="20" width="12" height="8" rx="1"/><rect class="fk" x="112" y="18" width="12" height="10" rx="1"/><rect class="fk" x="136" y="16" width="12" height="12" rx="1"/><rect class="fk" x="160" y="14" width="12" height="14" rx="1"/><rect class="fk" x="184" y="12" width="12" height="16" rx="1"/><rect class="fk" x="12" y="46" width="20" height="20" rx="4"/><rect class="fa" x="36" y="46" width="20" height="20" rx="4"/><rect class="fa" x="60" y="46" width="20" height="20" rx="4"/><rect class="fk" x="84" y="46" width="20" height="20" rx="4"/><rect class="fa" x="108" y="46" width="20" height="20" rx="4"/><rect class="fa" x="132" y="46" width="20" height="20" rx="4"/><rect class="fa" x="156" y="46" width="20" height="20" rx="4"/><rect class="fa" x="180" y="46" width="20" height="20" rx="4"/><rect class="fa" x="12" y="82" width="20" height="20" rx="4"/><rect class="fa" x="36" y="82" width="20" height="20" rx="4"/><rect class="fa" x="60" y="82" width="20" height="20" rx="4"/><rect class="fa" x="84" y="82" width="20" height="20" rx="4"/><rect class="fa" x="108" y="82" width="20" height="20" rx="4"/><rect class="fa" x="132" y="82" width="20" height="20" rx="4"/><rect class="fa" x="156" y="82" width="20" height="20" rx="4"/><rect class="fa" x="180" y="82" width="20" height="20" rx="4"/><path class="sc" d="M12 78V74H32V78M36 78V74H104V78M108 78V74H200V78"/></svg></div><div class="flow"><p>The same table with a different question in each cell.</p></div><div class="vgrid" id="vlist"></div></section>
+
+<section class="sec" id="quiz"><div class="sec-head"><div class="sec-title"><h2><span class="sec-ic"><svg class="i" aria-hidden="true"><use href="#i-s-quiz"/></svg></span><span>Check yourself</span></h2></div><svg class="vig" viewBox="0 0 240 112" role="img" aria-label="Illustration: Three questions as rows, the first one answered and ticked"><circle class="fg" cx="36" cy="24" r="10"/><path class="st" d="M31 24L35 28L42 20"/><circle class="st" cx="36" cy="56" r="10"/><circle class="st" cx="36" cy="88" r="10"/><rect class="fa" x="58" y="19" width="150" height="10" rx="5"/><rect class="fa" x="58" y="51" width="118" height="10" rx="5"/><rect class="fa" x="58" y="83" width="138" height="10" rx="5"/></svg></div><div id="qlist"></div></section>
+</article></div></main>
+<script src="../vendor/motion.js"></script>
+<script>
+(function(){
+'use strict';
+/* kit/engine.js: colour palette, animation clock and the scene player (grid boards and node-link boards).
+   Shared by every lesson page; concatenated inside one closure by kit/build.py. */
+var M = window.Motion || null;
+var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+var clamp=function(x,a,b){a=a==null?0:a;b=b==null?1:b;return Math.min(b,Math.max(a,x));};
+var ease=function(p){return p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;};
+function h2r(h){h=h.trim();if(h[0]==='#'){if(h.length===4)h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];return [1,3,5].map(function(i){return parseInt(h.slice(i,i+2),16);});}var m=h.match(/[\d.]+/g)||[0,0,0];return m.slice(0,3).map(Number);}
+/* relative luminance, for picking the readable ink over a fill that is mid-transition */
+var lumc=function(c){var f=function(v){v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);};return .2126*f(c[0])+.7152*f(c[1])+.0722*f(c[2]);};
+var crat=function(a,b){var x=lumc(a),y=lumc(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
+var mixc=function(a,b,p){return [Math.round(a[0]+(b[0]-a[0])*p),Math.round(a[1]+(b[1]-a[1])*p),Math.round(a[2]+(b[2]-a[2])*p)];};
+/* the ink for a fill that is mid-transition: the endpoint ink that reads better, or, when neither
+   clears AA, one pushed toward whichever of black and white contrasts more with this fill, only as far
+   as AA needs. Each state clears 4.5:1 with its own ink, but tints tuned close to that floor
+   (accent_cell) left both inks at 4.1-4.4:1 over a blend of two of them: a white ink cannot be pushed
+   whiter, so the direction comes from the fill, never the ink. One extreme always reaches 4.58:1
+   (sqrt 21, where black and white tie), so the push always lands. */
+var WHITE=[255,255,255],BLACK=[0,0,0];
+function legible(f,ia,ib){
+  var ink=crat(f,ia)>=crat(f,ib)?ia:ib;if(crat(f,ink)>=4.5)return ink;
+  var to=crat(f,WHITE)>=crat(f,BLACK)?WHITE:BLACK,from=(lumc(ia)>lumc(f))===(to===WHITE)?ia:ib;
+  for(var p=.1;p<1;p+=.1){var t=mixc(from,to,p);if(crat(f,t)>=4.5)return t;}
+  return to;
+}
+var rgb=function(a){return 'rgb('+a[0]+','+a[1]+','+a[2]+')';};
+var fmt=function(n){return n.toLocaleString('en-US');};
+/* a count with its unit: counters animate through 1, where "1 hops" would show */
+var count=function(n,one,many){return fmt(n)+' '+(n===1?one:many);};
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function icon(id){return '<svg class="i" aria-hidden="true"><use href="#'+id+'"/></svg>';}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+function run(from,to,dur,onUpdate,onDone){
+  if(M&&M.animate){
+    var c=M.animate(from,to,{duration:dur,ease:'linear',onUpdate:onUpdate,onComplete:onDone});
+    return {stop:function(){try{c.stop();}catch(e){try{c.cancel();}catch(e2){/* already finished: neither call is needed */}}}};
+  }
+  var t0=performance.now(),id=0,dead=false;
+  (function tick(now){if(dead)return;var p=clamp((now-t0)/(dur*1000));onUpdate(from+(to-from)*p);if(p<1)id=requestAnimationFrame(tick);else if(onDone)onDone();})(t0);
+  return {stop:function(){dead=true;cancelAnimationFrame(id);}};
+}
+
+/* palette from the page's CSS tokens: light and dark both come from the app.
+   Read inside a .navy probe, not from :root: every painted board sits on a navy
+   instrument card, whose inks differ from the paper's in the light theme. */
+var KINDS=['idle','cur','acc','done','bad','warn','dim','viol','win'];
+var PAL={},EDGE={};
+function readPal(){
+  var probe=document.createElement('div');probe.className='navy';probe.hidden=true;document.body.appendChild(probe);
+  var cs=getComputedStyle(probe);
+  KINDS.forEach(function(k){PAL[k]={f:h2r(cs.getPropertyValue('--k-'+k)),i:h2r(cs.getPropertyValue('--k-'+k+'-ink'))};});
+  EDGE.idle=h2r(cs.getPropertyValue('--e-idle'));EDGE.path=h2r(cs.getPropertyValue('--e-path'));EDGE.cur=h2r(cs.getPropertyValue('--e-cur'));
+  probe.remove();
+}
+/* s (0 to 1) shades a cell by value, from the idle fill toward the accent: a pixel's brightness,
+   a tile's place in an image. Its ink is whichever of the two reads better on that exact fill. */
+function styleOf(c){
+  if(c.s!=null){var f=mixc(PAL.idle.f,PAL.acc.f,clamp(c.s));return {f:f,i:legible(f,PAL.idle.i,PAL.acc.i)};}
+  var P=PAL[c.k]||PAL.idle;return {f:P.f,i:P.i};
+}
+/* win's fill sits about 1.1:1 off idle on the navy card, so the state is carried by a ring (.cell.win),
+   not the fill (#72). Every path that paints a cell's fill marks its state here too. */
+function markState(e,k){e.classList.toggle('win',k==='win');}
+/* A frame blends each fill from the last state to the next, so a cell leaving win still shows win's fill
+   at the start of the step. Its ring stays until the fill has finished moving, or for that moment it is a
+   win fill with nothing to tell it from idle (CI's gate caught it mid-play on sliding-window). */
+function ringKind(from,to,p){return to==='win'||(p<1&&from==='win')?'win':to;}
+
+var mk=function(n,f){var a=[];for(var i=0;i<n;i++)a.push(f(i));return a;};
+var cp=function(a){return a.map(function(x){return {k:x.k,t:x.t,s:x.s};});};
+function zeros(n){return mk(n,function(){return 0;});}
+
+/* ---------- Scene player ---------- */
+var SCENES=[];
+function Scene(def,root){
+  var self=this,frames=def.frames,n=frames.length,step=def.step,total=n*step,t=def.poster*step+step*.5,speed=1,playing=false,ctl=null,cells={},edgeEls={},ovs={},last={};
+  var stage=root.querySelector('.stage'),note=root.querySelector('.note'),stats=root.querySelector('.stats'),cnt=root.querySelector('.cnt'),head=root.querySelector('.head'),range=root.querySelector('input[type=range]'),ticks=root.querySelector('.ticks'),playB=root.querySelector('.pp'),spdB=root.querySelector('.spd');
+  var groups=[];
+  def.boards.forEach(function(b){
+    if(!groups[b.g]){groups[b.g]=el('div','grp'+(b.wide?' wide':''));stage.appendChild(groups[b.g]);}
+    var w=el('div','bw'),lab=el('div','bl',b.label),brd=el('div','brd'+(b.tree?' tree':'')+(b.strip?' strip':''));
+    cells[b.id]=[];
+    if(b.tree){
+      var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','edges');brd.appendChild(svg);b.svg=svg;
+      if(b.tree.directed){var mid='ah'+b.id+Math.floor(Math.random()*1e6);
+        svg.insertAdjacentHTML('afterbegin','<defs><marker id="'+mid+'" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="context-stroke"/></marker></defs>');
+        b.marker='url(#'+mid+')';}
+      edgeEls[b.id]=b.tree.edges.map(function(){var l=document.createElementNS('http://www.w3.org/2000/svg','line');if(b.marker)l.setAttribute('marker-end',b.marker);svg.appendChild(l);return l;});
+      b.tree.nodes.forEach(function(){var c=el('div','cell node');brd.appendChild(c);cells[b.id].push(c);});
+    }else{
+      brd.style.gridTemplateColumns='repeat('+b.cols+',var(--cs))';
+      for(var i=0;i<b.rows*b.cols;i++){var c2=el('div','cell');brd.appendChild(c2);cells[b.id].push(c2);}
+      /* a rectangle over cells (a filter's window, a spiral's untouched bounds), made only for a board
+         a frame draws one on, so no other board's markup changes; it follows the cells' tween */
+      if(frames.some(function(f){return f.ov&&f.ov[b.id];})){var ov=el('div','ov');ov.setAttribute('aria-hidden','true');brd.appendChild(ov);ovs[b.id]=ov;brd.classList.add('has-ov');}
+    }
+    w.appendChild(lab);w.appendChild(brd);groups[b.g].appendChild(w);b.el=brd;
+  });
+  frames.forEach(function(f,i){var tk=el('i',f.ev||'');tk.title='Frame '+(i+1);tk.addEventListener('click',function(){pause();t=i*step+step*.5;render();});ticks.appendChild(tk);});
+  var tickEls=ticks.children;
+
+  function statsHtml(f){return (f.stats||[]).map(function(s){return '<span>'+s[0]+' <b>'+s[1]+'</b></span>';}).join('');}
+  /* Hold the caption and the stats row at the tallest any frame needs, measured at this width:
+     they change length every frame, and a row that wraps moved everything below the player. */
+  function reserveText(){
+    [[note,function(f){var d=document.createElement('div');d.textContent=f.note||'';return d.innerHTML;}],[stats,statsHtml]].forEach(function(p){
+      var box=p[0],probe=box.cloneNode(false),h=0;probe.removeAttribute('aria-live');probe.setAttribute('aria-hidden','true');
+      probe.style.cssText='position:absolute;visibility:hidden;left:0;top:0;min-height:0;width:'+box.clientWidth+'px';box.parentNode.appendChild(probe);
+      frames.forEach(function(f){probe.innerHTML=p[1](f);h=Math.max(h,probe.offsetHeight);});probe.remove();
+      if(h)box.style.minHeight=h+'px';});
+  }
+  function fit(){
+    def.boards.forEach(function(b){
+      var g=b.el.closest('.grp'),gw=g.clientWidth||260;
+      if(b.tree){
+        var W=Math.max(220,gw-8),nx=Math.max(1,b.tree.width),dx=Math.min(62,(W-40)/Math.max(1,nx-1||1)),d=Math.min(36,Math.max(24,dx*.7,0)),dy=Math.min(70,110/Math.max(1,1)+0);
+        var rowsN=b.tree.depth+1;dy=rowsN>4?46:(rowsN>3?52:58);
+        var width=(nx-1)*dx+d+8,height=(rowsN-1)*dy+d+8;
+        b.geo={dx:dx,dy:dy,d:d,ox:d/2+4,oy:d/2+4};
+        b.el.style.width=width+'px';b.el.style.height=height+'px';b.svg.setAttribute('width',width);b.svg.setAttribute('height',height);
+        var fs=Math.max(10,Math.round(d*.34));
+        b.tree.nodes.forEach(function(nd,i){var c=cells[b.id][i];c.style.width=d+'px';c.style.height=d+'px';c.style.left=(b.geo.ox+nd.x*dx-d/2)+'px';c.style.top=(b.geo.oy+nd.d*dy-d/2)+'px';c.style.fontSize=fs+'px';});
+        b.tree.edges.forEach(function(e,i){var a=b.tree.nodes[e[0]],c=b.tree.nodes[e[1]],ln=edgeEls[b.id][i];
+          var x1=b.geo.ox+a.x*dx,y1=b.geo.oy+a.d*dy,x2=b.geo.ox+c.x*dx,y2=b.geo.oy+c.d*dy;
+          if(b.tree.directed){var len=Math.hypot(x2-x1,y2-y1)||1,back=d/2+3;x2-=(x2-x1)/len*back;y2-=(y2-y1)/len*back;}
+          ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);});
+      }else{
+        /* a strip is memory: narrow cells in one row, a wider gap every 4 (one cache line), no text */
+        var cap=b.cap||(b.strip?18:56),gap=b.strip?2:3,extra=b.strip?Math.floor(b.cols/4)*3:0;
+        var cs=Math.floor(Math.min(cap,(gw-8-(b.cols-1)*gap-extra)/b.cols));cs=Math.max(cs,b.strip?5:20);
+        b.el.style.setProperty('--cs',cs+'px');b.el.style.setProperty('--fs',Math.max(9,Math.round(cs*.4))+'px');
+      }
+    });
+    last={};reserveText();render();
+  }
+  /* o: {r0,c0,r1,c1} in cells, both corners included; measured from the laid-out cells, so it
+     follows whatever size fit() gave them */
+  function ovRect(b,o){
+    var cs=cells[b.id],c0=cs[0],stepX=cs.length>1&&b.cols>1?cs[1].offsetLeft-c0.offsetLeft:c0.offsetWidth,
+        stepY=b.rows>1?cs[b.cols].offsetTop-c0.offsetTop:c0.offsetHeight,gapX=stepX-c0.offsetWidth,gapY=stepY-c0.offsetHeight;
+    return {x:c0.offsetLeft+o.c0*stepX-3,y:c0.offsetTop+o.r0*stepY-3,w:(o.c1-o.c0+1)*stepX-gapX+6,h:(o.r1-o.r0+1)*stepY-gapY+6};
+  }
+  function render(){
+    var fi=Math.min(n-1,Math.floor(t/step+1e-9)),loc=(t-fi*step)/step,p=fi===0?1:ease(clamp(loc/.45));
+    var cur=frames[fi],prev=frames[Math.max(0,fi-1)];
+    def.boards.forEach(function(b){
+      var a=prev.b[b.id],c=cur.b[b.id],els=cells[b.id];
+      for(var i=0;i<els.length;i++){
+        var sa=styleOf(a[i]),sb=styleOf(c[i]),fm=mixc(sa.f,sb.f,p),f=rgb(fm),ink=rgb(legible(fm,sa.i,sb.i));
+        // the ink never blends: half-way between two states both fill and ink sat mid-tone and the
+        // letter nearly vanished (the browser gate measured 1.47:1), so it takes whichever reads better
+        var changed=a[i].k!==c[i].k||a[i].t!==c[i].t||a[i].s!==c[i].s;
+        var sc=changed&&p<1?1+.12*Math.sin(Math.PI*p):1,tx=(p<.3?a[i].t:c[i].t)||'';
+        var rk=ringKind(a[i].k,c[i].k,p),key=f+ink+sc.toFixed(3)+tx+rk,e=els[i],id=b.id+i;
+        if(last[id]===key)continue;last[id]=key;
+        markState(e,rk);e.style.background=f;e.style.color=ink;e.style.transform=sc===1?'':'scale('+sc.toFixed(3)+')';
+        if(e.textContent!==tx)e.textContent=tx;
+      }
+      var o=ovs[b.id];
+      if(o){var oc=cur.ov&&cur.ov[b.id],op=prev.ov&&prev.ov[b.id];
+        if(oc){var r1=ovRect(b,oc),r0=op?ovRect(b,op):r1,q=op?p:1;
+          o.className='ov'+(oc.cls==='bounds'?' bounds':'');
+          // moved by transform from a fixed box: a changing left/top is a layout shift at every frame
+          o.style.transform='translate('+(r0.x+(r1.x-r0.x)*q).toFixed(1)+'px,'+(r0.y+(r1.y-r0.y)*q).toFixed(1)+'px)';
+          o.style.width=(r0.w+(r1.w-r0.w)*q)+'px';o.style.height=(r0.h+(r1.h-r0.h)*q)+'px';o.style.opacity=op?1:p;}
+        else o.style.opacity=0;}
+      if(b.tree){
+        var ea=prev.e&&prev.e[b.id],ec=cur.e&&cur.e[b.id];
+        edgeEls[b.id].forEach(function(ln,i){
+          var va=ea?ea[i]:0,vc=ec?ec[i]:0,ca=EDGE[va===2?'cur':(va===1?'path':'idle')],cc=EDGE[vc===2?'cur':(vc===1?'path':'idle')];
+          var w0=va?4:2,w1=vc?4:2,key='e'+b.id+i+va+vc+p.toFixed(2);if(last[key])return;last[key]=1;
+          ln.style.stroke=rgb(mixc(ca,cc,p));ln.style.strokeWidth=(w0+(w1-w0)*p).toFixed(2);
+        });
+      }
+    });
+    if(note.dataset.f!==String(fi)){note.dataset.f=fi;note.textContent=cur.note||'';
+      stats.innerHTML=statsHtml(cur);
+      for(var k=0;k<tickEls.length;k++)tickEls[k].classList.toggle('on',k<=fi&&!tickEls[k].classList.contains('key')&&!tickEls[k].classList.contains('bad'));}
+    cnt.textContent=(fi+1)+' / '+n;
+    var pct=total?clamp(t/total)*100:0;head.style.left=pct+'%';
+    if(document.activeElement!==range||playing)range.value=Math.round(pct*10);
+    range.setAttribute('aria-valuetext','Frame '+(fi+1)+' of '+n);
+  }
+  function ui(){var again=t>=total-step*.6;playB.innerHTML=icon(playing?'i-pause':(again?'i-replay':'i-play'));playB.setAttribute('aria-label',playing?'Pause':(again?'Replay':'Play'));}
+  /* def.loop: hold the last frame, then play again, until the learner takes the controls */
+  var touched=false,loopT=0;
+  function pause(){clearTimeout(loopT);if(ctl){ctl.stop();ctl=null;}playing=false;ui();}
+  function play(){
+    if(playing)return;
+    if(t>=total-step*.6)t=0;
+    playing=true;ui();
+    var from=t,dur=(total-step*.5-from)/speed;
+    ctl=run(from,total-step*.5,Math.max(.05,dur),function(v){t=v;render();},function(){playing=false;ctl=null;t=total-step*.5;render();ui();
+      if(def.loop&&!touched&&!reduce)loopT=setTimeout(function(){if(!touched){t=0;play();}},2400);});
+  }
+  ['.pp','.pv','.nx'].forEach(function(sel){root.querySelector(sel).addEventListener('pointerdown',function(){touched=true;});});
+  range.addEventListener('pointerdown',function(){touched=true;});
+  playB.addEventListener('click',function(){playing?pause():play();});
+  root.querySelector('.pv').addEventListener('click',function(){pause();var fi=Math.min(n-1,Math.floor(t/step));t=Math.max(0,fi-1)*step+step*.5;render();ui();});
+  root.querySelector('.nx').addEventListener('click',function(){pause();var fi=Math.min(n-1,Math.floor(t/step));t=Math.min(n-1,fi+1)*step+step*.5;render();ui();});
+  spdB.addEventListener('click',function(){speed=speed===1?2:(speed===2?.5:1);spdB.textContent=speed+'×';if(playing){pause();play();}});
+  range.addEventListener('input',function(){pause();t=clamp(range.value/1000)*total;render();});
+  if('ResizeObserver' in window){new ResizeObserver(function(){fit();}).observe(stage);}else{window.addEventListener('resize',fit);}
+  self.refresh=function(){last={};render();};self.stop=pause;
+  self.start=function(){if(reduce)return;pause();t=0;render();play();};
+  fit();ui();
+}
+
+
+/* kit/trees.js: binary-tree layout helpers for lessons that draw trees. */
+/* ---------- binary trees ---------- */
+/* B(label,left,right) builds a tree; layout() numbers nodes in creation order (pre-order), x by in-order rank, y by depth */
+function B(v,l,r){return {v:v,l:l||null,r:r||null};}
+function layout(root){
+  var nodes=[],rank=0,maxd=0;
+  (function num(n,p,d){var id=nodes.length;nodes.push({id:id,v:n.v,p:p,d:d,l:-1,r:-1});n._id=id;maxd=Math.max(maxd,d);
+    if(n.l){nodes[id].l=num(n.l,id,d+1);} if(n.r){nodes[id].r=num(n.r,id,d+1);} return id;})(root,-1,0);
+  (function ino(id){var n=nodes[id];if(n.l>=0)ino(n.l);n.x=rank++;if(n.r>=0)ino(n.r);})(0);
+  var edges=[];nodes.forEach(function(n){if(n.l>=0)edges.push([n.id,n.l]);if(n.r>=0)edges.push([n.id,n.r]);});
+  return {nodes:nodes,edges:edges,depth:maxd,width:rank};
+}
+function edgeIndex(T,a,b){for(var i=0;i<T.edges.length;i++)if(T.edges[i][0]===a&&T.edges[i][1]===b)return i;return -1;}
+function treeBoard(id,T,label,g,extra){var b={id:id,tree:{nodes:T.nodes.map(function(n){return {x:n.x,d:n.d,l:n.v};}),edges:T.edges,width:T.width,depth:T.depth},label:label,g:g};for(var k in (extra||{}))b[k]=extra[k];return b;}
+function treeCells(T,f){return T.nodes.map(function(n){return f(n);});}
+
+/* kit/kit.js: everything a lesson page needs that is not about its own topic.
+   Reveals, code blocks, players, quiz, variant cards, kinetic
+   headline, scroll reveals, contents rail, code-language switch, theme repaint and
+   the embedding contract with the app. Concatenated after engine.js in one closure. */
+
+var svgNS='http://www.w3.org/2000/svg';
+function S(tag,attrs,parent){var e=document.createElementNS(svgNS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function $(s,r){return (r||document).querySelector(s);}
+function inView(node,fn){if(M&&M.inView)M.inView(node,fn,{amount:.35});else fn();}
+
+/* SVG note: the page CSS sets stroke on .edges line, and CSS beats presentation attributes, so edge colours go through style. */
+/* things that must redraw when the theme changes (the palette is read into JS, not CSS) */
+var REPAINT=[];
+function onRepaint(fn){REPAINT.push(fn);}
+
+function playerHtml(id,label){
+  return '<div class="player" role="group" aria-label="Walkthrough: '+label+'"><div class="stage"></div><div class="note" aria-live="off"></div><div class="stats"></div>'+
+    '<div class="ctl"><button type="button" class="btn main pp" id="'+id+'-pp"></button><button type="button" class="btn pv" id="'+id+'-pv" aria-label="Previous frame">'+icon('i-prev')+'</button><button type="button" class="btn nx" id="'+id+'-nx" aria-label="Next frame">'+icon('i-next')+'</button>'+
+    '<div class="track"><div class="ticks"></div><div class="head"></div><input type="range" id="'+id+'-rg" min="0" max="1000" value="0" aria-label="Scrub the walkthrough"></div><span class="cnt"></span><button type="button" class="btn spd" id="'+id+'-sp" aria-label="Playback speed">1×</button></div></div>';
+}
+
+/* A key to the cell states a widget paints, as [state, what it means] pairs. Its swatches paint from
+   PAL, the cells' own source, so the key cannot disagree with the drawing in either theme: a state's
+   hue differs by theme (bad is red in light and pink in dark), so prose and captions name the state,
+   never its colour (#64). set() refills it, so a widget whose tabs rebuild keeps one key. */
+function stateKey(host,pairs,before){
+  var k=el('ul','skey');k.setAttribute('aria-label','Key');
+  function paint(){[].forEach.call(k.children,function(li){li.firstChild.style.background=rgb(PAL[li.dataset.k].f);});}
+  function set(ps){k.innerHTML='';k.hidden=!ps||!ps.length;(ps||[]).forEach(function(p){
+    if(KINDS.indexOf(p[0])<0)throw new Error('stateKey: unknown state "'+p[0]+'"');
+    var li=el('li',null,'<i aria-hidden="true"></i>'+p[1]);li.dataset.k=p[0];k.appendChild(li);});paint();}
+  host.insertBefore(k,before||null);set(pairs);onRepaint(paint);
+  return {el:k,set:set};
+}
+
+/* A stepper widget: tabs choose an example, each builds a fresh Scene. `make(i)` returns a scene
+   definition; its `legend` pairs fill the widget's one state key. */
+function mountStepper(host,examples,make,id){
+  var tabs=host.querySelector('.extabs'),pl=host.querySelector('.plhost'),scene=null,key=stateKey(pl.parentNode,null,pl);
+  function load(i){
+    tabs.querySelectorAll('button').forEach(function(b,k){b.setAttribute('aria-pressed',k===i);});
+    if(scene&&scene.stop)scene.stop();
+    var d=make(i);key.set(d.legend);pl.innerHTML=playerHtml(id||'walk',d.label);
+    scene=new Scene(d,pl.querySelector('.player'));scene.start();
+  }
+  examples.forEach(function(e,i){var b=el('button','tab',e.name);b.type='button';b.addEventListener('click',function(){load(i);});tabs.appendChild(b);});
+  onRepaint(function(){if(scene)scene.refresh();});
+  load(0);
+}
+
+/* reveals: the content is created on click, so Ctrl+F cannot find it first */
+function reveal(host,label,build){
+  var b=el('button','reveal-btn',icon('i-eye')+'<span>'+label+'</span>');b.type='button';b.setAttribute('aria-expanded','false');
+  var body=el('div','reveal-body');body.hidden=true;host.appendChild(b);host.appendChild(body);
+  b.addEventListener('click',function(){var open=b.getAttribute('aria-expanded')==='true';
+    if(open){b.setAttribute('aria-expanded','false');body.hidden=true;body.innerHTML='';return;}
+    body.innerHTML='';build(body);body.hidden=false;b.setAttribute('aria-expanded','true');});
+}
+
+/* code blocks: Python and TypeScript follow the page's language switch */
+function codeBlock(py,ts,title){
+  var d=el('div','code navy');d.innerHTML='<header><span>'+title+'</span><span class="c-py">Python</span><span class="c-ts">TypeScript</span></header><pre class="c-py"></pre><pre class="c-ts"></pre>';
+  /* HL holds build-time Shiki colouring keyed by the exact source; without it, plain text */
+  [['pre.c-py',py],['pre.c-ts',ts]].forEach(function(p){var pre=d.querySelector(p[0]),h=typeof HL!=='undefined'&&HL[p[1]];
+    if(h){pre.classList.add('shiki');pre.innerHTML='<code>'+h+'</code>';}else pre.textContent=p[1];});
+  return d;
+}
+
+function callout(kind,label,iconId,html){
+  return el('div','callout '+kind,'<div class="cl"><svg class="i"><use href="#'+iconId+'"/></svg>'+label+'</div><p>'+html+'</p>');
+}
+
+/* Hold an element at the tallest of the contents it will ever show, measured at its width now:
+   a caption that grows to a third line mid-animation moves everything below it. */
+function reserveHeight(el,htmls){
+  var probe=el.cloneNode(false),h=0;probe.removeAttribute('id');probe.setAttribute('aria-hidden','true');
+  probe.style.cssText='position:absolute;visibility:hidden;left:0;top:0;min-height:0;width:'+el.clientWidth+'px';el.parentNode.appendChild(probe);
+  htmls.forEach(function(x){probe.innerHTML=x;h=Math.max(h,probe.offsetHeight);});probe.remove();
+  if(h)el.style.minHeight=h+'px';
+  return h;
+}
+
+/* fact strip: [{v: a number the lesson computed, l: what it means}] */
+function mountFacts(host,items){var d=el('div','factstrip');items.forEach(function(f){
+  d.appendChild(el('div','fact','<b>'+(typeof f.v==='number'?fmt(f.v):f.v)+'</b><span>'+f.l+'</span>'));});host.appendChild(d);}
+
+function mountVariants(host,list){
+  list.forEach(function(v){host.appendChild(el('div','vcard','<div class="vt">'+v[0]+'</div><div class="vs">'+v[1]+'</div><p>'+v[2]+'</p>'));});
+}
+
+/* lesson.md's data (build.py sets LESSON): code placeholders, reveals, variants and the quiz.
+   A reveal's text is inserted only on click; `hooks[id](body)` adds what the lesson computes.
+   FACTS is optional: lesson.js defines it only when its lesson.md uses {{name}} placeholders. */
+/* global FACTS */
+function fillFacts(html){
+  return html.replace(/\{\{(\w+)\}\}/g,function(_,k){
+    if(typeof FACTS==='undefined'||!(k in FACTS))throw new Error('lesson.md uses {{'+k+'}} but lesson.js sets no FACTS.'+k);
+    return String(FACTS[k]);});
+}
+function mountCode(root){
+  root.querySelectorAll('[data-code-file]').forEach(function(p){var c=CODE[p.dataset.codeFile];
+    if(!c)throw new Error('lesson.md shows code "'+p.dataset.codeFile+'" but code/ has no such file');
+    p.replaceWith(codeBlock(c.py,c.ts,p.dataset.title));});
+}
+function mountLesson(hooks){
+  hooks=hooks||{};
+  mountCode(document);
+  Object.keys(LESSON.reveals).forEach(function(id){var r=LESSON.reveals[id];
+    reveal($('#'+id),r.label,function(b){b.innerHTML=fillFacts(r.html);mountCode(b);if(hooks[id])hooks[id](b);});});
+  if(LESSON.variants.length)mountVariants($('#vlist'),LESSON.variants.map(function(v){return [fillFacts(v.title),fillFacts(v.source),fillFacts(v.text)];}));
+  if(LESSON.quiz.length)mountQuiz($('#qlist'),LESSON.quiz.map(function(x){return {q:fillFacts(x.q),opts:x.opts.map(fillFacts),a:x.a,why:fillFacts(x.why)};}));
+  Object.keys(hooks).forEach(function(id){if(!LESSON.reveals[id])throw new Error('lesson.js hooks reveal #'+id+' but lesson.md has none');});
+}
+
+/* quiz: each answer's slot comes from a hash of its question, so it moves between
+   questions with no pattern to learn. The fixed-seed shuffle this replaced put every
+   answer third. The checks throw at load, as the frame checks do: an
+   answer longer than every distractor, or every answer in one slot, gives it away. */
+function slotOf(text,n){var h=2166136261;for(var i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h%n;}
+function plainLen(html){var d=document.createElement('div');d.innerHTML=html;return d.textContent.length;}
+function mountQuiz(host,QUIZ){
+  var slots=QUIZ.map(function(item,qi){
+    var len=item.opts.map(plainLen),rest=len.filter(function(_,i){return i!==item.a;});
+    if(len[item.a]>Math.max.apply(null,rest))throw new Error('quiz '+(qi+1)+': the answer is longer than every other option ('+len.join(', ')+')');
+    return slotOf(item.q,item.opts.length);
+  });
+  if(QUIZ.length>1&&slots.every(function(x){return x===slots[0];}))throw new Error('quiz: every answer sits in slot '+slots[0]);
+  QUIZ.forEach(function(item,qi){
+    var idx=item.opts.map(function(_,i){return i;}).filter(function(i){return i!==item.a;});idx.splice(slots[qi],0,item.a);
+    var card=el('div','qcard');card.appendChild(el('div','qq','<span class="qn navy" aria-hidden="true">'+(qi+1)+'</span><span><span class="sr">Question '+(qi+1)+'. </span>'+item.q+'</span>'));
+    var opts=el('div','qopts'),fb=el('div','fb');card.appendChild(opts);card.appendChild(fb);
+    idx.forEach(function(oi,pos){
+      var b=el('button','qopt','<span class="ql">'+String.fromCharCode(65+pos)+'</span><span>'+item.opts[oi]+'</span>');b.type='button';opts.appendChild(b);
+      b.addEventListener('click',function(){
+        var right=oi===item.a;opts.querySelectorAll('.qopt').forEach(function(x,k){x.disabled=true;if(idx[k]===item.a)x.classList.add('good');});
+        if(!right)b.classList.add('bad');fb.innerHTML=(right?'<b>Correct.</b> ':'<b>Not quite.</b> ')+item.why;fb.classList.add('on');
+      });
+    });
+    host.appendChild(card);
+  });
+}
+
+/* Predict widget: a question per case with numeric choices; `draw(host, case)` paints the case, `after` shows the why. */
+function mountPredict(host,cases,opts){
+  cases.forEach(function(c,ci){
+    var card=el('div','pcard'),view=el('div','tv-wrap'),q=el('div','pq',opts.question(c)),ch=el('div','choices'),fb=el('div','fb');
+    card.appendChild(q);card.appendChild(view);card.appendChild(ch);card.appendChild(fb);host.appendChild(card);
+    var paint=opts.draw(view,c);
+    opts.choices(c).forEach(function(v){
+      var b=el('button','choice',String(v));b.type='button';ch.appendChild(b);
+      b.addEventListener('click',function(){
+        var right=v===c.expect;ch.querySelectorAll('.choice').forEach(function(x){x.disabled=true;if(x.textContent===String(c.expect))x.classList.add('good');});
+        if(!right)b.classList.add('bad');
+        fb.innerHTML=(right?'<b>Yes.</b> ':'<b>Not quite.</b> ')+opts.why(c);fb.classList.add('on');if(paint&&paint.reveal)paint.reveal();
+      });
+    });
+  });
+}
+
+function kinetic(){
+  var h=$('#h1');if(!h||!M||!M.animate||reduce)return;
+  if(!h.querySelector('.kw')){var words=h.textContent.split(' ');h.innerHTML=words.map(function(w){return '<span class="kw">'+w+'</span>';}).join(' ');}
+  M.animate('.kw',{opacity:[0.15,1],y:[26,0]},{duration:.7,delay:M.stagger(.09),ease:'easeOut'});
+  M.animate('.hero-art',{opacity:[.3,1],x:[24,0]},{duration:.8,ease:'easeOut'});
+}
+function riseIn(){
+  if(!M||!M.inView||reduce)return;
+  document.querySelectorAll('.widget,.callout,.vcard,.qcard,.rosetta').forEach(function(node){
+    M.inView(node,function(){M.animate(node,{opacity:[.25,1],y:[18,0]},{duration:.55,ease:'easeOut'});},{amount:.2});
+  });
+}
+
+/* contents rail, language switch, theme repaint, and the embedding contract */
+function wirePage(){
+  var links=[].slice.call(document.querySelectorAll('.toc a')),secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var i=secs.indexOf(e.target);links.forEach(function(a){a.removeAttribute('aria-current');});if(i>=0)links[i].setAttribute('aria-current','true');}});},{rootMargin:'-30% 0px -60% 0px'}):null;
+  if(io)secs.forEach(function(s){if(s)io.observe(s);});
+  /* the split layout (#63): the contents rail appears once the hero is out of view, and each flow
+     hangs its scenes beside the prose (kit.css "the flow") */
+  var split=$('.page.split');
+  if(split){
+    var toc=$('.split .toc'),hero=$('.hero2');
+    if(toc&&hero&&io){toc.classList.add('auto');new IntersectionObserver(function(es){toc.classList.toggle('on',!es[0].isIntersecting);}).observe(hero);}
+    var flows=[].slice.call(split.querySelectorAll('.flow')),wide=matchMedia('(min-width:1101px)'),GAP=18,REACH=72,queued=0;
+    /* each scene wants its own paragraph's top; it may not start before the scene above ends, and it
+       gives up as much of that as keeps the last scene from ending below the prose, but always
+       reaches REACH px past its paragraph's top, so it never parts from the words that introduce it (a backward pass
+       for the latest top each can take, then a forward one). A flow grows only when its scenes
+       together are taller than its prose. */
+    var lay=function(){
+      queued=0;split.classList.toggle('flowing',wide.matches);
+      flows.forEach(function(f){
+        var scs=[].slice.call(f.querySelectorAll(':scope>.beat>.duo-scene'));f.style.minHeight='';
+        if(!wide.matches){scs.forEach(function(sc){sc.style.top='';});return;}
+        var top=f.getBoundingClientRect().top,it=scs.map(function(sc){return {sc:sc,a:sc.previousElementSibling.getBoundingClientRect().top-top,h:sc.offsetHeight};});
+        var end=Math.max(f.offsetHeight,it.reduce(function(s,x){return s+x.h+GAP;},-GAP)),late=end,prev=0;
+        for(var i=it.length-1;i>=0;i--){it[i].late=Math.max(late-it[i].h,it[i].a+REACH-it[i].h);late=it[i].late-GAP;}
+        it.forEach(function(x){var t=Math.max(prev,Math.min(x.a,x.late));x.sc.style.top=t+'px';prev=t+x.h+GAP;});
+        if(it.length)f.style.minHeight=(prev-GAP)+'px';
+      });
+    };
+    var again=function(){if(!queued)queued=requestAnimationFrame(lay);};
+    lay();wide.addEventListener('change',again);addEventListener('resize',again);
+    /* prose re-wraps when a face arrives or a reveal opens; a scene changes height when a widget does.
+       Watch those, never the flow itself, whose min-height lay() sets. */
+    if('ResizeObserver' in window){var ro=new ResizeObserver(again);flows.forEach(function(f){[].forEach.call(f.querySelectorAll(':scope>:not(.beat),:scope>.beat>*'),function(el){ro.observe(el);});});}
+  }
+  var mainEl=$('main'),bpy=$('#lang-py'),bts=$('#lang-ts');
+  function setLang(l){mainEl.dataset.code=l;bpy.setAttribute('aria-pressed',l==='py');bts.setAttribute('aria-pressed',l==='ts');store('lesson-lang',l);}
+  window.__setLessonLang=setLang;
+  bpy.addEventListener('click',function(){setLang('py');});bts.addEventListener('click',function(){setLang('ts');});
+  var sv=store('lesson-lang');if(sv==='py'||sv==='ts')setLang(sv);
+  function repaint(){readPal();REPAINT.forEach(function(fn){fn();});}
+  if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener('change',repaint);
+  new MutationObserver(repaint).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+  /* embedded in the app: theme and code language come from the parent page */
+  var q=new URLSearchParams(location.search);
+  function applyTheme(t){if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}
+  if(q.get('embed')==='1'){document.documentElement.classList.add('embed');applyTheme(q.get('theme'));}
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin||!e.data||e.data.source!=='leetexpert')return;
+    applyTheme(e.data.theme);
+    if((e.data.code==='python'||e.data.code==='typescript')&&window.__setLessonLang)window.__setLessonLang(e.data.code==='python'?'py':'ts');
+  });
+}
+
+/* A row of letter cells drawn with the scene player's palette; `paint(kinds)` recolours it and survives theme changes. */
+function strip(host,chars,onPick){
+  host.innerHTML='';host.className=(host.className.replace(/\bbrd\b/g,'')+' brd').trim();
+  var cs=Math.max(24,Math.min(44,Math.floor(((host.parentNode.clientWidth||360)-16)/chars.length)-3));
+  host.style.gridTemplateColumns='repeat('+chars.length+','+cs+'px)';host.style.setProperty('--cs',cs+'px');host.style.setProperty('--fs',Math.round(cs*.42)+'px');
+  var els=chars.map(function(c,i){var e=el(onPick?'button':'div','cell');if(onPick){e.type='button';e.setAttribute('aria-label','Position '+i+', '+c);e.addEventListener('click',function(){onPick(i);});}e.textContent=c;host.appendChild(e);return e;});
+  var last=null;
+  function paint(kinds){last=kinds;els.forEach(function(e,i){var k=kinds[i]||'idle',st=styleOf({k:k});e.style.background=rgb(st.f);e.style.color=rgb(st.i);markState(e,k);});}
+  onRepaint(function(){if(last)paint(last);});
+  paint(chars.map(function(){return 'idle';}));
+  return {els:els,paint:paint};
+}
+
+/* A node-link view of a small graph, drawn with the scene player's palette and geometry.
+   G = {nodes:[{x,d,l}], edges:[[from,to]], width, depth, directed}. `update(cells, edgeStates)` recolours it;
+   edgeStates entries are 0 idle, 1 lit, 2 current. Nodes become buttons when `onPick` is given. */
+function graphView(host,G,o){
+  o=o||{};host.innerHTML='';host.className=(host.className.replace(/\btree\b/g,'')+' brd tree').trim();
+  var W=Math.max(220,(host.parentNode.clientWidth||360)-8),nx=Math.max(1,G.width),dx=Math.min(62,(W-40)/Math.max(1,nx-1)),d=Math.min(36,Math.max(24,dx*.7));
+  var rowsN=G.depth+1,dy=rowsN>4?46:(rowsN>3?52:58),width=(nx-1)*dx+d+8,height=(rowsN-1)*dy+d+8,ox=d/2+4,oy=d/2+4;
+  host.style.width=width+'px';host.style.height=height+'px';
+  var svg=document.createElementNS(svgNS,'svg');svg.setAttribute('class','edges');svg.setAttribute('width',width);svg.setAttribute('height',height);host.appendChild(svg);
+  var marker='';
+  if(G.directed){var mid='gv'+Math.floor(Math.random()*1e9);svg.insertAdjacentHTML('afterbegin','<defs><marker id="'+mid+'" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="context-stroke"/></marker></defs>');marker='url(#'+mid+')';}
+  var lines=G.edges.map(function(e){
+    var a=G.nodes[e[0]],c=G.nodes[e[1]],ln=document.createElementNS(svgNS,'line'),x1=ox+a.x*dx,y1=oy+a.d*dy,x2=ox+c.x*dx,y2=oy+c.d*dy;
+    if(G.directed){var len=Math.hypot(x2-x1,y2-y1)||1,back=d/2+3;x2-=(x2-x1)/len*back;y2-=(y2-y1)/len*back;ln.setAttribute('marker-end',marker);}
+    ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);svg.appendChild(ln);return ln;});
+  var els=G.nodes.map(function(nd,i){
+    var c=el(o.onPick?'button':'div','cell node');c.style.width=d+'px';c.style.height=d+'px';c.style.left=(ox+nd.x*dx-d/2)+'px';c.style.top=(oy+nd.d*dy-d/2)+'px';c.style.fontSize=Math.max(11,Math.round(d*.36))+'px';
+    if(o.onPick){c.type='button';c.setAttribute('aria-label','Course '+nd.l);c.addEventListener('click',function(){o.onPick(i);});}
+    host.appendChild(c);return c;});
+  var lastC=null,lastE=null;
+  function update(cells,edges){
+    lastC=cells;lastE=edges;
+    els.forEach(function(c,i){var s=styleOf(cells[i]);c.style.background=rgb(s.f);c.style.color=rgb(s.i);markState(c,cells[i].k);c.textContent=cells[i].t;});
+    lines.forEach(function(ln,i){var v=edges?edges[i]:0;ln.style.stroke=rgb(EDGE[v===2?'cur':(v===1?'path':'idle')]);ln.style.strokeWidth=v?4:2;});
+  }
+  var api={update:update,els:els};
+  onRepaint(function(){if(lastC)update(lastC,lastE);});
+  return api;
+}
+
+/* kit/plots.js: cost plots, a view for the step player (player.js) and the static costChart. A plot is named
+   series of y against n on one pair of axes:
+     curve    a formula, of(n): the named class, or c·g(n)
+     points   counts measured by running code, [[n, v]], joined by a line, a staircase or nothing
+     bars     a cost per item (the i-th append), [[i, v]]
+     range    best to worst at each n, [[n, lo, hi]], measured over every input of that size
+   and, between steps, a cursor walking n (each series' value at it is read out beside the plot), named
+   horizontal lines (a budget), named vertical lines (n₀, where a curve crosses the budget) and counters.
+   Text is HTML, never SVG text: the SVG is drawn at its real pixel size, re-laid out from its box's width, and
+   tick labels, axis names and line names sit over it at the page's type scale. Series are told apart by ink,
+   dash and marker shape, and named in the readout, so no series rests on colour.
+   PlotTrace / plotWalk: the page runs the algorithm first and records steps of small operations (reveal, hide,
+   cursor, level, at, count); plotWalk replays them on a model and reads every snapshot back through plotRead,
+   which sees the snapshot and not the trace, and throws when it disagrees with plotState, the pure function of
+   the first k steps (as intervals.js does). plotCheck holds a measured series to an independent statement of it.
+   Included by build.py only in lessons that plot (KIT_OPTIONAL). costChart needs nothing else; the stepped
+   player is plotplayer.js, which a page ships only when it steps through a plot, with player.js before it. Spec: docs/superpowers/specs/2026-09-30-cost-plot-player-design.md.
+   Names are prefixed (pl*, plot*). */
+
+var PL_H=264,PL_M={l:58,r:18,t:30,b:42};
+/* the six hue inks every page carries, each held to AA on every surface in both themes by shared.py */
+var PL_INKS=['--b-ink','--o-ink','--g-ink','--r-ink','--p-ink','--y-ink'];
+var PL_TONES={info:'--b-ink',cur:'--o-ink',good:'--g-ink',bad:'--r-ink',plain:'--p-ink',warn:'--y-ink'};
+var PL_DASH=['','8 5','2 4','12 4 2 4','5 3','1 5'];
+var PL_SHAPES=['circle','square','triangle','diamond','cross','bar'];
+var PL_KINDS=['curve','points','bars','range'];
+var PL_JOINS=['line','step','none'];
+/* the named complexity classes, labelled as the app labels them (held to BigOObservatory by the kit test) */
+var PL_CLASSES={
+  one:['O(1)',function(){return 1;}],
+  log:['O(log n)',function(n){return Math.log2(n);}],
+  n:['O(n)',function(n){return n;}],
+  nlogn:['O(n log n)',function(n){return n*Math.log2(n);}],
+  n2:['O(n²)',function(n){return n*n;}],
+  exp:['O(2ⁿ)',function(n){return Math.pow(2,n);}]
+};
+var PL_SUP={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻'};
+
+function plNum(x){return typeof x==='number'&&isFinite(x);}
+function plEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function plPow(base,e){return base+String(e).split('').map(function(c){return PL_SUP[c];}).join('');}
+/* a count as a reader says it: grouped digits up to a trillion, then a power of ten; a range as lo–hi */
+function plotFmt(v){
+  if(Array.isArray(v))return plotFmt(v[0])+'–'+plotFmt(v[1]);
+  if(v===null||v===undefined)return '–';
+  if(v===Infinity)return 'over 10³⁰⁸';
+  if(!plNum(v))throw new Error('plotFmt: '+v+' is not a number');
+  var a=Math.abs(v);
+  if(a>=1e12){var e=Math.floor(Math.log10(a)),m=v/Math.pow(10,e);
+    return (Math.abs(m-Math.round(m))<5e-4?String(Math.round(m)):m.toFixed(2).replace(/0+$/,'').replace(/\.$/,''))+' × '+plPow('10',e);}
+  if(Number.isInteger(v))return v.toLocaleString('en-US');
+  return (+v.toPrecision(4)).toLocaleString('en-US',{maximumFractionDigits:3});
+}
+/* a tick as short as it can be read: 10⁶ rather than 1,000,000 on a log axis, 2k on a busy linear one */
+function plTickText(v,log){
+  if(log&&v>=1e4){var e=Math.round(Math.log10(v));if(Math.abs(Math.pow(10,e)-v)<1e-9*v)return plPow('10',e);
+    var e2=Math.round(Math.log2(v));if(Math.pow(2,e2)===v)return plPow('2',e2);}
+  if(v>=1e6&&v%1e6===0)return (v/1e6)+'M';
+  if(v>=1e4&&v%1e3===0)return (v/1e3)+'k';
+  return plotFmt(v);
+}
+
+/* ---------- the trace: the series and the steps ---------- */
+/* new PlotTrace({x:{name, scale, lo, hi, ticks}, y:{...}, series:[{id, name, kind, of|cls|data, join, tone}]}).
+   Values are checked as they are given: finite, and positive on a log axis, since a log axis draws 0 nowhere. */
+function PlotTrace(o){
+  o=o||{};var self=this;
+  ['x','y'].forEach(function(k){
+    var a=o[k];if(!a||!a.name)throw new Error('a plot names its '+k+' axis');
+    if(a.scale&&a.scale!=='lin'&&a.scale!=='log')throw new Error(k+' axis: scale is lin or log, not '+a.scale);
+    if(a.lo!=null&&!plNum(a.lo)||a.hi!=null&&!plNum(a.hi))throw new Error(k+' axis: lo and hi are numbers');
+    if(a.lo!=null&&a.hi!=null&&!(a.lo<a.hi))throw new Error(k+' axis: lo must be below hi');
+    if(a.scale==='log'&&a.lo!=null&&!(a.lo>0))throw new Error(k+' axis: a log axis starts above 0');
+    self[k]={name:a.name,short:a.short||a.name.split(' ')[0],scale:a.scale||'lin',lo:a.lo==null?null:a.lo,hi:a.hi==null?null:a.hi,ticks:a.ticks||null};});
+  if(!Array.isArray(o.series)||!o.series.length)throw new Error('a plot has at least one series');
+  if(o.series.length>PL_INKS.length)throw new Error('a plot draws at most '+PL_INKS.length+' series: there is no seventh ink');
+  var ids={},inks={},next=0;this.series=[];this.by={};
+  o.series.forEach(function(d,j){
+    if(!d.id||ids[d.id])throw new Error('series '+j+' needs an id of its own');ids[d.id]=1;
+    if(PL_KINDS.indexOf(d.kind)<0)throw new Error(d.id+': kind is one of '+PL_KINDS.join(', ')+', not '+d.kind);
+    var s={id:d.id,name:d.name,kind:d.kind,join:d.join||(d.kind==='points'?'line':null),dash:PL_DASH[j],shape:PL_SHAPES[j]};
+    if(s.join&&PL_JOINS.indexOf(s.join)<0)throw new Error(d.id+': join is one of '+PL_JOINS.join(', '));
+    if(d.kind==='curve'){
+      if(d.cls){var c=PL_CLASSES[d.cls];if(!c)throw new Error(d.id+': no class '+d.cls);s.of=c[1];s.name=s.name||c[0];}
+      else if(typeof d.of==='function')s.of=d.of;else throw new Error(d.id+': a curve is a formula: of(n) or cls');
+    }else{
+      if(!Array.isArray(d.data)||!d.data.length)throw new Error(d.id+': a '+d.kind+' series is data measured by running code');
+      var seen={};s.data=d.data.map(function(p){
+        var w=d.kind==='range'?3:2;if(!Array.isArray(p)||p.length!==w||!p.every(plNum))throw new Error(d.id+': each entry is '+(w===3?'[n, lo, hi]':'[n, value]')+' of finite numbers, not '+JSON.stringify(p));
+        if(seen[p[0]])throw new Error(d.id+': n = '+p[0]+' is given twice');seen[p[0]]=1;
+        if(d.kind==='range'&&p[1]>p[2])throw new Error(d.id+': at n = '+p[0]+' the best case '+p[1]+' is above the worst '+p[2]);
+        if(d.kind==='bars'&&!Number.isInteger(p[0]))throw new Error(d.id+': a bar stands at a whole number, not '+p[0]);
+        return p.slice();}).sort(function(a,b){return a[0]-b[0];});
+    }
+    if(!s.name)throw new Error(d.id+': a series is named in the readout, so it needs a name');
+    if(d.tone){if(!PL_TONES[d.tone])throw new Error(d.id+': tone is one of '+Object.keys(PL_TONES).join(', '));s.ink=PL_TONES[d.tone];}
+    if(s.ink){if(inks[s.ink])throw new Error(d.id+' and '+inks[s.ink]+' share an ink');inks[s.ink]=d.id;}
+    self.series.push(s);self.by[s.id]=s;});
+  /* series without a tone take the inks the toned ones left, in table order */
+  this.series.forEach(function(s){if(s.ink)return;while(inks[PL_INKS[next]])next++;s.ink=PL_INKS[next];inks[s.ink]=s.id;});
+  this.series.forEach(function(s){plLogOk(self,s);});
+  this.events=[];
+}
+function plLogOk(T,s){
+  if(!s.data)return;
+  s.data.forEach(function(p){
+    if(T.x.scale==='log'&&!(p[0]>0))throw new Error(s.id+': n = '+p[0]+' cannot sit on a log axis');
+    if(T.y.scale==='log'&&p.slice(1).some(function(v){return !(v>0);}))throw new Error(s.id+': at n = '+p[0]+' a value of 0 or less cannot sit on a log axis');});
+}
+PlotTrace.prototype={
+  step:function(note,ops,hi){
+    if(!Array.isArray(ops)||!ops.every(Array.isArray))throw new Error('a step is a list of operations');
+    this.events.push({note:note,ops:ops,hi:hi||[]});return this;
+  },
+  /* show a series up to x = upTo (all of it when upTo is left out) */
+  reveal:function(id,upTo){return ['reveal',id,upTo===undefined?Infinity:upTo];},
+  hide:function(id){return ['hide',id];},
+  cursor:function(x){return ['cursor',x];},
+  level:function(name,y){return ['level',name,y];},
+  at:function(name,x){return ['at',name,x];},
+  count:function(name,v){return ['count',name,v];},
+  done:function(){if(!this.events.length)throw new Error('an empty plot walkthrough');plotState(this,this.events.length);return this;}
+};
+
+/* ---------- the reference: steps applied to plain data ---------- */
+/* a series' value at exactly x, read straight off what it was given; it shares no code with the model's plValue */
+function plRefAt(s,x){
+  if(s.kind==='curve')return s.of(x);
+  for(var i=0;i<s.data.length;i++)if(s.data[i][0]===x)return s.kind==='range'?[s.data[i][1],s.data[i][2]]:s.data[i][1];
+  return null;
+}
+function plApply(T,S,op){
+  var a=op[0];
+  if(a==='reveal'){if(!T.by[op[1]])throw new Error('reveal: there is no series '+op[1]);if(!(op[2]===Infinity||plNum(op[2])))throw new Error('reveal: '+op[1]+' up to '+op[2]+'?');S.shown[op[1]]=op[2];}
+  else if(a==='hide'){if(!T.by[op[1]])throw new Error('hide: there is no series '+op[1]);delete S.shown[op[1]];}
+  else if(a==='cursor'){if(op[1]!==null&&!plNum(op[1]))throw new Error('cursor: '+op[1]+' is not a number');S.cursor=op[1];}
+  else if(a==='level'||a==='at'){var bag=a==='level'?S.levels:S.ats;
+    if(op[2]===null)delete bag[op[1]];else if(!plNum(op[2]))throw new Error(a+' '+op[1]+': '+op[2]+' is not a number');else bag[op[1]]=op[2];}
+  else if(a==='count'){var hit=S.counts.filter(function(c){return c[0]===op[1];})[0];if(hit)hit[1]=String(op[2]);else S.counts.push([op[1],String(op[2])]);}
+  else throw new Error('unknown plot operation '+a);
+}
+function plStart(T){
+  var S={shown:{},cursor:null,levels:{},ats:{},counts:[]},named={};
+  /* every counter is on the fields line from the first step, reading a dash until it is set, so the line never grows */
+  T.events.forEach(function(e){e.ops.forEach(function(op){if(op[0]==='count'&&!named[op[1]]){named[op[1]]=1;S.counts.push([op[1],'–']);}});});
+  return S;
+}
+function plView(T,S){
+  var shown={},lv={},at={};Object.keys(S.shown).forEach(function(k){shown[k]=S.shown[k];});
+  Object.keys(S.levels).forEach(function(k){lv[k]=S.levels[k];});Object.keys(S.ats).forEach(function(k){at[k]=S.ats[k];});
+  var rows=T.series.map(function(s){
+    var up=S.shown[s.id],v=up===undefined||S.cursor===null||S.cursor>up?null:plRefAt(s,S.cursor);
+    return [s.id,up===undefined?'not shown':S.cursor===null?'':plotFmt(v)];});
+  return {shown:shown,cursor:S.cursor,levels:lv,ats:at,rows:rows,counts:S.counts.map(function(c){return [c[0],c[1]];})};
+}
+/* the whole picture after the first k steps, from the steps alone */
+function plotState(T,k){
+  var S=plStart(T);
+  for(var j=0;j<k&&j<T.events.length;j++)T.events[j].ops.forEach(function(op){plApply(T,S,op);});
+  return plView(T,S);
+}
+
+/* ---------- the model the view draws: the same operations, built again ---------- */
+/* a series' value at x: the model's own lookup (a map built once), so a wrong readout in either disagrees */
+function plValue(s,x){
+  if(s.kind==='curve'){var v=s.of(x);if(!(plNum(v)||v===Infinity))throw new Error(s.id+': of('+x+') is '+v);return v;}
+  if(!s.at){s.at={};s.data.forEach(function(p){s.at[p[0]]=s.kind==='range'?[p[1],p[2]]:p[1];});}
+  return Object.prototype.hasOwnProperty.call(s.at,x)?s.at[x]:null;
+}
+function PlotModel(T){this.T=T;this.shown={};this.cursor=null;this.levels={};this.ats={};this.counts=[];}
+PlotModel.prototype={
+  apply:function(op){
+    var a=op[0],T=this.T;
+    if(a==='reveal'){if(!T.by[op[1]])throw new Error('no series '+op[1]);this.shown[op[1]]=op[2];}
+    else if(a==='hide')delete this.shown[op[1]];
+    else if(a==='cursor')this.cursor=op[1];
+    else if(a==='level'){if(op[2]===null)delete this.levels[op[1]];else this.levels[op[1]]=op[2];}
+    else if(a==='at'){if(op[2]===null)delete this.ats[op[1]];else this.ats[op[1]]=op[2];}
+    else if(a==='count'){var c=this.counts.filter(function(x){return x[0]===op[1];})[0];if(c)c[1]=String(op[2]);else this.counts.push([op[1],String(op[2])]);}
+  },
+  snap:function(note,hi,ax,more){
+    var self=this,T=this.T,shown={},lv={},at={};
+    Object.keys(this.shown).forEach(function(k){shown[k]=self.shown[k];});
+    Object.keys(this.levels).forEach(function(k){lv[k]=self.levels[k];});Object.keys(this.ats).forEach(function(k){at[k]=self.ats[k];});
+    /* the readout, as the view prints it: every series, in order, so a tab's key never reflows */
+    var rows=T.series.map(function(s){var up=shown[s.id],on=up!==undefined;
+      return {id:s.id,name:s.name,ink:s.ink,dash:s.dash,shape:s.shape,kind:s.kind,on:on,
+        text:!on?'not shown':self.cursor===null?'':plotFmt(self.cursor>up?null:plValue(s,self.cursor))};});
+    return {note:note,hi:hi||[],done:true,fields:this.counts.map(function(c){return [c[0],c[1]];}).concat(more||[]),
+      plot:{T:T,ax:ax,shown:shown,cursor:this.cursor,levels:lv,ats:at,rows:rows}};
+  }
+};
+/* the same picture read back off a recorded snapshot, with no access to the trace's steps */
+function plotRead(s){
+  var p=s.plot,shown={},lv={},at={};
+  Object.keys(p.shown).forEach(function(k){shown[k]=p.shown[k];});
+  Object.keys(p.levels).forEach(function(k){lv[k]=p.levels[k];});Object.keys(p.ats).forEach(function(k){at[k]=p.ats[k];});
+  return {shown:shown,cursor:p.cursor,levels:lv,ats:at,rows:p.rows.map(function(r){return [r.id,r.text];}),
+    counts:s.fields.map(function(f){return [f[0],String(f[1])];})};
+}
+function plotSame(want,got,k){
+  var bad=null,J=function(x){return JSON.stringify(x,function(_,v){return v===Infinity?'∞':v;});};
+  ['shown','levels','ats'].forEach(function(f){if(!bad&&J(want[f])!==J(got[f]))bad=f+' should be '+J(want[f])+' but is drawn '+J(got[f]);});
+  if(!bad&&want.cursor!==got.cursor)bad='the cursor should be at '+want.cursor+' but is drawn at '+got.cursor;
+  want.rows.forEach(function(r,i){if(!bad&&J(r)!==J(got.rows[i]))bad='the readout for '+r[0]+' should say '+r[1]+' but says '+J(got.rows[i]);});
+  want.counts.forEach(function(c,i){if(!bad&&J(c)!==J(got.counts[i]))bad='counter '+c[0]+' should read '+c[1]+' but is drawn '+J(got.counts[i]);});
+  if(bad)throw new Error('plot step '+k+': '+bad);
+}
+
+/* ---------- scales, fixed for the player's life ---------- */
+/* the next round number at or above v; fine enough that a peak of 2,016 gets a 2,500 axis, not 5,000 */
+function plNiceHi(v){if(v<=0)return 1;var e=Math.pow(10,Math.floor(Math.log10(v))),m=v/e;
+  return [1,1.2,1.5,2,2.5,3,4,5,6,8,10].filter(function(c){return c>=m-1e-9;})[0]*e;}
+/* the extent of everything any step draws: every revealed series (curves over the x extent), every line and the
+   cursor, after every single operation. An axis the walkthrough sets is kept as given. */
+function plotExtent(T){
+  var xs=[],ys=[],S=plStart(T),ever={};
+  function see(){
+    Object.keys(S.shown).forEach(function(id){ever[id]=Math.max(ever[id]===undefined?-Infinity:ever[id],S.shown[id]);});
+    if(S.cursor!==null)xs.push(S.cursor);Object.keys(S.ats).forEach(function(n){xs.push(S.ats[n]);});
+    Object.keys(S.levels).forEach(function(n){ys.push(S.levels[n]);});}
+  see();T.events.forEach(function(e){e.ops.forEach(function(op){plApply(T,S,op);see();});});
+  Object.keys(ever).forEach(function(id){var s=T.by[id];if(s.data)s.data.forEach(function(p){if(p[0]<=ever[id])xs.push(p[0]);});});
+  var x=plAxis(T.x,xs,'x');
+  Object.keys(ever).forEach(function(id){var s=T.by[id];
+    if(s.data)s.data.forEach(function(p){if(p[0]<=ever[id])ys.push.apply(ys,p.slice(1));});
+    else for(var i=0;i<=64;i++){var t=i/64,xv=x.scale==='log'?x.lo*Math.pow(x.hi/x.lo,t):x.lo+(x.hi-x.lo)*t;
+      if(xv>ever[id])break;var v=s.of(xv);if(plNum(v)&&(T.y.scale!=='log'||v>0))ys.push(v);}});
+  return {x:x,y:plAxis(T.y,ys,'y')};
+}
+function plAxis(a,vs,k){
+  var lo=a.lo,hi=a.hi;
+  if(lo===null||hi===null){
+    if(!vs.length)throw new Error('the '+k+' axis has nothing on it: give it lo and hi, or reveal a series');
+    var mn=Math.min.apply(null,vs),mx=Math.max.apply(null,vs);
+    if(a.scale==='log'){var b=Math.log10(mx/Math.max(mn,1e-300))>=3?10:2;
+      if(lo===null)lo=Math.pow(b,Math.floor(Math.log(mn)/Math.log(b)+1e-9));if(hi===null)hi=Math.pow(b,Math.ceil(Math.log(mx)/Math.log(b)-1e-9));}
+    else{if(lo===null)lo=Math.min(0,mn);if(hi===null)hi=k==='y'?plNiceHi(mx):mx;}
+    if(!(hi>lo))hi=a.scale==='log'?lo*2:lo+1;
+  }
+  return {name:a.name,short:a.short,scale:a.scale,lo:lo,hi:hi,ticks:a.ticks};
+}
+/* map an axis onto [p0, p1] pixels, with ticks that leave `gap` pixels for each label */
+function plScale(a,p0,p1,gap){
+  var log=a.scale==='log',L0=log?Math.log10(a.lo):a.lo,L1=log?Math.log10(a.hi):a.hi;
+  var map=function(v){return p0+(p1-p0)*((log?Math.log10(v):v)-L0)/(L1-L0);};
+  var len=Math.abs(p1-p0),ticks=[];
+  if(a.ticks)ticks=a.ticks.slice();
+  else if(log){var b=Math.log10(a.hi/a.lo)>=3?10:2,e0=Math.ceil(Math.log(a.lo)/Math.log(b)-1e-9),e1=Math.floor(Math.log(a.hi)/Math.log(b)+1e-9),every=1;
+    while((e1-e0)/every*gap>len&&every<64)every++;
+    for(var e=e0;e<=e1;e+=every)ticks.push(Math.pow(b,e));}
+  else{var steps=[],d;for(d=-3;d<=15;d++)[1,2,5].forEach(function(m){steps.push(m*Math.pow(10,d));});
+    var st=steps.filter(function(s){return (a.hi-a.lo)/s*gap<=len;})[0]||steps[steps.length-1];
+    for(var t=Math.ceil(a.lo/st-1e-9)*st;t<=a.hi+1e-9*st;t+=st)ticks.push(+t.toPrecision(12));}
+  return {map:map,ticks:ticks,log:log,lo:a.lo,hi:a.hi,name:a.name,short:a.short};
+}
+
+/* ---------- drawing ---------- */
+function plShape(shape,x,y,r){
+  x=+x.toFixed(1);y=+y.toFixed(1);
+  if(shape==='circle')return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'"/>';
+  if(shape==='square')return '<rect x="'+(x-r)+'" y="'+(y-r)+'" width="'+2*r+'" height="'+2*r+'"/>';
+  if(shape==='triangle')return '<path d="M'+x+','+(y-r-1)+' L'+(x+r+1)+','+(y+r)+' L'+(x-r-1)+','+(y+r)+' Z"/>';
+  if(shape==='diamond')return '<path d="M'+x+','+(y-r-1.5)+' L'+(x+r+1.5)+','+y+' L'+x+','+(y+r+1.5)+' L'+(x-r-1.5)+','+y+' Z"/>';
+  if(shape==='cross')return '<path class="pl-x" d="M'+(x-r)+','+(y-r)+' L'+(x+r)+','+(y+r)+' M'+(x+r)+','+(y-r)+' L'+(x-r)+','+(y+r)+'"/>';
+  return '<rect x="'+(x-1.5)+'" y="'+(y-r-1)+'" width="3" height="'+(2*r+2)+'"/>';
+}
+/* the swatch beside a readout row: the series' own dash and marker, so the key can be read without colour */
+function plSwatch(r){
+  var line=r.kind==='bars'?'<rect x="9" y="3" width="10" height="11" class="pl-bar"/>':(r.kind==='range'?'<rect x="1" y="4" width="26" height="9" class="pl-band"/>':'')+
+    (r.kind==='bars'?'':'<line x1="1" x2="27" y1="8.5" y2="8.5"'+(r.dash?' stroke-dasharray="'+r.dash+'"':'')+'/>');
+  return '<svg class="pl-sw" width="28" height="17" aria-hidden="true" style="color:var('+r.ink+')">'+line+(r.kind==='bars'?'':'<g class="pl-mk">'+plShape(r.shape,14,8.5,3.5)+'</g>')+'</svg>';
+}
+function plLerp(a,b,t){return a+(b-a)*t;}
+
+/* the view: mount / layout / draw / fields / label, as player.js's contract says. costChart uses it alone. */
+function PlotView(o){
+  o=o||{};var box,svg,text,read,uid='pl'+Math.floor(Math.random()*1e9),rows=0,self;
+  function size(){var w=box.clientWidth||560;return {w:Math.max(260,w),h:PL_H};}
+  function geo(s){
+    var z=size(),ax=s.plot.ax,m=PL_M;
+    return {w:z.w,h:z.h,x:plScale(ax.x,m.l,z.w-m.r,56),y:plScale(ax.y,z.h-m.b,m.t,26),x0:m.l,x1:z.w-m.r,y0:z.h-m.b,y1:m.t};
+  }
+  function clip(g,v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+  function seriesSvg(g,s,upPx,op,on){
+    var T=s,h='',X=g.x.map,Y=g.y.map,yl=g.y.log?g.y.lo:Math.max(g.y.lo,0);
+    if(s.kind==='curve'){var pts=[],n=Math.max(24,Math.round((upPx-g.x0)/3));
+      for(var i=0;i<=n;i++){var px=g.x0+(upPx-g.x0)*i/n,xv=g.x.log?g.x.lo*Math.pow(g.x.hi/g.x.lo,(px-g.x0)/(g.x1-g.x0)):g.x.lo+(g.x.hi-g.x.lo)*(px-g.x0)/(g.x1-g.x0),v=T.of(xv);
+        /* log 0 is -∞ and a log axis has no 0: those points are nowhere on the plot, so the line starts after them */
+        if(v!==Infinity&&!plNum(v)||g.y.log&&!(v>0)||v<g.y.lo)continue;
+        var py=v===Infinity?g.y1-8:Math.max(g.y1-8,Y(v));pts.push(px.toFixed(1)+','+py.toFixed(1));}
+      h+='<polyline class="pl-ln" points="'+pts.join(' ')+'"'+(s.dash?' stroke-dasharray="'+s.dash+'"':'')+'/>';}
+    else{var d=s.data.filter(function(p){return X(p[0])<=upPx+0.5;});
+      if(s.kind==='bars'){var w=s.data.length>1?Math.min(18,0.7*Math.abs(X(s.data[1][0])-X(s.data[0][0]))):14;
+        d.forEach(function(p){var y=Y(p[1]),b=Y(yl);h+='<rect class="pl-bar" x="'+(X(p[0])-w/2).toFixed(1)+'" y="'+Math.min(y,b).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+Math.max(1,Math.abs(b-y)).toFixed(1)+'"/>';});}
+      else if(s.kind==='range'&&d.length){
+        h+='<path class="pl-band" d="M'+d.map(function(p){return X(p[0]).toFixed(1)+','+Y(p[2]).toFixed(1);}).join(' L')+' L'+d.slice().reverse().map(function(p){return X(p[0]).toFixed(1)+','+Y(p[1]).toFixed(1);}).join(' L')+' Z"/>';
+        ['2','1'].forEach(function(k){h+='<polyline class="pl-ln pl-edge" points="'+d.map(function(p){return X(p[0]).toFixed(1)+','+Y(p[+k]).toFixed(1);}).join(' ')+'"'+(s.dash?' stroke-dasharray="'+s.dash+'"':'')+'/>';});}
+      else if(s.kind==='points'&&d.length){
+        if(s.join!=='none'){var path=d.map(function(p,i){var x=X(p[0]).toFixed(1),y=Y(p[1]).toFixed(1);
+            return i===0?'M'+x+','+y:(s.join==='step'?'H'+x+' V'+y:'L'+x+','+y);}).join(' ');
+          h+='<path class="pl-ln" d="'+path+'"'+(s.dash?' stroke-dasharray="'+s.dash+'"':'')+'/>';}
+        /* markers thin out on a dense series, always keeping the last one drawn */
+        var every=Math.max(1,Math.ceil(d.length/24));h+='<g class="pl-mk">';
+        d.forEach(function(p,i){if(i%every===0||i===d.length-1)h+=plShape(s.shape,X(p[0]),Y(p[1]),3.2);});h+='</g>';}
+    }
+    return '<g class="pl-s'+(on?' hi':'')+'" style="color:var('+s.ink+');opacity:'+op.toFixed(3)+'" clip-path="url(#'+uid+'c)">'+h+'</g>';
+  }
+  /* where each series has drawn up to, in pixels: a revealed series draws on left to right */
+  function upPx(g,v){return v===Infinity?g.x1+1:clip(g,g.x.map(Math.max(v,g.x.lo)),g.x0,g.x1+1);}
+  function draw(s,L,t,fromS){
+    var g=geo(s),p=s.plot,T=p.T,fp=fromS&&fromS.plot&&fromS.plot.T===T?fromS.plot:null,h='',tx='';
+    t=t===undefined?1:t;
+    svg.setAttribute('width',g.w);svg.setAttribute('height',g.h);box.style.height=g.h+'px';
+    h+='<defs><clipPath id="'+uid+'c"><rect x="'+(g.x0-6)+'" y="'+(g.y1-4)+'" width="'+(g.x1-g.x0+12)+'" height="'+(g.y0-g.y1+10)+'"/></clipPath></defs>';
+    g.y.ticks.forEach(function(v){var y=g.y.map(v).toFixed(1);h+='<line class="pl-grid" x1="'+g.x0+'" x2="'+g.x1+'" y1="'+y+'" y2="'+y+'"/>';
+      tx+='<span class="pl-t pl-ty" style="top:'+y+'px;right:'+(g.w-g.x0+8)+'px">'+plTickText(v,g.y.log)+'</span>';});
+    g.x.ticks.forEach(function(v){var x=g.x.map(v).toFixed(1);h+='<line class="pl-tk" x1="'+x+'" x2="'+x+'" y1="'+g.y0+'" y2="'+(g.y0+5)+'"/>';
+      tx+='<span class="pl-t pl-tx" style="left:'+x+'px;top:'+(g.y0+8)+'px">'+plTickText(v,g.x.log)+'</span>';});
+    h+='<line class="pl-axis" x1="'+g.x0+'" x2="'+g.x1+'" y1="'+g.y0+'" y2="'+g.y0+'"/><line class="pl-axis" x1="'+g.x0+'" x2="'+g.x0+'" y1="'+g.y1+'" y2="'+g.y0+'"/>';
+    tx+='<span class="pl-an pl-anx" style="left:'+((g.x0+g.x1)/2).toFixed(1)+'px;top:'+(g.y0+24)+'px">'+plEsc(g.x.name)+(g.x.log?' (log scale)':'')+'</span>'+
+      '<span class="pl-an pl-any" style="left:'+(g.x0-PL_M.l+4)+'px;top:0">'+plEsc(g.y.name)+(g.y.log?' (log scale)':'')+'</span>';
+    T.series.forEach(function(se){
+      var to=p.shown[se.id],fr=fp?fp.shown[se.id]:undefined,on=s.hi.indexOf(se.id)>=0;
+      if(to!==undefined){var a=upPx(g,to),b=fr===undefined?(fp?g.x0:a):upPx(g,fr);h+=seriesSvg(g,se,plLerp(b,a,t),1,on);}
+      else if(fr!==undefined)h+=seriesSvg(g,se,upPx(g,fr),1-t,on);});
+    /* labels are placed, not stacked: each is sized from its text and moved to the next free place (the cursor's
+       name on the axis, a line's name above or below it, a vertical line's name on the first free row), so two
+       close lines never print over each other */
+    var placed=[];
+    function place(txt,cls,op,tries){
+      var w=Math.ceil(txt.replace(/<[^>]+>/g,'').length*7.2+12),h=19;
+      for(var i=0;i<tries.length;i++){var x=Math.max(g.x0+2,Math.min(g.x1-w,tries[i][0]-(tries[i][2]==='c'?w/2:tries[i][2]==='r'?w:0))),y=tries[i][1],
+          free=placed.every(function(r){return x+w<=r.x0||x>=r.x1||y+h<=r.y0||y>=r.y1;});
+        if(free||i===tries.length-1){placed.push({x0:x-3,x1:x+w+3,y0:y-1,y1:y+h+1});
+          tx+='<span class="'+cls+'" style="opacity:'+op.toFixed(3)+';left:'+x.toFixed(1)+'px;top:'+y.toFixed(1)+'px">'+txt+'</span>';return;}}
+    }
+    /* the cursor, and where each shown series is on it */
+    if(p.cursor!==null||(fp&&fp.cursor!==null)){
+      var c=p.cursor!==null?p.cursor:fp.cursor,cx=g.x.map(c),cop=p.cursor===null?1-t:1;
+      if(fp&&fp.cursor!==null&&p.cursor!==null)cx=plLerp(g.x.map(fp.cursor),cx,t);
+      h+='<line class="pl-cur" style="opacity:'+cop.toFixed(3)+'" x1="'+cx.toFixed(1)+'" x2="'+cx.toFixed(1)+'" y1="'+g.y1+'" y2="'+g.y0+'"/>';
+      if(p.cursor!==null&&t===1)T.series.forEach(function(se){var up=p.shown[se.id];if(up===undefined||c>up)return;var v=plValue(se,c);
+        if(v===null)return;[].concat(v).forEach(function(y){if(!(plNum(y)&&(!g.y.log||y>0)))return;
+          if(y<g.y.lo||y>g.y.hi)return;h+='<g class="pl-at" style="color:var('+se.ink+')">'+plShape(se.shape,cx,g.y.map(y),4.2)+'</g>';});});
+      place(plEsc(g.x.short)+' = '+plotFmt(c),'pl-cn',cop,[[cx,g.y0-24,'c']]);
+    }
+    /* the named lines: a name in both glides, a new one fades in, a gone one fades out */
+    function lines(bag,fbag,horiz){
+      var keys={};Object.keys(bag).forEach(function(k){keys[k]=1;});if(fbag)Object.keys(fbag).forEach(function(k){keys[k]=1;});
+      Object.keys(keys).sort().forEach(function(k){
+        var a=bag[k],f=fbag?fbag[k]:undefined,op=a!==undefined?(f!==undefined||!fbag?1:t):1-t,v=a!==undefined?a:f,
+            px=horiz?g.y.map(v):g.x.map(v);
+        if(a!==undefined&&f!==undefined)px=plLerp(horiz?g.y.map(f):g.x.map(f),px,t);
+        var on=s.hi.indexOf(k)>=0?' hi':'';
+        if(horiz){h+='<line class="pl-ref'+on+'" style="opacity:'+op.toFixed(3)+'" x1="'+g.x0+'" x2="'+g.x1+'" y1="'+px.toFixed(1)+'" y2="'+px.toFixed(1)+'"/>';
+          place(plEsc(k)+' '+plotFmt(v),'pl-rn'+on,op,[[g.x1-4,px-21,'r'],[g.x1-4,px+3,'r'],[g.x0+6,px-21,'l'],[g.x0+6,px+3,'l']]);}
+        else{h+='<line class="pl-ref'+on+'" style="opacity:'+op.toFixed(3)+'" x1="'+px.toFixed(1)+'" x2="'+px.toFixed(1)+'" y1="'+g.y1+'" y2="'+g.y0+'"/>';
+          var rows=[];for(var r=0;r<6;r++)rows.push([px,g.y1+2+21*r,'c']);
+          place(plEsc(k)+' = '+plotFmt(v),'pl-rn'+on,op,rows);}
+      });
+    }
+    lines(p.levels,fp&&fp.levels,true);lines(p.ats,fp&&fp.ats,false);
+    svg.innerHTML=h;text.innerHTML=tx;
+    read.innerHTML=p.rows.map(function(r){return '<li class="'+(r.on?'':'off')+(s.hi.indexOf(r.id)>=0?' hi':'')+'">'+plSwatch(r)+'<span class="pl-nm">'+plEsc(r.name)+'</span><b>'+plEsc(r.text)+'</b></li>';}).join('');
+    read.style.minHeight=rows?(rows*26)+'px':'';
+  }
+  function describe(s){
+    var p=s.plot,ax=p.ax,out=o.aria||('A plot of '+ax.y.name+(ax.y.log?' on a log scale':'')+' against '+ax.x.name+(ax.x.log?' on a log scale':'')+'.');
+    if(o.aria)return out;
+    var on=p.rows.filter(function(r){return r.on;});
+    if(p.cursor!==null)out+=' At '+ax.x.short+' = '+plotFmt(p.cursor)+': '+(on.length?on.map(function(r){return r.name+' '+r.text;}).join('; '):'nothing is drawn yet')+'.';
+    else out+=on.length?' Drawn: '+on.map(function(r){return r.name;}).join('; ')+'.':' Nothing is drawn yet.';
+    var lv=Object.keys(p.levels).sort().map(function(k){return k+' at '+plotFmt(p.levels[k]);}),at=Object.keys(p.ats).sort().map(function(k){return k+' at '+ax.x.short+' = '+plotFmt(p.ats[k]);});
+    if(lv.length||at.length)out+=' Lines: '+lv.concat(at).join(', ')+'.';
+    return out;
+  }
+  self={
+    mount:function(stage){
+      stage.innerHTML='<div class="pl"><div class="pl-box"><svg class="pl-svg" role="img"></svg><div class="pl-text" aria-hidden="true"></div></div><ul class="pl-read" aria-label="Values at the cursor"></ul></div>';
+      box=stage.querySelector('.pl-box');svg=box.querySelector('svg');text=box.querySelector('.pl-text');read=stage.querySelector('.pl-read');
+    },
+    layout:function(s){return {cursor:s.plot.cursor};},
+    draw:draw,
+    /* every tab's readout keeps the tallest tab's rows, so switching tabs never moves the controls below */
+    sizeTo:function(all){all.forEach(function(s){rows=Math.max(rows,s.plot.rows.length);});},
+    inv:[],check:function(){return [];},
+    fields:function(s,hiF){return s.fields.map(function(f){return '<span'+hiF(f[0])+'>'+plEsc(f[0])+' <b>'+plEsc(f[1])+'</b></span>';}).join('');},
+    label:function(s){svg.setAttribute('aria-label',describe(s));}
+  };
+  return self;
+}
+
+/* the invariant every plot shows: what was measured, and every line and the cursor, lie inside the axes. A curve
+   may leave the top (2ⁿ does), and is drawn cut off there. */
+var PL_INV=[['on the axes','every measured value, every named line and the cursor lie inside the axes',function(s){
+  var p=s.plot,ax=p.ax,inX=function(v){return v>=ax.x.lo-1e-9&&v<=ax.x.hi*(1+1e-9);},inY=function(v){return v>=ax.y.lo-1e-9&&v<=ax.y.hi*(1+1e-9);},ok=true;
+  Object.keys(p.shown).forEach(function(id){var se=p.T.by[id];if(se.data)se.data.forEach(function(d){if(d[0]<=p.shown[id]&&!(inX(d[0])&&d.slice(1).every(inY)))ok=false;});});
+  Object.keys(p.levels).forEach(function(k){if(!inY(p.levels[k]))ok=false;});Object.keys(p.ats).forEach(function(k){if(!inX(p.ats[k]))ok=false;});
+  return ok&&(p.cursor===null||inX(p.cursor));}]];
+
+/* hold a measured series to an independent statement of it: want(n) is the closed form or a second
+   implementation. Throws at the first n where they differ, so a wrong count is a page that fails. */
+function plotCheck(data,want,what){
+  data.forEach(function(p){var w=want(p[0]),got=p.length===3?[p[1],p[2]]:p[1];
+    if(JSON.stringify(w)!==JSON.stringify(got))throw new Error((what||'plot')+': at n = '+p[0]+' the count is '+JSON.stringify(got)+' but should be '+JSON.stringify(w));});
+  return data;
+}
+
+/* Record a finished trace as steps for a PlotPlayer. o.intro and o.outro are the first and last captions;
+   o.fields(state) adds to the fields line after the trace's own counters; o.inv, [[short, long, fn(snapshot)]],
+   are this walkthrough's own claims, shown and checked beside the plot's. */
+function plotWalk(T,o){
+  o=o||{};T.done();
+  var ax=plotExtent(T),M=new PlotModel(T),steps=[];
+  T.events.forEach(function(e){e.ops.forEach(function(op){if(op[0]==='count'&&!M.counts.some(function(c){return c[0]===op[1];}))M.counts.push([op[1],'–']);});});
+  function rec(note,hi){var k=steps.length,s=M.snap(note,hi,ax,o.fields?o.fields(plotState(T,k)):null);s.plot.inv=o.inv||null;steps.push(s);plotSame(plotState(T,k),plotRead(s),k);}
+  rec(o.intro||'The axes, before anything is drawn.');
+  T.events.forEach(function(e){e.ops.forEach(function(op){M.apply(op);});rec(e.note,e.hi);});
+  if(o.outro)rec(o.outro,[]);
+  return steps;
+}
+/* o.inv: [[short, long, fn(snapshot) -> bool]], the lesson's own claims, checked on every step */
+/* The static chart five lessons draw: one picture, no player. pts = [[x, a, b]] measured by running both
+   versions; names = [a's name, b's name]; log scales the y axis; xticks fixes the x ticks. Drawn by PlotView, so
+   its text is HTML and its two series differ in ink, dash and marker as well as colour. */
+function costChart(host,o){
+  var pts=o.pts,xmax=o.xmax||pts[pts.length-1][0],names=o.names||['naive','once'];
+  var T=new PlotTrace({x:{name:o.xlabel,lo:0,hi:xmax,ticks:o.xticks},y:{name:o.ylabel||'work',scale:o.log?'log':'lin'},
+    series:[{id:'a',name:names[0],kind:'points',tone:'bad',data:pts.map(function(p){return [p[0],p[1]];}).filter(function(p){return !o.log||p[1]>0;})},
+            {id:'b',name:names[1],kind:'points',tone:'good',data:pts.map(function(p){return [p[0],p[2]];}).filter(function(p){return !o.log||p[1]>0;})}]});
+  T.step('',[T.reveal('a'),T.reveal('b'),T.cursor(pts[pts.length-1][0])]);
+  var s=plotWalk(T)[1],view=PlotView({aria:o.aria});
+  host.classList.add('pl-chart');view.mount(host);view.sizeTo([s]);
+  var redraw=function(){view.draw(s,view.layout(s),1);view.label(s);};
+  redraw();onRepaint(redraw);if('ResizeObserver' in window)new ResizeObserver(redraw).observe(host);
+  return {redraw:redraw};
+}
+
+var CODE={"mistake_greedy": {"py": "def coin_change(coins, amount):\n    count = 0\n    for c in sorted(coins, reverse=True):  # always take the biggest coin that fits\n        count += amount // c\n        amount %= c\n    return count if amount == 0 else -1", "ts": "function coinChange(coins: number[], amount: number): number {\n  let count = 0;\n  for (const c of [...coins].sort((x, y) => y - x)) {\n    // always take the biggest coin that fits\n    count += Math.floor(amount / c);\n    amount %= c;\n  }\n  return amount === 0 ? count : -1;\n}"}, "mistake_inf": {"py": "def coin_change(coins, amount):\n    INF = amount + 1\n    dp = [0] + [INF] * amount\n    for a in range(1, amount + 1):\n        for c in coins:\n            if c <= a:\n                dp[a] = min(dp[a], dp[a - c] + 1)\n    return dp[amount]                      # the mistake: unreachable amounts still hold INF", "ts": "function coinChange(coins: number[], amount: number): number {\n  const INF = amount + 1;\n  const dp: number[] = [0, ...new Array<number>(amount).fill(INF)];\n  for (let a = 1; a <= amount; a++) {\n    for (const c of coins) {\n      if (c <= a) dp[a] = Math.min(dp[a], dp[a - c] + 1);\n    }\n  }\n  return dp[amount]; // the mistake: unreachable amounts still hold INF\n}"}, "slow_recursion": {"py": "def coin_change(coins, amount):\n    def fewest(a):\n        if a == 0:\n            return 0\n        best = float(\"inf\")\n        for c in coins:                    # try every coin as the last one\n            if c <= a:\n                best = min(best, fewest(a - c) + 1)\n        return best\n\n    result = fewest(amount)\n    return result if result != float(\"inf\") else -1", "ts": "function coinChange(coins: number[], amount: number): number {\n  function fewest(a: number): number {\n    if (a === 0) return 0;\n    let best = Infinity;\n    for (const c of coins) {\n      // try every coin as the last one\n      if (c <= a) best = Math.min(best, fewest(a - c) + 1);\n    }\n    return best;\n  }\n\n  const result = fewest(amount);\n  return result !== Infinity ? result : -1;\n}"}, "solution": {"py": "def coin_change(coins, amount):\n    INF = amount + 1                       # larger than any real answer\n    dp = [0] + [INF] * amount              # dp[a] = fewest coins that make exactly a\n    for a in range(1, amount + 1):\n        for c in coins:\n            if c <= a:                     # the last coin cannot exceed the amount\n                dp[a] = min(dp[a], dp[a - c] + 1)\n    return dp[amount] if dp[amount] != INF else -1", "ts": "function coinChange(coins: number[], amount: number): number {\n  const INF = amount + 1; // larger than any real answer\n  const dp: number[] = [0, ...new Array<number>(amount).fill(INF)]; // dp[a] = fewest coins that make exactly a\n  for (let a = 1; a <= amount; a++) {\n    for (const c of coins) {\n      if (c <= a) {\n        // the last coin cannot exceed the amount\n        dp[a] = Math.min(dp[a], dp[a - c] + 1);\n      }\n    }\n  }\n  return dp[amount] !== INF ? dp[amount] : -1;\n}"}};
+var LESSON={"title": "Coin Change", "quiz": [{"q": "Why is it enough to try every size as the <em>last</em> instance and take the best, when greedy's single choice is not?", "opts": ["Any fewest order for a ends in some size c, and what remains must be a fewest order for a \u2212 c, or the whole could be shorter. So 1 + the best dp[a \u2212 c] over all c misses nothing.", "Trying every size makes the table record every order in which instances could be launched, and taking the minimum then picks the cheapest of those orders once all of them are listed.", "Taking the minimum over every size ends up choosing the smallest size at each step, and building the order from small sizes is what keeps the count of instances as low as it can go."], "a": 0, "why": "This is optimal substructure: the best solution contains a best solution to a smaller version of the same problem. Greedy commits to one candidate without comparing, so a locally big choice can strand an awkward remainder. Trying every last size compares them all, and the order in which instances are launched never matters to the total."}, {"q": "The table starts with <code>dp[0] = 0</code> and every other entry at <code>amount + 1</code>. Why not start them all at 0?", "opts": ["A 0 would win every minimum, so every cell would claim zero instances. amount + 1 means \"not reachable yet\": any real count beats it, and a cell still holding it at the end is unreachable.", "Zero would give the same answers, since cells that are never reached are never read; the large value only guards against integer overflow when 1 is added to an entry that is already large.", "Starting high lets the inner loop stop early: once one size gives a count below the starting value, the remaining sizes cannot do better, so the comparison exits on most steps."], "a": 0, "why": "Take sizes {2} and capacity 3. With zeros everywhere, dp[1] and dp[3] would stay at their starting 0 and the code would answer 0, claiming no instances are needed. With the placeholder, dp[3] stays at 4 and the check turns it into -1. Forgetting that check, as the warning below shows, returns the placeholder itself."}, {"q": "For the constraint's largest input, an amount of 10\u2074 with 12 sizes, roughly how many inner steps does the table version take?", "opts": ["About {{fmt_OPS}} steps: each of the 10\u2074 amounts is solved once, and solving one tries each of the 12 sizes once, so 10\u2074 \u00d7 12.", "About 2\u00b9\u00b2 = 4,096 steps, since each of the 12 sizes is either used or not, and the table only settles which subset of sizes the best order draws from.", "About 10\u2074 steps, since the table has 10\u2074 cells and each is filled by one lookup into the cell for the largest size that fits, which keeps the work linear."], "a": 0, "why": "Each of the 10\u2074 cells tries every one of the 12 sizes, and a try is one lookup and one comparison. The plain recursion, by contrast, asks the same question again and again, and its call count multiplies at every step: see the chart above. The table is the same recurrence with each answer stored once."}], "variants": [{"title": "Coin Change II", "source": "count the ways", "text": "Same sizes, but the question is how many different combinations reach the amount. The loop order changes: put the sizes in the outer loop, so 2 + 1 and 1 + 2 count as one combination and not two."}, {"title": "Perfect Squares", "source": "sizes are the squares", "text": "The sizes are 1, 4, 9, 16 and so on, and the question is the fewest that sum to n. It is this table exactly, with the sizes generated on the fly."}, {"title": "Minimum Cost For Tickets", "source": "last ticket decides", "text": "A day is covered by a 1-day, 7-day or 30-day pass, and the cheapest plan for each day depends on the cheapest plan a fixed number of days earlier. It is the same \"try every last piece\" recurrence over days instead of vCPUs."}], "reveals": {"hint": {"label": "Hint: look only at the last instance", "html": "<p>Suppose you already knew the fewest instances for every smaller capacity. How would you use that to answer for capacity a?</p>\n<p>Whatever the best order is, one instance was launched last, and it had some size c. Take it away and you are looking at an order for a \u2212 c. So the answer for a is one more than the answer for a \u2212 c, for whichever c was last.</p>\n<p>You do not know which c was last, so try each size that fits and keep the smallest result.</p>"}, "solbox": {"label": "Show the solution", "html": "<div data-code-file=\"solution\" data-title=\"Fill the table from 0 to amount\"></div>\n<div class=\"notes\"><p>The outer loop walks the amounts upward, so when cell <code>a</code> is computed every cell it reads, <code>a - c</code>, is already final. The inner loop tries each size as the last instance. <code>c &lt;= a</code> skips sizes that are too big. After the loops, a cell that still holds the placeholder was never reachable, and that becomes <code>-1</code>.</p></div>\n<div class=\"complexity\"><div class=\"cx-h\">Complexity, derived</div><p><b>Time O(amount \u00d7 sizes).</b> The table has amount + 1 cells and each one tries every size once. For sizes {1, 2, 5} and amount 11 that is {{steps}} cells and {{tries}} tries, of which {{fits}} fit and do a lookup. At the constraint's limits, 10\u2074 \u00d7 12 is {{fmt_OPS}} tries. The recursion could not say this: it repeated questions instead of storing them.</p>\n<p><b>Space O(amount).</b> One number per amount from 0 to amount, {{smallCells}} cells in the small example and 10,001 at the limit.</p></div>\n<div class=\"callout warn\"><div class=\"cl\"><svg class=\"i\"><use href=\"#i-warn\"/></svg>Watch out</div><p>Do not return <code>dp[amount]</code> as it is. For an amount no order can reach, that cell still holds the placeholder <code>amount + 1</code>, so the answer comes out as {{rawCases}} instead of <b>-1</b>.</p>\n<div data-code-file=\"mistake_inf\" data-title=\"The mistake\"></div></div>"}}};
+var HL={"def coin_change(coins, amount):\n    count = 0\n    for c in sorted(coins, reverse=True):  # always take the biggest coin that fits\n        count += amount // c\n        amount %= c\n    return count if amount == 0 else -1": "<span class=\"line\"><span style=\"color:#7DD3FC\">def</span><span style=\"color:#C7D2FE\"> coin_change</span><span style=\"color:#E6EDF4\">(coins, amount):</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    count </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    for</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">in</span><span style=\"color:#C7D2FE\"> sorted</span><span style=\"color:#E6EDF4\">(coins, reverse</span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\">True</span><span style=\"color:#E6EDF4\">):  </span><span style=\"color:#94A3B8;font-style:italic\"># always take the biggest coin that fits</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">        count </span><span style=\"color:#7DD3FC\">+=</span><span style=\"color:#E6EDF4\"> amount </span><span style=\"color:#7DD3FC\">//</span><span style=\"color:#E6EDF4\"> c</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">        amount </span><span style=\"color:#7DD3FC\">%=</span><span style=\"color:#E6EDF4\"> c</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    return</span><span style=\"color:#E6EDF4\"> count </span><span style=\"color:#7DD3FC\">if</span><span style=\"color:#E6EDF4\"> amount </span><span style=\"color:#7DD3FC\">==</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#7DD3FC\"> else</span><span style=\"color:#7DD3FC\"> -</span><span style=\"color:#4ADE80\">1</span></span>", "function coinChange(coins: number[], amount: number): number {\n  let count = 0;\n  for (const c of [...coins].sort((x, y) => y - x)) {\n    // always take the biggest coin that fits\n    count += Math.floor(amount / c);\n    amount %= c;\n  }\n  return amount === 0 ? count : -1;\n}": "<span class=\"line\"><span style=\"color:#7DD3FC\">function</span><span style=\"color:#C7D2FE\"> coinChange</span><span style=\"color:#E6EDF4\">(coins</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">[], amount</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">)</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\"> {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  let</span><span style=\"color:#E6EDF4\"> count </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  for</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#7DD3FC\">const</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">of</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#7DD3FC\">...</span><span style=\"color:#E6EDF4\">coins].</span><span style=\"color:#C7D2FE\">sort</span><span style=\"color:#E6EDF4\">((x, y) </span><span style=\"color:#7DD3FC\">=></span><span style=\"color:#E6EDF4\"> y </span><span style=\"color:#7DD3FC\">-</span><span style=\"color:#E6EDF4\"> x)) {</span></span>\n<span class=\"line\"><span style=\"color:#94A3B8;font-style:italic\">    // always take the biggest coin that fits</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    count </span><span style=\"color:#7DD3FC\">+=</span><span style=\"color:#E6EDF4\"> Math.</span><span style=\"color:#C7D2FE\">floor</span><span style=\"color:#E6EDF4\">(amount </span><span style=\"color:#7DD3FC\">/</span><span style=\"color:#E6EDF4\"> c);</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    amount </span><span style=\"color:#7DD3FC\">%=</span><span style=\"color:#E6EDF4\"> c;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  return</span><span style=\"color:#E6EDF4\"> amount </span><span style=\"color:#7DD3FC\">===</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#7DD3FC\"> ?</span><span style=\"color:#E6EDF4\"> count </span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#7DD3FC\"> -</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">}</span></span>", "def coin_change(coins, amount):\n    INF = amount + 1\n    dp = [0] + [INF] * amount\n    for a in range(1, amount + 1):\n        for c in coins:\n            if c <= a:\n                dp[a] = min(dp[a], dp[a - c] + 1)\n    return dp[amount]                      # the mistake: unreachable amounts still hold INF": "<span class=\"line\"><span style=\"color:#7DD3FC\">def</span><span style=\"color:#C7D2FE\"> coin_change</span><span style=\"color:#E6EDF4\">(coins, amount):</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    INF</span><span style=\"color:#7DD3FC\"> =</span><span style=\"color:#E6EDF4\"> amount </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    dp </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">0</span><span style=\"color:#E6EDF4\">] </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">INF</span><span style=\"color:#E6EDF4\">] </span><span style=\"color:#7DD3FC\">*</span><span style=\"color:#E6EDF4\"> amount</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    for</span><span style=\"color:#E6EDF4\"> a </span><span style=\"color:#7DD3FC\">in</span><span style=\"color:#C7D2FE\"> range</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">, amount </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">):</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        for</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">in</span><span style=\"color:#E6EDF4\"> coins:</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">            if</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">&#x3C;=</span><span style=\"color:#E6EDF4\"> a:</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">                dp[a] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#C7D2FE\"> min</span><span style=\"color:#E6EDF4\">(dp[a], dp[a </span><span style=\"color:#7DD3FC\">-</span><span style=\"color:#E6EDF4\"> c] </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">)</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    return</span><span style=\"color:#E6EDF4\"> dp[amount]                      </span><span style=\"color:#94A3B8;font-style:italic\"># the mistake: unreachable amounts still hold INF</span></span>", "function coinChange(coins: number[], amount: number): number {\n  const INF = amount + 1;\n  const dp: number[] = [0, ...new Array<number>(amount).fill(INF)];\n  for (let a = 1; a <= amount; a++) {\n    for (const c of coins) {\n      if (c <= a) dp[a] = Math.min(dp[a], dp[a - c] + 1);\n    }\n  }\n  return dp[amount]; // the mistake: unreachable amounts still hold INF\n}": "<span class=\"line\"><span style=\"color:#7DD3FC\">function</span><span style=\"color:#C7D2FE\"> coinChange</span><span style=\"color:#E6EDF4\">(coins</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">[], amount</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">)</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\"> {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  const</span><span style=\"color:#E6EDF4\"> INF </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> amount </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  const</span><span style=\"color:#E6EDF4\"> dp</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">[] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">0</span><span style=\"color:#E6EDF4\">, </span><span style=\"color:#7DD3FC\">...new</span><span style=\"color:#C7D2FE\"> Array</span><span style=\"color:#E6EDF4\">&#x3C;</span><span style=\"color:#FBBF24\">number</span><span style=\"color:#E6EDF4\">>(amount).</span><span style=\"color:#C7D2FE\">fill</span><span style=\"color:#E6EDF4\">(INF)];</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  for</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#7DD3FC\">let</span><span style=\"color:#E6EDF4\"> a </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">; a </span><span style=\"color:#7DD3FC\">&#x3C;=</span><span style=\"color:#E6EDF4\"> amount; a</span><span style=\"color:#7DD3FC\">++</span><span style=\"color:#E6EDF4\">) {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    for</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#7DD3FC\">const</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">of</span><span style=\"color:#E6EDF4\"> coins) {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      if</span><span style=\"color:#E6EDF4\"> (c </span><span style=\"color:#7DD3FC\">&#x3C;=</span><span style=\"color:#E6EDF4\"> a) dp[a] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> Math.</span><span style=\"color:#C7D2FE\">min</span><span style=\"color:#E6EDF4\">(dp[a], dp[a </span><span style=\"color:#7DD3FC\">-</span><span style=\"color:#E6EDF4\"> c] </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">);</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    }</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  return</span><span style=\"color:#E6EDF4\"> dp[amount]; </span><span style=\"color:#94A3B8;font-style:italic\">// the mistake: unreachable amounts still hold INF</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">}</span></span>", "def coin_change(coins, amount):\n    def fewest(a):\n        if a == 0:\n            return 0\n        best = float(\"inf\")\n        for c in coins:                    # try every coin as the last one\n            if c <= a:\n                best = min(best, fewest(a - c) + 1)\n        return best\n\n    result = fewest(amount)\n    return result if result != float(\"inf\") else -1": "<span class=\"line\"><span style=\"color:#7DD3FC\">def</span><span style=\"color:#C7D2FE\"> coin_change</span><span style=\"color:#E6EDF4\">(coins, amount):</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    def</span><span style=\"color:#C7D2FE\"> fewest</span><span style=\"color:#E6EDF4\">(a):</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        if</span><span style=\"color:#E6EDF4\"> a </span><span style=\"color:#7DD3FC\">==</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">:</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">            return</span><span style=\"color:#4ADE80\"> 0</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">        best </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#FBBF24\"> float</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#86EFAC\">\"inf\"</span><span style=\"color:#E6EDF4\">)</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        for</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">in</span><span style=\"color:#E6EDF4\"> coins:                    </span><span style=\"color:#94A3B8;font-style:italic\"># try every coin as the last one</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">            if</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">&#x3C;=</span><span style=\"color:#E6EDF4\"> a:</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">                best </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#C7D2FE\"> min</span><span style=\"color:#E6EDF4\">(best, fewest(a </span><span style=\"color:#7DD3FC\">-</span><span style=\"color:#E6EDF4\"> c) </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">)</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        return</span><span style=\"color:#E6EDF4\"> best</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    result </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> fewest(amount)</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    return</span><span style=\"color:#E6EDF4\"> result </span><span style=\"color:#7DD3FC\">if</span><span style=\"color:#E6EDF4\"> result </span><span style=\"color:#7DD3FC\">!=</span><span style=\"color:#FBBF24\"> float</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#86EFAC\">\"inf\"</span><span style=\"color:#E6EDF4\">) </span><span style=\"color:#7DD3FC\">else</span><span style=\"color:#7DD3FC\"> -</span><span style=\"color:#4ADE80\">1</span></span>", "function coinChange(coins: number[], amount: number): number {\n  function fewest(a: number): number {\n    if (a === 0) return 0;\n    let best = Infinity;\n    for (const c of coins) {\n      // try every coin as the last one\n      if (c <= a) best = Math.min(best, fewest(a - c) + 1);\n    }\n    return best;\n  }\n\n  const result = fewest(amount);\n  return result !== Infinity ? result : -1;\n}": "<span class=\"line\"><span style=\"color:#7DD3FC\">function</span><span style=\"color:#C7D2FE\"> coinChange</span><span style=\"color:#E6EDF4\">(coins</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">[], amount</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">)</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\"> {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  function</span><span style=\"color:#C7D2FE\"> fewest</span><span style=\"color:#E6EDF4\">(a</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">)</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\"> {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    if</span><span style=\"color:#E6EDF4\"> (a </span><span style=\"color:#7DD3FC\">===</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">) </span><span style=\"color:#7DD3FC\">return</span><span style=\"color:#4ADE80\"> 0</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    let</span><span style=\"color:#E6EDF4\"> best </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> Infinity</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    for</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#7DD3FC\">const</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">of</span><span style=\"color:#E6EDF4\"> coins) {</span></span>\n<span class=\"line\"><span style=\"color:#94A3B8;font-style:italic\">      // try every coin as the last one</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      if</span><span style=\"color:#E6EDF4\"> (c </span><span style=\"color:#7DD3FC\">&#x3C;=</span><span style=\"color:#E6EDF4\"> a) best </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> Math.</span><span style=\"color:#C7D2FE\">min</span><span style=\"color:#E6EDF4\">(best, </span><span style=\"color:#C7D2FE\">fewest</span><span style=\"color:#E6EDF4\">(a </span><span style=\"color:#7DD3FC\">-</span><span style=\"color:#E6EDF4\"> c) </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">);</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    }</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    return</span><span style=\"color:#E6EDF4\"> best;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  const</span><span style=\"color:#E6EDF4\"> result </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#C7D2FE\"> fewest</span><span style=\"color:#E6EDF4\">(amount);</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  return</span><span style=\"color:#E6EDF4\"> result </span><span style=\"color:#7DD3FC\">!==</span><span style=\"color:#4ADE80\"> Infinity</span><span style=\"color:#7DD3FC\"> ?</span><span style=\"color:#E6EDF4\"> result </span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#7DD3FC\"> -</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">}</span></span>", "def coin_change(coins, amount):\n    INF = amount + 1                       # larger than any real answer\n    dp = [0] + [INF] * amount              # dp[a] = fewest coins that make exactly a\n    for a in range(1, amount + 1):\n        for c in coins:\n            if c <= a:                     # the last coin cannot exceed the amount\n                dp[a] = min(dp[a], dp[a - c] + 1)\n    return dp[amount] if dp[amount] != INF else -1": "<span class=\"line\"><span style=\"color:#7DD3FC\">def</span><span style=\"color:#C7D2FE\"> coin_change</span><span style=\"color:#E6EDF4\">(coins, amount):</span></span>\n<span class=\"line\"><span style=\"color:#4ADE80\">    INF</span><span style=\"color:#7DD3FC\"> =</span><span style=\"color:#E6EDF4\"> amount </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#94A3B8;font-style:italic\">                       # larger than any real answer</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    dp </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">0</span><span style=\"color:#E6EDF4\">] </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">INF</span><span style=\"color:#E6EDF4\">] </span><span style=\"color:#7DD3FC\">*</span><span style=\"color:#E6EDF4\"> amount              </span><span style=\"color:#94A3B8;font-style:italic\"># dp[a] = fewest coins that make exactly a</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    for</span><span style=\"color:#E6EDF4\"> a </span><span style=\"color:#7DD3FC\">in</span><span style=\"color:#C7D2FE\"> range</span><span style=\"color:#E6EDF4\">(</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">, amount </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">):</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">        for</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">in</span><span style=\"color:#E6EDF4\"> coins:</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">            if</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">&#x3C;=</span><span style=\"color:#E6EDF4\"> a:                     </span><span style=\"color:#94A3B8;font-style:italic\"># the last coin cannot exceed the amount</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">                dp[a] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#C7D2FE\"> min</span><span style=\"color:#E6EDF4\">(dp[a], dp[a </span><span style=\"color:#7DD3FC\">-</span><span style=\"color:#E6EDF4\"> c] </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">)</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    return</span><span style=\"color:#E6EDF4\"> dp[amount] </span><span style=\"color:#7DD3FC\">if</span><span style=\"color:#E6EDF4\"> dp[amount] </span><span style=\"color:#7DD3FC\">!=</span><span style=\"color:#4ADE80\"> INF</span><span style=\"color:#7DD3FC\"> else</span><span style=\"color:#7DD3FC\"> -</span><span style=\"color:#4ADE80\">1</span></span>", "function coinChange(coins: number[], amount: number): number {\n  const INF = amount + 1; // larger than any real answer\n  const dp: number[] = [0, ...new Array<number>(amount).fill(INF)]; // dp[a] = fewest coins that make exactly a\n  for (let a = 1; a <= amount; a++) {\n    for (const c of coins) {\n      if (c <= a) {\n        // the last coin cannot exceed the amount\n        dp[a] = Math.min(dp[a], dp[a - c] + 1);\n      }\n    }\n  }\n  return dp[amount] !== INF ? dp[amount] : -1;\n}": "<span class=\"line\"><span style=\"color:#7DD3FC\">function</span><span style=\"color:#C7D2FE\"> coinChange</span><span style=\"color:#E6EDF4\">(coins</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">[], amount</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">)</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\"> {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  const</span><span style=\"color:#E6EDF4\"> INF </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> amount </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">; </span><span style=\"color:#94A3B8;font-style:italic\">// larger than any real answer</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  const</span><span style=\"color:#E6EDF4\"> dp</span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#FBBF24\"> number</span><span style=\"color:#E6EDF4\">[] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> [</span><span style=\"color:#4ADE80\">0</span><span style=\"color:#E6EDF4\">, </span><span style=\"color:#7DD3FC\">...new</span><span style=\"color:#C7D2FE\"> Array</span><span style=\"color:#E6EDF4\">&#x3C;</span><span style=\"color:#FBBF24\">number</span><span style=\"color:#E6EDF4\">>(amount).</span><span style=\"color:#C7D2FE\">fill</span><span style=\"color:#E6EDF4\">(INF)]; </span><span style=\"color:#94A3B8;font-style:italic\">// dp[a] = fewest coins that make exactly a</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  for</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#7DD3FC\">let</span><span style=\"color:#E6EDF4\"> a </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">; a </span><span style=\"color:#7DD3FC\">&#x3C;=</span><span style=\"color:#E6EDF4\"> amount; a</span><span style=\"color:#7DD3FC\">++</span><span style=\"color:#E6EDF4\">) {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">    for</span><span style=\"color:#E6EDF4\"> (</span><span style=\"color:#7DD3FC\">const</span><span style=\"color:#E6EDF4\"> c </span><span style=\"color:#7DD3FC\">of</span><span style=\"color:#E6EDF4\"> coins) {</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">      if</span><span style=\"color:#E6EDF4\"> (c </span><span style=\"color:#7DD3FC\">&#x3C;=</span><span style=\"color:#E6EDF4\"> a) {</span></span>\n<span class=\"line\"><span style=\"color:#94A3B8;font-style:italic\">        // the last coin cannot exceed the amount</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">        dp[a] </span><span style=\"color:#7DD3FC\">=</span><span style=\"color:#E6EDF4\"> Math.</span><span style=\"color:#C7D2FE\">min</span><span style=\"color:#E6EDF4\">(dp[a], dp[a </span><span style=\"color:#7DD3FC\">-</span><span style=\"color:#E6EDF4\"> c] </span><span style=\"color:#7DD3FC\">+</span><span style=\"color:#4ADE80\"> 1</span><span style=\"color:#E6EDF4\">);</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">      }</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">    }</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">  }</span></span>\n<span class=\"line\"><span style=\"color:#7DD3FC\">  return</span><span style=\"color:#E6EDF4\"> dp[amount] </span><span style=\"color:#7DD3FC\">!==</span><span style=\"color:#E6EDF4\"> INF </span><span style=\"color:#7DD3FC\">?</span><span style=\"color:#E6EDF4\"> dp[amount] </span><span style=\"color:#7DD3FC\">:</span><span style=\"color:#7DD3FC\"> -</span><span style=\"color:#4ADE80\">1</span><span style=\"color:#E6EDF4\">;</span></span>\n<span class=\"line\"><span style=\"color:#E6EDF4\">}</span></span>"};
+/* ================= Coin Change: the lesson ================= */
+
+/* ---------- the algorithm, executed: one trace, plus independent references ---------- */
+var INF=Infinity;
+function dpTrace(coins,amount){
+  var dp=[0],par=[-1],steps=[];
+  for(var a=1;a<=amount;a++){
+    var cands=[],best=INF,bc=-1;
+    coins.forEach(function(c){if(c<=a){var v=dp[a-c]+1;cands.push({c:c,from:a-c,v:v});if(v<best){best=v;bc=c;}}});
+    dp[a]=best;par[a]=bc;steps.push({a:a,cands:cands,best:best,coin:bc,dp:dp.slice()});
+  }
+  return {dp:dp,par:par,steps:steps,ans:dp[amount]===INF?-1:dp[amount]};
+}
+function orderOf(tr,amount){var out=[];for(var a=amount;a>0&&tr.par[a]>0;a-=tr.par[a])out.push(tr.par[a]);return out;}
+/* a different algorithm: breadth-first search over amounts, one launch per level */
+function bfsFewest(coins,amount){
+  if(amount===0)return 0;
+  var seen={0:true},level=[0],steps=0;
+  while(level.length){steps++;var next=[];
+    for(var i=0;i<level.length;i++)for(var j=0;j<coins.length;j++){var t=level[i]+coins[j];
+      if(t===amount)return steps;if(t<amount&&!seen[t]){seen[t]=true;next.push(t);}}
+    level=next;}
+  return -1;
+}
+/* what greedy does: the biggest size that fits, again and again */
+function greedyOrder(coins,amount){
+  var out=[],left=amount,cs=coins.slice().sort(function(x,y){return y-x;});
+  cs.forEach(function(c){while(left>=c){out.push(c);left-=c;}});
+  return left===0?out:null;
+}
+/* the recursion from the page, run for real, counting every call and every different amount asked about */
+function recursionCost(coins,amount){
+  var calls=0,asked={};
+  function f(a){calls++;asked[a]=true;if(a===0)return 0;var best=INF;coins.forEach(function(c){if(c<=a)best=Math.min(best,f(a-c)+1);});return best;}
+  var r=f(amount);return {calls:calls,asked:Object.keys(asked).length,ans:r===INF?-1:r};
+}
+function vc(n){return n+' vCPU'+(n===1?'':'s');}
+function inputFor(coins){return '{'+coins.join(', ')+'}';}
+
+var CASES=[[[1,2,5],11],[[2],3],[[1],0],[[2],0],[[1,3,4],6],[[5],5],[[186,419,83,408],6249],[[7,9],11]];
+CASES.forEach(function(c){
+  var d=dpTrace(c[0],c[1]).ans,b=bfsFewest(c[0],c[1]);
+  if(d!==b)throw new Error('table and breadth-first search disagree on '+JSON.stringify(c));
+});
+[[[1,2,5],11,3],[[2],3,-1]].forEach(function(c){if(dpTrace(c[0],c[1]).ans!==c[2])throw new Error('problem statement example failed');});
+
+/* ---------- 1. explore: build an order by hand ---------- */
+var SCEN=[{name:'sizes 1, 2, 5 · need 11',coins:[1,2,5],amount:11},{name:'sizes 1, 3, 4 · need 6',coins:[1,3,4],amount:6},{name:'size 2 · need 3',coins:[2],amount:3}];
+function mountExplore(host){
+  var tabs=host.querySelector('.extabs'),bar=host.querySelector('.fleet'),out=host.querySelector('.readout'),picksEl=host.querySelector('.picks'),cur=0,picks=[];
+  function total(){return picks.reduce(function(a,b){return a+b;},0);}
+  function draw(msg){
+    var sc=SCEN[cur],t=total(),left=sc.amount-t;
+    bar.innerHTML='';bar.setAttribute('role','img');bar.setAttribute('aria-label',picks.length+' instances so far, '+t+' of '+sc.amount+' vCPUs');
+    picks.forEach(function(p){var s=el('span','seg',String(p));s.style.flexGrow=p;bar.appendChild(s);});
+    if(left>0){var g=el('span','gap',left+' left');g.style.flexGrow=left;bar.appendChild(g);}
+    picksEl.querySelectorAll('button').forEach(function(b){b.disabled=+b.dataset.size>left;});
+    var F=dpTrace(sc.coins,sc.amount).ans;
+    if(msg){out.innerHTML=msg;return;}
+    if(left===0)out.innerHTML='Exactly '+sc.amount+' vCPUs with <b>'+picks.length+'</b> instances. '+(picks.length===F?'That is the fewest possible.':'The fewest possible is <b>'+F+'</b>, so a better order exists.');
+    else if(!sc.coins.some(function(c){return c<=left;}))out.innerHTML='<b>Stuck:</b> '+vc(left)+' left and no size is that small. Undo and try a different mix.';
+    else out.innerHTML=(picks.length?picks.length+' instances launched, ':'Nothing launched yet, ')+'<b>'+left+'</b> '+(left===1?'vCPU':'vCPUs')+' still to fill.';
+  }
+  function pick(size){picks.push(size);draw();}
+  function load(i){
+    cur=i;picks=[];
+    tabs.querySelectorAll('button').forEach(function(b,k){b.setAttribute('aria-pressed',k===i);});
+    picksEl.innerHTML='';
+    SCEN[i].coins.forEach(function(c){var b=el('button','btn2','+ '+c+' vCPU');b.type='button';b.dataset.size=c;b.addEventListener('click',function(){pick(c);});picksEl.appendChild(b);});
+    draw();
+  }
+  SCEN.forEach(function(s,i){var b=el('button','tab',s.name);b.type='button';b.addEventListener('click',function(){load(i);});tabs.appendChild(b);});
+  host.querySelector('.undo').addEventListener('click',function(){picks.pop();draw();});
+  host.querySelector('.best').addEventListener('click',function(){
+    var sc=SCEN[cur],tr=dpTrace(sc.coins,sc.amount);picks=[];
+    if(tr.ans<0){draw('No order adds up to exactly '+sc.amount+': every size is even, so every total is even.');return;}
+    picks=orderOf(tr,sc.amount);draw('A fewest order: '+picks.join(' + ')+' = '+sc.amount+', <b>'+tr.ans+'</b> instances. No order uses fewer.');
+  });
+  load(0);
+}
+
+/* ---------- 2. predict ---------- */
+var PREDICT=[[[1,2,5],11],[[1,3,4],6],[[2],3]].map(function(c){var tr=dpTrace(c[0],c[1]);return {coins:c[0],amount:c[1],expect:tr.ans,order:orderOf(tr,c[1]),greedy:greedyOrder(c[0],c[1])};});
+function mountGuess(host){
+  mountPredict(host,PREDICT,{
+    question:function(c){return 'Sizes <code>'+inputFor(c.coins)+'</code>, capacity <code>'+c.amount+'</code>. What is the fewest instances that add up to exactly '+c.amount+'?';},
+    choices:function(){return [-1,1,2,3,4];},
+    draw:function(view,c){
+      var row=el('div','sizes',c.coins.map(function(s){return '<span class="sz">'+s+' vCPU</span>';}).join('')+'<span class="sz need">need '+c.amount+'</span>');view.appendChild(row);
+      return {reveal:function(){row.appendChild(el('span','sz ans',c.expect<0?'impossible':c.order.join(' + ')+' = '+c.amount));}};
+    },
+    why:function(c){
+      if(c.expect<0)return 'Every size is even, so every total is even and '+c.amount+' can never be reached. That is the case the <code>-1</code> is for.';
+      var g=c.greedy;
+      return 'An order that works: <code>'+c.order.join(' + ')+'</code>, '+c.expect+' instances. '+(g&&g.length===c.expect?'Greedy happens to find it here too.':(g?'Greedy would launch <code>'+g.join(' + ')+'</code>, which is '+g.length+' instances, so it is not the fewest.':'Greedy would fail outright here.'));
+    }
+  });
+}
+
+/* ---------- 3. the two traps ---------- */
+function mountGreedyTable(host){
+  var sets=[[[1,2,5],11],[[1,3,4],6],[[1,5,6,9],11],[[3,5],9]],wrong=0;
+  sets.forEach(function(c){
+    var opt=dpTrace(c[0],c[1]).ans,g=greedyOrder(c[0],c[1]),gl=g?g.length:-1,bad=gl!==opt;if(bad)wrong++;
+    host.appendChild(el('div','',
+      '<span>sizes '+inputFor(c[0])+', need '+c[1]+'</span><em>greedy → '+(g?g.join('+')+' = '+gl:'gets stuck, -1')+' · fewest → '+opt+(bad?' <b style="color:var(--r-ink)">greedy is wrong</b>':' <b style="color:var(--g-ink)">agree</b>')+'</em>'));
+  });
+  if(wrong<2||greedyOrder([3,5],9)!==null||greedyOrder([1,3,4],6).join('+')!=='4+1+1'||dpTrace([3,5],9).ans!==3)throw new Error('the greedy examples in the prose no longer hold');
+  $('#greedy-note').innerHTML='Greedy is wrong on <b>'+wrong+'</b> of these '+sets.length+'. On <code>{3, 5}</code> with 9 it takes a 5, is left with 4, and gives up, although 3 + 3 + 3 reaches 9 exactly. The answers in the "fewest" column come from the table you are about to build and are cross-checked by a breadth-first search.';
+  sets.forEach(function(c){if(dpTrace(c[0],c[1]).ans!==bfsFewest(c[0],c[1]))throw new Error('greedy table reference mismatch');});
+}
+function mountCost(host){
+  var pts=[],c=[1,2,5],calls=[1];
+  for(var a=1;a<=25;a++){
+    var r=recursionCost(c,a),f=1;c.forEach(function(x){if(x<=a)f+=calls[a-x];});calls[a]=f;
+    if(r.calls!==f||r.asked!==a+1||r.ans!==dpTrace(c,a).ans)throw new Error('recursion cost check failed at '+a);
+    pts.push([a,r.calls,r.asked]);
+  }
+  var last=pts[pts.length-1];
+  costChart(host,{names:['recursion, every call','different questions'],ylabel:'calls',pts:pts,xmax:25,log:true,xticks:[0,5,10,15,20,25],xlabel:'amount to make',aria:'Calls made by the plain recursion against different questions, on a log scale: the recursion reaches '+fmt(last[1])+' calls at amount 25 while there are only '+last[2]+' different questions.'});
+  host.parentNode.querySelector('.cost-note').innerHTML='Making <b>25</b> takes the recursion <b>'+fmt(last[1])+'</b> calls, yet it only ever asks <b>'+last[2]+'</b> different questions, one per amount from 0 to 25. The axis is logarithmic because the recursion\'s line multiplies by about '+(last[1]/pts[pts.length-2][1]).toFixed(1)+' with every step. Each call count is measured by running the recursion, and matches the recurrence calls(a) = 1 + the sum of calls(a − c) over sizes that fit.';
+}
+
+/* ---------- 4. the table, frame by frame ---------- */
+function tableFrames(coins,amount){
+  var tr=dpTrace(coins,amount),n=amount+1,frames=[],ix=[];
+  for(var i=0;i<n;i++)ix.push({k:'dim',t:String(i)});
+  function val(v){return v===INF?'∞':String(v);}
+  function cells(a,srcs,filled){
+    var out=[];
+    for(var i=0;i<n;i++){
+      var k='idle',t='';
+      if(i<=filled){t=val(tr.dp[i]);k=tr.dp[i]===INF?'dim':'idle';}
+      if(i===0)k='done';
+      if(srcs&&srcs.indexOf(i)>=0){k='win';}
+      if(i===a){k='cur';}
+      out.push({k:k,t:t});}
+    return out;
+  }
+  frames.push({b:{ix:ix,dp:cells(-1,null,0)},note:'The table has one cell per amount, from 0 to '+amount+'. Cell a will hold the fewest instances that add up to exactly a vCPUs. Cell 0 is 0: no capacity needs no instances.',stats:[['sizes',coins.join(' ')],['need',amount]]});
+  tr.steps.forEach(function(st){
+    var srcs=st.cands.map(function(x){return x.from;});
+    var note;
+    if(!st.cands.length)note='Amount '+st.a+': no size is small enough to be the last instance, so it stays ∞.';
+    else{
+      var parts=st.cands.map(function(x){return x.c+' → dp['+x.from+'] + 1 = '+(x.v===INF?'∞':x.v);});
+      note='Amount '+st.a+': try each size as the last instance. '+parts.join(', ')+'. '+(st.best===INF?'Every remainder is unreachable, so it stays ∞.':'The smallest is '+st.best+', so dp['+st.a+'] = '+st.best+'.');
+    }
+    frames.push({b:{ix:ix,dp:cells(st.a,srcs,st.a)},note:note,stats:[['amount',st.a],['dp['+st.a+']',val(st.best)]],ev:st.best===INF?'bad':null});
+  });
+  var path=orderOf(tr,amount),onPath=[];
+  if(tr.ans>=0){var a=amount;onPath.push(a);while(a>0&&tr.par[a]>0){a-=tr.par[a];onPath.push(a);}}
+  var fin=[];for(var j=0;j<n;j++){var k=onPath.indexOf(j)>=0?'done':(tr.dp[j]===INF?'dim':'idle');fin.push({k:k,t:val(tr.dp[j])});}
+  frames.push({b:{ix:ix,dp:fin},note:tr.ans<0?'Done: dp['+amount+'] is ∞, so no order adds up to exactly '+amount+'. The answer is -1.':'Done: dp['+amount+'] = '+tr.ans+'. Following the winning last size back from '+amount+' gives '+path.join(' + ')+' = '+amount+'.',stats:[['answer',tr.ans]],ev:'key'});
+  var ref=bfsFewest(coins,amount);if(ref!==tr.ans)throw new Error('frames disagree with breadth-first search');
+  return {frames:frames,step:1.0,poster:frames.length-1,
+    legend:[['cur','amount being solved'],['win','an entry it reads'],['dim','unreachable, ∞'],['done','cell 0, then the sizes used']],
+    boards:[{id:'ix',label:'amount',g:0,cols:n,rows:1,cap:44,wide:true},{id:'dp',label:'fewest instances',g:0,cols:n,rows:1,cap:44,wide:true}],
+    label:'Filling the table for sizes '+inputFor(coins)+' and capacity '+amount+'.'};
+}
+var EXAMPLES=[{name:'1, 2, 5 · 11',coins:[1,2,5],amount:11},{name:'1, 3, 4 · 6 (where greedy fails)',coins:[1,3,4],amount:6},{name:'2 · 5 (impossible)',coins:[2],amount:5}];
+function mountWalk(host){mountStepper(host,EXAMPLES,function(i){return tableFrames(EXAMPLES[i].coins,EXAMPLES[i].amount);},'walk');}
+
+/* ---------- the limit the quiz and the derivation quote: 10⁴ amounts × 12 sizes ---------- */
+var OPS=10000*12;
+
+/* ---------- the numbers lesson.md quotes as {{name}}: computed here, never typed ---------- */
+var FACTS=(function(){
+  var small=dpTrace([1,2,5],11),steps=small.steps.length;
+  var raws=[[[2],3],[[7,9],11]].map(function(c){var t=dpTrace(c[0],c[1]);return {c:c,raw:t.dp[c[1]]===INF?c[1]+1:t.dp[c[1]]};});
+  return {fmt_OPS:fmt(OPS),steps:steps,tries:steps*3,fits:small.steps.reduce(function(s,st){return s+st.cands.length;},0),smallCells:small.dp.length,
+    rawCases:raws.map(function(r){return '<b>'+r.raw+'</b> for sizes <code>'+inputFor(r.c[0])+'</code> and amount '+r.c[1];}).join(' and ')};
+})();
+/* ---------- assemble ---------- */
+(function(){
+  readPal();
+  mountExplore($('#explore'));
+  mountGuess($('#predict'));
+  mountLesson();
+  mountGreedyTable($('#greedy-table'));
+  mountCost($('#cost'));
+  mountWalk($('#stepper'));
+})();
+
+/* ================= systems layer: the table hero ================= */
+(function(){
+  var COINS=[1,2,5],AMT=11,tr=dpTrace(COINS,AMT),CW=38,X0=(560-12*CW)/2;
+  function heroFleet(){
+    var svg=$('#heroFleet');if(!svg)return;
+    COINS.forEach(function(c,i){
+      var x=170+i*80;S('rect',{x:x,y:40,width:64,height:48,rx:10,class:'hf-inst'},svg);
+      S('text',{x:x+32,y:70,class:'hf-ch','text-anchor':'middle'},svg).textContent=c+' vCPU';});
+    S('text',{x:280,y:24,class:'hn-lab','text-anchor':'middle'},svg).textContent='sizes on sale';
+    var cells=[];
+    for(var i=0;i<=AMT;i++){
+      var g=S('g',{},svg);
+      var r=S('rect',{x:X0+i*CW,y:150,width:CW-6,height:CW-6,rx:8,class:'hf-cell'},g);
+      var t=S('text',{x:X0+i*CW+(CW-6)/2,y:150+(CW-6)/2+6,class:'hf-ch','text-anchor':'middle'},g);
+      S('text',{x:X0+i*CW+(CW-6)/2,y:212,class:'hn-lab','text-anchor':'middle'},svg).textContent=i;
+      cells.push([r,t]);
+    }
+    var num=$('#heroNum'),cap=$('#heroCap');
+    function capOf(st){return !st?'zero capacity needs zero instances':'dp['+st.a+'] = 1 + min('+st.cands.map(function(x){return 'dp['+x.from+']';}).join(', ')+') = <b>'+st.best+'</b>';}
+    var reserveCap=function(){reserveHeight(cap,[capOf(null)].concat(tr.steps.map(capOf)));};
+    reserveCap();if('ResizeObserver' in window)new ResizeObserver(reserveCap).observe(cap.parentNode);
+    function draw(k){
+      var st=k===0?null:tr.steps[k-1];
+      cells.forEach(function(p,i){
+        var cls='hf-cell',txt='';
+        if(i===0){cls+=' base';txt='0';}
+        else if(st&&i<=st.a){txt=String(tr.dp[i]);}
+        if(st&&i===st.a)cls+=' cur';
+        if(st&&st.cands.some(function(x){return x.from===i;}))cls+=' src';
+        p[0].setAttribute('class',cls);p[1].textContent=txt;
+        p[1].setAttribute('class','hf-ch'+((st&&i===st.a)?' onink':''));
+      });
+      var unit=document.getElementById('heroUnit');
+      if(!st){num.textContent='0';unit.textContent='instances';cap.innerHTML=capOf(null);return;}
+      num.textContent=String(st.best);unit.textContent=st.best===1?'instance':'instances';
+      cap.innerHTML=capOf(st);
+    }
+    draw(AMT);
+    if(M&&M.animate&&!reduce){
+      var last=-1,total=AMT+2;
+      M.animate(0,total,{duration:total*.85,ease:'linear',repeat:Infinity,onUpdate:function(v){var k=Math.min(AMT,Math.floor(v));if(k!==last){last=k;draw(k);}}});
+    }
+  }
+  heroFleet();kinetic();riseIn();
+})();
+
+wirePage();
+window.__built&&window.__built();
+})();
+</script></body></html>

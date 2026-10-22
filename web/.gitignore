@@ -47,4 +47,3 @@ next-env.d.ts
 
 # Course overview pages, built from lesson-artifacts at prebuild
 /public/artifacts/
-/public/lessons/
