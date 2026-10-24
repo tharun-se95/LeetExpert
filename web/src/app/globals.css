@@ -1181,23 +1181,22 @@ body {
   pointer-events: none;
 }
 /*
-  A stage card's art (LandingStory, StageCardLink): the module stills fanned
-  like a hand of cards over a dotted field. --fan is -1, 0 or 1; hover or focus
-  spreads the hand and lifts it, on a springy curve so it pops.
+  A stage card's art (LandingStory, StageCardLink): clean modern algorithmic module
+  image cards with smooth elevation and layered preview.
 */
 .stage-art {
-  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 14%, transparent) 1px, transparent 1px);
-  background-size: 14px 14px;
+  background-color: var(--surface);
 }
 .stage-tile {
-  transform: translate(-50%, -46%) translateX(calc(var(--fan) * 42%)) rotate(calc(var(--fan) * 8deg))
+  transform: translate(-50%, -50%) translateX(calc(var(--fan) * 32%))
     scale(calc(1 - (var(--fan) * var(--fan)) * 0.08));
-  transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid color-mix(in oklab, var(--border) 75%, transparent);
 }
 .group:hover .stage-tile,
 .group:focus-visible .stage-tile {
-  transform: translate(-50%, -54%) translateX(calc(var(--fan) * 60%)) rotate(calc(var(--fan) * 13deg))
-    scale(calc(1.04 - (var(--fan) * var(--fan)) * 0.08));
+  transform: translate(-50%, -50%) translateX(calc(var(--fan) * 44%))
+    scale(calc(1.04 - (var(--fan) * var(--fan)) * 0.06));
 }
 @media (prefers-reduced-motion: reduce) {
   .stage-tile {
@@ -2774,156 +2773,5 @@ html[data-lamp-boot] .lamp--bloom .lamp-halo {
   }
 }
 
-/* ============================================================
-   Tangible 3D Binder Themes (Stages 0–4)
-   Rich physical notebook textures, blueprint grids, coordinates,
-   marbled cover washes, and cyber circuit traces.
-   ============================================================ */
 
-.track-binder {
-  position: relative;
-  transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              border-color 300ms ease;
-  transform-style: preserve-3d;
-}
-
-@media (hover: hover) {
-  .track-binder:hover,
-  .track-binder:focus-visible {
-    transform: translateY(-0.5rem) rotateX(3deg) rotateY(-2deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .track-binder,
-  .track-binder:hover,
-  .track-binder:focus-visible {
-    transform: none;
-    transition: none;
-  }
-}
-
-/* Stage 0: Sunny canary / golden amber binder */
-.binder-stage-0 {
-  background-color: var(--elevated);
-  background-image:
-    linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.04) 50%, transparent 100%);
-  border-color: rgba(245, 158, 11, 0.35);
-}
-.binder-stage-0:hover,
-.binder-stage-0:focus-visible {
-  border-color: rgba(245, 158, 11, 0.65);
-}
-.binder-pill-0 {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.24), rgba(217, 119, 6, 0.14));
-  border: 1px solid rgba(245, 158, 11, 0.45);
-  color: #b45309;
-}
-.dark .binder-pill-0 {
-  color: #fbbf24;
-  border-color: rgba(251, 191, 36, 0.5);
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(217, 119, 6, 0.1));
-}
-
-/* Stage 1: Vintage sage / emerald blueprint binder */
-.binder-stage-1 {
-  background-color: var(--elevated);
-  background-image:
-    linear-gradient(rgba(16, 185, 129, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 185, 129, 0.08) 1px, transparent 1px),
-    linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 50%, transparent 100%);
-  background-size: 16px 16px, 16px 16px, 100% 100%;
-  border-color: rgba(16, 185, 129, 0.35);
-}
-.binder-stage-1:hover,
-.binder-stage-1:focus-visible {
-  border-color: rgba(16, 185, 129, 0.65);
-}
-.binder-pill-1 {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.24), rgba(5, 150, 105, 0.14));
-  border: 1px solid rgba(16, 185, 129, 0.45);
-  color: #047857;
-}
-.dark .binder-pill-1 {
-  color: #34d399;
-  border-color: rgba(52, 211, 153, 0.5);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
-}
-
-/* Stage 2: Electric sky-blue retro grid binder */
-.binder-stage-2 {
-  background-color: var(--elevated);
-  background-image:
-    radial-gradient(circle, rgba(56, 189, 248, 0.18) 1px, transparent 1px),
-    linear-gradient(rgba(59, 130, 246, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.07) 1px, transparent 1px),
-    linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(59, 130, 246, 0.04) 50%, transparent 100%);
-  background-size: 20px 20px, 20px 20px, 20px 20px, 100% 100%;
-  border-color: rgba(56, 189, 248, 0.35);
-}
-.binder-stage-2:hover,
-.binder-stage-2:focus-visible {
-  border-color: rgba(56, 189, 248, 0.65);
-}
-.binder-pill-2 {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(37, 99, 235, 0.14));
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  color: #0369a1;
-}
-.dark .binder-pill-2 {
-  color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.5);
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(37, 99, 235, 0.1));
-}
-
-/* Stage 3: Terracotta coral rose / royal violet marbled binder */
-.binder-stage-3 {
-  background-color: var(--elevated);
-  background-image:
-    radial-gradient(ellipse 90% 70% at 90% 10%, rgba(244, 63, 94, 0.14), transparent 60%),
-    radial-gradient(ellipse 70% 90% at 10% 90%, rgba(168, 85, 247, 0.12), transparent 60%),
-    linear-gradient(135deg, rgba(244, 63, 94, 0.10) 0%, rgba(168, 85, 247, 0.05) 50%, transparent 100%);
-  border-color: rgba(244, 63, 94, 0.35);
-}
-.binder-stage-3:hover,
-.binder-stage-3:focus-visible {
-  border-color: rgba(244, 63, 94, 0.65);
-}
-.binder-pill-3 {
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.24), rgba(168, 85, 247, 0.14));
-  border: 1px solid rgba(244, 63, 94, 0.45);
-  color: #be123c;
-}
-.dark .binder-pill-3 {
-  color: #fb7185;
-  border-color: rgba(251, 113, 133, 0.5);
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(168, 85, 247, 0.1));
-}
-
-/* Stage 4: Vibrant mint / cyber teal circuit board binder */
-.binder-stage-4 {
-  background-color: var(--elevated);
-  background-image:
-    linear-gradient(rgba(20, 184, 166, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
-    radial-gradient(circle at 24px 24px, rgba(20, 184, 166, 0.22) 2px, transparent 2.5px),
-    linear-gradient(135deg, rgba(20, 184, 166, 0.12) 0%, rgba(6, 182, 212, 0.04) 50%, transparent 100%);
-  background-size: 24px 24px, 24px 24px, 48px 48px, 100% 100%;
-  border-color: rgba(20, 184, 166, 0.35);
-}
-.binder-stage-4:hover,
-.binder-stage-4:focus-visible {
-  border-color: rgba(20, 184, 166, 0.65);
-}
-.binder-pill-4 {
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.24), rgba(6, 182, 212, 0.14));
-  border: 1px solid rgba(20, 184, 166, 0.45);
-  color: #0f766e;
-}
-.dark .binder-pill-4 {
-  color: #2dd4bf;
-  border-color: rgba(45, 212, 191, 0.5);
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(6, 182, 212, 0.1));
-}
 

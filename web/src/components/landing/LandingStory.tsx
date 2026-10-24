@@ -334,35 +334,29 @@ function Inside({ chapter, stages, started }: { chapter: Chapter; stages: readon
 const STAGE_THEMES: Record<
   number,
   {
-    binder: string;
     border: string;
     pill: string;
   }
 > = {
   0: {
-    binder: "binder-stage-0",
     border: "border-t-2 border-t-warn",
-    pill: "binder-pill-0",
+    pill: "border border-warn/40 bg-warn-surface/80 text-warn",
   },
   1: {
-    binder: "binder-stage-1",
     border: "border-t-2 border-t-good",
-    pill: "binder-pill-1",
+    pill: "border border-good/40 bg-good-surface/80 text-good",
   },
   2: {
-    binder: "binder-stage-2",
     border: "border-t-2 border-t-info",
-    pill: "binder-pill-2",
+    pill: "border border-info/40 bg-info-surface/80 text-info",
   },
   3: {
-    binder: "binder-stage-3",
     border: "border-t-2 border-t-accent",
-    pill: "binder-pill-3",
+    pill: "border border-accent/40 bg-surface/90 text-mark",
   },
   4: {
-    binder: "binder-stage-4",
     border: "border-t-2 border-t-good",
-    pill: "binder-pill-4",
+    pill: "border border-good/40 bg-good-surface/80 text-good",
   },
 };
 
@@ -401,21 +395,19 @@ const DEFAULT_HIGHLIGHTS = [
 ];
 
 /**
- * One stage as a rich, tangible physical 3D notebook/binder:
- * - Left spine band with physical book stitching/rivet accents.
- * - Custom tactile texture & color wash (blueprint grid, retro coordinates, marbled, or cyber circuit).
- * - Metallic embossed stage number foil badge.
- * - 3D perspective hover lift.
- * - Decorative module art fanned over the cover field.
+ * One stage as a clean, modern image card button with content fill:
+ * - 16:9 visual header with module art and floating Stage pill badge.
+ * - Symmetrical, clean content fill with smooth hover elevation lift.
+ * - 3 key syllabus highlights with bullet marks.
+ * - Telemetry bar and quick-action navigation.
  */
 function StageCardLink({ stage }: { stage: StageCard }) {
   const art = stage.art ?? [];
   const theme = STAGE_THEMES[stage.number] ?? {
-    binder: "binder-stage-0",
     border: "border-t-2 border-t-good",
-    pill: "binder-pill-0",
+    pill: "border border-good/40 bg-good-surface/80 text-good",
   };
-  // Fanned from the middle: the centre card on top, its neighbours tipped out.
+  // Fanned from the middle: the centre card on top, its neighbours layered smoothly.
   const fan = art.length === 1 ? [0] : art.length === 2 ? [-1, 1] : [-1, 0, 1];
   const highlights = STAGE_HIGHLIGHTS[stage.number] ?? DEFAULT_HIGHLIGHTS;
 
@@ -423,53 +415,36 @@ function StageCardLink({ stage }: { stage: StageCard }) {
     <Link
       href={stage.href}
       className={cn(
-        "track-binder group relative flex h-[500px] sm:h-[520px] flex-col overflow-hidden rounded-[length:var(--radius-lg)] border bg-elevated shadow-elevation transition-all duration-300 group-hover:[transform:translateY(-0.5rem)_rotateX(3deg)_rotateY(-2deg)]",
-        theme.binder,
+        "group relative flex h-full flex-col overflow-hidden rounded-[length:var(--radius-lg)] border border-border/80 bg-elevated shadow-elevation transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:border-accent/60 hover:shadow-elevation focus-visible:-translate-y-1.5 motion-reduce:hover:transform-none motion-reduce:transition-none",
         theme.border,
       )}
     >
-      {/* Left spine band with physical book stitching and rivet accents */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 z-20 flex w-4 sm:w-5 flex-col items-center justify-between border-r border-border/70 bg-gradient-to-r from-foreground/[0.06] via-foreground/[0.02] to-transparent py-5"
-      >
-        <div className="absolute inset-y-0 right-1 w-px border-r border-dashed border-foreground/15" />
-        <div className="relative flex h-2 w-2 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
-          <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
-        </div>
-        <div className="relative flex h-2 w-2 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
-          <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
-        </div>
-        <div className="relative flex h-2 w-2 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
-          <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
-        </div>
-        <div className="relative flex h-2 w-2 items-center justify-center rounded-full border border-border/80 bg-surface shadow-elevation">
-          <span className="h-0.5 w-0.5 rounded-full bg-foreground/40" />
-        </div>
-      </div>
-
-      {/* 3D folder tab on the right edge of the binder */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-0 top-7 z-20 h-14 w-3 rounded-r-[length:var(--radius-sm)] border-r-2 border-y border-foreground/20 bg-foreground/10 transition-transform duration-300 group-hover:translate-x-0.5"
-      />
-
+      {/* 16:9 Visual Header / Module Art Showcase */}
       {art.length > 0 ? (
-        <div aria-hidden className="stage-art relative h-56 sm:h-64 overflow-hidden bg-surface/40 pl-4 [perspective:900px]">
+        <div aria-hidden="true" className="stage-art relative h-52 sm:h-56 overflow-hidden bg-surface/50 border-b border-border/70">
           {art.map((still, k) => (
             <div
               key={still.title}
-              className="stage-tile absolute top-1/2 left-1/2 aspect-[43/24] h-[68%] overflow-hidden rounded-[length:var(--radius-md)] shadow-elevation"
+              className="stage-tile absolute top-1/2 left-1/2 aspect-[16/9] h-[78%] overflow-hidden rounded-[length:var(--radius-md)] shadow-elevation"
               style={{ "--fan": fan[k], zIndex: fan[k] === 0 ? 2 : 1 } as CSSProperties}
             >
-              <Image src={still.light} alt="" fill sizes="(min-width: 1024px) 280px, 60vw" className="module-art-light object-cover" />
-              <Image src={still.dark} alt="" fill sizes="(min-width: 1024px) 280px, 60vw" className="module-art-dark object-cover" />
+              <Image src={still.light} alt="" fill sizes="(min-width: 1024px) 280px, 60vw" className="module-art-light object-cover transition-transform duration-500 group-hover:scale-105" />
+              <Image src={still.dark} alt="" fill sizes="(min-width: 1024px) 280px, 60vw" className="module-art-dark object-cover transition-transform duration-500 group-hover:scale-105" />
             </div>
           ))}
+
+          {/* Module count pill on top-right */}
+          <div className="absolute top-3 right-3 z-10 pointer-events-none">
+            <span className="rounded-full border border-border/80 bg-elevated/90 backdrop-blur-md px-2.5 py-0.5 text-[11px] font-mono font-medium text-muted shadow-elevation">
+              {stage.modules} Modules
+            </span>
+          </div>
         </div>
       ) : null}
-      <div className="flex flex-1 flex-col py-5 pr-5 pl-7 sm:pl-8">
-        <span className="flex items-center justify-between gap-3">
+
+      {/* Card Content Fill */}
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <div className="flex items-center justify-between gap-3">
           <span
             className={cn(
               "relative inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider uppercase shadow-elevation transition-transform duration-300 group-hover:scale-105",
@@ -480,15 +455,19 @@ function StageCardLink({ stage }: { stage: StageCard }) {
             Stage {stage.number}
           </span>
           <ArrowRight
-            className="h-4 w-4 text-muted transition-[color,transform] duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-1 group-hover:text-foreground motion-reduce:transition-none"
+            className="h-4 w-4 shrink-0 text-muted transition-[color,transform] duration-[var(--dur-fast)] ease-[var(--ease)] group-hover:translate-x-1 group-hover:text-good motion-reduce:transition-none"
             aria-hidden
           />
+        </div>
+        <span className="mt-2.5 font-display text-xl sm:text-2xl font-bold tracking-tight text-foreground transition-colors group-hover:text-good">
+          {stage.title}
         </span>
-        <span className="mt-2.5 font-display text-xl sm:text-2xl font-bold tracking-tight text-foreground">{stage.title}</span>
-        <span className="mt-1 text-sm leading-relaxed text-muted line-clamp-2">{stage.description}</span>
+        <span className="mt-1 text-sm leading-relaxed text-muted line-clamp-2">
+          {stage.description}
+        </span>
 
         {/* 3 key syllabus highlights with bullet marks */}
-        <ul className="mt-3.5 space-y-1.5 text-xs font-mono text-muted/90">
+        <ul className="mt-4 space-y-1.5 text-xs font-mono text-muted/90">
           {highlights.map((bullet, idx) => (
             <li key={idx} className="flex items-center gap-1.5">
               <span className="font-bold text-good">{bullet.slice(0, 1)}</span>
@@ -503,7 +482,7 @@ function StageCardLink({ stage }: { stage: StageCard }) {
             {stageMeta(stage)}
           </span>
           <span className="inline-flex items-center gap-1 text-xs font-mono font-semibold text-foreground group-hover:text-good transition-colors">
-            <span>Open</span>
+            <span>Explore Stage</span>
             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
           </span>
         </div>
