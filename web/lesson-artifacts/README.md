@@ -1,7 +1,9 @@
 # Lesson artifacts
 
-> **Parked (2026-09-21).** The pages are saved here but **not wired into the app**: no Lesson tab,
-> nothing under `public/`. Pages build to `dist/`. To put them back, see "Re-enabling" below.
+> **Served in the app (2026-10-22).** Pages build to `dist/`; `scripts/build-lesson-artifacts.mjs` copies them
+> to `public/lessons/`, which is **committed** (the deploy has no Python), and CI fails if the committed pages
+> differ from a fresh build. The registry is `src/lib/course/lessonArtifacts.ts`. The "Re-enabling" section at
+> the end is the history of how the pages were first wired in and no longer describes the tree.
 
 Interactive lesson pages that the problem workspace can show in a **Lesson** tab, beside the
 sandbox. Each is one self-contained HTML file built into `dist/<module>/<lesson>.html`.

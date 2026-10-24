@@ -74,7 +74,7 @@ export function Header({
   const modeLinkClass = (active: boolean) => cn(NAV_LINK, active && NAV_LINK_ACTIVE);
 
   return (
-    <header className="print:hidden absolute inset-x-0 top-0 z-40 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-background/90 backdrop-blur-md shadow-edge-bottom px-3 sm:gap-3 sm:px-4 lg:px-6">
+    <header className="print:hidden absolute inset-x-0 top-0 z-40 grid h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-border bg-background/90 backdrop-blur-md shadow-edge-bottom px-3 sm:gap-3 sm:px-4 lg:px-6">
       <div className="flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
         {showLessonsMenu ? (
           <>
@@ -209,8 +209,12 @@ export function Header({
         )}
       </nav>
 
-      <div className="col-start-3 ml-auto flex min-w-0 items-center justify-end gap-1.5 justify-self-end sm:gap-2 md:gap-3">
-        {showCodeLang && courseSlug !== "nextjs" ? <CodeLangSwitch /> : null}
+      <div className="col-start-3 ml-auto flex shrink-0 items-center justify-end gap-1.5 justify-self-end sm:gap-2 md:gap-3">
+        {showCodeLang && courseSlug !== "nextjs" ? (
+          <div className="hidden xl:block">
+            <CodeLangSwitch />
+          </div>
+        ) : null}
 
         {/*
           Icon-only below md: the Search+⌘K pill was the main collision with
@@ -222,23 +226,23 @@ export function Header({
           aria-label="Search lessons and problems"
           className={cn(
             ROUND_CONTROL,
-            "h-11 w-11 md:h-9 md:w-auto md:gap-2.5 md:rounded-full md:border-border/80 md:bg-surface/50 md:px-3 md:text-sm md:hover:border-accent/40 md:hover:bg-surface cursor-pointer",
+            "h-11 w-11 md:h-9 md:w-9 xl:w-auto xl:gap-2.5 md:rounded-full md:border-border/80 md:bg-surface/50 xl:px-3 md:text-sm md:hover:border-accent/40 md:hover:bg-surface cursor-pointer",
           )}
         >
           <MagnifyingGlass className="h-4 w-4" aria-hidden />
-          <span className="hidden text-muted md:inline">Search</span>
-          <kbd className="hidden font-mono text-[10px] md:inline-flex items-center justify-center px-1.5 py-0.5 rounded-[length:var(--radius-xs)] bg-elevated border border-border shadow-elevation text-muted">
+          <span className="hidden text-muted xl:inline">Search</span>
+          <kbd className="hidden font-mono text-[10px] xl:inline-flex items-center justify-center px-1.5 py-0.5 rounded-[length:var(--radius-xs)] bg-elevated border border-border shadow-elevation text-muted">
             ⌘K
           </kbd>
         </button>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 xl:flex">
           {showProgress ? (
             <div
               className="flex h-9 items-center gap-2.5 rounded-full border border-border/80 bg-surface/50 px-3 text-[11px] text-muted shadow-elevation"
               title={`${visitedCount} of ${totalCount} lessons completed`}
             >
-              <span className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-surface lg:block">
+              <span className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-surface 2xl:block">
                 <span
                   className={cn(
                     "block h-full rounded-full transition-all duration-500",

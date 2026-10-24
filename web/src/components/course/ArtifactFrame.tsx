@@ -69,6 +69,13 @@ export function ArtifactFrame({ src, title, mode = "concept" }: ArtifactFramePro
           }
         }
 
+        /* Below the page's own 1300px breakpoint the rail has no margin to sit in:
+           it is fixed at left 12px, 48px wide, and the body's 16px gutter put the
+           headline under it. Move the content right of the rail. */
+        @media (min-width: 1024px) and (max-width: 1299px) {
+          body { padding-left: 76px !important; }
+        }
+
         /* Guarantee 2-column hero with visual component side-by-side with text */
         @media (min-width: 900px) {
           .hero2 {

@@ -50,6 +50,15 @@ jobs:
         working-directory: web
         run: npm test
 
+      # public/lessons/ is committed (the deploy has no Python), so it can drift
+      # from lesson-artifacts/. Rebuild from source and require the same bytes.
+      - name: Committed lesson pages match their sources
+        working-directory: web
+        run: |
+          python3 lesson-artifacts/build.py
+          node scripts/build-lesson-artifacts.mjs
+          test -z "$(git status --porcelain -- public/lessons)" || { git status --short -- public/lessons; exit 1; }
+
       - name: Build
         working-directory: web
         run: npm run build
